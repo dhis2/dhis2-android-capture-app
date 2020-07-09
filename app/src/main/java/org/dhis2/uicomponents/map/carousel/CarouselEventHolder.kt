@@ -16,7 +16,8 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 class CarouselEventHolder(
     val binding: ItemCarouselEventBinding,
     val program: Program?,
-    val onClick: (teiUid: String?, enrollmentUid: String?) -> Boolean
+    val onClick: (teiUid: String?, enrollmentUid: String?) -> Boolean,
+    val profileImagePreviewCallback: (String) -> Unit
 ) :
     RecyclerView.ViewHolder(binding.root),
     CarouselBinder<EventUiComponentModel> {
@@ -56,7 +57,12 @@ class CarouselEventHolder(
             setProfilePicture(data.teiImage)
             defaultTypeIcon = data.teiDefaultIcon
             attributeValues = data.teiAttribute
-            setTeiImage(itemView.context, binding.teiImage, binding.imageText)
+            setTeiImage(
+                itemView.context,
+                binding.teiImage,
+                binding.imageText,
+                profileImagePreviewCallback
+            )
         }
     }
 

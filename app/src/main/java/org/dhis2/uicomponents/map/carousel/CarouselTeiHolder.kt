@@ -14,7 +14,8 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 class CarouselTeiHolder(
     val binding: ItemCarouselTeiBinding,
     val onClick: (teiUid: String, enrollmentUid: String?, isOnline: Boolean) -> Boolean,
-    val onSyncClick: (String) -> Boolean
+    val onSyncClick: (String) -> Boolean,
+    val profileImagePreviewCallback: (String) -> Unit
 ) :
     RecyclerView.ViewHolder(binding.root),
     CarouselBinder<SearchTeiModel> {
@@ -44,7 +45,12 @@ class CarouselTeiHolder(
                 isHasOverdue,
                 overdueDate
             )
-            setTeiImage(itemView.context, binding.trackedEntityImage, binding.imageText)
+            setTeiImage(
+                itemView.context,
+                binding.trackedEntityImage,
+                binding.imageText,
+                profileImagePreviewCallback
+            )
             binding.sortingFieldName.text = data.sortingKey
             binding.sortingFieldValue.text = data.sortingValue
         }

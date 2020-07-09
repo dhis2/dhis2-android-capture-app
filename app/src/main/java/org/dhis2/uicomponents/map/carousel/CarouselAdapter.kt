@@ -28,6 +28,7 @@ class CarouselAdapter private constructor(
     private val onTeiClickListener: (String, String?, Boolean) -> Boolean,
     private val onRelationshipClickListener: (relationshipTeiUid: String) -> Boolean,
     private val onEventClickListener: (teiUid: String?, enrollmentUid: String?) -> Boolean,
+    private val onProfileImageClick: (String) -> Unit,
     private val allItems: MutableList<CarouselItemModel>
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -48,7 +49,8 @@ class CarouselAdapter private constructor(
                         false
                     ),
                     onTeiClickListener,
-                    onSyncClickListener
+                    onSyncClickListener,
+                    onProfileImageClick
                 )
             CarouselItems.RELATIONSHIP ->
                 CarouselRelationshipHolder(
@@ -69,7 +71,8 @@ class CarouselAdapter private constructor(
                         false
                     ),
                     program,
-                    onEventClickListener
+                    onEventClickListener,
+                    onProfileImageClick
                 )
         }
     }
@@ -187,6 +190,7 @@ class CarouselAdapter private constructor(
         var onRelationshipClickListener: (relationshipTeiUid: String) -> Boolean = { false },
         var onEventClickListener: (String?, String?) -> Boolean =
             { _: String?, _: String? -> false },
+        var onProfileImageClick: (String) -> Unit = { },
         var items: MutableList<CarouselItemModel> = arrayListOf(),
         var program: Program? = null
     ) {
@@ -226,6 +230,12 @@ class CarouselAdapter private constructor(
             this.onEventClickListener = onEventClickListener
         }
 
+        fun addOnProfileImageClickListener(
+            onProfileImageClick: (String) -> Unit
+        ) = apply {
+            this.onProfileImageClick = onProfileImageClick
+        }
+
         fun addProgram(program: Program) = apply {
             this.program = program
         }
@@ -242,6 +252,7 @@ class CarouselAdapter private constructor(
             onTeiClickListener,
             onRelationshipClickListener,
             onEventClickListener,
+            onProfileImageClick,
             items
         )
     }

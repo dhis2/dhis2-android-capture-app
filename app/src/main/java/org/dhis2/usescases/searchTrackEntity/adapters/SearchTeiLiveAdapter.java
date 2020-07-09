@@ -5,13 +5,16 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentManager;
 import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
+import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 
+import java.io.File;
 import java.util.Objects;
 
 import kotlin.Unit;
@@ -46,11 +49,13 @@ public class SearchTeiLiveAdapter extends PagedListAdapter<SearchTeiModel, Searc
             }
         }
     };
+    private final FragmentManager fm;
     private SearchTEContractsModule.Presenter presenter;
 
-    public SearchTeiLiveAdapter(SearchTEContractsModule.Presenter presenter) {
+    public SearchTeiLiveAdapter(SearchTEContractsModule.Presenter presenter, FragmentManager fm) {
         super(DIFF_CALLBACK);
         this.presenter = presenter;
+        this.fm = fm;
     }
 
     @NonNull
@@ -63,10 +68,24 @@ public class SearchTeiLiveAdapter extends PagedListAdapter<SearchTeiModel, Searc
 
     @Override
     public void onBindViewHolder(@NonNull SearchTEViewHolder holder, int position) {
-        holder.bind(presenter, getItem(position), () -> {
-            getItem(position).toggleAttributeList();
-            notifyItemChanged(position);
-            return Unit.INSTANCE;
-        });
+        holder.bind(
+                presenter,
+                getItem(position),
+                () -> {
+                    getItem(holder.getAdapterPosition()).toggleAttributeList();
+                    notifyItemChanged(holder.getAdapterPosition());
+                    return Unit.INSTANCE;
+                },
+                path -> {
+                    new ImageDetailBottomDialog(
+                            null,
+                            new File(path)
+                    ).show(
+                            fm,
+                            ImageDetailBottomDialog.TAG
+                    );
+                    return Unit.INSTANCE;
+                }
+        );
     }
 }

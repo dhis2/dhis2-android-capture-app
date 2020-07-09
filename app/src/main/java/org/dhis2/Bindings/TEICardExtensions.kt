@@ -19,9 +19,6 @@ import androidx.core.graphics.drawable.DrawableCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import java.io.File
-import java.util.ArrayList
-import java.util.Date
 import org.dhis2.R
 import org.dhis2.databinding.ItemFieldValueBinding
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
@@ -32,6 +29,9 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import timber.log.Timber
+import java.io.File
+import java.util.ArrayList
+import java.util.Date
 
 fun List<Enrollment>.hasFollowUp(): Boolean {
     return firstOrNull { enrollment ->
@@ -139,7 +139,8 @@ fun Enrollment.setStatusText(
 fun SearchTeiModel.setTeiImage(
     context: Context,
     teiImageView: ImageView,
-    teiTextImageView: TextView
+    teiTextImageView: TextView,
+    pictureListener: (String) -> Unit
 ) {
     val imageBg = AppCompatResources.getDrawable(
         context,
@@ -156,6 +157,7 @@ fun SearchTeiModel.setTeiImage(
     val file = File(profilePicturePath)
     val placeHolderId = ResourceManager(context)
         .getObjectStyleDrawableResource(defaultTypeIcon, -1)
+    teiImageView.setOnClickListener(null)
     if (file.exists()) {
         teiTextImageView.visibility = View.GONE
         Glide.with(context)
@@ -165,8 +167,10 @@ fun SearchTeiModel.setTeiImage(
             .transition(DrawableTransitionOptions.withCrossFade())
             .transform(CircleCrop())
             .into(teiImageView)
+        teiImageView.setOnClickListener { pictureListener(profilePicturePath) }
     } else if (textAttributeValues != null &&
-        textAttributeValues.values.isNotEmpty()
+        textAttributeValues.values.isNotEmpty() &&
+        ArrayList(textAttributeValues.values)[0].value() != "-"
     ) {
         teiImageView.setImageDrawable(null)
         teiTextImageView.visibility = View.VISIBLE
@@ -174,7 +178,7 @@ fun SearchTeiModel.setTeiImage(
         if (valueToShow[0] == null) {
             teiTextImageView.text = "?"
         } else {
-            teiTextImageView.text = valueToShow[0].value()?.first().toString()
+            teiTextImageView.text = valueToShow[0].value()?.first().toString().toUpperCase()
         }
         teiTextImageView.setTextColor(
             ColorUtils.getContrastColor(
@@ -186,7 +190,20 @@ fun SearchTeiModel.setTeiImage(
         )
     } else if (placeHolderId != -1) {
         teiTextImageView.visibility = View.GONE
-        teiImageView.setImageResource(placeHolderId)
+        val icon = AppCompatResources.getDrawable(
+            context,
+            placeHolderId
+        )
+        icon!!.colorFilter = PorterDuffColorFilter(
+            ColorUtils.getContrastColor(
+                ColorUtils.getPrimaryColor(
+                    context,
+                    ColorUtils.ColorType.PRIMARY
+                )
+            ),
+            PorterDuff.Mode.SRC_IN
+        )
+        teiImageView.setImageDrawable(icon)
     } else {
         teiTextImageView.visibility = View.VISIBLE
         teiTextImageView.text = "?"

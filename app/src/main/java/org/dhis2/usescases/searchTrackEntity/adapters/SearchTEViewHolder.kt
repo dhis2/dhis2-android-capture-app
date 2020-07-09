@@ -19,7 +19,8 @@ class SearchTEViewHolder(private val binding: ItemSearchTrackedEntityBinding) :
     fun bind(
         presenter: SearchTEContractsModule.Presenter,
         searchTeiModel: SearchTeiModel,
-        attributeVisibilityCallback: () -> Unit
+        attributeVisibilityCallback: () -> Unit,
+        profileImagePreviewCallback: (String) -> Unit
     ) {
         if (searchTeiModel.isAttributeListOpen) {
             showAttributeList()
@@ -55,7 +56,8 @@ class SearchTEViewHolder(private val binding: ItemSearchTrackedEntityBinding) :
             setTeiImage(
                 itemView.context,
                 binding.trackedEntityImage,
-                binding.imageText
+                binding.imageText,
+                profileImagePreviewCallback
             )
             attributeValues.setAttributeList(
                 binding.attributeList,

@@ -107,13 +107,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:background="@drawable/round_border_box_2"
-                android:paddingStart="1dp"
-                android:paddingEnd="1dp"
+                android:ellipsize="end"
                 android:gravity="center"
                 android:minHeight="14dp"
-                android:textAlignment="center"
+                android:paddingStart="1dp"
+                android:paddingEnd="1dp"
                 android:singleLine="true"
-                android:ellipsize="end"
+                android:textAlignment="center"
                 android:textColor="#8A333333"
                 android:textSize="9sp"
                 android:visibility="gone"
@@ -142,8 +142,8 @@
                 android:id="@+id/attribute_b_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
                 android:layout_marginEnd="5dp"
                 android:fontFamily="@font/rubik_regular"
                 android:text="@{attributeNames.size()>1?attributeNames.toArray()[1]:null}"
@@ -174,8 +174,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginEnd="5dp"
                 android:layout_marginTop="6dp"
+                android:layout_marginEnd="5dp"
                 android:paddingBottom="24dp"
                 android:textColor="@color/text_black_DE3"
                 android:textSize="12sp"
@@ -207,8 +207,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
                 android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
                 android:ellipsize="end"
                 android:fontFamily="@font/rubik_regular"
                 android:singleLine="true"
@@ -242,12 +242,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
+                android:layout_marginTop="6dp"
                 android:layout_marginEnd="5dp"
                 android:ellipsize="end"
-                android:singleLine="true"
-                android:layout_marginTop="6dp"
-                android:textColor="#61333333"
                 android:paddingBottom="24dp"
+                android:singleLine="true"
+                android:textColor="#61333333"
                 android:textSize="12sp"
                 android:visibility='@{sortingValue != null ? View.VISIBLE : View.GONE}'
                 app:layout_constraintEnd_toStartOf="@id/infoLayout"
@@ -313,40 +313,49 @@
                 android:layout_marginTop="16dp"
                 android:orientation="vertical"
                 android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@id/showAttributesButton"
+                app:layout_constraintBottom_toTopOf="@id/actionLayout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
                 app:layout_constraintTop_toBottomOf="@id/entity_attribute_1" />
 
-            <LinearLayout
-                android:id="@+id/programList"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/actionLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="16dp"
-                android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/showAttributesButton">
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <LinearLayout
+                    android:id="@+id/programList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="16dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/showAttributesButton">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:background="@drawable/rounded_square"
+                        android:backgroundTint="?colorPrimaryLight"
+                        android:padding="2dp"
+                        app:srcCompat="@drawable/ic_child_health_positive" />
+                </LinearLayout>
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:background="@drawable/rounded_square"
-                    android:backgroundTint="?colorPrimaryLight"
-                    android:padding="2dp"
-                    app:srcCompat="@drawable/ic_child_health_positive" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/showAttributesButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:visibility="@{attributeNames.size()>3?View.VISIBLE:View.GONE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@drawable/ic_arrow_down"
-                app:tint="#61333333" />
+                    android:id="@+id/showAttributesButton"
+                    style="@style/ActionIconSmallPadding"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:visibility="@{attributeNames.size()>3?View.VISIBLE:View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:srcCompat="@drawable/ic_arrow_down"
+                    app:tint="#61333333" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>

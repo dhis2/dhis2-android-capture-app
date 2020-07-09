@@ -369,6 +369,11 @@ public class FilterManager {
         filterProcessor.onNext(this);
     }
 
+    public void clearSorting(){
+        sortingItem = null;
+        filterProcessor.onNext(this);
+    }
+
     public void clearAllFilters() {
         eventStatusFilters.clear();
         enrollmentStatusFilters.clear();

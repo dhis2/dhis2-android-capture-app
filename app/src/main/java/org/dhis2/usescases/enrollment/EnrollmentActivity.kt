@@ -18,8 +18,6 @@ import com.crashlytics.android.Crashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
-import java.io.File
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.isKeyboardOpened
 import org.dhis2.R
@@ -44,18 +42,22 @@ import org.dhis2.utils.Constants.TEI_UID
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.FileResourcesUtil
 import org.dhis2.utils.customviews.AlertBottomDialog
+import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.recyclers.StickyHeaderItemDecoration
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import java.io.File
+import javax.inject.Inject
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     enum class EnrollmentMode { NEW, CHECK }
 
     private var forRelationship: Boolean = false
+
     @Inject
     lateinit var presenter: EnrollmentPresenterImpl
 
@@ -122,8 +124,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 false
             ) { itemPosition ->
                 itemPosition >= 0 &&
-                    itemPosition < adapter.itemCount &&
-                    adapter.getItemViewType(itemPosition) == adapter.sectionViewType()
+                        itemPosition < adapter.itemCount &&
+                        adapter.getItemViewType(itemPosition) == adapter.sectionViewType()
             }
         )
         binding.fieldRecycler.adapter = adapter
@@ -376,6 +378,15 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .transform(CircleCrop())
                     .into(binding.teiDataHeader.teiImage)
+                binding.teiDataHeader.teiImage.setOnClickListener {
+                    ImageDetailBottomDialog(
+                        null,
+                        File(profileImage)
+                    ).show(
+                        supportFragmentManager,
+                        ImageDetailBottomDialog.TAG
+                    )
+                }
             }
         } else {
             binding.title.visibility = View.VISIBLE

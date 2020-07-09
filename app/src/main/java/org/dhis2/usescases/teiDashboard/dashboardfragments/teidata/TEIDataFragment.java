@@ -41,6 +41,7 @@ import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -77,10 +78,6 @@ import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT_TEI;
 import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_EVENT_TEI;
-
-/**
- * -Created by ppajuelo on 29/11/2017.
- */
 
 public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.View {
 
@@ -501,6 +498,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                     .transition(withCrossFade())
                     .transform(new CircleCrop())
                     .into(binding.cardFront.teiImage);
+            binding.cardFront.teiImage.setOnClickListener(view -> {
+                new ImageDetailBottomDialog(
+                        null,
+                        new File(filePath)
+                ).show(
+                        getChildFragmentManager(),
+                        ImageDetailBottomDialog.TAG
+                );
+            });
         }
     }
 

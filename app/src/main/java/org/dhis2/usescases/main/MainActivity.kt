@@ -18,7 +18,6 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableInt
 import com.android.dbexporterlibrary.ExporterListener
-import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
 import org.dhis2.R
@@ -44,12 +43,14 @@ import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.FiltersAdapter
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
+import javax.inject.Inject
 
 private const val FRAGMENT = "Fragment"
 private const val PERMISSION_REQUEST = 1987
 
 class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
     private lateinit var binding: ActivityMainBinding
+
     @Inject
     lateinit var presenter: MainPresenter
 
@@ -120,9 +121,9 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
         presenter.initFilters()
 
         if (ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.CAMERA
             ) != PackageManager.PERMISSION_GRANTED
@@ -273,8 +274,15 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
 
         if (activeFragment != null) {
             currentFragment.set(id)
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, activeFragment!!, tag).commitAllowingStateLoss()
+            val transaction = supportFragmentManager.beginTransaction()
+            transaction.setCustomAnimations(
+                R.anim.fragment_enter_right,
+                R.anim.fragment_exit_left,
+                R.anim.fragment_enter_left,
+                R.anim.fragment_exit_right
+            )
+            transaction.replace(R.id.fragment_container, activeFragment!!, tag)
+                .commitAllowingStateLoss()
             binding.title.text = tag
         }
         binding.mainDrawerLayout.closeDrawers()
