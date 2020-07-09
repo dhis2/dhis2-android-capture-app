@@ -23,6 +23,7 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.orgunitselector.OUTreeActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
@@ -207,5 +208,22 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
                 }).build();
 
         dialog.show(getSupportFragmentManager(), dialog.getDialogTag());
+    }
+
+    @Override
+    public void showCatOptComboDialog(String catComboUid) {
+        new CategoryDialog(
+                CategoryDialog.Type.CATEGORY_OPTION_COMBO,
+                catComboUid,
+                false,
+                null,
+                selectedCatOptionCombo -> {
+                    presenter.filterCatOptCombo(selectedCatOptionCombo);
+                    return null;
+                }
+        ).show(
+                getSupportFragmentManager(),
+                CategoryDialog.Companion.getTAG()
+        );
     }
 }

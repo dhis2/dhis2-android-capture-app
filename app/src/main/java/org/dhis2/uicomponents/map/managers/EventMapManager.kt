@@ -54,5 +54,6 @@ class EventMapManager : MapManager() {
         mapLayerManager.initMap(map)
             .withFeatureType(featureType)
             .addStartLayer(LayerType.EVENT_LAYER)
+            .addLayer(LayerType.SATELLITE_LAYER)
     }
 }

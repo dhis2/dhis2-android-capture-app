@@ -7,23 +7,28 @@ import org.dhis2.uicomponents.map.layer.MapLayer
 
 class SatelliteMapLayer(
     private val mapboxMap: MapboxMap,
-    private val styleChangeCallback: (() -> Unit)?
+    private val styleChangeCallback: (() -> Unit)?,
+    selected: Boolean
 ) : MapLayer {
 
-    override var visible = false
+    override var visible = selected
 
     override fun showLayer() {
-        mapboxMap.setStyle(Style.SATELLITE_STREETS) {
-            styleChangeCallback?.invoke()
+        if (!visible) {
+            mapboxMap.setStyle(Style.SATELLITE_STREETS) {
+                styleChangeCallback?.invoke()
+            }
+            visible = true
         }
-        visible = true
     }
 
     override fun hideLayer() {
-        mapboxMap.setStyle(Style.MAPBOX_STREETS) {
-            styleChangeCallback?.invoke()
+        if (visible) {
+            mapboxMap.setStyle(Style.MAPBOX_STREETS) {
+                styleChangeCallback?.invoke()
+            }
+            visible = false
         }
-        visible = false
     }
 
     override fun setSelectedItem(feature: Feature?) {

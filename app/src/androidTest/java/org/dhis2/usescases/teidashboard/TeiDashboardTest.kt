@@ -1,18 +1,12 @@
 package org.dhis2.usescases.teidashboard
 
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import org.dhis2.R
-import org.dhis2.common.rules.DataBindingIdlingResourceRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
@@ -21,10 +15,11 @@ import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.relationshipRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
-import org.junit.Ignore
+import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.experimental.theories.Theories
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -276,9 +271,14 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
-        val womanProgram = 4
+        val womanProgram = "MNCH / PNC (Adult Woman)"
+        val personAttribute = "Attributes - Person"
+        val visitPNCEvent = "PNC Visit"
+        val deliveryEvent = "Delivery"
+        val visitANCEvent = "ANC Visit (2-4+)"
+        val firstANCVisitEvent = "ANC 1st visit"
+
         prepareTeiToEnrollToOtherProgramAndLaunchActivity(rule)
 
         teiDashboardRobot {
@@ -289,33 +289,36 @@ class TeiDashboardTest : BaseTest() {
         enrollmentRobot {
             clickOnAProgramForEnrollment(womanProgram)
             clickOnAcceptEnrollmentDate()
-            clickOnPersonAttributes(5)
-            clickOnCalendarItem(5)
+            clickOnPersonAttributes(personAttribute)
+            clickOnCalendarItem()
             clickOnAcceptEnrollmentDate()
             scrollToBottomProgramForm()
             clickOnSaveEnrollment()
         }
 
-        eventRobot {
-            //typeOnRequiredEventForm("test", 4)
-            scrollToBottomForm()
-            clickOnFormFabButton()
-            clickOnFinish()
-        }
-
         teiDashboardRobot {
-            //check event was created
-            //checkEventWasCreatedAndOpen("ANC 1st visit", 3)
-            //checkEventWasScheduled("Baby Postnatal", 0)
-            //checkEventWasCreatedAndOpen("Birth", 1)
+            checkEventWasScheduled(visitPNCEvent, 0)
+            checkEventWasScheduled(deliveryEvent, 1)
+            checkEventWasScheduled(visitANCEvent, 2)
+            checkEventWasCreatedAndOpen(firstANCVisitEvent, 3)
         }
-
     }
 
     @Test
-    @Ignore
     fun shouldSuccessfullyCreateRelationshipWhenClickAdd() {
-        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
+        val teiName = "Tim"
+        val teiLastName = "Johnson"
+        val relationshipName = "Filona"
+        val relationshipLastName = "Ryder"
+        val completeName = "Ryder Filona"
+
+        setupCredentials()
+        prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
+
+        searchTeiRobot {
+            closeSearchForm()
+            clickOnTEI(teiName, teiLastName)
+        }
 
         teiDashboardRobot {
             clickOnRelationshipTab()
@@ -324,14 +327,18 @@ class TeiDashboardTest : BaseTest() {
         relationshipRobot {
             clickOnFabAdd()
             clickOnRelationshipType()
-            // click on a TEI
-            // check relationship was created
-            Thread.sleep(5000)
-            //    clickOnMotherRelationship()
+        }
+
+        searchTeiRobot {
+            closeSearchForm()
+            clickOnTEI(relationshipName, relationshipLastName)
+        }
+
+        relationshipRobot {
+            checkRelationshipWasCreated(0, completeName)
         }
     }
 
-    @Ignore("Check test. Sometimes it fails")
     @Test
     fun shouldDeleteTeiSuccessfully() {
         val teiName = "Anthony"
@@ -342,7 +349,6 @@ class TeiDashboardTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(4000)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -352,12 +358,10 @@ class TeiDashboardTest : BaseTest() {
         }
 
         searchTeiRobot {
-            Thread.sleep(4000)
             checkTEIsDelete(teiName, teiLastName)
         }
     }
 
-    @Ignore("Check test. Sometimes it fails")
     @Test
     fun shouldDeleteEnrollmentSuccessfully() {
 
@@ -369,7 +373,6 @@ class TeiDashboardTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(4000)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -379,7 +382,6 @@ class TeiDashboardTest : BaseTest() {
         }
 
         searchTeiRobot {
-            Thread.sleep(4000)
             checkTEIsDelete(teiName, teiLastName)
         }
     }

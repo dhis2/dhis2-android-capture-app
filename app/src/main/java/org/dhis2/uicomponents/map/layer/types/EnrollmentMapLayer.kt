@@ -61,7 +61,6 @@ class EnrollmentMapLayer(
             ?: SymbolLayer(POINT_LAYER_ID, ENROLLMENT_SOURCE_ID)
                 .withProperties(
                     PropertyFactory.iconImage(MapLayerManager.ENROLLMENT_ICON_ID),
-                    PropertyFactory.iconOffset(arrayOf(0f, -25f)),
                     PropertyFactory.iconAllowOverlap(true),
                     PropertyFactory.visibility(Property.NONE)
                 ).withFilter(
@@ -76,7 +75,6 @@ class EnrollmentMapLayer(
             ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_ENROLLMENT_SOURCE_ID)
                 .withProperties(
                     PropertyFactory.iconImage(MapLayerManager.ENROLLMENT_ICON_ID),
-                    PropertyFactory.iconOffset(arrayOf(0f, -25f)),
                     PropertyFactory.iconAllowOverlap(true),
                     PropertyFactory.visibility(Property.NONE)
                 ).withFilter(

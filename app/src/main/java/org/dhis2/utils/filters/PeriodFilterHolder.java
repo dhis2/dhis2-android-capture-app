@@ -11,6 +11,7 @@ import org.dhis2.databinding.FilterPeriodBinding;
 import org.dhis2.databinding.ItemFilterPeriodBinding;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
+import org.dhis2.utils.filters.sorting.SortingItem;
 import org.hisp.dhis.android.core.period.DatePeriod;
 
 import java.util.Calendar;
@@ -21,10 +22,11 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
 
     private ItemFilterPeriodBinding localBinding;
 
-    PeriodFilterHolder(@NonNull ItemFilterPeriodBinding binding, ObservableField<Filters> openedFilter) {
-        super(binding, openedFilter);
+    PeriodFilterHolder(@NonNull ItemFilterPeriodBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem, FiltersAdapter.ProgramType programType) {
+        super(binding, openedFilter, sortingItem);
         localBinding = binding;
         filterType = Filters.PERIOD;
+        this.programType = programType;
     }
 
     @Override

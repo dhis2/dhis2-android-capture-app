@@ -336,13 +336,15 @@ class RelationshipMapLayer(
                 arrowLayer.setProperties(PropertyFactory.visibility(visibility))
                 arrowBidirectionalLayer.setProperties(PropertyFactory.visibility(visibility))
                 pointLayer.setProperties(PropertyFactory.visibility(visibility))
-                polygonLayer.setProperties(PropertyFactory.visibility(visibility))
                 selectedLineLayer.setProperties(PropertyFactory.visibility(visibility))
                 selectedPointLayer.setProperties(PropertyFactory.visibility(visibility))
-                selectedPolygonLayer.setProperties(PropertyFactory.visibility(visibility))
                 baseRelationshipLayer.setProperties(PropertyFactory.visibility(visibility))
             }
             FeatureType.POLYGON -> {
+                linesLayer.setProperties(PropertyFactory.visibility(visibility))
+                polygonLayer.setProperties(PropertyFactory.visibility(visibility))
+                polygonBorderLayer.setProperties(PropertyFactory.visibility(visibility))
+                selectedPolygonLayer.setProperties(PropertyFactory.visibility(visibility))
             }
             else -> Unit
         }

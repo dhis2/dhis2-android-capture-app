@@ -22,6 +22,7 @@ import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Quartet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage;
@@ -33,6 +34,7 @@ import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.ObjectStyleUtils;
@@ -64,10 +66,10 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.BehaviorSubject;
-import kotlin.Triple;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
@@ -75,6 +77,7 @@ import static org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.
 import static org.dhis2.utils.analytics.AnalyticsConstants.ADD_RELATIONSHIP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_ENROLL;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_RELATIONSHIP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SEARCH_TEI;
 
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
@@ -100,6 +103,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private FlowableProcessor<Unit> mapProcessor;
     private FlowableProcessor<Unit> enrollmentMapProcessor;
     private Dialog dialogDisplayed;
+    private FlowableProcessor<Unit> mapDataProcessor;
+    private FlowableProcessor<Unit> listDataProcessor;
 
     private boolean showList = true;
     private MapTeisToFeatureCollection mapTeisToFeatureCollection;
@@ -130,6 +135,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         queryProcessor = PublishProcessor.create();
         mapProcessor = PublishProcessor.create();
         enrollmentMapProcessor = PublishProcessor.create();
+        mapDataProcessor = PublishProcessor.create();
+        listDataProcessor = PublishProcessor.create();
         selectedProgram = initialProgram != null ? d2.programModule().programs().uid(initialProgram).blockingGet() : null;
         currentProgram = BehaviorSubject.createDefault(initialProgram != null ? initialProgram : "");
     }
@@ -207,27 +214,48 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         Timber::d)
         );
 
+        ConnectableFlowable<Pair<HashMap<String, String>, FilterManager>> updaterFlowable = currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
+                .switchMap(program ->
+                        Flowable.combineLatest(
+                                queryProcessor.startWith(queryData),
+                                FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
+                                Pair::create
+                        ))
+                .onBackpressureLatest()
+                .publish();
 
         compositeDisposable.add(
-                currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
-                        .switchMap(program ->
-                                Flowable.combineLatest(
-                                        queryProcessor.startWith(queryData),
-                                        FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
-                                        Pair::create
-                                ))
-                        .onBackpressureLatest()
+                updaterFlowable
                         .observeOn(schedulerProvider.io())
-                        .filter(data -> !view.isMapVisible())
-                        .switchMap(map -> Flowable.just(searchRepository.searchTrackedEntities(
-                                selectedProgram,
-                                trackedEntityType,
-                                FilterManager.getInstance().getOrgUnitUidsFilters(),
-                                FilterManager.getInstance().getStateFilters(),
-                                FilterManager.getInstance().getEventStatusFilters(),
-                                queryData,
-                                FilterManager.getInstance().getAssignedFilter(),
-                                NetworkUtils.isOnline(view.getContext()))))
+                        .map(data -> view.isMapVisible())
+                        .subscribeOn(schedulerProvider.io())
+                        .subscribe(
+                                isMapVisible -> {
+                                    if (isMapVisible) {
+                                        mapDataProcessor.onNext(new Unit());
+                                    } else {
+                                        listDataProcessor.onNext(new Unit());
+                                    }
+                                },
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                listDataProcessor
+                        .switchMap(map -> {
+                            CountingIdlingResourceSingleton.INSTANCE.increment();
+                            return Flowable.just(searchRepository.searchTrackedEntities(
+                                    selectedProgram,
+                                    trackedEntityType,
+                                    FilterManager.getInstance().getOrgUnitUidsFilters(),
+                                    FilterManager.getInstance().getStateFilters(),
+                                    FilterManager.getInstance().getEventStatusFilters(),
+                                    queryData,
+                                    FilterManager.getInstance().getSortingItem(),
+                                    FilterManager.getInstance().getAssignedFilter(),
+                                    NetworkUtils.isOnline(view.getContext())));
+                        })
                         .doOnError(this::handleError)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
@@ -235,47 +263,35 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
 
         compositeDisposable.add(
-                mapProcessor.switchMap(data ->
-                        currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
-                                .switchMap(program ->
-                                        Flowable.combineLatest(
-                                                queryProcessor.startWith(queryData),
-                                                FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
-                                                Pair::create
-                                        )))
-                        .onBackpressureLatest()
-                        .observeOn(schedulerProvider.io())
-                        .filter(data -> view.isMapVisible())
+                mapDataProcessor
                         .switchMap(unit ->
-                                queryProcessor.startWith(queryData)
-                                        .observeOn(schedulerProvider.io())
-                                        .switchMap(query ->
-                                                searchRepository.searchTeiForMap(
-                                                        selectedProgram,
-                                                        trackedEntityType,
-                                                        FilterManager.getInstance().getOrgUnitUidsFilters(),
-                                                        FilterManager.getInstance().getStateFilters(),
-                                                        FilterManager.getInstance().getEventStatusFilters(),
-                                                        query,
-                                                        FilterManager.getInstance().getAssignedFilter(),
-                                                        NetworkUtils.isOnline(view.getContext())))
-                                        .map(teis -> new kotlin.Pair<>(teis, searchRepository.getEventsForMap(teis)))
-                                        .map(teis -> {
-                                                    List<EventUiComponentModel> eventsUi = eventToEventUiComponent.mapList(teis.component2());
-                                                    kotlin.Pair<HashMap<String, FeatureCollection>, BoundingBox> teisFeatCollection = mapTeisToFeatureCollection.map(teis.component1());
-                                                    EventsByProgramStage events = mapTeiEventsToFeatureCollection.map(eventsUi).component1();
-                                                    return new kotlin.Triple<>(teis.component1(), teisFeatCollection, events);
-                                                }
-                                            )
+                                searchRepository.searchTeiForMap(
+                                        selectedProgram,
+                                        trackedEntityType,
+                                        FilterManager.getInstance().getOrgUnitUidsFilters(),
+                                        FilterManager.getInstance().getStateFilters(),
+                                        FilterManager.getInstance().getEventStatusFilters(),
+                                        queryData,
+                                        FilterManager.getInstance().getSortingItem(),
+                                        FilterManager.getInstance().getAssignedFilter(),
+                                        NetworkUtils.isOnline(view.getContext())))
+                        .map(teis -> new kotlin.Pair<>(teis, searchRepository.getEventsForMap(teis)))
+                        .map(teis -> {
+                                    List<EventUiComponentModel> eventsUi = eventToEventUiComponent.mapList(teis.component2(), teis.component1());
+                                    kotlin.Pair<HashMap<String, FeatureCollection>, BoundingBox> teisFeatCollection = mapTeisToFeatureCollection.map(teis.component1());
+                                    EventsByProgramStage events = mapTeiEventsToFeatureCollection.map(eventsUi).component1();
+                                    return Quartet.create(teis.component1(), teisFeatCollection, events, eventsUi);
+                                }
                         )
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 teiAndMap -> view.setMap(
-                                        teiAndMap.component1(),
-                                        teiAndMap.component2().component1(),
-                                        teiAndMap.component2().component2(),
-                                        teiAndMap.component3()
+                                        teiAndMap.val0(),
+                                        teiAndMap.val1().component1(),
+                                        teiAndMap.val1().component2(),
+                                        teiAndMap.val2(),
+                                        teiAndMap.val3()
                                 ),
                                 Timber::e,
                                 () -> Timber.d("COMPLETED")
@@ -318,6 +334,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         )
         );
 
+        updaterFlowable.connect();
 
     }
 
@@ -492,7 +509,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private boolean compliesWithMinAttributesToSearch() {
         if (selectedProgram != null) {
-            if (selectedProgram.displayFrontPageList() && queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
+            if (selectedProgram.displayFrontPageList() && !queryData.isEmpty() && queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
                 return false;
             } else if (!selectedProgram.displayFrontPageList() && queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
                 return false;
@@ -666,7 +683,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid, Date enrollmentDate) {
         compositeDisposable.add(
-                searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData, enrollmentDate)
+                searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData, enrollmentDate, view.fromRelationshipTEI())
                         .subscribeOn(schedulerProvider.computation())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(enrollmentAndTEI -> {
@@ -801,6 +818,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void getMapData() {
         mapProcessor.onNext(new Unit());
+        FilterManager.getInstance().publishData();
     }
 
     @Override
@@ -851,22 +869,24 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public HashMap<String, StageStyle> getProgramStageStyle() {
-        List<ProgramStage> programStages = d2.programModule().programStages().byProgramUid().eq(selectedProgram.uid()).byFeatureType().neq(FeatureType.NONE).blockingGet();
         HashMap<String, StageStyle> stagesStyleMap = new HashMap<>();
-        for (ProgramStage stage : programStages) {
-            int color;
-            Drawable icon;
-            if (stage.style() != null && stage.style().color() != null) {
-                color = ColorUtils.parseColor(stage.style().color());
-            } else {
-                color = -1;
+        if (selectedProgram != null) {
+            List<ProgramStage> programStages = d2.programModule().programStages().byProgramUid().eq(selectedProgram.uid()).byFeatureType().neq(FeatureType.NONE).blockingGet();
+            for (ProgramStage stage : programStages) {
+                int color;
+                Drawable icon;
+                if (stage.style() != null && stage.style().color() != null) {
+                    color = ColorUtils.parseColor(stage.style().color());
+                } else {
+                    color = -1;
+                }
+                if (stage.style() != null && stage.style().icon() != null) {
+                    icon = ObjectStyleUtils.getIconResource(view.getContext(), stage.style().icon(), R.drawable.ic_clinical_f_outline);
+                } else {
+                    icon = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_clinical_f_outline);
+                }
+                stagesStyleMap.put(stage.displayName(), new StageStyle(color, icon));
             }
-            if (stage.style() != null && stage.style().icon() != null) {
-                icon = ObjectStyleUtils.getIconResource(view.getContext(), stage.style().icon(), R.drawable.ic_clinical_f_outline);
-            } else {
-                icon = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_clinical_f_outline);;
-            }
-            stagesStyleMap.put(stage.displayName(), new StageStyle(color, icon));
         }
         return stagesStyleMap;
     }
@@ -887,6 +907,18 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void restoreQueryData(HashMap<String, String> queryData) {
         this.queryData = queryData;
+    }
+
+    @Override
+    public void deleteRelationship(String relationshipUid) {
+        try {
+            d2.relationshipModule().relationships().withItems().uid(relationshipUid).blockingDelete();
+        } catch (D2Error error) {
+            Timber.d(error);
+        } finally {
+            analyticsHelper.setEvent(DELETE_RELATIONSHIP, CLICK, DELETE_RELATIONSHIP);
+            mapProcessor.onNext(new Unit());
+        }
     }
 
     @RestrictTo(RestrictTo.Scope.TESTS)

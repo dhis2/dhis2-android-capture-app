@@ -13,6 +13,7 @@ import org.dhis2.databinding.FilterPeriodBinding;
 import org.dhis2.databinding.ItemFilterPeriodBinding;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
+import org.dhis2.utils.filters.sorting.SortingItem;
 import org.hisp.dhis.android.core.period.DatePeriod;
 
 import java.util.ArrayList;
@@ -25,11 +26,12 @@ class EnrollmentDateFilterHolder extends FilterHolder implements CompoundButton.
 
     private ItemFilterPeriodBinding localBinding;
 
-    EnrollmentDateFilterHolder(@NonNull ItemFilterPeriodBinding binding, ObservableField<Filters> openedFilter) {
-        super(binding, openedFilter);
+    EnrollmentDateFilterHolder(@NonNull ItemFilterPeriodBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem, FiltersAdapter.ProgramType programType) {
+        super(binding, openedFilter, sortingItem);
         localBinding = binding;
         filterType = Filters.ENROLLMENT_DATE;
         filterTitle.setText(R.string.enrollment_date);
+        this.programType = programType;
     }
 
     @Override

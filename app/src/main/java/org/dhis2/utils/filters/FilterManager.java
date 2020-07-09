@@ -2,6 +2,8 @@ package org.dhis2.utils.filters;
 
 import androidx.databinding.ObservableField;
 
+import org.dhis2.utils.filters.sorting.SortingItem;
+import org.dhis2.utils.filters.cat_opt_comb.CatOptCombFilterAdapter;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
@@ -26,6 +28,10 @@ public class FilterManager {
         filterProcessor.onNext(this);
     }
 
+    public void setCatComboAdapter(CatOptCombFilterAdapter adapter) {
+        this.catComboAdapter = adapter;
+    }
+
     public enum PeriodRequest {
         FROM_TO, OTHER
     }
@@ -33,6 +39,8 @@ public class FilterManager {
     private int periodIdSelected;
     private int enrollmentPeriodIdSelected;
     private int totalSearchTeiFilter = 0;
+
+    private CatOptCombFilterAdapter catComboAdapter;
 
     private List<OrganisationUnit> ouFilters;
     private List<State> stateFilters;
@@ -42,6 +50,7 @@ public class FilterManager {
     private List<EventStatus> eventStatusFilters;
     private List<EnrollmentStatus> enrollmentStatusFilters;
     private boolean assignedFilter;
+    private SortingItem sortingItem;
 
     private ObservableField<Integer> ouFiltersApplied;
     private ObservableField<Integer> stateFiltersApplied;
@@ -55,6 +64,7 @@ public class FilterManager {
     private FlowableProcessor<FilterManager> filterProcessor;
     private FlowableProcessor<Boolean> ouTreeProcessor;
     private FlowableProcessor<Pair<PeriodRequest, Filters>> periodRequestProcessor;
+    private FlowableProcessor<String> catOptComboRequestProcessor;
 
     private static FilterManager instance;
 
@@ -73,6 +83,8 @@ public class FilterManager {
     }
 
     public void reset() {
+        catComboAdapter = null;
+
         ouFilters = new ArrayList<>();
         stateFilters = new ArrayList<>();
         periodFilters = new ArrayList<>();
@@ -94,6 +106,7 @@ public class FilterManager {
         filterProcessor = PublishProcessor.create();
         ouTreeProcessor = PublishProcessor.create();
         periodRequestProcessor = PublishProcessor.create();
+        catOptComboRequestProcessor = PublishProcessor.create();
     }
 
     public void setPeriodIdSelected(int selected) {
@@ -189,6 +202,9 @@ public class FilterManager {
         else
             catOptComboFilters.add(catOptCombo);
 
+        if (catComboAdapter != null) {
+            catComboAdapter.notifyDataSetChanged();
+        }
         catOptCombFiltersApplied.set(catOptComboFilters.size());
         filterProcessor.onNext(this);
     }
@@ -227,6 +243,10 @@ public class FilterManager {
 
     public FlowableProcessor<Pair<PeriodRequest, Filters>> getPeriodRequest() {
         return periodRequestProcessor;
+    }
+
+    public FlowableProcessor<String> getCatComboRequest() {
+        return catOptComboRequestProcessor;
     }
 
     public Flowable<Boolean> ouTreeFlowable() {
@@ -281,6 +301,10 @@ public class FilterManager {
 
     public void addPeriodRequest(PeriodRequest periodRequest, Filters filter) {
         periodRequestProcessor.onNext(new Pair<>(periodRequest, filter));
+    }
+
+    public void addCatOptComboRequest(String catOptComboUid) {
+        catOptComboRequestProcessor.onNext(catOptComboUid);
     }
 
     public void removeAll() {
@@ -380,5 +404,14 @@ public class FilterManager {
         this.assignedFilter = isChecked;
         assignedToMeApplied.set(isChecked ? 1 : 0);
         filterProcessor.onNext(this);
+    }
+
+    public void setSortingItem(SortingItem sortingItem) {
+        this.sortingItem = sortingItem;
+        filterProcessor.onNext(this);
+    }
+
+    public SortingItem getSortingItem() {
+        return sortingItem;
     }
 }
