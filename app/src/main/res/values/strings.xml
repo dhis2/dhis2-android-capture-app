@@ -707,4 +707,5 @@
     <string name="filters_title_enrollment_status">Enrollment status</string>
     <string name="enrollment_date">Enrollment date</string>
     <string name="action_apply">Apply</string>
+    <string name="no_data">No data</string>
 </resources>
