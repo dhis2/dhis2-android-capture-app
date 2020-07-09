@@ -188,10 +188,6 @@ android {
         enabled = true
     }
 
-    configurations {
-        compile.exclude group: "junit", module: "junit"
-    }
-
     packagingOptions {
         exclude 'LICENSE.txt'
         exclude 'META-INF/DEPENDENCIES'
