@@ -155,6 +155,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //region LIFECYCLE
     @Override
     protected void onStart() {
+
+        Integer i = null;
+        i.byteValue();
         super.onStart();
         if (teiMapManager != null) {
             teiMapManager.onStart();

@@ -115,7 +115,6 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
 
     override fun onResume() {
         super.onResume()
-        throw NullPointerException()
 
         presenter.init()
         presenter.initFilters()

@@ -97,8 +97,8 @@ android {
 
             def bitriseAcraUserDebug = System.getenv("ACRA_USER_DEBUG")
             def bitriseAcraPassDebug = System.getenv("ACRA_PASS_DEBUG")
-            def acraUserDebug = bitriseAcraUserDebug != null ? bitriseAcraUserDebug : ""
-            def acraPassDebug = bitriseAcraPassDebug != null ? bitriseAcraPassDebug : ""
+            def acraUserDebug = bitriseAcraUserDebug != null ? bitriseAcraUserDebug : "empty"
+            def acraPassDebug = bitriseAcraPassDebug != null ? bitriseAcraPassDebug : "empty"
 
             resValue "string", "content_provider", "com.dhis2.debug.provider"
             buildConfigField "String", "ACRA_USER", "\"$acraUserDebug\""
@@ -112,8 +112,8 @@ android {
 
             def bitriseAcraUserProd = System.getenv("ACRA_USER_PROD")
             def bitriseAcraPassProd = System.getenv("ACRA_PASS_PROD")
-            def acraUserProd = bitriseAcraUserProd != null ? bitriseAcraUserProd : ""
-            def acraPassProd = bitriseAcraPassProd != null ? bitriseAcraPassProd : ""
+            def acraUserProd = bitriseAcraUserProd != null ? bitriseAcraUserProd : "empty"
+            def acraPassProd = bitriseAcraPassProd != null ? bitriseAcraPassProd : "empty"
 
             buildConfigField "String", "ACRA_USER", "\"$acraUserProd\""
             buildConfigField "String", "ACRA_PASSWORD", "\"$acraPassProd\""
@@ -318,7 +318,7 @@ dependencies {
     //Paperwork
     implementation "hu.supercluster:paperwork:${libraries.paperwork}"
     implementation 'com.google.guava:guava:27.0.1-android'
-    implementation 'cat.ereza:customactivityoncrash:2.2.0'
+  //  implementation 'cat.ereza:customactivityoncrash:2.2.0'
     implementation "com.google.android.gms:play-services-analytics:${libraries.analytics}"
     //implementation 'com.github.pwittchen:rxbiometric:0.1.0'
     implementation 'co.infinum:goldfinger-rx:2.0.1'
