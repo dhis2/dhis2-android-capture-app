@@ -557,6 +557,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     String enrollmentDateLabel = programs.get(0).enrollmentDateLabel();
                     filtersAdapter.addEnrollmentDate(enrollmentDateLabel!=null?enrollmentDateLabel:getString(R.string.enrollment_date));
                 } else {
+                    if(isMapVisible()){
+                        showMap(false);
+                    }
                     presenter.setProgram(null);
                     filtersAdapter.removeEnrollmentDate();
                 }
