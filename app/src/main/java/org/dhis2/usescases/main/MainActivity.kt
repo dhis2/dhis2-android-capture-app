@@ -75,7 +75,11 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
         } ?: navigateTo<LoginActivity>(true)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        binding.presenter = presenter
+        if (::presenter.isInitialized) {
+            binding.presenter = presenter
+        } else {
+            navigateTo<LoginActivity>(true)
+        }
         binding.navView.setNavigationItemSelectedListener { item ->
             changeFragment(item.itemId)
             false
