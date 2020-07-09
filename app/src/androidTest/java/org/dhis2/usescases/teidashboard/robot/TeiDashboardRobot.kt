@@ -238,4 +238,42 @@ class TeiDashboardRobot : BaseRobot() {
                     hasDescendant(withText(R.string.event_schedule)))))))
     }
 
+    fun checkEventIsClosed(position: Int) {
+        onView(withId(R.id.tei_recycler))
+                .check(matches(allOf(isDisplayed(), isNotEmpty(),
+                        atPosition(position, hasDescendant(withText(R.string.program_completed))))))
+    }
+
+    fun checkEventIsOpen(position: Int) {
+        onView(withId(R.id.tei_recycler))
+                .check(matches(allOf(isDisplayed(), isNotEmpty(),
+                        atPosition(position, hasDescendant(withText(R.string.event_open))))))
+    }
+    fun checkEventIsInactivate(position: Int) {
+        onView(withId(R.id.tei_recycler))
+                .check(matches(allOf(isDisplayed(), isNotEmpty(), atPosition(position, hasDescendant(withText(R.string.program_inactive))))))
+    }
+
+    fun checkAllEventsAreInactive(totalEvents: Int) {
+        var event = 0
+        while (event < totalEvents) {
+            checkEventIsInactivate(event)
+            event++
+        }
+    }
+
+    fun checkAllEventsAreOpened(totalEvents: Int) {
+        var event = 0
+        while (event < totalEvents) {
+            checkEventIsOpen(event)
+            event++
+        }
+    }
+    fun checkAllEventsAreClosed(totalEvents: Int) {
+        var event = 0
+        while (event < totalEvents) {
+            checkEventIsClosed(event)
+            event++
+        }
+    }
 }

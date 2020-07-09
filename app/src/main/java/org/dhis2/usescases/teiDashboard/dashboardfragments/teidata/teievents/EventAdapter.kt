@@ -22,7 +22,7 @@ import org.hisp.dhis.android.core.program.Program
 class EventAdapter(
     val presenter: TEIDataContracts.Presenter,
     val program: Program,
-    val enrollment: Enrollment
+    var enrollment: Enrollment
 ) : ListAdapter<EventViewModel, RecyclerView.ViewHolder>(
     object : DiffUtil.ItemCallback<EventViewModel>() {
         override fun areItemsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
@@ -98,5 +98,14 @@ class EventAdapter(
 
     override fun getItemId(position: Int): Long {
         return getItem(position).hashCode().toLong()
+    }
+
+    fun updateEnrollement(enrollment: Enrollment) {
+        this.enrollment = enrollment
+    }
+
+    fun clear() {
+        this.submitList(emptyList())
+        notifyDataSetChanged()
     }
 }

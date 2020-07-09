@@ -88,6 +88,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuReOpen()
             checkUnlockIconIsDisplay()
             checkCanAddEvent()
+            checkAllEventsAreOpened(1)
         }
     }
 
@@ -100,6 +101,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuDeactivate()
             checkLockIconIsDisplay()
             checkCanNotAddEvent()
+            checkAllEventsAreInactive(1)
         }
     }
 
@@ -112,6 +114,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuComplete()
             checkLockCompleteIconIsDisplay()
             checkCanNotAddEvent()
+            checkAllEventsAreClosed(1)
         }
     }
 
