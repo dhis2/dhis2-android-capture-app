@@ -15,7 +15,7 @@ internal class AssignToMeFilterHolder(
     init {
         filterType = Filters.ASSIGNED_TO_ME
         this.programType = programType
-        filterArrow.visibility = View.GONE
+        filterArrow.visibility = View.INVISIBLE
         sortingIcon.visibility = View.GONE
     }
 

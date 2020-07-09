@@ -22,6 +22,7 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import kotlin.Triple;
 
 public interface ProgramEventDetailRepository {
 
@@ -36,7 +37,7 @@ public interface ProgramEventDetailRepository {
             boolean assignedToUser);
 
     @NonNull
-    Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(
+    Flowable<Triple<FeatureCollection, BoundingBox, List<ProgramEventViewModel>>> filteredEventsForMap(
             List<DatePeriod> dateFilter,
             List<String> orgUnitFilter,
             List<CategoryOptionCombo> catOptionComboUid,

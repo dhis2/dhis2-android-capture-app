@@ -54,6 +54,10 @@ class ProgramEventMapper @Inject constructor(val d2: D2) {
         )
     }
 
+    fun eventsToProgramEvents(events: List<Event>): List<ProgramEventViewModel> {
+        return events.map { event -> eventToProgramEvent(event) }
+    }
+
     private fun getOrgUnitName(orgUnitUid: String?) =
         d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet().displayName()
 

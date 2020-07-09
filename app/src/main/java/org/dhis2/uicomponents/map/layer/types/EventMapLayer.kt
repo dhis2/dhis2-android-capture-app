@@ -2,11 +2,14 @@ package org.dhis2.uicomponents.map.layer.types
 
 import com.mapbox.geojson.Feature
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.layers.FillLayer
 import com.mapbox.mapboxsdk.style.layers.Layer
 import com.mapbox.mapboxsdk.style.layers.Property
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.managers.EventMapManager
 import org.hisp.dhis.android.core.common.FeatureType
@@ -67,6 +70,9 @@ class EventMapLayer(
     }
 
     override fun findFeatureWithUid(featureUidProperty: String): Feature? {
-        return null
+        return style.getSourceAs<GeoJsonSource>(EventMapManager.EVENTS)
+            ?.querySourceFeatures(
+                Expression.eq(Expression.get(MapEventToFeatureCollection.EVENT), featureUidProperty)
+            )?.firstOrNull()
     }
 }
