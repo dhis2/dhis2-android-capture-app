@@ -545,6 +545,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             @SuppressLint("RestrictedApi")
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
+                if(isMapVisible()){
+                    showMap(false);
+                }
                 if (pos > 0) {
                     analyticsHelper().setEvent(CHANGE_PROGRAM, CLICK, CHANGE_PROGRAM);
                     Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
@@ -557,9 +560,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     String enrollmentDateLabel = programs.get(0).enrollmentDateLabel();
                     filtersAdapter.addEnrollmentDate(enrollmentDateLabel!=null?enrollmentDateLabel:getString(R.string.enrollment_date));
                 } else {
-                    if(isMapVisible()){
-                        showMap(false);
-                    }
                     presenter.setProgram(null);
                     filtersAdapter.removeEnrollmentDate();
                 }
