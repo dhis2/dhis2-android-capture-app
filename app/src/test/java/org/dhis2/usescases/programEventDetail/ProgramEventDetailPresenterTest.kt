@@ -7,6 +7,7 @@ import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -77,7 +78,7 @@ class ProgramEventDetailPresenterTest {
         whenever(repository.program()) doReturn Observable.just(program)
         whenever(repository.catOptionCombos()) doReturn Single.just(catOptionComboPair)
         whenever(
-            repository.filteredProgramEvents(any(), any(), any(), any(), any(), any(), any())
+            repository.filteredProgramEvents(any(), any(), any(), any(), any(), anyOrNull(), any())
         ) doReturn events
         whenever(
             repository.filteredEventsForMap(any(), any(), any(), any(), any(), any())

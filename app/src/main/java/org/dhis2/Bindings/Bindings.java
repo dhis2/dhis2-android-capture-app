@@ -1,5 +1,6 @@
 package org.dhis2.Bindings;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -16,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -156,6 +158,27 @@ public class Bindings {
         }
 
         view.setText(text);
+    }
+
+    public static String enrollmentText(Context context, EnrollmentStatus status){
+        String text;
+        if (status == null)
+            status = EnrollmentStatus.ACTIVE;
+        switch (status) {
+            case ACTIVE:
+                text = context.getString(R.string.event_open);
+                break;
+            case COMPLETED:
+                text = context.getString(R.string.completed);
+                break;
+            case CANCELLED:
+                text = context.getString(R.string.cancelled);
+                break;
+            default:
+                text = context.getString(R.string.read_only);
+                break;
+        }
+        return text;
     }
 
     @BindingAdapter(value = {"eventStatusIcon", "enrollmentStatusIcon", "eventProgramStage", "eventProgram"}, requireAll = false)
