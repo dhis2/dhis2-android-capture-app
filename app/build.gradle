@@ -97,12 +97,12 @@ android {
 
             def bitriseAcraUserDebug = System.getenv("ACRA_USER_DEBUG")
             def bitriseAcraPassDebug = System.getenv("ACRA_PASS_DEBUG")
-            def acraUserDebug = bitriseAcraUserDebug != null ? bitriseAcraUserDebug : "empty"
-            def acraPassDebug = bitriseAcraPassDebug != null ? bitriseAcraPassDebug : "empty"
+            def acraUserDebug = bitriseAcraUserDebug != null ? bitriseAcraUserDebug : ""
+            def acraPassDebug = bitriseAcraPassDebug != null ? bitriseAcraPassDebug : ""
 
             resValue "string", "content_provider", "com.dhis2.debug.provider"
-            buildConfigField "String", "ACRA_USER", acraUserDebug
-            buildConfigField "String", "ACRA_PASSWORD", acraPassDebug
+            buildConfigField "String", "ACRA_USER", "\"$acraUserDebug\""
+            buildConfigField "String", "ACRA_PASSWORD", "\"$acraPassDebug\""
             buildConfigField "String", "MATOMO_URL", "\"https://mipruebacustom.matomo.cloud/matomo.php\""
         }
         release {
@@ -112,11 +112,11 @@ android {
 
             def bitriseAcraUserProd = System.getenv("ACRA_USER_PROD")
             def bitriseAcraPassProd = System.getenv("ACRA_PASS_PROD")
-            def acraUserProd = bitriseAcraUserProd != null ? bitriseAcraUserProd : "empty"
-            def acraPassProd = bitriseAcraPassProd != null ? bitriseAcraPassProd : "empty"
+            def acraUserProd = bitriseAcraUserProd != null ? bitriseAcraUserProd : ""
+            def acraPassProd = bitriseAcraPassProd != null ? bitriseAcraPassProd : ""
 
-            buildConfigField "String", "ACRA_USER", acraUserProd
-            buildConfigField "String", "ACRA_PASSWORD", acraPassProd
+            buildConfigField "String", "ACRA_USER", "\"$acraUserProd\""
+            buildConfigField "String", "ACRA_PASSWORD", "\"$acraPassProd\""
             buildConfigField "String", "MATOMO_URL", "\"https://mipruebacustom.matomo.cloud/matomo.php\""
             resValue "string", "content_provider", "com.dhis2.provider"
         }
