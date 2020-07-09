@@ -19,6 +19,9 @@ import androidx.core.graphics.drawable.DrawableCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import java.io.File
+import java.util.ArrayList
+import java.util.Date
 import org.dhis2.R
 import org.dhis2.databinding.ItemFieldValueBinding
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
@@ -29,9 +32,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import timber.log.Timber
-import java.io.File
-import java.util.ArrayList
-import java.util.Date
 
 fun List<Enrollment>.hasFollowUp(): Boolean {
     return firstOrNull { enrollment ->
