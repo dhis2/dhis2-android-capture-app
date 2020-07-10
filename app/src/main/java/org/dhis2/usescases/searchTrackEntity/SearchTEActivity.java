@@ -287,7 +287,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public void onBackPressed() {
         if (!ExtensionsKt.isKeyboardOpened(this)) {
             super.onBackPressed();
-            presenter.onDestroy();
         } else {
             hideKeyboard();
         }
