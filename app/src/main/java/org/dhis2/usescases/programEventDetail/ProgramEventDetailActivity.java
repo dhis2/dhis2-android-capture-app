@@ -37,6 +37,8 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.InfoWindowEventBinding;
+import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
+import org.dhis2.uicomponents.map.layer.LayerType;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.EventMapManager;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -64,8 +66,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
-import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
 import timber.log.Timber;
 
 import static org.dhis2.R.layout.activity_program_event_detail;
@@ -267,8 +267,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public Consumer<FeatureType> setFeatureType() {
-        return type -> this.featureType = type;
+    public void setFeatureType(FeatureType type) {
+        this.featureType = type;
     }
 
     @Override
@@ -354,12 +354,31 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public void setMap(FeatureCollection featureCollection, BoundingBox boundingBox) {
+    public void setMap(FeatureCollection featureCollection, BoundingBox boundingBox, List<ProgramEventViewModel> programEventViewModels) {
         eventMapManager.update(
                 featureCollection,
                 boundingBox,
                 featureType
         );
+
+        if(binding.mapCarousel.getAdapter() == null) {
+            CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
+                    .addOnSyncClickListener(
+                            teiUid -> {
+                                presenter.onSyncIconClick(teiUid);
+                                return true;
+                            })
+                    .addOnEventClickListener((teiUid, orgUnit) -> {
+                        presenter.onEventClick(teiUid, orgUnit);
+                        return true;
+                    })
+                    .build();
+            binding.mapCarousel.setAdapter(carouselAdapter);
+            binding.mapCarousel.attachToMapManager(eventMapManager, () -> true);
+            carouselAdapter.addItems(programEventViewModels);
+        }else{
+            ((CarouselAdapter)binding.mapCarousel.getAdapter()).updateAllData(programEventViewModels);
+        }
     }
 
     @Override
@@ -462,6 +481,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.recycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
         binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
         binding.mapLayerButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
+        binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : View.GONE);
+        binding.addEventButton.setVisibility(showMap ? View.GONE : View.VISIBLE);
 
         if (showMap)
             presenter.getMapData();
@@ -473,12 +494,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
         List<Feature> features = eventMapManager.getMap().queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "POINT_LAYER" : "POLYGON_LAYER");
         if (!features.isEmpty()) {
-            for (Feature feature : features) {
-                presenter.getEventInfo(feature.getStringProperty("eventUid"), point);
-            }
+            eventMapManager.mapLayerManager.getLayer(LayerType.EVENT_LAYER.name(), false).setSelectedItem(features.get(0));
+            binding.mapCarousel.scrollToFeature(features.get(0));
             return true;
         }
-
         return false;
     }
 

@@ -14,6 +14,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -138,7 +139,8 @@ fun Enrollment.setStatusText(
 fun SearchTeiModel.setTeiImage(
     context: Context,
     teiImageView: ImageView,
-    teiTextImageView: TextView
+    teiTextImageView: TextView,
+    pictureListener: (String) -> Unit
 ) {
     val imageBg = AppCompatResources.getDrawable(
         context,
@@ -155,6 +157,7 @@ fun SearchTeiModel.setTeiImage(
     val file = File(profilePicturePath)
     val placeHolderId = ResourceManager(context)
         .getObjectStyleDrawableResource(defaultTypeIcon, -1)
+    teiImageView.setOnClickListener(null)
     if (file.exists()) {
         teiTextImageView.visibility = View.GONE
         Glide.with(context)
@@ -164,19 +167,18 @@ fun SearchTeiModel.setTeiImage(
             .transition(DrawableTransitionOptions.withCrossFade())
             .transform(CircleCrop())
             .into(teiImageView)
-    } else if (placeHolderId != -1) {
-        teiTextImageView.visibility = View.GONE
-        teiImageView.setImageResource(placeHolderId)
-    } else if (attributeValues != null &&
-        attributeValues.values.isNotEmpty()
+        teiImageView.setOnClickListener { pictureListener(profilePicturePath) }
+    } else if (textAttributeValues != null &&
+        textAttributeValues.values.isNotEmpty() &&
+        ArrayList(textAttributeValues.values)[0].value() != "-"
     ) {
         teiImageView.setImageDrawable(null)
         teiTextImageView.visibility = View.VISIBLE
-        val valueToShow = ArrayList(attributeValues.values)
+        val valueToShow = ArrayList(textAttributeValues.values)
         if (valueToShow[0] == null) {
-            teiTextImageView.text = "-"
+            teiTextImageView.text = "?"
         } else {
-            teiTextImageView.text = valueToShow[0].value().toString()
+            teiTextImageView.text = valueToShow[0].value()?.first().toString().toUpperCase()
         }
         teiTextImageView.setTextColor(
             ColorUtils.getContrastColor(
@@ -186,8 +188,33 @@ fun SearchTeiModel.setTeiImage(
                 )
             )
         )
-    } else {
+    } else if (placeHolderId != -1) {
         teiTextImageView.visibility = View.GONE
+        val icon = AppCompatResources.getDrawable(
+            context,
+            placeHolderId
+        )
+        icon!!.colorFilter = PorterDuffColorFilter(
+            ColorUtils.getContrastColor(
+                ColorUtils.getPrimaryColor(
+                    context,
+                    ColorUtils.ColorType.PRIMARY
+                )
+            ),
+            PorterDuff.Mode.SRC_IN
+        )
+        teiImageView.setImageDrawable(icon)
+    } else {
+        teiTextImageView.visibility = View.VISIBLE
+        teiTextImageView.text = "?"
+        teiTextImageView.setTextColor(
+            ColorUtils.getContrastColor(
+                ColorUtils.getPrimaryColor(
+                    context,
+                    ColorUtils.ColorType.PRIMARY
+                )
+            )
+        )
     }
 }
 
@@ -195,7 +222,10 @@ fun LinkedHashMap<String, TrackedEntityAttributeValue>.setAttributeList(
     parentLayout: LinearLayout,
     showAttributesButton: ImageView,
     adapterPosition: Int,
-    showList: (Boolean) -> Unit
+    listIsOpen: Boolean,
+    sortingKey: String?,
+    sortingValue: String?,
+    showList: () -> Unit
 ) {
     parentLayout.removeAllViews()
     if (size > 3) {
@@ -210,13 +240,31 @@ fun LinkedHashMap<String, TrackedEntityAttributeValue>.setAttributeList(
             itemFieldValueBinding.root.tag = adapterPosition.toString() + "_" + fieldName
             parentLayout.addView(itemFieldValueBinding.root)
         }
+        if (sortingKey != null) {
+            val itemFieldValueBinding =
+                ItemFieldValueBinding.inflate(LayoutInflater.from(parentLayout.context))
+            itemFieldValueBinding.name = sortingKey
+            itemFieldValueBinding.fieldName.setTextColor(
+                ResourcesCompat.getColor(
+                    itemFieldValueBinding.fieldName.context.resources,
+                    R.color.sorting_attribute_key_color,
+                    null
+                )
+            )
+            itemFieldValueBinding.value = sortingValue
+            itemFieldValueBinding.fieldValue.setTextColor(
+                ResourcesCompat.getColor(
+                    itemFieldValueBinding.fieldValue.context.resources,
+                    R.color.sorting_attribute_value_color,
+                    null
+                )
+            )
+            itemFieldValueBinding.root.tag = adapterPosition.toString() + "_" + sortingValue
+            parentLayout.addView(itemFieldValueBinding.root)
+        }
+        showAttributesButton.scaleY = if (listIsOpen) -1F else 1F
         showAttributesButton.setOnClickListener {
-            showAttributesButton.animate()
-                .scaleY(if (parentLayout.visibility == View.VISIBLE) 1F else -1F)
-                .setDuration(200).start()
-            val shouldShowAttributeList =
-                parentLayout.visibility == View.GONE
-            showList(shouldShowAttributeList)
+            showList()
         }
     } else {
         showAttributesButton.setOnClickListener(null)

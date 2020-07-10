@@ -50,6 +50,7 @@ private const val PERMISSION_REQUEST = 1987
 
 class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
     private lateinit var binding: ActivityMainBinding
+
     @Inject
     lateinit var presenter: MainPresenter
 
@@ -75,7 +76,11 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
         } ?: navigateTo<LoginActivity>(true)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        binding.presenter = presenter
+        if (::presenter.isInitialized) {
+            binding.presenter = presenter
+        } else {
+            navigateTo<LoginActivity>(true)
+        }
         binding.navView.setNavigationItemSelectedListener { item ->
             changeFragment(item.itemId)
             false
@@ -273,8 +278,15 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
 
         if (activeFragment != null) {
             currentFragment.set(id)
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, activeFragment!!, tag).commitAllowingStateLoss()
+            val transaction = supportFragmentManager.beginTransaction()
+            transaction.setCustomAnimations(
+                R.anim.fragment_enter_right,
+                R.anim.fragment_exit_left,
+                R.anim.fragment_enter_left,
+                R.anim.fragment_exit_right
+            )
+            transaction.replace(R.id.fragment_container, activeFragment!!, tag)
+                .commitAllowingStateLoss()
             binding.title.text = tag
         }
         binding.mainDrawerLayout.closeDrawers()

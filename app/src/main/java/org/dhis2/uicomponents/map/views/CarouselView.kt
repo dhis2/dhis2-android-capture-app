@@ -17,7 +17,6 @@ class CarouselView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
-    private var selectedFeature: Feature? = null
     private lateinit var carouselAdapter: CarouselAdapter
 
     init {
@@ -37,13 +36,12 @@ class CarouselView @JvmOverloads constructor(
                 super.onScrollStateChanged(recyclerView, newState)
                 if (newState == SCROLL_STATE_IDLE) {
                     mapManager.mapLayerManager.selectFeature(null)
-                    val feature = selectedFeature ?: mapManager.findFeatureFor(currentItem())
+                    val feature = mapManager.findFeatureFor(currentItem())
                     if (feature == null) {
                         callback.invoke()
                     } else {
                         mapManager.map.centerCameraOnFeature(feature)
                     }
-                    selectedFeature == null
                 }
             }
         })
@@ -62,7 +60,6 @@ class CarouselView @JvmOverloads constructor(
     }
 
     fun scrollToFeature(feature: Feature) {
-        selectedFeature = feature
         smoothScrollToPosition(
             carouselAdapter.indexOfFeature(feature)
         )

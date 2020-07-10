@@ -3,6 +3,7 @@ package org.dhis2.usescases.programEventDetail;
 import com.google.auto.value.AutoValue;
 
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.uicomponents.map.model.CarouselItemModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventStatus;
 
@@ -15,7 +16,7 @@ import androidx.annotation.NonNull;
  * QUADRAM. Created by ppajuelo on 31/01/2019.
  */
 @AutoValue
-public abstract class ProgramEventViewModel {
+public abstract class ProgramEventViewModel implements CarouselItemModel {
 
     @NonNull
     public abstract String uid();

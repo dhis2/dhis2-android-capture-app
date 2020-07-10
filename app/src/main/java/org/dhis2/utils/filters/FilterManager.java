@@ -4,6 +4,7 @@ import androidx.databinding.ObservableField;
 
 import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.filters.cat_opt_comb.CatOptCombFilterAdapter;
+import org.dhis2.utils.filters.sorting.SortingStatus;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
@@ -93,6 +94,7 @@ public class FilterManager {
         eventStatusFilters = new ArrayList<>();
         enrollmentStatusFilters = new ArrayList<>();
         assignedFilter = false;
+        sortingItem = null;
 
         ouFiltersApplied = new ObservableField<>(0);
         stateFiltersApplied = new ObservableField<>(0);
@@ -262,9 +264,11 @@ public class FilterManager {
         int enrollmentStatusApplying = enrollmentStatusFilters.isEmpty() ? 0 : 1;
         int catComboApplying = catOptComboFilters.isEmpty() ? 0 : 1;
         int assignedApplying = assignedFilter ? 1 : 0;
+        int sortingIsActive = sortingItem != null? 1 : 0;
         return ouIsApplying + stateIsApplying + periodIsApplying +
                 eventStatusApplying + catComboApplying +
-                assignedApplying + enrollmentPeriodIsApplying + enrollmentStatusApplying;
+                assignedApplying + enrollmentPeriodIsApplying + enrollmentStatusApplying +
+                sortingIsActive;
     }
 
     public List<DatePeriod> getPeriodFilters() {
@@ -365,6 +369,11 @@ public class FilterManager {
         filterProcessor.onNext(this);
     }
 
+    public void clearSorting(){
+        sortingItem = null;
+        filterProcessor.onNext(this);
+    }
+
     public void clearAllFilters() {
         eventStatusFilters.clear();
         enrollmentStatusFilters.clear();
@@ -376,6 +385,7 @@ public class FilterManager {
         enrollmentPeriodIdSelected = 0;
         periodIdSelected = 0;
         assignedFilter = false;
+        sortingItem = null;
 
         eventStatusFiltersApplied.set(eventStatusFilters.size());
         enrollmentStatusFiltersApplied.set(enrollmentStatusFilters.size());
@@ -407,7 +417,11 @@ public class FilterManager {
     }
 
     public void setSortingItem(SortingItem sortingItem) {
-        this.sortingItem = sortingItem;
+        if(sortingItem.getSortingStatus() != SortingStatus.NONE) {
+            this.sortingItem = sortingItem;
+        }else{
+            this.sortingItem = null;
+        }
         filterProcessor.onNext(this);
     }
 

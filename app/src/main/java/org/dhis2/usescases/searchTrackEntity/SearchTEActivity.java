@@ -40,7 +40,6 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
-import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -77,13 +76,14 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.customviews.ScanTextView;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.Filters;
 import org.dhis2.utils.filters.FiltersAdapter;
+import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
@@ -91,6 +91,7 @@ import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -103,6 +104,7 @@ import javax.inject.Inject;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
+import kotlin.Unit;
 import timber.log.Timber;
 
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
@@ -189,11 +191,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             relationshipLiveAdapter = new RelationshipLiveAdapter(presenter);
             binding.scrollView.setAdapter(relationshipLiveAdapter);
         } else {
-            liveAdapter = new SearchTeiLiveAdapter(presenter);
+            liveAdapter = new SearchTeiLiveAdapter(presenter, getSupportFragmentManager());
             binding.scrollView.setAdapter(liveAdapter);
         }
-
-        binding.scrollView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), this, presenter));
 
@@ -283,6 +283,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         FilterManager.getInstance().clearEnrollmentStatus();
         FilterManager.getInstance().clearEventStatus();
         FilterManager.getInstance().clearEnrollmentDate();
+        FilterManager.getInstance().clearSorting();
 
         super.onDestroy();
     }
@@ -544,15 +545,20 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             @SuppressLint("RestrictedApi")
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
+                if(isMapVisible()){
+                    showMap(false);
+                }
                 if (pos > 0) {
                     analyticsHelper().setEvent(CHANGE_PROGRAM, CLICK, CHANGE_PROGRAM);
                     Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((Program) adapterView.getItemAtPosition(pos - 1));
-                    filtersAdapter.addEnrollmentDate(selectedProgram.enrollmentDateLabel());
+                    String enrollmentDateLabel = selectedProgram.enrollmentDateLabel();
+                    filtersAdapter.addEnrollmentDate(enrollmentDateLabel!=null?enrollmentDateLabel:getString(R.string.enrollment_date));
                 } else if (programs.size() == 1 && pos != 0) {
                     presenter.setProgram(programs.get(0));
-                    filtersAdapter.addEnrollmentDate(programs.get(0).enrollmentDateLabel());
+                    String enrollmentDateLabel = programs.get(0).enrollmentDateLabel();
+                    filtersAdapter.addEnrollmentDate(enrollmentDateLabel!=null?enrollmentDateLabel:getString(R.string.enrollment_date));
                 } else {
                     presenter.setProgram(null);
                     filtersAdapter.removeEnrollmentDate();
@@ -810,7 +816,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             allItems.addAll(new MapRelationshipToRelationshipMapModel().mapList(searchTeiModel.getRelationships()));
         }
 
-        if(binding.mapCarousel.getAdapter() == null) {
+        if (binding.mapCarousel.getAdapter() == null) {
             CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
                     .addOnTeiClickListener(
                             (teiUid, enrollmentUid, isDeleted) -> {
@@ -834,12 +840,24 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         presenter.onTEIClick(teiUid, enrollmentUid, false);
                         return true;
                     })
+                    .addOnProfileImageClickListener(
+                            path -> {
+                                new ImageDetailBottomDialog(
+                                        null,
+                                        new File(path)
+                                ).show(
+                                        getSupportFragmentManager(),
+                                        ImageDetailBottomDialog.TAG
+                                );
+                                return Unit.INSTANCE;
+                            }
+                    )
                     .addProgram(presenter.getProgram())
                     .addItems(allItems)
                     .build();
             binding.mapCarousel.setAdapter(carouselAdapter);
-        }else{
-            ((CarouselAdapter)binding.mapCarousel.getAdapter()).updateAllData(allItems);
+        } else {
+            ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(allItems);
         }
 
         teiMapManager.update(

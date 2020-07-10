@@ -717,4 +717,9 @@
     <string name="validation_rules_empty_description">No description or instruction provided</string>
     <string name="validation_rules_data_to_review">Data to review</string>
     <string name="dataset_saved_completed">Saved and completed!</string>
+    <string name="enrollment_status_active">Opened</string>
+    <string name="enrollment_status_completed">Completed</string>
+    <string name="enrollment_status_cancelled">Cancelled</string>
+    <string name="unknownValue" translatable="false">-</string>
+    <string name="no_data">No data</string>
 </resources>
