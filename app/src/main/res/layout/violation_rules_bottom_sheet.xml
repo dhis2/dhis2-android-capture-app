@@ -29,6 +29,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="4dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_bottom_sheet_thumb"
+                android:layout_marginTop="8dp"/>
+
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/startGuideline"
                 android:layout_width="wrap_content"
