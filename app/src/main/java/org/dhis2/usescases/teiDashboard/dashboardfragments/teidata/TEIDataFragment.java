@@ -197,9 +197,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void setEnrollment(Enrollment enrollment) {
         binding.setEnrollment(enrollment);
+        dashboardViewModel.updateDashboard(dashboardModel);
         if (adapter != null) {
             adapter.clear();
-            adapter.updateEnrollement(enrollment);
+            adapter.updateEnrollment(enrollment);
         }
     }
 
@@ -407,7 +408,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     public Consumer<EnrollmentStatus> enrollmentCompleted() {
         return enrollmentStatus -> {
             if (enrollmentStatus == EnrollmentStatus.COMPLETED)
-                activity.getPresenter().init();
+                activity.updateStatus();
         };
     }
 

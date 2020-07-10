@@ -100,12 +100,11 @@ class EventAdapter(
         return getItem(position).hashCode().toLong()
     }
 
-    fun updateEnrollement(enrollment: Enrollment) {
+    fun updateEnrollment(enrollment: Enrollment) {
         this.enrollment = enrollment
     }
 
     fun clear() {
         this.submitList(emptyList())
-        notifyDataSetChanged()
     }
 }
