@@ -453,7 +453,7 @@ public class DateUtilsTest {
 
     @Test
     public void testTimeFormats() {
-        SimpleDateFormat uiFormat = new SimpleDateFormat(DateUtils.DATE_FORMAT_EXPRESSION, Locale.US);
+        SimpleDateFormat uiFormat = new SimpleDateFormat(DateUtils.SIMPLE_DATE_FORMAT, Locale.US);
         assertEquals(uiFormat, DateUtils.uiDateFormat());
 
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.US);

@@ -298,7 +298,7 @@ class DataSetTableRepositoryTest {
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid)) doReturn mock()
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet()) doReturn dataSet
 
-        val hasMandatoryValidationRules = repository.runMandatoryValidationRules()
+        val hasMandatoryValidationRules = repository.areValidationRulesMandatory()
 
         assert(hasMandatoryValidationRules)
     }
@@ -310,7 +310,7 @@ class DataSetTableRepositoryTest {
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid)) doReturn mock()
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet()) doReturn dataSet
 
-        val hasMandatoryValidationRules = repository.runMandatoryValidationRules()
+        val hasMandatoryValidationRules = repository.areValidationRulesMandatory()
 
         assert(!hasMandatoryValidationRules)
     }
@@ -322,7 +322,7 @@ class DataSetTableRepositoryTest {
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid)) doReturn mock()
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet()) doReturn dataSet
 
-        val hasMandatoryValidationRules = repository.runMandatoryValidationRules()
+        val hasMandatoryValidationRules = repository.areValidationRulesMandatory()
 
         assert(!hasMandatoryValidationRules)
     }

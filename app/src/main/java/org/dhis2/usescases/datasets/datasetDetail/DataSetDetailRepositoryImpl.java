@@ -60,6 +60,11 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
         if (!catOptComboFilters.isEmpty())
             repo = repo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptComboFilters));
 
+        d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet();
+        int dataSetOrgUnitNumber = d2.organisationUnitModule().organisationUnits()
+                .byDataSetUids(Collections.singletonList(dataSetUid))
+                .blockingGet().size();
+
         DataSetInstanceCollectionRepository finalRepo = repo;
         return Flowable.fromIterable(finalRepo.blockingGet())
                 .map(dataSetReport -> {
@@ -82,7 +87,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                             dataSetReport.organisationUnitUid(),
                             dataSetReport.attributeOptionComboUid(),
                             dataSetReport.period(),
-                            dataSetReport.organisationUnitDisplayName(),
+                            dataSetOrgUnitNumber > 1 ? dataSetReport.organisationUnitDisplayName() : "",
                             dataSetReport.attributeOptionComboDisplayName(),
                             periodName,
                             state,

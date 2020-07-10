@@ -23,7 +23,7 @@
         android:orientation="vertical"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="85dp">
+        app:behavior_peekHeight="48dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -66,11 +66,9 @@
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_marginStart="0dp"
-                android:layout_marginTop="20dp"
                 android:layout_marginEnd="14dp"
                 android:layout_marginBottom="8dp"
                 android:gravity="center_vertical"
-                android:text="@string/error"
                 android:textColor="@color/black_de0"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -78,7 +76,7 @@
                 app:layout_constraintStart_toEndOf="@id/errorCount"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0"
-                tools:text="Error!" />
+                tools:text="Error" />
 
             <ImageView
                 android:id="@+id/collapseExpand"
@@ -119,21 +117,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:barrierDirection="top"
-                app:constraint_referenced_ids="negativeBtn,positiveBtn" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/negativeBtn"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:textColor="?colorPrimary"
-                android:textSize="14sp"
-                android:text="@string/cancel"
-                android:onClick="@{ () -> presenter.onCancelBottomSheet() }"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/positiveBtn"
-                tools:visibility="visible" />
+                app:constraint_referenced_ids="positiveBtn" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/positiveBtn"

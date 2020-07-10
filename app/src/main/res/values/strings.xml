@@ -7,6 +7,10 @@
     <string name="default_notification_channel_id" translatable="false">20180901</string>
     <!-- Warnings and error messages -->
     <string name="error">Error</string>
+    <plurals name="error_message">
+        <item quantity="one">Error</item>
+        <item quantity="other">Errors</item>
+    </plurals>
     <string name="error_wrong_server_url">Wrong server url</string>
     <string name="error_wrong_credentials">Wrong credentials</string>
     <string name="error_unexpected_error">Unexpected error</string>
@@ -139,6 +143,7 @@
     <string name="cat_option">Cat option</string>
     <string name="field_required">If you set a value, the whole row needs all of values to complete the Data Set.</string>
     <string name="field_mandatory">Some values required are missing. You need set mandatory values to complete the Data Set.</string>
+    <string name="field_mandatory_v2">There are missing mandatory fields. Please, fill them to complete the data set.</string>
     <string name="datavalue_saved">Value is saved!</string>
     <string name="there_is_no_available_period">There is no available periods to select.</string>
     <!--Event Detail-->
@@ -514,8 +519,8 @@
     <string name="no_conflicts_synced_message">You are up to date! All your data is sent to the server.</string>
     <string name="relationship_error_recursive">You can\'t relate a record with itself</string>
     <string name="unblock_session">Unblock session</string>
-    <string name="data_set_closed">Closed</string>
-    <string name="data_set_open">Opened</string>
+    <string name="data_set_complete">Complete</string>
+    <string name="data_set_open">Open</string>
     <string name="unsupported_value_type">Unsupported value type</string>
     <string name="change_calendar_view">Change calendar view</string>
     <string name="data_every_fifteen_minutes">15 minutes</string>
@@ -695,9 +700,9 @@
     <string name="dataset_overview">Details</string>
     <string name="dataset_comments">Comments</string>
     <string name="saved">Saved!</string>
-    <string name="run_validation_rules">"Do you want to run the validation rules?"</string>
-    <string name="validation_success_title">"Everything looks good"</string>
-    <string name="mark_dataset_complete">"Do you want to mark the data set as complete?"</string>
+    <string name="run_validation_rules">"Do you want to check data quality?"</string>
+    <string name="validation_success_title">"Everything looks good!"</string>
+    <string name="mark_dataset_complete">"Do you also want to complete the data set?"</string>
     <string name="dataset_completed">"Mark as completed"</string>
     <string name="name">Name</string>
     <string name="formula">Formula</string>
@@ -707,4 +712,9 @@
     <string name="filters_title_enrollment_status">Enrollment status</string>
     <string name="enrollment_date">Enrollment date</string>
     <string name="action_apply">Apply</string>
+    <string name="dataset_empty_list_can_create">There are no data. Click \"+\" to add new a new record</string>
+    <string name="dataset_emtpy_list_can_not_create">There are no data. You don\'t have permission to add new records.</string>
+    <string name="validation_rules_empty_description">No description or instruction provided</string>
+    <string name="validation_rules_data_to_review">Data to review</string>
+    <string name="dataset_saved_completed">Saved and completed!</string>
 </resources>

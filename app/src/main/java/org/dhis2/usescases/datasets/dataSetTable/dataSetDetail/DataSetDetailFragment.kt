@@ -119,11 +119,11 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
             if (dataSetInstance.completed()) {
                 completedDate.visibility = View.VISIBLE
                 completedDate.text = String.format(
-                    "%s %s",
-                    getString(R.string.data_set_closed),
+                    "Completed by %s: %s",
+                    dataSetInstance.completedBy() ?: "?",
                     dataSetInstance.completionDate().toDateSpan(mContext)
                 )
-                dataSetStatus.setText(R.string.data_set_closed)
+                dataSetStatus.setText(R.string.data_set_complete)
             } else {
                 dataSetStatus.setText(R.string.data_set_open)
                 completedDate.visibility = View.GONE
@@ -132,6 +132,8 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
                     Color.parseColor("#CCFF90")
                 )
             }
+            lastUpdatedDate.text =
+                String.format("Updated: %s", dataSetInstance.lastUpdated().toDateSpan(mContext))
             Bindings.setStateIcon(binding.syncStatus, dataSetInstance.state())
             binding.dataSetPeriod.text = DateUtils.getInstance()
                 .getPeriodUIString(
