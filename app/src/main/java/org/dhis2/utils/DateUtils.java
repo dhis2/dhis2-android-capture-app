@@ -186,6 +186,11 @@ public class DateUtils {
     }
 
     @NonNull
+    public static SimpleDateFormat oldUiDateFormat() {
+        return new SimpleDateFormat(DATE_FORMAT_EXPRESSION, Locale.US);
+    }
+
+    @NonNull
     public static SimpleDateFormat timeFormat() {
         return new SimpleDateFormat("HH:mm", Locale.US);
     }

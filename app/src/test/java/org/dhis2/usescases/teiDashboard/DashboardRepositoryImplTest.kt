@@ -5,7 +5,7 @@ import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
-import org.dhis2.utils.DateUtils
+import org.dhis2.Bindings.toDate
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Unit
@@ -278,7 +278,7 @@ class DashboardRepositoryImplTest {
                 .program("program")
                 .enrollment("enrollmentUid")
                 .status(EventStatus.ACTIVE)
-                .eventDate(DateUtils.uiDateFormat().parse("2019-06-01"))
+                .eventDate("2019-06-01".toDate())
                 .build(),
             Event.builder()
                 .uid("event_uid_2")
@@ -286,7 +286,7 @@ class DashboardRepositoryImplTest {
                 .program("program")
                 .enrollment("enrollmentUid")
                 .status(EventStatus.ACTIVE)
-                .eventDate(DateUtils.uiDateFormat().parse("2019-06-05"))
+                .eventDate("2019-06-05".toDate())
                 .build(),
             Event.builder()
                 .uid("event_uid_3")
@@ -294,7 +294,7 @@ class DashboardRepositoryImplTest {
                 .program("program")
                 .enrollment("enrollmentUid")
                 .status(EventStatus.SCHEDULE)
-                .dueDate(DateUtils.uiDateFormat().parse("2019-06-02"))
+                .dueDate("2019-06-02".toDate())
                 .build(),
             Event.builder()
                 .uid("event_uid_4")
@@ -302,7 +302,7 @@ class DashboardRepositoryImplTest {
                 .program("program")
                 .enrollment("enrollmentUid")
                 .status(EventStatus.ACTIVE)
-                .eventDate(DateUtils.uiDateFormat().parse("2019-06-10"))
+                .eventDate("2019-06-10".toDate())
                 .build()
         )
     }

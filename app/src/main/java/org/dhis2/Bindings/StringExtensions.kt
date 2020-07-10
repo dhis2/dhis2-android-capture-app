@@ -50,6 +50,14 @@ fun String.toDate(): Date {
         }
     }
 
+    if(date == null){
+        try {
+            date = DateUtils.oldUiDateFormat().parse(this)
+        }catch (e: Exception) {
+            Timber.d("wrong format")
+        }
+    }
+
     if (date == null) {
         throw NullPointerException("$this can't be parse to Date")
     }
