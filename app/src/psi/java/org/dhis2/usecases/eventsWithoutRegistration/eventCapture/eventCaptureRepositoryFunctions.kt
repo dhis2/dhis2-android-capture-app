@@ -1,5 +1,6 @@
 package org.dhis2.usecases.eventsWithoutRegistration.eventCapture
 
+import org.dhis2.Bindings.userFriendlyValue
 import org.hisp.dhis.android.core.D2
 import java.util.HashMap
 
@@ -7,21 +8,53 @@ fun getProgramStageName(d2: D2, eventUid: String): String {
     val event = d2.eventModule().events().uid(eventUid).blockingGet()
     val programStage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
 
-    //TODO: retrieve attribute name if not exists get programStage
-    val attValue = "Name:{{MBRvfOpzowH}} Name2:{{MBRvfOpzowH}}"
+    val attValue = getProgramStagePatternAttValue(d2,programStage.uid())
 
     return if (attValue.isNotBlank()) {
         val getDataElementDisplayName = { uid: String ->
             val teValue = d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid)
                 .blockingGet()
 
-            teValue?.value() ?: ""
+            teValue.userFriendlyValue(d2) ?: ""
         }
 
         getProgramStageNameByAttributeValue(attValue, getDataElementDisplayName)
     } else {
         programStage?.displayName() ?: ""
     }
+}
+
+fun getProgramStagePatternAttValue(d2: D2, programStageUid: String): String {
+
+    val attributeUid = getProgramStagePatternAttributeUid(d2)
+
+    if (attributeUid.isNotBlank()) {
+        val attributeValueSelect =
+            "SELECT value FROM ProgramStageAttributeValueLink \n" +
+                "WHERE attribute = ? AND programStage = ?"
+
+        d2.databaseAdapter().rawQuery(attributeValueSelect, attributeUid, programStageUid)
+            .use { cursor ->
+                if (cursor != null && cursor.moveToFirst() && cursor.count > 0) {
+                    return cursor.getString(0)
+                }
+            }
+    }
+
+    return "";
+}
+
+fun getProgramStagePatternAttributeUid(d2: D2): String {
+    val attributeCode = "HeaderPattern"
+    val attributeSelect = "SELECT uid FROM Attribute WHERE code = '${attributeCode}'";
+
+    d2.databaseAdapter().rawQuery(attributeSelect).use { cursor ->
+        if (cursor != null && cursor.moveToFirst() && cursor.count > 0) {
+            return cursor.getString(0)
+        }
+    }
+
+    return ""
 }
 
 fun getProgramStageNameByAttributeValue(
