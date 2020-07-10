@@ -12,10 +12,10 @@ import org.joda.time.Interval
 import org.joda.time.LocalDate
 import org.joda.time.Minutes
 
-fun Date?.toDateSpan(context: Context): String {
-    return if (this == null) {
-        ""
-    } else {
+fun Date?.toDateSpan(context: Context): String = when {
+    this == null -> ""
+    this.after(Date()) -> SimpleDateFormat("d/M/yyyy", Locale.getDefault()).format(this)
+    else -> {
         val duration = Interval(time, Date().time).toDuration()
         when {
             duration.toStandardMinutes().isLessThan(Minutes.minutes(1)) -> {
@@ -39,10 +39,10 @@ fun Date?.toDateSpan(context: Context): String {
     }
 }
 
-fun Date?.toUiText(context: Context): String {
-    return if (this == null) {
-        ""
-    } else {
+fun Date?.toUiText(context: Context): String = when {
+    this == null -> ""
+    this.after(Date()) -> SimpleDateFormat("d/M/yyyy", Locale.getDefault()).format(this)
+    else -> {
         val duration = Interval(time, Date().time).toDuration()
         when {
             duration.toStandardHours().isLessThan(Hours.hours(24)) -> {
