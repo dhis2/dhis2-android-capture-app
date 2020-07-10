@@ -12,9 +12,6 @@ import org.dhis2.R;
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 
-/**
- * Created by frodriguez on 4/12/2019.
- */
 public class SearchTeiLiveAdapter extends PagedListAdapter<SearchTeiModel, SearchTEViewHolder> {
 
     private static final DiffUtil.ItemCallback<SearchTeiModel> DIFF_CALLBACK = new DiffUtil.ItemCallback<SearchTeiModel>() {

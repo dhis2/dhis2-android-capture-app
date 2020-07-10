@@ -181,7 +181,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                      @Nullable HashMap<String, String> queryData,
                                                                      @Nullable SortingItem sortingItem,
                                                                      boolean assignedToMe,
-                                                                     boolean isOnline) {
+                                                                     boolean isOnline) throws RuntimeException {
 
         TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery =
                 getFilteredRepository(selectedProgram,
@@ -194,22 +194,27 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         DataSource<TrackedEntityInstance, SearchTeiModel> dataSource;
 
-        if (isOnline && states.isEmpty()) {
-            dataSource = trackedEntityInstanceQuery.offlineFirst().getDataSource()
-                    .mapByPage(list -> filterByStatus(list, eventStatuses))
-                    .mapByPage(this::filterDeleted)
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list,d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
-                    .map(tei -> transform(tei, selectedProgram, false));
-        } else {
-            dataSource = trackedEntityInstanceQuery.offlineOnly().getDataSource()
-                    .mapByPage(list -> filterByStatus(list, eventStatuses))
-                    .mapByPage(this::filterDeleted)
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list,d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
-                    .map(tei -> transform(tei, selectedProgram, true));
+        try {
+            if (isOnline && states.isEmpty()) {
+                dataSource = trackedEntityInstanceQuery.offlineFirst().getDataSource()
+                        .mapByPage(list -> filterByStatus(list, eventStatuses))
+                        .mapByPage(this::filterDeleted)
+                        .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
+                        .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
+                        .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list,d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
+                        .map(tei -> transform(tei, selectedProgram, false));
+            } else {
+                dataSource = trackedEntityInstanceQuery.offlineOnly().getDataSource()
+                        .mapByPage(list -> filterByStatus(list, eventStatuses))
+                        .mapByPage(this::filterDeleted)
+                        .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
+                        .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
+                        .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list,d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
+                        .map(tei -> transform(tei, selectedProgram, true));
+            }
+
+        } catch (Exception e){
+            throw new RuntimeException ("User Not logged in");
         }
 
         return new LivePagedListBuilder<>(new DataSource.Factory<TrackedEntityInstance, SearchTeiModel>() {
