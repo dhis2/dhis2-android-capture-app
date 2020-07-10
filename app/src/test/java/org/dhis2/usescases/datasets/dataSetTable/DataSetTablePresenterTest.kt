@@ -182,7 +182,7 @@ class DataSetTablePresenterTest {
         whenever(repository.completeDataSetInstance()) doReturn Single.just(false)
         presenter.completeDataSet()
 
-        verify(view).showInfoDialog(true)
+        verify(view).showMandatoryMessage(true)
     }
 
     @Test
@@ -201,7 +201,7 @@ class DataSetTablePresenterTest {
         whenever(repository.completeDataSetInstance()) doReturn Single.just(false)
         presenter.completeDataSet()
 
-        verify(view).showInfoDialog(false)
+        verify(view).showMandatoryMessage(false)
     }
 
     @Test

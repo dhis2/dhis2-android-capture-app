@@ -8,7 +8,6 @@ import org.dhis2.data.tuples.Quartet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.validationrules.ValidationRuleResult;
-import org.hisp.dhis.android.core.validation.engine.ValidationResult;
 import org.hisp.dhis.android.core.validation.engine.ValidationResult.ValidationResultStatus;
 
 import java.util.concurrent.TimeUnit;
@@ -197,9 +196,9 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                             boolean mandatoryFieldOk = completedMissingAndCombination.val1();
                             boolean fieldCombinationOk = completedMissingAndCombination.val2();
                             if (!mandatoryFieldOk) {
-                                view.showInfoDialog(true);
+                                view.showMandatoryMessage(true);
                             } else if (!fieldCombinationOk) {
-                                view.showInfoDialog(false);
+                                view.showMandatoryMessage(false);
                             } else if (!alreadyCompleted) {
                                 view.showCompleteToast();
                             }else{

@@ -240,15 +240,18 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void showInfoDialog(boolean isMandatoryFields) {
-        String title = getString(R.string.saved);
+    public void showMandatoryMessage(boolean isMandatoryFields) {
         String message;
         if (isMandatoryFields) {
             message = getString(R.string.field_mandatory_v2);
         } else {
             message = getString(R.string.field_required);
         }
-        super.showInfoDialog(title, message);
+        AlertBottomDialog.Companion.getInstance()
+                .setTitle(getString(R.string.saved))
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.button_ok), () -> Unit.INSTANCE)
+                .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
     }
 
     @Override
