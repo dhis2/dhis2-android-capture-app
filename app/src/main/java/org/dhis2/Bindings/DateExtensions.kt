@@ -12,11 +12,14 @@ import org.joda.time.Interval
 import org.joda.time.LocalDate
 import org.joda.time.Minutes
 
+val currentDate: Date
+    get() = Date()
+
 fun Date?.toDateSpan(context: Context): String = when {
     this == null -> ""
-    this.after(Date()) -> SimpleDateFormat("d/M/yyyy", Locale.getDefault()).format(this)
+    this.after(currentDate) -> SimpleDateFormat("d/M/yyyy", Locale.getDefault()).format(this)
     else -> {
-        val duration = Interval(time, Date().time).toDuration()
+        val duration = Interval(time, currentDate.time).toDuration()
         when {
             duration.toStandardMinutes().isLessThan(Minutes.minutes(1)) -> {
                 context.getString(R.string.interval_now)
@@ -41,9 +44,9 @@ fun Date?.toDateSpan(context: Context): String = when {
 
 fun Date?.toUiText(context: Context): String = when {
     this == null -> ""
-    this.after(Date()) -> SimpleDateFormat("d/M/yyyy", Locale.getDefault()).format(this)
+    this.after(currentDate) -> SimpleDateFormat("d/M/yyyy", Locale.getDefault()).format(this)
     else -> {
-        val duration = Interval(time, Date().time).toDuration()
+        val duration = Interval(time, currentDate.time).toDuration()
         when {
             duration.toStandardHours().isLessThan(Hours.hours(24)) -> {
                 context.getString(R.string.filter_period_today)
