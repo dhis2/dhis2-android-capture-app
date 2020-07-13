@@ -455,7 +455,10 @@ public class DateUtilsTest {
     @Test
     public void testTimeFormats() {
         SimpleDateFormat uiFormat = new SimpleDateFormat(DateUtils.SIMPLE_DATE_FORMAT, Locale.US);
-        assertEquals(uiFormat, DateUtils.oldUiDateFormat());
+        assertEquals(uiFormat, DateUtils.uiDateFormat());
+
+        SimpleDateFormat oldUiFormat = new SimpleDateFormat(DateUtils.DATE_FORMAT_EXPRESSION, Locale.US);
+        assertEquals(oldUiFormat, DateUtils.oldUiDateFormat());
 
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.US);
         assertEquals(timeFormat, DateUtils.timeFormat());
@@ -501,7 +504,7 @@ public class DateUtilsTest {
     public void testFormatDate() {
         DateUtils dateUtils = DateUtils.getInstance();
         Date dateToFormat = Calendar.getInstance().getTime();
-        String dateFormatted = DateUtils.oldUiDateFormat().format(dateToFormat);
+        String dateFormatted = DateUtils.uiDateFormat().format(dateToFormat);
 
         assertEquals(dateFormatted, dateUtils.formatDate(dateToFormat));
     }
