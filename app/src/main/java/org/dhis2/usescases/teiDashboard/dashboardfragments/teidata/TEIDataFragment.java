@@ -197,6 +197,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void setEnrollment(Enrollment enrollment) {
         binding.setEnrollment(enrollment);
+        binding.executePendingBindings();
         dashboardViewModel.updateDashboard(dashboardModel);
         if (adapter != null) {
             adapter.clear();
