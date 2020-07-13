@@ -452,7 +452,7 @@
     <string name="errors_during_sync">La sincronización de configuración ha fallado. Puede haber fallos en el servidor. Haga click aquí para mas información.</string>
     <string name="sectionSelectorPrev">ANTERIOR</string>
     <string name="sectionSelectorNext">SIGUIENTE</string>
-    <string name="event_overview">Detalles</string>
+    <string name="event_overview">Datos</string>
     <string name="event_event">Evento</string>
     <string name="event_indicators">Indicadores</string>
     <string name="event_notes">Notas</string>
