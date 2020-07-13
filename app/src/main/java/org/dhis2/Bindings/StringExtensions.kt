@@ -50,10 +50,10 @@ fun String.toDate(): Date {
         }
     }
 
-    if(date == null){
+    if (date == null) {
         try {
             date = DateUtils.oldUiDateFormat().parse(this)
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             Timber.d("wrong format")
         }
     }
