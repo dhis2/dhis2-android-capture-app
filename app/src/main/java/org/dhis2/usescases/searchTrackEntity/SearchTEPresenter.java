@@ -35,6 +35,7 @@ import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.ObjectStyleUtils;
@@ -243,16 +244,19 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         compositeDisposable.add(
                 listDataProcessor
-                        .switchMap(map -> Flowable.just(searchRepository.searchTrackedEntities(
-                                selectedProgram,
-                                trackedEntityType,
-                                FilterManager.getInstance().getOrgUnitUidsFilters(),
-                                FilterManager.getInstance().getStateFilters(),
-                                FilterManager.getInstance().getEventStatusFilters(),
-                                queryData,
-                                FilterManager.getInstance().getSortingItem(),
-                                FilterManager.getInstance().getAssignedFilter(),
-                                NetworkUtils.isOnline(view.getContext()))))
+                        .switchMap(map -> {
+                            CountingIdlingResourceSingleton.INSTANCE.increment();
+                            return Flowable.just(searchRepository.searchTrackedEntities(
+                                    selectedProgram,
+                                    trackedEntityType,
+                                    FilterManager.getInstance().getOrgUnitUidsFilters(),
+                                    FilterManager.getInstance().getStateFilters(),
+                                    FilterManager.getInstance().getEventStatusFilters(),
+                                    queryData,
+                                    FilterManager.getInstance().getSortingItem(),
+                                    FilterManager.getInstance().getAssignedFilter(),
+                                    NetworkUtils.isOnline(view.getContext())));
+                        })
                         .doOnError(this::handleError)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
