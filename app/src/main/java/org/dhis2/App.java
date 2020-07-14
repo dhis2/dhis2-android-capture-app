@@ -147,7 +147,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     public synchronized Tracker getTracker() {
         if (matomoTracker == null){
-            matomoTracker = TrackerBuilder.createDefault(BuildConfig.MATOMO_URL, 1).build(Matomo.getInstance(this));
+            matomoTracker = TrackerBuilder.createDefault(BuildConfig.MATOMO_URL, BuildConfig.MATOMO_ID).build(Matomo.getInstance(this));
         }
         return matomoTracker;
     }

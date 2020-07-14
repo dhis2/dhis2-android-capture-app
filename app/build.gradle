@@ -55,6 +55,7 @@ android {
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
         buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"pk.eyJ1Ijoib3Jpa2dnIiwiYSI6ImNqdWpqb24zYTFsOXo0M2xwcXRseGx3aXkifQ.6N9aqvpqdrrSBwO9GyfjUw\""
         buildConfigField "String", "ACRA_URL", "\"http://192.168.0.10:8080/report\""
+        buildConfigField "String", "MATOMO_URL", "\"https://dhis2android.matomo.cloud/matomo.php\""
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -103,7 +104,7 @@ android {
             resValue "string", "content_provider", "com.dhis2.debug.provider"
             buildConfigField "String", "ACRA_USER", "\"$acraUserDebug\""
             buildConfigField "String", "ACRA_PASSWORD", "\"$acraPassDebug\""
-            buildConfigField "String", "MATOMO_URL", "\"https://mipruebacustom.matomo.cloud/matomo.php\""
+            buildConfigField "int", "MATOMO_ID", "2"
         }
         release {
             minifyEnabled false
@@ -117,7 +118,7 @@ android {
 
             buildConfigField "String", "ACRA_USER", "\"$acraUserProd\""
             buildConfigField "String", "ACRA_PASSWORD", "\"$acraPassProd\""
-            buildConfigField "String", "MATOMO_URL", "\"https://mipruebacustom.matomo.cloud/matomo.php\""
+            buildConfigField "int", "MATOMO_ID", "1"
             resValue "string", "content_provider", "com.dhis2.provider"
         }
     }
