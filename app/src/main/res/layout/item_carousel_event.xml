@@ -40,6 +40,7 @@
                 tools:src="@tools:sample/avatars" />
 
             <ImageView
+                android:id="@+id/borderImage"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:translationX="4dp"
@@ -51,14 +52,29 @@
 
             <ImageView
                 android:id="@+id/teiImage"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:translationX="4dp"
                 android:translationY="4dp"
-                android:padding="1dp"
-                app:layout_constraintBottom_toBottomOf="@id/programStageImage"
-                app:layout_constraintEnd_toEndOf="@id/programStageImage"
+                app:layout_constraintTop_toTopOf="@id/borderImage"
+                app:layout_constraintBottom_toBottomOf="@id/borderImage"
+                app:layout_constraintEnd_toEndOf="@id/borderImage"
+                app:layout_constraintStart_toStartOf="@+id/borderImage"
                 tools:src="@tools:sample/avatars" />
+
+            <TextView
+                android:id="@+id/imageText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:translationX="4dp"
+                android:translationY="4dp"
+                android:textSize="15sp"
+                app:layout_constraintTop_toTopOf="@id/teiImage"
+                app:layout_constraintBottom_toBottomOf="@id/teiImage"
+                app:layout_constraintEnd_toEndOf="@id/teiImage"
+                app:layout_constraintStart_toStartOf="@+id/teiImage"
+                tools:text="A"/>
 
             <TextView
                 android:id="@+id/teiAttribute"

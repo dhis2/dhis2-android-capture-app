@@ -707,4 +707,9 @@
     <string name="filters_title_enrollment_status">Enrollment status</string>
     <string name="enrollment_date">Enrollment date</string>
     <string name="action_apply">Apply</string>
+    <string name="enrollment_status_active">Opened</string>
+    <string name="enrollment_status_completed">Completed</string>
+    <string name="enrollment_status_cancelled">Cancelled</string>
+    <string name="unknownValue" translatable="false">-</string>
+    <string name="no_data">No data</string>
 </resources>

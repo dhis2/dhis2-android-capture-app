@@ -193,7 +193,9 @@ class EnrollmentDateFilterHolder extends FilterHolder implements CompoundButton.
     }
 
     public FilterHolder updateLabel(String enrollmentDateLabel) {
-        filterTitle.setText(enrollmentDateLabel);
+        if(enrollmentDateLabel!=null) {
+            filterTitle.setText(enrollmentDateLabel);
+        }
         return this;
     }
 }

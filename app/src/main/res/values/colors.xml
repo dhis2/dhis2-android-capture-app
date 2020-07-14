@@ -397,6 +397,10 @@
     <color name="secondaryColor">#F0858585</color>
     <color name="circleColor">#4D000000</color>
     <color name="filter_alpha">#32000000</color>
+    <color name="divider_bg">#eeeeee</color>
+    <color name="sorting_attribute_key_color">#DE2C98F0</color>
+    <color name="sorting_attribute_value_color">#612C98F0</color>
+    <color name="track_bg">#1A000000</color>
     <!--endregion-->
 
 </resources>

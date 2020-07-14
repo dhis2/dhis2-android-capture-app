@@ -32,6 +32,7 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import kotlin.Triple;
 
 
 public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepository {
@@ -87,7 +88,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @NonNull
     @Override
-    public Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(
+    public Flowable<Triple<FeatureCollection, BoundingBox, List<ProgramEventViewModel>>> filteredEventsForMap(
             List<DatePeriod> dateFilter,
             List<String> orgUnitFilter,
             List<CategoryOptionCombo> catOptCombList,
@@ -110,7 +111,11 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
 
         return eventRepo.byDeleted().isFalse().withTrackedEntityDataValues().get()
-                .map(listEvents -> mapEventToFeatureCollection.map(listEvents))
+                .map(listEvents -> new Triple<>(
+                        mapEventToFeatureCollection.map(listEvents).getFirst(),
+                        mapEventToFeatureCollection.map(listEvents).getSecond(),
+                        mapper.eventsToProgramEvents(listEvents)
+                ))
                 .toFlowable();
     }
 

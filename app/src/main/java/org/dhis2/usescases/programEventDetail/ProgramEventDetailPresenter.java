@@ -59,7 +59,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                        featureType -> view.setFeatureType(),
+                        view::setFeatureType,
                         Timber::e
                 )
         );
@@ -138,7 +138,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                map -> view.setMap(map.component1(), map.component2()),
+                                map -> view.setMap(map.component1(), map.component2(), map.component3()),
                                 throwable -> view.renderError(throwable.getMessage())
                         ));
 
