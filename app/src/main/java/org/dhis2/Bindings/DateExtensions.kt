@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import org.dhis2.R
-import org.dhis2.utils.DateUtils
 import org.joda.time.Days
 import org.joda.time.Hours
 import org.joda.time.Instant
@@ -13,11 +12,14 @@ import org.joda.time.Interval
 import org.joda.time.LocalDate
 import org.joda.time.Minutes
 
-fun Date?.toDateSpan(context: Context): String {
-    return if (this == null) {
-        ""
-    } else {
-        val duration = Interval(time, Date().time).toDuration()
+val currentDate: Date
+    get() = Date()
+
+fun Date?.toDateSpan(context: Context): String = when {
+    this == null -> ""
+    this.after(currentDate) -> SimpleDateFormat("d/M/yyyy", Locale.getDefault()).format(this)
+    else -> {
+        val duration = Interval(time, currentDate.time).toDuration()
         when {
             duration.toStandardMinutes().isLessThan(Minutes.minutes(1)) -> {
                 context.getString(R.string.interval_now)
@@ -34,17 +36,17 @@ fun Date?.toDateSpan(context: Context): String {
                 context.getString(R.string.interval_yesterday)
             }
             else -> {
-                DateUtils.uiDateFormat().format(this)
+                SimpleDateFormat("d/M/yyyy", Locale.getDefault()).format(this)
             }
         }
     }
 }
 
-fun Date?.toUiText(context: Context): String {
-    return if (this == null) {
-        ""
-    } else {
-        val duration = Interval(time, Date().time).toDuration()
+fun Date?.toUiText(context: Context): String = when {
+    this == null -> ""
+    this.after(currentDate) -> SimpleDateFormat("d/M/yyyy", Locale.getDefault()).format(this)
+    else -> {
+        val duration = Interval(time, currentDate.time).toDuration()
         when {
             duration.toStandardHours().isLessThan(Hours.hours(24)) -> {
                 context.getString(R.string.filter_period_today)
@@ -56,7 +58,7 @@ fun Date?.toUiText(context: Context): String {
                 SimpleDateFormat("dd MMM", Locale.getDefault()).format(this)
             }
             else -> {
-                SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(this)
+                SimpleDateFormat("d/M/yyyy", Locale.getDefault()).format(this)
             }
         }
     }

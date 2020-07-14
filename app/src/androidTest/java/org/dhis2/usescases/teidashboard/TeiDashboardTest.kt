@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teidashboard
 
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.R
@@ -15,7 +16,9 @@ import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.relationshipRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
-import org.junit.Ignore
+import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -79,7 +82,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun shouldReactivateTEIWhenClickReOpen() {
+    fun shouldReactivateTEIWhenClickReOpenWithProgramCompletedEvents() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
@@ -87,6 +90,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuReOpen()
             checkUnlockIconIsDisplay()
             checkCanAddEvent()
+            checkAllEventsCompleted(1)
         }
     }
 
@@ -99,10 +103,11 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuDeactivate()
             checkLockIconIsDisplay()
             checkCanNotAddEvent()
+            checkAllEventsAreInactive(1)
         }
     }
 
-    @Test
+   @Test
     fun shouldCompleteTEIWhenClickOpen() {
         prepareTeiOpenedForCompleteProgrammeAndLaunchActivity(rule)
 
@@ -111,10 +116,11 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuComplete()
             checkLockCompleteIconIsDisplay()
             checkCanNotAddEvent()
+            checkAllEventsAreClosed(1)
         }
     }
 
-    @Test
+   @Test
     fun shouldShowQRWhenClickOnShare() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
@@ -304,7 +310,6 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldSuccessfullyCreateRelationshipWhenClickAdd() {
         val teiName = "Tim"
         val teiLastName = "Johnson"
@@ -317,7 +322,6 @@ class TeiDashboardTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(4000)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -332,7 +336,6 @@ class TeiDashboardTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(4000)
             clickOnTEI(relationshipName, relationshipLastName)
         }
 
@@ -341,7 +344,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore("Check test. Sometimes it fails")
     @Test
     fun shouldDeleteTeiSuccessfully() {
         val teiName = "Anthony"
@@ -352,7 +354,6 @@ class TeiDashboardTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(4000)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -362,12 +363,10 @@ class TeiDashboardTest : BaseTest() {
         }
 
         searchTeiRobot {
-            Thread.sleep(4000)
             checkTEIsDelete(teiName, teiLastName)
         }
     }
 
-    @Ignore("Check test. Sometimes it fails")
     @Test
     fun shouldDeleteEnrollmentSuccessfully() {
 
@@ -379,7 +378,6 @@ class TeiDashboardTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(4000)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -389,7 +387,6 @@ class TeiDashboardTest : BaseTest() {
         }
 
         searchTeiRobot {
-            Thread.sleep(4000)
             checkTEIsDelete(teiName, teiLastName)
         }
     }

@@ -226,13 +226,15 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                             }
                                                             fieldMap.get(fieldSection).add(fieldViewModel);
 
-                                                            if (fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)) {
-                                                                totalFields++;
-                                                            } else if (!optionSets.contains(fieldViewModel.optionSet())) {
-                                                                optionSets.add(fieldViewModel.optionSet());
-                                                                totalFields++;
+                                                            if (!(fieldViewModel instanceof DisplayViewModel)) {
+                                                                if (fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)) {
+                                                                    totalFields++;
+                                                                } else if (!optionSets.contains(fieldViewModel.optionSet())) {
+                                                                    optionSets.add(fieldViewModel.optionSet());
+                                                                    totalFields++;
+                                                                }
                                                             }
-                                                            if (fieldViewModel instanceof UnsupportedViewModel || fieldViewModel instanceof DisplayViewModel)
+                                                            if (fieldViewModel instanceof UnsupportedViewModel)
                                                                 unsupportedFields++;
                                                         }
                                                     }

@@ -18,15 +18,24 @@ class SearchTEViewHolder(private val binding: ItemSearchTrackedEntityBinding) :
 
     fun bind(
         presenter: SearchTEContractsModule.Presenter,
-        searchTeiModel: SearchTeiModel
+        searchTeiModel: SearchTeiModel,
+        attributeVisibilityCallback: () -> Unit,
+        profileImagePreviewCallback: (String) -> Unit
     ) {
+        if (searchTeiModel.isAttributeListOpen) {
+            showAttributeList()
+        } else {
+            hideAttributeList()
+        }
         binding.apply {
             overdue = searchTeiModel.isHasOverdue
             isOnline = searchTeiModel.isOnline
             teiSyncState = searchTeiModel.tei.state()
             attribute = searchTeiModel.attributeValues.values.toList()
             attributeNames = searchTeiModel.attributeValues.keys
+            attributeListOpened = searchTeiModel.isAttributeListOpen
             lastUpdated.text = searchTeiModel.tei.lastUpdated().toDateSpan(itemView.context)
+            sortingValue = searchTeiModel.sortingValue
         }
 
         searchTeiModel.apply {
@@ -36,28 +45,32 @@ class SearchTEViewHolder(private val binding: ItemSearchTrackedEntityBinding) :
                 binding.programList,
                 if (selectedEnrollment != null) selectedEnrollment.program() else null
             )
-            selectedEnrollment.setStatusText(
-                itemView.context,
-                binding.enrollmentStatus,
-                isHasOverdue,
-                overdueDate
-            )
+            if (selectedEnrollment != null) {
+                selectedEnrollment.setStatusText(
+                    itemView.context,
+                    binding.enrollmentStatus,
+                    isHasOverdue,
+                    overdueDate
+                )
+            }
             setTeiImage(
                 itemView.context,
                 binding.trackedEntityImage,
-                binding.imageText
+                binding.imageText,
+                profileImagePreviewCallback
             )
             attributeValues.setAttributeList(
                 binding.attributeList,
                 binding.showAttributesButton,
-                adapterPosition
-            ) { showAttributes ->
-                if (showAttributes) {
-                    showAttributeList()
-                } else {
-                    hideAttributeList()
-                }
+                adapterPosition,
+                searchTeiModel.isAttributeListOpen,
+                searchTeiModel.sortingKey,
+                searchTeiModel.sortingValue
+            ) {
+                attributeVisibilityCallback()
             }
+            binding.sortingFieldName.text = searchTeiModel.sortingKey
+            binding.sortingFieldValue.text = searchTeiModel.sortingValue
         }
 
         binding.syncState.setOnClickListener {
@@ -71,7 +84,7 @@ class SearchTEViewHolder(private val binding: ItemSearchTrackedEntityBinding) :
             ).show() else presenter.onSyncIconClick(searchTeiModel.tei.uid())
         }
         binding.executePendingBindings()
-        itemView.setOnClickListener { view: View? ->
+        itemView.setOnClickListener {
             presenter.onTEIClick(
                 searchTeiModel.tei.uid(),
                 if (searchTeiModel.selectedEnrollment != null) {
