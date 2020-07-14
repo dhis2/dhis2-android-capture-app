@@ -54,6 +54,10 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM;
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM_ENROLLMENT;
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT;
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT_PROGRAM;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.Constants.TEI_UID;
@@ -470,19 +474,19 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.RQ_ENROLLMENTS && resultCode == RESULT_OK) {
-            if (data.hasExtra("GO_TO_ENROLLMENT")) {
+            if (data.hasExtra(GO_TO_ENROLLMENT)) {
                 Intent intent = EnrollmentActivity.Companion.getIntent(this,
-                        data.getStringExtra("GO_TO_ENROLLMENT"),
-                        data.getStringExtra("GO_TO_ENROLLMENT_PROGRAM"),
+                        data.getStringExtra(GO_TO_ENROLLMENT),
+                        data.getStringExtra(GO_TO_ENROLLMENT_PROGRAM),
                         EnrollmentActivity.EnrollmentMode.NEW,
                         false);
                 startActivity(intent);
                 finish();
             }
 
-            if (data.hasExtra("CHANGE_PROGRAM")) {
-                startActivity(intent(this, teiUid, data.getStringExtra("CHANGE_PROGRAM"),
-                        data.getStringExtra("CHANGE_PROGRAM_ENROLLMENT")));
+            if (data.hasExtra(CHANGE_PROGRAM)) {
+                startActivity(intent(this, teiUid, data.getStringExtra(CHANGE_PROGRAM),
+                        data.getStringExtra(CHANGE_PROGRAM_ENROLLMENT)));
                 finish();
             }
 

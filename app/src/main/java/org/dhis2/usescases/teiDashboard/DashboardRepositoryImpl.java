@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.dhis2.Bindings.EventExtensionsKt;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
@@ -112,7 +111,9 @@ public class DashboardRepositoryImpl
     public Observable<List<Event>> getTEIEnrollmentEvents(String programUid, String teiUid) {
 
         return d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
-                .byDeleted().isFalse().get().toFlowable().flatMapIterable(events -> events).map(event -> {
+                .byDeleted().isFalse()
+                .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
+                .get().toFlowable().flatMapIterable(events -> events).map(event -> {
                     if (Boolean.FALSE
                             .equals(d2.programModule().programs().uid(programUid).blockingGet().ignoreOverdueEvents()))
                         if (event.status() == EventStatus.SCHEDULE
@@ -120,10 +121,7 @@ public class DashboardRepositoryImpl
                             event = updateState(event, EventStatus.OVERDUE);
 
                     return event;
-                }).toSortedList((event1, event2) ->
-                        EventExtensionsKt.primaryDate(event2).compareTo(
-                                EventExtensionsKt.primaryDate(event1)
-                        ))
+                }).toList()
                 .toObservable();
     }
 
@@ -562,13 +560,13 @@ public class DashboardRepositoryImpl
     public Observable<StatusChangeResultCode> updateEnrollmentStatus(String enrollmentUid, EnrollmentStatus status) {
         try {
             if (d2.programModule().programs().uid(programUid).blockingGet().access().data().write()) {
-                if(reopenCheck(status)){
+                if (reopenCheck(status)) {
                     d2.enrollmentModule().enrollments().uid(enrollmentUid).setStatus(status);
                     return Observable.just(StatusChangeResultCode.CHANGED);
-                }else{
+                } else {
                     return Observable.just(StatusChangeResultCode.ACTIVE_EXIST);
                 }
-            }else {
+            } else {
                 return Observable.just(StatusChangeResultCode.WRITE_PERMISSION_FAIL);
             }
         } catch (D2Error error) {

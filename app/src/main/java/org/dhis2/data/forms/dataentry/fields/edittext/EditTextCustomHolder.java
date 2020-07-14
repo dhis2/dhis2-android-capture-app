@@ -60,7 +60,6 @@ public class EditTextCustomHolder extends FormViewHolder {
                 if (isSearchMode || valueHasChanged()) {
                     sendAction();
                 }
-//                closeKeyboard(binding.customEdittext.getEditText());
             }
             validateRegex();
         });
