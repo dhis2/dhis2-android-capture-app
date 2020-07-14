@@ -397,7 +397,7 @@ class TeiDashboardTest : BaseTest() {
 
     private fun createExpectedEnrollmentInformation() =
         EnrollmentUIModel(
-            "10/01/2021",
+            "10/1/2021",
             "10/1/2021",
             "Ngelehun CHC",
             "40.48713205295354",

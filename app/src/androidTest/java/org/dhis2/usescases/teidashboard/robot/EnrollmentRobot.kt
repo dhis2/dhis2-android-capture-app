@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teidashboard.robot
 
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
@@ -39,8 +40,9 @@ class EnrollmentRobot : BaseRobot() {
 
     fun clickOnPersonAttributes(attribute: String) {
         onView(withId(R.id.fieldRecycler))
-            .perform(actionOnItem<EditTextCustomHolder>(
-                hasDescendant(withText(attribute)), click()))
+            .perform(
+                scrollToBottomRecyclerView(),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(5, click()))
     }
 
     fun typeOnRequiredTextField(text: String, position: Int) {

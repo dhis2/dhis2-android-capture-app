@@ -203,7 +203,7 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnMenuProgramEnrollments() {
-        onView(withText("Program enrollments")).perform(click())
+        onView(withText(R.string.program_selector)).perform(click())
     }
 
     fun clickOnCreateNewEvent() {
