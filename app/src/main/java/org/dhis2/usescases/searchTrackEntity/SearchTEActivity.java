@@ -159,6 +159,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (teiMapManager != null) {
             teiMapManager.onStart();
         }
+
+        Integer i = null;
+        i.byteValue();
     }
 
     @SuppressLint("ClickableViewAccessibility")

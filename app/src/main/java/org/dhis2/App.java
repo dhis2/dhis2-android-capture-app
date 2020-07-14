@@ -140,7 +140,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         }
         setUpServerComponent();
         setUpRxPlugin();
-
+        initAcra();
         TrackHelper.track().download().identifier(new DownloadTracker.Extra.ApkChecksum(this)).with(getTracker());
     }
 
@@ -171,7 +171,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(this);
-        initAcra();
     }
 
     private void initAcra() {
@@ -184,6 +183,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .setReportField(DISPLAY, false)
                 .setReportField(BUILD_CONFIG, false)
                 .setReportField(FILE_PATH, false)
+                .setAlsoReportToAndroidFramework(true)
                 .setReportFormat(StringFormat.JSON);
 
         builder.getPluginConfigurationBuilder(HttpSenderConfigurationBuilder.class)
