@@ -23,6 +23,7 @@ import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
 import org.junit.Before
@@ -72,11 +73,14 @@ class ProgramEventDetailPresenterTest {
         whenever(repository.program()) doReturn Observable.just(program)
         whenever(repository.catOptionCombos()) doReturn Single.just(catOptionComboPair)
         whenever(
-            repository.filteredProgramEvents(any(), any(), any(), any(), any(), any())
+            repository.filteredProgramEvents(any(), any(), any(), any(), any(), any(), any())
         ) doReturn events
         whenever(
             repository.filteredEventsForMap(any(), any(), any(), any(), any(), any())
         ) doReturn Flowable.just(mapEvents)
+
+        whenever(repository.textTypeDataElements()) doReturn Observable.just(emptyList<DataElement>())
+
         presenter.init()
         verify(view).setFeatureType()
         verify(view).setWritePermission(true)
@@ -84,6 +88,7 @@ class ProgramEventDetailPresenterTest {
         verify(view).setProgram(program)
         verify(view).setCatOptionComboFilter(catOptionComboPair)
         verify(view).setLiveData(events)
+        verify(view).setTextTypeDataElementsFilter(emptyList<DataElement>())
         // verify(view).setMap()
     }
 
