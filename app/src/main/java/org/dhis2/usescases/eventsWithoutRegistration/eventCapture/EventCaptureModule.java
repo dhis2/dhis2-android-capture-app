@@ -29,10 +29,12 @@ public class EventCaptureModule {
 
     private final String eventUid;
     private final EventCaptureContract.View view;
+    private final String programUid;
 
-    public EventCaptureModule(EventCaptureContract.View view, String eventUid) {
+    public EventCaptureModule(EventCaptureContract.View view, String eventUid, String programUid) {
         this.view = view;
         this.eventUid = eventUid;
+        this.programUid = programUid;
     }
 
     @Provides
@@ -41,7 +43,7 @@ public class EventCaptureModule {
                                                     @NonNull RulesUtilsProvider ruleUtils,
                                                     @NonNull ValueStore valueStore,
                                                     SchedulerProvider schedulerProvider) {
-        return new EventCapturePresenterImpl(view, eventUid, eventCaptureRepository, ruleUtils, valueStore, schedulerProvider);
+        return new EventCapturePresenterImpl(view, eventUid,programUid, eventCaptureRepository, ruleUtils, valueStore, schedulerProvider);
     }
 
     @Provides

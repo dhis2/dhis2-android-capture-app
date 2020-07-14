@@ -45,17 +45,23 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (Filters.values()[viewType]) {
             case PERIOD:
-                return new PeriodFilterHolder(ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter);
+                return new PeriodFilterHolder(
+                        ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter);
             case ORG_UNIT:
-                return new OrgUnitFilterHolder(ItemFilterOrgUnitBinding.inflate(inflater, parent, false), openedFilter);
+                return new OrgUnitFilterHolder(
+                        ItemFilterOrgUnitBinding.inflate(inflater, parent, false), openedFilter);
             case SYNC_STATE:
-                return new SyncStateFilterHolder(ItemFilterStateBinding.inflate(inflater, parent, false), openedFilter);
+                return new SyncStateFilterHolder(
+                        ItemFilterStateBinding.inflate(inflater, parent, false), openedFilter);
             case CAT_OPT_COMB:
-                return new CatOptCombFilterHolder(ItemFilterCatOptCombBinding.inflate(inflater, parent, false), openedFilter, catCombData);
+                return new CatOptCombFilterHolder(
+                        ItemFilterCatOptCombBinding.inflate(inflater, parent, false), openedFilter, catCombData);
             case EVENT_STATUS:
-                return new StatusEventFilterHolder(ItemFilterStatusBinding.inflate(inflater, parent, false), openedFilter, programType);
+                return new StatusEventFilterHolder(
+                        ItemFilterStatusBinding.inflate(inflater, parent, false), openedFilter, programType);
             case ASSIGNED_TO_ME:
-                return new AssignToMeFilterHolder(ItemFilterAssignedBinding.inflate(inflater, parent, false), openedFilter);
+                return new AssignToMeFilterHolder(
+                        ItemFilterAssignedBinding.inflate(inflater, parent, false), openedFilter);
             default:
                 throw new IllegalArgumentException("Unsupported filter value");
         }
