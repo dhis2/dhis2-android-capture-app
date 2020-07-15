@@ -17,7 +17,7 @@ class CarouselEventHolder(
     val binding: ItemCarouselEventBinding,
     val program: Program?,
     val onClick: (teiUid: String?, enrollmentUid: String?) -> Boolean,
-    val profileImagePreviewCallback: (String) -> Unit
+    private val profileImagePreviewCallback: (String) -> Unit
 ) :
     RecyclerView.ViewHolder(binding.root),
     CarouselBinder<EventUiComponentModel> {
