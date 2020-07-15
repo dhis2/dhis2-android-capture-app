@@ -457,7 +457,7 @@
     <string name="errors_during_sync">Your configuration sync has failed. There  could be errors in your server. Click here for more information.</string>
     <string name="sectionSelectorPrev">PREV</string>
     <string name="sectionSelectorNext">NEXT</string>
-    <string name="event_overview">Data</string>
+    <string name="event_overview">Details</string>
     <string name="event_event">Event</string>
     <string name="event_indicators">Indicators</string>
     <string name="event_notes">Notes</string>
@@ -712,4 +712,5 @@
     <string name="enrollment_status_cancelled">Cancelled</string>
     <string name="unknownValue" translatable="false">-</string>
     <string name="no_data">No data</string>
+    <string name="event_data">Data</string>
 </resources>
