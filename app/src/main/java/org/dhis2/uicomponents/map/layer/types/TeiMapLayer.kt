@@ -222,5 +222,6 @@ class TeiMapLayer(
         return style.getSourceAs<GeoJsonSource>(TEIS_SOURCE_ID)
             ?.querySourceFeatures(Expression.eq(Expression.get("teiUid"), featureUidProperty))
             ?.firstOrNull()
+            .also { setSelectedItem(it) }
     }
 }
