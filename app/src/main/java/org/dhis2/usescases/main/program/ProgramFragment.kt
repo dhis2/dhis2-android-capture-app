@@ -1,7 +1,9 @@
 package org.dhis2.usescases.main.program
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
@@ -9,11 +11,13 @@ import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.OvershootInterpolator
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import javax.inject.Inject
 import org.dhis2.App
+import org.dhis2.Bindings.dp
 import org.dhis2.R
 import org.dhis2.databinding.FragmentProgramBinding
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
@@ -42,6 +46,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
     @Inject
     lateinit var presenter: ProgramPresenter
+
     @Inject
     lateinit var adapter: ProgramModelAdapter
 
@@ -61,7 +66,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_program, container, false)
-
+        (binding.drawerLayout?.background as GradientDrawable).cornerRadius = 0f
         return binding.apply {
             presenter = this@ProgramFragment.presenter
             programRecycler.itemAnimator = null
@@ -78,11 +83,32 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     override fun onResume() {
         super.onResume()
         presenter.init()
+        val gd: GradientDrawable = binding.drawerLayout?.background as GradientDrawable
+        ValueAnimator.ofInt(0, 16.dp)
+            .apply {
+                duration = 700
+                startDelay = 700
+                interpolator = OvershootInterpolator()
+                addUpdateListener {
+                    val value = (it.animatedValue as Int).toFloat()
+                    gd.cornerRadii = floatArrayOf(value, value, value, value, 0f, 0f, 0f, 0f)
+                }
+            }.start()
     }
 
     override fun onPause() {
-        super.onPause()
+        val gd: GradientDrawable = binding.drawerLayout?.background as GradientDrawable
+        ValueAnimator.ofInt(16.dp, 0)
+            .apply {
+                duration = 200
+                interpolator = OvershootInterpolator()
+                addUpdateListener {
+                    val value = (it.animatedValue as Int).toFloat()
+                    gd.cornerRadius = value
+                }
+            }.start()
         presenter.dispose()
+        super.onPause()
     }
 
     //endregion

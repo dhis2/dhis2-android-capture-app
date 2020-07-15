@@ -7,7 +7,6 @@ import org.dhis2.data.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.common.State
-import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -35,80 +34,40 @@ internal class HomeRepositoryImpl(
         statesFilter: List<State>,
         assignedToUser: Boolean?
     ): Flowable<List<ProgramViewModel>> {
-        return ParallelFlowable.from<DataSet>(
-            Flowable.fromIterable<DataSet>(d2.dataSetModule().dataSets().blockingGet())
-        )
-            .runOn(schedulerProvider.io())
-            .map { dataSet ->
-                var repo = d2.dataSetModule().dataSetInstances().byDataSetUid().eq(dataSet.uid())
-                if (orgUnitFilter.isNotEmpty()) {
-                    repo = repo.byOrganisationUnitUid().`in`(orgUnitFilter)
+        var repo = d2.dataSetModule().dataSetInstanceSummaries()
+        if (dateFilter.isNotEmpty()) {
+            repo = repo.byPeriodStartDate().inDatePeriods(dateFilter)
+        }
+        if (orgUnitFilter.isNotEmpty()) {
+            repo = repo.byOrganisationUnitUid().`in`(orgUnitFilter)
+        }
+        if (statesFilter.isNotEmpty()) {
+            repo = repo.byState().`in`(statesFilter)
+        }
+
+        return repo.get().toFlowable()
+            .map { dataSetSummaries ->
+                dataSetSummaries.map {
+                    val dataSet = d2.dataSetModule().dataSets()
+                        .uid(it.dataSetUid())
+                        .blockingGet()
+                    ProgramViewModel.create(
+                        it.dataSetUid(),
+                        it.dataSetDisplayName(),
+                        dataSet.style().color(),
+                        dataSet.style().icon(),
+                        it.dataSetInstanceCount(),
+                        null,
+                        dataSetLabel,
+                        "",
+                        dataSet.description(),
+                        false,
+                        dataSet.access().data().write(),
+                        it.state()?.name ?: State.SYNCED.name,
+                        false
+                    )
                 }
-                if (dateFilter.isNotEmpty()) {
-                    repo = repo.byPeriodStartDate().inDatePeriods(dateFilter)
-                }
-
-                var count = 0
-                if (assignedToUser != true) {
-                    if (statesFilter.isNotEmpty()) {
-                        for (instance in repo.blockingGet()) {
-                            if (statesFilter.contains(instance.state())) {
-                                count++
-                            }
-                        }
-                    } else {
-                        count = repo.blockingCount()
-                    }
-                }
-
-                val possibleStates = repo.blockingGet().map { it.state() }.toMutableList()
-
-                possibleStates.addAll(
-                    d2.dataSetModule().dataSetCompleteRegistrations()
-                        .byDataSetUid().eq(dataSet.uid())
-                        .blockingGet().map { it.state() }
-                )
-
-                val state = when {
-                    possibleStates.contains(State.ERROR) ||
-                        possibleStates.contains(State.WARNING) ->
-                        State.WARNING
-                    possibleStates.contains(State.SENT_VIA_SMS) ||
-                        possibleStates.contains(State.SYNCED_VIA_SMS) ->
-                        State.SENT_VIA_SMS
-                    possibleStates.contains(State.TO_UPDATE) ||
-                        possibleStates.contains(State.UPLOADING) ||
-                        possibleStates.contains(State.TO_POST) ->
-                        State.TO_UPDATE
-                    else -> State.SYNCED
-                }
-
-                ProgramViewModel.create(
-                    dataSet.uid(),
-                    dataSet.displayName()!!,
-                    if (dataSet.style() != null) dataSet.style()!!.color() else null,
-                    if (dataSet.style() != null) dataSet.style()!!.icon() else null,
-                    count, null,
-                    dataSetLabel,
-                    "",
-                    dataSet.displayDescription(),
-                    true,
-                    dataSet.access().data().write()!!,
-                    state.name
-                )
-            }.sequential()
-            .map { program ->
-                program.setTranslucent(
-                    (
-                        dateFilter.isNotEmpty() ||
-                            orgUnitFilter.isNotEmpty() ||
-                            statesFilter.isNotEmpty() ||
-                            assignedToUser == true
-                        ) &&
-                        program.count() == 0
-                )
             }
-            .toList().toFlowable()
     }
 
     override fun programModels(
