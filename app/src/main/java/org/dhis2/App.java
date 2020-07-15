@@ -132,10 +132,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
         Fabric.with(this, new Crashlytics());
 
-        CaocConfig.Builder.create()
-                .errorDrawable(R.drawable.ic_dhis)
-                .apply();
-
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
             upgradeSecurityProviderSync();
 
@@ -146,10 +142,16 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         setUpServerComponent();
         setUpRxPlugin();
         initAcra();
+        initCustomCrashActivity();
         TrackHelper.track().download().identifier(new DownloadTracker.Extra.ApkChecksum(this)).with(getTracker());
     }
 
-
+    private void initCustomCrashActivity() {
+        CaocConfig.Builder.create()
+                .errorDrawable(R.drawable.ic_dhis)
+                .apply();
+    }
+    
     public synchronized Tracker getTracker() {
         if (matomoTracker == null){
             matomoTracker = TrackerBuilder.createDefault(BuildConfig.MATOMO_URL, BuildConfig.MATOMO_ID).build(Matomo.getInstance(this));
