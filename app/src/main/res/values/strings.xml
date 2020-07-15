@@ -713,4 +713,5 @@
     <string name="enrollment_status_cancelled">Cancelled</string>
     <string name="unknownValue" translatable="false">-</string>
     <string name="no_data">No data</string>
+    <string name="event_data">Data</string>
 </resources>
