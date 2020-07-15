@@ -84,6 +84,7 @@ abstract class MapManager {
     }
 
     fun findFeatureFor(featureUidProperty: String): Feature? {
+        if (!isMapReady()) return null
         return mapLayerManager.getLayers().mapNotNull { mapLayer ->
             mapLayer.findFeatureWithUid(featureUidProperty)
         }.firstOrNull()
