@@ -67,6 +67,7 @@ import java.net.SocketException;
 
 import javax.inject.Singleton;
 
+import cat.ereza.customactivityoncrash.config.CaocConfig;
 import io.fabric.sdk.android.Fabric;
 import io.reactivex.Scheduler;
 import io.reactivex.android.plugins.RxAndroidPlugins;
@@ -130,6 +131,10 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         MapController.Companion.init(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
 
         Fabric.with(this, new Crashlytics());
+
+        CaocConfig.Builder.create()
+                .errorDrawable(R.drawable.ic_dhis)
+                .apply();
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
             upgradeSecurityProviderSync();
