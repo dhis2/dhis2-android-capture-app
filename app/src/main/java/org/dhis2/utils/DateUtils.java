@@ -923,6 +923,31 @@ public class DateUtils {
 
     }
 
+    public static Date yearsBeforeNow(int years) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        if (years > 0) {
+            calendar.add(Calendar.YEAR, -years);
+        } else {
+            calendar.add(Calendar.YEAR, years);
+        }
+        return calendar.getTime();
+    }
+
+    public static Date yearsAfterNow(int years) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        calendar.add(Calendar.YEAR, years);
+
+        return calendar.getTime();
+    }
 
     public static long timeToDate(Date finaLDate) {
         return finaLDate.getTime() - new Date().getTime();

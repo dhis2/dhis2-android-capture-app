@@ -254,6 +254,13 @@ public class SearchRepositoryImpl implements SearchRepository {
             //TODO: THE SDK NEEDS TO PROVIDE A WAY TO SET ENROLLMENT STATUS SO WE CAN SEARCH BOTH LOCAL AND ONLINE
         }
 
+        if (!FilterManager.getInstance().getEventStatusFilters().isEmpty()) {
+             trackedEntityInstanceQuery = trackedEntityInstanceQuery
+                     .byEventStartDate().eq(DateUtils.yearsBeforeNow(5))
+                     .byEventEndDate().eq(DateUtils.yearsAfterNow(1))
+                     .byEventStatus().in(FilterManager.getInstance().getEventStatusFilters());
+        }
+
         OrganisationUnitMode ouMode;
         if (orgUnits.isEmpty()) {
             orgUnits.addAll(
