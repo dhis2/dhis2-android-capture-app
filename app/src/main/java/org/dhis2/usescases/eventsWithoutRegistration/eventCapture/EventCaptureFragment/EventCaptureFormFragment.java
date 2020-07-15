@@ -205,9 +205,9 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     private void checkLastItem() {
         GridLayoutManager layoutManager = (GridLayoutManager) binding.formRecycler.getLayoutManager();
         int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
-        boolean shouldShowFab =
+        boolean shouldShowFab = lastVisiblePosition != -1 && (
                 lastVisiblePosition == dataEntryAdapter.getItemCount() - 1 ||
-                        dataEntryAdapter.getItemViewType(lastVisiblePosition) == 17;
+                        dataEntryAdapter.getItemViewType(lastVisiblePosition) == 17);
         animateFabButton(shouldShowFab);
     }
 

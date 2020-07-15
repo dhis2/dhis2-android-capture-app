@@ -41,6 +41,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -425,6 +426,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 d2.enrollmentModule().enrollments()
                         .byTrackedEntityInstance().eq(searchTei.getTei().uid())
                         .byDeleted().eq(false)
+                        .orderByCreated(RepositoryScope.OrderByDirection.DESC)
                         .blockingGet();
         for (Enrollment enrollment : enrollments) {
             if (enrollments.indexOf(enrollment) == 0)
@@ -740,10 +742,17 @@ public class SearchRepositoryImpl implements SearchRepository {
                 List<Enrollment> possibleEnrollments = d2.enrollmentModule().enrollments()
                         .byTrackedEntityInstance().eq(localTei.uid())
                         .byProgram().eq(selectedProgram.uid())
+                        .orderByEnrollmentDate(RepositoryScope.OrderByDirection.DESC)
                         .blockingGet();
-                Collections.sort(possibleEnrollments, (enrollment1, enrollment2) ->
-                        enrollment1.enrollmentDate().compareTo(enrollment2.enrollmentDate()));
-                searchTei.setCurrentEnrollment(possibleEnrollments.get(0));
+                for(Enrollment enrollment : possibleEnrollments){
+                    if(enrollment.status() == EnrollmentStatus.ACTIVE){
+                        searchTei.setCurrentEnrollment(enrollment);
+                        break;
+                    }
+                }
+                if(searchTei.getSelectedEnrollment()==null) {
+                    searchTei.setCurrentEnrollment(possibleEnrollments.get(0));
+                }
                 searchTei.setOnline(false);
             } else if (d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(localTei.uid()).one().blockingExists())
                 searchTei.setOnline(false);

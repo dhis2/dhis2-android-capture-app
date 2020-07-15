@@ -153,11 +153,6 @@ class TeiDataRepositoryImpl(
             .byDeleted().isFalse
             .get()
             .map { eventList ->
-                /*eventList.sortWith(
-                    Comparator { event1, event2 ->
-                        event2.primaryDate().compareTo(event1.primaryDate())
-                    }
-                )*/
                 checkEventStatus(eventList).forEach { event ->
                     val stageUid = d2.programModule().programStages()
                         .uid(event.programStage())
