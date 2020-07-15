@@ -4,7 +4,9 @@
 
 This section focuses on the Android Settings app implementation.
 
-The Android Settings is a web app that allows us to configure the different synchronization parameters for the DHIS2 Android Capture App, in addition to that, it allows us to run tests on the size of data synchronized by user.
+The Android Settings web app allows admins to configure synchronization parameters for the DHIS2 Android Capture App, encrypt the local database of the android devices, and run tests on the size of data and metadata synchronized by a given android user.
+
+Please note that in this version of the app, only users with 'ALL' authority are able to define those parameters in the configuration. Other users having access to the app can see the value of the parameters, but cannot edit them. 
 
 
 ## General download sync settings
