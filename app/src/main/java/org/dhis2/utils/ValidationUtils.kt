@@ -10,9 +10,9 @@ class ValidationUtils {
         @JvmStatic
         fun validate(valueType: ValueType, value: String?): String? {
             return value?.let {
-                if(value == "-"){
+                if (value == "-") {
                     "0"
-                }else {
+                } else {
                     when (valueType) {
                         ValueType.INTEGER,
                         ValueType.INTEGER_NEGATIVE,
