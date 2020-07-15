@@ -45,7 +45,8 @@ internal class HomeRepositoryImpl(
             repo = repo.byState().`in`(statesFilter)
         }
 
-        return repo.get().toFlowable()
+        return repo.get()
+            .toFlowable()
             .map { dataSetSummaries ->
                 dataSetSummaries.map {
                     val dataSet = d2.dataSetModule().dataSets()
