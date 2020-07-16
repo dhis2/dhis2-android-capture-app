@@ -2,11 +2,15 @@ package org.dhis2.uicomponents.map.managers
 
 import androidx.appcompat.content.res.AppCompatResources
 import com.mapbox.geojson.BoundingBox
+import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.BitmapUtils
 import org.dhis2.R
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.layer.LayerType
+import org.dhis2.usescases.events.EXTRA_EVENT_UID
 import org.hisp.dhis.android.core.common.FeatureType
 
 class RelationshipMapManager : MapManager() {
@@ -89,5 +93,37 @@ class RelationshipMapManager : MapManager() {
             .withFeatureType(featureType)
             .addLayers(LayerType.RELATIONSHIP_LAYER, featureCollections.keys.toList(), true)
             .addLayer(LayerType.SATELLITE_LAYER)
+    }
+
+    override fun findFeature(
+        source: String,
+        propertyName: String,
+        propertyValue: String
+    ): Feature? {
+        return featureCollections[source]?.features()?.firstOrNull {
+            it.getStringProperty(propertyName) == propertyValue
+        }
+    }
+
+    override fun findFeature(propertyValue: String): Feature? {
+        val mainProperties = arrayListOf(
+            MapTeisToFeatureCollection.TEI_UID,
+            MapTeisToFeatureCollection.ENROLLMENT_UID,
+            MapRelationshipsToFeatureCollection.RELATIONSHIP_UID, EXTRA_EVENT_UID)
+        var featureToReturn:Feature? = null
+        for (source in featureCollections.keys){
+            for(propertyLabel in mainProperties){
+                val feature = findFeature(source, propertyLabel, propertyValue)
+                if(feature!=null){
+                    featureToReturn = feature
+                    mapLayerManager.getLayer(source,true)?.setSelectedItem(featureToReturn)
+                    break
+                }
+                if(featureToReturn!=null){
+                    break
+                }
+            }
+        }
+        return featureToReturn
     }
 }
