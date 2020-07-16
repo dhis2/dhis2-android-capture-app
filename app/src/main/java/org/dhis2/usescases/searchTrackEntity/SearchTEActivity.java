@@ -868,12 +868,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 (CarouselAdapter) binding.mapCarousel.getAdapter()
         );
 
-        binding.mapCarousel.attachToMapManager(teiMapManager, () ->
-                {
-                    Toast.makeText(this, "Item does not have coordinates", Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-        );
+        binding.mapCarousel.attachToMapManager(teiMapManager, () -> true);
     }
 
 
