@@ -6,6 +6,7 @@ import android.text.style.ForegroundColorSpan
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.R
+import org.dhis2.data.tuples.Pair
 import org.dhis2.databinding.ItemCarouselProgramEventBinding
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel
 
@@ -24,21 +25,28 @@ class CarouselProgramEventHolder(
 
         val attributesString = SpannableStringBuilder("")
         data.eventDisplayData().forEach {
-            attributesString.append(
-                SpannableStringBuilder("${it.val0()} ${it.val1()}  ").apply {
-                    setSpan(
-                        ForegroundColorSpan(
-                            ContextCompat.getColor(itemView.context, R.color.text_black_8A3)
-                        ),
-                        0, it.val0().length,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
-                }
-            )
+            attributesString.append(setAttributes(it))
         }
         binding.dataValue.text = when {
             attributesString.isNotEmpty() -> attributesString
             else -> itemView.context.getString(R.string.no_data)
+        }
+    }
+
+    private fun setAttributes(attribute: Pair<String, String>) : SpannableStringBuilder {
+        val attributeValue = if (attribute.val1().isNullOrEmpty()){
+            "-"
+        } else {
+            attribute.val1()
+        }
+        return SpannableStringBuilder("${attribute.val0()} $attributeValue  ").apply {
+            setSpan(
+                ForegroundColorSpan(
+                    ContextCompat.getColor(itemView.context, R.color.text_black_8A3)
+                ),
+                0, attribute.val0().length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
         }
     }
 }
