@@ -1,5 +1,6 @@
 package org.dhis2.uicomponents.map.carousel
 
+import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.Bindings.addEnrollmentIcons
@@ -51,6 +52,13 @@ class CarouselTeiHolder(
                 binding.imageText,
                 profileImagePreviewCallback
             )
+            if(tei.geometry() == null) {
+                binding.noCoordinatesLabel.root.visibility = View.VISIBLE
+                binding.noCoordinatesLabel.noCoordinatesMessage.text =
+                    itemView.context.getString(R.string.no_coordinates_item).format(teTypeName)
+            }else{
+                binding.noCoordinatesLabel.root.visibility = View.INVISIBLE
+            }
             binding.sortingFieldName.text = data.sortingKey
             binding.sortingFieldValue.text = data.sortingValue
         }

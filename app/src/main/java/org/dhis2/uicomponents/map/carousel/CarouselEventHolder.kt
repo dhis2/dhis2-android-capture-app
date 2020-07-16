@@ -1,5 +1,6 @@
 package org.dhis2.uicomponents.map.carousel
 
+import android.view.View
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.Bindings.setTeiImage
@@ -64,6 +65,17 @@ class CarouselEventHolder(
                 profileImagePreviewCallback
             )
         }
+
+        if(data.event.geometry() == null) {
+            binding.noCoordinatesLabel.root.visibility = View.VISIBLE
+            binding.noCoordinatesLabel.noCoordinatesMessage.text =
+                itemView.context.getString(R.string.no_coordinates_item).format(
+                    itemView.context.getString(R.string.event_event)
+                )
+        }else{
+            binding.noCoordinatesLabel.root.visibility = View.INVISIBLE
+        }
+
     }
 
     private fun setStageStyle(color: String?, icon: String?, target: ImageView) {
