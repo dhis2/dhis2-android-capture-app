@@ -11,7 +11,7 @@ Please note that in this version of the app, only users with 'ALL' authority are
 
 ## General download sync settings
 
-Includes configurations such as how often the synchronizations will be made for metadata and data, reserved values downloaded per TEI, and encrypt the device database.
+Includes configurations such as how often the android app will synchronize metadata and data, number of reserved values to download per TEI, and encrypt the device database.
 
 ![](resources/images/general-settings.png)
 
@@ -21,20 +21,18 @@ Includes configurations such as how often the synchronizations will be made for 
 
 **SMS Gateway:** This section allows you to edit the SMS gateway phone number.
 
-**Reserved values:** This will specify the number of reserved values per TEI to download in your device.
+**Reserved values:** This will specify the number of reserved values per TEI attribute to download in your device.
 
 **Encrypt device database:** 
 
 > **Warning**
 >
-> This is a critical action and will not affect the DHIS2 database.
+> This is a critical action and will affect the local database of all android devices synchronizing with the server (it won't affect the server DHIS2 database).
 >
-> *Decrypt* device database will reduce the level of protection of the data.
-> 
-> *Encrypt* device database could have an impact on the database volume and performance.
+> By default the android app database is not encrypted, but a system admin can check the *Encrypt device database* to encrypt the metadata and data stored in every device. Encrypting the database will have an impact on the database volume and performance of the app. Also note that at the moment of selecting or unselecting this option no data is lost (even if it hasn't been previously synchronized with the server)
 
  
-**Disable all settings:** This is an option when you don’t want the configurations you generate on the web app to be applied to the Android Capture app. By clicking this button you will disable all General, Program, and data set settings and remove namespace and key names from Datastore.
+**Disable all settings:** By clicking this button the user will remove all android confiuration settings, so no configuration will be applied to the Android Capture app.  
 
 
 ## Program download sync settings
@@ -43,25 +41,25 @@ This section has two parts, global and specific settings.
 
 ### Global settings
 
-Global settings apply to all programs an android user has access to. Some of these settings are maximum TEI and event to download and update period.
+Global settings apply to all programs that an android user has access to. 
 
 ![](resources/images/program-global-settings.png)
 
-**TEI to download:** Maximum number of Tracked Entity Instance to download.
+**TEI to download:** Maximum number of TEIs to download from the server.
 
-**TEI download period:** Download TEI that have been updated within a period. e.g. TEI that have been updated within last month
+**TEI download period:** It downloads the TEIs that have been updated within a period. e.g. TEIs that have been updated within last month
 
 **Event to download:** Maximum number of Events to download.
 
-**Event download period:** Download Events with event date within a specific period.
+**Event download period:** It downloads Events which event date belongs to a specific period.
 
 ### Specific settings
 
-To add a setting for a specific program:
+This section allows the admin users to specify the behaviour of a particular program/s when syncing the data. The specific configuration overwrites the general settings for the programs listed in this section.  To add a setting for a specific program:
  
 - Click on *Add a Program-specific setting*, a Dialog will appear. 
 - Bellow "Values per Program" title you can click and find a list of programs.
-- Click on a program, and it will show you settings taking into account the program type (With or without registration). 
+- Clicking on a program will show up the different parameters to configure. The number of parameters depends on the program type (with or without registration). 
 
 **Settings for Program Without Registration**
 
@@ -71,13 +69,15 @@ To add a setting for a specific program:
 
 ![](resources/images/program-specific-dialog-with_registration.png)
 
-When you save a specific setting a table only with this kind of settings will appear, the table will show a summary of the specific program setting and options to edit or delete those settings for the program.
+In the case that any specific settings have been saved, a table will show up a summary with the specific configuration per program, and the options to edit or delete these settings.
 
 ![](resources/images/program-specific-table.png)
 
 ### Reset all values
 
-By clicking on *Reset all values*, you will restore your default settings values, in this case means no specific settings. To save it on Datastore and apply it to Android Capture App, you need to click on *Save*.
+By clicking on *Reset all values*, the user will restore the default settings values of the program section. Please note that in this case it means no specific settings per program. 
+
+To save any configuration, the user needs to click on the *Save* button (this button is disabled for the users who doesn't have the 'ALL' authority)
 
 
 ## Data set download sync settings
