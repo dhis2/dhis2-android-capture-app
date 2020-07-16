@@ -149,9 +149,19 @@
                     app:eventProgram="@{program}"
                     app:eventProgramStage="@{programStage}"
                     app:eventStatusIcon="@{event}"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/sync_icon"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:src="@drawable/ic_edit" />
+
+                <ImageView
+                    android:id="@+id/sync_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:stateIcon='@{event.state()}'
+                    tools:ignore="ContentDescription"
+                    tools:src="@drawable/ic_sync" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
