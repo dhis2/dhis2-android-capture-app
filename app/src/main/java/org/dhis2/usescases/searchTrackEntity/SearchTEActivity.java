@@ -542,7 +542,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             @SuppressLint("RestrictedApi")
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
-                if(isMapVisible()){
+                if (isMapVisible()) {
                     showMap(false);
                 }
                 if (pos > 0) {
@@ -551,11 +551,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((Program) adapterView.getItemAtPosition(pos - 1));
                     String enrollmentDateLabel = selectedProgram.enrollmentDateLabel();
-                    filtersAdapter.addEnrollmentDate(enrollmentDateLabel!=null?enrollmentDateLabel:getString(R.string.enrollment_date));
+                    filtersAdapter.addEnrollmentDate(enrollmentDateLabel != null ? enrollmentDateLabel : getString(R.string.enrollment_date));
                 } else if (programs.size() == 1 && pos != 0) {
                     presenter.setProgram(programs.get(0));
                     String enrollmentDateLabel = programs.get(0).enrollmentDateLabel();
-                    filtersAdapter.addEnrollmentDate(enrollmentDateLabel!=null?enrollmentDateLabel:getString(R.string.enrollment_date));
+                    filtersAdapter.addEnrollmentDate(enrollmentDateLabel != null ? enrollmentDateLabel : getString(R.string.enrollment_date));
                 } else {
                     presenter.setProgram(null);
                     filtersAdapter.removeEnrollmentDate();
@@ -787,6 +787,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             downloadingSnackbar.dismiss();
         }
         startActivity(TeiDashboardMobileActivity.intent(this, teiUid, enrollmentUid != null ? programUid : null, enrollmentUid));
+    }
+
+    @Override
+    public void couldNotDownload(String typeName) {
+        displayMessage(getString(R.string.download_tei_error, typeName));
     }
 
     @Override

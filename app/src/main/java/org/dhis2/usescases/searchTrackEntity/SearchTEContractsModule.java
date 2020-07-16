@@ -101,6 +101,8 @@ public class SearchTEContractsModule {
         void goToEnrollment(String enrollmentUid, String programUid);
 
         void onBackClicked();
+
+        void couldNotDownload(String typeName);
     }
 
     public interface Presenter {
