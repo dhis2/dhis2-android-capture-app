@@ -70,28 +70,3 @@ fun MutableList<TrackedEntityInstance>.filterEvents(
     }
     return this
 }
-
-fun MutableList<TrackedEntityInstance>.filterEnrollmentStatus(
-    d2: D2,
-    program: String?,
-    enrollmentStatuses: List<EnrollmentStatus>
-): MutableList<TrackedEntityInstance> {
-    val iterator = this.iterator()
-    if (program != null && enrollmentStatuses.isNotEmpty()) {
-        while (iterator.hasNext()) {
-            val tei = iterator.next()
-            val hasEnrollmentInProgramWithStatus =
-                !d2.enrollmentModule().enrollments()
-                    .byTrackedEntityInstance().eq(tei.uid())
-                    .byProgram().eq(program)
-                    .byDeleted().isFalse
-                    .byStatus().`in`(enrollmentStatuses)
-                    .blockingIsEmpty()
-            if (!hasEnrollmentInProgramWithStatus) {
-                iterator.remove()
-            }
-        }
-    }
-
-    return this
-}
