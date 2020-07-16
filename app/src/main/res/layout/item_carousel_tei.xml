@@ -34,6 +34,10 @@
         <variable
             name="sortingValue"
             type="String" />
+
+        <variable
+            name="attributeListOpened"
+            type="java.lang.Boolean" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -149,7 +153,7 @@
                 android:text="@{attributeNames.size()>1?attributeNames.toArray()[1]:null}"
                 android:textColor="@color/text_black_DE3"
                 android:textSize="12sp"
-                android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}'
+                android:visibility='@{attribute.size() > 1 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
                 app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
                 app:layout_constraintTop_toBottomOf="@id/attribute_a_name"
                 tools:text="Attribute 2:" />
@@ -164,7 +168,7 @@
                 android:text="@{attributeNames.size()>2?attributeNames.toArray()[2]:null}"
                 android:textColor="@color/text_black_DE3"
                 android:textSize="12sp"
-                android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.GONE}'
+                android:visibility='@{attribute.size() > 2 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
                 app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
                 app:layout_constraintTop_toBottomOf="@id/attribute_b_name"
                 tools:text="Attribute 3:" />
@@ -196,7 +200,7 @@
                 android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
                 android:textColor="#61333333"
                 android:textSize="14sp"
-                android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}'
+                android:visibility='@{attribute.size()>0 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
                 app:layout_constraintEnd_toStartOf="@id/infoLayout"
                 app:layout_constraintStart_toEndOf="@id/attribute_a_name"
                 app:layout_constraintTop_toTopOf="@id/attribute_a_name"
@@ -215,7 +219,7 @@
                 android:text='@{attribute.size() > 1 ? attribute.get(1).value() : "" , default="attribute 2"}'
                 android:textColor="#61333333"
                 android:textSize="12sp"
-                android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}'
+                android:visibility='@{attribute.size() > 1 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
                 app:layout_constraintEnd_toStartOf="@id/infoLayout"
                 app:layout_constraintStart_toEndOf="@id/attribute_b_name"
                 app:layout_constraintTop_toBottomOf="@id/entity_attribute_1" />
@@ -232,7 +236,7 @@
                 android:text='@{attribute.size() > 2 ? attribute.get(2).value() : "", default="attribute 3"}'
                 android:textColor="#61333333"
                 android:textSize="12sp"
-                android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.GONE}'
+                android:visibility='@{attribute.size() > 2 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
                 app:layout_constraintEnd_toStartOf="@id/infoLayout"
                 app:layout_constraintStart_toEndOf="@id/attribute_c_name"
                 app:layout_constraintTop_toBottomOf="@id/entity_attribute_2" />
