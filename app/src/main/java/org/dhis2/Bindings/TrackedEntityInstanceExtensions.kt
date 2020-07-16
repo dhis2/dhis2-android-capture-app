@@ -15,13 +15,16 @@ fun MutableList<TrackedEntityInstance>.filterDeletedEnrollment(
     if (program != null) {
         while (iterator.hasNext()) {
             val tei = iterator.next()
+            val isLocal = d2.trackedEntityModule().trackedEntityInstances()
+                .uid(tei.uid())
+                .blockingExists()
             val hasEnrollmentInProgram =
                 !d2.enrollmentModule().enrollments()
                     .byTrackedEntityInstance().eq(tei.uid())
                     .byProgram().eq(program)
                     .byDeleted().isFalse
                     .blockingIsEmpty()
-            if (!hasEnrollmentInProgram) {
+            if (isLocal && !hasEnrollmentInProgram) {
                 iterator.remove()
             }
         }
@@ -80,6 +83,9 @@ fun MutableList<TrackedEntityInstance>.filterEnrollmentStatus(
     if (program != null && enrollmentStatuses.isNotEmpty()) {
         while (iterator.hasNext()) {
             val tei = iterator.next()
+            val isLocal = d2.trackedEntityModule().trackedEntityInstances()
+                .uid(tei.uid())
+                .blockingExists()
             val hasEnrollmentInProgramWithStatus =
                 !d2.enrollmentModule().enrollments()
                     .byTrackedEntityInstance().eq(tei.uid())
@@ -87,7 +93,7 @@ fun MutableList<TrackedEntityInstance>.filterEnrollmentStatus(
                     .byDeleted().isFalse
                     .byStatus().`in`(enrollmentStatuses)
                     .blockingIsEmpty()
-            if (!hasEnrollmentInProgramWithStatus) {
+            if (isLocal && !hasEnrollmentInProgramWithStatus) {
                 iterator.remove()
             }
         }
