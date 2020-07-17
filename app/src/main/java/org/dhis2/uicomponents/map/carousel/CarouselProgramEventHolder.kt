@@ -33,8 +33,8 @@ class CarouselProgramEventHolder(
         }
     }
 
-    private fun setAttributes(attribute: Pair<String, String>) : SpannableStringBuilder {
-        val attributeValue = if (attribute.val1().isNullOrEmpty()){
+    private fun setAttributes(attribute: Pair<String, String>): SpannableStringBuilder {
+        val attributeValue = if (attribute.val1().isNullOrEmpty()) {
             "-"
         } else {
             attribute.val1()

@@ -75,19 +75,20 @@ class EventMapManager : MapManager() {
         val mainProperties = arrayListOf(
             MapTeisToFeatureCollection.TEI_UID,
             MapTeisToFeatureCollection.ENROLLMENT_UID,
-            MapRelationshipsToFeatureCollection.RELATIONSHIP_UID, EXTRA_EVENT_UID)
-        var featureToReturn:Feature? = null
-            for(propertyLabel in mainProperties){
-                val feature = findFeature(EVENTS, propertyLabel, propertyValue)
-                if(feature!=null){
-                    featureToReturn = feature
-                    mapLayerManager.getLayer(EVENTS,true)?.setSelectedItem(featureToReturn)
-                    break
-                }
-                if(featureToReturn!=null){
-                    break
-                }
+            MapRelationshipsToFeatureCollection.RELATIONSHIP_UID, EXTRA_EVENT_UID
+        )
+        var featureToReturn: Feature? = null
+        for (propertyLabel in mainProperties) {
+            val feature = findFeature(EVENTS, propertyLabel, propertyValue)
+            if (feature != null) {
+                featureToReturn = feature
+                mapLayerManager.getLayer(EVENTS, true)?.setSelectedItem(featureToReturn)
+                break
             }
+            if (featureToReturn != null) {
+                break
+            }
+        }
         return featureToReturn
     }
 }

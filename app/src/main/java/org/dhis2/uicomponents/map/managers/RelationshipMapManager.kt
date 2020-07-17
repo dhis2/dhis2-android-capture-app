@@ -109,17 +109,18 @@ class RelationshipMapManager : MapManager() {
         val mainProperties = arrayListOf(
             MapTeisToFeatureCollection.TEI_UID,
             MapTeisToFeatureCollection.ENROLLMENT_UID,
-            MapRelationshipsToFeatureCollection.RELATIONSHIP_UID, EXTRA_EVENT_UID)
-        var featureToReturn:Feature? = null
-        for (source in featureCollections.keys){
-            for(propertyLabel in mainProperties){
+            MapRelationshipsToFeatureCollection.RELATIONSHIP_UID, EXTRA_EVENT_UID
+        )
+        var featureToReturn: Feature? = null
+        for (source in featureCollections.keys) {
+            for (propertyLabel in mainProperties) {
                 val feature = findFeature(source, propertyLabel, propertyValue)
-                if(feature!=null){
+                if (feature != null) {
                     featureToReturn = feature
-                    mapLayerManager.getLayer(source,true)?.setSelectedItem(featureToReturn)
+                    mapLayerManager.getLayer(source, true)?.setSelectedItem(featureToReturn)
                     break
                 }
-                if(featureToReturn!=null){
+                if (featureToReturn != null) {
                     break
                 }
             }
