@@ -128,7 +128,8 @@ class OptionSetPresenterTest {
             true,
             "description",
             10,
-            ObjectStyle.builder().build()
+            ObjectStyle.builder().build(),
+            null
         )
     }
 
