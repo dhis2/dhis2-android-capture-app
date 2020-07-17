@@ -51,12 +51,17 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
 import static android.text.TextUtils.isEmpty;
+
+import static org.dhis2.usecases.eventsWithoutRegistration.eventCapture.EventCaptureRepositoryFunctionsKt.getProgramStageName;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
@@ -187,8 +192,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Flowable<String> programStageName() {
-        return Flowable.just(d2.eventModule().events().uid(eventUid).blockingGet())
-                .map(event -> d2.programModule().programStages().uid(event.programStage()).blockingGet().displayName());
+        return Flowable.just(getProgramStageName(d2, eventUid));
     }
 
     @Override
