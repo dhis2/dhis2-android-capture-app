@@ -60,6 +60,7 @@ import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.program.Program;
 
 import java.lang.reflect.Field;
@@ -136,6 +137,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         filtersAdapter = new FiltersAdapter();
         filtersAdapter.addEventStatus();
+
         try {
             binding.filterLayout.setAdapter(filtersAdapter);
 
@@ -301,6 +303,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos) {
         filtersAdapter.addCatOptCombFilter(categoryOptionCombos);
+    }
+
+    @Override
+    public void setTextTypeDataElementsFilter(List<DataElement> textTypeDataElementsFilter) {
+        filtersAdapter.addTextValueFilter(textTypeDataElementsFilter);
     }
 
     @Override

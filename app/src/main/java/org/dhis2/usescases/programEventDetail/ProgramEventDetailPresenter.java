@@ -102,6 +102,15 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         );
 
         compositeDisposable.add(
+                eventRepository.textTypeDataElements()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(view::setTextTypeDataElementsFilter,
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
                 FilterManager.getInstance().asFlowable()
                         .startWith(FilterManager.getInstance())
                         .map(filterManager -> eventRepository.filteredProgramEvents(
@@ -109,7 +118,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                 filterManager.getOrgUnitUidsFilters(),
                                 filterManager.getCatOptComboFilters(),
                                 filterManager.getEventStatusFilters(),
-                                filterManager.getStateFilters()
+                                filterManager.getStateFilters(),
+                                filterManager.getTexValueFilter()
                         ))
                         .subscribeOn(schedulerProvider.computation())
                         .observeOn(schedulerProvider.ui())

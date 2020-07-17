@@ -10,7 +10,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import org.dhis2.data.tuples.Pair;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -37,12 +37,14 @@ public class FilterManager {
     private List<DatePeriod> periodFilters;
     private List<CategoryOptionCombo> catOptComboFilters;
     private List<EventStatus> eventStatusFilters;
+    private Pair<String,String> textValueFilter;
 
     private ObservableField<Integer> ouFiltersApplied;
     private ObservableField<Integer> stateFiltersApplied;
     private ObservableField<Integer> periodFiltersApplied;
     private ObservableField<Integer> catOptCombFiltersApplied;
     private ObservableField<Integer> eventStatusFiltersApplied;
+    private ObservableField<Integer> textValueFiltersApplied;
 
     private FlowableProcessor<FilterManager> filterProcessor;
     private FlowableProcessor<Boolean> ouTreeProcessor;
@@ -70,12 +72,14 @@ public class FilterManager {
         periodFilters = null;
         catOptComboFilters = new ArrayList<>();
         eventStatusFilters = new ArrayList<>();
+        textValueFilter = Pair.create("","");
 
         ouFiltersApplied = new ObservableField<>(0);
         stateFiltersApplied = new ObservableField<>(0);
         periodFiltersApplied = new ObservableField<>(0);
         catOptCombFiltersApplied = new ObservableField<>(0);
         eventStatusFiltersApplied = new ObservableField<>(0);
+        textValueFiltersApplied = new ObservableField<>(0);
 
         filterProcessor = PublishProcessor.create();
         ouTreeProcessor = PublishProcessor.create();
@@ -160,6 +164,8 @@ public class FilterManager {
                 return catOptCombFiltersApplied;
             case EVENT_STATUS:
                 return eventStatusFiltersApplied;
+            case TEXT_VALUE:
+                return textValueFiltersApplied;
             default:
                 return new ObservableField<>(0);
         }
@@ -187,7 +193,9 @@ public class FilterManager {
         int periodIsApplying = periodFilters == null ? 0 : 1;
         int eventStatusApplying = eventStatusFilters.isEmpty() ? 0 : 1;
         int catComboApplying = catOptComboFilters.isEmpty() ? 0 : 1;
-        return ouIsApplying + stateIsApplying + periodIsApplying + eventStatusApplying + catComboApplying;
+        int textValueApplying = textValueFilter == null || textValueFilter.val0().isEmpty() ? 0 : 1;
+        return ouIsApplying + stateIsApplying + periodIsApplying +
+                eventStatusApplying + catComboApplying + textValueApplying;
     }
 
     public List<DatePeriod> getPeriodFilters() {
@@ -211,6 +219,18 @@ public class FilterManager {
     }
 
     public List<EventStatus> getEventStatusFilters(){ return eventStatusFilters; }
+
+    public Pair<String,String> getTexValueFilter(){ return textValueFilter; }
+
+    public void setTexValueFilter(Pair<String,String> filter){
+        if (filter.val0().isEmpty() || filter.val1().isEmpty()){
+            clearTextValues();
+        } else {
+            textValueFilter = filter;
+            textValueFiltersApplied.set(1);
+            filterProcessor.onNext(this);
+        }
+    }
 
     public void addPeriodRequest(PeriodRequest periodRequest) {
         periodRequestProcessor.onNext(periodRequest);
@@ -254,6 +274,12 @@ public class FilterManager {
         filterProcessor.onNext(this);
     }
 
+    public void clearTextValues() {
+        textValueFilter = Pair.create("","");
+        textValueFiltersApplied.set(0);
+        filterProcessor.onNext(this);
+    }
+
     public void clearAllFilters(){
         eventStatusFilters.clear();
         catOptComboFilters.clear();
@@ -261,12 +287,14 @@ public class FilterManager {
         ouFilters.clear();
         periodFilters = null;
         periodIdSelected = 0;
+        textValueFilter = Pair.create("","");
 
         eventStatusFiltersApplied.set(eventStatusFilters.size());
         catOptCombFiltersApplied.set(catOptComboFilters.size());
         stateFiltersApplied.set(stateFilters.size());
         ouFiltersApplied.set(ouFilters.size());
         periodFiltersApplied.set(0);
+        textValueFiltersApplied.set(0);
 
         filterProcessor.onNext(this);
     }

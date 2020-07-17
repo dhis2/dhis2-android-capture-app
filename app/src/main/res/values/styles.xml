@@ -278,4 +278,6 @@
              colorControlHighlight, and colorSwitchThumbNormal. -->
     </style>
 
+    <style name="spinner"/>
+
 </resources>
