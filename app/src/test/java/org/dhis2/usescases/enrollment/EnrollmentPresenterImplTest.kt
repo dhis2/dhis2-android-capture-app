@@ -350,6 +350,7 @@ class EnrollmentPresenterImplTest {
                     null,
                     null,
                     ObjectStyle.builder().build(),
+                    null,
                     null
                 )
             )
@@ -369,6 +370,7 @@ class EnrollmentPresenterImplTest {
                     null,
                     null,
                     ObjectStyle.builder().build(),
+                    null,
                     null
                 ).withError("error")
             )
@@ -395,6 +397,7 @@ class EnrollmentPresenterImplTest {
             null,
             null,
             ObjectStyle.builder().build(),
+            null,
             null
         )
 
