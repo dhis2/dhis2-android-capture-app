@@ -2,7 +2,6 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetDetail
 
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.data.schedulers.SchedulerProvider
@@ -36,10 +35,15 @@ class DataSetDetailPresenter(
                     { error -> Timber.d(error) }
                 )
         )
+
         disposable.add(
             updateProcessor.startWith(true)
                 .switchMap {
-                    Flowable.combineLatest<DataSetInstance, Period, Boolean, Trio<DataSetInstance, Period, Boolean>>(
+                    Flowable.combineLatest<
+                        DataSetInstance,
+                        Period,
+                        Boolean,
+                        Trio<DataSetInstance, Period, Boolean>>(
                         repository.dataSetInstance(),
                         repository.getPeriod().toFlowable(),
                         repository.isComplete().toFlowable(),
@@ -49,7 +53,13 @@ class DataSetDetailPresenter(
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.ui())
                 .subscribe(
-                    { data -> view.setDataSetDetails(data.val0()!!, data.val1()!!, data.val2() == true) },
+                    { data ->
+                        view.setDataSetDetails(
+                            data.val0()!!,
+                            data.val1()!!,
+                            data.val2() == true
+                        )
+                    },
                     { error -> Timber.d(error) }
                 )
         )
@@ -61,6 +71,16 @@ class DataSetDetailPresenter(
                 .subscribe(
                     { style -> view.setStyle(style) },
                     { error -> Timber.d(error) }
+                )
+        )
+
+        disposable.add(
+            view.observeReopenChanges()
+                .subscribeOn(schedulers.io())
+                .observeOn(schedulers.io())
+                .subscribe(
+                    { updateData() },
+                    { Timber.e(it) }
                 )
         )
     }

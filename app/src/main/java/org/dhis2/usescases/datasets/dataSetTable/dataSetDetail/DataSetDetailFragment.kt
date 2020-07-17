@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import io.reactivex.Flowable
 import java.util.Locale
 import javax.inject.Inject
 import org.dhis2.Bindings.Bindings
@@ -33,6 +34,7 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
     private var accessWrite: Boolean = false
     private lateinit var binding: FragmentDatasetDetailBinding
     private lateinit var mContext: Context
+    private lateinit var activity: DataSetTableActivity
 
     @Inject
     lateinit var presenter: DataSetDetailPresenter
@@ -52,6 +54,8 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
     override fun onAttach(context: Context) {
         super.onAttach(context)
         this.mContext = context
+        this.activity = context as DataSetTableActivity
+
         arguments?.let {
             dataSetUid = it.getString(DATASET_UID, "")
             accessWrite = it.getBoolean(DATASET_ACCESS)
@@ -134,7 +138,10 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
                 )
             }
             lastUpdatedDate.text =
-                String.format(getString(R.string.updated_time), dataSetInstance.lastUpdated().toDateSpan(mContext))
+                String.format(
+                    getString(R.string.updated_time),
+                    dataSetInstance.lastUpdated().toDateSpan(mContext)
+                )
             Bindings.setStateIcon(binding.syncStatus, dataSetInstance.state())
             binding.dataSetPeriod.text = DateUtils.getInstance()
                 .getPeriodUIString(
@@ -171,5 +178,9 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
             )
         )
         binding.dataSetIcon.setColorFilter(ColorUtils.getContrastColor(color))
+    }
+
+    override fun observeReopenChanges(): Flowable<Boolean> {
+        return activity.observeReopenChanges()
     }
 }

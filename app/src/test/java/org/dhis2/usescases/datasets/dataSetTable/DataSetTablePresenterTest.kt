@@ -73,6 +73,7 @@ class DataSetTablePresenterTest {
     @Test
     fun `Should show success if no validation rules exist`() {
         whenever(repository.hasValidationRules()) doReturn false
+        whenever(repository.isComplete()) doReturn Single.just(false)
         presenter.handleSaveClick()
         verify(view).showSuccessValidationDialog()
     }
@@ -90,6 +91,19 @@ class DataSetTablePresenterTest {
 
     @Test
     fun `Should show success dialog`() {
+        whenever(repository.isComplete()) doReturn Single.just(false)
+        presenter.handleValidationResult(
+            ValidationRuleResult(
+                ValidationResult.ValidationResultStatus.OK,
+                emptyList()
+            )
+        )
+        verify(view).showSuccessValidationDialog()
+    }
+
+    @Test
+    fun `Should save and finish`() {
+        whenever(repository.isComplete()) doReturn Single.just(true)
         presenter.handleValidationResult(
             ValidationRuleResult(
                 ValidationResult.ValidationResultStatus.OK,
@@ -156,7 +170,7 @@ class DataSetTablePresenterTest {
         whenever(repository.completeDataSetInstance()) doReturn Single.just(false)
         presenter.completeDataSet()
 
-        verify(view).showCompleteToast()
+        verify(view).savedAndCompleteMessage()
     }
 
     @Test
@@ -216,7 +230,7 @@ class DataSetTablePresenterTest {
         whenever(repository.completeDataSetInstance()) doReturn Single.just(true)
         presenter.completeDataSet()
 
-        verify(view).savedAndCompleteMessage()
+        verify(view).saveAndFinish()
     }
 
     @Test

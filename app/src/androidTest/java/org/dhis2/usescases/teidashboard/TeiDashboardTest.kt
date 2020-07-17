@@ -254,10 +254,8 @@ class TeiDashboardTest : BaseTest() {
         }
 
         eventRobot {
-            waitToDebounce(10000)
             clickOnChangeDate()
             clickOnEditDate()
-            waitToDebounce(10000)
             acceptUpdateEventDate()
             clickOnUpdate()
             waitToDebounce(600)

@@ -108,7 +108,11 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     @VisibleForTesting
     public void handleValidationResult(ValidationRuleResult result) {
         if (result.getValidationResultStatus() == ValidationResultStatus.OK) {
-            view.showSuccessValidationDialog();
+            if(!isComplete()) {
+                view.showSuccessValidationDialog();
+            }else{
+                view.saveAndFinish();
+            }
         } else {
             view.showErrorsValidationDialog(result.getViolations());
         }

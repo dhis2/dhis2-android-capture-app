@@ -5,9 +5,8 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.PopupMenu;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,6 +29,7 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.AppMenuHelper;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.customviews.AlertBottomDialog;
@@ -38,16 +38,15 @@ import org.dhis2.utils.validationrules.Violation;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.period.Period;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 import kotlin.Unit;
-import timber.log.Timber;
 
 import static org.dhis2.utils.Constants.NO_SECTION;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
@@ -74,6 +73,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     private DataSetTableComponent dataSetTableComponent;
 
     private BottomSheetBehavior<View> behavior;
+    private FlowableProcessor<Boolean> reopenProcessor;
 
     public static Bundle getBundle(@NonNull String dataSetUid,
                                    @NonNull String orgUnitUid,
@@ -104,6 +104,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         catOptCombo = getIntent().getStringExtra(Constants.CAT_COMB);
         dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
         accessDataWrite = getIntent().getBooleanExtra(Constants.ACCESS_DATA, true);
+        reopenProcessor = PublishProcessor.create();
 
         dataSetTableComponent = ((App) getApplicationContext()).userComponent()
                 .plus(new DataSetTableModule(this,
@@ -299,10 +300,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public void showErrorsValidationDialog(List<Violation> violations) {
         configureShapeDrawable();
         binding.BSLayout.dotsIndicator.setVisibility(violations.size() > 1 ? View.VISIBLE : View.INVISIBLE);
-        binding.BSLayout.bottomSheetLayout.setVisibility(View.VISIBLE);
-        binding.saveButton.animate()
-                .translationY(-ExtensionsKt.getDp(48))
-                .start();
+        initValidationErrorsDialog();
         binding.BSLayout.setErrorCount(violations.size());
         binding.BSLayout.title.setText(
                 getResources().getQuantityText(R.plurals.error_message, violations.size())
@@ -405,41 +403,38 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         }
     }
 
+    private void initValidationErrorsDialog(){
+        binding.BSLayout.bottomSheetLayout.setTranslationY(ExtensionsKt.getDp(48));
+        binding.BSLayout.bottomSheetLayout.setVisibility(View.VISIBLE);
+        binding.BSLayout.bottomSheetLayout.animate()
+                .setDuration(500)
+                .setInterpolator(new OvershootInterpolator())
+                .translationY(0)
+                .start();
+        binding.saveButton.animate()
+                .translationY(-ExtensionsKt.getDp(48))
+                .start();
+    }
+
     public void showMoreOptions(View view) {
-        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
-        try {
-            Field[] fields = popupMenu.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                if ("mPopup".equals(field.getName())) {
-                    field.setAccessible(true);
-                    Object menuPopupHelper = field.get(popupMenu);
-                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
-                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
-                    setForceIcons.invoke(menuPopupHelper, true);
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-
-        int menu = R.menu.dataset_menu;
-        popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
-
-        popupMenu.getMenu().findItem(R.id.reopen).setVisible(presenter.isComplete());
-
-        popupMenu.setOnMenuItemClickListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == R.id.showHelp) {
-                analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
-                showTutorial(true);
-            } else if (itemId == R.id.reopen) {
-                showReopenDialog();
-            }
-            return true;
-
-        });
-        popupMenu.show();
+        new AppMenuHelper.Builder()
+                .menu(this, R.menu.dataset_menu)
+                .anchor(view)
+                .onMenuInflated(popupMenu -> {
+                    popupMenu.getMenu().findItem(R.id.reopen).setVisible(presenter.isComplete());
+                    return Unit.INSTANCE;
+                })
+                .onMenuItemClicked(itemId -> {
+                    if (itemId == R.id.showHelp) {
+                        analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
+                        showTutorial(true);
+                    } else if (itemId == R.id.reopen) {
+                        showReopenDialog();
+                    }
+                    return true;
+                })
+                .build()
+                .show();
     }
 
     private void showReopenDialog() {
@@ -458,7 +453,9 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public void displayReopenedMessage(boolean done) {
         if (done) {
             Toast.makeText(this, R.string.action_done, Toast.LENGTH_SHORT).show();
+            reopenProcessor.onNext(true);
         }
+
     }
 
     @Override
@@ -478,5 +475,9 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public void saveAndFinish() {
         Toast.makeText(this, R.string.save, Toast.LENGTH_SHORT).show();
         finish();
+    }
+
+    public FlowableProcessor<Boolean> observeReopenChanges(){
+        return reopenProcessor;
     }
 }
