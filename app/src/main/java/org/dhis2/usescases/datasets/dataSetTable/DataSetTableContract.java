@@ -42,6 +42,12 @@ public class DataSetTableContract {
         void cancelBottomSheet();
 
         void completeBottomSheet();
+
+        void displayReopenedMessage(boolean done);
+
+        void showInternalValidationError();
+
+        void saveAndFinish();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -73,6 +79,10 @@ public class DataSetTableContract {
         boolean isValidationMandatoryToComplete();
 
         void reopenDataSet();
+
+        boolean shouldAllowCompleteAnyway();
+
+        boolean isComplete();
     }
 
 }

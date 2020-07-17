@@ -111,15 +111,16 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
 
     override fun setDataSetDetails(
         dataSetInstance: DataSetInstance,
-        period: Period
+        period: Period,
+        isComplete: Boolean
     ) {
         this.dataSetInstance = dataSetInstance
         binding.apply {
             dataSetName.text = dataSetInstance.dataSetDisplayName()
-            if (dataSetInstance.completed()) {
+            if (isComplete) {
                 completedDate.visibility = View.VISIBLE
                 completedDate.text = String.format(
-                    "Completed by %s: %s",
+                    getString(R.string.completed_by),
                     dataSetInstance.completedBy() ?: "?",
                     dataSetInstance.completionDate().toDateSpan(mContext)
                 )
@@ -133,7 +134,7 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
                 )
             }
             lastUpdatedDate.text =
-                String.format("Updated: %s", dataSetInstance.lastUpdated().toDateSpan(mContext))
+                String.format(getString(R.string.updated_time), dataSetInstance.lastUpdated().toDateSpan(mContext))
             Bindings.setStateIcon(binding.syncStatus, dataSetInstance.state())
             binding.dataSetPeriod.text = DateUtils.getInstance()
                 .getPeriodUIString(

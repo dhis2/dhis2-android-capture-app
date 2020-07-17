@@ -87,7 +87,10 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 this::handleValidationResult,
-                                Timber::e
+                                t -> {
+                                    Timber.e(t);
+                                    view.showInternalValidationError();
+                                }
                         )
         );
 
@@ -103,7 +106,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     }
 
     @VisibleForTesting
-    public void handleValidationResult(ValidationRuleResult result){
+    public void handleValidationResult(ValidationRuleResult result) {
         if (result.getValidationResultStatus() == ValidationResultStatus.OK) {
             view.showSuccessValidationDialog();
         } else {
@@ -119,13 +122,15 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
             } else {
                 view.showValidationRuleDialog();
             }
-        } else {
+        } else if(!isComplete()){
             view.showSuccessValidationDialog();
+        }else{
+            view.saveAndFinish();
         }
     }
 
     @VisibleForTesting
-    public Flowable<Boolean> runValidationProcessor(){
+    public Flowable<Boolean> runValidationProcessor() {
         return validationProcessor;
     }
 
@@ -200,9 +205,9 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                             } else if (!fieldCombinationOk) {
                                 view.showMandatoryMessage(false);
                             } else if (!alreadyCompleted) {
-                                view.showCompleteToast();
-                            }else{
                                 view.savedAndCompleteMessage();
+                            } else {
+                                view.saveAndFinish();
                             }
                         }, Timber::e)
         );
@@ -215,10 +220,14 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                done -> {
-                                },
+                                done -> view.displayReopenedMessage(done),
                                 Timber::e)
         );
+    }
+
+    @Override
+    public boolean shouldAllowCompleteAnyway() {
+        return !tableRepository.isComplete().blockingGet() && !isValidationMandatoryToComplete();
     }
 
     @Override
@@ -239,5 +248,10 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     @Override
     public boolean isValidationMandatoryToComplete() {
         return tableRepository.areValidationRulesMandatory();
+    }
+
+    @Override
+    public boolean isComplete(){
+        return tableRepository.isComplete().blockingGet();
     }
 }

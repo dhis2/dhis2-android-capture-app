@@ -6,6 +6,6 @@
         android:title="@string/showHelp" />
     <item
         android:id="@+id/reopen"
-        android:icon="@drawable/ic_sort_deactivated"
+        android:icon="@drawable/ic_lock_open_menu"
         android:title="@string/re_open"/>
 </menu>

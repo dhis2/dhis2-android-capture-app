@@ -30,6 +30,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/rubik_regular"
             android:text='@{dataset.nameOrgUnit}'
+            android:visibility="@{dataset.displayOrgUnitName() ? View.VISIBLE : View.INVISIBLE}"
             android:textColor="@color/black_de0"
             android:textSize="12sp"
             android:textStyle="bold"

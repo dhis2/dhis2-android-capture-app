@@ -87,11 +87,12 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                             dataSetReport.organisationUnitUid(),
                             dataSetReport.attributeOptionComboUid(),
                             dataSetReport.period(),
-                            dataSetOrgUnitNumber > 1 ? dataSetReport.organisationUnitDisplayName() : "",
+                            dataSetReport.organisationUnitDisplayName(),
                             dataSetReport.attributeOptionComboDisplayName(),
                             periodName,
                             state,
-                            dataSetReport.periodType().name());
+                            dataSetReport.periodType().name(),
+                            dataSetOrgUnitNumber > 1);
                 })
                 .filter(dataSetDetailModel -> stateFilters.isEmpty() || stateFilters.contains(dataSetDetailModel.state()))
                 .toSortedList((dataSet1, dataSet2) -> {

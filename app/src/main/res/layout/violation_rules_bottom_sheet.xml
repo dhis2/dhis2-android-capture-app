@@ -103,19 +103,19 @@
                 android:id="@+id/dotsIndicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="48dp"
                 app:dotsColor="@color/dots_error_selected"
                 app:dotsSize="12dp"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintStart_toStartOf="@id/startGuideline"
-                app:layout_constraintTop_toBottomOf="@id/title" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/violationsViewPager"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="20dp"
                 app:layout_constraintBottom_toTopOf="@id/barrier"
                 app:layout_constraintEnd_toStartOf="@id/endGuideline"
                 app:layout_constraintStart_toEndOf="@id/startGuideline"
@@ -137,7 +137,7 @@
                 android:textColor="?colorPrimary"
                 android:textSize="14sp"
                 android:text="@string/complete_anyway"
-                android:visibility="@{ presenter.isValidationMandatoryToComplete() ? View.GONE : View.VISIBLE }"
+                android:visibility="@{ presenter.shouldAllowCompleteAnyway() ? View.VISIBLE : View.GONE }"
                 android:onClick="@{ () -> presenter.onCompleteBottomSheet() }"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/endGuideline" />

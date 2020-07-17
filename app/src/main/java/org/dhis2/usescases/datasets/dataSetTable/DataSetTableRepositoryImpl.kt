@@ -5,7 +5,6 @@ import io.reactivex.Single
 import io.reactivex.functions.Function4
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import javax.inject.Singleton
 import org.dhis2.data.tuples.Pair
 import org.dhis2.utils.validationrules.DataToReview
 import org.dhis2.utils.validationrules.ValidationRuleResult
@@ -22,6 +21,8 @@ import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.Period
 import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation
+import java.util.Date
+import javax.inject.Singleton
 
 @Singleton
 class DataSetTableRepositoryImpl(
@@ -75,9 +76,9 @@ class DataSetTableRepositoryImpl(
             d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).get(),
             d2.periodModule().periodHelper().getPeriodForPeriodId(periodId),
             Function4 { dataSet: DataSet,
-                catOptComb: CategoryOptionCombo,
-                orgUnit: OrganisationUnit,
-                period: Period ->
+                        catOptComb: CategoryOptionCombo,
+                        orgUnit: OrganisationUnit,
+                        period: Period ->
                 DataSetInstance.builder()
                     .dataSetUid(dataSetUid)
                     .dataSetDisplayName(dataSet.displayName())
@@ -89,6 +90,7 @@ class DataSetTableRepositoryImpl(
                     .period(period.periodId())
                     .valueCount(0)
                     .completed(false)
+                    .lastUpdated(Date())
                     .state(State.SYNCED)
                     .build()
             }
@@ -170,8 +172,15 @@ class DataSetTableRepositoryImpl(
     fun completeDataSetInstance(): Single<Boolean> {
         return d2.dataSetModule().dataSetCompleteRegistrations()
             .value(periodId, orgUnitUid, dataSetUid, catOptCombo).exists()
-            .map { alreadyCompleted: Boolean? ->
-                if (!alreadyCompleted!!) {
+            .map { hasCompleteRegistration: Boolean? ->
+                val hasValidCompleteRegistration = if (hasCompleteRegistration == true) {
+                    d2.dataSetModule().dataSetCompleteRegistrations()
+                        .value(periodId, orgUnitUid, dataSetUid, catOptCombo).blockingGet()
+                        .deleted() != true
+                } else {
+                    false
+                }
+                if (!hasValidCompleteRegistration) {
                     d2.dataSetModule().dataSetCompleteRegistrations()
                         .value(periodId, orgUnitUid, dataSetUid, catOptCombo)
                         .blockingSet()
@@ -197,8 +206,19 @@ class DataSetTableRepositoryImpl(
                 catOptCombo
             ).exists()
             .map { exist ->
+                val hasBeenReopened = if (exist) {
+                    d2.dataSetModule().dataSetCompleteRegistrations()
+                        .value(
+                            periodId,
+                            orgUnitUid,
+                            dataSetUid,
+                            catOptCombo
+                        ).blockingGet().deleted() == true
+                } else {
+                    true
+                }
                 dataSetInstanceProcessor.onNext(Unit())
-                !exist
+                hasBeenReopened
             }
             .toFlowable()
     }
@@ -247,8 +267,8 @@ class DataSetTableRepositoryImpl(
                                 .byCategoryOptionComboUid()
                                 .`in`(UidsHelper.getUidsList(categoryOptionCombos))
                             dataValueRepository.blockingGet().isNotEmpty() &&
-                                dataValueRepository
-                                .blockingGet().size != categoryOptionCombos.size
+                                    dataValueRepository
+                                        .blockingGet().size != categoryOptionCombos.size
                         }?.map { dataSetElement -> dataSetElement.dataElement().uid() }
                         ?: emptyList()
                 } else {
@@ -318,8 +338,8 @@ class DataSetTableRepositoryImpl(
                 }
             catOptCombos.forEach { catOptCombo ->
                 val value = if (d2.dataValueModule().dataValues()
-                    .value(periodId, orgUnitUid, de.uid(), catOptCombo.uid(), this.catOptCombo)
-                    .blockingExists() &&
+                        .value(periodId, orgUnitUid, de.uid(), catOptCombo.uid(), this.catOptCombo)
+                        .blockingExists() &&
                     d2.dataValueModule().dataValues()
                         .value(periodId, orgUnitUid, de.uid(), catOptCombo.uid(), this.catOptCombo)
                         .blockingGet().deleted() != true

@@ -9,7 +9,8 @@ interface DataSetDetailView {
     fun setCatOptComboName(catComboName: String)
     fun setDataSetDetails(
         dataSetInstance: DataSetInstance,
-        period: Period
+        period: Period,
+        isComplete: Boolean
     )
     fun hideCatOptCombo()
     fun setStyle(style: ObjectStyle?)

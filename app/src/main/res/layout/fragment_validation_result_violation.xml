@@ -9,7 +9,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="212dp"
             android:layout_margin="8dp"
             android:background="@drawable/ic_violation_background"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -47,7 +47,8 @@
                     <TextView
                         android:id="@+id/description"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="24dp"
+                        android:gravity="bottom"
                         android:layout_marginTop="8dp"
                         android:textSize="14sp"
                         android:textStyle="bold"

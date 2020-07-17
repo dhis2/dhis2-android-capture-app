@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -73,7 +74,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     private DataSetTableComponent dataSetTableComponent;
 
     private BottomSheetBehavior<View> behavior;
-    private boolean isComplete;
 
     public static Bundle getBundle(@NonNull String dataSetUid,
                                    @NonNull String orgUnitUid,
@@ -122,7 +122,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         binding.setPresenter(presenter);
         binding.BSLayout.bottomSheetLayout.setVisibility(View.GONE);
         setViewPager();
-        observeSaveButtonClicks();
         presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
     }
 
@@ -192,7 +191,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void renderDetails(DataSet dataSet, String catComboName, Period period, boolean isComplete) {
-        this.isComplete = isComplete;
         binding.dataSetName.setText(dataSet.displayName());
         StringBuilder subtitle = new StringBuilder(
                 DateUtils.getInstance().getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault())
@@ -236,7 +234,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public Observable<Object> observeSaveButtonClicks() {
-        return RxView.clicks(binding.saveButton);
+        return RxView.clicks(binding.saveButton).doOnNext(o -> binding.saveButton.requestFocus());
     }
 
     @Override
@@ -264,7 +262,11 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                     return Unit.INSTANCE;
                 })
                 .setNegativeButton(getString(R.string.no), () -> {
-                    showSuccessValidationDialog();
+                    if (presenter.isComplete()) {
+                        finish();
+                    } else {
+                        showSuccessValidationDialog();
+                    }
                     return Unit.INSTANCE;
                 })
                 .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
@@ -288,7 +290,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void savedAndCompleteMessage() {
-        Snackbar.make(binding.getRoot(), R.string.dataset_saved_completed, BaseTransientBottomBar.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.dataset_saved_completed, Toast.LENGTH_SHORT).show();
         finish();
     }
 
@@ -296,7 +298,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Override
     public void showErrorsValidationDialog(List<Violation> violations) {
         configureShapeDrawable();
-
+        binding.BSLayout.dotsIndicator.setVisibility(violations.size() > 1 ? View.VISIBLE : View.INVISIBLE);
         binding.BSLayout.bottomSheetLayout.setVisibility(View.VISIBLE);
         binding.saveButton.animate()
                 .translationY(-ExtensionsKt.getDp(48))
@@ -424,7 +426,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         int menu = R.menu.dataset_menu;
         popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
 
-        popupMenu.getMenu().findItem(R.id.reopen).setVisible(isComplete);
+        popupMenu.getMenu().findItem(R.id.reopen).setVisible(presenter.isComplete());
 
         popupMenu.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
@@ -432,11 +434,49 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                 analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
                 showTutorial(true);
             } else if (itemId == R.id.reopen) {
-                presenter.reopenDataSet();
+                showReopenDialog();
             }
             return true;
 
         });
         popupMenu.show();
+    }
+
+    private void showReopenDialog() {
+        AlertBottomDialog.Companion.getInstance()
+                .setTitle("Are you sure?")
+                .setMessage("Do you want to re-open the data set?")
+                .setPositiveButton(getString(R.string.yes), () -> {
+                    presenter.reopenDataSet();
+                    return Unit.INSTANCE;
+                })
+                .setNegativeButton(getString(R.string.no), () -> Unit.INSTANCE)
+                .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
+    }
+
+    @Override
+    public void displayReopenedMessage(boolean done) {
+        if (done) {
+            Toast.makeText(this, R.string.action_done, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void showInternalValidationError() {
+        AlertBottomDialog.Companion.getInstance()
+                .setTitle(getString(R.string.saved))
+                .setMessage("Quality evaluation could not finish because an internal error was found")
+                .setPositiveButton(getString(R.string.yes), () -> {
+                    presenter.reopenDataSet();
+                    return Unit.INSTANCE;
+                })
+                .setNegativeButton(getString(R.string.no), () -> Unit.INSTANCE)
+                .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
+    }
+
+    @Override
+    public void saveAndFinish() {
+        Toast.makeText(this, R.string.save, Toast.LENGTH_SHORT).show();
+        finish();
     }
 }
