@@ -3,6 +3,7 @@ package org.dhis2.utils.customviews;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -17,6 +18,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
@@ -373,5 +375,9 @@ public class CustomTextView extends FieldLayout {
     public void setOnLongActionListener(View.OnLongClickListener listener) {
         if (!editText.isFocusable())
             editText.setOnLongClickListener(listener);
+    }
+
+    public void setBackgroundColor(@ColorInt int color) {
+        inputLayout.setBackgroundColor(color);
     }
 }
