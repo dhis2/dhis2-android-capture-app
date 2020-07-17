@@ -796,7 +796,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         searchTei.setDefaultTypeIcon(os != null ? os.icon() : null);
 
         searchTei.setSortingValue(sortingValueSetter.setSortingItem(searchTei, sortingItem));
-
+        searchTei.setTEType(d2.trackedEntityModule().trackedEntityTypes().uid(teiType).blockingGet().displayName());
         return searchTei;
     }
 
