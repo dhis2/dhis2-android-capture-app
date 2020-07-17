@@ -10,13 +10,13 @@ import org.dhis2.R
 import org.dhis2.uicomponents.map.TeiMarkers
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.Companion.RELATIONSHIP_UID
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.ENROLLMENT_UID
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.TEI_UID
 import org.dhis2.uicomponents.map.layer.LayerType
 import org.dhis2.uicomponents.map.layer.MapLayerManager
 import org.dhis2.uicomponents.map.model.MapStyle
-import org.dhis2.usescases.events.EXTRA_EVENT_UID
 import org.hisp.dhis.android.core.common.FeatureType
 import java.util.HashMap
 
@@ -181,7 +181,12 @@ class TeiMapManager(
     }
 
     override fun findFeature(propertyValue: String): Feature? {
-        val mainProperties = arrayListOf(TEI_UID, ENROLLMENT_UID, RELATIONSHIP_UID, EXTRA_EVENT_UID)
+        val mainProperties = arrayListOf(
+            TEI_UID,
+            ENROLLMENT_UID,
+            RELATIONSHIP_UID,
+            MapEventToFeatureCollection.EVENT
+        )
         var featureToReturn: Feature? = null
         for (source in teiFeatureCollections.keys) {
             for (propertyLabel in mainProperties) {

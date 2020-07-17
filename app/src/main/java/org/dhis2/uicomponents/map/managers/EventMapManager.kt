@@ -6,10 +6,10 @@ import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.R
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.layer.LayerType
-import org.dhis2.usescases.events.EXTRA_EVENT_UID
 import org.hisp.dhis.android.core.common.FeatureType
 
 class EventMapManager : MapManager() {
@@ -75,19 +75,21 @@ class EventMapManager : MapManager() {
         val mainProperties = arrayListOf(
             MapTeisToFeatureCollection.TEI_UID,
             MapTeisToFeatureCollection.ENROLLMENT_UID,
-            MapRelationshipsToFeatureCollection.RELATIONSHIP_UID, EXTRA_EVENT_UID)
-        var featureToReturn:Feature? = null
-            for(propertyLabel in mainProperties){
-                val feature = findFeature(EVENTS, propertyLabel, propertyValue)
-                if(feature!=null){
-                    featureToReturn = feature
-                    mapLayerManager.getLayer(EVENTS,true)?.setSelectedItem(featureToReturn)
-                    break
-                }
-                if(featureToReturn!=null){
-                    break
-                }
+            MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
+            MapEventToFeatureCollection.EVENT
+        )
+        var featureToReturn: Feature? = null
+        for (propertyLabel in mainProperties) {
+            val feature = findFeature(EVENTS, propertyLabel, propertyValue)
+            if (feature != null) {
+                featureToReturn = feature
+                mapLayerManager.getLayer(EVENTS, true)?.setSelectedItem(featureToReturn)
+                break
             }
+            if (featureToReturn != null) {
+                break
+            }
+        }
         return featureToReturn
     }
 }

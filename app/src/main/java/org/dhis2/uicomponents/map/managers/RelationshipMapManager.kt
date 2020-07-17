@@ -7,6 +7,7 @@ import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.BitmapUtils
 import org.dhis2.R
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.layer.LayerType
@@ -109,7 +110,9 @@ class RelationshipMapManager : MapManager() {
         val mainProperties = arrayListOf(
             MapTeisToFeatureCollection.TEI_UID,
             MapTeisToFeatureCollection.ENROLLMENT_UID,
-            MapRelationshipsToFeatureCollection.RELATIONSHIP_UID, EXTRA_EVENT_UID)
+            MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
+            MapEventToFeatureCollection.EVENT
+        )
         var featureToReturn:Feature? = null
         for (source in featureCollections.keys){
             for(propertyLabel in mainProperties){

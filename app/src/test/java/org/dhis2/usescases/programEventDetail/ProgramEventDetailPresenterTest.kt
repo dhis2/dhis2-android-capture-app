@@ -90,7 +90,6 @@ class ProgramEventDetailPresenterTest {
         verify(view).setProgram(program)
         verify(view).setCatOptionComboFilter(catOptionComboPair)
         verify(view).setLiveData(events)
-        // verify(view).setMap()
     }
 
     @Test
