@@ -3,6 +3,7 @@ package org.dhis2.uicomponents.map.carousel
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
+import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.R
@@ -30,6 +31,16 @@ class CarouselProgramEventHolder(
         binding.dataValue.text = when {
             attributesString.isNotEmpty() -> attributesString
             else -> itemView.context.getString(R.string.no_data)
+        }
+
+        if (data.geometry() == null) {
+            binding.noCoordinatesLabel.root.visibility = View.VISIBLE
+            binding.noCoordinatesLabel.noCoordinatesMessage.text =
+                itemView.context.getString(R.string.no_coordinates_item).format(
+                    itemView.context.getString(R.string.event_event)
+                )
+        } else {
+            binding.noCoordinatesLabel.root.visibility = View.INVISIBLE
         }
     }
 

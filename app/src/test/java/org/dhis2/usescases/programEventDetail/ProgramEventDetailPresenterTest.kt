@@ -59,7 +59,8 @@ class ProgramEventDetailPresenterTest {
             mutableListOf(),
             EventStatus.ACTIVE,
             true,
-            "attr"
+            "attr",
+            null
         )
         val events =
             MutableLiveData<PagedList<ProgramEventViewModel>>().also {
