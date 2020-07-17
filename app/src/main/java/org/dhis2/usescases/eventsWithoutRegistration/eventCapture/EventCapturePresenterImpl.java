@@ -60,6 +60,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private final EventCaptureContract.EventCaptureRepository eventCaptureRepository;
     private final RulesUtilsProvider rulesUtils;
     private final String eventUid;
+    private final String programUid;
     private final PublishProcessor<Unit> progressProcessor;
     private final PublishProcessor<Unit> sectionAdjustProcessor;
     private final PublishProcessor<Unit> formAdjustProcessor;
@@ -94,12 +95,13 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private final int MAX_LOOP_CALCULATIONS = 5;
 
 
-    public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
+    public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,String programUid,
                                      EventCaptureContract.EventCaptureRepository eventCaptureRepository,
                                      RulesUtilsProvider rulesUtils,
                                      ValueStore valueStore, SchedulerProvider schedulerProvider) {
         this.view = view;
         this.eventUid = eventUid;
+        this.programUid = programUid;
         this.eventCaptureRepository = eventCaptureRepository;
         this.rulesUtils = rulesUtils;
         this.valueStore = valueStore;
@@ -160,6 +162,22 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::setProgramStage,
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                eventCaptureRepository.getIndicators(programUid)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                data -> {
+                                    if (data.size()> 0){
+                                        view.showIndicatorsIcon();
+                                    } else {
+                                        view.hideIndicatorsIcon();
+                                    }
+                                },
                                 Timber::e
                         )
         );
