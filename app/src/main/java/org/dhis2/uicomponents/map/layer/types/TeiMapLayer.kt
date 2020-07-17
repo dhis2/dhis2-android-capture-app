@@ -169,8 +169,6 @@ class TeiMapLayer(
     }
 
     private fun selectPoint(feature: Feature) {
-        deselectCurrentPoint()
-
         style.getSourceAs<GeoJsonSource>(SELECTED_POINT_SOURCE_ID)?.apply {
             setGeoJson(
                 FeatureCollection.fromFeatures(
