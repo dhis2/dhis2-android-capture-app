@@ -465,7 +465,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public void showInternalValidationError() {
         AlertBottomDialog.Companion.getInstance()
                 .setTitle(getString(R.string.saved))
-                .setMessage("Quality evaluation could not finish because an internal error was found")
+                .setMessage(getString(R.string.validation_internal_error))
                 .setPositiveButton(getString(R.string.yes), () -> {
                     presenter.reopenDataSet();
                     return Unit.INSTANCE;
