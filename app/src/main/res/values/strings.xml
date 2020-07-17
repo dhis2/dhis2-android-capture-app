@@ -728,4 +728,6 @@
     <string name="updated_time">Updated: %s</string>
     <string name="action_done">Done!</string>
     <string name="validation_internal_error">Quality evaluation could not finish because an internal error was found</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="reopen_question">Do you want to re-open the data set?</string>
 </resources>

@@ -110,7 +110,7 @@ class DataSetTablePresenterTest {
                 emptyList()
             )
         )
-        verify(view).showSuccessValidationDialog()
+        verify(view).saveAndFinish()
     }
 
     @Test

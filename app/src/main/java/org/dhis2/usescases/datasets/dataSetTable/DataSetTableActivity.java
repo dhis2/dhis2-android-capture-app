@@ -439,8 +439,8 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     private void showReopenDialog() {
         AlertBottomDialog.Companion.getInstance()
-                .setTitle("Are you sure?")
-                .setMessage("Do you want to re-open the data set?")
+                .setTitle(getString(R.string.are_you_sure))
+                .setMessage(getString(R.string.reopen_question))
                 .setPositiveButton(getString(R.string.yes), () -> {
                     presenter.reopenDataSet();
                     return Unit.INSTANCE;
