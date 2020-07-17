@@ -14,8 +14,10 @@ import org.dhis2.databinding.ItemFilterOrgUnitBinding;
 import org.dhis2.databinding.ItemFilterPeriodBinding;
 import org.dhis2.databinding.ItemFilterStateBinding;
 import org.dhis2.databinding.ItemFilterStatusBinding;
+import org.dhis2.databinding.ItemFilterValueBinding;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +31,7 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
     private List<Filters> filtersList;
     private ObservableField<Filters> openedFilter;
     private Pair<CategoryCombo, List<CategoryOptionCombo>> catCombData;
+    private List<DataElement> textTypeDataElements;
 
     public FiltersAdapter(ProgramType programType) {
         this.filtersList = new ArrayList<>();
@@ -56,6 +59,8 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
                 return new StatusEventFilterHolder(ItemFilterStatusBinding.inflate(inflater, parent, false), openedFilter, programType);
             case ASSIGNED_TO_ME:
                 return new AssignToMeFilterHolder(ItemFilterAssignedBinding.inflate(inflater, parent, false), openedFilter);
+            case TEXT_VALUE:
+                return new TextValueFilterHolder(ItemFilterValueBinding.inflate(inflater, parent, false), openedFilter, textTypeDataElements);
             default:
                 throw new IllegalArgumentException("Unsupported filter value");
         }
@@ -106,4 +111,11 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
         notifyDataSetChanged();
     }
 
+    public void addTextValueFilter(List<DataElement> textTypeDataElements) {
+        if(!filtersList.contains(Filters.TEXT_VALUE)) {
+            filtersList.add(Filters.TEXT_VALUE);
+            this.textTypeDataElements = textTypeDataElements;
+            notifyDataSetChanged();
+        }
+    }
 }
