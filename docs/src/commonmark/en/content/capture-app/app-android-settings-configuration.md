@@ -143,7 +143,7 @@ After you install and launch the Android Settings App when you launch it for the
 
 ### Datastore
 
-All settings are stored in [Datastore](https://docs.dhis2.org/master/en/developer/html/webapi_data_store.html) in JSON format.
+Internally all settings are stored in [Datastore](https://docs.dhis2.org/master/en/developer/html/webapi_data_store.html) in JSON format.
 
 Datastore structure:
 
@@ -163,14 +163,14 @@ Only when you click on this button all changes made on the current section are s
  
 **Unsaved changes:** 
  
-In case you want to go to another section, and you still have unsaved changes, an alert will be displayed before navigating away from the current section. In case you accept leaving the page your unsaved changes will be lost.
+In case an admin user wants to go to another section, and the user still has unsaved changes, an alert will be displayed before navigating away from the current section. In case the user accepts leaving the page, the unsaved changes will be lost.
 
 ![](resources/images/unsaved-changes.png)
  
 #### Reset all values to default
 
-You can restore your settings at any time. At the form footer of all settings sections, you can find a *Reset all values to default* button.
+A user can restore the settings at any time. There is a *Reset all values to default* button at the form footer of all settings sections. 
 
 ![](resources/images/reset-default.png)
 
-Your will be only restored on Datastore and apply after clicking on *Save*. 
+The default values will be only restored on Datastore and applied after clicking on *Save*. 
