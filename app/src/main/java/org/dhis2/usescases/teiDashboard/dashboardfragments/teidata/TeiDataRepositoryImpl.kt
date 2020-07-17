@@ -3,6 +3,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 import io.reactivex.Single
 import org.dhis2.Bindings.applyFilters
 import org.dhis2.Bindings.primaryDate
+import org.dhis2.usecases.eventsWithoutRegistration.eventCapture.getProgramStageName
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
 import org.dhis2.utils.DateUtils
@@ -18,6 +19,7 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
 class TeiDataRepositoryImpl(
@@ -150,14 +152,20 @@ class TeiDataRepositoryImpl(
                         event2.primaryDate().compareTo(event1.primaryDate())
                     }
                 )
+
                 checkEventStatus(eventList).forEach { event ->
-                    val stageUid = d2.programModule().programStages()
+
+                    val programStage = d2.programModule().programStages()
                         .uid(event.programStage())
                         .blockingGet()
+
+                    val programStageDisplayName = getProgramStageName(d2, event.uid())
+                    val editedProgramStage = programStage.toBuilder().displayName(programStageDisplayName).build();
+
                     eventViewModels.add(
                         EventViewModel(
                             EventViewModelType.EVENT,
-                            stageUid,
+                            editedProgramStage,
                             event,
                             0,
                             null,

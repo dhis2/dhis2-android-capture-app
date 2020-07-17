@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
@@ -191,5 +192,9 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
 
     public interface OnSelectedOption {
         void onSelectedOption(String optionName, String optionCode);
+    }
+
+    public void setBackgroundColor(@ColorInt int color) {
+        inputLayout.setBackgroundColor(color);
     }
 }
