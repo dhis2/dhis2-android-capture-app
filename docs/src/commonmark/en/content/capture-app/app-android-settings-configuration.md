@@ -4,7 +4,7 @@
 
 This section focuses on the Android Settings app implementation.
 
-The Android Settings web app allows admins to configure synchronization parameters for the DHIS2 Android Capture App, encrypt the local database of the android devices, and run tests on the size of data and metadata synchronized by a given android user.
+The Android Settings web app allows admins to configure synchronization parameters for the DHIS2 Android Capture App, encrypt the local database of the android devices, and run tests on the size of data and metadata synchronized by a given android user. The configuration parameters defined within this app will overwrite the settings of all android devices using the DHIS2 Android Capture App.
 
 Please note that in this version of the app, only users with 'ALL' authority are able to define those parameters in the configuration. Other users having access to the app can see the value of the parameters, but cannot edit them. 
 
@@ -126,14 +126,14 @@ You can easily install the Android Settings App by logging into the DHIS2 and go
 
 ## Log in and first time setup
 
-After you install and launch the Android Settings App when you launch it for the first time, you will be required to create a namespace and key names on the DataStore, and save all settings default values in those key names; to do that you need to click on *Set defaults and save* button.
+After you install and launch the Android Settings App when you launch it for the first time, you will be required to set and save the default values of the configuration. This will apply default settings to all android devices connected to the instance. 
 
 ![](resources/images/first-time-setup.png)
 
 
 > **Warning** 
 >
-> In case your user doesn't have ALL authorities or permissions you won't be able to *create* a namespace, but you will have Read Only access once it's created.
+> In case the user doesn't have ALL authorities or permissions you won't be able to *save or update* the configuration, but the user will have view access once it's created.
 
 
 ![](resources/images/first-setup-no-authorities.png)
