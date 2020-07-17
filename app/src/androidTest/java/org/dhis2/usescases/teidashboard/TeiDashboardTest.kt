@@ -3,6 +3,7 @@ package org.dhis2.usescases.teidashboard
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.R
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.searchTeiRobot
@@ -27,6 +28,7 @@ class TeiDashboardTest : BaseTest() {
 
     @get:Rule
     val rule = ActivityTestRule(TeiDashboardMobileActivity::class.java, false, false)
+
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
@@ -80,7 +82,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun shouldReactivateTEIWhenClickReOpen() {
+    fun shouldReactivateTEIWhenClickReOpenWithProgramCompletedEvents() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
@@ -88,6 +90,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuReOpen()
             checkUnlockIconIsDisplay()
             checkCanAddEvent()
+            checkAllEventsCompleted(1)
         }
     }
 
@@ -100,10 +103,11 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuDeactivate()
             checkLockIconIsDisplay()
             checkCanNotAddEvent()
+            checkAllEventsAreInactive(1)
         }
     }
 
-    @Test
+   @Test
     fun shouldCompleteTEIWhenClickOpen() {
         prepareTeiOpenedForCompleteProgrammeAndLaunchActivity(rule)
 
@@ -112,10 +116,11 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuComplete()
             checkLockCompleteIconIsDisplay()
             checkCanNotAddEvent()
+            checkAllEventsAreClosed(1)
         }
     }
 
-    @Test
+   @Test
     fun shouldShowQRWhenClickOnShare() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
@@ -273,7 +278,7 @@ class TeiDashboardTest : BaseTest() {
     @Test
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
         val womanProgram = "MNCH / PNC (Adult Woman)"
-        val personAttribute = "Attributes - Person"
+        val personAttribute = context.getString(R.string.enrollment_single_section_label).replace("%s","")
         val visitPNCEvent = "PNC Visit"
         val deliveryEvent = "Delivery"
         val visitANCEvent = "ANC Visit (2-4+)"

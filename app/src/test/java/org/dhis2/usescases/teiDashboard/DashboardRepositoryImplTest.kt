@@ -27,9 +27,10 @@ class DashboardRepositoryImplTest {
     private lateinit var repository: DashboardRepositoryImpl
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val resources: ResourceManager = mock()
+
     @Before
     fun setUp() {
-        repository = DashboardRepositoryImpl(d2, "teiUid", "programUid", resources)
+        repository = DashboardRepositoryImpl(d2, "teiUid", "programUid", "enrollmentUid", resources)
     }
 
     @Test
@@ -53,74 +54,6 @@ class DashboardRepositoryImplTest {
         testObserver.assertValue(getMockStage())
 
         testObserver.dispose()
-    }
-
-    @Test
-    fun `event list should be order from newest to oldest`() {
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byProgram().eq("programUid")
-        ) doReturn mock()
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byProgram().eq("programUid")
-                .byTrackedEntityInstance()
-        ) doReturn mock()
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byProgram().eq("programUid")
-                .byTrackedEntityInstance().eq("teiUid")
-        ) doReturn mock()
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byProgram().eq("programUid")
-                .byTrackedEntityInstance().eq("teiUid")
-                .one()
-        ) doReturn mock()
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byProgram().eq("programUid")
-                .byTrackedEntityInstance().eq("teiUid")
-                .one().get()
-        ) doReturn Single.just(getMockingEnrollment())
-        whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq("enrollmentUid")
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq("enrollmentUid")
-                .byDeleted()
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq("enrollmentUid")
-                .byDeleted().isFalse
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq("enrollmentUid")
-                .byDeleted().isFalse.get()
-        ) doReturn Single.just(getMockingEventList())
-
-        whenever(
-            d2.programModule().programs()
-                .uid("programUid").blockingGet()
-        ) doReturn getMockingProgram()
-
-        val testObserver = repository.getTEIEnrollmentEvents(
-            "programUid",
-            "teiUid"
-        ).test()
-
-        testObserver.assertNoErrors()
-        testObserver.assertValueCount(1)
-        testObserver.assertValue { events ->
-            events[0].uid() == "event_uid_4" &&
-                events[1].uid() == "event_uid_2" &&
-                events[2].uid() == "event_uid_3" &&
-                events[3].uid() == "event_uid_1"
-        }
     }
 
     @Test
@@ -205,7 +138,7 @@ class DashboardRepositoryImplTest {
 
         testObserver.assertNoErrors()
         testObserver.assertValueAt(0) {
-            !it
+            it == StatusChangeResultCode.FAILED
         }
     }
 
@@ -235,7 +168,7 @@ class DashboardRepositoryImplTest {
 
         testObserver.assertNoErrors()
         testObserver.assertValueAt(0) {
-            it
+            it == StatusChangeResultCode.CHANGED
         }
     }
 
@@ -259,7 +192,7 @@ class DashboardRepositoryImplTest {
 
         testObserver.assertNoErrors()
         testObserver.assertValueAt(0) {
-            !it
+            it == StatusChangeResultCode.WRITE_PERMISSION_FAIL
         }
     }
 

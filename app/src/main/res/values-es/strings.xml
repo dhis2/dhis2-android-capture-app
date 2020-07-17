@@ -679,4 +679,5 @@
     <string name="filter_sync_not_synced">No sincronizado</string>
     <string name="filter_sync_error">Errores de sincro.</string>
     <string name="filter_sync_sms">Sincronizado por SMS</string>
+    <string name="event_data">Datos</string>
 </resources>

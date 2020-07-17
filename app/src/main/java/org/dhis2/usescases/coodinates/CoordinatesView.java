@@ -23,6 +23,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.dhis2.Bindings.DoubleExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.FormCoordinatesAccentBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
@@ -109,8 +110,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
         latitude.setOnEditorActionListener((v, actionId, event) -> {
             if (validateCoordinates()) {
-                Double latitudeValue = isEmpty(latitude.getText().toString()) ? null : Double.valueOf(latitude.getText().toString());
-                Double longitudeValue = isEmpty(longitude.getText().toString()) ? null : Double.valueOf(longitude.getText().toString());
+                Double latitudeValue = isEmpty(latitude.getText().toString()) ? null : DoubleExtensionsKt.truncate(Double.valueOf(latitude.getText().toString()));
+                Double longitudeValue = isEmpty(longitude.getText().toString()) ? null : DoubleExtensionsKt.truncate(Double.valueOf(longitude.getText().toString()));
                 currentLocationListener.onCurrentLocationClick(GeometryHelper.createPointGeometry(longitudeValue, latitudeValue));
             } else {
                 longitude.requestFocus();
@@ -121,8 +122,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
         longitude.setOnEditorActionListener((v, actionId, event) -> {
             if (validateCoordinates()) {
-                Double latitudeValue = isEmpty(latitude.getText().toString()) ? null : Double.valueOf(latitude.getText().toString());
-                Double longitudeValue = isEmpty(longitude.getText().toString()) ? null : Double.valueOf(longitude.getText().toString());
+                Double latitudeValue = isEmpty(latitude.getText().toString()) ? null : DoubleExtensionsKt.truncate(Double.valueOf(latitude.getText().toString()));
+                Double longitudeValue = isEmpty(longitude.getText().toString()) ? null : DoubleExtensionsKt.truncate(Double.valueOf(longitude.getText().toString()));
                 currentLocationListener.onCurrentLocationClick(GeometryHelper.createPointGeometry(longitudeValue, latitudeValue));
             } else {
                 latitude.requestFocus();
@@ -250,10 +251,13 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
             mFusedLocationClient.getLastLocation().
                     addOnSuccessListener(location -> {
-                        if (location != null)
-                            updateLocation(GeometryHelper.createPointGeometry(location.getLongitude(), location.getLatitude()));
-                        else
+                        if (location != null) {
+                            double longitude = DoubleExtensionsKt.truncate(location.getLongitude());
+                            double latitude = DoubleExtensionsKt.truncate(location.getLatitude());
+                            updateLocation(GeometryHelper.createPointGeometry(longitude, latitude));
+                        } else {
                             startRequestingLocation();
+                        }
                     });
         }
     }
@@ -330,8 +334,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult != null) {
-                    Double latitude = locationResult.getLocations().get(0).getLatitude();
-                    Double longitude = locationResult.getLocations().get(0).getLongitude();
+                    Double latitude = DoubleExtensionsKt.truncate(locationResult.getLocations().get(0).getLatitude());
+                    Double longitude = DoubleExtensionsKt.truncate(locationResult.getLocations().get(0).getLongitude());
                     updateLocation(GeometryHelper.createPointGeometry(longitude, latitude));
                     mFusedLocationClient.removeLocationUpdates(locationCallback);
                 }
