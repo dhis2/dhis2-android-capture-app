@@ -1,9 +1,9 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.dhis2.utils.validationrules.Violation;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.period.Period;
-import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation;
 
 import java.util.List;
 
@@ -21,17 +21,19 @@ public class DataSetTableContract {
 
         String getOrgUnitName();
 
-        void renderDetails(DataSet dataSet, String catcomboName, Period period);
+        void renderDetails(DataSet dataSet, String catcomboName, Period period, boolean isComplete);
 
         Observable<Object> observeSaveButtonClicks();
 
-        void showInfoDialog(boolean isMandatoryFields);
+        void showMandatoryMessage(boolean isMandatoryFields);
 
         void showValidationRuleDialog();
 
         void showSuccessValidationDialog();
 
-        void showErrorsValidationDialog(List<ValidationResultViolation> violations);
+        void savedAndCompleteMessage();
+
+        void showErrorsValidationDialog(List<Violation> violations);
 
         void showCompleteToast();
 
@@ -40,6 +42,12 @@ public class DataSetTableContract {
         void cancelBottomSheet();
 
         void completeBottomSheet();
+
+        void displayReopenedMessage(boolean done);
+
+        void showInternalValidationError();
+
+        void saveAndFinish();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -69,6 +77,12 @@ public class DataSetTableContract {
         void onCompleteBottomSheet();
 
         boolean isValidationMandatoryToComplete();
+
+        void reopenDataSet();
+
+        boolean shouldAllowCompleteAnyway();
+
+        boolean isComplete();
     }
 
 }
