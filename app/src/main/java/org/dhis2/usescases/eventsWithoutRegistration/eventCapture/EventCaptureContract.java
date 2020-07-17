@@ -7,11 +7,12 @@ import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Result;
-import org.dhis2.utils.RulesActionCallbacks;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
+import org.hisp.dhis.android.core.program.ProgramIndicator;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.Date;
@@ -68,6 +69,10 @@ public class EventCaptureContract {
         void showRuleCalculation(Boolean shouldShow);
 
         void showErrorSnackBar();
+
+        void showIndicatorsIcon();
+
+        void hideIndicatorsIcon();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -174,6 +179,10 @@ public class EventCaptureContract {
         void assign(String uid, String value);
 
         void saveImage(String uuid, String filePath);
+
+        Flowable<List<ProgramIndicator>> getIndicators( String programUid);
+
+        Observable<Trio<ProgramIndicator, String, String>> getLegendColorForIndicator(ProgramIndicator programIndicator, String value);
     }
 
 }

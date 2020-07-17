@@ -40,7 +40,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_more"
-                tools:ignore="ContentDescription" />
+                tools:ignore="ContentDescription"/>
 
 
             <org.dhis2.utils.customviews.CircularCompletionView
@@ -54,6 +54,17 @@
                 app:percentageSize="13sp"
                 app:strokeSize="3dp"/>
 
+            <ImageView
+                android:id="@+id/indicators"
+                style="@style/ActionIcon"
+                android:onClick="showIndicators"
+                app:layout_constraintBottom_toBottomOf="@+id/completion"
+                app:layout_constraintEnd_toStartOf="@id/completion"
+                app:layout_constraintTop_toTopOf="@+id/completion"
+                app:srcCompat="@drawable/ic_indicators"
+                tools:ignore="ContentDescription"
+                android:tint="@android:color/white"/>
+
             <TextView
                 android:id="@+id/programStageName"
                 style="@style/TextPrimary"
@@ -62,7 +73,7 @@
                 android:layout_marginStart="12dp"
                 android:maxLines="1"
                 android:textColor="?colorAccent"
-                app:layout_constraintEnd_toStartOf="@id/completion"
+                app:layout_constraintEnd_toStartOf="@id/indicators"
                 app:layout_constraintStart_toEndOf="@id/buttonBack"
                 app:layout_constraintTop_toTopOf="@id/buttonBack"
                 tools:text="Program Stage Name" />
@@ -77,7 +88,7 @@
                 android:maxLines="1"
                 android:textColor="?colorAccent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/completion"
+                app:layout_constraintEnd_toStartOf="@id/indicators"
                 app:layout_constraintStart_toEndOf="@id/buttonBack"
                 tools:text="2018-01-07|Org Unit|Cat Option" />
         </androidx.constraintlayout.widget.ConstraintLayout>

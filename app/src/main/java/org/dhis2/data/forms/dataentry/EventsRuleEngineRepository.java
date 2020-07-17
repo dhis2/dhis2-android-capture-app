@@ -1,8 +1,8 @@
 package org.dhis2.data.forms.dataentry;
 
-import android.database.Cursor;
+import static android.text.TextUtils.isEmpty;
 
-import androidx.annotation.NonNull;
+import android.database.Cursor;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -10,8 +10,6 @@ import org.dhis2.data.forms.FormRepository;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.event.EventTableInfo;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.models.RuleDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
@@ -24,10 +22,9 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-
-import static android.text.TextUtils.isEmpty;
 
 public final class EventsRuleEngineRepository implements RuleEngineRepository {
     private static final String QUERY_EVENT = "SELECT Event.uid,\n" +
@@ -40,7 +37,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
             "FROM Event\n" +
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
             "WHERE Event.uid = ?\n" +
-            " AND Event.deleted != 1'" +
+            " AND Event.deleted != 1\n" +
             "LIMIT 1;";
 
     /*private static final String QUERY_VALUES = "SELECT " +

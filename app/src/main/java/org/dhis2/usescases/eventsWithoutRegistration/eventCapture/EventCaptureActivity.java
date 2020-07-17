@@ -27,6 +27,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.indicators.EventIndicatorsDialogFragment;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.ColorUtils;
@@ -46,6 +47,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import androidx.fragment.app.FragmentManager;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
@@ -70,6 +72,17 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     private String programStageUid;
     private Boolean isEventCompleted = false;
 
+    private String programUid;
+    private String eventUid;
+
+    public String getProgramUid() {
+        return programUid;
+    }
+
+    public String getEventUid() {
+        return eventUid;
+    }
+
     public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.EVENT_UID, eventUid);
@@ -79,11 +92,14 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+
+        programUid = getIntent().getStringExtra(Constants.PROGRAM_UID);
+        eventUid = getIntent().getStringExtra(Constants.EVENT_UID);
+
         ((App) getApplicationContext()).userComponent().plus(
-                new EventCaptureModule(
-                        getIntent().getStringExtra(Constants.EVENT_UID),
-                        getIntent().getStringExtra(Constants.PROGRAM_UID)))
+                new EventCaptureModule(eventUid, programUid))
                 .inject(this);
+
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture);
         binding.setPresenter(presenter);
@@ -410,6 +426,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             Timber.e(e);
         }
         popupMenu.getMenuInflater().inflate(R.menu.event_menu, popupMenu.getMenu());
+
+        if(binding.indicators.getVisibility() == View.GONE){
+            popupMenu.getMenu().removeItem(R.id.menu_indicators);
+        }
+
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
@@ -422,6 +443,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 case R.id.menu_overview:
                     goToInitialScreen();
                     break;
+                case R.id.menu_indicators:
+                    showIndicators();
+                    break;
                 default:
                     break;
             }
@@ -429,6 +453,29 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         });
         popupMenu.getMenu().getItem(1).setVisible(presenter.canWrite() && presenter.isEnrollmentOpen());
         popupMenu.show();
+    }
+
+    public void showIndicators(View view) {
+        showIndicators();
+    }
+
+    public void showIndicators() {
+        FragmentManager fm = getSupportFragmentManager();
+
+        EventIndicatorsDialogFragment eventIndicatorsDialogFragment =
+                EventIndicatorsDialogFragment.Companion.create();
+
+        eventIndicatorsDialogFragment.show(fm);
+    }
+
+    @Override
+    public void showIndicatorsIcon() {
+        binding.indicators.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideIndicatorsIcon() {
+        binding.indicators.setVisibility(View.GONE);
     }
 
     @Override

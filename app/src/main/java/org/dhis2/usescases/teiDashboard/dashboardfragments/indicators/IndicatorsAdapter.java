@@ -23,7 +23,7 @@ public class IndicatorsAdapter extends RecyclerView.Adapter<IndicatorViewHolder>
 
     private List<Trio<ProgramIndicator, String, String>> programIndicators;
 
-    IndicatorsAdapter() {
+    public IndicatorsAdapter() {
         programIndicators = new ArrayList<>();
     }
 

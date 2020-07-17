@@ -1,6 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import android.content.Context;
+import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
@@ -17,6 +18,7 @@ import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
@@ -37,6 +39,7 @@ import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramIndicator;
 import org.hisp.dhis.android.core.program.ProgramRule;
 import org.hisp.dhis.android.core.program.ProgramRuleAction;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
@@ -90,11 +93,21 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private Map<String, List<Rule>> dataElementRules = new HashMap<>();
     private List<Rule> finalMandatoryRules;
     private List<FieldViewModel> sectionFields;
+    BriteDatabase briteDatabase;
 
-    public EventCaptureRepositoryImpl(Context context, FormRepository formRepository, String eventUid, D2 d2) {
+    private static final String SELECT_LEGEND = String.format(
+            "SELECT %s.%s FROM %s\n" + "JOIN %s ON %s.%s = %s.%s\n" + "JOIN %s ON %s.%s = %s.%s\n" + "WHERE %s.%s = ?\n"
+                    + "AND %s.%s <= ?\n" + "AND %s.%s > ?",
+            "Legend", "color", "Legend", "ProgramIndicatorLegendSetLink", "ProgramIndicatorLegendSetLink", "legendSet",
+            "Legend", "LegendSet", "ProgramIndicator", "ProgramIndicator", "uid", "ProgramIndicatorLegendSetLink",
+            "programIndicator", "ProgramIndicator", "uid", "Legend", "startValue", "Legend", "endValue" );
+
+
+    public EventCaptureRepositoryImpl(BriteDatabase briteDatabase, Context context, FormRepository formRepository, String eventUid, D2 d2) {
         this.eventUid = eventUid;
         this.formRepository = formRepository;
         this.d2 = d2;
+        this.briteDatabase = briteDatabase;
 
         currentEvent = d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).blockingGet();
         currentStage = d2.programModule().programStages().uid(currentEvent.programStage()).blockingGet();
@@ -706,6 +719,30 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         } catch (D2Error d2Error) {
         }
 
+    }
+
+    @Override
+    public Flowable<List<ProgramIndicator>> getIndicators( String programUid )
+    {
+        return d2.programModule().programIndicators().byProgramUid().eq( programUid ).withLegendSets().get()
+                .toFlowable();
+    }
+
+    @Override
+    public Observable<Trio<ProgramIndicator, String, String>> getLegendColorForIndicator( ProgramIndicator indicator,
+            String value )
+    {
+        String piId = indicator != null && indicator.uid() != null ? indicator.uid() : "";
+        String color = "";
+        try (Cursor cursor = briteDatabase.query( SELECT_LEGEND, piId, value == null ? "" : value,
+                value == null ? "" : value ))
+        {
+            if ( cursor != null && cursor.moveToFirst() && cursor.getCount() > 0 )
+            {
+                color = cursor.getString( 0 );
+            }
+        }
+        return Observable.just( Trio.create( indicator, value, color ) );
     }
 
     private String getFileResource(String path) throws D2Error {
