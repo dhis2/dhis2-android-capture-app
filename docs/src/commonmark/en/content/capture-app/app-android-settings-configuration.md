@@ -37,7 +37,7 @@ Includes configurations such as how often the android app will synchronize metad
 
 ## Program download sync settings
 
-This section has two parts, global and specific settings. 
+It allows admin users to specify the sync parameters for Programs. This section has two parts, global and specific settings. 
 
 ### Global settings
 
@@ -82,7 +82,7 @@ To save any configuration, the user needs to click on the *Save* button (this bu
 
 ## Data set download sync settings
 
-It is very similar to **Program settings** section, it has two parts.
+It allows admin users to specify the sync parameters for DataSets. It has two parts.
 
 ### Global settings
 
@@ -105,7 +105,7 @@ To add a specific setting:
 
 ## User Sync Test
 
-This section checks the amount of data a user would sync to their device. You cannot only run this test on the user that is currently login but also with other users. This test will show you the number of OU that the user has access to, data sets, programs, and program rules linked to OU, and the metadata and data download size.
+This section checks the amount of data and metadata a user would sync to their device. You cannot only run this test on the user that is currently login but also with other users that you have access to. This test shows up the number of organisation units that the user has access to, data sets, programs, and program rules linked to the organisation units, and the metadata and data download size.
 
 ![](resources/images/user-sync-test.png)
 
