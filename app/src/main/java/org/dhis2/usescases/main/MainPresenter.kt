@@ -131,6 +131,10 @@ class MainPresenter(
     }
 
     fun hasProgramWithAssignment(): Boolean {
-        return !d2.programModule().programStages().byEnableUserAssignment().isTrue.blockingIsEmpty()
+        if (d2.userModule().isLogged.blockingGet()) {
+            return !d2.programModule().programStages().byEnableUserAssignment()
+                .isTrue.blockingIsEmpty()
+        }
+        return false
     }
 }

@@ -55,7 +55,7 @@ class CarouselAdapter private constructor(
                     onSyncClickListener,
                     onProfileImageClick,
                     { item ->
-                        (items.first {it == item} as SearchTeiModel).toggleAttributeList()
+                        (items.first { it == item } as SearchTeiModel).toggleAttributeList()
                         notifyItemChanged(items.indexOf(item))
                     }
                 )

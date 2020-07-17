@@ -66,16 +66,15 @@ class CarouselEventHolder(
             )
         }
 
-        if(data.event.geometry() == null) {
+        if (data.event.geometry() == null) {
             binding.noCoordinatesLabel.root.visibility = View.VISIBLE
             binding.noCoordinatesLabel.noCoordinatesMessage.text =
                 itemView.context.getString(R.string.no_coordinates_item).format(
                     itemView.context.getString(R.string.event_event)
                 )
-        }else{
+        } else {
             binding.noCoordinatesLabel.root.visibility = View.INVISIBLE
         }
-
     }
 
     private fun setStageStyle(color: String?, icon: String?, target: ImageView) {

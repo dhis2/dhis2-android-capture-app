@@ -56,7 +56,7 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
     @Override
     public void onActiveEnrollClick(EnrollmentViewModel enrollmentModel) {
         preferences.removeValue(Preference.CURRENT_ORG_UNIT);
-        view.changeCurrentProgram(enrollmentModel.programUid());
+        view.changeCurrentProgram(enrollmentModel.programUid(), enrollmentModel.uid());
     }
 
     @Override
@@ -68,7 +68,7 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
     public void onUnselectEnrollment() {
         analytics.setEvent(DESELECT_ENROLLMENT, CLICK, DESELECT_ENROLLMENT);
         preferences.removeValue(Preference.CURRENT_ORG_UNIT);
-        view.changeCurrentProgram(null);
+        view.changeCurrentProgram(null, null);
     }
 
     @Override

@@ -117,12 +117,12 @@ class RelationshipMapManager : MapManager() {
         for (source in featureCollections.keys){
             for(propertyLabel in mainProperties){
                 val feature = findFeature(source, propertyLabel, propertyValue)
-                if(feature!=null){
+                if (feature != null) {
                     featureToReturn = feature
-                    mapLayerManager.getLayer(source,true)?.setSelectedItem(featureToReturn)
+                    mapLayerManager.getLayer(source, true)?.setSelectedItem(featureToReturn)
                     break
                 }
-                if(featureToReturn!=null){
+                if (featureToReturn != null) {
                     break
                 }
             }

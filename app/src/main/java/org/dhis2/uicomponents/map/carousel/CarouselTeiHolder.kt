@@ -19,7 +19,7 @@ class CarouselTeiHolder(
     val onSyncClick: (String) -> Boolean,
     val profileImagePreviewCallback: (String) -> Unit,
     val attributeVisibilityCallback: (SearchTeiModel) -> Unit
-    ) :
+) :
     RecyclerView.ViewHolder(binding.root),
     CarouselBinder<SearchTeiModel> {
 
@@ -70,11 +70,11 @@ class CarouselTeiHolder(
             ) {
                 attributeVisibilityCallback(this)
             }
-            if(tei.geometry() == null) {
+            if (tei.geometry() == null) {
                 binding.noCoordinatesLabel.root.visibility = View.VISIBLE
                 binding.noCoordinatesLabel.noCoordinatesMessage.text =
                     itemView.context.getString(R.string.no_coordinates_item).format(teTypeName)
-            }else{
+            } else {
                 binding.noCoordinatesLabel.root.visibility = View.INVISIBLE
             }
             binding.sortingFieldName.text = data.sortingKey

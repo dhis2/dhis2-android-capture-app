@@ -97,11 +97,12 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
     }
 
     @Override
-    public void changeCurrentProgram(String program) {
+    public void changeCurrentProgram(String program, String enrollmentUid) {
         if (program != null)
             SetProgramTheme(presenter.getProgramColor(program));
         Intent data = new Intent();
         data.putExtra("CHANGE_PROGRAM", program);
+        data.putExtra("CHANGE_PROGRAM_ENROLLMENT",enrollmentUid);
         setResult(RESULT_OK, data);
 
         finish();
