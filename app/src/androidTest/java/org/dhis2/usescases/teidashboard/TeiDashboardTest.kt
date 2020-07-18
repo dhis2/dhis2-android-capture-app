@@ -391,6 +391,78 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    @Test
+    fun shouldEnrollToSameProgram() {
+        /**
+         * MNCH /PNC (Adult Woman)
+         * register TEI
+         * add event
+         * close enrollment, check all event are Program Completed
+         * add new enrollment with different date to same program
+         * verify enrollment
+         *
+         * */
+
+        val teiName = "Marta"
+        val teiLastName = "Stuart"
+        val firstName = "First name"
+        val lastName = "Last name"
+        val date = "Date of birth"
+        val womanProgram = "MNCH / PNC (Adult Woman)"
+        val personAttribute = context.getString(R.string.enrollment_single_section_label).replace("%s","")
+
+        setupCredentials()
+        prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
+
+        searchTeiRobot {
+            searchByField(teiName, firstName)
+            searchByField(teiLastName, lastName)
+            clickOnDateField(date)
+            selectSpecificDate(2010, 6, 30)
+            acceptDate()
+            clickOnFab()
+            clickOnFab() //to enroll to program
+            selectSpecificDate(2017, 6 , 30)
+            acceptDate()
+        }
+
+        enrollmentRobot {
+            clickOnSaveEnrollment()
+        }
+
+        teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnMenuComplete()
+            checkCanNotAddEvent()
+            checkAllEventsAreClosed(3)
+        }
+
+        teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnMenuProgramEnrollments()
+        }
+
+        enrollmentRobot {
+            clickOnAProgramForEnrollment(womanProgram)
+            clickOnAcceptEnrollmentDate()
+            clickOnPersonAttributes(personAttribute)
+            clickOnCalendarItem()
+            clickOnAcceptEnrollmentDate()
+            scrollToBottomProgramForm()
+            clickOnSaveEnrollment()
+        }
+
+        teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnMenuProgramEnrollments()
+        }
+
+        enrollmentRobot {
+
+        }
+
+    }
+
     private fun createExpectedUpperInformation() =
         UpperEnrollmentUIModel(
             "2021-01-10",
