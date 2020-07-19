@@ -8,6 +8,7 @@ import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import org.dhis2.usescases.teidashboard.entity.EnrollmentListUIModel
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
@@ -392,7 +393,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun shouldEnrollToSameProgram() {
+    fun shouldEnrollToSameProgramAfterClosedIt() {
         /**
          * MNCH /PNC (Adult Woman)
          * register TEI
@@ -400,7 +401,8 @@ class TeiDashboardTest : BaseTest() {
          * close enrollment, check all event are Program Completed
          * add new enrollment with different date to same program
          * verify enrollment
-         *
+         * verify there's two enrollments (current and past)
+         * check past enrollment all closed events
          * */
 
         val teiName = "Marta"
@@ -409,14 +411,16 @@ class TeiDashboardTest : BaseTest() {
         val lastName = "Last name"
         val date = "Date of birth"
         val womanProgram = "MNCH / PNC (Adult Woman)"
-        val personAttribute = context.getString(R.string.enrollment_single_section_label).replace("%s","")
+
+        val enrollmentListDetails = createEnrollmentList()
 
         setupCredentials()
-        prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
+        prepareWomanProgrammeIntentAndLaunchActivity(ruleSearch)
 
+        // add a new TEI
         searchTeiRobot {
-            searchByField(teiName, firstName)
-            searchByField(teiLastName, lastName)
+            searchByPosition(teiName, 0)
+            searchByPosition(teiLastName, 1)
             clickOnDateField(date)
             selectSpecificDate(2010, 6, 30)
             acceptDate()
@@ -443,22 +447,27 @@ class TeiDashboardTest : BaseTest() {
         }
 
         enrollmentRobot {
-            clickOnAProgramForEnrollment(womanProgram)
-            clickOnAcceptEnrollmentDate()
-            clickOnPersonAttributes(personAttribute)
-            clickOnCalendarItem()
+            clickOnSameProgramForEnrollment(womanProgram)
             clickOnAcceptEnrollmentDate()
             scrollToBottomProgramForm()
             clickOnSaveEnrollment()
         }
 
+        // check all enrollment information
         teiDashboardRobot {
             clickOnMenuMoreOptions()
             clickOnMenuProgramEnrollments()
         }
 
         enrollmentRobot {
+            checkActiveAndPastEnrollmentDetails(enrollmentListDetails)
+            clickOnEnrolledProgram(4) // past enrollment
+        }
 
+        teiDashboardRobot {
+            checkLockCompleteIconIsDisplay()
+            checkCanNotAddEvent()
+            checkAllEventsAreClosed(3)
         }
 
     }
@@ -481,6 +490,13 @@ class TeiDashboardTest : BaseTest() {
             "Ryder",
             "Female"
         )
+
+    private fun createEnrollmentList() = EnrollmentListUIModel(
+        "MNCH / PNC (Adult Woman)",
+        "Ngelehun CHC",
+        "2017-06-30",
+        ""
+    )
 
     companion object {
         const val NOTE_VALID = "ThisIsJustATest"

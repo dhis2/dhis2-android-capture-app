@@ -55,10 +55,21 @@ class SearchTeiRobot : BaseRobot() {
             )
     }
 
-    fun clickOnDateField(field: String) {
-        onView(withId(R.id.formRecycler))
+    fun searchByPosition(searchWord: String, position:Int) {
+        onView(withId(R.id.form_recycler))
             .perform(
+                actionOnItemAtPosition<SearchTEViewHolder>(position, typeChildViewWithId(searchWord, R.id.input_editText))
+            )
+    }
+
+
+    fun clickOnDateField(field: String) {
+        onView(withId(R.id.form_recycler))
+            /*.perform(
                 actionOnItem<SearchTEViewHolder>(hasDescendant(withText(field)), clickChildViewWithId(R.id.inputEditText))
+            )*/
+            .perform(
+                actionOnItemAtPosition<SearchTEViewHolder>(2, clickChildViewWithId(R.id.inputEditText))
             )
     }
 
