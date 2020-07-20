@@ -18,9 +18,14 @@ class ValidationUtils {
                         ValueType.INTEGER_NEGATIVE,
                         ValueType.INTEGER_POSITIVE,
                         ValueType.INTEGER_ZERO_OR_POSITIVE,
-                        ValueType.PERCENTAGE -> String.format(Locale.US, "%.0f", it.toFloat())
+                        ValueType.PERCENTAGE -> it.toInt().toString()
                         ValueType.UNIT_INTERVAL -> it.toFloat().toString()
-                        ValueType.NUMBER -> it.toDouble().toString()
+                        ValueType.NUMBER ->
+                            if(it.toDouble() % 1.toDouble() == 0.toDouble()) {
+                                it.toInt().toString()
+                            }else{
+                                it.toDouble().toString()
+                            }
                         else -> it
                     }
                 }

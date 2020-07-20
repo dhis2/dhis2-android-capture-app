@@ -38,6 +38,12 @@ class ValidationUtilsTest {
     }
 
     @Test
+    fun `number should not have decimals and remove left zeroes`() {
+        val result = ValidationUtils.validate(ValueType.NUMBER, "00023")
+        assertTrue(result == "23")
+    }
+
+    @Test
     fun `percentage should remove left zeroes`() {
         val result = ValidationUtils.validate(ValueType.PERCENTAGE, "035")
         assertTrue(result == "35")
@@ -54,4 +60,11 @@ class ValidationUtilsTest {
         val result = ValidationUtils.validate(ValueType.UNIT_INTERVAL, null)
         assertNull(result)
     }
+
+    @Test
+    fun `minus value should return 0`() {
+        val result = ValidationUtils.validate(ValueType.UNIT_INTERVAL, "-")
+        assertTrue(result == "0")
+    }
+
 }
