@@ -28,7 +28,6 @@ class EventViewHolder extends RecyclerView.ViewHolder {
     public void bind(EventViewModel eventModel, Enrollment enrollment) {
         ProgramStage programStage = eventModel.getStage();
         Event event = eventModel.getEvent();
-        binding.invalidateAll();
         binding.setEvent(eventModel.getEvent());
         binding.setStage(eventModel.getStage());
 
