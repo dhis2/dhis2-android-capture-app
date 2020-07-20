@@ -13,34 +13,27 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.Locale;
 
-/**
- * Created by ppajuelo on 29/11/2017.
- */
-
 class EventViewHolder extends RecyclerView.ViewHolder {
     private final Program program;
-    private final Enrollment enrollment;
     private final TEIDataContracts.Presenter presenter;
     private ItemEventBinding binding;
 
-    EventViewHolder(ItemEventBinding binding, Program program, Enrollment enrollment, TEIDataContracts.Presenter presenter) {
+    EventViewHolder(ItemEventBinding binding, Program program, TEIDataContracts.Presenter presenter) {
         super(binding.getRoot());
         this.binding = binding;
         this.program = program;
-        this.enrollment = enrollment;
         this.presenter = presenter;
     }
 
-    public void bind(EventViewModel eventModel) {
+    public void bind(EventViewModel eventModel, Enrollment enrollment) {
         ProgramStage programStage = eventModel.getStage();
         Event event = eventModel.getEvent();
+        binding.invalidateAll();
         binding.setEvent(eventModel.getEvent());
         binding.setStage(eventModel.getStage());
 
         binding.setEnrollment(enrollment);
 
-
-        binding.setVariable(BR.enrollment, enrollment);
         binding.setVariable(BR.program, program);
         binding.executePendingBindings();
 
