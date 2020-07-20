@@ -26,6 +26,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -235,7 +236,13 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public Observable<Object> observeSaveButtonClicks() {
-        return RxView.clicks(binding.saveButton).doOnNext(o -> binding.saveButton.requestFocus());
+        return RxView.clicks(binding.saveButton).doOnNext(o -> {
+            if (getCurrentFocus() != null) {
+                View currentFocus = getCurrentFocus();
+                currentFocus.clearFocus();
+                ViewExtensionsKt.closeKeyboard(currentFocus);
+            }
+        });
     }
 
     @Override
@@ -403,7 +410,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         }
     }
 
-    private void initValidationErrorsDialog(){
+    private void initValidationErrorsDialog() {
         binding.BSLayout.bottomSheetLayout.setTranslationY(ExtensionsKt.getDp(48));
         binding.BSLayout.bottomSheetLayout.setVisibility(View.VISIBLE);
         binding.BSLayout.bottomSheetLayout.animate()
@@ -477,7 +484,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         finish();
     }
 
-    public FlowableProcessor<Boolean> observeReopenChanges(){
+    public FlowableProcessor<Boolean> observeReopenChanges() {
         return reopenProcessor;
     }
 }
