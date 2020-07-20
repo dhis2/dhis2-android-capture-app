@@ -66,5 +66,4 @@ class ValidationUtilsTest {
         val result = ValidationUtils.validate(ValueType.UNIT_INTERVAL, "-")
         assertTrue(result == "0")
     }
-
 }
