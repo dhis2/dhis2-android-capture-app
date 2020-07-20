@@ -2,7 +2,7 @@
 
 <!--DHIS2-SECTION-ID:sms_report_sending-->
 
-DHIS2 supports accepting data via ![SMS](https://docs.dhis2.org/master/en/dhis2_user_manual_en/mobile.html), however, this might be cumbersome as the user in the field need to compose SMS in a cryptic way. The DHIS2 Android App can be used in a transparent to send the information via SMS as long as the gateway is properly configured. This section explains the different options available and how to achieve that.
+DHIS2 supports accepting data via [SMS](https://docs.dhis2.org/master/en/dhis2_user_manual_en/mobile.html), however, this might be cumbersome as the user in the field need to compose SMS in a cryptic way. The DHIS2 Android App can be used in a transparent to send the information via SMS as long as the gateway is properly configured. This section explains the different options available and how to achieve that.
 
 ## Sending SMS
 
@@ -12,7 +12,7 @@ It is important to clarify firstly, that this section mainly concerns the set up
 
 Sending SMS, i.e. from the DHIS2 server to mobile devices, is relatively simple to set up. If all that is required is the sending of notifications to users phones from DHIS2 when certain events occur (messaging, thresholds e.t.c.) only sending SMS is required.
 
-This can all be configured in the SMS Service Configuration page within the ![Mobile Configuration section](https://docs.dhis2.org/master/en/user/html/mobile_sms_service.html).
+This can all be configured in the SMS Service Configuration page within the [Mobile Configuration section](https://docs.dhis2.org/master/en/user/html/mobile_sms_service.html).
 
 There is out of the box support for common providers such as *Bulk SMS* and *Clickatell*, and both providers support sending of SMS to numbers in most countries.
 
@@ -24,7 +24,7 @@ Note also, it is possible to use a different SMS Gateway for sending and receivi
 
 The simplest solution by far is to use a dedicated Android device as your SMS Gateway. Any phone or tablet running Android OS (4.4, Kitkat or above) should be fine. It will require a constant internet connection, in order to forward messages to your DHIS2 server and it will also need a SIM card to receive the incoming SMS.
 
-You’ll need to download and install the DHIS2 Android SMS Gateway app on the mobile device. See a list of ![releases](https://github.com/dhis2/dhis2-sms-android-gateway/releases) where you can download the latest APK file to install. There are instructions on the app page itself, but essentially you’ll just need to start the app and enter the details of your DHIS2 server (URL, username and password).
+You’ll need to download and install the DHIS2 Android SMS Gateway app on the mobile device. See a list of [releases](https://github.com/dhis2/dhis2-sms-android-gateway/releases) where you can download the latest APK file to install. There are instructions on the app page itself, but essentially you’ll just need to start the app and enter the details of your DHIS2 server (URL, username and password).
 
 Once this is set up and running, you then enter the phone number of this gateway device in the configuration page of any other mobile device using the DHIS2 Capture App. Then, when SMS are sent from these reporting devices, they will be received on the gateway device and automatically forwarded to the DHIS2 server where they will be processed.
 
@@ -58,7 +58,7 @@ In DHIS2 version 2.35, it is planned to support these cases with a templating sy
 
 ### Using RapidPro
 
-![RapidPro](https://rapidpro.io/) is a service run by UNICEF in over 50 countries around the world. It is a collection of software which works with in-country phone carriers to enable organisations to design SMS solutions for their projects, such as SMS reporting or awareness campaigns.
+[RapidPro](https://rapidpro.io/) is a service run by UNICEF in over 50 countries around the world. It is a collection of software which works with in-country phone carriers to enable organisations to design SMS solutions for their projects, such as SMS reporting or awareness campaigns.
 
 The RapidPro service will involve an SMPP connection to one or more phone carriers in-country, usually via a shortcode, potentially dedicated to Health work for NGOs. It’s then possible to add a webhook so that incoming SMS are forwarded to another web service, such as the formatting web service described above. If the shortcode is used for other purposes as well, it may be necessary to add the phone numbers of your reporting devices to a separate group, so that only the incoming SMS from those devices is forwarded to the webhook.
 
@@ -76,7 +76,7 @@ If none of the above solutions are available it would be necessary to approach t
 
 If not, as a final option, you would need to consider setting up and maintaining your own SMPP connection with the phone provider. However, not all phone providers might offer such a service.
 
-You would need to run your own server running software such as ![Kannel](https://www.kannel.org/), which connects (usually via a VPN) to an SMPP service running in the phone providers network. With this in place, any incoming SMS for the configured long number or shortcode are sent from the phone carrier to your Kannel server and you can then forward on these messages as above.
+You would need to run your own server running software such as [Kannel](https://www.kannel.org/), which connects (usually via a VPN) to an SMPP service running in the phone providers network. With this in place, any incoming SMS for the configured long number or shortcode are sent from the phone carrier to your Kannel server and you can then forward on these messages as above.
 
 ### Receiving concatenated or multipart SMS
 
