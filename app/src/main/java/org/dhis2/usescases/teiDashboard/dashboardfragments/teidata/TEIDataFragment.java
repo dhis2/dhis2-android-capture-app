@@ -194,11 +194,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void setEnrollment(Enrollment enrollment) {
         binding.setEnrollment(enrollment);
-        binding.executePendingBindings();
         dashboardViewModel.updateDashboard(dashboardModel);
         if (adapter != null) {
-            adapter.clear();
-            adapter.updateEnrollment(enrollment);
+            adapter.setEnrollment(enrollment);
         }
     }
 
@@ -218,6 +216,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void setEnrollmentData(Program program, Enrollment enrollment) {
+        if (adapter != null) {
+            adapter.setEnrollment(enrollment);
+        }
         binding.setProgram(program);
         binding.setEnrollment(enrollment);
         if (enrollment != null) {
@@ -285,7 +286,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public Flowable<String> observeStageSelection(Program currentProgram, Enrollment currentEnrollment) {
         if (adapter == null) {
-            adapter = new EventAdapter(presenter, currentProgram, currentEnrollment);
+            adapter = new EventAdapter(presenter, currentProgram);
+            adapter.setEnrollment(currentEnrollment);
             binding.teiRecycler.setAdapter(adapter);
         }
         return adapter.stageSelector();
