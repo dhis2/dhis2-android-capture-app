@@ -112,7 +112,7 @@ Compress the information using the lib mentioned before and encode the SMS in ba
 ## Android APP
 Configure SMS gateway (ej: +34670872412) and enable SMS submission in settings:
 
-![Android SMS Settings](resources/images/android-sms-setting.png)
+![Android SMS Settings](resources/images/android-sms-settings.png)
 
 If you really want to get a confirmation SMS to check if the sync was performed successfully on the server side you should enable *wait for SMS result response*.
 
