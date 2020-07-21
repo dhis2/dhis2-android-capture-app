@@ -12,6 +12,7 @@ import org.dhis2.Bindings.toDateSpan
 import org.dhis2.R
 import org.dhis2.databinding.ItemCarouselTeiBinding
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
+import java.util.Locale
 
 class CarouselTeiHolder(
     val binding: ItemCarouselTeiBinding,
@@ -73,7 +74,8 @@ class CarouselTeiHolder(
             if (tei.geometry() == null) {
                 binding.noCoordinatesLabel.root.visibility = View.VISIBLE
                 binding.noCoordinatesLabel.noCoordinatesMessage.text =
-                    itemView.context.getString(R.string.no_coordinates_item).format(teTypeName)
+                    itemView.context.getString(R.string.no_coordinates_item)
+                        .format(teTypeName.toLowerCase(Locale.ROOT))
             } else {
                 binding.noCoordinatesLabel.root.visibility = View.INVISIBLE
             }

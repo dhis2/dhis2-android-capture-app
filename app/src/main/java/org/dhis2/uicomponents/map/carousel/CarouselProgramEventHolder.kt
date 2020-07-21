@@ -10,6 +10,7 @@ import org.dhis2.R
 import org.dhis2.data.tuples.Pair
 import org.dhis2.databinding.ItemCarouselProgramEventBinding
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel
+import java.util.Locale
 
 class CarouselProgramEventHolder(
     val binding: ItemCarouselProgramEventBinding,
@@ -37,7 +38,7 @@ class CarouselProgramEventHolder(
             binding.noCoordinatesLabel.root.visibility = View.VISIBLE
             binding.noCoordinatesLabel.noCoordinatesMessage.text =
                 itemView.context.getString(R.string.no_coordinates_item).format(
-                    itemView.context.getString(R.string.event_event)
+                    itemView.context.getString(R.string.event_event).toLowerCase(Locale.getDefault())
                 )
         } else {
             binding.noCoordinatesLabel.root.visibility = View.INVISIBLE

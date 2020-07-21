@@ -13,6 +13,7 @@ import org.dhis2.utils.DateUtils
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
+import java.util.Locale
 
 class CarouselEventHolder(
     val binding: ItemCarouselEventBinding,
@@ -70,7 +71,7 @@ class CarouselEventHolder(
             binding.noCoordinatesLabel.root.visibility = View.VISIBLE
             binding.noCoordinatesLabel.noCoordinatesMessage.text =
                 itemView.context.getString(R.string.no_coordinates_item).format(
-                    itemView.context.getString(R.string.event_event)
+                    itemView.context.getString(R.string.event_event).toLowerCase(Locale.getDefault())
                 )
         } else {
             binding.noCoordinatesLabel.root.visibility = View.INVISIBLE
