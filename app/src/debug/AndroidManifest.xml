@@ -122,7 +122,10 @@
             android:windowSoftInputMode="adjustPan|stateHidden"
             android:configChanges="keyboardHidden|orientation|screenSize"/>
         <activity android:name=".usescases.events.ScheduledEventActivity" />
-
+        <activity
+            android:name="cat.ereza.customactivityoncrash.activity.DefaultErrorActivity"
+            android:theme="@style/ErrorActivityTheme"
+            android:process=":error_activity" />
         <service
             android:name=".data.notifications.DhisFirebaseMessagingService"
             android:exported="false">

@@ -21,8 +21,7 @@ import org.hisp.dhis.android.core.program.Program
 
 class EventAdapter(
     val presenter: TEIDataContracts.Presenter,
-    val program: Program,
-    var enrollment: Enrollment
+    val program: Program
 ) : ListAdapter<EventViewModel, RecyclerView.ViewHolder>(
     object : DiffUtil.ItemCallback<EventViewModel>() {
         override fun areItemsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
@@ -43,6 +42,8 @@ class EventAdapter(
             return oldItem == newItem
         }
     }) {
+
+    private lateinit var enrollment: Enrollment
 
     private var stageSelector: FlowableProcessor<String> = PublishProcessor.create()
 
@@ -74,7 +75,6 @@ class EventAdapter(
                 EventViewHolder(
                     binding,
                     program,
-                    enrollment,
                     presenter
                 )
             }
@@ -88,7 +88,7 @@ class EventAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is EventViewHolder -> {
-                holder.bind(getItem(position))
+                holder.bind(getItem(position), enrollment)
             }
             is StageViewHolder -> {
                 holder.bind(getItem(position))
@@ -100,11 +100,8 @@ class EventAdapter(
         return getItem(position).hashCode().toLong()
     }
 
-    fun updateEnrollment(enrollment: Enrollment) {
+    fun setEnrollment(enrollment: Enrollment) {
         this.enrollment = enrollment
-    }
-
-    fun clear() {
-        this.submitList(emptyList())
+        this.notifyDataSetChanged()
     }
 }
