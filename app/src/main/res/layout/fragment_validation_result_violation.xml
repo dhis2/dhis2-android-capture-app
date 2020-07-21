@@ -33,7 +33,7 @@
 
             <ScrollView
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 app:layout_constraintEnd_toStartOf="@id/endGuideline"
                 app:layout_constraintStart_toEndOf="@id/startGuideline"
                 app:layout_constraintTop_toTopOf="parent"
@@ -47,9 +47,8 @@
                     <TextView
                         android:id="@+id/description"
                         android:layout_width="match_parent"
-                        android:layout_height="24dp"
-                        android:gravity="bottom"
-                        android:layout_marginTop="8dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         tools:text="Description" />
