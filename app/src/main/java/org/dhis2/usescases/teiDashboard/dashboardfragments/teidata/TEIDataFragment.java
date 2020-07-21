@@ -505,13 +505,16 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                     .transform(new CircleCrop())
                     .into(binding.cardFront.teiImage);
             binding.cardFront.teiImage.setOnClickListener(view -> {
-                new ImageDetailBottomDialog(
-                        null,
-                        new File(filePath)
-                ).show(
-                        getChildFragmentManager(),
-                        ImageDetailBottomDialog.TAG
-                );
+                File fileToShow = new File(filePath);
+                if (fileToShow.exists()) {
+                    new ImageDetailBottomDialog(
+                            null,
+                            fileToShow
+                    ).show(
+                            getChildFragmentManager(),
+                            ImageDetailBottomDialog.TAG
+                    );
+                }
             });
         }
     }
