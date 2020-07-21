@@ -235,11 +235,10 @@ public class CustomTextView extends FieldLayout {
             inputLayout.setErrorTextAppearance(R.style.error_appearance);
             inputLayout.setError(error);
             inputLayout.setErrorTextColor(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.error_color, null)));
-            editText.requestFocus();
         } else if (!isEmpty(warning)) {
             inputLayout.setErrorTextAppearance(R.style.warning_appearance);
-            inputLayout.setErrorTextColor(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.warning_color, null)));
             inputLayout.setError(warning);
+            inputLayout.setErrorTextColor(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.warning_color, null)));
         } else
             inputLayout.setError(null);
     }
