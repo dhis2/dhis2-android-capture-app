@@ -168,7 +168,6 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         if (isOnline && states.isEmpty()) {
             dataSource = trackedEntityInstanceQuery.offlineFirst().getDataSource()
-                    .mapByPage(list -> filterByStatus(list, eventStatuses))
                     .mapByPage(this::filterDeleted)
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
@@ -711,23 +710,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                 if (!hasEventsByDueDate && !hasEventsByEventDate)
                     iterator.remove();
 
-            }
-
-        return teis;
-    }
-
-    private List<TrackedEntityInstance> filterByStatus(List<TrackedEntityInstance> teis, List<EventStatus> eventStatuses) {
-        Iterator<TrackedEntityInstance> iterator = teis.iterator();
-        if (!eventStatuses.isEmpty())
-            while (iterator.hasNext()) {
-                TrackedEntityInstance tei = iterator.next();
-
-                boolean hasEventWithStatus = !d2.eventModule().events()
-                        .byTrackedEntityInstanceUids(Collections.singletonList(tei.uid()))
-                        .byStatus().in(eventStatuses).blockingIsEmpty();
-
-                if (!hasEventWithStatus)
-                    iterator.remove();
             }
 
         return teis;
