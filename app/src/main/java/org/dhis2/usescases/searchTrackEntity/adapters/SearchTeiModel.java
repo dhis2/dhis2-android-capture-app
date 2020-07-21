@@ -35,6 +35,7 @@ public class SearchTeiModel implements CarouselItemModel {
     private boolean openedAttributeList = false;
     private String sortingKey;
     private String sortingValue;
+    private String teTypeName;
 
     public SearchTeiModel() {
         this.tei = null;
@@ -192,5 +193,13 @@ public class SearchTeiModel implements CarouselItemModel {
 
     public String getSortingValue() {
         return sortingValue;
+    }
+
+    public void setTEType(String teTypeName){
+        this.teTypeName = teTypeName;
+    }
+
+    public String getTeTypeName() {
+        return teTypeName;
     }
 }

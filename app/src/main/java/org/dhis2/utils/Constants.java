@@ -137,6 +137,8 @@ public class Constants {
     public static final String SCAN_RENDERING_TYPE = "SCAN_RENDERING_TYPE";
     public static final String QUERY_DATA = "QUERY_DATA";
 
+    //DATASET
+    public static final String NO_SECTION = "NO_SECTION";
 
     private Constants() {
         // hide public constructor

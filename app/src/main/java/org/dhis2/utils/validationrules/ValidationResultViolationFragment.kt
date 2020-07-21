@@ -8,12 +8,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import org.dhis2.R
 import org.dhis2.databinding.FragmentValidationResultViolationBinding
-import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation
+import org.dhis2.databinding.ItemDataReviewBinding
 
 class ValidationResultViolationFragment : Fragment() {
 
     private lateinit var binding: FragmentValidationResultViolationBinding
-    private lateinit var violation: ValidationResultViolation
+    private lateinit var violation: Violation
 
     companion object {
         @JvmStatic
@@ -22,7 +22,7 @@ class ValidationResultViolationFragment : Fragment() {
         }
     }
 
-    fun setViolation(violation: ValidationResultViolation) {
+    fun setViolation(violation: Violation) {
         this.violation = violation
     }
 
@@ -38,18 +38,35 @@ class ValidationResultViolationFragment : Fragment() {
             false
         )
 
-        binding.violation = violation
+        binding.apply {
+            if (!violation.description.isNullOrEmpty()) {
+                description.text = violation.description
+                if (!violation.instruction.isNullOrEmpty()) {
+                    instruction.text = violation.instruction
+                } else {
+                    instruction.visibility = View.GONE
+                }
+            } else if (!violation.instruction.isNullOrEmpty()) {
+                description.text = violation.instruction
+            } else {
+                description.visibility = View.GONE
+                instruction.text = getString(R.string.validation_rules_empty_description)
+            }
+        }
 
-        val formula = "${violation.leftSideEvaluation().displayExpression()} " +
-            "${violation.validationRule().operator().mathematicalOperator} " +
-            violation.rightSideEvaluation().displayExpression()
-
-        val resultEquation = "${violation.leftSideEvaluation().regeneratedExpression()} " +
-            "${violation.validationRule().operator().mathematicalOperator} " +
-            violation.rightSideEvaluation().regeneratedExpression()
-
-        binding.textValueEquation.text = formula
-        binding.resultEquation.text = resultEquation
+        binding.dataToReviewContainer.removeAllViews()
+        for (data in violation.dataToReview) {
+            binding.dataToReviewContainer.addView(
+                ItemDataReviewBinding.inflate(layoutInflater).apply {
+                    dataPosition.text = String.format(
+                        "%s | %s",
+                        data.dataElementDisplayName,
+                        data.categoryOptionComboDisplayName
+                    )
+                    dataValue.text = data.value
+                }.root
+            )
+        }
 
         return binding.root
     }

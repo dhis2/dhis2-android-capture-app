@@ -121,7 +121,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-   @Test
+    @Test
     fun shouldShowQRWhenClickOnShare() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
@@ -504,15 +504,15 @@ class TeiDashboardTest : BaseTest() {
 
     private fun createExpectedUpperInformation() =
         UpperEnrollmentUIModel(
-            "2021-01-10",
-            "2021-01-10",
+            "10/1/2021",
+            "10/1/2021",
             "Ngelehun CHC"
         )
 
     private fun createExpectedEnrollmentInformation() =
         EnrollmentUIModel(
-            "2021-01-10",
-            "2021-01-10",
+            "10/1/2021",
+            "10/1/2021",
             "Ngelehun CHC",
             "40.48713205295354",
             "-3.6847423830882633",
@@ -524,7 +524,7 @@ class TeiDashboardTest : BaseTest() {
     private fun createEnrollmentList() = EnrollmentListUIModel(
         "MNCH / PNC (Adult Woman)",
         "Ngelehun CHC",
-        "2017-06-30",
+        "30/06/2017",
         ""
     )
 

@@ -1,5 +1,6 @@
 package org.dhis2.uicomponents.map.carousel
 
+import android.view.View
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.Bindings.setTeiImage
@@ -17,7 +18,7 @@ class CarouselEventHolder(
     val binding: ItemCarouselEventBinding,
     val program: Program?,
     val onClick: (teiUid: String?, enrollmentUid: String?) -> Boolean,
-    val profileImagePreviewCallback: (String) -> Unit
+    private val profileImagePreviewCallback: (String) -> Unit
 ) :
     RecyclerView.ViewHolder(binding.root),
     CarouselBinder<EventUiComponentModel> {
@@ -63,6 +64,16 @@ class CarouselEventHolder(
                 binding.imageText,
                 profileImagePreviewCallback
             )
+        }
+
+        if (data.event.geometry() == null) {
+            binding.noCoordinatesLabel.root.visibility = View.VISIBLE
+            binding.noCoordinatesLabel.noCoordinatesMessage.text =
+                itemView.context.getString(R.string.no_coordinates_item).format(
+                    itemView.context.getString(R.string.event_event)
+                )
+        } else {
+            binding.noCoordinatesLabel.root.visibility = View.INVISIBLE
         }
     }
 

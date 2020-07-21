@@ -50,7 +50,8 @@ class ProgramEventMapper @Inject constructor(val d2: D2) {
             data,
             event.status()!!,
             hasExpired || !inOrgUnitRange,
-            attrOptCombo
+            attrOptCombo,
+            event.geometry()
         )
     }
 

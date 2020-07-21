@@ -214,6 +214,14 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
                 Timber.e(e);
             }
 
+        if (initialDate == null)
+            try {
+                initialDate = DateUtils.oldUiDateFormat().parse(initialValue);
+
+            } catch (Exception e) {
+                Timber.e(e);
+            }
+
         if (initialDate != null) {
             String result = dateFormat.format(initialDate);
             selectedCalendar.setTime(initialDate);

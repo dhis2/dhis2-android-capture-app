@@ -107,6 +107,7 @@ import kotlin.Pair;
 import kotlin.Unit;
 import timber.log.Timber;
 
+import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.RELATIONSHIP_UID;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CHANGE_PROGRAM;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
@@ -865,12 +866,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 (CarouselAdapter) binding.mapCarousel.getAdapter()
         );
 
-        binding.mapCarousel.attachToMapManager(teiMapManager, () ->
-                {
-                    Toast.makeText(this, "Item does not have coordinates", Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-        );
+        binding.mapCarousel.attachToMapManager(teiMapManager, () -> true);
     }
 
 
@@ -904,7 +900,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         .queryRenderedFeatures(rectF, lineLayerId, pointLayerId);
                 if (!features.isEmpty()) {
                     teiMapManager.mapLayerManager.selectFeature(null);
-                    teiMapManager.mapLayerManager.getLayer(sourceId, true).setSelectedItem(features.get(0));
+                    Feature selectedFeature = teiMapManager.findFeature(sourceId,RELATIONSHIP_UID,features.get(0).getStringProperty(RELATIONSHIP_UID));
+                    teiMapManager.mapLayerManager.getLayer(sourceId, true).setSelectedItem(selectedFeature);
                     binding.mapCarousel.scrollToFeature(features.get(0));
                     return true;
                 } else {
