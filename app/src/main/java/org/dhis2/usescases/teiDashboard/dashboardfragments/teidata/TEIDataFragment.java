@@ -510,10 +510,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                     new ImageDetailBottomDialog(
                             null,
                             fileToShow
-                    ).show(
-                            getChildFragmentManager(),
-                            ImageDetailBottomDialog.TAG
-                    );
+                    ).show(getChildFragmentManager(), ImageDetailBottomDialog.TAG);
                 }
             });
         }
