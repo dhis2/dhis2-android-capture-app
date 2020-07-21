@@ -96,7 +96,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun shouldDeactivateTEIWhenClickOpen() {
+    fun shouldShowInactiveProgramWhenClickDeactivate() {
         prepareTeiOpenedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
@@ -109,7 +109,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
    @Test
-    fun shouldCompleteTEIWhenClickOpen() {
+    fun shouldCompleteProgramWhenClickComplete() {
         prepareTeiOpenedForCompleteProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
@@ -403,6 +403,9 @@ class TeiDashboardTest : BaseTest() {
          * verify enrollment
          * verify there's two enrollments (current and past)
          * check past enrollment all closed events
+         * reopen the past enrollment
+         * check open
+         * check two current enrollments
          * */
 
         val teiName = "Marta"
@@ -469,6 +472,33 @@ class TeiDashboardTest : BaseTest() {
             checkCanNotAddEvent()
             checkAllEventsAreClosed(3)
         }
+
+    }
+
+    @Test
+    fun shouldDeleteEventWhenClickOnDeleteInsideSpecificEvent() {
+
+        /**
+         * Open and launch TEI
+         * click on event
+         * click on menu
+         * click on Delete
+         * accept dialog
+         * check list of events, event was deleted
+         * */
+
+    }
+
+    @Test
+    fun shouldShowEventDetailsWhenClickOnDetailsInsideSpecificEvent() {
+
+        /**
+         * Open and launch TEI
+         * click on event
+         * click on menu
+         * click on Details
+         * check %, OU and date
+         * */
 
     }
 
