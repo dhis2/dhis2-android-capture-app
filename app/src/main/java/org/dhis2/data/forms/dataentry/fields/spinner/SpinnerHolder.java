@@ -62,6 +62,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
+        binding.optionSetView.requestFocus();
         closeKeyboard(v);
         setSelectedBackground(isSearchMode);
         OptionSetDialog dialog = new OptionSetDialog();

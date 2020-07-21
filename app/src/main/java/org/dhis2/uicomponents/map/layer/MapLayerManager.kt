@@ -126,7 +126,6 @@ class MapLayerManager {
 
     fun getLayer(sourceId: String, shouldSaveLayer: Boolean? = false): MapLayer? {
         return mapLayers[sourceId].let {
-            currentLayerSelection?.setSelectedItem(null)
             if (shouldSaveLayer == true) {
                 this.currentLayerSelection = it
             }

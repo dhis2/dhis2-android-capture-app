@@ -67,6 +67,7 @@
         <Button
             android:id="@+id/negative"
             style="@style/TextButton"
+            android:textColor="?colorPrimaryLight"
             android:layout_marginEnd="20dp"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="5dp"

@@ -275,7 +275,9 @@ class DataSetTableRepositoryTest {
 
     @Test
     fun `Should return true if dataset was successfully marked as completed`() {
-        whenever(d2.dataSetModule().dataSetCompleteRegistrations()) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+        ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSetCompleteRegistrations()
                 .value(periodId, orgUnitUid, dataSetUid, catOptCombo)
@@ -283,7 +285,7 @@ class DataSetTableRepositoryTest {
         whenever(
             d2.dataSetModule().dataSetCompleteRegistrations()
                 .value(periodId, orgUnitUid, dataSetUid, catOptCombo).exists()
-        ) doReturn Single.just(true)
+        ) doReturn Single.just(false)
 
         val testObserver = repository.completeDataSetInstance().test()
 
@@ -298,7 +300,7 @@ class DataSetTableRepositoryTest {
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid)) doReturn mock()
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet()) doReturn dataSet
 
-        val hasMandatoryValidationRules = repository.runMandatoryValidationRules()
+        val hasMandatoryValidationRules = repository.areValidationRulesMandatory()
 
         assert(hasMandatoryValidationRules)
     }
@@ -310,7 +312,7 @@ class DataSetTableRepositoryTest {
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid)) doReturn mock()
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet()) doReturn dataSet
 
-        val hasMandatoryValidationRules = repository.runMandatoryValidationRules()
+        val hasMandatoryValidationRules = repository.areValidationRulesMandatory()
 
         assert(!hasMandatoryValidationRules)
     }
@@ -322,7 +324,7 @@ class DataSetTableRepositoryTest {
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid)) doReturn mock()
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet()) doReturn dataSet
 
-        val hasMandatoryValidationRules = repository.runMandatoryValidationRules()
+        val hasMandatoryValidationRules = repository.areValidationRulesMandatory()
 
         assert(!hasMandatoryValidationRules)
     }

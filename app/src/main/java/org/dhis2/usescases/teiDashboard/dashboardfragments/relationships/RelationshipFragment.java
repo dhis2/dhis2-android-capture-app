@@ -53,6 +53,7 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 import static android.app.Activity.RESULT_OK;
+import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.RELATIONSHIP_UID;
 
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
@@ -319,7 +320,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                     .queryRenderedFeatures(rectF, lineLayerId, pointLayerId);
             if (!features.isEmpty()) {
                 relationshipMapManager.mapLayerManager.selectFeature(null);
-                relationshipMapManager.mapLayerManager.getLayer(sourceId,true).setSelectedItem(features.get(0));
+                Feature selectedFeature = relationshipMapManager.findFeature(sourceId, RELATIONSHIP_UID, features.get(0).getStringProperty(RELATIONSHIP_UID));
+                relationshipMapManager.mapLayerManager.getLayer(sourceId, true).setSelectedItem(selectedFeature);
                 binding.mapCarousel.scrollToFeature(features.get(0));
                 return true;
             }

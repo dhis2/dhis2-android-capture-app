@@ -39,12 +39,14 @@ class DataSetDetailPresenterTest {
         whenever(repository.getDataSetCatComboName()) doReturn Single.just("catOptionName")
         whenever(repository.dataSetInstance()) doReturn Flowable.just(defaultDataSetInstance)
         whenever(repository.getPeriod()) doReturn Single.just(defaultPeriod)
+        whenever(repository.isComplete()) doReturn Single.just(false)
         whenever(repository.getDataSet()) doReturn Single.just(defaultDataSet)
+        whenever(view.observeReopenChanges()) doReturn Flowable.empty()
 
         presenter.init()
 
         verify(view).setCatOptComboName("catOptionName")
-        verify(view).setDataSetDetails(defaultDataSetInstance, defaultPeriod)
+        verify(view).setDataSetDetails(defaultDataSetInstance, defaultPeriod, false)
         verify(view).setStyle(defaultStyle)
     }
 
@@ -53,12 +55,14 @@ class DataSetDetailPresenterTest {
         whenever(repository.getDataSetCatComboName()) doReturn Single.just("")
         whenever(repository.dataSetInstance()) doReturn Flowable.just(defaultDataSetInstance)
         whenever(repository.getPeriod()) doReturn Single.just(defaultPeriod)
+        whenever(repository.isComplete()) doReturn Single.just(false)
         whenever(repository.getDataSet()) doReturn Single.just(defaultDataSet)
+        whenever(view.observeReopenChanges()) doReturn Flowable.empty()
 
         presenter.init()
 
         verify(view).hideCatOptCombo()
-        verify(view).setDataSetDetails(defaultDataSetInstance, defaultPeriod)
+        verify(view).setDataSetDetails(defaultDataSetInstance, defaultPeriod, false)
         verify(view).setStyle(defaultStyle)
     }
 

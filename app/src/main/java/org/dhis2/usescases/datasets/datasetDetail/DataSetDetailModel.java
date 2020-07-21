@@ -34,8 +34,11 @@ public abstract class DataSetDetailModel {
     public abstract String periodType();
 
     @NonNull
-    public static DataSetDetailModel create(@NonNull String orgUnitUid, @NonNull String catOptionComboUid, @NonNull String periodId, @NonNull String orgUnitName, String nameCatCombo, String namePeriod, State state, String periodType) {
-        return new AutoValue_DataSetDetailModel(orgUnitUid, catOptionComboUid, periodId, orgUnitName, nameCatCombo, namePeriod, state, periodType);
+    public abstract Boolean displayOrgUnitName();
+
+    @NonNull
+    public static DataSetDetailModel create(@NonNull String orgUnitUid, @NonNull String catOptionComboUid, @NonNull String periodId, @NonNull String orgUnitName, String nameCatCombo, String namePeriod, State state, String periodType, Boolean displayOrgUnitName) {
+        return new AutoValue_DataSetDetailModel(orgUnitUid, catOptionComboUid, periodId, orgUnitName, nameCatCombo, namePeriod, state, periodType, displayOrgUnitName);
     }
 
 }

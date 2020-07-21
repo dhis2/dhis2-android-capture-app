@@ -5,6 +5,10 @@
         <item name="android:colorAccent">@color/colorGreyDefault</item>
     </style>
 
+    <style name="ErrorActivityTheme" parent="AppTheme">
+        <item name="colorAccent">@color/text_black_4d4d4d</item>
+    </style>
+
     <style name="DatePickerTheme" parent="Base.Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">@color/colorGreyDefault</item>
         <item name="android:colorAccent">@color/colorGreyDefault</item>

@@ -185,7 +185,8 @@ class DataSetDetailPresenterTest {
         "",
         "",
         State.SYNCED,
-        ""
+        "",
+        true
     )
 
     private fun dummyCategoryCombo() = CategoryCombo.builder().uid("uid").build()

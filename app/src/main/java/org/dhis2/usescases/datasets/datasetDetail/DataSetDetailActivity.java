@@ -91,11 +91,11 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
             binding.recycler.setAdapter(adapter);
             binding.recycler.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         }
-        if(datasets.size() == 0){
-            binding.emptyTeis.setVisibility(View.VISIBLE);
+        if (datasets.size() == 0) {
+            binding.emptyData.setVisibility(View.VISIBLE);
             binding.recycler.setVisibility(View.GONE);
         } else {
-            binding.emptyTeis.setVisibility(View.GONE);
+            binding.emptyData.setVisibility(View.GONE);
             binding.recycler.setVisibility(View.VISIBLE);
             adapter.setDataSets(datasets);
         }
@@ -120,8 +120,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         initSet.clone(binding.backdropLayout);
         if (backDropActive) {
             initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.filterLayout, ConstraintSet.BOTTOM, 50);
-        }
-        else {
+        } else {
             initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
         }
         initSet.applyTo(binding.backdropLayout);
@@ -167,6 +166,9 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @SuppressLint("RestrictedApi")
     @Override
     public void setWritePermission(Boolean canWrite) {
+        binding.emptyData.setText(
+                canWrite ? getString(R.string.dataset_empty_list_can_create) : getString(R.string.dataset_emtpy_list_can_not_create)
+        );
         binding.addDatasetButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
     }
 
@@ -175,7 +177,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         binding.addDatasetButton.setEnabled(false);
         Bundle bundle = new Bundle();
         bundle.putString(Constants.DATA_SET_UID, dataSetUid);
-        startActivity(DataSetInitialActivity.class,bundle,false,false,null);
+        startActivity(DataSetInitialActivity.class, bundle, false, false, null);
     }
 
     @Override
