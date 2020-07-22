@@ -30,12 +30,13 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/rubik_regular"
             android:text='@{dataset.nameOrgUnit}'
+            android:visibility="@{dataset.displayOrgUnitName() ? View.VISIBLE : View.INVISIBLE}"
             android:textColor="@color/black_de0"
             android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/status_text"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/Period"
             tools:text="Org Unit" />
 
         <TextView
@@ -47,22 +48,23 @@
             android:textColor="@color/black_de0"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/status_text"
-            app:layout_constraintTop_toBottomOf="@id/OrgUnit"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="Period" />
 
         <TextView
             android:id="@+id/optionCombo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/rubik_regular"
             android:layout_weight="1"
+            android:fontFamily="@font/rubik_regular"
             android:gravity="end"
-            android:text='@{dataset.nameCatCombo.equals("default")?"":dataset.nameCatCombo}'
+            android:visibility='@{dataset.nameCatCombo().equals("default") ? View.GONE : View.VISIBLE}'
+            android:text='@{dataset.nameCatCombo().equals("default") ?"":dataset.nameCatCombo}'
             android:textColor="@color/black_de0"
             android:textSize="12sp"
-            app:layout_constraintTop_toBottomOf="@id/Period"
+            app:layout_constraintTop_toBottomOf="@id/OrgUnit"
             tools:text="Cat combo" />
 
 
@@ -86,18 +88,19 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_edit" />
+
         <TextView
             android:id="@+id/status_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxWidth="50dp"
             android:layout_gravity="center"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:fontFamily="@font/rubik_regular"
-            android:textSize="9sp"
             android:gravity="end"
+            android:maxWidth="50dp"
             android:textColor="@color/text_black_333"
+            android:textSize="9sp"
             app:layout_constraintBottom_toBottomOf="@id/status_icon"
             app:layout_constraintEnd_toStartOf="@id/status_icon"
             app:layout_constraintTop_toTopOf="@id/status_icon"

@@ -29,8 +29,20 @@ public class StatusEnrollmentFilterHolder extends FilterHolder {
         localBinding.filterEnrollmentStatus.stateCancelled.setChecked(FilterManager.getInstance().getEnrollmentStatusFilters().contains(EnrollmentStatus.CANCELLED));
         localBinding.filterEnrollmentStatus.stateCompleted.setChecked(FilterManager.getInstance().getEnrollmentStatusFilters().contains(EnrollmentStatus.COMPLETED));
 
-        localBinding.filterEnrollmentStatus.stateActive.setOnCheckedChangeListener((compoundButton, b) -> FilterManager.getInstance().addEnrollmentStatus(!b, EnrollmentStatus.ACTIVE));
-        localBinding.filterEnrollmentStatus.stateCancelled.setOnCheckedChangeListener((compoundButton, b) -> FilterManager.getInstance().addEnrollmentStatus(!b, EnrollmentStatus.CANCELLED));
-        localBinding.filterEnrollmentStatus.stateCompleted.setOnCheckedChangeListener((compoundButton, b) -> FilterManager.getInstance().addEnrollmentStatus(!b, EnrollmentStatus.COMPLETED));
+        localBinding.filterEnrollmentStatus.stateActive.setOnCheckedChangeListener((compoundButton, b) -> {
+            FilterManager.getInstance().addEnrollmentStatus(!b, EnrollmentStatus.ACTIVE);
+            localBinding.filterEnrollmentStatus.stateCancelled.setChecked(FilterManager.getInstance().getEnrollmentStatusFilters().contains(EnrollmentStatus.CANCELLED));
+            localBinding.filterEnrollmentStatus.stateCompleted.setChecked(FilterManager.getInstance().getEnrollmentStatusFilters().contains(EnrollmentStatus.COMPLETED));
+        });
+        localBinding.filterEnrollmentStatus.stateCancelled.setOnCheckedChangeListener((compoundButton, b) -> {
+            FilterManager.getInstance().addEnrollmentStatus(!b, EnrollmentStatus.CANCELLED);
+            localBinding.filterEnrollmentStatus.stateActive.setChecked(FilterManager.getInstance().getEnrollmentStatusFilters().contains(EnrollmentStatus.ACTIVE));
+            localBinding.filterEnrollmentStatus.stateCompleted.setChecked(FilterManager.getInstance().getEnrollmentStatusFilters().contains(EnrollmentStatus.COMPLETED));
+        });
+        localBinding.filterEnrollmentStatus.stateCompleted.setOnCheckedChangeListener((compoundButton, b) -> {
+            FilterManager.getInstance().addEnrollmentStatus(!b, EnrollmentStatus.COMPLETED);
+            localBinding.filterEnrollmentStatus.stateActive.setChecked(FilterManager.getInstance().getEnrollmentStatusFilters().contains(EnrollmentStatus.ACTIVE));
+            localBinding.filterEnrollmentStatus.stateCancelled.setChecked(FilterManager.getInstance().getEnrollmentStatusFilters().contains(EnrollmentStatus.CANCELLED));
+        });
     }
 }

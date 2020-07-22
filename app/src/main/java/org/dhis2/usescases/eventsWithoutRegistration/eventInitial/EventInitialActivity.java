@@ -64,6 +64,7 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.ParseException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -687,12 +688,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-        String date = String.format(Locale.getDefault(), "%s-%02d-%02d", year, month + 1, day);
-        try {
-            selectedDate = DateUtils.uiDateFormat().parse(date);
-        } catch (ParseException e) {
-            Timber.e(e);
-        }
+        Calendar c = Calendar.getInstance();
+        c.set(year,month,day,0,0);
+        selectedDate = c.getTime();
         selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
         binding.date.setText(selectedDateString);
         binding.date.clearFocus();

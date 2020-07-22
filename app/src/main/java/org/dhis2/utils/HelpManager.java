@@ -36,6 +36,10 @@ public class HelpManager {
         return instance;
     }
 
+    public boolean isReady(){
+        return help != null;
+    }
+
 
     public void setScreenHelp(String screen, List<FancyShowCaseView> steps) {
         help = steps;

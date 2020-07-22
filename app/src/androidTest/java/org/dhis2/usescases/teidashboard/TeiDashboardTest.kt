@@ -3,6 +3,7 @@ package org.dhis2.usescases.teidashboard
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.R
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.searchTeiRobot
@@ -27,6 +28,7 @@ class TeiDashboardTest : BaseTest() {
 
     @get:Rule
     val rule = ActivityTestRule(TeiDashboardMobileActivity::class.java, false, false)
+
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
@@ -105,7 +107,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-   @Test
+    @Test
     fun shouldCompleteTEIWhenClickOpen() {
         prepareTeiOpenedForCompleteProgrammeAndLaunchActivity(rule)
 
@@ -118,7 +120,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-   @Test
+    @Test
     fun shouldShowQRWhenClickOnShare() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
@@ -276,7 +278,7 @@ class TeiDashboardTest : BaseTest() {
     @Test
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
         val womanProgram = "MNCH / PNC (Adult Woman)"
-        val personAttribute = "Attributes - Person"
+        val personAttribute = context.getString(R.string.enrollment_single_section_label).replace("%s","")
         val visitPNCEvent = "PNC Visit"
         val deliveryEvent = "Delivery"
         val visitANCEvent = "ANC Visit (2-4+)"
@@ -391,15 +393,15 @@ class TeiDashboardTest : BaseTest() {
 
     private fun createExpectedUpperInformation() =
         UpperEnrollmentUIModel(
-            "2021-01-10",
-            "2021-01-10",
+            "10/1/2021",
+            "10/1/2021",
             "Ngelehun CHC"
         )
 
     private fun createExpectedEnrollmentInformation() =
         EnrollmentUIModel(
-            "2021-01-10",
-            "2021-01-10",
+            "10/1/2021",
+            "10/1/2021",
             "Ngelehun CHC",
             "40.48713205295354",
             "-3.6847423830882633",

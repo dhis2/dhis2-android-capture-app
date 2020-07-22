@@ -98,6 +98,8 @@ class MainPresenter(
                 .subscribe(
                     {
                         workManagerController.cancelAllWork()
+                        preferences.setValue(Preference.SESSION_LOCKED, false)
+                        preferences.setValue(Preference.PIN, null)
                         view.startActivity(LoginActivity::class.java, null, true, true, null)
                     },
                     { Timber.e(it) }
@@ -131,6 +133,10 @@ class MainPresenter(
     }
 
     fun hasProgramWithAssignment(): Boolean {
-        return !d2.programModule().programStages().byEnableUserAssignment().isTrue.blockingIsEmpty()
+        if (d2.userModule().isLogged.blockingGet()) {
+            return !d2.programModule().programStages().byEnableUserAssignment()
+                .isTrue.blockingIsEmpty()
+        }
+        return false
     }
 }

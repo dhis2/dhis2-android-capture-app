@@ -62,6 +62,7 @@ class EnrollmentMapLayer(
                 .withProperties(
                     PropertyFactory.iconImage(MapLayerManager.ENROLLMENT_ICON_ID),
                     PropertyFactory.iconAllowOverlap(true),
+                    PropertyFactory.iconOffset(arrayOf(0f, -25f)),
                     PropertyFactory.visibility(Property.NONE)
                 ).withFilter(
                     Expression.eq(
@@ -76,6 +77,7 @@ class EnrollmentMapLayer(
                 .withProperties(
                     PropertyFactory.iconImage(MapLayerManager.ENROLLMENT_ICON_ID),
                     PropertyFactory.iconAllowOverlap(true),
+                    PropertyFactory.iconOffset(arrayOf(0f, -25f)),
                     PropertyFactory.visibility(Property.NONE)
                 ).withFilter(
                     Expression.eq(

@@ -12,6 +12,7 @@ import org.dhis2.usescases.splash.SplashComponent;
 import org.dhis2.usescases.splash.SplashModule;
 import org.dhis2.utils.UtilsModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsModule;
 import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
 
@@ -24,7 +25,8 @@ import dagger.Component;
  */
 @Singleton
 @Component(modules = {
-        AppModule.class, SchedulerModule.class, UtilsModule.class, AnalyticsModule.class, PreferenceModule.class, WorkManagerModule.class
+        AppModule.class, SchedulerModule.class, UtilsModule.class, AnalyticsModule.class, PreferenceModule.class, WorkManagerModule.class,
+        MatomoAnalyticsModule.class
 })
 public interface AppComponent {
 

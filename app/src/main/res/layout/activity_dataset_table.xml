@@ -33,11 +33,7 @@
 
                 <ImageView
                     android:id="@+id/menu"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
+                    style="@style/ActionIcon"
                     android:onClick="@{()->presenter.onBackClick()}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -45,35 +41,45 @@
                     app:srcCompat="@drawable/ic_arrow_back"
                     tools:ignore="ContentDescription" />
 
+                <ImageView
+                    android:id="@+id/moreOptions"
+                    style="@style/ActionIcon"
+                    android:onClick="showMoreOptions"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_more"
+                    tools:ignore="ContentDescription" />
+
                 <TextView
                     android:id="@+id/dataSetName"
+                    style="@style/TextPrimary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="9dp"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:textColor="@android:color/white"
-                    android:textSize="17sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/menu"
+                    android:textColor="?colorAccent"
+                    app:layout_constraintBottom_toTopOf="@+id/dataSetSubtitle"
+                    app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                    app:layout_constraintStart_toEndOf="@id/menu"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="DATA_SET_TITLE" />
 
                 <TextView
                     android:id="@+id/dataSetSubtitle"
+                    style="@style/TextSecondary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginBottom="9dp"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:textColor="@android:color/white"
-                    android:textSize="10sp"
+                    android:textColor="?colorAccent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/dataSetName"
+                    app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                    app:layout_constraintStart_toEndOf="@id/menu"
                     app:layout_constraintTop_toBottomOf="@+id/dataSetName"
                     tools:text="DATA_SET_SUBTITLE" />
 
@@ -106,8 +112,8 @@
             android:id="@+id/saveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
             android:layout_gravity="bottom|end"
+            android:layout_margin="15dp"
             android:tint="@color/white"
             app:backgroundTint="?attr/colorPrimary"
             app:fabSize="normal"
@@ -117,8 +123,7 @@
             android:id="@+id/BSLayout"
             layout="@layout/violation_rules_bottom_sheet"
             app:errorCount="@{ errorCount }"
-            app:presenter="@{ presenter }"
-            />
+            app:presenter="@{ presenter }" />
 
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

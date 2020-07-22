@@ -182,6 +182,11 @@ public class DateUtils {
 
     @NonNull
     public static SimpleDateFormat uiDateFormat() {
+        return new SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.US);
+    }
+
+    @NonNull
+    public static SimpleDateFormat oldUiDateFormat() {
         return new SimpleDateFormat(DATE_FORMAT_EXPRESSION, Locale.US);
     }
 

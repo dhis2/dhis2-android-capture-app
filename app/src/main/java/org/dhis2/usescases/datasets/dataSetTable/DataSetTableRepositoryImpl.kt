@@ -5,8 +5,12 @@ import io.reactivex.Single
 import io.reactivex.functions.Function4
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
+import java.util.Date
 import javax.inject.Singleton
 import org.dhis2.data.tuples.Pair
+import org.dhis2.utils.validationrules.DataToReview
+import org.dhis2.utils.validationrules.ValidationRuleResult
+import org.dhis2.utils.validationrules.Violation
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -18,7 +22,7 @@ import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.Period
-import org.hisp.dhis.android.core.validation.engine.ValidationResult
+import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation
 
 @Singleton
 class DataSetTableRepositoryImpl(
@@ -71,8 +75,7 @@ class DataSetTableRepositoryImpl(
             d2.categoryModule().categoryOptionCombos().uid(catOptCombo).get(),
             d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).get(),
             d2.periodModule().periodHelper().getPeriodForPeriodId(periodId),
-            Function4 {
-                dataSet: DataSet,
+            Function4 { dataSet: DataSet,
                 catOptComb: CategoryOptionCombo,
                 orgUnit: OrganisationUnit,
                 period: Period ->
@@ -87,6 +90,7 @@ class DataSetTableRepositoryImpl(
                     .period(period.periodId())
                     .valueCount(0)
                     .completed(false)
+                    .lastUpdated(Date())
                     .state(State.SYNCED)
                     .build()
             }
@@ -168,8 +172,15 @@ class DataSetTableRepositoryImpl(
     fun completeDataSetInstance(): Single<Boolean> {
         return d2.dataSetModule().dataSetCompleteRegistrations()
             .value(periodId, orgUnitUid, dataSetUid, catOptCombo).exists()
-            .map { alreadyCompleted: Boolean? ->
-                if (!alreadyCompleted!!) {
+            .map { hasCompleteRegistration: Boolean? ->
+                val hasValidCompleteRegistration = if (hasCompleteRegistration == true) {
+                    d2.dataSetModule().dataSetCompleteRegistrations()
+                        .value(periodId, orgUnitUid, dataSetUid, catOptCombo).blockingGet()
+                        .deleted() != true
+                } else {
+                    false
+                }
+                if (!hasValidCompleteRegistration) {
                     d2.dataSetModule().dataSetCompleteRegistrations()
                         .value(periodId, orgUnitUid, dataSetUid, catOptCombo)
                         .blockingSet()
@@ -195,8 +206,19 @@ class DataSetTableRepositoryImpl(
                 catOptCombo
             ).exists()
             .map { exist ->
+                val hasBeenReopened = if (exist) {
+                    d2.dataSetModule().dataSetCompleteRegistrations()
+                        .value(
+                            periodId,
+                            orgUnitUid,
+                            dataSetUid,
+                            catOptCombo
+                        ).blockingGet().deleted() == true
+                } else {
+                    true
+                }
                 dataSetInstanceProcessor.onNext(Unit())
-                !exist
+                hasBeenReopened
             }
             .toFlowable()
     }
@@ -260,22 +282,96 @@ class DataSetTableRepositoryImpl(
             }
     }
 
-    fun runMandatoryValidationRules(): Boolean {
+    fun areValidationRulesMandatory(): Boolean {
         return d2.dataSetModule()
             .dataSets().uid(dataSetUid)
             .blockingGet().validCompleteOnly() ?: false
     }
 
-    fun doesDatasetHasValidationRulesAssociated(): Boolean {
+    fun hasValidationRules(): Boolean {
         return !d2.validationModule().validationRules()
             .byDataSetUids(listOf(dataSetUid))
             .bySkipFormValidation().isFalse
             .blockingIsEmpty()
     }
 
-    fun executeValidationRules(): Flowable<ValidationResult> {
+    fun executeValidationRules(): Flowable<ValidationRuleResult> {
         return d2.validationModule()
             .validationEngine().validate(dataSetUid, periodId, orgUnitUid, catOptCombo)
+            .map {
+                ValidationRuleResult(
+                    it.status(),
+                    mapViolations(it.violations())
+                )
+            }
             .toFlowable()
+    }
+
+    private fun mapViolations(violations: List<ValidationResultViolation>): List<Violation> {
+        return violations.map {
+            Violation(
+                it.validationRule().description(),
+                it.validationRule().instruction(),
+                mapDataElements(it.dataElementUids())
+            )
+        }
+    }
+
+    private fun mapDataElements(
+        dataElementUids: MutableSet<DataElementOperand>
+    ): List<DataToReview> {
+        val dataToReview = arrayListOf<DataToReview>()
+        for (deOperand in dataElementUids) {
+            val de =
+                d2.dataElementModule().dataElements()
+                    .uid(deOperand.dataElement()?.uid())
+                    .blockingGet()
+            val catOptCombos =
+                if (deOperand.categoryOptionCombo() != null) {
+                    d2.categoryModule().categoryOptionCombos()
+                        .byUid().like(deOperand.categoryOptionCombo()?.uid())
+                        .blockingGet()
+                } else {
+                    d2.categoryModule().categoryOptionCombos()
+                        .byCategoryComboUid().like(de.categoryComboUid())
+                        .blockingGet()
+                }
+            catOptCombos.forEach { catOptCombo ->
+                val value = if (d2.dataValueModule().dataValues()
+                    .value(periodId, orgUnitUid, de.uid(), catOptCombo.uid(), this.catOptCombo)
+                    .blockingExists() &&
+                    d2.dataValueModule().dataValues()
+                        .value(periodId, orgUnitUid, de.uid(), catOptCombo.uid(), this.catOptCombo)
+                        .blockingGet().deleted() != true
+                ) {
+                    d2.dataValueModule().dataValues()
+                        .value(periodId, orgUnitUid, de.uid(), catOptCombo.uid(), this.catOptCombo)
+                        .blockingGet().value() ?: "?"
+                } else {
+                    "?"
+                }
+                dataToReview.add(
+                    DataToReview(
+                        de.uid(),
+                        de.displayName(),
+                        catOptCombo.uid(),
+                        catOptCombo.displayName(),
+                        value
+                    )
+                )
+            }
+        }
+        return dataToReview
+    }
+
+    fun isComplete(): Single<Boolean> {
+        return d2.dataSetModule().dataSetCompleteRegistrations()
+            .byDataSetUid().eq(dataSetUid)
+            .byPeriod().eq(periodId)
+            .byOrganisationUnitUid().eq(orgUnitUid)
+            .byAttributeOptionComboUid().eq(catOptCombo)
+            .byDeleted().isFalse
+            .isEmpty
+            .map { isEmpty -> !isEmpty }
     }
 }

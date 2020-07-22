@@ -72,7 +72,6 @@ class MainActivity :
     var adapter: FiltersAdapter? = null
         private set
 
-    // -------------------------------------
     //region LIFECYCLE
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -129,6 +128,7 @@ class MainActivity :
 
     override fun onResume() {
         super.onResume()
+
         presenter.init()
         presenter.initFilters()
 
@@ -154,8 +154,6 @@ class MainActivity :
         presenter.onDetach()
         super.onPause()
     }
-
-    //endregion
 
     /*User info methods*/
 

@@ -179,7 +179,8 @@ public class FilterManager {
     public void addEnrollmentStatus(boolean remove, EnrollmentStatus enrollmentStatus) {
         if (remove) {
             enrollmentStatusFilters.remove(enrollmentStatus);
-        } else if (!enrollmentStatusFilters.contains(enrollmentStatus)) {
+        } else {
+            enrollmentStatusFilters.clear();
             enrollmentStatusFilters.add(enrollmentStatus);
         }
         enrollmentStatusFiltersApplied.set(enrollmentStatusFilters.size());
