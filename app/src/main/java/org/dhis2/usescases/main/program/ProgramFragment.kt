@@ -220,7 +220,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     override fun showSyncDialog(program: ProgramViewModel) {
         val dialog = SyncStatusDialog.Builder()
             .setConflictType(
-                if (program.typeName() != Constants.DATA_SET) {
+                if (program.programType().isNotEmpty()) {
                     SyncStatusDialog.ConflictType.PROGRAM
                 } else {
                     SyncStatusDialog.ConflictType.DATA_SET
