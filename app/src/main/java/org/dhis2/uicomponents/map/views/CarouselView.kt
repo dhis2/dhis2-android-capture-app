@@ -7,10 +7,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.mapbox.geojson.Feature
-import kotlin.math.abs
 import org.dhis2.uicomponents.map.camera.centerCameraOnFeature
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.managers.MapManager
+import kotlin.math.abs
 
 class CarouselView @JvmOverloads constructor(
     context: Context,
@@ -63,8 +63,8 @@ class CarouselView @JvmOverloads constructor(
     }
 
     fun scrollToFeature(feature: Feature) {
-        val initialPosition =
-            (layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
+        val initialPosition = (layoutManager as LinearLayoutManager)
+            .findFirstCompletelyVisibleItemPosition()
         val endPosition = carouselAdapter.indexOfFeature(feature)
 
         if (initialPosition == -1 || endPosition == -1) {
