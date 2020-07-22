@@ -111,7 +111,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-   @Test
+    @Test
     fun shouldCompleteTEIWhenClickOpen() {
         prepareTeiOpenedForCompleteProgrammeAndLaunchActivity(rule)
 
@@ -126,7 +126,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-   @Test
+    @Test
     fun shouldShowQRWhenClickOnShare() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
