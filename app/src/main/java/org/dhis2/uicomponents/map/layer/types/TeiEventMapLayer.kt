@@ -13,6 +13,9 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.layer.MapLayerManager
+import org.dhis2.uicomponents.map.layer.TYPE
+import org.dhis2.uicomponents.map.layer.TYPE_POINT
+import org.dhis2.uicomponents.map.layer.TYPE_POLYGON
 import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
 
@@ -56,11 +59,12 @@ class TeiEventMapLayer(
                 .withProperties(
                     PropertyFactory.iconImage("${MapLayerManager.STAGE_ICON_ID}_$sourceId"),
                     PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.visibility(Property.NONE)
+                    PropertyFactory.visibility(Property.NONE),
+                    PropertyFactory.iconOffset(arrayOf(0f, -25f))
                 ).withFilter(
                     Expression.eq(
-                        Expression.literal("\$type"),
-                        Expression.literal("Point")
+                        Expression.literal(TYPE),
+                        Expression.literal(TYPE_POINT)
                     )
                 )
 
@@ -70,11 +74,12 @@ class TeiEventMapLayer(
                 .withProperties(
                     PropertyFactory.iconImage("${MapLayerManager.STAGE_ICON_ID}_$sourceId"),
                     PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.iconSize(1.5f)
+                    PropertyFactory.iconSize(1.5f),
+                    PropertyFactory.iconOffset(arrayOf(0f, -25f))
                 ).withFilter(
                     Expression.eq(
-                        Expression.literal("\$type"),
-                        Expression.literal("Point")
+                        Expression.literal(TYPE),
+                        Expression.literal(TYPE_POINT)
                     )
                 )
 
@@ -86,8 +91,8 @@ class TeiEventMapLayer(
                     PropertyFactory.visibility(Property.NONE)
                 ).withFilter(
                     Expression.eq(
-                        Expression.literal("\$type"),
-                        Expression.literal("Polygon")
+                        Expression.literal(TYPE),
+                        Expression.literal(TYPE_POLYGON)
                     )
                 )
 
@@ -99,8 +104,8 @@ class TeiEventMapLayer(
                     PropertyFactory.visibility(Property.NONE)
                 ).withFilter(
                     Expression.eq(
-                        Expression.literal("\$type"),
-                        Expression.literal("Polygon")
+                        Expression.literal(TYPE),
+                        Expression.literal(TYPE_POLYGON)
                     )
                 )
 
@@ -112,8 +117,8 @@ class TeiEventMapLayer(
                     PropertyFactory.lineWidth(SELECTED_LINE_WIDTH)
                 ).withFilter(
                     Expression.eq(
-                        Expression.literal("\$type"),
-                        Expression.literal("Polygon")
+                        Expression.literal(TYPE),
+                        Expression.literal(TYPE_POLYGON)
                     )
                 )
 
