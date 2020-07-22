@@ -87,6 +87,8 @@ class TeiDashboardTest : BaseTest() {
 
         teiDashboardRobot {
             clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
+            clickOnMenuMoreOptions()
             clickOnMenuReOpen()
             checkUnlockIconIsDisplay()
             checkCanAddEvent()
@@ -100,6 +102,8 @@ class TeiDashboardTest : BaseTest() {
 
         teiDashboardRobot {
             clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
+            clickOnMenuMoreOptions()
             clickOnMenuDeactivate()
             checkLockIconIsDisplay()
             checkCanNotAddEvent()
@@ -112,6 +116,8 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiOpenedForCompleteProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
             clickOnMenuMoreOptions()
             clickOnMenuComplete()
             checkLockCompleteIconIsDisplay()
@@ -135,6 +141,8 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiOpenedForReferralProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
             clickOnFab()
             clickOnReferral()
             clickOnFirstReferralEvent()
@@ -150,6 +158,8 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
             clickOnFab()
             clickOnScheduleNew()
             clickOnFirstReferralEvent()
@@ -164,6 +174,8 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiOpenedWithFullEventsAndLaunchActivity(rule)
 
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
             clickOnFab()
             clickOnReferral()
             checkCannotAddMoreEventToastIsShown()
@@ -178,6 +190,8 @@ class TeiDashboardTest : BaseTest() {
 
         val babyPostNatal = 0
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
             clickOnEventWithPosition(babyPostNatal)
         }
 
@@ -229,6 +243,8 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiToCreateANewEventAndLaunchActivity(rule)
 
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
             clickOnFab()
             clickOnCreateNewEvent()
             clickOnFirstReferralEvent()
@@ -254,6 +270,8 @@ class TeiDashboardTest : BaseTest() {
         val labMonitoring = 2
 
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
             clickOnEventWithPosition(labMonitoring)
             waitToDebounce(600)
         }
@@ -288,6 +306,8 @@ class TeiDashboardTest : BaseTest() {
 
         teiDashboardRobot {
             clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
+            clickOnMenuMoreOptions()
             clickOnMenuProgramEnrollments()
         }
 
@@ -302,6 +322,8 @@ class TeiDashboardTest : BaseTest() {
         }
 
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
             checkEventWasScheduled(visitPNCEvent, 0)
             checkEventWasScheduled(deliveryEvent, 1)
             checkEventWasScheduled(visitANCEvent, 2)
