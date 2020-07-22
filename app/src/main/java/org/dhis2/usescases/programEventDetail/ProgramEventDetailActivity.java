@@ -65,12 +65,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
 import static org.dhis2.R.layout.activity_program_event_detail;
 import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection.EVENT;
-import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.RELATIONSHIP_UID;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
@@ -363,7 +361,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 featureType
         );
 
-        if(binding.mapCarousel.getAdapter() == null) {
+        if (binding.mapCarousel.getAdapter() == null) {
             CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
                     .addOnSyncClickListener(
                             teiUid -> {
@@ -378,8 +376,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             binding.mapCarousel.setAdapter(carouselAdapter);
             binding.mapCarousel.attachToMapManager(eventMapManager, () -> true);
             carouselAdapter.addItems(programEventViewModels);
-        }else{
-            ((CarouselAdapter)binding.mapCarousel.getAdapter()).updateAllData(programEventViewModels);
+        } else {
+            ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(programEventViewModels);
         }
     }
 
@@ -496,7 +494,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
         List<Feature> features = eventMapManager.getMap().queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "POINT_LAYER" : "POLYGON_LAYER");
         if (!features.isEmpty()) {
-            Feature selectedFeature = eventMapManager.findFeature(LayerType.EVENT_LAYER.name(), RELATIONSHIP_UID, features.get(0).getStringProperty(EVENT));
+            Feature selectedFeature = eventMapManager.findFeature(LayerType.EVENT_LAYER.name(), EVENT, features.get(0).getStringProperty(EVENT));
             eventMapManager.mapLayerManager.getLayer(LayerType.EVENT_LAYER.name(), true).setSelectedItem(selectedFeature);
             binding.mapCarousel.scrollToFeature(features.get(0));
             return true;

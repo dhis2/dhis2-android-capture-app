@@ -34,9 +34,9 @@ class MapRelationshipToRelationshipMapModel {
             ?.trackedEntityInstance()
 
         val fromAttr =
-            relationshipViewModel.fromAttributes().firstOrNull()?.let { it.value() ?: "" } ?: ""
+            relationshipViewModel.fromAttributes().firstOrNull()?.let { it.value() ?: "-" } ?: "-"
         val toAttr =
-            relationshipViewModel.toAttributes().firstOrNull()?.let { it.value() ?: "" } ?: ""
+            relationshipViewModel.toAttributes().firstOrNull()?.let { it.value() ?: "-" } ?: "-"
 
         val teiFrom = TeiMap(
             teiFromUid,
