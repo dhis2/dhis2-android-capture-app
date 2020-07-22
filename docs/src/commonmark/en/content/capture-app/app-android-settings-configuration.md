@@ -6,7 +6,7 @@ This section focuses on the Android Settings app implementation.
 
 The Android Settings web app allows admins to configure synchronization parameters for the DHIS2 Android Capture App, encrypt the local database of the android devices, and run tests on the size of data and metadata synchronized by a given android user. The configuration parameters defined within this app will overwrite the settings of all android devices using the DHIS2 Android Capture App.
 
-Please note that in this version of the app, only users with 'ALL' authority are able to define those parameters in the configuration. Other users having access to the app can see the value of the parameters, but cannot edit them. 
+Please note that in this version of the web app, only users with 'ALL' authority are able to define those parameters in the configuration. Other users having access to the web app can see the value of the parameters, but cannot edit them. 
 
 
 ## General download sync settings
@@ -15,13 +15,13 @@ Includes configurations such as how often the android app will synchronize metad
 
 ![](resources/images/general-settings.png)
 
-**Metadata sync:** You can choose how often you want to sync your metadata. e.g. Sync metadata every 24 hours.
+**Metadata sync:** Admin users can choose how often they want to sync the metadata. e.g. Sync metadata every 24 hours.
 
-**Data sync:** You can choose how often you want to sync your data. e.g. Syncing data every 6 hours. 
+**Data sync:** Admin users can choose how often they want to sync the data. e.g. Syncing data every 6 hours. 
 
-**SMS Gateway:** This section allows you to edit the SMS gateway phone number.
+**SMS Gateway:** This section allows admin users to edit the SMS gateway phone number.
 
-**Reserved values:** This will specify the number of reserved values per TEI attribute to download in your device.
+**Reserved values:** This will specify the number of reserved values per TEI attribute to download in the devices.
 
 **Encrypt device database:** 
 
@@ -29,7 +29,7 @@ Includes configurations such as how often the android app will synchronize metad
 >
 > This is a critical action and will affect the local database of all android devices synchronizing with the server (it won't affect the server DHIS2 database).
 >
-> By default the android app database is not encrypted, but a system admin can check the *Encrypt device database* to encrypt the metadata and data stored in every device. Encrypting the database will have an impact on the database volume and performance of the app. Also note that at the moment of selecting or unselecting this option no data is lost (even if it hasn't been previously synchronized with the server)
+> By default the android app database is not encrypted, but a system admin can check the *Encrypt device database* to encrypt the metadata and data stored in every device. Encrypting the database will have an impact on the database volume and performance of the android app. Also note that at the moment of selecting or unselecting this option no data is lost (even if it hasn't been previously synchronized with the server)
 
  
 **Disable all settings:** By clicking this button the user will remove all android confiuration settings, so no configuration will be applied to the Android Capture app.  
@@ -58,7 +58,7 @@ Global settings apply to all programs that an android user has access to.
 This section allows the admin users to specify the behaviour of a particular program/s when syncing the data. The specific configuration overwrites the general settings for the programs listed in this section.  To add a setting for a specific program:
  
 - Click on *Add a Program-specific setting*, a Dialog will appear. 
-- Bellow "Values per Program" title you can click and find a list of programs.
+- Bellow "Values per Program" title a user can click and find a list of programs.
 - Clicking on a program will show up the different parameters to configure. The number of parameters depends on the program type (with or without registration). 
 
 **Settings for Program Without Registration**
@@ -75,9 +75,9 @@ In the case that any specific settings have been saved, a table will show up a s
 
 ### Reset all values
 
-By clicking on *Reset all values*, the user will restore the default settings values of the program section. Please note that in this case it means no specific settings per program. 
+By clicking on *Reset all values*, the admin user will restore the default settings values of the program section. Please note that in this case it means no specific settings per program. 
 
-To save any configuration, the user needs to click on the *Save* button (this button is disabled for the users who doesn't have the 'ALL' authority)
+To save any configuration, the admin user needs to click on the *Save* button (this button is disabled for the users who doesn't have the 'ALL' authority)
 
 
 ## Data set download sync settings
@@ -95,7 +95,7 @@ The first part is for global settings that apply to all data sets an android use
 ### Specific Settings
 
 To add a specific setting:
- - Click on *Add a Data set specific setting*, you will find a dialog with a list of data sets, 
+ - Click on *Add a Data set specific setting*, the will find a dialog with a list of data sets, 
  - Click on a data set and this field will be autocompleted with the default value based on the dataset period type.
 
 ![](resources/images/dataset-specific-dialog.png)
@@ -105,7 +105,7 @@ To add a specific setting:
 
 ## User Sync Test
 
-This section checks the amount of data and metadata a user would sync to their device. You cannot only run this test on the user that is currently login but also with other users that you have access to. This test shows up the number of organisation units that the user has access to, data sets, programs, and program rules linked to the organisation units, and the metadata and data download size.
+This section checks the amount of data and metadata a user would sync to their device. You can run this test on any user that you have access to. This test shows up the number of organisation units, data sets, program rules, programs, etc. that an android user has access to (so the resoruces that the android app will download) , and the metadata and data download size (approx estimation).
 
 ![](resources/images/user-sync-test.png)
 
@@ -116,7 +116,7 @@ This section checks the amount of data and metadata a user would sync to their d
 
 ## Installation
 
-You can easily install the Android Settings App by logging into the DHIS2 and going to **App Management**.
+A user can easily install the Android Settings App by logging into the DHIS2 and going to **App Management**.
 
 - Click on the *Upload* (arrow) button.
 - Select the app build .zip
@@ -126,14 +126,14 @@ You can easily install the Android Settings App by logging into the DHIS2 and go
 
 ## Log in and first time setup
 
-After you install and launch the Android Settings App when you launch it for the first time, you will be required to set and save the default values of the configuration. This will apply default settings to all android devices connected to the instance. 
+After a user install and launch the Android Settings App for the first time, the web app will require to set and save the default values of the configuration. This will apply default settings to all android devices connected to the instance. 
 
 ![](resources/images/first-time-setup.png)
 
 
 > **Warning** 
 >
-> In case the user doesn't have ALL authorities or permissions you won't be able to *save or update* the configuration, but the user will have view access once it's created.
+> Only users will 'ALL' authority are able to *save or update* the configuration, but any user will have view access once it's created.
 
 
 ![](resources/images/first-setup-no-authorities.png)
@@ -155,21 +155,21 @@ Datastore structure:
 
 ### Save configuration parameters
 
-At the form footer of all settings sections, you can find a *Save* button.
+At the form footer of all settings sections, admin users can find a *Save* button.
 
 ![](resources/images/save_button.png)
 
-Only when you click on this button all changes made on the current section are saved on Datastore, and they will apply to the Android Capture Apps when they synchronize their configuration.
+Only when an admin user clicks on this button all changes made on the current section are saved on the Datastore. These changes will apply to the Android Capture Apps when they synchronize their configuration.
  
 **Unsaved changes:** 
  
-In case an admin user wants to go to another section, and the user still has unsaved changes, an alert will be displayed before navigating away from the current section. In case the user accepts leaving the page, the unsaved changes will be lost.
+In case an admin user wants to go to another section when there are some unsaved changes, an alert will be displayed before navigating away from the current section. In case the user accepts leaving the page, the unsaved changes will be lost.
 
 ![](resources/images/unsaved-changes.png)
  
 #### Reset all values to default
 
-A user can restore the settings at any time. There is a *Reset all values to default* button at the form footer of all settings sections. 
+An admin user can restore the settings at any time. There is a *Reset all values to default* button at the form footer of all settings sections. 
 
 ![](resources/images/reset-default.png)
 
