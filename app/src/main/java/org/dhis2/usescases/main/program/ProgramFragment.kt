@@ -50,6 +50,9 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     @Inject
     lateinit var adapter: ProgramModelAdapter
 
+    @Inject
+    lateinit var animation: ProgramAnimation
+
     // -------------------------------------------
     //region LIFECYCLE
 
@@ -83,30 +86,15 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     override fun onResume() {
         super.onResume()
         presenter.init()
-        val gd: GradientDrawable = binding.drawerLayout?.background as GradientDrawable
-        ValueAnimator.ofInt(0, 16.dp)
-            .apply {
-                duration = 700
-                startDelay = 700
-                interpolator = OvershootInterpolator()
-                addUpdateListener {
-                    val value = (it.animatedValue as Int).toFloat()
-                    gd.cornerRadii = floatArrayOf(value, value, value, value, 0f, 0f, 0f, 0f)
-                }
-            }.start()
+        animation.initBackdropCorners(
+            binding.drawerLayout?.background as GradientDrawable
+        )
     }
 
     override fun onPause() {
-        val gd: GradientDrawable = binding.drawerLayout?.background as GradientDrawable
-        ValueAnimator.ofInt(16.dp, 0)
-            .apply {
-                duration = 200
-                interpolator = OvershootInterpolator()
-                addUpdateListener {
-                    val value = (it.animatedValue as Int).toFloat()
-                    gd.cornerRadius = value
-                }
-            }.start()
+        animation.reverseBackdropCorners(
+            binding.drawerLayout?.background as GradientDrawable
+        )
         presenter.dispose()
         super.onPause()
     }
