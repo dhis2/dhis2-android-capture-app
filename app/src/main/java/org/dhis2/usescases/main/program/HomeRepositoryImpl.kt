@@ -2,6 +2,7 @@ package org.dhis2.usescases.main.program
 
 import io.reactivex.Flowable
 import io.reactivex.parallel.ParallelFlowable
+import java.util.Date
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
@@ -15,7 +16,6 @@ import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
 import org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION
-import java.util.Date
 
 internal class HomeRepositoryImpl(
     private val d2: D2,
@@ -69,12 +69,13 @@ internal class HomeRepositoryImpl(
                     )
 
                     programModel.setTranslucent(
-                        (dateFilter.isNotEmpty() ||
+                        (
+                            dateFilter.isNotEmpty() ||
                                 orgUnitFilter.isNotEmpty() ||
                                 statesFilter.isNotEmpty() ||
                                 assignedToUser == true
-                                ) &&
-                                programModel.count() == 0
+                            ) &&
+                            programModel.count() == 0
                     )
                 }
             }
@@ -151,12 +152,12 @@ internal class HomeRepositoryImpl(
             }.map { program ->
                 program.setTranslucent(
                     (
-                            dateFilter.isNotEmpty() ||
-                                    orgUnitFilter.isNotEmpty() ||
-                                    statesFilter.isNotEmpty() ||
-                                    assignedToUser == true
-                            ) &&
-                            program.count() == 0
+                        dateFilter.isNotEmpty() ||
+                            orgUnitFilter.isNotEmpty() ||
+                            statesFilter.isNotEmpty() ||
+                            assignedToUser == true
+                        ) &&
+                        program.count() == 0
                 )
             }
             .toList().toFlowable()
@@ -164,28 +165,28 @@ internal class HomeRepositoryImpl(
 
     private fun getStateForProgramWithRegistration(program: Program): State {
         return if (d2.trackedEntityModule().trackedEntityInstances()
-                .byProgramUids(arrayListOf(program.uid())).byState().`in`(
-                    State.ERROR,
-                    State.WARNING
-                )
-                .blockingGet().isNotEmpty()
+            .byProgramUids(arrayListOf(program.uid())).byState().`in`(
+                State.ERROR,
+                State.WARNING
+            )
+            .blockingGet().isNotEmpty()
         ) {
             State.WARNING
         } else if (d2.trackedEntityModule().trackedEntityInstances()
-                .byProgramUids(arrayListOf(program.uid()))
-                .byState().`in`(
-                    State.SENT_VIA_SMS,
-                    State.SYNCED_VIA_SMS
-                ).blockingGet().isNotEmpty()
+            .byProgramUids(arrayListOf(program.uid()))
+            .byState().`in`(
+                State.SENT_VIA_SMS,
+                State.SYNCED_VIA_SMS
+            ).blockingGet().isNotEmpty()
         ) {
             State.SENT_VIA_SMS
         } else if (d2.trackedEntityModule().trackedEntityInstances()
-                .byProgramUids(arrayListOf(program.uid()))
-                .byState().`in`(
-                    State.TO_UPDATE,
-                    State.TO_POST,
-                    State.UPLOADING
-                ).blockingGet().isNotEmpty() ||
+            .byProgramUids(arrayListOf(program.uid()))
+            .byState().`in`(
+                State.TO_UPDATE,
+                State.TO_POST,
+                State.UPLOADING
+            ).blockingGet().isNotEmpty() ||
             d2.trackedEntityModule().trackedEntityInstances()
                 .byProgramUids(arrayListOf(program.uid()))
                 .byDeleted().isTrue.blockingGet().isNotEmpty()
@@ -372,11 +373,11 @@ internal class HomeRepositoryImpl(
                     .byDeleted().isFalse
                     .byEnrollmentUid().eq(enrollment.uid())
                     .byStatus().eq(EventStatus.OVERDUE).blockingIsEmpty() ||
-                        !d2.eventModule().events()
-                            .byDeleted().isFalse
-                            .byEnrollmentUid().eq(enrollment.uid())
-                            .byStatus().eq(EventStatus.SCHEDULE)
-                            .byDueDate().before(Date()).blockingIsEmpty()
+                    !d2.eventModule().events()
+                        .byDeleted().isFalse
+                        .byEnrollmentUid().eq(enrollment.uid())
+                        .byStatus().eq(EventStatus.SCHEDULE)
+                        .byDueDate().before(Date()).blockingIsEmpty()
             }
         }
         return Pair(teiUids.size, hasOverdue)
