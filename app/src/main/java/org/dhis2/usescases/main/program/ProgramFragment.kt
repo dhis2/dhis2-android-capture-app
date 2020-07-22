@@ -1,6 +1,5 @@
 package org.dhis2.usescases.main.program
 
-import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
@@ -11,13 +10,11 @@ import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.OvershootInterpolator
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import javax.inject.Inject
 import org.dhis2.App
-import org.dhis2.Bindings.dp
 import org.dhis2.R
 import org.dhis2.databinding.FragmentProgramBinding
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
