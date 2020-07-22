@@ -1,7 +1,5 @@
 package org.dhis2.usescases.programEventDetail
 
-import java.util.Date
-import javax.inject.Inject
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.tuples.Pair
 import org.dhis2.utils.DateUtils
@@ -10,7 +8,11 @@ import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.event.EventStatus
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
+import java.util.Date
+import javax.inject.Inject
 
 class ProgramEventMapper @Inject constructor(val d2: D2) {
 
@@ -51,9 +53,87 @@ class ProgramEventMapper @Inject constructor(val d2: D2) {
             event.status()!!,
             hasExpired || !inOrgUnitRange,
             attrOptCombo,
-            event.geometry()
+            event.geometry(),
+            isEventEditable(event.uid())
         )
     }
+
+    fun isEventEditable(eventUid: String): Boolean {
+        val event =
+            d2.eventModule().events().uid(eventUid).blockingGet()
+        val program = d2.programModule().programs().uid(event.program()).blockingGet()
+        val stage =
+            d2.programModule().programStages().uid(event.programStage()).blockingGet()
+        val isExpired = DateUtils.getInstance().isEventExpired(
+            event.eventDate(),
+            event.completedDate(),
+            event.status(),
+            program.completeEventsExpiryDays()!!,
+            if (stage.periodType() != null) stage.periodType() else program.expiryPeriodType(),
+            program.expiryDays()!!
+        )
+        val blockAfterComplete =
+            event.status() == EventStatus.COMPLETED && stage.blockEntryForm()!!
+        val isInCaptureOrgUnit = d2.organisationUnitModule().organisationUnits()
+            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+            .byUid().eq(event.organisationUnit()).one().blockingExists()
+        val hasCatComboAccess =
+            event.attributeOptionCombo() == null || getCatComboAccess(event)
+        return !blockAfterComplete && !isExpired &&
+                getAccessDataWrite(eventUid) && inOrgUnitRange(eventUid) && isInCaptureOrgUnit && hasCatComboAccess
+    }
+
+    private fun inOrgUnitRange(eventUid: String): Boolean {
+        val event =
+            d2.eventModule().events().uid(eventUid).blockingGet()
+        val orgUnitUid = event.organisationUnit()
+        val eventDate = event.eventDate()
+        var inRange = true
+        val orgUnit =
+            d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet()
+        if (eventDate != null && orgUnit.openingDate() != null && eventDate.before(orgUnit.openingDate())) inRange =
+            false
+        if (eventDate != null && orgUnit.closedDate() != null && eventDate.after(orgUnit.closedDate())) inRange =
+            false
+        return inRange
+    }
+
+    fun getAccessDataWrite(eventUid: String): Boolean {
+        var canWrite: Boolean
+        canWrite = d2.programModule().programs().uid(
+            d2.eventModule().events().uid(eventUid).blockingGet().program()
+        ).blockingGet().access().data().write()
+        if (canWrite) canWrite = d2.programModule().programStages().uid(
+            d2.eventModule().events().uid(eventUid).blockingGet().programStage()
+        ).blockingGet().access().data().write()
+        return canWrite
+    }
+
+    private fun getCatComboAccess(event: Event): Boolean {
+        return if (event.attributeOptionCombo() != null) {
+            val optionUid =
+                UidsHelper.getUidsList(
+                    d2.categoryModule()
+                        .categoryOptionCombos().withCategoryOptions()
+                        .uid(event.attributeOptionCombo())
+                        .blockingGet().categoryOptions()
+                )
+            val options =
+                d2.categoryModule().categoryOptions().byUid().`in`(optionUid).blockingGet()
+            var access = true
+            val eventDate = event.eventDate()
+            for (option in options) {
+                if (!option.access().data().write()) access = false
+                if (eventDate != null && option.startDate() != null && eventDate.before(option.startDate())) access =
+                    false
+                if (eventDate != null && option.endDate() != null && eventDate.after(option.endDate())) access =
+                    false
+            }
+            access
+        } else true
+    }
+
+
 
     fun eventsToProgramEvents(events: List<Event>): List<ProgramEventViewModel> {
         return events.map { event -> eventToProgramEvent(event) }
