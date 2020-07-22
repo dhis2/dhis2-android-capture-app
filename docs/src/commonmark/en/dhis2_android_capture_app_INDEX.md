@@ -20,3 +20,4 @@ applicable_txt: 'Applicable to version 2.1'
 !INCLUDE "content/capture-app/program-rules-supported-in-android-capture-app.md"
 !INCLUDE "content/capture-app/program-indicators.md"
 !INCLUDE "content/capture-app/value-types-supported.md"
+!INCLUDE "content/capture-app/app-android-settings-configuration.md"
