@@ -4,7 +4,7 @@
 
 This section focuses on the Android Settings app implementation.
 
-The Android Settings web app allows admins to configure synchronization parameters for the DHIS2 Android Capture App, encrypt the local database of the android devices, and run tests on the size of data and metadata synchronized by a given android user. The configuration parameters defined within this app will overwrite the settings of all android devices using the DHIS2 Android Capture App.
+The Android Settings web app allows admins to configure synchronization parameters for the DHIS2 Android Capture App, encrypt the local database of the android devices, and run tests on the size of data and metadata synchronized by a given android user. The configuration parameters defined within this web app will overwrite the settings of all android devices using the DHIS2 Android Capture App.
 
 Please note that in this version of the web app, only users with 'ALL' authority are able to define those parameters in the configuration. Other users having access to the web app can see the value of the parameters, but cannot edit them. 
 
@@ -15,9 +15,9 @@ Includes configurations such as how often the android app will synchronize metad
 
 ![](resources/images/general-settings.png)
 
-**Metadata sync:** Admin users can choose how often they want to sync the metadata. e.g. Sync metadata every 24 hours.
+**Metadata sync:** Admin users can choose how often the metadata will sync. e.g. Sync metadata every 24 hours.
 
-**Data sync:** Admin users can choose how often they want to sync the data. e.g. Syncing data every 6 hours. 
+**Data sync:** Admin users can choose how often the data will sync. e.g. Syncing data every 6 hours. 
 
 **SMS Gateway:** This section allows admin users to edit the SMS gateway phone number.
 
@@ -29,10 +29,10 @@ Includes configurations such as how often the android app will synchronize metad
 >
 > This is a critical action and will affect the local database of all android devices synchronizing with the server (it won't affect the server DHIS2 database).
 >
-> By default the android app database is not encrypted, but a system admin can check the *Encrypt device database* to encrypt the metadata and data stored in every device. Encrypting the database will have an impact on the database volume and performance of the android app. Also note that at the moment of selecting or unselecting this option no data is lost (even if it hasn't been previously synchronized with the server)
+> By default the android app database is not encrypted, but an admin can check the *Encrypt device database* to encrypt the metadata and data stored in every device. Encrypting the database will have an impact on the database volume and performance of the android app. Also note that at the moment of selecting or unselecting this option no data is lost (even if it hasn't been previously synchronized with the server)
 
  
-**Disable all settings:** By clicking this button the user will remove all android confiuration settings, so no configuration will be applied to the Android Capture app.  
+**Disable all settings:** By clicking this button the user will remove all android confiuration settings, so no configuration will be applied to the Android Capture app (if this is the case the sync parameters applied are the ones defined in the Android Capture app).
 
 
 ## Program download sync settings
@@ -69,7 +69,7 @@ This section allows the admin users to specify the behaviour of a particular pro
 
 ![](resources/images/program-specific-dialog-with_registration.png)
 
-In the case that any specific settings have been saved, a table will show up a summary with the specific configuration per program, and the options to edit or delete these settings.
+In the case that any specific settings has been saved, a table will show up a summary with the specific configuration per program, and the options to edit or delete these settings.
 
 ![](resources/images/program-specific-table.png)
 
@@ -105,7 +105,7 @@ To add a specific setting:
 
 ## User Sync Test
 
-This section checks the amount of data and metadata a user would sync to their device. You can run this test on any user that you have access to. This test shows up the number of organisation units, data sets, program rules, programs, etc. that an android user has access to (so the resoruces that the android app will download) , and the metadata and data download size (approx estimation).
+This section checks the amount of data and metadata a user would sync to his/her device. You can run this test on any user that you have access to. This test shows up the number of organisation units, data sets, program rules, programs, etc. that an android user has access to (so the resoruces that the android app will download) , and the metadata and data download size (approx estimation). Please note that a user doesn't need to have the 'ALL' authority to run this test.
 
 ![](resources/images/user-sync-test.png)
 
@@ -163,7 +163,7 @@ Only when an admin user clicks on this button all changes made on the current se
  
 **Unsaved changes:** 
  
-In case an admin user wants to go to another section when there are some unsaved changes, an alert will be displayed before navigating away from the current section. In case the user accepts leaving the page, the unsaved changes will be lost.
+In case an admin user wants to go to another section when there are still some unsaved changes, an alert will be displayed before navigating away from the current section. In case the user accepts leaving the page, the unsaved changes will be lost.
 
 ![](resources/images/unsaved-changes.png)
  
