@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mapbox.geojson.Feature
 import org.dhis2.uicomponents.map.camera.centerCameraOnFeature
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
+import org.dhis2.uicomponents.map.carousel.CarouselLayoutManager
 import org.dhis2.uicomponents.map.managers.MapManager
 
 class CarouselView @JvmOverloads constructor(
@@ -17,10 +18,11 @@ class CarouselView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
+    var carouselEnabled: Boolean = true
     private lateinit var carouselAdapter: CarouselAdapter
 
     init {
-        layoutManager = LinearLayoutManager(context, HORIZONTAL, false)
+        layoutManager = CarouselLayoutManager(context, HORIZONTAL, false)
         itemAnimator = DefaultItemAnimator()
         LinearSnapHelper().attachToRecyclerView(this)
     }
@@ -34,7 +36,7 @@ class CarouselView @JvmOverloads constructor(
         addOnScrollListener(object : OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                if (newState == SCROLL_STATE_IDLE) {
+                if (newState == SCROLL_STATE_IDLE && carouselEnabled) {
                     mapManager.mapLayerManager.selectFeature(null)
                     val feature = mapManager.findFeature(currentItem())
                     if (feature == null) {
@@ -60,8 +62,15 @@ class CarouselView @JvmOverloads constructor(
     }
 
     fun scrollToFeature(feature: Feature) {
-        smoothScrollToPosition(
-            carouselAdapter.indexOfFeature(feature)
-        )
+        if (carouselEnabled) {
+            smoothScrollToPosition(
+                carouselAdapter.indexOfFeature(feature)
+            )
+        }
+    }
+
+    fun setEnabledStatus(enabled: Boolean) {
+        this.carouselEnabled = enabled
+        (layoutManager as CarouselLayoutManager).setEnabled(enabled)
     }
 }

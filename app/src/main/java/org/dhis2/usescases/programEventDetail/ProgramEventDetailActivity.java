@@ -1,6 +1,5 @@
 package org.dhis2.usescases.programEventDetail;
 
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.PointF;
@@ -15,7 +14,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
@@ -36,6 +34,7 @@ import com.mapbox.mapboxsdk.plugins.markerview.MarkerView;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.InfoWindowEventBinding;
@@ -84,6 +83,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Inject
     ProgramEventDetailContract.Presenter presenter;
+
+    @Inject
+    CarouselViewAnimations animations;
 
     private ProgramEventDetailLiveAdapter liveAdapter;
     private boolean backDropActive;
@@ -157,13 +159,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     protected void onResume() {
         super.onResume();
         if (isMapVisible()) {
-            ValueAnimator anim = ValueAnimator.ofFloat(1f, 0.25f)
-                    .setDuration(500);
-            anim.addUpdateListener(valueAnimator -> {
-                binding.mapCarousel.setAlpha((float)valueAnimator.getAnimatedValue());
-            });
-            anim.setInterpolator(new DecelerateInterpolator());
-            anim.start();
+            animations.initMapLoading(binding.mapCarousel);
             binding.toolbarProgress.show();
         }
         presenter.init();
@@ -329,7 +325,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos) {
-        if(!categoryOptionCombos.val0().isDefault()) {
+        if (!categoryOptionCombos.val0().isDefault()) {
             filtersAdapter.addCatOptCombFilter(categoryOptionCombos);
         }
     }
@@ -380,11 +376,15 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
                     .addOnSyncClickListener(
                             teiUid -> {
-                                presenter.onSyncIconClick(teiUid);
+                                if (binding.mapCarousel.getCarouselEnabled()) {
+                                    presenter.onSyncIconClick(teiUid);
+                                }
                                 return true;
                             })
                     .addOnEventClickListener((teiUid, orgUnit) -> {
-                        presenter.onEventClick(teiUid, orgUnit);
+                        if (binding.mapCarousel.getCarouselEnabled()) {
+                            presenter.onEventClick(teiUid, orgUnit);
+                        }
                         return true;
                     })
                     .build();
@@ -395,13 +395,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(programEventViewModels);
         }
 
-        ValueAnimator anim = ValueAnimator.ofFloat(binding.mapCarousel.getAlpha(), 1)
-                .setDuration(500);
-        anim.addUpdateListener(valueAnimator -> {
-            binding.mapCarousel.setAlpha((float)valueAnimator.getAnimatedValue());
-        });
-        anim.setInterpolator(new DecelerateInterpolator());
-        anim.start();
+        animations.endMapLoading(binding.mapCarousel);
         binding.toolbarProgress.hide();
     }
 
