@@ -759,11 +759,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(TEIuid);
         compositeDisposable.add(
-                d2.trackedEntityModule().trackedEntityInstanceDownloader().byUid().in(teiUids).download()
+                d2.trackedEntityModule().trackedEntityInstanceDownloader()
+                        .byUid().in(teiUids)
+                        .overwrite(true)
+                        .download()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                data -> Timber.d("DOWNLOADING TEI %s : %s%", TEIuid, data.percentage()),
+                                view.downloadProgress(),
                                 Timber::d,
                                 () -> addRelationship(TEIuid, relationshipTypeUid, false))
         );
