@@ -66,7 +66,6 @@ class CarouselView @JvmOverloads constructor(
 
     fun scrollToFeature(feature: Feature) {
         if (carouselEnabled) {
-
             val initialPosition = (layoutManager as LinearLayoutManager)
                 .findFirstCompletelyVisibleItemPosition()
             val endPosition = carouselAdapter.indexOfFeature(feature)
