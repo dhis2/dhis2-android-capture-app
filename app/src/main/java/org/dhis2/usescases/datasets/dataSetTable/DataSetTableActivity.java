@@ -145,7 +145,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         binding.viewPager.setAdapter(viewPagerAdapter);
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> {
             if (position == 0) {
-                tab.setText(R.string.dataset_overview);
+                tab.setText(R.string.dataset_data);
             } else {
                 tab.setText(viewPagerAdapter.getSectionTitle(position));
             }

@@ -6,6 +6,7 @@ import android.text.style.ForegroundColorSpan
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import java.util.Locale
 import org.dhis2.R
 import org.dhis2.data.tuples.Pair
 import org.dhis2.databinding.ItemCarouselProgramEventBinding
@@ -38,6 +39,7 @@ class CarouselProgramEventHolder(
             binding.noCoordinatesLabel.noCoordinatesMessage.text =
                 itemView.context.getString(R.string.no_coordinates_item).format(
                     itemView.context.getString(R.string.event_event)
+                        .toLowerCase(Locale.getDefault())
                 )
         } else {
             binding.noCoordinatesLabel.root.visibility = View.INVISIBLE

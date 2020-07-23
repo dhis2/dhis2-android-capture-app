@@ -142,7 +142,7 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
                     getString(R.string.updated_time),
                     dataSetInstance.lastUpdated().toDateSpan(mContext)
                 )
-            Bindings.setStateIcon(binding.syncStatus, dataSetInstance.state())
+            Bindings.setStateIcon(binding.syncStatus, dataSetInstance.state(), false)
             binding.dataSetPeriod.text = DateUtils.getInstance()
                 .getPeriodUIString(
                     period.periodType(),
