@@ -13,9 +13,7 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 
-class ProgramEventMapper @Inject constructor(val d2: D2) {
-
-    private var dhisEventUtils: DhisEventUtils = DhisEventUtils(d2)
+class ProgramEventMapper @Inject constructor(val d2: D2, val dhisEventUtils: DhisEventUtils) {
 
     fun eventToProgramEvent(event: Event): ProgramEventViewModel {
         val orgUnitName: String = getOrgUnitName(event.organisationUnit()) ?: ""

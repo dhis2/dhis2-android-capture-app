@@ -1,5 +1,6 @@
 package org.dhis2.data.event
 
+import javax.inject.Inject
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
@@ -8,7 +9,7 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
-class DhisEventUtils(val d2: D2) {
+class DhisEventUtils @Inject constructor(val d2: D2) {
 
     fun isEventEditable(eventUid: String): Boolean {
         val event =
