@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import io.reactivex.Flowable
 import java.util.Locale
 import javax.inject.Inject
 import org.dhis2.Bindings.Bindings
@@ -33,6 +34,7 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
     private var accessWrite: Boolean = false
     private lateinit var binding: FragmentDatasetDetailBinding
     private lateinit var mContext: Context
+    private lateinit var activity: DataSetTableActivity
 
     @Inject
     lateinit var presenter: DataSetDetailPresenter
@@ -52,6 +54,8 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
     override fun onAttach(context: Context) {
         super.onAttach(context)
         this.mContext = context
+        this.activity = context as DataSetTableActivity
+
         arguments?.let {
             dataSetUid = it.getString(DATASET_UID, "")
             accessWrite = it.getBoolean(DATASET_ACCESS)
@@ -111,19 +115,20 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
 
     override fun setDataSetDetails(
         dataSetInstance: DataSetInstance,
-        period: Period
+        period: Period,
+        isComplete: Boolean
     ) {
         this.dataSetInstance = dataSetInstance
         binding.apply {
             dataSetName.text = dataSetInstance.dataSetDisplayName()
-            if (dataSetInstance.completed()) {
+            if (isComplete) {
                 completedDate.visibility = View.VISIBLE
                 completedDate.text = String.format(
-                    "%s %s",
-                    getString(R.string.data_set_closed),
+                    getString(R.string.completed_by),
+                    dataSetInstance.completedBy() ?: "?",
                     dataSetInstance.completionDate().toDateSpan(mContext)
                 )
-                dataSetStatus.setText(R.string.data_set_closed)
+                dataSetStatus.setText(R.string.data_set_complete)
             } else {
                 dataSetStatus.setText(R.string.data_set_open)
                 completedDate.visibility = View.GONE
@@ -132,7 +137,12 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
                     Color.parseColor("#CCFF90")
                 )
             }
-            Bindings.setStateIcon(binding.syncStatus, dataSetInstance.state())
+            lastUpdatedDate.text =
+                String.format(
+                    getString(R.string.updated_time),
+                    dataSetInstance.lastUpdated().toDateSpan(mContext)
+                )
+            Bindings.setStateIcon(binding.syncStatus, dataSetInstance.state(), false)
             binding.dataSetPeriod.text = DateUtils.getInstance()
                 .getPeriodUIString(
                     period.periodType(),
@@ -168,5 +178,9 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
             )
         )
         binding.dataSetIcon.setColorFilter(ColorUtils.getContrastColor(color))
+    }
+
+    override fun observeReopenChanges(): Flowable<Boolean> {
+        return activity.observeReopenChanges()
     }
 }

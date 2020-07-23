@@ -181,7 +181,11 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     @Override
     public void showTutorial(boolean shaked) {
-        HelpManager.getInstance().showHelp();
+        if(HelpManager.getInstance().isReady()) {
+            HelpManager.getInstance().showHelp();
+        }else{
+            showToast(getString(R.string.no_intructions));
+        }
     }
 
     public void showMoreOptions(View view) {

@@ -23,7 +23,17 @@ class MapLayerManager {
     private var featureType: FeatureType = FeatureType.POINT
     var styleChangeCallback: (() -> Unit)? = null
     private val relationShipColors =
-        mutableListOf(Color.CYAN, Color.GREEN, Color.MAGENTA, Color.YELLOW, Color.BLUE, Color.RED)
+        mutableListOf(
+            Color.parseColor("#E71409"),
+            Color.parseColor("#337DBA"),
+            Color.parseColor("#49B044"),
+            Color.parseColor("#994BA5"),
+            Color.parseColor("#FF7F00"),
+            Color.parseColor("#999999"),
+            Color.parseColor("#A85621"),
+            Color.parseColor("#F97FC0"),
+            Color.parseColor("#2C2C2C")
+        )
     private var carouselAdapter: CarouselAdapter? = null
     private val relationshipUsedColors =
         mutableMapOf<String, Int>()
@@ -126,7 +136,6 @@ class MapLayerManager {
 
     fun getLayer(sourceId: String, shouldSaveLayer: Boolean? = false): MapLayer? {
         return mapLayers[sourceId].let {
-            currentLayerSelection?.setSelectedItem(null)
             if (shouldSaveLayer == true) {
                 this.currentLayerSelection = it
             }

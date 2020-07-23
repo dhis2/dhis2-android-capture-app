@@ -84,6 +84,7 @@ abstract class MapManager {
     }
 
     fun findFeatureFor(featureUidProperty: String): Feature? {
+        if (!isMapReady()) return null
         return mapLayerManager.getLayers().mapNotNull { mapLayer ->
             mapLayer.findFeatureWithUid(featureUidProperty)
         }.firstOrNull()
@@ -107,4 +108,7 @@ abstract class MapManager {
         markerViewManager?.onDestroy()
         symbolManager?.onDestroy()
     }
+
+    abstract fun findFeature(source: String, propertyName: String, propertyValue: String): Feature?
+    abstract fun findFeature(propertyValue: String): Feature?
 }

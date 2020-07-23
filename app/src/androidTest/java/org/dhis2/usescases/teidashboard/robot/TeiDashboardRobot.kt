@@ -230,6 +230,14 @@ class TeiDashboardRobot : BaseRobot() {
         onView(withText(R.string.dashboard_menu_delete_enrollment)).perform(click())
     }
 
+    fun clickOnGroupByStage(){
+        onView(withText(R.string.group_events_by_stage)).perform(click())
+    }
+
+    fun clickOnTimelineEvents(){
+        onView(withText(R.string.show_events_timeline)).perform(click())
+    }
+
     fun checkEventWasScheduled(eventName: String, position: Int) {
         onView(withId(R.id.tei_recycler))
             .check(matches(allOf(isDisplayed(), isNotEmpty(),

@@ -48,9 +48,13 @@ class SyncStateFilterHolder extends FilterHolder {
                     FilterManager.getInstance().addState(!b, State.TO_POST);
                     FilterManager.getInstance().addState(!b, State.UPLOADING);
                 });
-        localBinding.filterState.stateError.setOnCheckedChangeListener((compoundButton, b) ->
-                FilterManager.getInstance().addState(!b, State.ERROR));
-        localBinding.filterState.stateSMS.setOnCheckedChangeListener((compoundButton, b) ->
-                FilterManager.getInstance().addState(!b, State.SYNCED_VIA_SMS));
+        localBinding.filterState.stateError.setOnCheckedChangeListener((compoundButton, b) -> {
+            FilterManager.getInstance().addState(!b, State.ERROR);
+            FilterManager.getInstance().addState(!b, State.WARNING);
+        });
+        localBinding.filterState.stateSMS.setOnCheckedChangeListener((compoundButton, b) -> {
+            FilterManager.getInstance().addState(!b, State.SYNCED_VIA_SMS);
+            FilterManager.getInstance().addState(!b, State.SENT_VIA_SMS);
+        });
     }
 }

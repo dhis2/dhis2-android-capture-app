@@ -19,7 +19,7 @@
     <item
         android:id="@+id/groupEvents"
         android:icon="@drawable/ic_group_view"
-        android:title="Group events by stage"/>
+        android:title="@string/group_events_by_stage"/>
     <item
         android:id="@+id/complete"
         android:icon="@drawable/ic_lock_menu"

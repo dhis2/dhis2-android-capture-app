@@ -1,6 +1,8 @@
 package org.dhis2.uicomponents.map.layer.types
 
+import android.graphics.Color
 import com.mapbox.geojson.Feature
+import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.layers.FillLayer
@@ -12,6 +14,7 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.managers.EventMapManager
+import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
 
 class EventMapLayer(
@@ -21,13 +24,26 @@ class EventMapLayer(
 ) : MapLayer {
 
     private val POINT_LAYER_ID = "POINT_LAYER"
+    private var SELECTED_POINT_LAYER_ID: String = "SELECTED_TEI_POINT_LAYER_ID"
     private val POLYGON_LAYER_ID = "POLYGON_LAYER"
+    private var SELECTED_POINT_SOURCE_ID = "SELECTED_POINT_SOURCE"
+    private var SELECTED_POLYGON_LAYER_ID: String = "SELECTED_POLYGON_LAYER_ID"
+    private var SELECTED_POLYGON_SOURCE_ID = "SELECTED_POLYGON_SOURCE_ID"
+
     override var visible = false
 
     init {
         when (featureType) {
-            FeatureType.POINT -> style.addLayer(pointLayer)
-            FeatureType.POLYGON -> style.addLayer(polygonLayer)
+            FeatureType.POINT -> {
+                style.addLayer(pointLayer)
+                style.addSource(GeoJsonSource(SELECTED_POINT_SOURCE_ID))
+                style.addLayer(selectedPointLayer)
+            }
+            FeatureType.POLYGON -> {
+                style.addLayer(polygonLayer)
+                style.addSource(GeoJsonSource(SELECTED_POLYGON_SOURCE_ID))
+                style.addLayer(selectedPolygonLayer)
+            }
             else -> Unit
         }
     }
@@ -40,11 +56,26 @@ class EventMapLayer(
                     PropertyFactory.iconAllowOverlap(true)
                 ).apply { minZoom = 0f }
 
+    private val selectedPointLayer: Layer
+        get() = style.getLayer(SELECTED_POINT_LAYER_ID)
+            ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_POINT_SOURCE_ID)
+                .withProperties(
+                    PropertyFactory.iconImage(EventMapManager.ICON_ID),
+                    PropertyFactory.iconAllowOverlap(true)
+                ).apply { minZoom = 0f }
+
     private val polygonLayer: Layer
         get() = style.getLayer(POLYGON_LAYER_ID)
             ?: FillLayer(POLYGON_LAYER_ID, EventMapManager.EVENTS)
                 .withProperties(
                     PropertyFactory.fillColor(eventColor ?: -1)
+                )
+
+    private val selectedPolygonLayer: Layer
+        get() = style.getLayer(SELECTED_POLYGON_LAYER_ID)
+            ?: FillLayer(SELECTED_POLYGON_LAYER_ID, SELECTED_POLYGON_SOURCE_ID)
+                .withProperties(
+                    PropertyFactory.fillColor(ColorUtils.withAlpha(eventColor ?: -1))
                 )
 
     private fun setVisibility(visibility: String) {
@@ -67,12 +98,64 @@ class EventMapLayer(
     }
 
     override fun setSelectedItem(feature: Feature?) {
+        feature?.let {
+            if (featureType == FeatureType.POINT) {
+                selectPoint(feature)
+            } else {
+                selectPolygon(feature)
+            }
+        } ?: deselectCurrentPoint()
+    }
+
+    private fun selectPoint(feature: Feature) {
+        deselectCurrentPoint()
+
+        style.getSourceAs<GeoJsonSource>(SELECTED_POINT_SOURCE_ID)?.apply {
+            setGeoJson(
+                FeatureCollection.fromFeatures(
+                    arrayListOf(Feature.fromGeometry(feature.geometry()))
+                )
+            )
+        }
+
+        selectedPointLayer.setProperties(PropertyFactory.iconSize(1.5f))
+    }
+
+    private fun selectPolygon(feature: Feature) {
+        deselectCurrentPoint()
+
+        style.getSourceAs<GeoJsonSource>(SELECTED_POLYGON_SOURCE_ID)?.apply {
+            setGeoJson(
+                FeatureCollection.fromFeatures(
+                    arrayListOf(Feature.fromGeometry(feature.geometry()))
+                )
+            )
+        }
+
+        selectedPolygonLayer.setProperties(
+            PropertyFactory.fillColor(ColorUtils.withAlpha(Color.WHITE))
+        )
+    }
+
+    private fun deselectCurrentPoint() {
+        if (featureType == FeatureType.POINT) {
+            selectedPointLayer.setProperties(
+                PropertyFactory.iconSize(1f)
+            )
+        } else {
+            selectedPolygonLayer.setProperties(
+                PropertyFactory.fillColor(ColorUtils.withAlpha(eventColor ?: -1))
+            )
+        }
     }
 
     override fun findFeatureWithUid(featureUidProperty: String): Feature? {
         return style.getSourceAs<GeoJsonSource>(EventMapManager.EVENTS)
             ?.querySourceFeatures(
                 Expression.eq(Expression.get(MapEventToFeatureCollection.EVENT), featureUidProperty)
-            )?.firstOrNull()
+            )?.firstOrNull()?.let {
+            setSelectedItem(it)
+            it
+        }
     }
 }

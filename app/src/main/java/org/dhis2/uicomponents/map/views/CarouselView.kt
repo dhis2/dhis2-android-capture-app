@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.mapbox.geojson.Feature
+import kotlin.math.abs
 import org.dhis2.uicomponents.map.camera.centerCameraOnFeature
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.managers.MapManager
@@ -18,6 +19,8 @@ class CarouselView @JvmOverloads constructor(
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
     private lateinit var carouselAdapter: CarouselAdapter
+    private val CAROUSEL_SMOOTH_THREADSHOLD = 10
+    private val CAROUSEL_PROXIMITY_THREADSHOLD = 3
 
     init {
         layoutManager = LinearLayoutManager(context, HORIZONTAL, false)
@@ -36,7 +39,7 @@ class CarouselView @JvmOverloads constructor(
                 super.onScrollStateChanged(recyclerView, newState)
                 if (newState == SCROLL_STATE_IDLE) {
                     mapManager.mapLayerManager.selectFeature(null)
-                    val feature = mapManager.findFeatureFor(currentItem())
+                    val feature = mapManager.findFeature(currentItem())
                     if (feature == null) {
                         callback.invoke()
                     } else {
@@ -54,14 +57,33 @@ class CarouselView @JvmOverloads constructor(
             visiblePosition = (layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
         }
         if (visiblePosition == -1) {
-            visiblePosition == 0
+            visiblePosition = 0
         }
         return carouselAdapter.getUidProperty(visiblePosition)
     }
 
     fun scrollToFeature(feature: Feature) {
-        smoothScrollToPosition(
-            carouselAdapter.indexOfFeature(feature)
-        )
+        val initialPosition = (layoutManager as LinearLayoutManager)
+            .findFirstCompletelyVisibleItemPosition()
+        val endPosition = carouselAdapter.indexOfFeature(feature)
+
+        if (initialPosition == -1 || endPosition == -1) {
+            return
+        }
+
+        when {
+            abs(endPosition - initialPosition) < CAROUSEL_SMOOTH_THREADSHOLD ->
+                smoothScrollToPosition(endPosition)
+            endPosition > initialPosition -> {
+                smoothScrollToPosition(initialPosition + CAROUSEL_PROXIMITY_THREADSHOLD)
+                scrollToPosition(endPosition - CAROUSEL_PROXIMITY_THREADSHOLD)
+                smoothScrollToPosition(endPosition)
+            }
+            else -> {
+                smoothScrollToPosition(initialPosition - CAROUSEL_PROXIMITY_THREADSHOLD)
+                scrollToPosition(endPosition + CAROUSEL_PROXIMITY_THREADSHOLD)
+                smoothScrollToPosition(endPosition)
+            }
+        }
     }
 }
