@@ -145,7 +145,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         binding.viewPager.setAdapter(viewPagerAdapter);
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> {
             if (position == 0) {
-                tab.setText(R.string.dataset_overview);
+                tab.setText(R.string.dataset_data);
             } else {
                 tab.setText(viewPagerAdapter.getSectionTitle(position));
             }
@@ -236,14 +236,13 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public Observable<Object> observeSaveButtonClicks() {
-        return RxView.clicks(binding.saveButton)
-                .doOnNext(o -> {
-                    if (getCurrentFocus() != null) {
-                        View currentFocus = getCurrentFocus();
-                        currentFocus.clearFocus();
-                        ViewExtensionsKt.closeKeyboard(currentFocus);
-                    }
-                });
+        return RxView.clicks(binding.saveButton).doOnNext(o -> {
+            if (getCurrentFocus() != null) {
+                View currentFocus = getCurrentFocus();
+                currentFocus.clearFocus();
+                ViewExtensionsKt.closeKeyboard(currentFocus);
+            }
+        });
     }
 
     @Override
