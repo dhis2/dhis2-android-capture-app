@@ -33,7 +33,19 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
     public void bind() {
         super.bind();
         filterIcon.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_calendar_positive));
-        filterTitle.setText(R.string.filters_title_period);
+        switch (programType){
+            case ALL:
+            case EVENT:
+                filterTitle.setText(R.string.filters_title_date);
+                break;
+            case TRACKER:
+            case DASHBOARD:
+                filterTitle.setText(R.string.filters_title_event_date);
+                break;
+            case DATASET:
+                filterTitle.setText(R.string.filters_title_period);
+                break;
+        }
 
         setListeners(localBinding.periodLayout);
 
