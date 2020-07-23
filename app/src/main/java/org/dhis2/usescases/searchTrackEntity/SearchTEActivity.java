@@ -194,7 +194,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
 
         binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), this, presenter));
-
         binding.enrollmentButton.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 v.requestFocus();
@@ -235,10 +234,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onResume() {
         super.onResume();
-
-        Integer hola = null;
-        hola.byteValue();
-
         if (isMapVisible()) {
             binding.progressLayout.setVisibility(View.GONE);
         }
