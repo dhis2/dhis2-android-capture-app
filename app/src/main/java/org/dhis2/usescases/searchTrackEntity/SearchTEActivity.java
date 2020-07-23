@@ -235,6 +235,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onResume() {
         super.onResume();
+
+        Integer hola = null;
+        hola.byteValue();
+
         if (isMapVisible()) {
             binding.progressLayout.setVisibility(View.GONE);
         }
