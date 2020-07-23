@@ -55,7 +55,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                         catComboUid -> view.showCatOptComboDialog(catComboUid),
-                        Timber::e
+                        t8 -> Timber.e(t8)
                 )
         );
         compositeDisposable.add(eventRepository.featureType()
@@ -63,7 +63,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                         view::setFeatureType,
-                        Timber::e
+                        t7 -> Timber.e(t7)
                 )
         );
 
@@ -72,7 +72,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                         view::setWritePermission,
-                        Timber::e)
+                        t6 -> Timber.e(t6))
         );
 
 
@@ -82,7 +82,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::setOptionComboAccess,
-                                Timber::e
+                                t5 -> Timber.e(t5)
                         )
         );
 
@@ -92,7 +92,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .subscribeOn(schedulerProvider.io())
                         .subscribe(
                                 view::setProgram,
-                                Timber::e
+                                t4 -> Timber.e(t4)
                         )
         );
 
@@ -101,7 +101,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(view::setCatOptionComboFilter,
-                                Timber::e
+                                t3 -> Timber.e(t3)
                         )
         );
 
@@ -122,7 +122,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                         listDataProcessor.onNext(new Unit());
                                     }
                                 },
-                                Timber::e
+                                t2 -> Timber.e(t2)
                         )
         );
 
@@ -186,7 +186,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 open -> view.openOrgUnitTreeSelector(),
-                                Timber::e
+                                t1 -> Timber.e(t1)
                         )
         );
 
@@ -200,7 +200,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 filterManager -> view.updateFilters(filterManager.getTotalFilters()),
-                                Timber::e
+                                t -> Timber.e(t)
                         )
         );
 
@@ -214,7 +214,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 periodRequest -> view.showPeriodRequest(periodRequest.getFirst()),
-                                Timber::e
+                                t -> Timber.e(t)
                         ));
 
         updaterFlowable.connect();
