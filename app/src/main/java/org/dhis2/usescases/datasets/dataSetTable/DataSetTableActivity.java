@@ -236,14 +236,13 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public Observable<Object> observeSaveButtonClicks() {
-        return RxView.clicks(binding.saveButton)
-                .doOnNext(o -> {
-                    if (getCurrentFocus() != null) {
-                        View currentFocus = getCurrentFocus();
-                        currentFocus.clearFocus();
-                        ViewExtensionsKt.closeKeyboard(currentFocus);
-                    }
-                });
+        return RxView.clicks(binding.saveButton).doOnNext(o -> {
+            if (getCurrentFocus() != null) {
+                View currentFocus = getCurrentFocus();
+                currentFocus.clearFocus();
+                ViewExtensionsKt.closeKeyboard(currentFocus);
+            }
+        });
     }
 
     @Override

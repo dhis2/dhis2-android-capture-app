@@ -249,7 +249,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public Boolean getProgramGrouping() {
         if (programUid != null) {
-            return getGrouping().containsKey(programUid) ? getGrouping().get(programUid) : false;
+            return getGrouping().containsKey(programUid) ? getGrouping().get(programUid) : true;
         } else {
             return false;
         }
