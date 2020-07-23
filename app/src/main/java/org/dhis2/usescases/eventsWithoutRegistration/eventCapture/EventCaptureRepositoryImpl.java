@@ -72,11 +72,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private List<FieldViewModel> sectionFields;
     private final DhisEventUtils dhisEventUtils;
 
-    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2) {
+    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2,DhisEventUtils dhisEventUtils) {
         this.eventUid = eventUid;
         this.formRepository = formRepository;
         this.d2 = d2;
-        this.dhisEventUtils = new DhisEventUtils(d2);
+        this.dhisEventUtils = dhisEventUtils;
 
         currentEvent = d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).blockingGet();
         currentStage = d2.programModule().programStages().uid(currentEvent.programStage()).blockingGet();

@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.event.DhisEventUtils;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
@@ -47,9 +48,11 @@ public class EventCaptureModule {
     @Provides
     @PerActivity
     EventCaptureContract.EventCaptureRepository provideRepository(Context context,
-                                                                  FormRepository formRepository, D2 d2) {
+                                                                  FormRepository formRepository,
+                                                                  D2 d2,
+                                                                  DhisEventUtils eventUtils) {
         FieldViewModelFactory fieldFactory = new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context));
-        return new EventCaptureRepositoryImpl(fieldFactory, formRepository, eventUid, d2);
+        return new EventCaptureRepositoryImpl(fieldFactory, formRepository, eventUid, d2, eventUtils);
     }
 
     @Provides
