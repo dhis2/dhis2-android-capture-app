@@ -20,6 +20,8 @@ abstract class BaseViewHolder(
 
     abstract fun itemViewClick()
 
+    abstract fun itemConfiguration()
+
     fun bind(
         presenter: SearchTEContractsModule.Presenter,
         teiModel: SearchTeiModel,
@@ -76,11 +78,10 @@ abstract class BaseViewHolder(
             ) {
                 attributeVisibilityCallback()
             }
-            binding.sortingFieldName.text = teiModel.sortingKey
-            binding.sortingFieldValue.text = teiModel.sortingValue
         }
 
         binding.executePendingBindings()
+        itemConfiguration()
         itemViewClick()
     }
 

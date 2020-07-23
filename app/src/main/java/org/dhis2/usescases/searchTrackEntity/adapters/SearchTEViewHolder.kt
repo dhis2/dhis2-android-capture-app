@@ -8,6 +8,11 @@ class SearchTEViewHolder(
     private val binding: ItemSearchTrackedEntityBinding
 ) : BaseViewHolder(binding) {
 
+    override fun itemConfiguration() {
+        binding.sortingFieldName.text = teiModel.sortingKey
+        binding.sortingFieldValue.text = teiModel.sortingValue
+    }
+
     override fun itemViewClick() {
         binding.syncState.setOnClickListener {
             if (teiModel.tei.deleted()!! ||
