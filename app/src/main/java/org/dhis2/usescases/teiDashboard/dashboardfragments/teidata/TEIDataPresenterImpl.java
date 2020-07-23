@@ -146,7 +146,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                         }
                     });
             Flowable<Boolean> groupingFlowable = groupingProcessor.startWith(
-                    getGrouping().containsKey(programUid) ? getGrouping().get(programUid) : false
+                    getGrouping().containsKey(programUid) ? getGrouping().get(programUid) : true
             );
 
             compositeDisposable.add(
@@ -423,7 +423,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
             if (shouldGroup) {
                 groups.put(programUid, true);
             } else {
-                groups.remove(programUid);
+                groups.put(programUid, false);
             }
             preferences.saveAsJson(Preference.GROUPING, groups);
             groupingProcessor.onNext(shouldGroup);

@@ -3,6 +3,7 @@ package org.dhis2.uicomponents.map.carousel
 import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import java.util.Locale
 import org.dhis2.Bindings.addEnrollmentIcons
 import org.dhis2.Bindings.hasFollowUp
 import org.dhis2.Bindings.setAttributeList
@@ -73,7 +74,8 @@ class CarouselTeiHolder(
             if (tei.geometry() == null) {
                 binding.noCoordinatesLabel.root.visibility = View.VISIBLE
                 binding.noCoordinatesLabel.noCoordinatesMessage.text =
-                    itemView.context.getString(R.string.no_coordinates_item).format(teTypeName)
+                    itemView.context.getString(R.string.no_coordinates_item)
+                        .format(teTypeName.toLowerCase(Locale.ROOT))
             } else {
                 binding.noCoordinatesLabel.root.visibility = View.INVISIBLE
             }

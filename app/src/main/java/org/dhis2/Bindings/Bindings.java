@@ -396,8 +396,8 @@ public class Bindings {
         }
     }
 
-    @BindingAdapter("stateIcon")
-    public static void setStateIcon(ImageView imageView, State state) {
+    @BindingAdapter(value = {"stateIcon", "showSynced"}, requireAll = false)
+    public static void setStateIcon(ImageView imageView, State state, boolean showSynced) {
         if (state != null) {
             switch (state) {
                 case TO_POST:
@@ -412,7 +412,9 @@ public class Bindings {
                     break;
                 case SYNCED:
                     imageView.setImageResource(R.drawable.ic_sync);
-                    imageView.setVisibility(View.GONE);
+                    if (!showSynced) {
+                        imageView.setVisibility(View.GONE);
+                    }
                     break;
                 case WARNING:
                     imageView.setImageResource(R.drawable.ic_sync_warning);

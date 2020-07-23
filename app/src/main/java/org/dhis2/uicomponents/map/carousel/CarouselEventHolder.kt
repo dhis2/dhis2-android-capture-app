@@ -3,6 +3,7 @@ package org.dhis2.uicomponents.map.carousel
 import android.view.View
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import java.util.Locale
 import org.dhis2.Bindings.setTeiImage
 import org.dhis2.R
 import org.dhis2.databinding.ItemCarouselEventBinding
@@ -71,6 +72,7 @@ class CarouselEventHolder(
             binding.noCoordinatesLabel.noCoordinatesMessage.text =
                 itemView.context.getString(R.string.no_coordinates_item).format(
                     itemView.context.getString(R.string.event_event)
+                        .toLowerCase(Locale.getDefault())
                 )
         } else {
             binding.noCoordinatesLabel.root.visibility = View.INVISIBLE
