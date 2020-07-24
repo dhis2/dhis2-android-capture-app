@@ -21,7 +21,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/ic_front_backdrop_bg">
+        android:background="@drawable/bottomsheet_bg">
 
 
         <TextView
