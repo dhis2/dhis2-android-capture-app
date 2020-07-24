@@ -34,6 +34,7 @@ import com.mapbox.mapboxsdk.plugins.markerview.MarkerView;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.InfoWindowEventBinding;
@@ -81,6 +82,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Inject
     ProgramEventDetailContract.Presenter presenter;
+
+    @Inject
+    CarouselViewAnimations animations;
 
     private ProgramEventDetailLiveAdapter liveAdapter;
     private boolean backDropActive;
@@ -153,6 +157,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onResume() {
         super.onResume();
+        if (isMapVisible()) {
+            animations.initMapLoading(binding.mapCarousel);
+            binding.toolbarProgress.show();
+        }
         presenter.init();
         if (eventMapManager != null) {
             eventMapManager.onResume();
@@ -316,7 +324,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos) {
-        filtersAdapter.addCatOptCombFilter(categoryOptionCombos);
+        if (!categoryOptionCombos.val0().isDefault()) {
+            filtersAdapter.addCatOptCombFilter(categoryOptionCombos);
+        }
     }
 
     @Override
@@ -365,11 +375,15 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
                     .addOnSyncClickListener(
                             teiUid -> {
-                                presenter.onSyncIconClick(teiUid);
+                                if (binding.mapCarousel.getCarouselEnabled()) {
+                                    presenter.onSyncIconClick(teiUid);
+                                }
                                 return true;
                             })
                     .addOnEventClickListener((teiUid, orgUnit) -> {
-                        presenter.onEventClick(teiUid, orgUnit);
+                        if (binding.mapCarousel.getCarouselEnabled()) {
+                            presenter.onEventClick(teiUid, orgUnit);
+                        }
                         return true;
                     })
                     .build();
@@ -379,6 +393,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         } else {
             ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(programEventViewModels);
         }
+
+        animations.endMapLoading(binding.mapCarousel);
+        binding.toolbarProgress.hide();
     }
 
     @Override
@@ -484,8 +501,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : View.GONE);
         binding.addEventButton.setVisibility(showMap ? View.GONE : View.VISIBLE);
 
-        if (showMap)
+        if (showMap) {
+            binding.toolbarProgress.setVisibility(View.VISIBLE);
+            binding.toolbarProgress.show();
             presenter.getMapData();
+        }
     }
 
     @Override

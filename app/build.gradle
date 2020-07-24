@@ -52,9 +52,12 @@ android {
 
         setProperty("archivesBaseName", "dhis2-v" + versions.vName)
 
+        def bitriseAcraUrl = System.getenv("ACRA_URL")
+        def acraUrl = bitriseAcraUrl != null ? bitriseAcraUrl : "http://127.0.0.1:8080/report"
+
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
         buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"pk.eyJ1Ijoib3Jpa2dnIiwiYSI6ImNqdWpqb24zYTFsOXo0M2xwcXRseGx3aXkifQ.6N9aqvpqdrrSBwO9GyfjUw\""
-        buildConfigField "String", "ACRA_URL", "\"http://127.0.0.1:8080/report\""
+        buildConfigField "String", "ACRA_URL", "\"$acraUrl\""
         buildConfigField "String", "MATOMO_URL", "\"https://dhis2android.matomo.cloud/matomo.php\""
 
         javaCompileOptions {

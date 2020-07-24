@@ -2,6 +2,7 @@ package org.dhis2.usescases.programEventDetail;
 
 import androidx.annotation.NonNull;
 
+import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
@@ -65,5 +66,11 @@ public class ProgramEventDetailModule {
     ProgramEventDetailRepository eventDetailRepository(D2 d2, ProgramEventMapper mapper,
                                                        MapEventToFeatureCollection mapEventToFeatureCollection){
         return new ProgramEventDetailRepositoryImpl(programUid, d2, mapper, mapEventToFeatureCollection);
+    }
+
+    @Provides
+    @PerActivity
+    CarouselViewAnimations animations(){
+        return new CarouselViewAnimations();
     }
 }
