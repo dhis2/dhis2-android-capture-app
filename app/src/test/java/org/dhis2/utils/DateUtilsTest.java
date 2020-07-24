@@ -654,7 +654,7 @@ public class DateUtilsTest {
     public void shouldSubtractYearsToDateWithPositiveInteger() throws ParseException{
         int years = 5;
 
-        Date currentDate = DateUtils.uiDateFormat().parse("2020-07-15");
+        Date currentDate = DateUtils.oldUiDateFormat().parse("2020-07-15");
         Date beforeDate = DateUtils.yearsBeforeNow(years);
 
         Calendar now = Calendar.getInstance();
@@ -671,7 +671,7 @@ public class DateUtilsTest {
     public void shouldSubtractYearsToDateWithNegativeInteger() throws ParseException{
         int years = -5;
 
-        Date currentDate = DateUtils.uiDateFormat().parse("2020-07-15");
+        Date currentDate = DateUtils.oldUiDateFormat().parse("2020-07-15");
         Date beforeDate = DateUtils.yearsBeforeNow(years);
 
         Calendar now = Calendar.getInstance();
@@ -688,7 +688,7 @@ public class DateUtilsTest {
     public void shouldAddYearsToDate() throws ParseException{
         int years = 1;
 
-        Date currentDate = DateUtils.uiDateFormat().parse("2020-07-15");
+        Date currentDate = DateUtils.oldUiDateFormat().parse("2020-07-15");
         Date beforeDate = DateUtils.yearsAfterNow(years);
 
         Calendar now = Calendar.getInstance();
