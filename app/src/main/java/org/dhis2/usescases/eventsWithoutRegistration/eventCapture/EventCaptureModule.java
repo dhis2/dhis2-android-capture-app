@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.data.event.DhisEventUtils;
+import org.dhis2.data.dhislogic.DhisEventUtils;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;

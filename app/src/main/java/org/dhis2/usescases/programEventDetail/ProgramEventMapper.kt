@@ -3,7 +3,7 @@ package org.dhis2.usescases.programEventDetail
 import java.util.Date
 import javax.inject.Inject
 import org.dhis2.Bindings.userFriendlyValue
-import org.dhis2.data.event.DhisEventUtils
+import org.dhis2.data.dhislogic.DhisEventUtils
 import org.dhis2.data.tuples.Pair
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2

@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.Bindings.RuleExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
-import org.dhis2.data.event.DhisEventUtils;
+import org.dhis2.data.dhislogic.DhisEventUtils;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -17,7 +17,6 @@ import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
-import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.ValueType;
