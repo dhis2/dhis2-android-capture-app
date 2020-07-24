@@ -1,10 +1,10 @@
 package org.dhis2.data.dhislogic
 
+import javax.inject.Inject
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import javax.inject.Inject
 
 class DhisEventUtils @Inject constructor(
     val d2: D2,
@@ -37,14 +37,11 @@ class DhisEventUtils @Inject constructor(
             .byUid().eq(event.organisationUnit()).one().blockingExists()
         val hasCatComboAccess = dhisCategoryUtils.getEventCatComboAccess(event)
         return dhisEnrollmentUtils.isEventEnrollmentOpen(event) &&
-                !blockAfterComplete &&
-                !isExpired &&
-                dhisAccessUtils.getEventAccessDataWrite(event) &&
-                dhisOrgUnitUtils.eventInOrgUnitRange(event) &&
-                isInCaptureOrgUnit &&
-                hasCatComboAccess
+            !blockAfterComplete &&
+            !isExpired &&
+            dhisAccessUtils.getEventAccessDataWrite(event) &&
+            dhisOrgUnitUtils.eventInOrgUnitRange(event) &&
+            isInCaptureOrgUnit &&
+            hasCatComboAccess
     }
-
-
-
 }

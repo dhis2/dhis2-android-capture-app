@@ -1,9 +1,9 @@
 package org.dhis2.data.dhislogic
 
+import javax.inject.Inject
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.event.Event
-import javax.inject.Inject
 
 class DhisCategoryUtils @Inject constructor(val d2: D2) {
     fun getEventCatComboAccess(event: Event): Boolean {
