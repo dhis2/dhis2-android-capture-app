@@ -210,6 +210,18 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
+    public void showFilterProgress() {
+        runOnUiThread(() -> {
+            if (isMapVisible()){
+                binding.toolbarProgress.setVisibility(View.VISIBLE);
+                binding.toolbarProgress.show();
+            } else {
+                binding.progressLayout.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    @Override
     public void setLiveData(LiveData<PagedList<ProgramEventViewModel>> pagedListLiveData) {
         pagedListLiveData.observe(this, pagedList -> {
             binding.programProgress.setVisibility(View.GONE);

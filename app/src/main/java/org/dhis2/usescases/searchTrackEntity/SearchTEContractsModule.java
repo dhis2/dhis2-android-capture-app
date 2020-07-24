@@ -58,6 +58,8 @@ public class SearchTEContractsModule {
 
         void clearData();
 
+        void showFilterProgress();
+
         void setTutorial();
 
         void showAssignmentFilter();

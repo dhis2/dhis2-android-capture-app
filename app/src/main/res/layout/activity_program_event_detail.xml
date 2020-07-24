@@ -222,7 +222,7 @@
                     android:paddingBottom="100dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/filterOpen"
+                    app:layout_constraintTop_toBottomOf="@id/progressLayout"
                     tools:listitem="@layout/item_program_event" />
 
                 <com.mapbox.mapboxsdk.maps.MapView
@@ -261,6 +261,22 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/mapView" />
 
+                <RelativeLayout
+                    android:id="@+id/progressLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/filterOpen">
+
+                    <ProgressBar
+                        android:id="@+id/program_progress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerInParent="true"
+                        android:layout_margin="5dp"
+                        app:progressColor="@{@color/colorPrimary}" />
+                </RelativeLayout>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -277,21 +293,6 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:srcCompat="@drawable/ic_add_accent" />
-
-            <RelativeLayout
-                android:id="@+id/progressLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ProgressBar
-                    android:id="@+id/program_progress"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerInParent="true"
-                    android:layout_margin="5dp"
-                    app:progressColor="@{@color/colorPrimary}" />
-            </RelativeLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>

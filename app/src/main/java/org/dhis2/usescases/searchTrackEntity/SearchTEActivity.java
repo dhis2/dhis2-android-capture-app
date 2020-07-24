@@ -457,6 +457,18 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
+    public void showFilterProgress() {
+        runOnUiThread(() -> {
+            if (isMapVisible()){
+                binding.toolbarProgress.setVisibility(View.VISIBLE);
+                binding.toolbarProgress.show();
+            } else {
+                binding.progressLayout.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    @Override
     public void setTutorial() {
         new Handler().postDelayed(() ->
                         HelpManager.getInstance().show(getActivity(),

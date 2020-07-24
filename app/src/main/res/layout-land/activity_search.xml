@@ -318,7 +318,7 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/filterOpen" />
+                    app:layout_constraintTop_toBottomOf="@id/progressLayout" />
 
                 <com.mapbox.mapboxsdk.maps.MapView
                     android:id="@+id/mapView"
@@ -375,17 +375,15 @@
                         tools:text="You need to enter at least N attributes to do a search" />
 
                 </RelativeLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <RelativeLayout
                 android:id="@+id/progressLayout"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:background="@drawable/ic_front_backdrop_bg_landscape"
                 android:visibility="visible"
                 app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/backdropGuideDiv">
+                app:layout_constraintTop_toBottomOf="@id/filterOpen">
 
                 <ProgressBar
                     android:layout_width="match_parent"
@@ -394,6 +392,7 @@
                     android:layout_margin="5dp"
                     app:progressColor="@{@color/colorPrimary}" />
             </RelativeLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/enrollmentButton"

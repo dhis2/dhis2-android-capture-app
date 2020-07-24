@@ -247,7 +247,7 @@ class SyncStatusDialog private constructor(
             }
         } else {
             binding!!.connectionMessage.text = null
-            binding!!.syncButton.setText(R.string.action_sync)
+            binding!!.syncButton.setText(R.string.action_send)
             if (binding!!.syncStatusName.text == getString(R.string.state_synced)) {
                 binding!!.syncButton.visibility = View.GONE
             }
