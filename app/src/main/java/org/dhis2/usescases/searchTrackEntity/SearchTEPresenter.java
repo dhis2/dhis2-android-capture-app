@@ -34,7 +34,6 @@ import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.ObjectStyleUtils;
@@ -42,6 +41,7 @@ import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
+import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Unit;
@@ -745,7 +745,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribe(
                                 view.downloadProgress(),
                                 Timber::d,
-                                () -> openDashboard(teiUid, enrollmentUid))
+                                () -> {
+                                    if(d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingExists()) {
+                                        openDashboard(teiUid, enrollmentUid);
+                                    }else{
+                                        view.couldNotDownload(trackedEntity.displayName());
+                                    }
+                                })
         );
     }
 

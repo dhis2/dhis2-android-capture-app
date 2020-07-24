@@ -819,6 +819,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
+    public void couldNotDownload(String typeName) {
+        displayMessage(getString(R.string.download_tei_error, typeName));
+    }
+
+    @Override
     public void goToEnrollment(String enrollmentUid, String programUid) {
         Intent intent = EnrollmentActivity.Companion.getIntent(this,
                 enrollmentUid,

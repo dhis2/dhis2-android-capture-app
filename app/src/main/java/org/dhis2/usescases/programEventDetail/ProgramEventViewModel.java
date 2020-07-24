@@ -51,10 +51,13 @@ public abstract class ProgramEventViewModel implements CarouselItemModel {
     public abstract Geometry geometry();
 
     @NonNull
+    public abstract Boolean canBeEdited();
+
+    @NonNull
     public static ProgramEventViewModel create(@NonNull String uid, @NonNull String orgUnitUid, @NonNull String orgUnitName, @NonNull Date date,
                                                @NonNull State eventState, @NonNull List<Pair<String, String>> data, @NonNull EventStatus status,
-                                               @NonNull Boolean isExpired, @NonNull String attributeOptionComboName, Geometry geometry) {
-        return new AutoValue_ProgramEventViewModel(uid, orgUnitUid, orgUnitName, date, eventState, data, status, isExpired, attributeOptionComboName, geometry);
+                                               @NonNull Boolean isExpired, @NonNull String attributeOptionComboName, Geometry geometry, Boolean canBeEdited) {
+        return new AutoValue_ProgramEventViewModel(uid, orgUnitUid, orgUnitName, date, eventState, data, status, isExpired, attributeOptionComboName, geometry, canBeEdited);
     }
 
 }
