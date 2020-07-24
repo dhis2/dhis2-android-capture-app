@@ -450,6 +450,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
+    public void showFilterProgress() {
+        runOnUiThread(() -> binding.progressLayout.setVisibility(View.VISIBLE));
+    }
+
+    @Override
     public void setTutorial() {
         new Handler().postDelayed(() ->
                         HelpManager.getInstance().show(getActivity(),
