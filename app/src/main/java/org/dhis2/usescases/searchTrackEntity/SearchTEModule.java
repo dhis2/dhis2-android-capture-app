@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.dhis2.R;
+import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
 import org.dhis2.data.prefs.PreferenceProvider;
@@ -117,5 +118,11 @@ public class SearchTEModule {
                 enrollmentDateDefaultLabel,
                 uiDateFormat,
                 enrollmentUiDataHelper);
+    }
+
+    @Provides
+    @PerActivity
+    CarouselViewAnimations animations(){
+        return new CarouselViewAnimations();
     }
 }
