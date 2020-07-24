@@ -116,6 +116,7 @@
     <string name="state_to_delete">To delete</string>
     <string name="state_error">Error</string>
     <string name="action_sync">SYNC</string>
+    <string name="action_send">SEND</string>
     <string name="action_sync_sms">SYNC SMS</string>
 
     <!--Completion-->
@@ -157,6 +158,7 @@
     <string name="confirm_delete_event">Are you sure that you want to delete this event?</string>
     <string name="event_was_deleted">Event deleted successfully</string>
     <string name="total">Total</string>
+    <string name="most_recent_event_date">Most recent event date</string>
 
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Enrollment List</string>
