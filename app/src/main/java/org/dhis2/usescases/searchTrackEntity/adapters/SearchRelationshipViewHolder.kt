@@ -5,7 +5,7 @@ import org.dhis2.databinding.ItemSearchTrackedEntityBinding
 
 class SearchRelationshipViewHolder(
     val binding: ItemSearchTrackedEntityBinding
-) : BaseViewHolder(binding) {
+) : BaseTeiViewHolder(binding) {
 
     override fun itemConfiguration() {
         binding.sortingFieldName.visibility = View.GONE

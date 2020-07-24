@@ -11,7 +11,7 @@ import org.dhis2.Bindings.toDateSpan
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule
 
-abstract class BaseViewHolder(
+abstract class BaseTeiViewHolder(
     private val binding: ItemSearchTrackedEntityBinding
 ) : RecyclerView.ViewHolder(binding.root) {
 
