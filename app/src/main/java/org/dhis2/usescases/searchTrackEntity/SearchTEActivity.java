@@ -189,7 +189,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
 
         if (fromRelationship) {
-            relationshipLiveAdapter = new RelationshipLiveAdapter(presenter);
+            relationshipLiveAdapter = new RelationshipLiveAdapter(presenter, getSupportFragmentManager());
             binding.scrollView.setAdapter(relationshipLiveAdapter);
         } else {
             liveAdapter = new SearchTeiLiveAdapter(presenter, getSupportFragmentManager());
