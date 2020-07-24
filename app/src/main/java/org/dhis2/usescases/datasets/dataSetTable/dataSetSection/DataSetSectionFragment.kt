@@ -186,6 +186,10 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 adapter.columnHeaderHeight =
                     third + context!!.resources.getDimensionPixelSize(R.dimen.padding_5)
             }
+            presenterFragment.saveCurrentSectionMeasures(
+                adapter.rowHeaderWidth,
+                adapter.columnHeaderHeight
+            )
         }
 
         adapter.setAllItems(
