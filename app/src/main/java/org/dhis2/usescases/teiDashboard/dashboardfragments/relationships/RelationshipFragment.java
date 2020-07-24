@@ -27,6 +27,7 @@ import com.wangjie.rapidfloatingactionbutton.util.RFABTextUtil;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
@@ -63,6 +64,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     @Inject
     RelationshipPresenter presenter;
+    @Inject
+    CarouselViewAnimations animations;
 
     private FragmentRelationshipsBinding binding;
 
@@ -73,11 +76,12 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     public static final String TEI_A_UID = "TEI_A_UID";
     private Set<String> sources;
+    private TeiDashboardMobileActivity activity;
 
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
-        TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) context;
+        activity = (TeiDashboardMobileActivity) context;
         if (((App) context.getApplicationContext()).dashboardComponent() != null)
             ((App) context.getApplicationContext())
                     .dashboardComponent()
@@ -116,6 +120,9 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     @Override
     public void onResume() {
         super.onResume();
+        if(binding.mapView.getVisibility() == View.VISIBLE){
+            animations.initMapLoading(binding.mapCarousel);
+        }
         presenter.init();
         relationshipMapManager.onResume();
     }
@@ -294,17 +301,24 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                 new CarouselAdapter.Builder()
                         .addCurrentTei(currentTei)
                         .addOnDeleteRelationshipListener(relationshipUid -> {
-                            presenter.deleteRelationship(relationshipUid);
+                            if(binding.mapCarousel.getCarouselEnabled()) {
+                                presenter.deleteRelationship(relationshipUid);
+                            }
                             return true;
                         })
                         .addOnRelationshipClickListener(teiUid -> {
-                            presenter.openDashboard(teiUid);
+                            if(binding.mapCarousel.getCarouselEnabled()) {
+                                presenter.openDashboard(teiUid);
+                            }
                             return true;
                         })
                         .build();
         binding.mapCarousel.setAdapter(carouselAdapter);
         binding.mapCarousel.attachToMapManager(relationshipMapManager, () -> true);
         carouselAdapter.addItems(relationships);
+
+        animations.endMapLoading(binding.mapCarousel);
+        activity.onRelationshipMapLoaded();
     }
 
     @Override

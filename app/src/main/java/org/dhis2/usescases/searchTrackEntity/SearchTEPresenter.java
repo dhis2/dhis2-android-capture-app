@@ -110,6 +110,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private MapTeisToFeatureCollection mapTeisToFeatureCollection;
     private MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection;
     private EventToEventUiComponent eventToEventUiComponent;
+    private boolean teiTypeHasAttributesToDisplay = true;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -185,7 +186,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 .map(data -> Pair.create(data.getTrackedEntityAttributes(), data.getRendering()));
                 })
                 .subscribe(
-                        data -> view.setForm(data.val0(), selectedProgram, queryData, data.val1()),
+                        data -> {
+                            if (data.val0().isEmpty()) {
+                                teiTypeHasAttributesToDisplay = false;
+                            }
+                            view.setForm(data.val0(), selectedProgram, queryData, data.val1());
+                        },
                         Timber::d)
         );
 
@@ -376,7 +382,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 canRegister = true;
             }
         } else if (selectedProgram == null) {
-            if (size == 0 && queryData.isEmpty() && view.fromRelationshipTEI() == null)
+            if (!teiTypeHasAttributesToDisplay) {
+                messageId = String.format(view.getContext().getString(R.string.tei_type_has_no_attributes), getTrackedEntityName().displayName());
+            }
+            else if (size == 0 && queryData.isEmpty() && view.fromRelationshipTEI() == null)
                 messageId = view.getContext().getString(R.string.search_init);
             else if (size == 0) {
                 messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
@@ -756,11 +765,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(TEIuid);
         compositeDisposable.add(
-                d2.trackedEntityModule().trackedEntityInstanceDownloader().byUid().in(teiUids).download()
+                d2.trackedEntityModule().trackedEntityInstanceDownloader()
+                        .byUid().in(teiUids)
+                        .overwrite(true)
+                        .download()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                data -> Timber.d("DOWNLOADING TEI %s : %s%", TEIuid, data.percentage()),
+                                view.downloadProgress(),
                                 Timber::d,
                                 () -> addRelationship(TEIuid, relationshipTypeUid, false))
         );
