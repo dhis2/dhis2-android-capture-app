@@ -237,10 +237,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribeOn(schedulerProvider.io())
                         .subscribe(
                                 isMapVisible -> {
-                                    view.showFilterProgress();
                                     if (isMapVisible) {
                                         mapDataProcessor.onNext(new Unit());
                                     } else {
+                                        view.showFilterProgress();
                                         listDataProcessor.onNext(new Unit());
                                     }
                                 },

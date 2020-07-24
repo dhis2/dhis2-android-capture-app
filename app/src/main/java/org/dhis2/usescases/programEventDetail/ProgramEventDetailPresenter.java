@@ -116,10 +116,10 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .subscribeOn(schedulerProvider.io())
                         .subscribe(
                                 isMapVisible -> {
-                                    view.showFilterProgress();
                                     if (isMapVisible) {
                                         mapProcessor.onNext(new Unit());
                                     } else {
+                                        view.showFilterProgress();
                                         listDataProcessor.onNext(new Unit());
                                     }
                                 },
