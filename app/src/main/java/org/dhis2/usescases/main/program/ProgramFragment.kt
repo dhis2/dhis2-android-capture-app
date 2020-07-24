@@ -66,7 +66,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_program, container, false)
-        (binding.drawerLayout?.background as GradientDrawable).cornerRadius = 0f
+        (binding.drawerLayout.background as GradientDrawable).cornerRadius = 0f
         return binding.apply {
             presenter = this@ProgramFragment.presenter
             programRecycler.itemAnimator = null
@@ -84,13 +84,13 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         super.onResume()
         presenter.init()
         animation.initBackdropCorners(
-            binding.drawerLayout?.background as GradientDrawable
+            binding.drawerLayout.background as GradientDrawable
         )
     }
 
     override fun onPause() {
         animation.reverseBackdropCorners(
-            binding.drawerLayout?.background as GradientDrawable
+            binding.drawerLayout.background as GradientDrawable
         )
         presenter.dispose()
         super.onPause()
