@@ -52,4 +52,10 @@ class ProgramModule(private val view: ProgramView) {
     internal fun providesAdapter(presenter: ProgramPresenter): ProgramModelAdapter {
         return ProgramModelAdapter(presenter)
     }
+
+    @Provides
+    @PerFragment
+    fun provideAnimations(): ProgramAnimation {
+        return ProgramAnimation()
+    }
 }

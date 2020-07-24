@@ -339,7 +339,7 @@ class TeiDashboardPresenterTest {
     }
 
     @Test
-    fun `Should return false program grouping if the programUid not = presenter's programUid`() {
+    fun `Should return true program grouping if the programUid not = presenter's programUid`() {
         val typeToken: TypeToken<HashMap<String, Boolean>> =
             object : TypeToken<HashMap<String, Boolean>>() {}
         val returnedHashMap = hashMapOf("otherProgramUid" to true)
@@ -350,7 +350,7 @@ class TeiDashboardPresenterTest {
 
         val isGrouped = presenter.programGrouping
 
-        assert(isGrouped == false)
+        assert(isGrouped == true)
     }
 
     @Test

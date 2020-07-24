@@ -17,6 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableInt
+import androidx.drawerlayout.widget.DrawerLayout
 import com.android.dbexporterlibrary.ExporterListener
 import javax.inject.Inject
 import org.dhis2.Bindings.app
@@ -48,7 +49,11 @@ import org.dhis2.utils.session.PinDialog
 private const val FRAGMENT = "Fragment"
 private const val PERMISSION_REQUEST = 1987
 
-class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
+class MainActivity :
+    ActivityGlobalAbstract(),
+    MainView,
+    ExporterListener,
+    DrawerLayout.DrawerListener {
     private lateinit var binding: ActivityMainBinding
 
     @Inject
@@ -94,6 +99,9 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
             binding.currentFragment = currentFragment
             changeFragment(R.id.menu_home)
         }
+        initCurrentScreen()
+
+        binding.mainDrawerLayout.addDrawerListener(this)
 
         prefs = abstracContext.getSharedPreferences(
             Constants.SHARE_PREFS, Context.MODE_PRIVATE
@@ -214,8 +222,6 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
             fragId != R.id.menu_home -> changeFragment(R.id.menu_home)
             isPinLayoutVisible -> {
                 isPinLayoutVisible = false
-                /*startActivity(Intent(this@MainActivity, MainActivity::class.java))
-                finish()*/
             }
             else -> super.onBackPressed()
         }
@@ -225,9 +231,74 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
         fragId = id
         binding.navView.setCheckedItem(id)
         activeFragment = null
-        var tag: String? = null
 
-        when (id) {
+        binding.mainDrawerLayout.closeDrawers()
+    }
+
+    override fun updateFilters(totalFilters: Int) {
+        binding.totalFilters = totalFilters
+    }
+
+    override fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest) {
+        if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
+            DateUtils.getInstance()
+                .showFromToSelector(this) { FilterManager.getInstance().addPeriod(it) }
+        } else {
+            DateUtils.getInstance()
+                .showPeriodDialog(
+                    this,
+                    { datePeriods -> FilterManager.getInstance().addPeriod(datePeriods) },
+                    true
+                )
+        }
+    }
+
+    fun setTitle(title: String) {
+        binding.title.text = title
+    }
+
+    override fun showTutorial(shaked: Boolean) {
+        when (fragId) {
+            R.id.menu_home -> (activeFragment as ProgramFragment).setTutorial()
+            R.id.sync_manager -> (activeFragment as SyncManagerFragment).showTutorial()
+            else -> showToast(getString(R.string.no_intructions))
+        }
+    }
+
+    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
+            adapter!!.notifyDataSetChanged()
+            updateFilters(FilterManager.getInstance().totalFilters)
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun fail(message: String, exception: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun success(s: String) {
+        Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDrawerStateChanged(newState: Int) {
+    }
+
+    override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+    }
+
+    override fun onDrawerClosed(drawerView: View) {
+        if (currentFragment.get() != fragId) {
+            initCurrentScreen()
+        }
+    }
+
+    override fun onDrawerOpened(drawerView: View) {
+    }
+
+    private fun initCurrentScreen() {
+        var tag: String? = null
+        when (fragId) {
             R.id.sync_manager -> {
                 activeFragment = SyncManagerFragment()
                 tag = getString(R.string.SYNC_MANAGER)
@@ -275,7 +346,7 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
         }
 
         if (activeFragment != null) {
-            currentFragment.set(id)
+            currentFragment.set(fragId)
             val transaction = supportFragmentManager.beginTransaction()
             transaction.setCustomAnimations(
                 R.anim.fragment_enter_right,
@@ -287,56 +358,9 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
                 .commitAllowingStateLoss()
             binding.title.text = tag
         }
-        binding.mainDrawerLayout.closeDrawers()
 
         if (backDropActive && activeFragment !is ProgramFragment) {
             showHideFilter()
         }
-    }
-
-    override fun updateFilters(totalFilters: Int) {
-        binding.totalFilters = totalFilters
-    }
-
-    override fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest) {
-        if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
-            DateUtils.getInstance()
-                .showFromToSelector(this) { FilterManager.getInstance().addPeriod(it) }
-        } else {
-            DateUtils.getInstance()
-                .showPeriodDialog(
-                    this,
-                    { datePeriods -> FilterManager.getInstance().addPeriod(datePeriods) },
-                    true
-                )
-        }
-    }
-
-    fun setTitle(title: String) {
-        binding.title.text = title
-    }
-
-    override fun showTutorial(shaked: Boolean) {
-        when (fragId) {
-            R.id.menu_home -> (activeFragment as ProgramFragment).setTutorial()
-            R.id.sync_manager -> (activeFragment as SyncManagerFragment).showTutorial()
-            else -> showToast(getString(R.string.no_intructions))
-        }
-    }
-
-    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
-            adapter!!.notifyDataSetChanged()
-            updateFilters(FilterManager.getInstance().totalFilters)
-        }
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
-    override fun fail(message: String, exception: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    override fun success(s: String) {
-        Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
     }
 }
