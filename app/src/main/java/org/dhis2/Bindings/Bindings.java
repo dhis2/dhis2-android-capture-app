@@ -191,38 +191,39 @@ public class Bindings {
             if (enrollmentStatus == null)
                 enrollmentStatus = EnrollmentStatus.ACTIVE;
 
-            if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
-                switch (status) {
-                    case ACTIVE:
-                        Date eventDate = event.eventDate();
-                        if (eventProgramStage.periodType() != null && eventProgramStage.periodType().name().contains(PeriodType.Weekly.name()))
-                            eventDate = DateUtils.getInstance().getNextPeriod(eventProgramStage.periodType(), eventDate, 0, true);
-                        if (DateUtils.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {
-                            view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_eye_red));
-                        } else {
-                            view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_edit));
-                        }
-                        break;
-                    case OVERDUE:
-                    case COMPLETED:
-                    case SKIPPED:
-                        view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_visibility));
-                        break;
-                    case SCHEDULE:
-                        view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_edit));
-                        break;
-                    case VISITED:
-                        view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_edit));
-                        break;
-                    default:
-                        view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_edit));
-                        break;
-                }
-            } else if (enrollmentStatus == EnrollmentStatus.COMPLETED) {
-                view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_visibility));
-            } else { //EnrollmentStatus = CANCELLED
-                view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_visibility));
+            int drawableResource;
+            switch (status) {
+                case ACTIVE:
+                    Date eventDate = event.eventDate();
+                    if (eventProgramStage.periodType() != null && eventProgramStage.periodType().name().contains(PeriodType.Weekly.name())) {
+                        eventDate = DateUtils.getInstance().getNextPeriod(eventProgramStage.periodType(), eventDate, 0, true);
+                    }
+                    boolean isExpired = DateUtils.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType(), program.expiryDays());
+                    drawableResource = (enrollmentStatus == EnrollmentStatus.ACTIVE && !isExpired) ? R.drawable.ic_event_status_open : R.drawable.ic_event_status_open_read;
+                    break;
+                case OVERDUE:
+                    drawableResource = enrollmentStatus == EnrollmentStatus.ACTIVE ? R.drawable.ic_event_status_overdue : R.drawable.ic_event_status_overdue_read;
+                    break;
+                case COMPLETED:
+                    drawableResource = enrollmentStatus == EnrollmentStatus.ACTIVE ? R.drawable.ic_event_status_complete : R.drawable.ic_event_status_complete_read;
+                    break;
+                case SKIPPED:
+                    drawableResource = enrollmentStatus == EnrollmentStatus.ACTIVE ? R.drawable.ic_event_status_skipped : R.drawable.ic_event_status_skipped_read;
+                    break;
+                case SCHEDULE:
+                    drawableResource = enrollmentStatus == EnrollmentStatus.ACTIVE ? R.drawable.ic_event_status_open : R.drawable.ic_event_status_open_read;
+                    break;
+                default:
+                    drawableResource = R.drawable.ic_event_status_open;
+                    break;
             }
+
+            view.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                            view.getContext(),
+                            drawableResource
+                    )
+            );
         }
     }
 
@@ -363,10 +364,16 @@ public class Bindings {
 
     @BindingAdapter("eventWithoutRegistrationStatusIcon")
     public static void setEventWithoutRegistrationStatusIcon(ImageView imageView, ProgramEventViewModel event) {
-        if (event.eventStatus() == EventStatus.ACTIVE && !event.isExpired())
-            imageView.setImageResource(R.drawable.ic_edit);
-        else
-            imageView.setImageResource(R.drawable.ic_visibility);
+        int drawableResource;
+        switch (event.eventStatus()) {
+            case COMPLETED:
+                drawableResource = event.canBeEdited() ? R.drawable.ic_event_status_complete : R.drawable.ic_event_status_complete_read;
+                break;
+            default:
+                drawableResource = event.canBeEdited() ? R.drawable.ic_event_status_open : R.drawable.ic_event_status_open_read;
+                break;
+        }
+        imageView.setImageResource(drawableResource);
     }
 
     @BindingAdapter("stateText")

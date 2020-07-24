@@ -649,4 +649,55 @@ public class DateUtilsTest {
         assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.COMPLETED, 1, null, 0));
 
     }
+
+    @Test
+    public void shouldSubtractYearsToDateWithPositiveInteger() throws ParseException{
+        int years = 5;
+
+        Date currentDate = DateUtils.oldUiDateFormat().parse("2020-07-15");
+        Date beforeDate = DateUtils.yearsBeforeNow(years);
+
+        Calendar now = Calendar.getInstance();
+        now.setTime(currentDate);
+        Calendar before = Calendar.getInstance();
+        before.setTime(beforeDate);
+
+        int result = now.get(Calendar.YEAR) - before.get(Calendar.YEAR);
+
+        assertEquals(result, years);
+    }
+
+    @Test
+    public void shouldSubtractYearsToDateWithNegativeInteger() throws ParseException{
+        int years = -5;
+
+        Date currentDate = DateUtils.oldUiDateFormat().parse("2020-07-15");
+        Date beforeDate = DateUtils.yearsBeforeNow(years);
+
+        Calendar now = Calendar.getInstance();
+        now.setTime(currentDate);
+        Calendar before = Calendar.getInstance();
+        before.setTime(beforeDate);
+
+        int result = now.get(Calendar.YEAR) - before.get(Calendar.YEAR);
+
+        assertEquals(result, -(years));
+    }
+
+    @Test
+    public void shouldAddYearsToDate() throws ParseException{
+        int years = 1;
+
+        Date currentDate = DateUtils.oldUiDateFormat().parse("2020-07-15");
+        Date beforeDate = DateUtils.yearsAfterNow(years);
+
+        Calendar now = Calendar.getInstance();
+        now.setTime(currentDate);
+        Calendar after = Calendar.getInstance();
+        after.setTime(beforeDate);
+
+        int result = after.get(Calendar.YEAR) - now.get(Calendar.YEAR);
+
+        assertEquals(result, years);
+    }
 }

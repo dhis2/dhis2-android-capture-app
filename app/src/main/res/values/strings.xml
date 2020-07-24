@@ -725,6 +725,7 @@
     <string name="no_data">No data</string>
     <string name="no_coordinates_item">This %s has no coordinates.</string>
     <string name="event_data">Data</string>
+    <string name="download_tei_error">The selected %s could not be downloaded.</string>
     <string name="completed_by">Completed by %s: %s</string>
     <string name="updated_time">Updated: %s</string>
     <string name="action_done">Done!</string>
@@ -736,4 +737,5 @@
     <string name="filters_title_date">Date</string>
     <string name="filters_title_event_date">Event date</string>
     <string name="dataset_data">Data</string>
+    <string name="tei_type_has_no_attributes">%s has no public attributes. Please select a program</string>
 </resources>

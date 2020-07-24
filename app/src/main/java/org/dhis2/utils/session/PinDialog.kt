@@ -118,7 +118,7 @@ class PinDialog(
 
     override fun show(manager: FragmentManager, tag: String?) {
         if (manager.findFragmentByTag(tag) == null) {
-            super.show(manager, tag)
+            manager.beginTransaction().add(this, tag).commitAllowingStateLoss()
         }
     }
 }

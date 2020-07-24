@@ -14,6 +14,7 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
 
 class TrackedEntityInstanceExtensions {
@@ -40,6 +41,11 @@ class TrackedEntityInstanceExtensions {
             TrackedEntityInstance.builder().uid("tei_C").build(),
             TrackedEntityInstance.builder().uid("tei_D").build()
         )
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances()
+                .uid(anyString())
+                .blockingExists()
+        ) doReturn true
         testList.forEachIndexed { index, tei ->
             handleEnrollmentCall(tei.uid(), "programUid", index == 0)
         }
