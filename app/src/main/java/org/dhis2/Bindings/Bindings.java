@@ -160,7 +160,7 @@ public class Bindings {
         view.setText(text);
     }
 
-    public static String enrollmentText(Context context, EnrollmentStatus status){
+    public static String enrollmentText(Context context, EnrollmentStatus status) {
         String text;
         if (status == null)
             status = EnrollmentStatus.ACTIVE;
@@ -389,8 +389,8 @@ public class Bindings {
         }
     }
 
-    @BindingAdapter("stateIcon")
-    public static void setStateIcon(ImageView imageView, State state) {
+    @BindingAdapter(value = {"stateIcon", "showSynced"}, requireAll = false)
+    public static void setStateIcon(ImageView imageView, State state, boolean showSynced) {
         if (state != null) {
             switch (state) {
                 case TO_POST:
@@ -405,7 +405,9 @@ public class Bindings {
                     break;
                 case SYNCED:
                     imageView.setImageResource(R.drawable.ic_sync);
-                    imageView.setVisibility(View.GONE);
+                    if (!showSynced) {
+                        imageView.setVisibility(View.GONE);
+                    }
                     break;
                 case WARNING:
                     imageView.setImageResource(R.drawable.ic_sync_warning);
@@ -474,7 +476,7 @@ public class Bindings {
             int icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
             if (view instanceof ImageView)
                 ((ImageView) view).setImageResource(icon);
-        }else if(objectStyle != null && objectStyle.icon() == null){
+        } else if (objectStyle != null && objectStyle.icon() == null) {
             Drawable drawable = resources.getDrawable(R.drawable.ic_program_default);
             if (view instanceof ImageView)
                 ((ImageView) view).setImageDrawable(drawable);
@@ -490,7 +492,7 @@ public class Bindings {
 
             itemView.setBackgroundColor(colorRes);
             setFromResBgColor(view, colorRes);
-        }else if(objectStyle!=null && objectStyle.color() ==null){
+        } else if (objectStyle != null && objectStyle.color() == null) {
             int colorRes = ColorUtils.getPrimaryColor(view.getContext(), ColorUtils.ColorType.PRIMARY);
             itemView.setBackgroundColor(colorRes);
             setFromResBgColor(view, colorRes);

@@ -118,9 +118,7 @@ class EventMapLayer(
             )
         }
 
-        selectedPointLayer.setProperties(
-            PropertyFactory.iconSize(1.5f)
-        )
+        selectedPointLayer.setProperties(PropertyFactory.iconSize(1.5f))
     }
 
     private fun selectPolygon(feature: Feature) {
@@ -155,6 +153,9 @@ class EventMapLayer(
         return style.getSourceAs<GeoJsonSource>(EventMapManager.EVENTS)
             ?.querySourceFeatures(
                 Expression.eq(Expression.get(MapEventToFeatureCollection.EVENT), featureUidProperty)
-            )?.firstOrNull()
+            )?.firstOrNull()?.let {
+            setSelectedItem(it)
+            it
+        }
     }
 }
