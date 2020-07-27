@@ -10,7 +10,6 @@ import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.splash.SplashComponent;
 import org.dhis2.usescases.splash.SplashModule;
-import org.dhis2.utils.UtilsModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsModule;
 import org.dhis2.utils.session.PinModule;
@@ -25,7 +24,7 @@ import dagger.Component;
  */
 @Singleton
 @Component(modules = {
-        AppModule.class, SchedulerModule.class, UtilsModule.class, AnalyticsModule.class, PreferenceModule.class, WorkManagerModule.class,
+        AppModule.class, SchedulerModule.class, AnalyticsModule.class, PreferenceModule.class, WorkManagerModule.class,
         MatomoAnalyticsModule.class
 })
 public interface AppComponent {
@@ -35,8 +34,6 @@ public interface AppComponent {
         Builder appModule(AppModule appModule);
 
         Builder schedulerModule(SchedulerModule schedulerModule);
-
-        Builder utilModule(UtilsModule utilsModule);
 
         Builder analyticsModule(AnalyticsModule module);
 
