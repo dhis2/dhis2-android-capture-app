@@ -148,6 +148,28 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         position.setOnClickListener(this);
         map.setOnClickListener(this);
         clearButton.setOnClickListener(this);
+
+        longitude.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus)
+                    if (!longitude.getText().toString().isEmpty()) {
+                        Double lon = DoubleExtensionsKt.truncate(getLongitude());
+                        longitude.setText(lon.toString());
+                    }
+            }
+        });
+
+        latitude.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus)
+                    if (!latitude.getText().toString().isEmpty()) {
+                        Double lat = DoubleExtensionsKt.truncate(getLatitude());
+                        latitude.setText(lat.toString());
+                    }
+            }
+        });
     }
 
     private boolean validateCoordinates() {
