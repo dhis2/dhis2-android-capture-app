@@ -68,9 +68,89 @@ It is possible to add notes to events in single event programs and program stage
 ![](resources/images/image106.jpg){ width=25%}
 ![](resources/images/image107.jpg){ width=25%}
 
+### Maps
+
+#### Map Layers in programs without registration
+
+The possible layers to display in maps are:
+
+- Show events
+- Show satellite views
+
+The user can select one or more layers to be displayed.
+
+![](resources/images/image133.png){ width=25%}
+
+#### Map Carousel in programs without registration
+
+On the map view of the program, a carousel of cards is displayed, one for each event.
+
+* When scrolling horizontally the carousel, the map zooms into the selected coordinates. If coordinates field is empty a message is shown instead.
+
+![](resources/images/image132.png){ width=25%}
+
 ## Program with registration in Android
 
 <!-- DHIS2-SECTION-ID:programs_registration -->
+
+### TEI Card Design
+
+The new TEI Card design includes:
+
+* Last update date
+* Other enrollments in programs with displayFrontPageList
+* At least **3 main attributes**. 
+  * If there are more, there will be an arrow to display the full list (only attributes with displayInList option)
+* Enrollment status label if **completed** or **cancelled**
+* Overdue icon if an overdue event exists with the most recent overdue event date
+* Card image (one of the following options):
+  * Profile picture when available or
+  * First letter of the first attribute or
+  * Tracked Entity Type icon
+  * A hyphen will display if non of the options are available
+
+![](resources/images/image124.png){ width=25%}
+
+### Maps
+
+#### Map Layers
+
+The possible layers to display in maps are:
+
+- TEI coordinates (by default)
+- Enrollment Coordinates
+- Program Stage coordinates
+- Relationships
+- Heatmap
+- Satellite view
+
+The user can select one or more layers to be displayed.
+
+The maps will display coordinates and polygons.
+
+![](resources/images/image125.jpg){ width=25%}
+
+#### Map Carousel
+
+On the map view of the program, a carousel of cards is displayed, one for each enrolled TEI.
+
+* TEI cards on the carousel follow the same design as the TEI list view.
+
+* When scrolling horizontally the carousel, the map zooms into the selected coordinates. If coordinates field is empty a message is shown instead.
+
+![](resources/images/image126.jpg){ width=25%}
+
+#### Map Relationships
+
+User can see relationships on a map by tapping the map icon on the relationships tab.
+
+* An arrow is shown on the direction of the relationship.
+* For bidirectional relationships, the arrow points both sides.
+* Each relationship type displays a different color.
+* If one or both TEIs have a polygon as coordinate, the line goes from (and to) the nearest point in the polygon of both TEIs.
+
+![](resources/images/image127.jpg){ width=25%}
+
 
 ### Complete/Deactivate Enrollment
 
@@ -156,6 +236,18 @@ The TEI Dashboard offers now the possibility to change the list of events from t
 
 ![](resources/images/image108.png){ width=25%}
 ![](resources/images/image109.jpg){ width=25%}
+
+### Inherit Values
+
+When creating a new TEI for a relationship, inherit any program attribute marked with the inherit check in web.
+
+This means that any existing attributes in the first TEI should have pass to the new TEI and be shown in the registration form.
+
+### Breaking the glass
+
+If the program is configured with access level 'protected', and the user searches and finds tracked entity instances that is owned by organisation unit that the user does not have data capture authority for, the user is presented with the option of breaking the glass. In the app, if the TEI is not stored locally, a message will pop-up.
+
+[Screenshot when available]
 
 ## Supported features Overview
 
@@ -257,6 +349,7 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 |Search screen for all TE Type|User is able to search across all program of one tracked entity type (TET). In the Search screen there is a drop down which shows all the programs available for the active TET (active TET is defined by the selection of the program in the home screen). That drop down should also have an option with TET name. (Person in our server). When the user selects that option, the search fields available will only be the TET attributes (no program specific attributes). All search restrictions do not apply, because they belong to the programs.|![](resources/images/../../admin/icon-complete.png)||
 |TEI Dashboard without program|User can see the TEI dashboard without any program by selecting the TEI in the list if the search was without program. The dashboards will show the TET attributes in the details card followed by a list of active enrollments.|![](resources/images/../../admin/icon-complete.png)||
 |TEI enrollment history and new enrollment|User is able to see the complete historical record of the TEI. By clicking on the top right corner icon they will see a list of Active enrolments, followed by a list of past enrolments (completed or cancelled), followed by the programs in which the TEI could be enrolled. Users should be able to navigate to the different enrolments from the list.|![](resources/images/../../admin/icon-complete.png)||
+|Access level-Breaking the glass|If the program is configured with access level protected, and the user searches and finds tracked entity instances that is owned by organisation unit that the user does not have data capture authority for, the user is presented with the option of breaking the glass. The user will gove a reason for breaking the glass, then gain temporary ownership of the tracked entity instance.|![](resources/images/../../admin/icon-complete.png)||
 
 ### Program without registration: Single event program
 
