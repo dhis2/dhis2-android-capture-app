@@ -75,8 +75,8 @@ Icons can be associated to programs, stages, data elements and the options of an
 
 In the Android App icons render in the home screen to illustrate all the programs available to a user, or while adding an stage. For data elements and options, the icons render for single event programs, when a section contains a single DE, showing the option set as a matrix or sequence of images.
 
-![](resources/images/image19.jpg){ width=25%}
-![](resources/images/image26.jpg){ width=25%}
+![](resources/images/image19.png){ width=25%}
+![](resources/images/image26.png){ width=25%}
 
 > **Note**
 >
@@ -94,7 +94,7 @@ Tracker and Event capture now have the ability to render colours for programs, s
 
 In the Android App, the color will be rendered as background color for programs and stages combined with an icon (if selected). For options it renders as the background colour during data entry form for single event programs. When the user selects a program with an assigned colour, that colour becomes the background theme for all screens in the domain of the program.
 
-![](resources/images/image19.jpg){ width=25%}
+![](resources/images/image19.png){ width=25%}
 ![](resources/images/image2.jpg){ width=25%}
 
 > **Note**
@@ -109,8 +109,8 @@ In the Android App, the color will be rendered as background color for programs 
 
 **Program Section**: when used in combination with icons, a Program Section with a single data element and associated Option Set can render the options in sequential or matrix layout (see screenshots).
 
-![](resources/images/image26.jpg){ width=25%}
-![](resources/images/image36.jpg){ width=25%}
+![](resources/images/image26.png){ width=25%}
+![](resources/images/image36.png){ width=25%}
 
 > **Note**
 >
