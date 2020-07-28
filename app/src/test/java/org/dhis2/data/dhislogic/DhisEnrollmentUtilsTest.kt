@@ -72,7 +72,7 @@ class DhisEnrollmentUtilsTest {
                 .enrollment("enrollmentUid")
                 .build()
         )
-        assertFalse(result)
+        assertTrue(result)
     }
 
     @Test
