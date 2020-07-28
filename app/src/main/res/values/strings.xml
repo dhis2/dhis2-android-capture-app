@@ -108,6 +108,7 @@
     <string name="cancelled">Cancelled</string>
     <string name="re_open">re-open</string>
     <string name="activate">Activate</string>
+    <string name="active">Active</string>
 
     <!-- State -->
     <string name="state_synced">Sync</string>
