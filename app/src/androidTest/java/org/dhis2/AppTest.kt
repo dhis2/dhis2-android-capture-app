@@ -6,7 +6,6 @@ import org.dhis2.data.schedulers.SchedulersProviderImpl
 import org.dhis2.data.server.ServerModule
 import org.dhis2.data.service.workManager.WorkManagerModule
 import org.dhis2.data.user.UserModule
-import org.dhis2.utils.UtilsModule
 import org.dhis2.utils.analytics.AnalyticsModule
 import org.hisp.dhis.android.core.D2Manager
 
@@ -48,7 +47,6 @@ class AppTest : App() {
             .schedulerModule(SchedulerModule(SchedulersProviderImpl()))
             .analyticsModule(AnalyticsModule())
             .preferenceModule(PreferencesTestingModule())
-            .utilModule(UtilsModule())
             .workManagerController(WorkManagerModule())
     }
 
