@@ -118,10 +118,11 @@ This section checks the amount of data and metadata a user would sync to his/her
 
 A user can easily install the Android Settings App by logging into the DHIS2 and going to **App Management**.
 
-- Click on the *Upload* (arrow) button.
-- Select the app build .zip
+- Click on **App Store**
+- Go to *Android Settings App*
+- Click on *Install V1.0.0*
 
-![](resources/images/install-app.png)
+![](resources/images/app-store-install.png)
 
 
 ## Log in and first time setup
