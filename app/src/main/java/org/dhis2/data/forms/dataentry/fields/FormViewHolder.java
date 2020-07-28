@@ -28,6 +28,7 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
     protected MutableLiveData<String> currentUid;
     protected String fieldUid;
     protected ObjectStyle objectStyle;
+    protected static String selectedFieldUid;
 
     public FormViewHolder(ViewDataBinding binding) {
         super(binding.getRoot());
@@ -50,7 +51,7 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
     public void initFieldFocus() {
         if (currentUid != null) {
             currentUid.observeForever(fieldUid -> {
-                if (Objects.equals(fieldUid, this.fieldUid)) {
+                if((selectedFieldUid == null && Objects.equals(fieldUid, this.fieldUid)) || ((selectedFieldUid != null) && selectedFieldUid.equals(this.fieldUid))){
                     Drawable bgDrawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg);
                     itemView.setBackground(bgDrawable);
                 } else {
@@ -80,7 +81,9 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setSelectedBackground(boolean isSarchMode) {
-        if (!isSarchMode)
+        if (!isSarchMode) {
+            selectedFieldUid = fieldUid;
             currentUid.setValue(fieldUid);
+        }
     }
 }
