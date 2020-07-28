@@ -84,13 +84,13 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         super.onResume()
         presenter.init()
         animation.initBackdropCorners(
-            binding.drawerLayout.background as GradientDrawable
+            binding.drawerLayout.background.mutate() as GradientDrawable
         )
     }
 
     override fun onPause() {
         animation.reverseBackdropCorners(
-            binding.drawerLayout.background as GradientDrawable
+            binding.drawerLayout.background.mutate() as GradientDrawable
         )
         presenter.dispose()
         super.onPause()
