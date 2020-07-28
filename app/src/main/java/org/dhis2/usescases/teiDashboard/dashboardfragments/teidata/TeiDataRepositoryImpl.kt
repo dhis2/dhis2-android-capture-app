@@ -20,6 +20,7 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
 class TeiDataRepositoryImpl(
@@ -107,6 +108,8 @@ class TeiDataRepositoryImpl(
                     eventRepo = eventRepoSorting(sortingItem, eventRepo)
                     val eventList = eventRepo.blockingGet()
 
+                    val isSelected = programStage.uid() == selectedStage
+
                     eventViewModels.add(
                         EventViewModel(
                             EventViewModelType.STAGE,
@@ -114,8 +117,8 @@ class TeiDataRepositoryImpl(
                             null,
                             eventList.size,
                             if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
-                            programStage.uid() == selectedStage,
-                            checkAddEvent(),
+                            isSelected,
+                            checkAddEvent(programStage, isSelected),
                             orgUnitName = ""
                         )
                     )
@@ -218,8 +221,26 @@ class TeiDataRepositoryImpl(
         }
     }
 
-    private fun checkAddEvent(): Boolean {
+    private fun checkAddEvent(stage: ProgramStage, isSelected: Boolean): Boolean {
         val enrollment = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
-        return !(enrollment == null || enrollment.status() != EnrollmentStatus.ACTIVE)
+        val enrollmentStatusCheck =
+            !(enrollment == null || enrollment.status() != EnrollmentStatus.ACTIVE)
+        val totalEventCount = d2.eventModule().events()
+            .byEnrollmentUid().eq(enrollmentUid)
+            .byProgramStageUid().eq(stage.uid())
+            .byDeleted().isFalse
+            .blockingCount()
+        val stageNotRepeatableZeroCount = stage.repeatable() != true &&
+            totalEventCount == 0
+        val stageRepeatableZeroCount = stage.repeatable() == true &&
+            totalEventCount == 0
+        val stageRepeatableCountSelected = stage.repeatable() == true &&
+            totalEventCount > 0 && isSelected
+
+        return enrollmentStatusCheck && (
+            stageNotRepeatableZeroCount ||
+                stageRepeatableZeroCount ||
+                stageRepeatableCountSelected
+            )
     }
 }

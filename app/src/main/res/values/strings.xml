@@ -720,8 +720,8 @@
     <string name="validation_rules_data_to_review">Data to review</string>
     <string name="dataset_saved_completed">Saved and completed!</string>
     <string name="status_change_error_active_exist">There is already an active enrollment</string>
-    <string name="enrollment_status_active">Opened</string>
-    <string name="enrollment_status_completed">Completed</string>
+    <string name="enrollment_status_active">Open</string>
+    <string name="enrollment_status_completed">Complete</string>
     <string name="enrollment_status_cancelled">Cancelled</string>
     <string name="unknownValue" translatable="false">-</string>
     <string name="no_data">No data</string>
