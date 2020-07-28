@@ -469,12 +469,11 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public void showInternalValidationError() {
         AlertBottomDialog.Companion.getInstance()
                 .setTitle(getString(R.string.saved))
-                .setMessage(getString(R.string.validation_internal_error))
-                .setPositiveButton(getString(R.string.yes), () -> {
+                .setMessage(getString(R.string.validation_internal_error_datasets))
+                .setPositiveButton(getString(R.string.button_ok), () -> {
                     presenter.reopenDataSet();
                     return Unit.INSTANCE;
                 })
-                .setNegativeButton(getString(R.string.no), () -> Unit.INSTANCE)
                 .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
     }
 
