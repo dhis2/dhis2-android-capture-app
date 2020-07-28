@@ -110,6 +110,24 @@ In tracker, the user can see relationships on a map by tapping the map icon on t
 
 ![](resources/images/image132.png){ width=25%}
 ![](resources/images/image127.png){ width=25%}
+#### Map Layers in programs without registration
+
+The possible layers to display in maps are:
+
+- Show events
+- Show satellite views
+
+The user can select one or more layers to be displayed.
+
+![](resources/images/image133.png){ width=25%}
+
+#### Map Carousel in programs without registration
+
+On the map view of the program, a carousel of cards is displayed, one for each event.
+
+* When scrolling horizontally the carousel, the map zooms into the selected coordinates. If coordinates field is empty a message is shown instead.
+
+![](resources/images/image132.png){ width=25%}
 
 ## Program with registration in Android
 
