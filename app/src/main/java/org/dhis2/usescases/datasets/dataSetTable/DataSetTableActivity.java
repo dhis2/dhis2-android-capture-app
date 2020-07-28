@@ -145,7 +145,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         binding.viewPager.setAdapter(viewPagerAdapter);
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> {
             if (position == 0) {
-                tab.setText(R.string.dataset_data);
+                tab.setText(R.string.dataset_overview);
             } else {
                 tab.setText(viewPagerAdapter.getSectionTitle(position));
             }
@@ -157,7 +157,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         this.sections = sections;
         if (sections.contains(NO_SECTION) && sections.size() > 1) {
             sections.remove(NO_SECTION);
-            sections.add(getString(R.string.tab_tables));
+            sections.add(getString(R.string.dataset_data));
         }
         viewPagerAdapter.swapData(sections);
         binding.viewPager.setCurrentItem(1);
@@ -166,7 +166,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public void updateTabLayout(String section, int numTables) {
         if (sections.get(0).equals(NO_SECTION)) {
             sections.remove(NO_SECTION);
-            sections.add(getString(R.string.tab_tables));
+            sections.add(getString(R.string.dataset_data));
             viewPagerAdapter.swapData(sections);
             binding.viewPager.setCurrentItem(1);
         }
