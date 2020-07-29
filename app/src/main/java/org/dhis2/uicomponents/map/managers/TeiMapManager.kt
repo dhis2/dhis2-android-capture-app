@@ -227,7 +227,7 @@ class TeiMapManager(
             )
         )
         sources.add(ENROLLMENT_SOURCE_ID)
-        for (sourceId in sources) {
+        for (sourceId in teiFeatureCollections.keys) {
             layers.add(arrayOf("RELATIONSHIP_LINE_LAYER_ID_$sourceId"))
             sources.add(sourceId)
         }
