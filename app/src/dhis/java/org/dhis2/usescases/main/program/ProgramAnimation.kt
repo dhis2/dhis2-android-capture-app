@@ -27,7 +27,7 @@ class ProgramAnimation {
                 interpolator = OvershootInterpolator()
                 addUpdateListener {
                     val value = (it.animatedValue as Int).toFloat()
-                    gd.cornerRadius = value
+                    gd.cornerRadii = floatArrayOf(value, value, value, value, 0f, 0f, 0f, 0f)
                 }
             }.start()
     }

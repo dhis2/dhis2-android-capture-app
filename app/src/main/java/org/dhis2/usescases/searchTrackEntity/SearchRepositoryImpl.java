@@ -458,7 +458,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         } else {
             List<ProgramTrackedEntityAttribute> programAttributes = d2.programModule().programTrackedEntityAttributes()
                     .byProgram().eq(selectedProgram.uid())
-//                    .byDisplayInList().isTrue()
+                    .byDisplayInList().isTrue()
                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                     .blockingGet();
             for (ProgramTrackedEntityAttribute programAttribute : programAttributes) {

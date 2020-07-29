@@ -1,5 +1,7 @@
 package org.dhis2.uicomponents.map.geometry
 
-fun areLngLatCorrect(lon: Double, lat: Double): Boolean {
-    return (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180)
-}
+fun areLngLatCorrect(lon: Double, lat: Double) = isLatitudeValid(lat) && isLongitudeValid(lon)
+
+fun isLongitudeValid(longitude: Double) = longitude >= -180 && longitude <= 180
+
+fun isLatitudeValid(latitude: Double) = latitude >= -90 && latitude <= 90

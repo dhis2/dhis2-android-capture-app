@@ -214,7 +214,7 @@ public class Bindings {
                     drawableResource = enrollmentStatus == EnrollmentStatus.ACTIVE ? R.drawable.ic_event_status_open : R.drawable.ic_event_status_open_read;
                     break;
                 default:
-                    drawableResource = R.drawable.ic_event_status_open;
+                    drawableResource = R.drawable.ic_event_status_open_read;
                     break;
             }
 

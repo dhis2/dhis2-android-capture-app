@@ -108,6 +108,7 @@
     <string name="cancelled">Cancelled</string>
     <string name="re_open">re-open</string>
     <string name="activate">Activate</string>
+    <string name="active">Active</string>
 
     <!-- State -->
     <string name="state_synced">Sync</string>
@@ -720,8 +721,8 @@
     <string name="validation_rules_data_to_review">Data to review</string>
     <string name="dataset_saved_completed">Saved and completed!</string>
     <string name="status_change_error_active_exist">There is already an active enrollment</string>
-    <string name="enrollment_status_active">Opened</string>
-    <string name="enrollment_status_completed">Completed</string>
+    <string name="enrollment_status_active">Open</string>
+    <string name="enrollment_status_completed">Complete</string>
     <string name="enrollment_status_cancelled">Cancelled</string>
     <string name="unknownValue" translatable="false">-</string>
     <string name="no_data">No data</string>
@@ -731,7 +732,7 @@
     <string name="completed_by">Completed by %s: %s</string>
     <string name="updated_time">Updated: %s</string>
     <string name="action_done">Done!</string>
-    <string name="validation_internal_error">Quality evaluation could not finish because an internal error was found</string>
+    <string name="validation_internal_error_datasets">We could not check data quality. Contact your administrator</string>
     <string name="are_you_sure">Are you sure?</string>
     <string name="reopen_question">Do you want to re-open the data set?</string>
     <string name="group_events_by_stage">Group events by stage</string>
@@ -740,5 +741,6 @@
     <string name="filters_title_event_date">Event date</string>
     <string name="dataset_data">Data</string>
     <string name="tei_type_has_no_attributes">%s has no public attributes. Please select a program</string>
+    <string name="coordinates_error">Coordinates values are not valid</string>
     <string name="break_glass_error">You cannot enroll TEIs from other org units in this program because it is protected.\nContact your administrator.</string>
 </resources>
