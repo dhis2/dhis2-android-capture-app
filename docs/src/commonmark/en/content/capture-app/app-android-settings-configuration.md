@@ -1,10 +1,10 @@
-# Android Settings App
+# Android Settings Web App
 
 ## Overview
 
-This section focuses on the Android Settings app implementation.
+This section focuses on the Android Settings Web App implementation.
 
-The Android Settings web app allows admins to configure synchronization parameters for the DHIS2 Android Capture App, encrypt the local database of the android devices, and run tests on the size of data and metadata synchronized by a given android user. The configuration parameters defined within this web app will overwrite the settings of all android devices using the DHIS2 Android Capture App.
+The Android Settings Web App allows admins to configure synchronization parameters for the DHIS2 Android Capture App, encrypt the local database of the android devices, and run tests on the size of data and metadata synchronized by a given android user. The configuration parameters defined within this web app will overwrite the settings of all android devices using the DHIS2 Android Capture App.
 
 Please note that in this version of the web app, only users with 'ALL' authority are able to define those parameters in the configuration. Other users having access to the web app can see the value of the parameters, but cannot edit them. 
 
