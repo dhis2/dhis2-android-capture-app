@@ -163,26 +163,37 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         map.setOnClickListener(this);
         clearButton.setOnClickListener(this);
 
-        longitude.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if(!hasFocus)
-                    if (!longitude.getText().toString().isEmpty()) {
-                        Double lon = DoubleExtensionsKt.truncate(getLongitude());
-                        longitude.setText(lon.toString());
+        longitude.setOnFocusChangeListener((v, hasFocus) -> {
+            if(!hasFocus) {
+                if (!longitude.getText().toString().isEmpty()) {
+                    Double lon = DoubleExtensionsKt.truncate(getLongitude());
+                    longitude.setText(lon.toString());
+                    if (!latitude.getText().toString().isEmpty()) {
+                        Double lat = getLatitude();
+                        if (!LngLatValidatorKt.areLngLatCorrect(lon, lat)) {
+                            setError(getContext().getString(R.string.coordinates_error));
+                        } else {
+                            setError(null);
+                        }
                     }
+                }
             }
         });
 
-        latitude.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if(!hasFocus)
-                    if (!latitude.getText().toString().isEmpty()) {
-                        Double lat = DoubleExtensionsKt.truncate(getLatitude());
-                        latitude.setText(lat.toString());
+        latitude.setOnFocusChangeListener((v, hasFocus) -> {
+            if(!hasFocus)
+                if (!latitude.getText().toString().isEmpty()) {
+                    Double lat = DoubleExtensionsKt.truncate(getLatitude());
+                    latitude.setText(lat.toString());
+                    if (!longitude.getText().toString().isEmpty()) {
+                        Double lon = getLongitude();
+                        if (!LngLatValidatorKt.areLngLatCorrect(lon, lat)) {
+                            setError(getContext().getString(R.string.coordinates_error));
+                        } else {
+                            setError(null);
+                        }
                     }
-            }
+                }
         });
     }
 
