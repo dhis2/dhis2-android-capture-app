@@ -116,7 +116,7 @@ This section checks the amount of data and metadata a user would sync to his/her
 
 ## Installation
 
-A user can easily install the Android Settings App by logging into the DHIS2 and going to **App Management**.
+A user can easily install the Android Settings Web App by logging into the DHIS2 and going to **App Management**.
 
 - Click on **App Store**
 - Go to *Android Settings App*
@@ -127,7 +127,7 @@ A user can easily install the Android Settings App by logging into the DHIS2 and
 
 ## Log in and first time setup
 
-After a user install and launch the Android Settings App for the first time, the web app will require to set and save the default values of the configuration. This will apply default settings to all android devices connected to the instance. 
+After a user install and launch the Android Settings Web App for the first time, the web app will require to set and save the default values of the configuration. This will apply default settings to all android devices connected to the instance. 
 
 ![](resources/images/first-time-setup.png)
 
