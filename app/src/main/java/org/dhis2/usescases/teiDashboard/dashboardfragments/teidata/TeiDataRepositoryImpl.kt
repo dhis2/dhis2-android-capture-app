@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
 import io.reactivex.Single
 import org.dhis2.Bindings.applyFilters
+import org.dhis2.data.dhislogic.DhisEventUtils
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
 import org.dhis2.utils.DateUtils
@@ -13,21 +14,20 @@ import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
 class TeiDataRepositoryImpl(
     private val d2: D2,
     private val programUid: String?,
     private val teiUid: String,
-    private val enrollmentUid: String?
+    private val enrollmentUid: String?,
+    private val dhisEventUtils: DhisEventUtils
 ) : TeiDataRepository {
 
     override fun getTEIEnrollmentEvents(
@@ -118,7 +118,11 @@ class TeiDataRepositoryImpl(
                             eventList.size,
                             if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
                             isSelected,
-                            checkAddEvent(programStage, isSelected),
+                            dhisEventUtils.checkAddEventInEnrollment(
+                                enrollmentUid,
+                                programStage,
+                                isSelected
+                            ),
                             orgUnitName = ""
                         )
                     )
@@ -219,28 +223,5 @@ class TeiDataRepositoryImpl(
                 event
             }
         }
-    }
-
-    private fun checkAddEvent(stage: ProgramStage, isSelected: Boolean): Boolean {
-        val enrollment = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
-        val enrollmentStatusCheck =
-            !(enrollment == null || enrollment.status() != EnrollmentStatus.ACTIVE)
-        val totalEventCount = d2.eventModule().events()
-            .byEnrollmentUid().eq(enrollmentUid)
-            .byProgramStageUid().eq(stage.uid())
-            .byDeleted().isFalse
-            .blockingCount()
-        val stageNotRepeatableZeroCount = stage.repeatable() != true &&
-            totalEventCount == 0
-        val stageRepeatableZeroCount = stage.repeatable() == true &&
-            totalEventCount == 0
-        val stageRepeatableCountSelected = stage.repeatable() == true &&
-            totalEventCount > 0 && isSelected
-
-        return enrollmentStatusCheck && (
-            stageNotRepeatableZeroCount ||
-                stageRepeatableZeroCount ||
-                stageRepeatableCountSelected
-            )
     }
 }
