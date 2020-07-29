@@ -6,6 +6,7 @@ import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.BitmapUtils
+import java.util.ArrayList
 import java.util.HashMap
 import org.dhis2.R
 import org.dhis2.uicomponents.map.TeiMarkers
@@ -202,5 +203,44 @@ class TeiMapManager(
             }
         }
         return featureToReturn
+    }
+
+    fun getSourcesAndLayersForSearch(): Pair<List<String>, List<Array<String>>> {
+        val layers: MutableList<Array<String>> =
+            ArrayList()
+        val sources: MutableList<String> =
+            ArrayList()
+        layers.add(
+            arrayOf(
+                if (featureType == FeatureType.POINT) {
+                    "TEI_POINT_LAYER_ID"
+                } else {
+                    "TEI_POLYGON_LAYER_ID"
+                }
+            )
+        )
+        sources.add(TEIS_SOURCE_ID)
+        layers.add(
+            arrayOf(
+                "ENROLLMENT_POINT_LAYER_ID",
+                "ENROLLMENT_POLYGON_LAYER_ID"
+            )
+        )
+        sources.add(ENROLLMENT_SOURCE_ID)
+        for (sourceId in sources) {
+            layers.add(arrayOf("RELATIONSHIP_LINE_LAYER_ID_$sourceId"))
+            sources.add(sourceId)
+        }
+        for (eventSource in eventsFeatureCollection.keys) {
+            layers.add(
+                arrayOf(
+                    "POINT_LAYER_$eventSource",
+                    "POLYGON_LAYER$eventSource"
+                )
+            )
+            sources.add(eventSource)
+        }
+
+        return Pair(sources, layers)
     }
 }
