@@ -262,7 +262,8 @@ class DataSetTableRepositoryImpl(
                             val dataValueRepository = d2.dataValueModule().dataValues()
                                 .byPeriod().eq(periodId)
                                 .byOrganisationUnitUid().eq(orgUnitUid)
-                                .byCategoryOptionComboUid().eq(catOptCombo)
+                                .byAttributeOptionComboUid().eq(catOptCombo)
+                                .byDeleted().isFalse
                                 .byDataElementUid().eq(dataSetElement.dataElement().uid())
                                 .byCategoryOptionComboUid()
                                 .`in`(UidsHelper.getUidsList(categoryOptionCombos))
@@ -278,7 +279,7 @@ class DataSetTableRepositoryImpl(
                 if (dataElementsUids.isNotEmpty()) {
                     missingCompleteDataElementsProcessor.onNext(dataElementsUids)
                 }
-                Pair.create(true, dataElementsUids)
+                Pair.create(dataElementsUids.isEmpty(), dataElementsUids)
             }
     }
 
