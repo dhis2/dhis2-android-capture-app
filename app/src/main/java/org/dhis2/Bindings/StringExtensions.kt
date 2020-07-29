@@ -64,3 +64,5 @@ fun String.toDate(): Date {
 
     return date
 }
+
+fun String.parseToDouble() = this.toDoubleOrNull()?.toString() ?: "0.0"
