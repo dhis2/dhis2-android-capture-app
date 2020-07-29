@@ -7,7 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.core.content.ContextCompat
 import androidx.core.widget.CompoundButtonCompat
+import androidx.core.widget.ImageViewCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -22,6 +24,7 @@ import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
 import org.dhis2.uicomponents.map.layer.types.SatelliteMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiEventMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
+import org.dhis2.uicomponents.map.managers.RelationshipMapManager.Companion.RELATIONSHIP_ICON
 import org.dhis2.utils.ColorUtils
 
 class MapLayerDialog(
@@ -97,36 +100,70 @@ class MapLayerDialog(
     }
 
     private fun initProgramData() {
+        val layerMap: LinkedHashMap<String, MutableList<View>> = linkedMapOf(
+            Pair("SATELLITE", mutableListOf()),
+            Pair("TEI", mutableListOf()),
+            Pair("ENROLLMENT", mutableListOf()),
+            Pair("TRACKER_EVENT", mutableListOf()),
+            Pair("RELATIONSHIP", mutableListOf()),
+            Pair("EVENT", mutableListOf()),
+            Pair("HEATMAP", mutableListOf())
+        )
         mapLayerManager.mapLayers.toSortedMap().forEach { (source, layer) ->
             layerVisibility[source] ?: run { layerVisibility[source] = layer.visible }
             when (layer) {
-                is TeiMapLayer -> addCheckBox(
-                    source,
-                    context!!.getString(R.string.dialog_layer_tei_coordinates),
-                    MapLayerManager.TEI_ICON_ID
+                is TeiMapLayer -> layerMap["TEI"]?.add(
+                    addCheckBox(
+                        source,
+                        context!!.getString(R.string.dialog_layer_tei_coordinates),
+                        MapLayerManager.TEI_ICON_ID
+                    )
                 )
-                is EnrollmentMapLayer -> addCheckBox(
-                    source,
-                    context!!.getString(R.string.dialog_layer_enrollment_coordinates),
-                    MapLayerManager.ENROLLMENT_ICON_ID
+                is EnrollmentMapLayer -> layerMap["ENROLLMENT"]?.add(
+                    addCheckBox(
+                        source,
+                        context!!.getString(R.string.dialog_layer_enrollment_coordinates),
+                        MapLayerManager.ENROLLMENT_ICON_ID
+                    )
                 )
-                is TeiEventMapLayer -> addCheckBox(
-                    source,
-                    image = "${MapLayerManager.STAGE_ICON_ID}_$source"
+                is TeiEventMapLayer -> layerMap["TRACKER_EVENT"]?.add(
+                    addCheckBox(
+                        source,
+                        image = "${MapLayerManager.STAGE_ICON_ID}_$source"
+                    )
                 )
-                is HeatmapMapLayer -> addCheckBox(
-                    source,
-                    context!!.getString(R.string.dialog_layer_heatmap)
+                is HeatmapMapLayer -> layerMap["HEATMAP"]?.add(
+                    addCheckBox(
+                        source,
+                        context!!.getString(R.string.dialog_layer_heatmap)
+                    )
                 )
-                is SatelliteMapLayer -> addCheckBox(
-                    source,
-                    context!!.getString(R.string.dialog_layer_satellite)
+                is SatelliteMapLayer -> layerMap["SATELLITE"]?.add(
+                    addCheckBox(
+                        source,
+                        context!!.getString(R.string.dialog_layer_satellite)
+                    )
                 )
-                is RelationshipMapLayer -> addCheckBox(source)
-                is EventMapLayer -> addCheckBox(
-                    source,
-                    context!!.getString(R.string.dialog_layer_event)
+                is RelationshipMapLayer -> layerMap["RELATIONSHIP"]?.add(
+                    addCheckBox(
+                        source,
+                        null,
+                        RELATIONSHIP_ICON
+                    )
                 )
+                is EventMapLayer -> layerMap["EVENT"]?.add(
+                    addCheckBox(
+                        source,
+                        context!!.getString(R.string.dialog_layer_event)
+                    )
+                )
+            }
+        }
+        layerMap.forEach {
+            if (it.value.isNotEmpty()) {
+                it.value.forEach { checkBox ->
+                    binding.layout.addView(checkBox)
+                }
             }
         }
     }
@@ -140,8 +177,12 @@ class MapLayerDialog(
         }
     }
 
-    private fun addCheckBox(source: String, layerText: String? = null, image: String? = null) {
-        val layerView = ItemLayerBinding.inflate(LayoutInflater.from(context)).apply {
+    private fun addCheckBox(
+        source: String,
+        layerText: String? = null,
+        image: String? = null
+    ): View {
+        return ItemLayerBinding.inflate(LayoutInflater.from(context)).apply {
             root.tag = "tag_$source"
             layerCheckBox.apply {
                 text = layerText ?: source
@@ -163,13 +204,24 @@ class MapLayerDialog(
                 }
             }
             image?.let {
-                layerIcon.setImageBitmap(
-                    mapLayerManager.mapboxMap.style?.getImage(
-                        image
+                if (it == RELATIONSHIP_ICON &&
+                    mapLayerManager.relationshipUsedColors[source] != null
+                ) {
+                    layerIcon.setImageDrawable(
+                        ContextCompat.getDrawable(context!!, R.drawable.map_marker)
                     )
-                )
+                    ImageViewCompat.setImageTintList(
+                        layerIcon,
+                        ColorStateList.valueOf(mapLayerManager.relationshipUsedColors[source]!!)
+                    )
+                } else {
+                    layerIcon.setImageBitmap(
+                        mapLayerManager.mapboxMap.style?.getImage(
+                            image
+                        )
+                    )
+                }
             }
         }.root
-        binding.layout.addView(layerView)
     }
 }

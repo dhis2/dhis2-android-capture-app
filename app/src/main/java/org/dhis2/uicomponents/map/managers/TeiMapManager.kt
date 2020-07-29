@@ -188,17 +188,17 @@ class TeiMapManager(
             MapEventToFeatureCollection.EVENT
         )
         var featureToReturn: Feature? = null
-        for (source in teiFeatureCollections.keys) {
-            for (propertyLabel in mainProperties) {
+        mainLoop@ for (source in teiFeatureCollections.keys) {
+            sourceLoop@ for (propertyLabel in mainProperties) {
                 val feature = findFeature(source, propertyLabel, propertyValue)
                 if (feature != null) {
                     featureToReturn = feature
                     mapLayerManager.getLayer(source, true)?.setSelectedItem(featureToReturn)
-                    break
+                    break@sourceLoop
                 }
-                if (featureToReturn != null) {
-                    break
-                }
+            }
+            if (featureToReturn != null) {
+                break@mainLoop
             }
         }
         return featureToReturn
