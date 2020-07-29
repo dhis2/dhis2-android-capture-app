@@ -51,7 +51,7 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
     public void initFieldFocus() {
         if (currentUid != null) {
             currentUid.observeForever(fieldUid -> {
-                if((selectedFieldUid == null && Objects.equals(fieldUid, this.fieldUid)) || ((selectedFieldUid != null) && selectedFieldUid.equals(this.fieldUid))){
+                if(fieldWasSelectedManually() || currentSelectedItem(fieldUid)){
                     Drawable bgDrawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg);
                     itemView.setBackground(bgDrawable);
                 } else {
@@ -60,6 +60,14 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
             });
 
         }
+    }
+
+    private boolean fieldWasSelectedManually() {
+        return selectedFieldUid != null && selectedFieldUid.equals(this.fieldUid);
+    }
+
+    private boolean currentSelectedItem(String fieldUid) {
+        return selectedFieldUid == null && Objects.equals(fieldUid, this.fieldUid);
     }
 
     public void closeKeyboard(View v) {
