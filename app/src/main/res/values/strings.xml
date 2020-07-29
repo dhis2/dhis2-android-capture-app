@@ -742,4 +742,5 @@
     <string name="dataset_data">Data</string>
     <string name="tei_type_has_no_attributes">%s has no public attributes. Please select a program</string>
     <string name="coordinates_error">Coordinates values are not valid</string>
+    <string name="break_glass_error">You cannot enroll TEIs from other org units in this program because it is protected.\nContact your administrator.</string>
 </resources>
