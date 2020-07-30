@@ -24,10 +24,6 @@ import timber.log.Timber;
 
 import static org.dhis2.utils.analytics.AnalyticsConstants.ABOUT_FRAGMENT;
 
-/**
- * QUADRAM. Created by ppajuelo on 05/07/2018.
- */
-
 public class AboutFragment extends FragmentGlobalAbstract implements AboutContracts.AboutView {
 
     @Inject
@@ -55,6 +51,9 @@ public class AboutFragment extends FragmentGlobalAbstract implements AboutContra
         setAppVersion();
         setSDKVersion();
 
+        aboutBinding.aboutParent.setOnClickListener(v -> {
+
+        });
         return aboutBinding.getRoot();
     }
 
