@@ -83,6 +83,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         this.flowableOptions = PublishProcessor.create();
 
         binding.actionButton.setOnClickListener(view -> {
+            view.requestFocus();
             presenter.onActionButtonClick();
         });
 
