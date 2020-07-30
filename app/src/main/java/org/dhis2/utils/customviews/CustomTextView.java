@@ -9,7 +9,6 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
@@ -27,11 +25,14 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.utils.ObjectStyleUtils;
+import org.dhis2.utils.ValidationUtils;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.regex.Pattern;
+
+import kotlin.Pair;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -260,7 +261,7 @@ public class CustomTextView extends FieldLayout {
         }
     }
 
-    public void setHint(String hint){
+    public void setHint(String hint) {
         binding.setVariable(BR.fieldHint, hint);
     }
 
@@ -277,71 +278,13 @@ public class CustomTextView extends FieldLayout {
     }
 
     private boolean validate() {
-        if (editText.getText() != null && !isEmpty(editText.getText())) {
-            switch (valueType) {
-                case PHONE_NUMBER:
-                    if (Patterns.PHONE.matcher(editText.getText().toString()).matches())
-                        return true;
-                    else {
-                        inputLayout.setError(editText.getContext().getString(R.string.invalid_phone_number));
-                        return false;
-                    }
-                case EMAIL:
-                    if (Patterns.EMAIL_ADDRESS.matcher(editText.getText().toString()).matches())
-                        return true;
-                    else {
-                        inputLayout.setError(editText.getContext().getString(R.string.invalid_email));
-                        return false;
-                    }
-                case INTEGER_NEGATIVE:
-                    if (Float.valueOf(editText.getText().toString()) < 0)
-                        return true;
-                    else {
-                        inputLayout.setError(editText.getContext().getString(R.string.invalid_negative_number));
-                        return false;
-                    }
-                case INTEGER_ZERO_OR_POSITIVE:
-                    if (editText.getText() != null &&
-                            Float.valueOf(editText.getText().toString()) >= 0)
-                        return true;
-                    else {
-                        inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
-                        return false;
-                    }
-                case INTEGER_POSITIVE:
-                    if (Float.valueOf(editText.getText().toString()) > 0)
-                        return true;
-                    else {
-                        inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive));
-                        return false;
-                    }
-                case UNIT_INTERVAL:
-                    if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 1)
-                        return true;
-                    else {
-                        inputLayout.setError(editText.getContext().getString(R.string.invalid_interval));
-                        return false;
-                    }
-                case PERCENTAGE:
-                    if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 100)
-                        return true;
-                    else {
-                        inputLayout.setError(editText.getContext().getString(R.string.invalid_percentage));
-                        return false;
-                    }
-                case URL:
-                    if (urlPattern.matcher(editText.getText().toString()).matches()) {
-                        inputLayout.setError(null);
-                        return true;
-                    } else {
-                        inputLayout.setError(getContext().getString(R.string.validation_url));
-                        return false;
-                    }
-                default:
-                    return true;
-            }
+
+        Pair<Boolean, Integer> validationResult = ValidationUtils.formatValidation(editText.getText() != null ? editText.getText().toString() : null, valueType);
+        if (!validationResult.component1()) {
+            inputLayout.setError(editText.getContext().getString(validationResult.component2()));
         }
-        return true;
+
+        return validationResult.component1();
     }
 
     public void setRenderType(String renderType) {
