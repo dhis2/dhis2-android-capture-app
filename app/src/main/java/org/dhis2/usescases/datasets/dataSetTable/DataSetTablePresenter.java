@@ -120,6 +120,9 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     @VisibleForTesting
     public void handleSaveClick() {
+        if (view.isErrorBottomSheetShowing()) {
+            closeBottomSheet();
+        }
         if (tableRepository.hasValidationRules()) {
             if (tableRepository.areValidationRulesMandatory()) {
                 validationProcessor.onNext(true);
@@ -235,13 +238,13 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     }
 
     @Override
-    public void closeExpandBottomSheet() {
-        view.closeExpandBottom();
+    public void collapseExpandBottomSheet() {
+        view.collapseExpandBottom();
     }
 
     @Override
-    public void onCancelBottomSheet() {
-        view.cancelBottomSheet();
+    public void closeBottomSheet() {
+        view.closeBottomSheet();
     }
 
     @Override

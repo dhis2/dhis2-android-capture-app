@@ -21,9 +21,6 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.security.ProviderInstaller;
 
 import org.acra.ACRA;
-import org.acra.ReportField;
-import org.acra.annotation.AcraCore;
-import org.acra.annotation.AcraHttpSender;
 import org.acra.config.CoreConfigurationBuilder;
 import org.acra.config.HttpSenderConfigurationBuilder;
 import org.acra.data.StringFormat;
@@ -47,7 +44,6 @@ import org.dhis2.usescases.login.LoginContracts;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
-import org.dhis2.utils.UtilsModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
@@ -237,7 +233,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()))
                 .analyticsModule(new AnalyticsModule())
                 .preferenceModule(new PreferenceModule())
-                .utilModule(new UtilsModule())
                 .workManagerController(new WorkManagerModule());
     }
 

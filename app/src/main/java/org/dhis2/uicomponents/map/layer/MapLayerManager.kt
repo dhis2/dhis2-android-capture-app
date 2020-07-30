@@ -35,7 +35,7 @@ class MapLayerManager {
             Color.parseColor("#2C2C2C")
         )
     private var carouselAdapter: CarouselAdapter? = null
-    private val relationshipUsedColors =
+    val relationshipUsedColors =
         mutableMapOf<String, Int>()
 
     companion object {

@@ -93,7 +93,7 @@
                 android:layout_height="48dp"
                 android:padding="12dp"
                 android:layout_marginEnd="8dp"
-                android:onClick="@{ () -> presenter.closeExpandBottomSheet() }"
+                android:onClick="@{ () -> presenter.collapseExpandBottomSheet() }"
                 app:layout_constraintBottom_toBottomOf="@id/title"
                 app:layout_constraintEnd_toStartOf="@id/endGuideline"
                 app:layout_constraintTop_toTopOf="@id/title"

@@ -42,7 +42,7 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         String trackedEntityId = getIntent().getStringExtra("TEI_UID");
-        ((App) getApplicationContext()).userComponent().plus(new TeiProgramListModule(trackedEntityId)).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new TeiProgramListModule(this,trackedEntityId)).inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_tei_program_list);
         binding.setPresenter(presenter);
@@ -52,7 +52,7 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this);
+        presenter.init();
     }
 
     @Override
@@ -153,5 +153,15 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
             a.recycle();
             window.setStatusBarColor(colorToReturn);
         }
+    }
+
+    @Override
+    public void displayBreakGlassError() {
+        displayMessage(getString(R.string.break_glass_error));
+    }
+
+    @Override
+    public void displayAccessError() {
+        displayMessage(getString(R.string.search_access_error));
     }
 }

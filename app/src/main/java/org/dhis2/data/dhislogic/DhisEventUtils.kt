@@ -3,8 +3,10 @@ package org.dhis2.data.dhislogic
 import javax.inject.Inject
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.android.core.program.ProgramStage
 
 class DhisEventUtils @Inject constructor(
     val d2: D2,
@@ -43,5 +45,32 @@ class DhisEventUtils @Inject constructor(
             dhisOrgUnitUtils.eventInOrgUnitRange(event) &&
             isInCaptureOrgUnit &&
             hasCatComboAccess
+    }
+
+    fun checkAddEventInEnrollment(
+        enrollmentUid: String?,
+        stage: ProgramStage,
+        isSelected: Boolean
+    ): Boolean {
+        val enrollment = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
+        val enrollmentStatusCheck =
+            !(enrollment == null || enrollment.status() != EnrollmentStatus.ACTIVE)
+        val totalEventCount = d2.eventModule().events()
+            .byEnrollmentUid().eq(enrollmentUid)
+            .byProgramStageUid().eq(stage.uid())
+            .byDeleted().isFalse
+            .blockingCount()
+        val stageNotRepeatableZeroCount = stage.repeatable() != true &&
+            totalEventCount == 0
+        val stageRepeatableZeroCount = stage.repeatable() == true &&
+            totalEventCount == 0
+        val stageRepeatableCountSelected = stage.repeatable() == true &&
+            totalEventCount > 0 && isSelected
+
+        return enrollmentStatusCheck && (
+            stageNotRepeatableZeroCount ||
+                stageRepeatableZeroCount ||
+                stageRepeatableCountSelected
+            )
     }
 }
