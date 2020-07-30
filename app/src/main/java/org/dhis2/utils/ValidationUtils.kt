@@ -1,13 +1,15 @@
 package org.dhis2.utils
 
 import android.util.Patterns
+import java.util.regex.Pattern
 import org.dhis2.R
 import org.hisp.dhis.android.core.common.ValueType
-import java.util.regex.Pattern
 
 const val urlStringPattern =
-    "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$"
+    "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)[a-z0-9]" +
+        "+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$"
 val urlPattern: Pattern = Pattern.compile(urlStringPattern)
+
 class ValidationUtils {
 
     companion object {
