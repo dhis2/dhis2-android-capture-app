@@ -459,7 +459,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void showFilterProgress() {
         runOnUiThread(() -> {
-            if (isMapVisible()){
+            if (isMapVisible()) {
                 binding.toolbarProgress.setVisibility(View.VISIBLE);
                 binding.toolbarProgress.show();
             } else {
@@ -933,41 +933,29 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public boolean onMapClick(@NonNull LatLng point) {
         PointF pointf = teiMapManager.getMap().getProjection().toScreenLocation(point);
         RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
-        List<Feature> features = teiMapManager.getMap()
-                .queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "TEI_POINT_LAYER_ID" : "TEI_POLYGON_LAYER_ID");
+
+        Pair<List<String>, List<String[]>> sourcesAndLayer = teiMapManager.getSourcesAndLayersForSearch();
+        return findFeature(rectF, sourcesAndLayer.component1(), sourcesAndLayer.component2(), 0);
+    }
+
+    private boolean findFeature(RectF rectF, List<String> sources, List<String[]> layers, int count) {
+        String source = sources.get(count);
+        String[] layersToSearch = layers.get(count);
+        List<Feature> features = teiMapManager.getMap().queryRenderedFeatures(rectF, layersToSearch);
         if (!features.isEmpty()) {
-            teiMapManager.mapLayerManager.getLayer(TeiMapManager.TEIS_SOURCE_ID, false).setSelectedItem(features.get(0));
-            binding.mapCarousel.scrollToFeature(features.get(0));
-            return true;
-        } else {
-            for (String sourceId : sources) {
-                String lineLayerId = "RELATIONSHIP_LINE_LAYER_ID_" + sourceId;
-                String pointLayerId = "RELATIONSHIP_LINE_LAYER_ID_" + sourceId;
-
-                features = teiMapManager.getMap()
-                        .queryRenderedFeatures(rectF, lineLayerId, pointLayerId);
-                if (!features.isEmpty()) {
-                    teiMapManager.mapLayerManager.selectFeature(null);
-                    Feature selectedFeature = teiMapManager.findFeature(sourceId, RELATIONSHIP_UID, features.get(0).getStringProperty(RELATIONSHIP_UID));
-                    teiMapManager.mapLayerManager.getLayer(sourceId, true).setSelectedItem(selectedFeature);
-                    binding.mapCarousel.scrollToFeature(features.get(0));
-                    return true;
-                } else {
-                    for (String eventSource : eventSources) {
-                        features = teiMapManager.getMap()
-                                .queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "POINT_LAYER_" + eventSource : "POLYGON_LAYER_" + eventSource);
-                        if (!features.isEmpty()) {
-                            teiMapManager.mapLayerManager.selectFeature(null);
-                            teiMapManager.mapLayerManager.getLayer(eventSource, true).setSelectedItem(features.get(0));
-                            binding.mapCarousel.scrollToFeature(features.get(0));
-                            return true;
-                        }
-                    }
-                }
+            teiMapManager.mapLayerManager.selectFeature(null);
+            Feature selectedFeature = features.get(0);
+            if (source.contains("RELATIONSHIP")) {
+                selectedFeature = teiMapManager.findFeature(source, RELATIONSHIP_UID, selectedFeature.getStringProperty(RELATIONSHIP_UID));
             }
+            teiMapManager.mapLayerManager.getLayer(source, true).setSelectedItem(selectedFeature);
+            binding.mapCarousel.scrollToFeature(selectedFeature);
+            return true;
+        } else if (count < sources.size() - 1) {
+            return findFeature(rectF, sources, layers, count + 1);
+        } else {
+            return false;
         }
-
-        return false;
     }
 
     /*endregion*/

@@ -72,6 +72,7 @@ class DataSetTablePresenterTest {
 
     @Test
     fun `Should show success if no validation rules exist`() {
+        whenever(view.isErrorBottomSheetShowing) doReturn false
         whenever(repository.hasValidationRules()) doReturn false
         whenever(repository.isComplete()) doReturn Single.just(false)
         presenter.handleSaveClick()
@@ -80,6 +81,7 @@ class DataSetTablePresenterTest {
 
     @Test
     fun `Should run validations`() {
+        whenever(view.isErrorBottomSheetShowing) doReturn false
         whenever(repository.hasValidationRules()) doReturn true
         whenever(repository.areValidationRulesMandatory()) doReturn true
         val testObserver = presenter.runValidationProcessor().test()
@@ -87,6 +89,20 @@ class DataSetTablePresenterTest {
         testObserver
             .assertNoErrors()
             .assertValue(true)
+    }
+
+    @Test
+    fun `Should re-run validations when a rule was fixed`() {
+        whenever(view.isErrorBottomSheetShowing) doReturn true
+        whenever(repository.hasValidationRules()) doReturn true
+        whenever(repository.areValidationRulesMandatory()) doReturn true
+        val testObserver = presenter.runValidationProcessor().test()
+        presenter.handleSaveClick()
+        testObserver
+            .assertNoErrors()
+            .assertValue(true)
+
+        verify(view).closeBottomSheet()
     }
 
     @Test
@@ -235,16 +251,16 @@ class DataSetTablePresenterTest {
 
     @Test
     fun `Should close or expand the bottom sheet`() {
-        presenter.closeExpandBottomSheet()
+        presenter.collapseExpandBottomSheet()
 
-        verify(view).closeExpandBottom()
+        verify(view).collapseExpandBottom()
     }
 
     @Test
     fun `Should close bottom sheet on cancel click`() {
-        presenter.onCancelBottomSheet()
+        presenter.closeBottomSheet()
 
-        verify(view).cancelBottomSheet()
+        verify(view).closeBottomSheet()
     }
 
     @Test

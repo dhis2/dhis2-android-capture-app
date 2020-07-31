@@ -370,7 +370,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void closeExpandBottom() {
+    public void collapseExpandBottom() {
         if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
             behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -379,15 +379,19 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void cancelBottomSheet() {
+    public void closeBottomSheet() {
         binding.BSLayout.bottomSheetLayout.setVisibility(View.GONE);
-        binding.saveButton.show();
     }
 
     @Override
     public void completeBottomSheet() {
-        cancelBottomSheet();
+        closeBottomSheet();
         presenter.completeDataSet();
+    }
+
+    @Override
+    public boolean isErrorBottomSheetShowing() {
+        return binding.BSLayout.bottomSheetLayout.getVisibility() == View.VISIBLE;
     }
 
     private void configureShapeDrawable() {
@@ -422,6 +426,8 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                 .translationY(-ExtensionsKt.getDp(48))
                 .start();
     }
+
+
 
     public void showMoreOptions(View view) {
         new AppMenuHelper.Builder()

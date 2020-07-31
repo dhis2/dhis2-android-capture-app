@@ -247,10 +247,10 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
 
         if (!FilterManager.getInstance().getEventStatusFilters().isEmpty()) {
-             trackedEntityInstanceQuery = trackedEntityInstanceQuery
-                     .byEventStartDate().eq(DateUtils.yearsBeforeNow(5))
-                     .byEventEndDate().eq(DateUtils.yearsAfterNow(1))
-                     .byEventStatus().in(FilterManager.getInstance().getEventStatusFilters());
+            trackedEntityInstanceQuery = trackedEntityInstanceQuery
+                    .byEventStartDate().eq(DateUtils.yearsBeforeNow(5))
+                    .byEventEndDate().eq(DateUtils.yearsAfterNow(1))
+                    .byEventStatus().in(FilterManager.getInstance().getEventStatusFilters());
         }
 
         OrganisationUnitMode ouMode;
@@ -727,18 +727,19 @@ public class SearchRepositoryImpl implements SearchRepository {
                         .byProgram().eq(selectedProgram.uid())
                         .orderByEnrollmentDate(RepositoryScope.OrderByDirection.DESC)
                         .blockingGet();
-                for(Enrollment enrollment : possibleEnrollments){
-                    if(enrollment.status() == EnrollmentStatus.ACTIVE){
+                for (Enrollment enrollment : possibleEnrollments) {
+                    if (enrollment.status() == EnrollmentStatus.ACTIVE) {
                         searchTei.setCurrentEnrollment(enrollment);
                         break;
                     }
                 }
-                if(searchTei.getSelectedEnrollment()==null) {
+                if (searchTei.getSelectedEnrollment() == null) {
                     searchTei.setCurrentEnrollment(possibleEnrollments.get(0));
                 }
                 searchTei.setOnline(false);
-            } else if (d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(localTei.uid()).one().blockingExists())
+            } else {
                 searchTei.setOnline(false);
+            }
 
             if (offlineOnly)
                 searchTei.setOnline(!offlineOnly);

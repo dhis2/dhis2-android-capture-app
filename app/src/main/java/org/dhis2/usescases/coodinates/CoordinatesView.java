@@ -24,9 +24,11 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.Bindings.DoubleExtensionsKt;
+import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.FormCoordinatesAccentBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
+import org.dhis2.uicomponents.map.geometry.LngLatValidatorKt;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
@@ -110,9 +112,15 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
         latitude.setOnEditorActionListener((v, actionId, event) -> {
             if (validateCoordinates()) {
-                Double latitudeValue = isEmpty(latitude.getText().toString()) ? null : DoubleExtensionsKt.truncate(Double.valueOf(latitude.getText().toString()));
-                Double longitudeValue = isEmpty(longitude.getText().toString()) ? null : DoubleExtensionsKt.truncate(Double.valueOf(longitude.getText().toString()));
-                currentLocationListener.onCurrentLocationClick(GeometryHelper.createPointGeometry(longitudeValue, latitudeValue));
+                Double latitudeValue = isEmpty(latitude.getText().toString()) ? null : DoubleExtensionsKt.truncate(getLatitude());
+                Double longitudeValue = isEmpty(longitude.getText().toString()) ? null : DoubleExtensionsKt.truncate(getLongitude());
+                if (latitudeValue != null || longitudeValue != null) {
+                    if (LngLatValidatorKt.isLatitudeValid(latitudeValue)) {
+                        currentLocationListener.onCurrentLocationClick(GeometryHelper.createPointGeometry(longitudeValue, latitudeValue));
+                    } else {
+                        setError(getContext().getString(R.string.coordinates_error));
+                    }
+                }
             } else {
                 longitude.requestFocus();
                 longitude.performClick();
@@ -122,9 +130,15 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
         longitude.setOnEditorActionListener((v, actionId, event) -> {
             if (validateCoordinates()) {
-                Double latitudeValue = isEmpty(latitude.getText().toString()) ? null : DoubleExtensionsKt.truncate(Double.valueOf(latitude.getText().toString()));
-                Double longitudeValue = isEmpty(longitude.getText().toString()) ? null : DoubleExtensionsKt.truncate(Double.valueOf(longitude.getText().toString()));
-                currentLocationListener.onCurrentLocationClick(GeometryHelper.createPointGeometry(longitudeValue, latitudeValue));
+                Double latitudeValue = isEmpty(latitude.getText().toString()) ? null : DoubleExtensionsKt.truncate(getLatitude());
+                Double longitudeValue = isEmpty(longitude.getText().toString()) ? null : DoubleExtensionsKt.truncate(getLongitude());
+                if (latitudeValue != null || longitudeValue != null) {
+                    if (LngLatValidatorKt.areLngLatCorrect(longitudeValue, latitudeValue)) {
+                        currentLocationListener.onCurrentLocationClick(GeometryHelper.createPointGeometry(longitudeValue, latitudeValue));
+                    } else {
+                        setError(getContext().getString(R.string.coordinates_error));
+                    }
+                }
             } else {
                 latitude.requestFocus();
                 latitude.performClick();
@@ -148,6 +162,39 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         position.setOnClickListener(this);
         map.setOnClickListener(this);
         clearButton.setOnClickListener(this);
+
+        longitude.setOnFocusChangeListener((v, hasFocus) -> {
+            if(!hasFocus) {
+                if (!longitude.getText().toString().isEmpty()) {
+                    Double lon = DoubleExtensionsKt.truncate(getLongitude());
+                    longitude.setText(lon.toString());
+                    if (!latitude.getText().toString().isEmpty()) {
+                        Double lat = getLatitude();
+                        if (!LngLatValidatorKt.areLngLatCorrect(lon, lat)) {
+                            setError(getContext().getString(R.string.coordinates_error));
+                        } else {
+                            setError(null);
+                        }
+                    }
+                }
+            }
+        });
+
+        latitude.setOnFocusChangeListener((v, hasFocus) -> {
+            if(!hasFocus)
+                if (!latitude.getText().toString().isEmpty()) {
+                    Double lat = DoubleExtensionsKt.truncate(getLatitude());
+                    latitude.setText(lat.toString());
+                    if (!longitude.getText().toString().isEmpty()) {
+                        Double lon = getLongitude();
+                        if (!LngLatValidatorKt.areLngLatCorrect(lon, lat)) {
+                            setError(getContext().getString(R.string.coordinates_error));
+                        } else {
+                            setError(null);
+                        }
+                    }
+                }
+        });
     }
 
     private boolean validateCoordinates() {
@@ -238,6 +285,9 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             case R.id.clearButton:
                 clearValueData();
                 updateLocation(null);
+                if (errorView.getVisibility()== VISIBLE) {
+                    setError(null);
+                }
                 break;
         }
     }
@@ -352,28 +402,18 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     public void clearValueData() {
-
         this.latitude.setText(null);
         this.longitude.setText(null);
-        this.clearButton.setVisibility(GONE);
-
-    }
-
-    public boolean validateInputtedData() {
-        if (!validateCoordinates())
-            return false;
-
-        double latitude = Double.valueOf(this.latitude.getText().toString());
-        double longitude = Double.valueOf(this.longitude.getText().toString());
-        return ((latitude > -90 && latitude < 90) && (longitude > -180 && longitude < 180));
     }
 
     public Double getLatitude() {
-        return Double.valueOf(latitude.getText().toString());
+        String latString = StringExtensionsKt.parseToDouble(latitude.getText().toString());
+        return Double.valueOf(latString);
     }
 
     public Double getLongitude() {
-        return Double.valueOf(longitude.getText().toString());
+        String lonString = StringExtensionsKt.parseToDouble(longitude.getText().toString());
+        return Double.valueOf(lonString);
     }
 
     public String currentCoordinates() {

@@ -64,6 +64,7 @@ public class EditTextCustomHolder extends FormViewHolder {
             validateRegex();
         });
         binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
+            selectedFieldUid = null;
             binding.customEdittext.getEditText().clearFocus();
             sendAction();
             closeKeyboard(binding.customEdittext.getEditText());

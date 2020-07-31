@@ -55,30 +55,20 @@ class RelationshipMapLayer(
     override var visible = false
 
     init {
-        when (featureType) {
-            FeatureType.POINT -> {
-                if (style.getLayer(BASE_RELATIONSHIP_LAYER_ID) == null) {
-                    style.addLayer(baseRelationshipLayer)
-                }
-                style.addSource(GeoJsonSource(SELECTED_SOURCE))
-                style.addLayerBelow(polygonLayer, BASE_RELATIONSHIP_LAYER_ID)
-                style.addLayerBelow(polygonBorderLayer, BASE_RELATIONSHIP_LAYER_ID)
-                style.addLayerBelow(selectedPolygonLayer, BASE_RELATIONSHIP_LAYER_ID)
-                style.addLayerBelow(selectedPolygonBorderLayer, BASE_RELATIONSHIP_LAYER_ID)
-                style.addLayerAbove(pointLayer, BASE_RELATIONSHIP_LAYER_ID)
-                style.addLayerAbove(selectedPointLayer, BASE_RELATIONSHIP_LAYER_ID)
-                style.addLayerAbove(linesLayer, BASE_RELATIONSHIP_LAYER_ID)
-                style.addLayerAbove(selectedLineLayer, BASE_RELATIONSHIP_LAYER_ID)
-                style.addLayerAbove(arrowLayer, BASE_RELATIONSHIP_LAYER_ID)
-                style.addLayerAbove(arrowBidirectionalLayer, BASE_RELATIONSHIP_LAYER_ID)
-            }
-            FeatureType.POLYGON -> {
-                style.addLayer(linesLayer)
-                style.addLayer(polygonLayer)
-                style.addLayer(polygonBorderLayer)
-            }
-            else -> Unit
+        if (style.getLayer(BASE_RELATIONSHIP_LAYER_ID) == null) {
+            style.addLayer(baseRelationshipLayer)
         }
+        style.addSource(GeoJsonSource(SELECTED_SOURCE))
+        style.addLayerBelow(polygonLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerBelow(polygonBorderLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerBelow(selectedPolygonLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerBelow(selectedPolygonBorderLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerAbove(pointLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerAbove(selectedPointLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerAbove(linesLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerAbove(selectedLineLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerAbove(arrowLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerAbove(arrowBidirectionalLayer, BASE_RELATIONSHIP_LAYER_ID)
     }
 
     private val baseRelationshipLayer: Layer
@@ -256,7 +246,7 @@ class RelationshipMapLayer(
 
     override fun setSelectedItem(feature: Feature?) {
         feature?.let {
-            if (featureType == FeatureType.POINT) {
+            if (feature.type() == FeatureType.POINT.geometryType) {
                 selectPoint(feature)
             } else {
                 selectPolygon(feature)
@@ -296,15 +286,11 @@ class RelationshipMapLayer(
     }
 
     private fun deselectCurrent() {
-        if (featureType == FeatureType.POINT) {
-            selectedLineLayer.setProperties(visibility(Property.NONE))
-            selectedPointLayer.setProperties(
-                PropertyFactory.iconSize(1f)
-            )
-
-            selectedPolygonBorderLayer.setProperties(lineWidth(LINE_WIDTH))
-        } else {
-        }
+        selectedLineLayer.setProperties(visibility(Property.NONE))
+        selectedPointLayer.setProperties(
+            PropertyFactory.iconSize(1f)
+        )
+        selectedPolygonBorderLayer.setProperties(lineWidth(LINE_WIDTH))
     }
 
     override fun findFeatureWithUid(featureUidProperty: String): Feature? {
@@ -323,24 +309,16 @@ class RelationshipMapLayer(
     }
 
     private fun setVisibility(visibility: String) {
-        when (featureType) {
-            FeatureType.POINT -> {
-                linesLayer.setProperties(visibility(visibility))
-                arrowLayer.setProperties(visibility(visibility))
-                arrowBidirectionalLayer.setProperties(visibility(visibility))
-                pointLayer.setProperties(visibility(visibility))
-                selectedLineLayer.setProperties(visibility(visibility))
-                selectedPointLayer.setProperties(visibility(visibility))
-                baseRelationshipLayer.setProperties(visibility(visibility))
-            }
-            FeatureType.POLYGON -> {
-                linesLayer.setProperties(visibility(visibility))
-                polygonLayer.setProperties(visibility(visibility))
-                polygonBorderLayer.setProperties(visibility(visibility))
-                selectedPolygonLayer.setProperties(visibility(visibility))
-            }
-            else -> Unit
-        }
+        arrowLayer.setProperties(visibility(visibility))
+        arrowBidirectionalLayer.setProperties(visibility(visibility))
+        pointLayer.setProperties(visibility(visibility))
+        selectedLineLayer.setProperties(visibility(visibility))
+        selectedPointLayer.setProperties(visibility(visibility))
+        baseRelationshipLayer.setProperties(visibility(visibility))
+        linesLayer.setProperties(visibility(visibility))
+        polygonLayer.setProperties(visibility(visibility))
+        polygonBorderLayer.setProperties(visibility(visibility))
+        selectedPolygonLayer.setProperties(visibility(visibility))
         visible = visibility == Property.VISIBLE
     }
 
