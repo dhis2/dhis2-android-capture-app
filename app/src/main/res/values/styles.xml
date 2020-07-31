@@ -5,6 +5,10 @@
         <item name="android:colorAccent">@color/colorGreyDefault</item>
     </style>
 
+    <style name="ErrorActivityTheme" parent="AppTheme">
+        <item name="colorAccent">@color/text_black_4d4d4d</item>
+    </style>
+
     <style name="DatePickerTheme" parent="Base.Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">@color/colorGreyDefault</item>
         <item name="android:colorAccent">@color/colorGreyDefault</item>
@@ -208,6 +212,14 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/padding_12</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <style name="ActionIconSmallPadding" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_6</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
     </style>

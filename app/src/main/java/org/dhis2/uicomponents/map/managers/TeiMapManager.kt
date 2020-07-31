@@ -1,12 +1,21 @@
 package org.dhis2.uicomponents.map.managers
 
+import androidx.appcompat.content.res.AppCompatResources
 import com.mapbox.geojson.BoundingBox
+import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import com.mapbox.mapboxsdk.utils.BitmapUtils
+import java.util.ArrayList
 import java.util.HashMap
+import org.dhis2.R
 import org.dhis2.uicomponents.map.TeiMarkers
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.Companion.RELATIONSHIP_UID
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.ENROLLMENT_UID
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.TEI_UID
 import org.dhis2.uicomponents.map.layer.LayerType
 import org.dhis2.uicomponents.map.layer.MapLayerManager
 import org.dhis2.uicomponents.map.model.MapStyle
@@ -88,6 +97,36 @@ class TeiMapManager(
                 )
             }
         }
+        style?.addImage(
+            RelationshipMapManager.RELATIONSHIP_ARROW,
+            BitmapUtils.getBitmapFromDrawable(
+                AppCompatResources.getDrawable(
+                    mapView.context,
+                    R.drawable.ic_arrowhead
+                )
+            )!!,
+            true
+        )
+        style?.addImage(
+            RelationshipMapManager.RELATIONSHIP_ICON,
+            BitmapUtils.getBitmapFromDrawable(
+                AppCompatResources.getDrawable(
+                    mapView.context,
+                    R.drawable.map_marker
+                )
+            )!!,
+            true
+        )
+        style?.addImage(
+            RelationshipMapManager.RELATIONSHIP_ARROW_BIDIRECTIONAL,
+            BitmapUtils.getBitmapFromDrawable(
+                AppCompatResources.getDrawable(
+                    mapView.context,
+                    R.drawable.ic_arrowhead_bidirectional
+                )
+            )!!,
+            true
+        )
         setSource()
         setLayer()
         teiFeatureCollections[TEIS_SOURCE_ID]?.let { setSymbolManager(it) }
@@ -130,5 +169,78 @@ class TeiMapManager(
                 eventsFeatureCollection.keys.toList(),
                 false
             )
+    }
+
+    override fun findFeature(
+        source: String,
+        propertyName: String,
+        propertyValue: String
+    ): Feature? {
+        return teiFeatureCollections[source]?.features()?.firstOrNull {
+            it.getStringProperty(propertyName) == propertyValue
+        }
+    }
+
+    override fun findFeature(propertyValue: String): Feature? {
+        val mainProperties = arrayListOf(
+            TEI_UID,
+            ENROLLMENT_UID,
+            RELATIONSHIP_UID,
+            MapEventToFeatureCollection.EVENT
+        )
+        var featureToReturn: Feature? = null
+        mainLoop@ for (source in teiFeatureCollections.keys) {
+            sourceLoop@ for (propertyLabel in mainProperties) {
+                val feature = findFeature(source, propertyLabel, propertyValue)
+                if (feature != null) {
+                    featureToReturn = feature
+                    mapLayerManager.getLayer(source, true)?.setSelectedItem(featureToReturn)
+                    break@sourceLoop
+                }
+            }
+            if (featureToReturn != null) {
+                break@mainLoop
+            }
+        }
+        return featureToReturn
+    }
+
+    fun getSourcesAndLayersForSearch(): Pair<List<String>, List<Array<String>>> {
+        val layers: MutableList<Array<String>> =
+            ArrayList()
+        val sources: MutableList<String> =
+            ArrayList()
+        layers.add(
+            arrayOf(
+                if (featureType == FeatureType.POINT) {
+                    "TEI_POINT_LAYER_ID"
+                } else {
+                    "TEI_POLYGON_LAYER_ID"
+                }
+            )
+        )
+        sources.add(TEIS_SOURCE_ID)
+        layers.add(
+            arrayOf(
+                "ENROLLMENT_POINT_LAYER_ID",
+                "ENROLLMENT_POLYGON_LAYER_ID"
+            )
+        )
+        sources.add(ENROLLMENT_SOURCE_ID)
+        for (sourceId in teiFeatureCollections.keys) {
+            layers.add(arrayOf("RELATIONSHIP_LINE_LAYER_ID_$sourceId"))
+            sources.add(sourceId)
+        }
+        for (eventSource in eventsFeatureCollection.keys) {
+            layers.add(
+                arrayOf(
+                    "POINT_LAYER_$eventSource",
+                    "POLYGON_LAYER$eventSource"
+                )
+            )
+            sources.add(eventSource)
+        }
+
+        return Pair(sources, layers)
     }
 }

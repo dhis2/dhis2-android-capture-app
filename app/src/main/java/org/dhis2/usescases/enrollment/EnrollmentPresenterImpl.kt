@@ -423,7 +423,7 @@ class EnrollmentPresenterImpl(
 
         val fieldMap = fields.map { it.uid() to it }.toMap().toMutableMap()
 
-        RulesUtilsProviderImpl()
+        RulesUtilsProviderImpl(d2)
             .applyRuleEffects(fieldMap, result, this)
 
         fieldMap.values.forEach {

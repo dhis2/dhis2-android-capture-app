@@ -32,6 +32,7 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import kotlin.Triple;
 
 
 public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepository {
@@ -87,7 +88,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @NonNull
     @Override
-    public Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(
+    public Flowable<Triple<FeatureCollection, BoundingBox, List<ProgramEventViewModel>>> filteredEventsForMap(
             List<DatePeriod> dateFilter,
             List<String> orgUnitFilter,
             List<CategoryOptionCombo> catOptCombList,
@@ -110,7 +111,11 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
 
         return eventRepo.byDeleted().isFalse().withTrackedEntityDataValues().get()
-                .map(listEvents -> mapEventToFeatureCollection.map(listEvents))
+                .map(listEvents -> new Triple<>(
+                        mapEventToFeatureCollection.map(listEvents).getFirst(),
+                        mapEventToFeatureCollection.map(listEvents).getSecond(),
+                        mapper.eventsToProgramEvents(listEvents)
+                ))
                 .toFlowable();
     }
 
@@ -194,40 +199,36 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @Override
     public Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos() {
         return d2.programModule().programs().uid(programUid).get()
-                .filter(program -> program.categoryCombo() != null)
-                .flatMapSingle(program -> d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).get())
-                .filter(categoryCombo -> !categoryCombo.isDefault())
-                .flatMapSingle(categoryCombo -> Single.zip(
-                        d2.categoryModule().categoryCombos()
-                                .uid(categoryCombo.uid()).get(),
-                        d2.categoryModule().categoryOptionCombos()
-                                .byCategoryComboUid().eq(categoryCombo.uid()).get(),
-                        Pair::create
-                ));
+                .map(program -> {
+                    CategoryCombo catCombo = d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).blockingGet();
+                    List<CategoryOptionCombo> catOptCombos = d2.categoryModule().categoryOptionCombos()
+                            .byCategoryComboUid().eq(catCombo.uid()).blockingGet();
+                    return Pair.create(catCombo, catOptCombos);
+                });
     }
 
     @Override
     public Single<Boolean> hasAccessToAllCatOptions() {
         return d2.programModule().programs().uid(programUid).get()
-                .filter(program -> program.categoryComboUid() != null)
-                .map(program -> d2.categoryModule().categoryCombos().withCategories().withCategoryOptionCombos().uid(program.categoryComboUid()).blockingGet())
-                .filter(catCombo -> !catCombo.isDefault())
-                .map(catCombo -> {
+                .map(program -> {
+                    CategoryCombo catCombo = d2.categoryModule().categoryCombos().withCategories().uid(program.categoryComboUid()).blockingGet();
                     boolean hasAccess = true;
-                    for (Category category : catCombo.categories()) {
-                        List<CategoryOption> options = d2.categoryModule().categories().withCategoryOptions().uid(category.uid()).blockingGet().categoryOptions();
-                        int accesibleOptions = options.size();
-                        for (CategoryOption categoryOption : options) {
-                            if (!d2.categoryModule().categoryOptions().uid(categoryOption.uid()).blockingGet().access().data().write())
-                                accesibleOptions--;
-                        }
-                        if (accesibleOptions == 0) {
-                            hasAccess = false;
-                            break;
+                    if (!catCombo.isDefault()) {
+                        for (Category category : catCombo.categories()) {
+                            List<CategoryOption> options = d2.categoryModule().categories().withCategoryOptions().uid(category.uid()).blockingGet().categoryOptions();
+                            int accesibleOptions = options.size();
+                            for (CategoryOption categoryOption : options) {
+                                if (!d2.categoryModule().categoryOptions().uid(categoryOption.uid()).blockingGet().access().data().write())
+                                    accesibleOptions--;
+                            }
+                            if (accesibleOptions == 0) {
+                                hasAccess = false;
+                                break;
+                            }
                         }
                     }
                     return hasAccess;
-                }).toSingle();
+                });
     }
 
 }

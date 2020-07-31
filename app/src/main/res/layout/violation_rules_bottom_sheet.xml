@@ -23,11 +23,20 @@
         android:orientation="vertical"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="85dp">
+        app:behavior_peekHeight="48dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="4dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_bottom_sheet_thumb"
+                android:layout_marginTop="8dp"/>
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/startGuideline"
@@ -66,11 +75,9 @@
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_marginStart="0dp"
-                android:layout_marginTop="20dp"
                 android:layout_marginEnd="14dp"
                 android:layout_marginBottom="8dp"
                 android:gravity="center_vertical"
-                android:text="@string/error"
                 android:textColor="@color/black_de0"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -78,7 +85,7 @@
                 app:layout_constraintStart_toEndOf="@id/errorCount"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0"
-                tools:text="Error!" />
+                tools:text="Error" />
 
             <ImageView
                 android:id="@+id/collapseExpand"
@@ -86,7 +93,7 @@
                 android:layout_height="48dp"
                 android:padding="12dp"
                 android:layout_marginEnd="8dp"
-                android:onClick="@{ () -> presenter.closeExpandBottomSheet() }"
+                android:onClick="@{ () -> presenter.collapseExpandBottomSheet() }"
                 app:layout_constraintBottom_toBottomOf="@id/title"
                 app:layout_constraintEnd_toStartOf="@id/endGuideline"
                 app:layout_constraintTop_toTopOf="@id/title"
@@ -96,19 +103,19 @@
                 android:id="@+id/dotsIndicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="48dp"
                 app:dotsColor="@color/dots_error_selected"
                 app:dotsSize="12dp"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintStart_toStartOf="@id/startGuideline"
-                app:layout_constraintTop_toBottomOf="@id/title" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/violationsViewPager"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="20dp"
                 app:layout_constraintBottom_toTopOf="@id/barrier"
                 app:layout_constraintEnd_toStartOf="@id/endGuideline"
                 app:layout_constraintStart_toEndOf="@id/startGuideline"
@@ -119,21 +126,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:barrierDirection="top"
-                app:constraint_referenced_ids="negativeBtn,positiveBtn" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/negativeBtn"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:textColor="?colorPrimary"
-                android:textSize="14sp"
-                android:text="@string/cancel"
-                android:onClick="@{ () -> presenter.onCancelBottomSheet() }"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/positiveBtn"
-                tools:visibility="visible" />
+                app:constraint_referenced_ids="positiveBtn" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/positiveBtn"
@@ -144,7 +137,7 @@
                 android:textColor="?colorPrimary"
                 android:textSize="14sp"
                 android:text="@string/complete_anyway"
-                android:visibility="@{ presenter.isValidationMandatoryToComplete() ? View.GONE : View.VISIBLE }"
+                android:visibility="@{ presenter.shouldAllowCompleteAnyway() ? View.VISIBLE : View.GONE }"
                 android:onClick="@{ () -> presenter.onCompleteBottomSheet() }"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/endGuideline" />

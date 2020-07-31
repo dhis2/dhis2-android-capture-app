@@ -14,6 +14,7 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineCap
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
@@ -54,30 +55,20 @@ class RelationshipMapLayer(
     override var visible = false
 
     init {
-        when (featureType) {
-            FeatureType.POINT -> {
-                if (style.getLayer(BASE_RELATIONSHIP_LAYER_ID) == null) {
-                    style.addLayer(baseRelationshipLayer)
-                }
-                style.addSource(GeoJsonSource(SELECTED_SOURCE))
-                style.addLayerBelow(polygonLayer, BASE_RELATIONSHIP_LAYER_ID)
-                style.addLayerBelow(polygonBorderLayer, BASE_RELATIONSHIP_LAYER_ID)
-                style.addLayerBelow(selectedPolygonLayer, BASE_RELATIONSHIP_LAYER_ID)
-                style.addLayerBelow(selectedPolygonBorderLayer, BASE_RELATIONSHIP_LAYER_ID)
-                style.addLayerAbove(pointLayer, BASE_RELATIONSHIP_LAYER_ID)
-                style.addLayerAbove(selectedPointLayer, BASE_RELATIONSHIP_LAYER_ID)
-                style.addLayerAbove(linesLayer, BASE_RELATIONSHIP_LAYER_ID)
-                style.addLayerAbove(selectedLineLayer, BASE_RELATIONSHIP_LAYER_ID)
-                style.addLayerAbove(arrowLayer, BASE_RELATIONSHIP_LAYER_ID)
-                style.addLayerAbove(arrowBidirectionalLayer, BASE_RELATIONSHIP_LAYER_ID)
-            }
-            FeatureType.POLYGON -> {
-                style.addLayer(linesLayer)
-                style.addLayer(polygonLayer)
-                style.addLayer(polygonBorderLayer)
-            }
-            else -> Unit
+        if (style.getLayer(BASE_RELATIONSHIP_LAYER_ID) == null) {
+            style.addLayer(baseRelationshipLayer)
         }
+        style.addSource(GeoJsonSource(SELECTED_SOURCE))
+        style.addLayerBelow(polygonLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerBelow(polygonBorderLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerBelow(selectedPolygonLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerBelow(selectedPolygonBorderLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerAbove(pointLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerAbove(selectedPointLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerAbove(linesLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerAbove(selectedLineLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerAbove(arrowLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerAbove(arrowBidirectionalLayer, BASE_RELATIONSHIP_LAYER_ID)
     }
 
     private val baseRelationshipLayer: Layer
@@ -103,7 +94,7 @@ class RelationshipMapLayer(
             ?: LineLayer(SELECTED_LINE_LAYER_ID, SELECTED_SOURCE)
                 .withProperties(
                     lineColor(lineColor ?: LINE_COLOR),
-                    lineWidth(LINE_WIDTH),
+                    lineWidth(SELECTED_LINE_WIDTH),
                     lineCap(LINE_CAP_SQUARE)
                 )
 
@@ -153,7 +144,7 @@ class RelationshipMapLayer(
                 .withProperties(
                     PropertyFactory.iconImage(RelationshipMapManager.RELATIONSHIP_ICON),
                     PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.visibility(Property.NONE),
+                    visibility(Property.NONE),
                     PropertyFactory.symbolPlacement(Property.SYMBOL_PLACEMENT_LINE_CENTER),
                     PropertyFactory.iconColor(lineColor ?: LINE_COLOR)
                 ).withFilter(
@@ -169,7 +160,7 @@ class RelationshipMapLayer(
                 .withProperties(
                     PropertyFactory.iconImage(RelationshipMapManager.RELATIONSHIP_ICON),
                     PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.visibility(Property.NONE),
+                    visibility(Property.NONE),
                     PropertyFactory.iconColor(lineColor ?: LINE_COLOR)
                 ).withFilter(
                     Expression.eq(
@@ -184,7 +175,7 @@ class RelationshipMapLayer(
                 .withProperties(
                     PropertyFactory.iconImage(RelationshipMapManager.RELATIONSHIP_ICON),
                     PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.visibility(Property.NONE),
+                    visibility(Property.NONE),
                     PropertyFactory.iconColor(lineColor ?: LINE_COLOR)
                 ).withFilter(
                     Expression.eq(
@@ -255,7 +246,7 @@ class RelationshipMapLayer(
 
     override fun setSelectedItem(feature: Feature?) {
         feature?.let {
-            if (featureType == FeatureType.POINT) {
+            if (feature.type() == FeatureType.POINT.geometryType) {
                 selectPoint(feature)
             } else {
                 selectPolygon(feature)
@@ -274,12 +265,8 @@ class RelationshipMapLayer(
             )
         }
 
-        selectedLineLayer.setProperties(
-            lineWidth(4.0f)
-        )
-        selectedPointLayer.setProperties(
-            PropertyFactory.iconSize(1.5f)
-        )
+        selectedLineLayer.setProperties(visibility(Property.VISIBLE))
+        selectedPointLayer.setProperties(PropertyFactory.iconSize(1.5f))
     }
 
     private fun selectPolygon(feature: Feature) {
@@ -299,19 +286,11 @@ class RelationshipMapLayer(
     }
 
     private fun deselectCurrent() {
-        if (featureType == FeatureType.POINT) {
-            selectedLineLayer.setProperties(
-                lineWidth(LINE_WIDTH)
-            )
-            selectedPointLayer.setProperties(
-                PropertyFactory.iconSize(1f)
-            )
-
-            selectedPolygonBorderLayer.setProperties(
-                lineWidth(LINE_WIDTH)
-            )
-        } else {
-        }
+        selectedLineLayer.setProperties(visibility(Property.NONE))
+        selectedPointLayer.setProperties(
+            PropertyFactory.iconSize(1f)
+        )
+        selectedPolygonBorderLayer.setProperties(lineWidth(LINE_WIDTH))
     }
 
     override fun findFeatureWithUid(featureUidProperty: String): Feature? {
@@ -330,29 +309,22 @@ class RelationshipMapLayer(
     }
 
     private fun setVisibility(visibility: String) {
-        when (featureType) {
-            FeatureType.POINT -> {
-                linesLayer.setProperties(PropertyFactory.visibility(visibility))
-                arrowLayer.setProperties(PropertyFactory.visibility(visibility))
-                arrowBidirectionalLayer.setProperties(PropertyFactory.visibility(visibility))
-                pointLayer.setProperties(PropertyFactory.visibility(visibility))
-                selectedLineLayer.setProperties(PropertyFactory.visibility(visibility))
-                selectedPointLayer.setProperties(PropertyFactory.visibility(visibility))
-                baseRelationshipLayer.setProperties(PropertyFactory.visibility(visibility))
-            }
-            FeatureType.POLYGON -> {
-                linesLayer.setProperties(PropertyFactory.visibility(visibility))
-                polygonLayer.setProperties(PropertyFactory.visibility(visibility))
-                polygonBorderLayer.setProperties(PropertyFactory.visibility(visibility))
-                selectedPolygonLayer.setProperties(PropertyFactory.visibility(visibility))
-            }
-            else -> Unit
-        }
+        arrowLayer.setProperties(visibility(visibility))
+        arrowBidirectionalLayer.setProperties(visibility(visibility))
+        pointLayer.setProperties(visibility(visibility))
+        selectedLineLayer.setProperties(visibility(visibility))
+        selectedPointLayer.setProperties(visibility(visibility))
+        baseRelationshipLayer.setProperties(visibility(visibility))
+        linesLayer.setProperties(visibility(visibility))
+        polygonLayer.setProperties(visibility(visibility))
+        polygonBorderLayer.setProperties(visibility(visibility))
+        selectedPolygonLayer.setProperties(visibility(visibility))
         visible = visibility == Property.VISIBLE
     }
 
     companion object {
         private const val LINE_COLOR = Color.RED
         private const val LINE_WIDTH = 2f
+        private const val SELECTED_LINE_WIDTH = 4f
     }
 }

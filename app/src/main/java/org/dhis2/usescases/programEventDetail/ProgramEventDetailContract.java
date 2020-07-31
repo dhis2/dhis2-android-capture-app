@@ -35,6 +35,8 @@ public class ProgramEventDetailContract {
 
         void setWritePermission(Boolean aBoolean);
 
+        void showFilterProgress();
+
         void setLiveData(LiveData<PagedList<ProgramEventViewModel>> pagedListLiveData);
 
         void setOptionComboAccess(Boolean canCreateEvent);
@@ -45,7 +47,7 @@ public class ProgramEventDetailContract {
 
         void openOrgUnitTreeSelector();
 
-        void setMap(FeatureCollection featureCollection, BoundingBox boundingBox);
+        void setMap(FeatureCollection featureCollection, BoundingBox boundingBox, List<ProgramEventViewModel> programEventViewModels);
 
         void setEventInfo(Pair<ProgramEventViewModel,LatLng> programEventViewModel);
 
@@ -53,7 +55,7 @@ public class ProgramEventDetailContract {
 
         void clearFilters();
 
-        Consumer<FeatureType> setFeatureType();
+        void setFeatureType(FeatureType featureType);
 
         void startNewEvent();
 

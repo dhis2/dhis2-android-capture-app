@@ -47,10 +47,19 @@ class CarouselRelationshipHolder(
             setImage(data.from, binding.toTeiImage)
         }
 
-        binding.toRelationshipName.text = if (currentTei == data.from.teiUid) {
-            data.to.mainAttribute
-        } else {
-            data.from.mainAttribute
+        when (currentTei) {
+            "" -> {
+                binding.toRelationshipName.text = data.to.mainAttribute
+                binding.fromRelationshipName.text = data.from.mainAttribute
+            }
+            data.from.teiUid -> {
+                binding.toRelationshipName.text = data.to.mainAttribute
+                binding.fromRelationshipName.visibility = View.GONE
+            }
+            data.to.teiUid -> {
+                binding.toRelationshipName.text = data.from.mainAttribute
+                binding.fromRelationshipName.visibility = View.GONE
+            }
         }
     }
 

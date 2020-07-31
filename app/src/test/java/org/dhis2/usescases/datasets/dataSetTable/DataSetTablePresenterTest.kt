@@ -1,18 +1,21 @@
 package org.dhis2.usescases.datasets.dataSetTable
 
-import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyArray
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.Date
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.data.tuples.Pair
 import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.utils.validationrules.ValidationRuleResult
+import org.dhis2.utils.validationrules.Violation
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.dataelement.DataElementOperand
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.period.Period
 import org.hisp.dhis.android.core.period.PeriodType
@@ -56,6 +59,7 @@ class DataSetTablePresenterTest {
         whenever(repository.getDataSet()) doReturn Single.just(dataSet)
         whenever(repository.getCatComboName(catCombo)) doReturn Flowable.just(catComboName)
         whenever(repository.getPeriod()) doReturn Single.just(period)
+        whenever(repository.isComplete()) doReturn Single.just(false)
         whenever(repository.dataSetStatus()) doReturn Flowable.just(true)
         whenever(repository.dataSetState()) doReturn Flowable.just(State.SYNCED)
         whenever(view.observeSaveButtonClicks()) doReturn Observable.empty()
@@ -63,7 +67,86 @@ class DataSetTablePresenterTest {
         presenter.init(orgUnit, periodTypeName, catCombo, periodFinalDate, periodId)
 
         verify(view).setSections(sections)
-        verify(view).renderDetails(dataSet, catComboName, period)
+        verify(view).renderDetails(dataSet, catComboName, period, false)
+    }
+
+    @Test
+    fun `Should show success if no validation rules exist`() {
+        whenever(view.isErrorBottomSheetShowing) doReturn false
+        whenever(repository.hasValidationRules()) doReturn false
+        whenever(repository.isComplete()) doReturn Single.just(false)
+        presenter.handleSaveClick()
+        verify(view).showSuccessValidationDialog()
+    }
+
+    @Test
+    fun `Should run validations`() {
+        whenever(view.isErrorBottomSheetShowing) doReturn false
+        whenever(repository.hasValidationRules()) doReturn true
+        whenever(repository.areValidationRulesMandatory()) doReturn true
+        val testObserver = presenter.runValidationProcessor().test()
+        presenter.handleSaveClick()
+        testObserver
+            .assertNoErrors()
+            .assertValue(true)
+    }
+
+    @Test
+    fun `Should re-run validations when a rule was fixed`() {
+        whenever(view.isErrorBottomSheetShowing) doReturn true
+        whenever(repository.hasValidationRules()) doReturn true
+        whenever(repository.areValidationRulesMandatory()) doReturn true
+        val testObserver = presenter.runValidationProcessor().test()
+        presenter.handleSaveClick()
+        testObserver
+            .assertNoErrors()
+            .assertValue(true)
+
+        verify(view).closeBottomSheet()
+    }
+
+    @Test
+    fun `Should show success dialog`() {
+        whenever(repository.isComplete()) doReturn Single.just(false)
+        presenter.handleValidationResult(
+            ValidationRuleResult(
+                ValidationResult.ValidationResultStatus.OK,
+                emptyList()
+            )
+        )
+        verify(view).showSuccessValidationDialog()
+    }
+
+    @Test
+    fun `Should save and finish`() {
+        whenever(repository.isComplete()) doReturn Single.just(true)
+        presenter.handleValidationResult(
+            ValidationRuleResult(
+                ValidationResult.ValidationResultStatus.OK,
+                emptyList()
+            )
+        )
+        verify(view).saveAndFinish()
+    }
+
+    @Test
+    fun `Should show validation error dialog`() {
+        val violations = anyArray<Violation>().toList()
+        presenter.handleValidationResult(
+            ValidationRuleResult(
+                ValidationResult.ValidationResultStatus.ERROR,
+                violations
+            )
+        )
+        verify(view).showErrorsValidationDialog(violations)
+    }
+
+    @Test
+    fun `Should show validation dialog if validation rules exist and are not mandatory`() {
+        whenever(repository.hasValidationRules()) doReturn true
+        whenever(repository.areValidationRulesMandatory()) doReturn false
+        presenter.handleSaveClick()
+        verify(view).showValidationRuleDialog()
     }
 
     @Test
@@ -92,82 +175,92 @@ class DataSetTablePresenterTest {
     }
 
     @Test
-    fun `Should check if DataSet does have ValidationRules and show appropriate dialog`() {
-        whenever(repository.doesDatasetHasValidationRulesAssociated()) doReturn true
-
-        presenter.checkIfValidationRulesExecutionIsOptional()
-
-        verify(view).showValidationRuleDialog()
-    }
-
-    @Test
-    fun `Should check if DataSet does not have ValidationRules associated and complete DataSet`() {
-        whenever(repository.doesDatasetHasValidationRulesAssociated()) doReturn false
-        whenever(repository.completeDataSetInstance()) doReturn Single.just(false)
-
-        presenter.checkIfValidationRulesExecutionIsOptional()
-
-        verify(view).showCompleteToast()
-    }
-
-    @Test
-    fun `Should execute ValidationRules without errors`() {
-        val resultOk =
-            ValidationResult.builder()
-                .status(ValidationResult.ValidationResultStatus.OK)
-                .violations(emptyList()).build()
-
-        whenever(repository.executeValidationRules()) doReturn Flowable.just(resultOk)
-
-        presenter.executeValidationRules()
-
-        verify(view).showSuccessValidationDialog()
-    }
-
-    @Test
-    fun `Should execute ValidationRules and the result is with errors`() {
-        val resultError =
-            ValidationResult.builder()
-                .status(ValidationResult.ValidationResultStatus.ERROR)
-                .violations(emptyList()).build()
-
-        whenever(repository.executeValidationRules()) doReturn Flowable.just(resultError)
-
-        presenter.executeValidationRules()
-
-        verify(view).showErrorsValidationDialog(any())
-    }
-
-    @Test
     fun `Should show the mark as complete snackbar if dataset was not previously completed`() {
+        whenever(repository.checkMandatoryFields()) doReturn Single.just(emptyList())
+        whenever(repository.checkFieldCombination()) doReturn Single.just(
+            Pair.create(
+                true,
+                emptyList()
+            )
+        )
         whenever(repository.completeDataSetInstance()) doReturn Single.just(false)
-
         presenter.completeDataSet()
 
-        verify(view).showCompleteToast()
+        verify(view).savedAndCompleteMessage()
     }
 
     @Test
-    fun `Should not show the mark as complete snackbar if dataset was previously completed`() {
-        whenever(repository.completeDataSetInstance()) doReturn Single.just(true)
+    fun `Should show missing mandatory fields`() {
+        whenever(
+            repository.checkMandatoryFields()
+        ) doReturn Single.just(
+            arrayListOf(
+                DataElementOperand.builder()
+                    .uid("uid")
+                    .build()
+            ).toList()
 
+        )
+        whenever(
+            repository.checkFieldCombination()
+        ) doReturn Single.just(
+            Pair.create(
+                true,
+                emptyList()
+            )
+        )
+        whenever(repository.completeDataSetInstance()) doReturn Single.just(false)
         presenter.completeDataSet()
 
-        verifyZeroInteractions(view)
+        verify(view).showMandatoryMessage(true)
+    }
+
+    @Test
+    fun `Should show combination fields message`() {
+        whenever(
+            repository.checkMandatoryFields()
+        ) doReturn Single.just(emptyList())
+        whenever(
+            repository.checkFieldCombination()
+        ) doReturn Single.just(
+            Pair.create(
+                false,
+                emptyList()
+            )
+        )
+        whenever(repository.completeDataSetInstance()) doReturn Single.just(false)
+        presenter.completeDataSet()
+
+        verify(view).showMandatoryMessage(false)
+    }
+
+    @Test
+    fun `Should finish with message`() {
+        whenever(repository.checkMandatoryFields()) doReturn Single.just(emptyList())
+        whenever(repository.checkFieldCombination()) doReturn Single.just(
+            Pair.create(
+                true,
+                emptyList()
+            )
+        )
+        whenever(repository.completeDataSetInstance()) doReturn Single.just(true)
+        presenter.completeDataSet()
+
+        verify(view).saveAndFinish()
     }
 
     @Test
     fun `Should close or expand the bottom sheet`() {
-        presenter.closeExpandBottomSheet()
+        presenter.collapseExpandBottomSheet()
 
-        verify(view).closeExpandBottom()
+        verify(view).collapseExpandBottom()
     }
 
     @Test
     fun `Should close bottom sheet on cancel click`() {
-        presenter.onCancelBottomSheet()
+        presenter.closeBottomSheet()
 
-        verify(view).cancelBottomSheet()
+        verify(view).closeBottomSheet()
     }
 
     @Test

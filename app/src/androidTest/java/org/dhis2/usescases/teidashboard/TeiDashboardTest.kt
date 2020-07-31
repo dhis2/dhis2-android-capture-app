@@ -1,18 +1,13 @@
 package org.dhis2.usescases.teidashboard
 
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.R
-import org.dhis2.common.rules.DataBindingIdlingResourceRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
@@ -21,10 +16,11 @@ import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.relationshipRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
-import org.junit.Ignore
+import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.experimental.theories.Theories
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -32,6 +28,7 @@ class TeiDashboardTest : BaseTest() {
 
     @get:Rule
     val rule = ActivityTestRule(TeiDashboardMobileActivity::class.java, false, false)
+
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
@@ -85,14 +82,17 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun shouldReactivateTEIWhenClickReOpen() {
+    fun shouldReactivateTEIWhenClickReOpenWithProgramCompletedEvents() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
+            clickOnMenuMoreOptions()
             clickOnMenuReOpen()
             checkUnlockIconIsDisplay()
             checkCanAddEvent()
+            checkAllEventsCompleted(1)
         }
     }
 
@@ -102,9 +102,12 @@ class TeiDashboardTest : BaseTest() {
 
         teiDashboardRobot {
             clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
+            clickOnMenuMoreOptions()
             clickOnMenuDeactivate()
             checkLockIconIsDisplay()
             checkCanNotAddEvent()
+            checkAllEventsAreInactive(1)
         }
     }
 
@@ -114,9 +117,12 @@ class TeiDashboardTest : BaseTest() {
 
         teiDashboardRobot {
             clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
+            clickOnMenuMoreOptions()
             clickOnMenuComplete()
             checkLockCompleteIconIsDisplay()
             checkCanNotAddEvent()
+            checkAllEventsAreClosed(1)
         }
     }
 
@@ -135,6 +141,8 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiOpenedForReferralProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
             clickOnFab()
             clickOnReferral()
             clickOnFirstReferralEvent()
@@ -150,6 +158,8 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
             clickOnFab()
             clickOnScheduleNew()
             clickOnFirstReferralEvent()
@@ -164,6 +174,8 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiOpenedWithFullEventsAndLaunchActivity(rule)
 
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
             clickOnFab()
             clickOnReferral()
             checkCannotAddMoreEventToastIsShown()
@@ -178,6 +190,8 @@ class TeiDashboardTest : BaseTest() {
 
         val babyPostNatal = 0
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
             clickOnEventWithPosition(babyPostNatal)
         }
 
@@ -229,6 +243,8 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiToCreateANewEventAndLaunchActivity(rule)
 
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
             clickOnFab()
             clickOnCreateNewEvent()
             clickOnFirstReferralEvent()
@@ -254,6 +270,8 @@ class TeiDashboardTest : BaseTest() {
         val labMonitoring = 2
 
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
             clickOnEventWithPosition(labMonitoring)
             waitToDebounce(600)
         }
@@ -278,7 +296,7 @@ class TeiDashboardTest : BaseTest() {
     @Test
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
         val womanProgram = "MNCH / PNC (Adult Woman)"
-        val personAttribute = "Attributes - Person"
+        val personAttribute = context.getString(R.string.enrollment_single_section_label).replace("%s","")
         val visitPNCEvent = "PNC Visit"
         val deliveryEvent = "Delivery"
         val visitANCEvent = "ANC Visit (2-4+)"
@@ -287,6 +305,8 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiToEnrollToOtherProgramAndLaunchActivity(rule)
 
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
             clickOnMenuMoreOptions()
             clickOnMenuProgramEnrollments()
         }
@@ -302,6 +322,8 @@ class TeiDashboardTest : BaseTest() {
         }
 
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
             checkEventWasScheduled(visitPNCEvent, 0)
             checkEventWasScheduled(deliveryEvent, 1)
             checkEventWasScheduled(visitANCEvent, 2)
@@ -310,7 +332,6 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldSuccessfullyCreateRelationshipWhenClickAdd() {
         val teiName = "Tim"
         val teiLastName = "Johnson"
@@ -323,7 +344,6 @@ class TeiDashboardTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(4000)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -338,7 +358,6 @@ class TeiDashboardTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(4000)
             clickOnTEI(relationshipName, relationshipLastName)
         }
 
@@ -347,7 +366,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore("Check test. Sometimes it fails")
     @Test
     fun shouldDeleteTeiSuccessfully() {
         val teiName = "Anthony"
@@ -358,7 +376,6 @@ class TeiDashboardTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(4000)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -368,12 +385,10 @@ class TeiDashboardTest : BaseTest() {
         }
 
         searchTeiRobot {
-            Thread.sleep(4000)
             checkTEIsDelete(teiName, teiLastName)
         }
     }
 
-    @Ignore("Check test. Sometimes it fails")
     @Test
     fun shouldDeleteEnrollmentSuccessfully() {
 
@@ -385,7 +400,6 @@ class TeiDashboardTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(4000)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -395,22 +409,21 @@ class TeiDashboardTest : BaseTest() {
         }
 
         searchTeiRobot {
-            Thread.sleep(4000)
             checkTEIsDelete(teiName, teiLastName)
         }
     }
 
     private fun createExpectedUpperInformation() =
         UpperEnrollmentUIModel(
-            "2021-01-10",
-            "2021-01-10",
+            "10/1/2021",
+            "10/1/2021",
             "Ngelehun CHC"
         )
 
     private fun createExpectedEnrollmentInformation() =
         EnrollmentUIModel(
-            "2021-01-10",
-            "2021-01-10",
+            "10/1/2021",
+            "10/1/2021",
             "Ngelehun CHC",
             "40.48713205295354",
             "-3.6847423830882633",

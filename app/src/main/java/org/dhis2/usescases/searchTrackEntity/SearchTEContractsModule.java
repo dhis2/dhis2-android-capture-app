@@ -58,6 +58,8 @@ public class SearchTEContractsModule {
 
         void clearData();
 
+        void showFilterProgress();
+
         void setTutorial();
 
         void showAssignmentFilter();
@@ -101,6 +103,8 @@ public class SearchTEContractsModule {
         void goToEnrollment(String enrollmentUid, String programUid);
 
         void onBackClicked();
+
+        void couldNotDownload(String typeName);
     }
 
     public interface Presenter {

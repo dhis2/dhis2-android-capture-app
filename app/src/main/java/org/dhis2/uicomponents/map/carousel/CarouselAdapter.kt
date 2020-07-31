@@ -5,8 +5,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.mapbox.geojson.Feature
 import org.dhis2.databinding.ItemCarouselEventBinding
+import org.dhis2.databinding.ItemCarouselProgramEventBinding
 import org.dhis2.databinding.ItemCarouselRelationshipBinding
 import org.dhis2.databinding.ItemCarouselTeiBinding
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
@@ -17,6 +19,7 @@ import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
 import org.dhis2.uicomponents.map.model.CarouselItemModel
 import org.dhis2.uicomponents.map.model.EventUiComponentModel
 import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel
+import org.dhis2.usescases.programEventDetail.ProgramEventViewModel
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 import org.hisp.dhis.android.core.program.Program
 
@@ -28,6 +31,7 @@ class CarouselAdapter private constructor(
     private val onTeiClickListener: (String, String?, Boolean) -> Boolean,
     private val onRelationshipClickListener: (relationshipTeiUid: String) -> Boolean,
     private val onEventClickListener: (teiUid: String?, enrollmentUid: String?) -> Boolean,
+    private val onProfileImageClick: (String) -> Unit,
     private val allItems: MutableList<CarouselItemModel>
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -35,7 +39,7 @@ class CarouselAdapter private constructor(
     val items: MutableList<CarouselItemModel> = arrayListOf()
 
     enum class CarouselItems {
-        TEI, RELATIONSHIP, EVENT
+        TEI, RELATIONSHIP, EVENT, PROGRAM_EVENT
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -48,7 +52,12 @@ class CarouselAdapter private constructor(
                         false
                     ),
                     onTeiClickListener,
-                    onSyncClickListener
+                    onSyncClickListener,
+                    onProfileImageClick,
+                    { item ->
+                        (items.first { it == item } as SearchTeiModel).toggleAttributeList()
+                        notifyItemChanged(items.indexOf(item))
+                    }
                 )
             CarouselItems.RELATIONSHIP ->
                 CarouselRelationshipHolder(
@@ -69,6 +78,16 @@ class CarouselAdapter private constructor(
                         false
                     ),
                     program,
+                    onEventClickListener,
+                    onProfileImageClick
+                )
+            CarouselItems.PROGRAM_EVENT ->
+                CarouselProgramEventHolder(
+                    ItemCarouselProgramEventBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    ),
                     onEventClickListener
                 )
         }
@@ -80,6 +99,7 @@ class CarouselAdapter private constructor(
             is CarouselRelationshipHolder ->
                 holder.bind(items[position] as RelationshipUiComponentModel)
             is CarouselEventHolder -> holder.bind(items[position] as EventUiComponentModel)
+            is CarouselProgramEventHolder -> holder.bind(items[position] as ProgramEventViewModel)
         }
     }
 
@@ -90,6 +110,7 @@ class CarouselAdapter private constructor(
             is SearchTeiModel -> CarouselItems.TEI.ordinal
             is RelationshipUiComponentModel -> CarouselItems.RELATIONSHIP.ordinal
             is EventUiComponentModel -> CarouselItems.EVENT.ordinal
+            is ProgramEventViewModel -> CarouselItems.PROGRAM_EVENT.ordinal
             else -> -1
         }
     }
@@ -154,6 +175,10 @@ class CarouselAdapter private constructor(
                     it.eventUid == feature.getStringProperty(
                         MapTeiEventsToFeatureCollection.EVENT_UID
                     )
+                is ProgramEventViewModel ->
+                    it.uid() == feature.getStringProperty(
+                        MapEventToFeatureCollection.EVENT
+                    )
                 else -> false
             }
         }
@@ -169,6 +194,7 @@ class CarouselAdapter private constructor(
                 is SearchTeiModel -> it.tei.uid()
                 is RelationshipUiComponentModel -> it.relationshipUid
                 is EventUiComponentModel -> it.eventUid
+                is ProgramEventViewModel -> it.uid()
                 else -> ""
             }
         }
@@ -187,6 +213,7 @@ class CarouselAdapter private constructor(
         var onRelationshipClickListener: (relationshipTeiUid: String) -> Boolean = { false },
         var onEventClickListener: (String?, String?) -> Boolean =
             { _: String?, _: String? -> false },
+        var onProfileImageClick: (String) -> Unit = { },
         var items: MutableList<CarouselItemModel> = arrayListOf(),
         var program: Program? = null
     ) {
@@ -226,6 +253,12 @@ class CarouselAdapter private constructor(
             this.onEventClickListener = onEventClickListener
         }
 
+        fun addOnProfileImageClickListener(
+            onProfileImageClick: (String) -> Unit
+        ) = apply {
+            this.onProfileImageClick = onProfileImageClick
+        }
+
         fun addProgram(program: Program) = apply {
             this.program = program
         }
@@ -242,6 +275,7 @@ class CarouselAdapter private constructor(
             onTeiClickListener,
             onRelationshipClickListener,
             onEventClickListener,
+            onProfileImageClick,
             items
         )
     }

@@ -54,6 +54,10 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM;
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM_ENROLLMENT;
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT;
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT_PROGRAM;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.Constants.TEI_UID;
@@ -123,7 +127,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             enrollmentUid = getIntent().getStringExtra(ENROLLMENT_UID);
         }
 
-        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid)).inject(this);
+        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid, enrollmentUid)).inject(this);
         setTheme(presenter.getProgramTheme(R.style.AppTheme));
         super.onCreate(savedInstanceState);
         groupByStage = new MutableLiveData<>(presenter.getProgramGrouping());
@@ -182,7 +186,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     } else {
                         binding.relationshipMapIcon.setImageResource(R.drawable.ic_map);
                     }
-                    relationshipMap.setValue(!relationshipMap.getValue());
+                    boolean showMap = !relationshipMap.getValue();
+                    if(showMap){
+                        binding.toolbarProgress.setVisibility(View.VISIBLE);
+                        binding.toolbarProgress.hide();
+                    }
+                    relationshipMap.setValue(showMap);
                 }
         );
 
@@ -303,10 +312,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         }
     }
 
-    private void enablePagerScrolling(boolean enable){
-        if(OrientationUtilsKt.isPortrait()){
+    private void enablePagerScrolling(boolean enable) {
+        if (OrientationUtilsKt.isPortrait()) {
             binding.teiPager.setUserInputEnabled(enable);
-        }else{
+        } else {
             binding.teiTablePager.setUserInputEnabled(enable);
         }
     }
@@ -470,18 +479,19 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.RQ_ENROLLMENTS && resultCode == RESULT_OK) {
-            if (data.hasExtra("GO_TO_ENROLLMENT")) {
+            if (data.hasExtra(GO_TO_ENROLLMENT)) {
                 Intent intent = EnrollmentActivity.Companion.getIntent(this,
-                        data.getStringExtra("GO_TO_ENROLLMENT"),
-                        data.getStringExtra("GO_TO_ENROLLMENT_PROGRAM"),
+                        data.getStringExtra(GO_TO_ENROLLMENT),
+                        data.getStringExtra(GO_TO_ENROLLMENT_PROGRAM),
                         EnrollmentActivity.EnrollmentMode.NEW,
                         false);
                 startActivity(intent);
                 finish();
             }
 
-            if (data.hasExtra("CHANGE_PROGRAM")) {
-                startActivity(intent(this, teiUid, data.getStringExtra("CHANGE_PROGRAM"), null));
+            if (data.hasExtra(CHANGE_PROGRAM)) {
+                startActivity(intent(this, teiUid, data.getStringExtra(CHANGE_PROGRAM),
+                        data.getStringExtra(CHANGE_PROGRAM_ENROLLMENT)));
                 finish();
             }
 
@@ -707,5 +717,25 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     public LiveData<String> updatedEnrollment() {
         return currentEnrollment;
+    }
+
+    @Override
+    public void displayStatusError(StatusChangeResultCode statusCode) {
+        switch (statusCode) {
+            case FAILED:
+                displayMessage(getString(R.string.something_wrong));
+                break;
+            case ACTIVE_EXIST:
+                displayMessage(getString(R.string.status_change_error_active_exist));
+                break;
+            case WRITE_PERMISSION_FAIL:
+                displayMessage(getString(R.string.permission_denied));
+                break;
+        }
+
+    }
+
+    public void onRelationshipMapLoaded() {
+        binding.toolbarProgress.hide();
     }
 }

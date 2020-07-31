@@ -6,16 +6,15 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import junit.framework.Assert.assertTrue
 import org.dhis2.Bindings.filterDeletedEnrollment
-import org.dhis2.Bindings.filterEnrollmentStatus
 import org.dhis2.Bindings.filterEvents
 import org.dhis2.Bindings.toDate
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
 
 class TrackedEntityInstanceExtensions {
@@ -42,6 +41,11 @@ class TrackedEntityInstanceExtensions {
             TrackedEntityInstance.builder().uid("tei_C").build(),
             TrackedEntityInstance.builder().uid("tei_D").build()
         )
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances()
+                .uid(anyString())
+                .blockingExists()
+        ) doReturn true
         testList.forEachIndexed { index, tei ->
             handleEnrollmentCall(tei.uid(), "programUid", index == 0)
         }
@@ -83,88 +87,6 @@ class TrackedEntityInstanceExtensions {
                 .byTrackedEntityInstance().eq(teiUid)
                 .byProgram().eq(programUid)
                 .byDeleted().isFalse
-                .blockingIsEmpty()
-        ) doReturn returnValue
-    }
-
-    @Test
-    fun `Should filter by enrollment status`() {
-        val testList = mutableListOf(
-            TrackedEntityInstance.builder().uid("tei_A").build(),
-            TrackedEntityInstance.builder().uid("tei_C").build(),
-            TrackedEntityInstance.builder().uid("tei_D").build()
-        )
-
-        testList.forEachIndexed { index, tei ->
-            handleEnrollmentStatusCall(
-                tei.uid(),
-                "programUid",
-                arrayListOf(EnrollmentStatus.ACTIVE),
-                index == 0
-            )
-        }
-
-        testList.filterEnrollmentStatus(
-            d2,
-            "programUid",
-            arrayListOf(EnrollmentStatus.ACTIVE)
-        )
-
-        assertTrue(testList.size == 2)
-    }
-
-    private fun handleEnrollmentStatusCall(
-        teiUid: String,
-        programUid: String,
-        statuses: List<EnrollmentStatus>,
-        returnValue: Boolean
-    ) {
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid)
-        ) doReturn mock()
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid)
-                .byProgram()
-        ) doReturn mock()
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid)
-                .byProgram().eq(programUid)
-        ) doReturn mock()
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid)
-                .byProgram().eq(programUid)
-                .byDeleted()
-        ) doReturn mock()
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid)
-                .byProgram().eq(programUid)
-                .byDeleted().isFalse
-        ) doReturn mock()
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid)
-                .byProgram().eq(programUid)
-                .byDeleted().isFalse
-                .byStatus()
-        ) doReturn mock()
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid)
-                .byProgram().eq(programUid)
-                .byDeleted().isFalse
-                .byStatus().`in`(statuses)
-        ) doReturn mock()
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid)
-                .byProgram().eq(programUid)
-                .byDeleted().isFalse
-                .byStatus().`in`(statuses)
                 .blockingIsEmpty()
         ) doReturn returnValue
     }

@@ -21,6 +21,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
 
@@ -121,9 +122,9 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
     public void addEnrollmentDate(String enrollmentDateLabel) {
         if (!filtersList.contains(Filters.ENROLLMENT_DATE)) {
             this.enrollmentDateLabel = enrollmentDateLabel;
-            filtersList.add(0, Filters.ENROLLMENT_DATE);
+            filtersList.add(1, Filters.ENROLLMENT_DATE);
             notifyDataSetChanged();
-        }else if(enrollmentDateLabel!=null && !this.enrollmentDateLabel.equals(enrollmentDateLabel)){
+        }else if(enrollmentDateLabel!=null && !Objects.equals(this.enrollmentDateLabel, enrollmentDateLabel)){
             this.enrollmentDateLabel = enrollmentDateLabel;
             notifyDataSetChanged();
         }

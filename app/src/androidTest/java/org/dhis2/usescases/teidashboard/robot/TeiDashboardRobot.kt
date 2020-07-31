@@ -203,7 +203,7 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnMenuProgramEnrollments() {
-        onView(withText("Program enrollments")).perform(click())
+        onView(withText(R.string.program_selector)).perform(click())
     }
 
     fun clickOnCreateNewEvent() {
@@ -230,6 +230,14 @@ class TeiDashboardRobot : BaseRobot() {
         onView(withText(R.string.dashboard_menu_delete_enrollment)).perform(click())
     }
 
+    fun clickOnGroupByStage(){
+        onView(withText(R.string.group_events_by_stage)).perform(click())
+    }
+
+    fun clickOnTimelineEvents(){
+        onView(withText(R.string.show_events_timeline)).perform(click())
+    }
+
     fun checkEventWasScheduled(eventName: String, position: Int) {
         onView(withId(R.id.tei_recycler))
             .check(matches(allOf(isDisplayed(), isNotEmpty(),
@@ -238,4 +246,58 @@ class TeiDashboardRobot : BaseRobot() {
                     hasDescendant(withText(R.string.event_schedule)))))))
     }
 
+    fun checkEventIsClosed(position: Int) {
+        onView(withId(R.id.tei_recycler))
+                .check(matches(allOf(isDisplayed(), isNotEmpty(),
+                        atPosition(position, hasDescendant(withText(R.string.program_completed))))))
+    }
+
+    fun checkEventIsOpen(position: Int) {
+        onView(withId(R.id.tei_recycler))
+                .check(matches(allOf(isDisplayed(), isNotEmpty(),
+                        atPosition(position, hasDescendant(withText(R.string.event_open))))))
+    }
+
+    fun checkEventIsCompleted(position: Int) {
+        onView(withId(R.id.tei_recycler))
+            .check(matches(allOf(isDisplayed(), isNotEmpty(),
+                atPosition(position, hasDescendant(withText(R.string.event_completed))))))
+    }
+
+    fun checkEventIsInactivate(position: Int) {
+        onView(withId(R.id.tei_recycler))
+                .check(matches(allOf(isDisplayed(), isNotEmpty(), atPosition(position, hasDescendant(withText(R.string.program_inactive))))))
+    }
+
+    fun checkAllEventsAreInactive(totalEvents: Int) {
+        var event = 0
+        while (event < totalEvents) {
+            checkEventIsInactivate(event)
+            event++
+        }
+    }
+
+    fun checkAllEventsAreOpened(totalEvents: Int) {
+        var event = 0
+        while (event < totalEvents) {
+            checkEventIsOpen(event)
+            event++
+        }
+    }
+
+    fun checkAllEventsCompleted(totalEvents: Int) {
+        var event = 0
+        while (event < totalEvents) {
+            checkEventIsCompleted(event)
+            event++
+        }
+    }
+
+    fun checkAllEventsAreClosed(totalEvents: Int) {
+        var event = 0
+        while (event < totalEvents) {
+            checkEventIsClosed(event)
+            event++
+        }
+    }
 }

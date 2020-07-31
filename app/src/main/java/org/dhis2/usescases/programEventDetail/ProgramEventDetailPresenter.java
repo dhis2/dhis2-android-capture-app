@@ -11,6 +11,7 @@ import org.hisp.dhis.android.core.common.Unit;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
@@ -26,6 +27,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     private final FilterManager filterManager;
     private ProgramEventDetailContract.View view;
     CompositeDisposable compositeDisposable;
+    private FlowableProcessor<Unit> listDataProcessor;
 
     //Search fields
     FlowableProcessor<Pair<String, LatLng>> eventInfoProcessor;
@@ -43,6 +45,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         eventInfoProcessor = PublishProcessor.create();
         mapProcessor = PublishProcessor.create();
         compositeDisposable = new CompositeDisposable();
+        listDataProcessor = PublishProcessor.create();
     }
 
     @Override
@@ -59,7 +62,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                        featureType -> view.setFeatureType(),
+                        view::setFeatureType,
                         Timber::e
                 )
         );
@@ -102,10 +105,31 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         )
         );
 
+        ConnectableFlowable<FilterManager> updaterFlowable = filterManager.asFlowable()
+                .startWith(filterManager)
+                .publish();
+
         compositeDisposable.add(
-                filterManager.asFlowable()
-                        .startWith(filterManager)
-                        .map(filterManager -> eventRepository.filteredProgramEvents(
+                updaterFlowable
+                        .observeOn(schedulerProvider.io())
+                        .map(data -> view.isMapVisible())
+                        .subscribeOn(schedulerProvider.io())
+                        .subscribe(
+                                isMapVisible -> {
+                                    view.showFilterProgress();
+                                    if (isMapVisible) {
+                                        mapProcessor.onNext(new Unit());
+                                    } else {
+                                        listDataProcessor.onNext(new Unit());
+                                    }
+                                },
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                listDataProcessor
+                        .map(next -> eventRepository.filteredProgramEvents(
                                 filterManager.getPeriodFilters(),
                                 filterManager.getOrgUnitUidsFilters(),
                                 filterManager.getCatOptComboFilters(),
@@ -138,7 +162,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                map -> view.setMap(map.component1(), map.component2()),
+                                map -> view.setMap(map.component1(), map.component2(), map.component3()),
                                 throwable -> view.renderError(throwable.getMessage())
                         ));
 
@@ -193,6 +217,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                 periodRequest -> view.showPeriodRequest(periodRequest.getFirst()),
                                 Timber::e
                         ));
+
+        updaterFlowable.connect();
     }
 
     @Override

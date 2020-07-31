@@ -1,5 +1,7 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
+import org.dhis2.animations.CarouselViewAnimations;
+import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerFragment;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
@@ -51,5 +53,11 @@ public class RelationshipModule {
                 new MapPolygonToFeature(),
                 new GetBoundingBox()
         );
+    }
+
+    @Provides
+    @PerFragment
+    CarouselViewAnimations animations(){
+        return new CarouselViewAnimations();
     }
 }

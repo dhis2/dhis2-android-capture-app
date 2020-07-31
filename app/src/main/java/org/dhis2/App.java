@@ -20,6 +20,11 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.security.ProviderInstaller;
 
+import org.acra.ACRA;
+import org.acra.config.CoreConfigurationBuilder;
+import org.acra.config.HttpSenderConfigurationBuilder;
+import org.acra.data.StringFormat;
+import org.acra.sender.HttpSender;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerServer;
 import org.dhis2.data.dagger.PerUser;
@@ -39,7 +44,6 @@ import org.dhis2.usescases.login.LoginContracts;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
-import org.dhis2.utils.UtilsModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
@@ -48,12 +52,18 @@ import org.dhis2.utils.timber.ReleaseTree;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.D2Manager;
 import org.jetbrains.annotations.NotNull;
+import org.matomo.sdk.Matomo;
+import org.matomo.sdk.Tracker;
+import org.matomo.sdk.TrackerBuilder;
+import org.matomo.sdk.extra.DownloadTracker;
+import org.matomo.sdk.extra.TrackHelper;
 
 import java.io.IOException;
 import java.net.SocketException;
 
 import javax.inject.Singleton;
 
+import cat.ereza.customactivityoncrash.config.CaocConfig;
 import io.fabric.sdk.android.Fabric;
 import io.reactivex.Scheduler;
 import io.reactivex.android.plugins.RxAndroidPlugins;
@@ -62,9 +72,13 @@ import io.reactivex.exceptions.UndeliverableException;
 import io.reactivex.plugins.RxJavaPlugins;
 import timber.log.Timber;
 
-/**
- * QUADRAM. Created by ppajuelo on 27/09/2017.
- */
+import static org.acra.ReportField.BUILD_CONFIG;
+import static org.acra.ReportField.DEVICE_FEATURES;
+import static org.acra.ReportField.DISPLAY;
+import static org.acra.ReportField.ENVIRONMENT;
+import static org.acra.ReportField.FILE_PATH;
+import static org.acra.ReportField.INITIAL_CONFIGURATION;
+import static org.acra.ReportField.LOGCAT;
 
 public class App extends MultiDexApplication implements Components, LifecycleObserver {
     static {
@@ -98,6 +112,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     private boolean fromBackGround = false;
     private boolean recreated;
+    private Tracker matomoTracker;
 
     @Override
     public void onCreate() {
@@ -122,6 +137,22 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         }
         setUpServerComponent();
         setUpRxPlugin();
+//        initAcra();
+        initCustomCrashActivity();
+        TrackHelper.track().download().identifier(new DownloadTracker.Extra.ApkChecksum(this)).with(getTracker());
+    }
+
+    private void initCustomCrashActivity() {
+        CaocConfig.Builder.create()
+                .errorDrawable(R.drawable.ic_dhis)
+                .apply();
+    }
+    
+    public synchronized Tracker getTracker() {
+        if (matomoTracker == null){
+            matomoTracker = TrackerBuilder.createDefault(BuildConfig.MATOMO_URL, BuildConfig.MATOMO_ID).build(Matomo.getInstance(this));
+        }
+        return matomoTracker;
     }
 
     private void populateDBIfNeeded() {
@@ -145,6 +176,30 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         MultiDex.install(this);
     }
 
+    private void initAcra() {
+        CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this)
+                .setBuildConfigClass(BuildConfig.class)
+                .setReportField(DEVICE_FEATURES, false)
+                .setReportField(ENVIRONMENT, false)
+                .setReportField(INITIAL_CONFIGURATION, false)
+                .setReportField(LOGCAT, false)
+                .setReportField(DISPLAY, false)
+                .setReportField(BUILD_CONFIG, false)
+                .setReportField(FILE_PATH, false)
+                .setAlsoReportToAndroidFramework(true)
+                .setReportFormat(StringFormat.JSON);
+
+        builder.getPluginConfigurationBuilder(HttpSenderConfigurationBuilder.class)
+                .setUri(BuildConfig.ACRA_URL)
+                .setHttpMethod(HttpSender.Method.POST)
+                .setConnectionTimeout(20000)
+                .setBasicAuthLogin(BuildConfig.ACRA_USER)
+                .setBasicAuthPassword(BuildConfig.ACRA_PASSWORD)
+                .setEnabled(true);
+
+        ACRA.init(this, builder);
+    }
+
     private void setUpAppComponent() {
         appComponent = prepareAppComponent().build();
         appComponent.inject(this);
@@ -153,7 +208,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     protected void setUpServerComponent() {
         D2 d2Configuration = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this));
         boolean isLogged = d2Configuration.userModule().isLogged().blockingGet();
-
         serverComponent = appComponent.plus(new ServerModule());
 
         if (isLogged)
@@ -179,7 +233,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()))
                 .analyticsModule(new AnalyticsModule())
                 .preferenceModule(new PreferenceModule())
-                .utilModule(new UtilsModule())
                 .workManagerController(new WorkManagerModule());
     }
 

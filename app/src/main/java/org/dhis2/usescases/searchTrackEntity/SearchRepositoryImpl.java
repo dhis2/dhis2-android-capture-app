@@ -17,6 +17,7 @@ import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.StoreResult;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
+import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
@@ -40,6 +41,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -80,49 +82,19 @@ import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
-/**
- * QUADRAM. Created by ppajuelo on 02/11/2017.
- */
-
 public class SearchRepositoryImpl implements SearchRepository {
-
-    private final String PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_PROGRAM_QUERY = String.format(
-            "SELECT %s.*, %s.%s, %s.%s FROM %s " +
-                    "JOIN %s ON %s.%s = %s.%s " +
-                    "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? AND %s.%s = ? AND " +
-                    "%s.%s = 1 " +
-                    "ORDER BY %s.%s ASC " +
-                    "LIMIT 3",
-            "TrackedEntityAttributeValue", "TrackedEntityAttribute", "valueType", "TrackedEntityAttribute", "optionSet", "TrackedEntityAttributeValue",
-            "ProgramTrackedEntityAttribute", "ProgramTrackedEntityAttribute", "trackedEntityAttribute", "TrackedEntityAttributeValue", "trackedEntityAttribute",
-            "TrackedEntityAttribute", "TrackedEntityAttribute", "uid", "TrackedEntityAttributeValue", "trackedEntityAttribute",
-            "ProgramTrackedEntityAttribute", "program", "TrackedEntityAttributeValue", "trackedEntityInstance",
-            "ProgramTrackedEntityAttribute", "displayInList",
-            "ProgramTrackedEntityAttribute", "sortOrder");
-
-    private final String PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_QUERY = String.format(
-            "SELECT DISTINCT %s.*, TrackedEntityAttribute.valueType, TrackedEntityAttribute.optionSet, ProgramTrackedEntityAttribute.displayInList FROM %s " +
-                    "JOIN %s ON %s.%s = %s.%s " +
-                    "LEFT JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.trackedEntityAttribute = TrackedEntityAttribute.uid " +
-                    "WHERE %s.%s = ? AND %s.%s = 1 ORDER BY %s.%s ASC " +
-                    "LIMIT 3",
-            "TrackedEntityAttributeValue", "TrackedEntityAttributeValue",
-            "TrackedEntityAttribute", "TrackedEntityAttribute", "uid", "TrackedEntityAttributeValue", "trackedEntityAttribute",
-            "TrackedEntityAttributeValue", "trackedEntityInstance",
-            "ProgramTrackedEntityAttribute", "displayInList",
-            "TrackedEntityAttribute", "sortOrderInListNoProgram"
-    );
 
     private final String teiType;
     private final ResourceManager resources;
     private final D2 d2;
+    private final SearchSortingValueSetter sortingValueSetter;
 
 
-    SearchRepositoryImpl(String teiType, D2 d2, ResourceManager resources) {
+    SearchRepositoryImpl(String teiType, D2 d2, ResourceManager resources, SearchSortingValueSetter sortingValueSetter) {
         this.teiType = teiType;
         this.d2 = d2;
         this.resources = resources;
+        this.sortingValueSetter = sortingValueSetter;
     }
 
 
@@ -196,20 +168,16 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         if (isOnline && states.isEmpty()) {
             dataSource = trackedEntityInstanceQuery.offlineFirst().getDataSource()
-                    .mapByPage(list -> filterByStatus(list, eventStatuses))
                     .mapByPage(this::filterDeleted)
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list,d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
-                    .map(tei -> transform(tei, selectedProgram, false));
+                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
+                    .map(tei -> transform(tei, selectedProgram, false, sortingItem));
         } else {
             dataSource = trackedEntityInstanceQuery.offlineOnly().getDataSource()
-                    .mapByPage(list -> filterByStatus(list, eventStatuses))
                     .mapByPage(this::filterDeleted)
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list,d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
-                    .map(tei -> transform(tei, selectedProgram, true));
+                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
+                    .map(tei -> transform(tei, selectedProgram, true, sortingItem));
         }
 
         return new LivePagedListBuilder<>(new DataSource.Factory<TrackedEntityInstance, SearchTeiModel>() {
@@ -244,23 +212,19 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         if (isOnline && states.isEmpty())
             return trackedEntityInstanceQuery.offlineFirst().get().toFlowable()
-                    .map(list -> filterByStatus(list, eventStatuses))
                     .map(this::filterDeleted)
                     .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
-                    .map(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
-                    .map(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list,d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
+                    .map(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
                     .flatMapIterable(list -> list)
-                    .map(tei -> transform(tei, selectedProgram, false))
+                    .map(tei -> transform(tei, selectedProgram, false, sortingItem))
                     .toList().toFlowable();
         else
             return trackedEntityInstanceQuery.offlineOnly().get().toFlowable()
-                    .map(list -> filterByStatus(list, eventStatuses))
                     .map(this::filterDeleted)
                     .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
-                    .map(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list,d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
-                    .map(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
+                    .map(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
                     .flatMapIterable(list -> list)
-                    .map(tei -> transform(tei, selectedProgram, true))
+                    .map(tei -> transform(tei, selectedProgram, true, sortingItem))
                     .toList().toFlowable();
     }
 
@@ -279,7 +243,14 @@ public class SearchRepositoryImpl implements SearchRepository {
             trackedEntityInstanceQuery = trackedEntityInstanceQuery.byTrackedEntityType().eq(trackedEntityType);
 
         if (!FilterManager.getInstance().getEnrollmentStatusFilters().isEmpty()) {
-            //TODO: THE SDK NEEDS TO PROVIDE A WAY TO SET ENROLLMENT STATUS SO WE CAN SEARCH BOTH LOCAL AND ONLINE
+            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byEnrollmentStatus().in(FilterManager.getInstance().getEnrollmentStatusFilters());
+        }
+
+        if (!FilterManager.getInstance().getEventStatusFilters().isEmpty()) {
+            trackedEntityInstanceQuery = trackedEntityInstanceQuery
+                    .byEventStartDate().eq(DateUtils.yearsBeforeNow(5))
+                    .byEventEndDate().eq(DateUtils.yearsAfterNow(1))
+                    .byEventStatus().in(FilterManager.getInstance().getEventStatusFilters());
         }
 
         OrganisationUnitMode ouMode;
@@ -454,6 +425,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 d2.enrollmentModule().enrollments()
                         .byTrackedEntityInstance().eq(searchTei.getTei().uid())
                         .byDeleted().eq(false)
+                        .orderByCreated(RepositoryScope.OrderByDirection.DESC)
                         .blockingGet();
         for (Enrollment enrollment : enrollments) {
             if (enrollments.indexOf(enrollment) == 0)
@@ -499,11 +471,24 @@ public class SearchRepositoryImpl implements SearchRepository {
         TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeUid).blockingGet();
         if (attribute.valueType() != ValueType.IMAGE) {
             TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues().value(attribute.uid(), searchTei.getTei().uid()).blockingGet();
-            searchTei.addAttributeValue(
-                    attribute.displayFormName(),
-                    attributeValue != null ? ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null) : null
-            );
+            if (attributeValue != null) {
+                attributeValue = ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null);
+            } else {
+                attributeValue = emptyValue(attribute.uid(), searchTei.getTei().uid());
+            }
+            searchTei.addAttributeValue(attribute.displayFormName(), attributeValue);
+            if (attribute.valueType() == ValueType.TEXT || attribute.valueType() == ValueType.LONG_TEXT) {
+                searchTei.addTextAttribute(attribute.displayName(), attributeValue);
+            }
         }
+    }
+
+    private TrackedEntityAttributeValue emptyValue(String attrUid, String teiUid) {
+        return TrackedEntityAttributeValue.builder()
+                .trackedEntityAttribute(attrUid)
+                .trackedEntityInstance(teiUid)
+                .value(sortingValueSetter.getUnknownLabel())
+                .build();
     }
 
 
@@ -730,23 +715,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         return teis;
     }
 
-    private List<TrackedEntityInstance> filterByStatus(List<TrackedEntityInstance> teis, List<EventStatus> eventStatuses) {
-        Iterator<TrackedEntityInstance> iterator = teis.iterator();
-        if (!eventStatuses.isEmpty())
-            while (iterator.hasNext()) {
-                TrackedEntityInstance tei = iterator.next();
-
-                boolean hasEventWithStatus = !d2.eventModule().events().byTrackedEntityInstanceUids(Collections.singletonList(tei.uid())).byStatus().in(eventStatuses).blockingIsEmpty();
-                boolean hasScheduledEvent = !d2.eventModule().events().byTrackedEntityInstanceUids(Collections.singletonList(tei.uid())).byStatus().eq(EventStatus.SCHEDULE)
-                        .byDueDate().before(new Date()).blockingIsEmpty();
-                if (!hasEventWithStatus && !hasScheduledEvent)
-                    iterator.remove();
-            }
-
-        return teis;
-    }
-
-    private SearchTeiModel transform(TrackedEntityInstance tei, @Nullable Program selectedProgram, boolean offlineOnly) {
+    private SearchTeiModel transform(TrackedEntityInstance tei, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
 
         SearchTeiModel searchTei = new SearchTeiModel();
         if (d2.trackedEntityModule().trackedEntityInstances().byUid().eq(tei.uid()).one().blockingExists()) {
@@ -756,13 +725,21 @@ public class SearchRepositoryImpl implements SearchRepository {
                 List<Enrollment> possibleEnrollments = d2.enrollmentModule().enrollments()
                         .byTrackedEntityInstance().eq(localTei.uid())
                         .byProgram().eq(selectedProgram.uid())
+                        .orderByEnrollmentDate(RepositoryScope.OrderByDirection.DESC)
                         .blockingGet();
-                Collections.sort(possibleEnrollments, (enrollment1, enrollment2) ->
-                        enrollment1.enrollmentDate().compareTo(enrollment2.enrollmentDate()));
-                searchTei.setCurrentEnrollment(possibleEnrollments.get(0));
+                for (Enrollment enrollment : possibleEnrollments) {
+                    if (enrollment.status() == EnrollmentStatus.ACTIVE) {
+                        searchTei.setCurrentEnrollment(enrollment);
+                        break;
+                    }
+                }
+                if (searchTei.getSelectedEnrollment() == null) {
+                    searchTei.setCurrentEnrollment(possibleEnrollments.get(0));
+                }
                 searchTei.setOnline(false);
-            } else if (d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(localTei.uid()).one().blockingExists())
+            } else {
                 searchTei.setOnline(false);
+            }
 
             if (offlineOnly)
                 searchTei.setOnline(!offlineOnly);
@@ -806,6 +783,8 @@ public class SearchRepositoryImpl implements SearchRepository {
             os = d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).blockingGet().style();
         searchTei.setDefaultTypeIcon(os != null ? os.icon() : null);
 
+        searchTei.setSortingValue(sortingValueSetter.setSortingItem(searchTei, sortingItem));
+        searchTei.setTEType(d2.trackedEntityModule().trackedEntityTypes().uid(teiType).blockingGet().displayName());
         return searchTei;
     }
 

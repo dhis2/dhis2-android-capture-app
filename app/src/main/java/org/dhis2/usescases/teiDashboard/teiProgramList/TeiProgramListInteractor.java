@@ -218,7 +218,8 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         showCustomCalendar(programUid, uid, orgUnitDialog);
     }
 
-    private Program getProgramFromUid(String programUid) {
+    @Override
+    public Program getProgramFromUid(String programUid) {
         return teiProgramListRepository.getProgram(programUid);
     }
 

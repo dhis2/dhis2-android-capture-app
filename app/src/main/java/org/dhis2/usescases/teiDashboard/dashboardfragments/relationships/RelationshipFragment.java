@@ -27,6 +27,7 @@ import com.wangjie.rapidfloatingactionbutton.util.RFABTextUtil;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
@@ -53,6 +54,7 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 import static android.app.Activity.RESULT_OK;
+import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.RELATIONSHIP_UID;
 
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
@@ -62,6 +64,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     @Inject
     RelationshipPresenter presenter;
+    @Inject
+    CarouselViewAnimations animations;
 
     private FragmentRelationshipsBinding binding;
 
@@ -72,11 +76,12 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     public static final String TEI_A_UID = "TEI_A_UID";
     private Set<String> sources;
+    private TeiDashboardMobileActivity activity;
 
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
-        TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) context;
+        activity = (TeiDashboardMobileActivity) context;
         if (((App) context.getApplicationContext()).dashboardComponent() != null)
             ((App) context.getApplicationContext())
                     .dashboardComponent()
@@ -115,6 +120,9 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     @Override
     public void onResume() {
         super.onResume();
+        if(binding.mapView.getVisibility() == View.VISIBLE){
+            animations.initMapLoading(binding.mapCarousel);
+        }
         presenter.init();
         relationshipMapManager.onResume();
     }
@@ -293,17 +301,24 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                 new CarouselAdapter.Builder()
                         .addCurrentTei(currentTei)
                         .addOnDeleteRelationshipListener(relationshipUid -> {
-                            presenter.deleteRelationship(relationshipUid);
+                            if(binding.mapCarousel.getCarouselEnabled()) {
+                                presenter.deleteRelationship(relationshipUid);
+                            }
                             return true;
                         })
                         .addOnRelationshipClickListener(teiUid -> {
-                            presenter.openDashboard(teiUid);
+                            if(binding.mapCarousel.getCarouselEnabled()) {
+                                presenter.openDashboard(teiUid);
+                            }
                             return true;
                         })
                         .build();
         binding.mapCarousel.setAdapter(carouselAdapter);
         binding.mapCarousel.attachToMapManager(relationshipMapManager, () -> true);
         carouselAdapter.addItems(relationships);
+
+        animations.endMapLoading(binding.mapCarousel);
+        activity.onRelationshipMapLoaded();
     }
 
     @Override
@@ -319,7 +334,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                     .queryRenderedFeatures(rectF, lineLayerId, pointLayerId);
             if (!features.isEmpty()) {
                 relationshipMapManager.mapLayerManager.selectFeature(null);
-                relationshipMapManager.mapLayerManager.getLayer(sourceId,true).setSelectedItem(features.get(0));
+                Feature selectedFeature = relationshipMapManager.findFeature(sourceId, RELATIONSHIP_UID, features.get(0).getStringProperty(RELATIONSHIP_UID));
+                relationshipMapManager.mapLayerManager.getLayer(sourceId, true).setSelectedItem(selectedFeature);
                 binding.mapCarousel.scrollToFeature(features.get(0));
                 return true;
             }

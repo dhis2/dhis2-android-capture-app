@@ -38,7 +38,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:tint="@color/white"
-                app:srcCompat="@drawable/ic_edit" />
+                app:srcCompat="@drawable/ic_event_status_open" />
 
             <TextView
                 android:layout_width="0dp"
@@ -69,7 +69,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:tint="@color/white"
-                app:srcCompat="@drawable/ic_calendar_positive" />
+                app:srcCompat="@drawable/ic_event_status_schedule" />
 
             <TextView
                 android:layout_width="0dp"
@@ -100,7 +100,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:tint="@color/white"
-                app:srcCompat="@drawable/ic_overdue" />
+                app:srcCompat="@drawable/ic_overdue_filter" />
 
             <TextView
                 android:layout_width="0dp"
@@ -132,7 +132,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:tint="@color/white"
-                app:srcCompat="@drawable/ic_visibility" />
+                app:srcCompat="@drawable/ic_event_status_complete" />
 
             <TextView
                 android:layout_width="0dp"
@@ -162,7 +162,8 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:padding="2dp"
-                app:srcCompat="@drawable/ic_skipped" />
+                android:tint="@color/white"
+                app:srcCompat="@drawable/ic_filter_event_status_skipped" />
 
             <TextView
                 android:layout_width="0dp"
