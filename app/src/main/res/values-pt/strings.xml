@@ -86,7 +86,6 @@
     <string name="table">Tabela</string>
     <string name="state_warning">Advertência</string>
     <string name="action_close">Fechar</string>
-    <string name="data_set_closed">Fechar</string>
     <string name="data_set_open">Abrir</string>
     <string name="unsupported_value_type">Tipo de valor não suportado</string>
     <string name="data_every_day">Diário</string>

@@ -143,7 +143,6 @@
     <string name="confirm_delete_event">¿Estás seguro de querer eliminar este evento?</string>
     <string name="event_was_deleted">Evento eliminado</string>
     <string name="total">Total</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Listado de admisiones</string>
     <string name="active_programs">Programas activos</string>
@@ -489,7 +488,6 @@
     <string name="no_conflicts_synced_message">¡Estas al día! Todos tus datos se han enviado al servidor.</string>
     <string name="relationship_error_recursive">No se puede relacionar un registro con el mismo</string>
     <string name="unblock_session">Desbloquear sesión</string>
-    <string name="data_set_closed">Cerrar</string>
     <string name="data_set_open">Abierto</string>
     <string name="unsupported_value_type">Tipo de valor no admitido</string>
     <string name="change_calendar_view">Cambiar vista</string>

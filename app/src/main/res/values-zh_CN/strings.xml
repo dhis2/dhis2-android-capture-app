@@ -143,7 +143,6 @@
     <string name="confirm_delete_event">你确定删除事件</string>
     <string name="event_was_deleted">事件删除成功</string>
     <string name="total">总共</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">注册清单</string>
     <string name="active_programs">活动项目</string>
@@ -491,7 +490,6 @@
     <string name="no_conflicts_synced_message">已经更新。所有的数据已经发送到服务器。</string>
     <string name="relationship_error_recursive">你不能关联记录到自身。</string>
     <string name="unblock_session">解锁会话</string>
-    <string name="data_set_closed">关闭</string>
     <string name="data_set_open">开放</string>
     <string name="unsupported_value_type">不支持的值类型</string>
     <string name="change_calendar_view">改变日历视图。</string>

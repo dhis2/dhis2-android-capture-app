@@ -472,7 +472,6 @@
     <string name="no_conflicts_synced_message">Vous êtes à jour! Toutes vos données ont été envoyées au serveur. </string>
     <string name="relationship_error_recursive">Vous ne pouvez pas établir de relation entre une donnée et elle-même</string>
     <string name="unblock_session">Dévérouiller la session</string>
-    <string name="data_set_closed">Fermer</string>
     <string name="data_set_open">Ouvrir</string>
     <string name="unsupported_value_type">Type de valeur non supporté</string>
     <string name="change_calendar_view">Changer de vue calendrier</string>
