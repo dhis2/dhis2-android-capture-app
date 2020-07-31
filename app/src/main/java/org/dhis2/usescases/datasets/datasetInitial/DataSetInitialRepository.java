@@ -31,4 +31,6 @@ public interface DataSetInitialRepository {
 
     @NonNull
     Flowable<String> getPeriodId(PeriodType periodType, Date date);
+
+    CategoryOption getCategoryOption(String selectedOption);
 }

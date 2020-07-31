@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="name"
+            type="String" />
+
+        <variable
+            name="value"
+            type="String" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp">
+
+        <TextView
+            android:id="@+id/fieldName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{name}"
+            android:textAlignment="viewStart"
+            android:textColor="@color/text_black_DE3"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@id/fieldValue"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Attribute name" />
+
+        <TextView
+            android:id="@+id/fieldValue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{value}"
+            android:textAlignment="viewEnd"
+            android:textColor="#61333333"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/fieldName"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Value" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

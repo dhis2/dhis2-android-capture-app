@@ -39,8 +39,9 @@ import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.OrientationUtilsKt;
-import org.dhis2.utils.customviews.CategoryComboDialog;
+import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -77,10 +78,6 @@ import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT_TEI;
 import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_EVENT_TEI;
-
-/**
- * -Created by ppajuelo on 29/11/2017.
- */
 
 public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.View {
 
@@ -155,9 +152,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             presenter.onGroupingChanged(group);
         });
         activity.observeFilters().observe(this, showFilters -> showHideFilters(showFilters));
-        activity.updatedEnrollment().observe(this, enrollmentUid -> updateEnrollment(enrollmentUid) );
+        activity.updatedEnrollment().observe(this, enrollmentUid -> updateEnrollment(enrollmentUid));
         filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.TRACKER);
-        if(presenter.hasAssignment()){
+        if (presenter.hasAssignment()) {
             filtersAdapter.addAssignedToMe();
         }
         filtersAdapter.addEventStatus();
@@ -197,6 +194,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void setEnrollment(Enrollment enrollment) {
         binding.setEnrollment(enrollment);
+        dashboardViewModel.updateDashboard(dashboardModel);
+        if (adapter != null) {
+            adapter.setEnrollment(enrollment);
+        }
     }
 
     @Override
@@ -215,6 +216,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void setEnrollmentData(Program program, Enrollment enrollment) {
+        if (adapter != null) {
+            adapter.setEnrollment(enrollment);
+        }
         binding.setProgram(program);
         binding.setEnrollment(enrollment);
         if (enrollment != null) {
@@ -282,7 +286,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public Flowable<String> observeStageSelection(Program currentProgram, Enrollment currentEnrollment) {
         if (adapter == null) {
-            adapter = new EventAdapter(presenter, currentProgram, currentEnrollment);
+            adapter = new EventAdapter(presenter, currentProgram);
+            adapter.setEnrollment(currentEnrollment);
             binding.teiRecycler.setAdapter(adapter);
         }
         return adapter.stageSelector();
@@ -403,7 +408,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     public Consumer<EnrollmentStatus> enrollmentCompleted() {
         return enrollmentStatus -> {
             if (enrollmentStatus == EnrollmentStatus.COMPLETED)
-                activity.getPresenter().init();
+                activity.updateStatus();
         };
     }
 
@@ -425,19 +430,19 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void showCatComboDialog(String eventId, CategoryCombo categoryCombo, List<CategoryOptionCombo> categoryOptionCombos) {
-        CategoryComboDialog dialog = new CategoryComboDialog(
-                getAbstracContext(),
-                categoryCombo,
-                123,
-                selectedOption ->
-                        presenter.changeCatOption(
-                                eventId,
-                                selectedOption),
-                categoryCombo.displayName());
-
-        dialog.setCancelable(false);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
+        if (categoryCombo.name().equals("default")) return;
+        CategoryDialog categoryDialog = new CategoryDialog(
+                CategoryDialog.Type.CATEGORY_OPTION_COMBO,
+                categoryCombo.uid(),
+                false,
+                null,
+                selectedCatOptComboUid -> {
+                    presenter.changeCatOption(eventId, selectedCatOptComboUid);
+                    return null;
+                }
+        );
+        categoryDialog.setCancelable(false);
+        categoryDialog.show(getChildFragmentManager(), CategoryDialog.Companion.getTAG());
     }
 
     @Override
@@ -501,6 +506,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                     .transition(withCrossFade())
                     .transform(new CircleCrop())
                     .into(binding.cardFront.teiImage);
+            binding.cardFront.teiImage.setOnClickListener(view -> {
+                File fileToShow = new File(filePath);
+                if (fileToShow.exists()) {
+                    new ImageDetailBottomDialog(
+                            null,
+                            fileToShow
+                    ).show(getChildFragmentManager(), ImageDetailBottomDialog.TAG);
+                }
+            });
         }
     }
 

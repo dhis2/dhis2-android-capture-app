@@ -33,21 +33,12 @@ import org.dhis2.Bindings.setDateInterval
 import org.dhis2.databinding.ItemNoteBinding
 import org.hisp.dhis.android.core.note.Note
 
-class NotesViewHolder(private val binding: ItemNoteBinding) :
+class NotesViewHolder(val binding: ItemNoteBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
     fun bind(note: Note, listener: NoteItemClickListener) {
         note.storedDate()?.let {
             binding.date.setDateInterval(it)
-/*
-            val formattedDate = try {
-                val date = DateUtils.databaseDateFormat().parse(note.storedDate())
-                DateUtils.uiDateFormat().format(date)
-            } catch (e: ParseException) {
-                e.printStackTrace()
-                note.storedDate()
-            }
-            binding.date.text = formattedDate*/
         }
 
         binding.noteText.text = note.value()

@@ -1,6 +1,7 @@
 package org.dhis2.utils.customviews;
 
 import android.content.Context;
+import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -70,6 +71,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
 
 
         editText.setFocusable(false);
+        editText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
         delete.setOnClickListener(view -> deleteSelectedOption());
 

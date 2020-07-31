@@ -158,8 +158,6 @@ public class EventCaptureContract {
 
         boolean isEventEditable(String eventUid);
 
-        boolean optionIsInOptionGroup(String optionUid, String optionGroupToHide);
-
         String getSectionFor(String field);
 
         Single<Boolean> canReOpenEvent();

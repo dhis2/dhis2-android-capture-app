@@ -146,7 +146,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                         }
                     });
             Flowable<Boolean> groupingFlowable = groupingProcessor.startWith(
-                    getGrouping().containsKey(programUid) ? getGrouping().get(programUid) : false
+                    getGrouping().containsKey(programUid) ? getGrouping().get(programUid) : true
             );
 
             compositeDisposable.add(
@@ -165,7 +165,8 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                                     filterManager.getStateFilters(),
                                                     filterManager.getAssignedFilter(),
                                                     filterManager.getEventStatusFilters(),
-                                                    filterManager.getCatOptComboFilters()
+                                                    filterManager.getCatOptComboFilters(),
+                                                    filterManager.getSortingItem()
                                             ).toFlowable(),
                                             ruleEngineRepository.updateRuleEngine()
                                                     .flatMap(ruleEngine -> ruleEngineRepository.reCalculate()),
@@ -216,7 +217,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                periodRequest -> view.showPeriodRequest(periodRequest),
+                                periodRequest -> view.showPeriodRequest(periodRequest.getFirst()),
                                 Timber::e
                         ));
 
@@ -422,7 +423,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
             if (shouldGroup) {
                 groups.put(programUid, true);
             } else {
-                groups.remove(programUid);
+                groups.put(programUid, false);
             }
             preferences.saveAsJson(Preference.GROUPING, groups);
             groupingProcessor.onNext(shouldGroup);

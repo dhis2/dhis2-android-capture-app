@@ -137,7 +137,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/sync_status"
             app:layout_constraintTop_toTopOf="parent"
-            android:tint="?colorPrimary"
             app:srcCompat="@drawable/ic_overdue"
             android:visibility="@{program.hasOverdue()?View.VISIBLE:View.GONE}"/>
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -60,11 +60,11 @@ public class EditTextCustomHolder extends FormViewHolder {
                 if (isSearchMode || valueHasChanged()) {
                     sendAction();
                 }
-                closeKeyboard(binding.customEdittext.getEditText());
             }
             validateRegex();
         });
         binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
+            selectedFieldUid = null;
             binding.customEdittext.getEditText().clearFocus();
             sendAction();
             closeKeyboard(binding.customEdittext.getEditText());

@@ -3,6 +3,7 @@ package org.dhis2.usescases.programEventDetail
 import java.util.Date
 import javax.inject.Inject
 import org.dhis2.Bindings.userFriendlyValue
+import org.dhis2.data.dhislogic.DhisEventUtils
 import org.dhis2.data.tuples.Pair
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
@@ -12,7 +13,7 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 
-class ProgramEventMapper @Inject constructor(val d2: D2) {
+class ProgramEventMapper @Inject constructor(val d2: D2, val dhisEventUtils: DhisEventUtils) {
 
     fun eventToProgramEvent(event: Event): ProgramEventViewModel {
         val orgUnitName: String = getOrgUnitName(event.organisationUnit()) ?: ""
@@ -50,8 +51,14 @@ class ProgramEventMapper @Inject constructor(val d2: D2) {
             data,
             event.status()!!,
             hasExpired || !inOrgUnitRange,
-            attrOptCombo
+            attrOptCombo,
+            event.geometry(),
+            dhisEventUtils.isEventEditable(event.uid())
         )
+    }
+
+    fun eventsToProgramEvents(events: List<Event>): List<ProgramEventViewModel> {
+        return events.map { event -> eventToProgramEvent(event) }
     }
 
     private fun getOrgUnitName(orgUnitUid: String?) =

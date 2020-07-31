@@ -50,6 +50,7 @@ public class DateUtils {
     public static final String DATABASE_FORMAT_EXPRESSION_NO_SECONDS = "yyyy-MM-dd'T'HH:mm";
     public static final String DATE_TIME_FORMAT_EXPRESSION = "yyyy-MM-dd HH:mm";
     public static final String DATE_FORMAT_EXPRESSION = "yyyy-MM-dd";
+    public static final String SIMPLE_DATE_FORMAT = "d/M/yyyy";
 
     public Date[] getDateFromDateAndPeriod(Date date, Period period) {
         switch (period) {
@@ -181,6 +182,11 @@ public class DateUtils {
 
     @NonNull
     public static SimpleDateFormat uiDateFormat() {
+        return new SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.US);
+    }
+
+    @NonNull
+    public static SimpleDateFormat oldUiDateFormat() {
         return new SimpleDateFormat(DATE_FORMAT_EXPRESSION, Locale.US);
     }
 
@@ -922,6 +928,31 @@ public class DateUtils {
 
     }
 
+    public static Date yearsBeforeNow(int years) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        if (years > 0) {
+            calendar.add(Calendar.YEAR, -years);
+        } else {
+            calendar.add(Calendar.YEAR, years);
+        }
+        return calendar.getTime();
+    }
+
+    public static Date yearsAfterNow(int years) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        calendar.add(Calendar.YEAR, years);
+
+        return calendar.getTime();
+    }
 
     public static long timeToDate(Date finaLDate) {
         return finaLDate.getTime() - new Date().getTime();

@@ -314,31 +314,39 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     override fun saveUsersData() {
         (context.applicationContext as App).createUserComponent()
 
-        if (presenter.canHandleBiometrics() == true &&
-            !presenter.areSameCredentials(
-                binding.serverUrlEdit.text.toString(),
-                binding.userNameEdit.text.toString(),
-                binding.userPassEdit.text.toString()
-            )
+        if (!presenter.areSameCredentials(
+            binding.serverUrlEdit.text.toString(),
+            binding.userNameEdit.text.toString(),
+            binding.userPassEdit.text.toString()
+        )
         ) {
-            showInfoDialog(
-                getString(R.string.biometrics_security_title),
-                getString(R.string.biometrics_security_text),
-                object : OnDialogClickListener {
-                    override fun onPossitiveClick(alertDialog: AlertDialog) {
-                        presenter.saveUserCredentials(
-                            binding.serverUrlEdit.text.toString(),
-                            binding.userNameEdit.text.toString(),
-                            binding.userPassEdit.text.toString()
-                        )
-                        goToNextScreen()
-                    }
+            if (presenter.canHandleBiometrics() == true) {
+                showInfoDialog(
+                    getString(R.string.biometrics_security_title),
+                    getString(R.string.biometrics_security_text),
+                    object : OnDialogClickListener {
+                        override fun onPossitiveClick(alertDialog: AlertDialog) {
+                            presenter.saveUserCredentials(
+                                binding.serverUrlEdit.text.toString(),
+                                binding.userNameEdit.text.toString(),
+                                binding.userPassEdit.text.toString()
+                            )
+                            goToNextScreen()
+                        }
 
-                    override fun onNegativeClick(alertDialog: AlertDialog) {
-                        goToNextScreen()
+                        override fun onNegativeClick(alertDialog: AlertDialog) {
+                            goToNextScreen()
+                        }
                     }
-                }
-            )?.show()
+                )?.show()
+            } else {
+                presenter.saveUserCredentials(
+                    binding.serverUrlEdit.text.toString(),
+                    binding.userNameEdit.text.toString(),
+                    ""
+                )
+                goToNextScreen()
+            }
         } else {
             goToNextScreen()
         }

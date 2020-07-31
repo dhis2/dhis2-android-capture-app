@@ -45,7 +45,7 @@ public class EventCapturePagerAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             default:
-                return context.getString(R.string.event_overview);
+                return context.getString(R.string.event_data);
             case 1:
                 return context.getString(R.string.event_notes);
         }

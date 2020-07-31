@@ -11,6 +11,7 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ItemFilterOrgUnitBinding;
 import org.dhis2.utils.filters.ou.OUFilterAdapter;
+import org.dhis2.utils.filters.sorting.SortingItem;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
@@ -18,9 +19,10 @@ class OrgUnitFilterHolder extends FilterHolder {
 
     private OrganisationUnit currentOrgUnit;
 
-    OrgUnitFilterHolder(@NonNull ItemFilterOrgUnitBinding binding, ObservableField<Filters> openedFilter) {
-        super(binding, openedFilter);
+    OrgUnitFilterHolder(@NonNull ItemFilterOrgUnitBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem, FiltersAdapter.ProgramType programType) {
+        super(binding, openedFilter, sortingItem);
         filterType = Filters.ORG_UNIT;
+        this.programType = programType;
     }
 
     @Override
@@ -77,7 +79,9 @@ class OrgUnitFilterHolder extends FilterHolder {
             }
         });
 
-        localBinding.filterOrgUnit.ouTreeButton.setOnClickListener(view ->
-                FilterManager.getInstance().getOuTreeProcessor().onNext(true));
+        localBinding.filterOrgUnit.ouTreeButton.setOnClickListener(view -> {
+                localBinding.root.clearFocus();
+                FilterManager.getInstance().getOuTreeProcessor().onNext(true);
+        });
     }
 }

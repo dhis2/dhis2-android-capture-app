@@ -62,6 +62,7 @@ class SyncStatusDialog private constructor(
 
     @Inject
     lateinit var presenter: GranularSyncContracts.Presenter
+
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
@@ -189,7 +190,7 @@ class SyncStatusDialog private constructor(
     }
 
     override fun setState(state: State) {
-        Bindings.setStateIcon(binding!!.syncIcon, state)
+        Bindings.setStateIcon(binding!!.syncIcon, state, true)
         binding!!.syncStatusName.setText(getTextByState(state))
         binding!!.syncStatusBar.setBackgroundResource(getColorForState(state))
         when (state) {
@@ -246,7 +247,7 @@ class SyncStatusDialog private constructor(
             }
         } else {
             binding!!.connectionMessage.text = null
-            binding!!.syncButton.setText(R.string.action_sync)
+            binding!!.syncButton.setText(R.string.action_send)
             if (binding!!.syncStatusName.text == getString(R.string.state_synced)) {
                 binding!!.syncButton.visibility = View.GONE
             }
@@ -491,7 +492,7 @@ class SyncStatusDialog private constructor(
                     )
                 )
                 binding!!.noConflictMessage.text = getString(R.string.no_conflicts_synced_message)
-                Bindings.setStateIcon(binding!!.syncIcon, State.SYNCED)
+                Bindings.setStateIcon(binding!!.syncIcon, State.SYNCED, true)
                 dismissListener!!.onDismiss(true)
             }
             WorkInfo.State.FAILED -> {
@@ -527,7 +528,7 @@ class SyncStatusDialog private constructor(
                         )
                     )
                 }
-                Bindings.setStateIcon(binding!!.syncIcon, State.ERROR)
+                Bindings.setStateIcon(binding!!.syncIcon, State.ERROR, true)
                 dismissListener!!.onDismiss(false)
             }
             WorkInfo.State.CANCELLED ->

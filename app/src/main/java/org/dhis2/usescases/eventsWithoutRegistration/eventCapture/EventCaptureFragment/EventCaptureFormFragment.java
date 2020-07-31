@@ -83,6 +83,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         this.flowableOptions = PublishProcessor.create();
 
         binding.actionButton.setOnClickListener(view -> {
+            view.requestFocus();
             presenter.onActionButtonClick();
         });
 
@@ -102,6 +103,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         presenter.onDetach();
     }
 
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -119,13 +121,22 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         }
 
         LinearLayoutManager myLayoutManager = (LinearLayoutManager) binding.formRecycler.getLayoutManager();
-        dataEntryAdapter.swap(updates, () -> {
-            if (myLayoutManager != null) {
-                if(!dataEntryAdapter.isSectionAlreadyOpen()) {
-                    myLayoutManager.scrollToPositionWithOffset(dataEntryAdapter.getOpenSectionPos(), 0);
-                }
-            }
-        });
+        if (myLayoutManager == null) return;
+
+        int myFirstPositionIndex = myLayoutManager.findFirstVisibleItemPosition();
+        View myFirstPositionView = myLayoutManager.findViewByPosition(myFirstPositionIndex);
+        int offset = 0;
+        if (myFirstPositionView != null) {
+            offset = myFirstPositionView.getTop();
+        }
+
+        if (dataEntryAdapter == null) {
+            createDataEntry();
+        }
+
+        dataEntryAdapter.swap(updates, () -> { });
+
+        myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset);
     }
 
     @Override
@@ -195,9 +206,9 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     private void checkLastItem() {
         GridLayoutManager layoutManager = (GridLayoutManager) binding.formRecycler.getLayoutManager();
         int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
-        boolean shouldShowFab =
+        boolean shouldShowFab = lastVisiblePosition != -1 && (
                 lastVisiblePosition == dataEntryAdapter.getItemCount() - 1 ||
-                        dataEntryAdapter.getItemViewType(lastVisiblePosition) == 17;
+                        dataEntryAdapter.getItemViewType(lastVisiblePosition) == 17);
         animateFabButton(shouldShowFab);
     }
 

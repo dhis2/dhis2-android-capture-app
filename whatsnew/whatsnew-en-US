@@ -1,10 +1,15 @@
-This is a patch version which fixes:
-- ANDROAPP-3093
-- ANDROAPP-3038
-- ANDROAPP-3041
-- ANDROAPP-2812
-- ANDROAPP-3036
-- ANDROAPP-3037
-- ANDROAPP-3073
-- ANDROAPP-3076
-- ANDROAPP-3109
+The main new features include:
+- Validation rules
+- New sorting and filters
+- Map visualization of TEI and event lists
+- Map visualization of relationships
+- Inherit values when creating a new TEI for a relationship
+- Pre-selection of current organisation unit when creating events
+- Make category options searchable
+- New event and TEI cards
+- Improved data set screen
+- New event status and sync state icons
+- Support for Android Settings DHIS2 web app
+- Expanded error log
+- Database encryption
+- Other quality and performance improvements

@@ -12,11 +12,11 @@
 
         <variable
             name="viewModel"
-            type="org.dhis2.usescases.map.polygon.PolygonViewModel" />
+            type="org.dhis2.uicomponents.map.geometry.polygon.PolygonViewModel" />
 
         <variable
             name="point"
-            type="org.dhis2.usescases.map.polygon.PolygonViewModel.PolygonPoint" />
+            type="org.dhis2.uicomponents.map.geometry.polygon.PolygonViewModel.PolygonPoint" />
 
     </data>
 

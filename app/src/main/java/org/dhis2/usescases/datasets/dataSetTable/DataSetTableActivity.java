@@ -1,34 +1,57 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-
 import android.content.pm.ActivityInfo;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 
-import com.google.android.flexbox.FlexDirection;
-import com.google.android.flexbox.FlexboxLayoutManager;
-import com.google.android.flexbox.JustifyContent;
-import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.shape.CornerFamily;
+import com.google.android.material.shape.MaterialShapeDrawable;
+import com.google.android.material.shape.ShapeAppearanceModel;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayoutMediator;
+import com.jakewharton.rxbinding2.view.RxView;
 
 import org.dhis2.App;
+import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.ColorUtils;
+import org.dhis2.utils.AppMenuHelper;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.dhis2.utils.resources.ResourceManager;
-import org.hisp.dhis.android.core.common.State;
+import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.customviews.AlertBottomDialog;
+import org.dhis2.utils.validationrules.ValidationResultViolationsAdapter;
+import org.dhis2.utils.validationrules.Violation;
 import org.hisp.dhis.android.core.dataset.DataSet;
+import org.hisp.dhis.android.core.period.Period;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
+
+import io.reactivex.Observable;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
+import kotlin.Unit;
+
+import static org.dhis2.utils.Constants.NO_SECTION;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
 public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.View {
 
@@ -41,7 +64,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     String periodId;
 
     boolean accessDataWrite;
-    boolean tableSelectorVisible = false;
     private List<String> sections;
 
     @Inject
@@ -49,6 +71,10 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     private ActivityDatasetTableBinding binding;
     private DataSetSectionAdapter viewPagerAdapter;
     private boolean backPressed;
+    private DataSetTableComponent dataSetTableComponent;
+
+    private BottomSheetBehavior<View> behavior;
+    private FlowableProcessor<Boolean> reopenProcessor;
 
     public static Bundle getBundle(@NonNull String dataSetUid,
                                    @NonNull String orgUnitUid,
@@ -79,8 +105,16 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         catOptCombo = getIntent().getStringExtra(Constants.CAT_COMB);
         dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
         accessDataWrite = getIntent().getBooleanExtra(Constants.ACCESS_DATA, true);
+        reopenProcessor = PublishProcessor.create();
 
-        ((App) getApplicationContext()).userComponent().plus(new DataSetTableModule(this, dataSetUid, periodId, orgUnitUid, catOptCombo)).inject(this);
+        dataSetTableComponent = ((App) getApplicationContext()).userComponent()
+                .plus(new DataSetTableModule(this,
+                        dataSetUid,
+                        periodId,
+                        orgUnitUid,
+                        catOptCombo
+                ));
+        dataSetTableComponent.inject(this);
         super.onCreate(savedInstanceState);
 
         //Orientation
@@ -88,10 +122,8 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_table);
         binding.setPresenter(presenter);
-        binding.dataSetName.setText(String.format("%s - %s", orgUnitName, periodInitialDate));
-
+        binding.BSLayout.bottomSheetLayout.setVisibility(View.GONE);
         setViewPager();
-
         presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
     }
 
@@ -108,86 +140,46 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     private void setViewPager() {
-        viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager(), accessDataWrite, getIntent().getStringExtra(Constants.DATA_SET_UID), this);
+        viewPagerAdapter = new DataSetSectionAdapter(this, accessDataWrite, getIntent().getStringExtra(Constants.DATA_SET_UID));
+        binding.viewPager.setUserInputEnabled(false);
         binding.viewPager.setAdapter(viewPagerAdapter);
-        binding.tabLayout.setupWithViewPager(binding.viewPager);
-        binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                binding.selectorLayout.setVisibility(View.GONE);
-                tableSelectorVisible = false;
+        new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> {
+            if (position == 0) {
+                tab.setText(R.string.dataset_overview);
+            } else {
+                tab.setText(viewPagerAdapter.getSectionTitle(position));
             }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                if (viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables() > 1)
-                    if (tableSelectorVisible)
-                        binding.selectorLayout.setVisibility(View.GONE);
-                    else {
-                        binding.selectorLayout.setVisibility(View.VISIBLE);
-                        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(getContext());
-                        layoutManager.setFlexDirection(FlexDirection.ROW);
-                        layoutManager.setJustifyContent(JustifyContent.FLEX_START);
-                        binding.tableRecycler.setLayoutManager(layoutManager);
-
-                        binding.tableRecycler.setAdapter(new TableCheckboxAdapter(presenter, getContext()));
-                        ((TableCheckboxAdapter) binding.tableRecycler.getAdapter()).swapData(viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables());
-                    }
-
-                tableSelectorVisible = !tableSelectorVisible;
-            }
-        });
+        }).attach();
     }
 
     @Override
     public void setSections(List<String> sections) {
         this.sections = sections;
-        if (sections.contains("NO_SECTION") && sections.size() > 1)
-            sections.remove("NO_SECTION");
+        if (sections.contains(NO_SECTION) && sections.size() > 1) {
+            sections.remove(NO_SECTION);
+            sections.add(getString(R.string.dataset_data));
+        }
         viewPagerAdapter.swapData(sections);
+        binding.viewPager.setCurrentItem(1);
     }
 
     public void updateTabLayout(String section, int numTables) {
-
-        if (section.equals("NO_SECTION")) {
-            if (numTables > 1) {
-                sections.remove("NO_SECTION");
-                sections.add(getString(R.string.tab_tables));
-                viewPagerAdapter.swapData(sections);
-            } else
-                binding.tabLayout.setVisibility(View.GONE);
-        } else {
-            if (numTables > 1)
-                viewPagerAdapter.swapData(sections);
+        if (sections.get(0).equals(NO_SECTION)) {
+            sections.remove(NO_SECTION);
+            sections.add(getString(R.string.dataset_data));
+            viewPagerAdapter.swapData(sections);
+            binding.viewPager.setCurrentItem(1);
         }
-    }
-
-    @Override
-    public void setDataValue(List<DataSetTableModel> data) {
     }
 
     public DataSetTableContract.Presenter getPresenter() {
         return presenter;
     }
 
-
     @Override
     public Boolean accessDataWrite() {
         return accessDataWrite;
     }
-
-    @Override
-    public void showOptions(boolean open) {
-        if (open)
-            binding.infoContainer.setVisibility(View.VISIBLE);
-        else
-            binding.infoContainer.setVisibility(View.GONE);
-    }
-
 
     @Override
     public String getDataSetUid() {
@@ -200,88 +192,18 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void goToTable(int numTable) {
-        ((TableCheckboxAdapter) binding.tableRecycler.getAdapter()).setSelectedPosition(numTable);
-        viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).goToTable(numTable);
-    }
-
-    @Override
-    public void renderDetails(DataSet dataSet, String catComboName) {
-        binding.dataSetSubtitle.setText(String.format("%s %s", dataSet.displayName(), !catComboName.equals("default") ? "- " + catComboName : ""));
-        if (catComboName.equals("default")) {
-            binding.catCombo.setVisibility(View.GONE);
-            binding.catComboLabel.setVisibility(View.GONE);
+    public void renderDetails(DataSet dataSet, String catComboName, Period period, boolean isComplete) {
+        binding.dataSetName.setText(dataSet.displayName());
+        StringBuilder subtitle = new StringBuilder(
+                DateUtils.getInstance().getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault())
+        )
+                .append(" | ")
+                .append(orgUnitName);
+        if (!catComboName.equals("default")) {
+            subtitle.append(" | ")
+                    .append(catComboName);
         }
-        binding.orgUnit.setText(orgUnitName);
-        binding.reportPeriod.setText(periodInitialDate);
-        binding.catCombo.setText(catComboName);
-        binding.datasetDescription.setText(dataSet.displayDescription());
-
-        binding.dataSetIcon.setBackground(
-                ColorUtils.tintDrawableWithColor(
-                        binding.dataSetIcon.getBackground(),
-                        ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT)
-                )
-        );
-        binding.dataSetIcon.setImageResource(
-                new ResourceManager(this).getObjectStyleDrawableResource(
-                        dataSet.style().icon(),
-                        R.drawable.ic_program_default
-                )
-        );
-
-    }
-
-    @Override
-    public void isDataSetOpen(boolean dataSetIsOpen) {
-        boolean editStatus = !dataSetIsOpen && accessDataWrite;
-        binding.programLock.setImageResource(editStatus ? R.drawable.ic_edit_green : R.drawable.ic_visibility);
-        binding.programLockText.setText(!dataSetIsOpen ? getString(org.dhis2.R.string.event_open) : getString(org.dhis2.R.string.completed));
-        binding.programLockText.setTextColor(editStatus ? getResources().getColor(R.color.green_7ed) : getResources().getColor(R.color.gray_666));
-    }
-
-    @Override
-    public void setDataSetState(State state) {
-        int syncIconRes;
-        switch (state) {
-
-            case ERROR:
-                syncIconRes = R.drawable.ic_sync_problem_red;
-                break;
-            case WARNING:
-                syncIconRes = R.drawable.ic_sync_warning;
-                break;
-            case TO_POST:
-            case TO_UPDATE:
-            case UPLOADING:
-                syncIconRes = R.drawable.ic_sync_problem_grey;
-                break;
-            case SENT_VIA_SMS:
-            case SYNCED_VIA_SMS:
-                syncIconRes = R.drawable.ic_sync_sms;
-                break;
-            default:
-                syncIconRes = R.drawable.ic_sync_green;
-                break;
-        }
-        binding.syncState.setImageResource(syncIconRes);
-    }
-
-    @Override
-    public void showSyncDialog() {
-        SyncStatusDialog dialog = new SyncStatusDialog.Builder()
-                .setConflictType(SyncStatusDialog.ConflictType.DATA_VALUES)
-                .setUid(dataSetUid)
-                .setOrgUnit(orgUnitUid)
-                .setPeriodId(periodId)
-                .setAttributeOptionCombo(catOptCombo)
-                .onDismissListener(hasChanged -> {
-                    if (hasChanged) {
-                        presenter.updateState();
-                    }
-                })
-                .build();
-        dialog.show(getSupportFragmentManager(), dialog.getDialogTag());
+        binding.dataSetSubtitle.setText(subtitle);
     }
 
     public void update() {
@@ -306,5 +228,268 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     public boolean isBackPressed() {
         return backPressed;
+    }
+
+    public DataSetTableComponent getDataSetTableComponent() {
+        return dataSetTableComponent;
+    }
+
+    @Override
+    public Observable<Object> observeSaveButtonClicks() {
+        return RxView.clicks(binding.saveButton).doOnNext(o -> {
+            if (getCurrentFocus() != null) {
+                View currentFocus = getCurrentFocus();
+                currentFocus.clearFocus();
+                ViewExtensionsKt.closeKeyboard(currentFocus);
+            }
+        });
+    }
+
+    @Override
+    public void showMandatoryMessage(boolean isMandatoryFields) {
+        String message;
+        if (isMandatoryFields) {
+            message = getString(R.string.field_mandatory_v2);
+        } else {
+            message = getString(R.string.field_required);
+        }
+        AlertBottomDialog.Companion.getInstance()
+                .setTitle(getString(R.string.saved))
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.button_ok), () -> Unit.INSTANCE)
+                .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
+    }
+
+    @Override
+    public void showValidationRuleDialog() {
+        AlertBottomDialog.Companion.getInstance()
+                .setTitle(getString(R.string.saved))
+                .setMessage(getString(R.string.run_validation_rules))
+                .setPositiveButton(getString(R.string.yes), () -> {
+                    presenter.executeValidationRules();
+                    return Unit.INSTANCE;
+                })
+                .setNegativeButton(getString(R.string.no), () -> {
+                    if (presenter.isComplete()) {
+                        finish();
+                    } else {
+                        showSuccessValidationDialog();
+                    }
+                    return Unit.INSTANCE;
+                })
+                .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
+    }
+
+    @Override
+    public void showSuccessValidationDialog() {
+        AlertBottomDialog.Companion.getInstance()
+                .setTitle(getString(R.string.validation_success_title))
+                .setMessage(getString(R.string.mark_dataset_complete))
+                .setPositiveButton(getString(R.string.yes), () -> {
+                    presenter.completeDataSet();
+                    return Unit.INSTANCE;
+                })
+                .setNegativeButton(getString(R.string.no), () -> {
+                    finish();
+                    return Unit.INSTANCE;
+                })
+                .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
+    }
+
+    @Override
+    public void savedAndCompleteMessage() {
+        Toast.makeText(this, R.string.dataset_saved_completed, Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
+
+    @Override
+    public void showErrorsValidationDialog(List<Violation> violations) {
+        configureShapeDrawable();
+        binding.BSLayout.dotsIndicator.setVisibility(violations.size() > 1 ? View.VISIBLE : View.INVISIBLE);
+        initValidationErrorsDialog();
+        binding.BSLayout.setErrorCount(violations.size());
+        binding.BSLayout.title.setText(
+                getResources().getQuantityText(R.plurals.error_message, violations.size())
+        );
+        binding.BSLayout.violationsViewPager.setAdapter(new ValidationResultViolationsAdapter(this, violations));
+        binding.BSLayout.dotsIndicator.setViewPager(binding.BSLayout.violationsViewPager);
+
+        behavior = BottomSheetBehavior.from(binding.BSLayout.bottomSheetLayout);
+        behavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        animateArrowDown();
+                        binding.saveButton.animate()
+                                .translationY(0)
+                                .start();
+                        binding.saveButton.hide();
+                        break;
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        animateArrowUp();
+                        binding.saveButton.show();
+                        binding.saveButton.animate()
+                                .translationY(-ExtensionsKt.getDp(48))
+                                .start();
+                        break;
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                    case BottomSheetBehavior.STATE_HALF_EXPANDED:
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                    case BottomSheetBehavior.STATE_SETTLING:
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                /*UnUsed*/
+            }
+
+            private void animateArrowDown() {
+                binding.BSLayout.collapseExpand.animate()
+                        .scaleY(-1f).setDuration(200)
+                        .start();
+            }
+
+            private void animateArrowUp() {
+                binding.BSLayout.collapseExpand.animate()
+                        .scaleY(1f).setDuration(200)
+                        .start();
+            }
+        });
+    }
+
+    @Override
+    public void showCompleteToast() {
+        Snackbar.make(binding.viewPager, R.string.dataset_completed, BaseTransientBottomBar.LENGTH_SHORT)
+                .show();
+        finish();
+    }
+
+    @Override
+    public void collapseExpandBottom() {
+        if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
+    }
+
+    @Override
+    public void closeBottomSheet() {
+        binding.BSLayout.bottomSheetLayout.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void completeBottomSheet() {
+        closeBottomSheet();
+        presenter.completeDataSet();
+    }
+
+    @Override
+    public boolean isErrorBottomSheetShowing() {
+        return binding.BSLayout.bottomSheetLayout.getVisibility() == View.VISIBLE;
+    }
+
+    private void configureShapeDrawable() {
+        int cornerSize = getResources().getDimensionPixelSize(R.dimen.rounded_16);
+        ShapeAppearanceModel appearanceModel = new ShapeAppearanceModel().toBuilder()
+                .setTopLeftCorner(CornerFamily.ROUNDED, cornerSize)
+                .setTopRightCorner(CornerFamily.ROUNDED, cornerSize)
+                .build();
+
+        int elevation = getResources().getDimensionPixelSize(R.dimen.elevation);
+        MaterialShapeDrawable shapeDrawable = new MaterialShapeDrawable(appearanceModel);
+        int color = ResourcesCompat.getColor(getResources(), R.color.white, null);
+        shapeDrawable.setFillColor(ColorStateList.valueOf(color));
+
+        binding.BSLayout.bottomSheetLayout.setBackground(shapeDrawable);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            binding.BSLayout.bottomSheetLayout.setElevation(elevation);
+        } else {
+            ViewCompat.setElevation(binding.BSLayout.bottomSheetLayout, elevation);
+        }
+    }
+
+    private void initValidationErrorsDialog() {
+        binding.BSLayout.bottomSheetLayout.setTranslationY(ExtensionsKt.getDp(48));
+        binding.BSLayout.bottomSheetLayout.setVisibility(View.VISIBLE);
+        binding.BSLayout.bottomSheetLayout.animate()
+                .setDuration(500)
+                .setInterpolator(new OvershootInterpolator())
+                .translationY(0)
+                .start();
+        binding.saveButton.animate()
+                .translationY(-ExtensionsKt.getDp(48))
+                .start();
+    }
+
+
+
+    public void showMoreOptions(View view) {
+        new AppMenuHelper.Builder()
+                .menu(this, R.menu.dataset_menu)
+                .anchor(view)
+                .onMenuInflated(popupMenu -> {
+                    popupMenu.getMenu().findItem(R.id.reopen).setVisible(presenter.isComplete());
+                    return Unit.INSTANCE;
+                })
+                .onMenuItemClicked(itemId -> {
+                    if (itemId == R.id.showHelp) {
+                        analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
+                        showTutorial(true);
+                    } else if (itemId == R.id.reopen) {
+                        showReopenDialog();
+                    }
+                    return true;
+                })
+                .build()
+                .show();
+    }
+
+    private void showReopenDialog() {
+        AlertBottomDialog.Companion.getInstance()
+                .setTitle(getString(R.string.are_you_sure))
+                .setMessage(getString(R.string.reopen_question))
+                .setPositiveButton(getString(R.string.yes), () -> {
+                    presenter.reopenDataSet();
+                    return Unit.INSTANCE;
+                })
+                .setNegativeButton(getString(R.string.no), () -> Unit.INSTANCE)
+                .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
+    }
+
+    @Override
+    public void displayReopenedMessage(boolean done) {
+        if (done) {
+            Toast.makeText(this, R.string.action_done, Toast.LENGTH_SHORT).show();
+            reopenProcessor.onNext(true);
+        }
+
+    }
+
+    @Override
+    public void showInternalValidationError() {
+        AlertBottomDialog.Companion.getInstance()
+                .setTitle(getString(R.string.saved))
+                .setMessage(getString(R.string.validation_internal_error_datasets))
+                .setPositiveButton(getString(R.string.button_ok), () -> {
+                    presenter.reopenDataSet();
+                    return Unit.INSTANCE;
+                })
+                .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
+    }
+
+    @Override
+    public void saveAndFinish() {
+        Toast.makeText(this, R.string.save, Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
+    public FlowableProcessor<Boolean> observeReopenChanges() {
+        return reopenProcessor;
     }
 }

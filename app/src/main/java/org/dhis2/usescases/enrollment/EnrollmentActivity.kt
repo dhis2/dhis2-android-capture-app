@@ -29,10 +29,10 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.databinding.EnrollmentActivityBinding
+import org.dhis2.uicomponents.map.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
-import org.dhis2.usescases.map.MapSelectorActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.CAMERA_REQUEST
@@ -44,6 +44,7 @@ import org.dhis2.utils.Constants.TEI_UID
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.FileResourcesUtil
 import org.dhis2.utils.customviews.AlertBottomDialog
+import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.recyclers.StickyHeaderItemDecoration
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
@@ -56,6 +57,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     enum class EnrollmentMode { NEW, CHECK }
 
     private var forRelationship: Boolean = false
+
     @Inject
     lateinit var presenter: EnrollmentPresenterImpl
 
@@ -96,6 +98,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*region LIFECYCLE*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         (applicationContext as App).userComponent()!!.plus(
             EnrollmentModule(
                 this,
@@ -105,7 +108,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             )
         ).inject(this)
         forRelationship = intent.getBooleanExtra(FOR_RELATIONSHIP, false)
-        super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.enrollment_activity)
         binding.view = this
 
@@ -376,6 +378,15 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .transform(CircleCrop())
                     .into(binding.teiDataHeader.teiImage)
+                binding.teiDataHeader.teiImage.setOnClickListener {
+                    ImageDetailBottomDialog(
+                        null,
+                        File(profileImage)
+                    ).show(
+                        supportFragmentManager,
+                        ImageDetailBottomDialog.TAG
+                    )
+                }
             }
         } else {
             binding.title.visibility = View.VISIBLE
@@ -418,11 +429,16 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         val myLayoutManager: LinearLayoutManager =
             binding.fieldRecycler.layoutManager as LinearLayoutManager
 
-        adapter.swap(fields) {
-            if (!adapter.isSectionAlreadyOpen) {
-                myLayoutManager.scrollToPositionWithOffset(adapter.openSectionPos, 0)
-            }
+        val myFirstPositionIndex = myLayoutManager.findFirstVisibleItemPosition()
+        val myFirstPositionView = myLayoutManager.findViewByPosition(myFirstPositionIndex)
+
+        var offset = 0
+        myFirstPositionView?.let {
+            offset = it.top
         }
+
+        adapter.swap(fields) { }
+        myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
 
     /*endregion*/

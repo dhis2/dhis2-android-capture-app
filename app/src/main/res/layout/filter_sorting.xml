@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="currentFilter"
+            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.Filters&gt;" />
+
+        <variable
+            name="filterType"
+            type="org.dhis2.utils.filters.Filters" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/orgUnitSearchLayout"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="?colorPrimary"
+            android:elevation="1dp"
+            android:visibility="@{currentFilter == filterType ? View.VISIBLE : View.GONE}"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_search"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/sortingTreeButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="2dp"
+                    app:srcCompat="@drawable/ic_search" />
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <EditText
+                        android:id="@+id/sortingSearchEditText"
+                        android:background="@android:color/transparent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:hint="@string/search_optionset"
+                        android:imeOptions="actionDone"
+                        android:maxLines="1"
+                        android:paddingTop="8dp"
+                        android:paddingStart="5dp"
+                        android:paddingEnd="5dp"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        tools:text="Org" />
+
+                    <TextView
+                        android:id="@+id/sortingtHint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:alpha="0.3"
+                        android:paddingTop="8dp"
+                        android:paddingStart="5dp"
+                        android:paddingEnd="5dp"
+                        tools:text="OrgUnit Test"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toStartOf="parent" />
+                </RelativeLayout>
+
+                <ImageView
+                    android:id="@+id/addButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/ic_add_circle_primary" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/sortingTreeButton"
+                style="@style/ActionIconNoPadding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_add_item" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?colorPrimaryDark"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:visibility="@{currentFilter == filterType ? View.VISIBLE : View.GONE}"
+            app:layout_constraintTop_toBottomOf="@id/orgUnitSearchLayout">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/sortingRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:listitem="@layout/item_selected_ou_filter" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
