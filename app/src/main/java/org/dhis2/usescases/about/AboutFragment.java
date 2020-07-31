@@ -54,9 +54,6 @@ public class AboutFragment extends FragmentGlobalAbstract implements AboutContra
         setAppVersion();
         setSDKVersion();
         setPrivacyPolicy();
-        aboutBinding.aboutParent.setOnClickListener(v -> {
-
-        });
         return aboutBinding.getRoot();
     }
 
