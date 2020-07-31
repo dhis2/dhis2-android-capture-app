@@ -87,7 +87,7 @@ public class AgeHolder extends FormViewHolder {
             ageView.setInitialValue(ageViewModel.value());
         }
 
-        ageView.setAgeChangedListener(ageDate -> date = ageDate != null ? DateUtils.databaseDateFormat().format(ageDate) : "");
+        ageView.setAgeChangedListener(ageDate -> date = ageDate != null ? DateUtils.oldUiDateFormat().format(ageDate) : "");
 
         new TableFieldDialog(
                 context,
