@@ -2,7 +2,7 @@
 
 <!--DHIS2-SECTION-ID:sms_report_sending-->
 
-DHIS2 supports accepting data via [SMS](https://docs.dhis2.org/master/en/dhis2_user_manual_en/mobile.html), however, this might be cumbersome as the user in the field need to compose SMS in a cryptic way. The DHIS2 Android App can be used in a transparent to send the information via SMS as long as the gateway is properly configured. This section explains the different options available and how to achieve that.
+DHIS2 supports accepting data via [SMS](https://docs.dhis2.org/master/en/dhis2_user_manual_en/mobile.html), however, the SMS needs to be composed in a cryptic way to protect the information. The DHIS2 Android App acts as a transparent layer to send the information via SMS where the user does not have to worry about writing the SMS. To send SMSs with the Android App the SMS gateway need to be properly configured. This section explains the different options available and how to achieve that.
 
 ## Sending SMS
 
@@ -28,9 +28,9 @@ You’ll need to download and install the DHIS2 Android SMS Gateway app on the m
 
 Once this is set up and running, you then enter the phone number of this gateway device in the configuration page of any other mobile device using the DHIS2 Capture App. Then, when SMS are sent from these reporting devices, they will be received on the gateway device and automatically forwarded to the DHIS2 server where they will be processed.
 
-Using this gateway device is perfect when testing the SMS functionality out. It would be fine when piloting projects that require SMS reporting. As long as the device is plugged into a power supply and has a constant internet connection it works well for small scale projects.
+**Using this gateway device is perfect when testing the SMS functionality.** It would be fine when piloting projects that require SMS reporting. As long as the device is plugged into a power supply and has a constant internet connection it works well for small scale projects.
 
-However, when considering scaling a project up to a larger scale it would be necessary to investigate one of the more permanent and reliable solutions for gateways below.
+However, when considering moving a project to production it would be necessary to investigate one of the more permanent and reliable solutions for gateways below.
 
 ### Sending SMS using an Android Device Gateway
 
