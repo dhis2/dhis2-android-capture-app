@@ -13,7 +13,6 @@ Any issues around using a particular feature with Android are highlighted with a
 |![](resources/images/../../admin/icon-na.png)|Not applicable|
 |![](resources/images/../../admin/icon-wip.png)|Work in progress. Feature not completely implemented yet or with unexpected behavior already reported |
 
-
 ## Program rule Variable source types supported
 
 <!-- DHIS2-SECTION-ID:programrules_variables -->
@@ -195,6 +194,8 @@ DHIS2 web version evaluate numbers in a more flexible way casting values from in
 | true | Assign value to DE: d2:daysBetween('2020-05-13', '2020-05-17') / 3 | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-negative.png) | The user would expect the division to be calculated as 4/3 with a result of 1.3333. However, Android does not cast 4 to a float (4.0 as the web version does) so the result in Android is a pure 1 as the result of the integer division 4/3 |
 | true | Assign value to DE: d2:daysBetween('2020-05-13', '2020-05-17') / 3.0 | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | Division results in 1.33333 in both web and Android | 
 
+## Changes in Program Rules (from 2.2 version )
+
 ### Evaluation of 'd2:hasValue'
 
 #### Description
@@ -202,11 +203,12 @@ DHIS2 web version evaluate numbers in a more flexible way casting values from in
 d2:hasValue now works with both single quotes or full variable expression (d2:hasValue('variable_name') and d2:hasValue(#{variable_name}))
 
 #### How to identify via API?
-Get programRules where either the condition or the program rule action uses the d2:hasValue function. 
 
-https://example.org/api/programRules?fields=program[name],name,programRuleActions[data],condition&filter=programRuleActions.data:like:hasValue&filter=condition:like:hasValue&rootJunction=OR
+Get programRules where either the condition or the program rule action uses the d2:hasValue function.
 
-<programRule name="PR01 - Check variable with hasValue(#{variable})">
+>https://example.org/api/programRules?fields=program[name],name,programRuleActions[data],condition&filter=programRuleActions.data:like:hasValue&filter=condition:like:hasValue&rootJunction=OR
+
+`<programRule name="PR01 - Check variable with hasValue(#{variable})">
 <condition>d2:hasValue(#{Age in years})</condition>
 <program name="JB_Testing_2.2"/>
 <programRuleActions>
@@ -219,40 +221,41 @@ https://example.org/api/programRules?fields=program[name],name,programRuleAction
 <programRuleActions>
 <programRuleAction/>
 </programRuleActions>
-</programRule>
+</programRule>`
 
 #### How to fix it?
+
 The example above shows how different ways of using the hasValue function will have the same effect as from version 2.2. There are no mandatory changes but have in mind that while writing new program rules being consistent might help avoiding problems.
 
 ### Evaluation of a variable
 
 #### Description
 
-!#{varible_name} will only work with boolean type variables (BOOLEAN and TRUE_ONLY). 
+!#{varible_name} will only work with boolean type variables (BOOLEAN and TRUE_ONLY).
 
 #### How to identify via API?
 
 Get programRulesVariables with dataElements of the type NOT BOOLEAN or TRUE_ONLY
 
-https://example.org/api/programRuleVariables?fields=name&filter=dataElement.valueType:!in:[TRUE_ONLY,BOOLEAN]&paging=False
+>https://example.org/api/programRuleVariables?fields=name&filter=dataElement.valueType:!in:[TRUE_ONLY,BOOLEAN]&paging=False
 
 Get all programRule.conditions
-https://example.org/api/programRules?fields=displayName,condition&paging=False
+>https://example.org/api/programRules?fields=displayName,condition&paging=False
 
 Check manually (or programmatically via a script) if in the list of programRule.conditions (obtained via the second API call) any of the program rules variables (obtained via the first API call) is being used. 
 
 For example, from the first list we get:
 
-<programRuleVariable name="AdditionalMedication"/>
+`<programRuleVariable name="AdditionalMedication"/>
 <programRuleVariable name="age"/>
 <programRuleVariable name="Age in years"/>
 <programRuleVariable name="AgeYears"/>
 <programRuleVariable name="allergies"/>
-<programRuleVariable name="apgarcomment"/>
+<programRuleVariable name="apgarcomment"/>`
 
 And we can compare with the second list:
 
-<programRule>
+`<programRule>
 <condition>!#{Pregant}</condition>
 <displayName>PR03- !#{varible_name} - BOOLEAN</displayName>
 </programRule>
@@ -263,7 +266,7 @@ And we can compare with the second list:
 <programRule>
 <condition>#{PregnancyStatus} != 'YES'</condition>
 <displayName>Pregnancy status : false</displayName>
-</programRule>
+</programRule>`
 
 This shows that a NON BOOLEAN variable is being used wrongly.
 
@@ -272,9 +275,10 @@ This shows that a NON BOOLEAN variable is being used wrongly.
 Make sure that you are evaluating  BOOLEAN or TRUE_ONLY variables in your conditions. In case the program rule variable is not of that type update your program rule condition with d2:hasValue(#{variable_name}) or d2:hasValue(‘variable_name’)
 
 In the example above the condition should change from:
-<condition>!#{Age in years}</condition>
+
+`<condition>!#{Age in years}</condition>
 To:
-<condition>d2:hasValue(‘Age in years’)</condition>
+<condition>d2:hasValue(‘Age in years’)</condition>`
 
 ### Evaluation of texts
 
@@ -286,11 +290,11 @@ In program rule actions (ASSIGN, DISPLAY TEXT, DISPLAY KEY/VALUE PAIR) If the Ex
 
 Get the Program Rules which actions are of type text, with something on the field data and verify their data content to find strings without quotes.
 
-https://example.org/api/programRules?fields=program[name],name,programRuleActions[programRuleActionType,content,data]&filter=programRuleActions.programRuleActionType:in:[ASSIGN,DISPLAYTEXT,DISPLAYKEYVALUEPAIR,SHOWWARNING,SHOWERROR]&filter=programRuleActions.data:!null&paging=false
+>https://example.org/api/programRules?fields=program[name],name,programRuleActions[programRuleActionType,content,data]&filter=programRuleActions.programRuleActionType:in:[ASSIGN,DISPLAYTEXT,DISPLAYKEYVALUEPAIR,SHOWWARNING,SHOWERROR]&filter=programRuleActions.data:!null&paging=false
 
 For example we can detect here an error of a text field without quotes in the first Program Rule Action while the second one is correct.
 
-<programRule name="PR04- !#{varible_name} - BOOLEAN - Assign text without quotes">
+`<programRule name="PR04- !#{varible_name} - BOOLEAN - Assign text without quotes">
 <program name="JB_Testing_2.2"/>
 <programRuleActions>
 <programRuleAction>
@@ -299,9 +303,9 @@ For example we can detect here an error of a text field without quotes in the fi
 <content>PR04 text with quotes is: </content>
 </programRuleAction>
 </programRuleActions>
-</programRule>
+</programRule>`
 
-<programRule name="PR04- !#{varible_name} - BOOLEAN - Assign text with quotes">
+`<programRule name="PR04- !#{varible_name} - BOOLEAN - Assign text with quotes">
 <program name="JB_Testing_2.2"/>
 <programRuleActions>
 <programRuleAction>
@@ -310,7 +314,7 @@ For example we can detect here an error of a text field without quotes in the fi
 <content>PR04 text with quotes is: </content>
 </programRuleAction>
 </programRuleActions>
-</programRule>
+</programRule>`
 
 #### How to fix it?
 
@@ -327,11 +331,12 @@ In program rule actions (ASSIGN, DISPLAY TEXT, DISPLAY KEY/VALUE PAIR) If the Ex
 Get the Program Rules which actions are of type text, with any content on the field data and verify their data content to check if in case of two or more strings (or other objects) are being joined the d2:concatenate function is used
 
 Get the Program Rules which actions are of type text and verify their data content to find strings without quotes.
-http://localhost:8034/api/programRules?fields=program[name],name,programRuleActions[programRuleActionType,content,data]&filter=programRuleActions.programRuleActionType:in:[ASSIGN,DISPLAYTEXT,DISPLAYKEYVALUEPAIR,SHOWWARNING,SHOWERROR]&filter=programRuleActions.data:!null&paging=false
+
+>http://localhost:8034/api/programRules?fields=program[name],name,programRuleActions[programRuleActionType,content,data]&filter=programRuleActions.programRuleActionType:in:[ASSIGN,DISPLAYTEXT,DISPLAYKEYVALUEPAIR,SHOWWARNING,SHOWERROR]&filter=programRuleActions.data:!null&paging=false
 
 For example we can detect here an error of two strings in an action without the use of d2:concatenate.
 
-<programRule name="PR08- Assign text and variable without concatenate">
+`<programRule name="PR08- Assign text and variable without concatenate">
 <program name="JB_Testing_2.2"/>
 <programRuleActions>
 <programRuleAction>
@@ -340,13 +345,14 @@ For example we can detect here an error of two strings in an action without the 
 <content>PR05 text without concat is: </content>
 </programRuleAction>
 </programRuleActions>
-</programRule>
+</programRule>`
 
 #### How to fix it?
 
 Scan the generated list (via the suggested API calls) to find data components of the Program Rule Action where two or more objects are being concatenated and update them to use the d2:concatenate function.
 
 In the example above the data should change from:
-<data>'Age is 10 and modulus' 'another string'</data>
+
+`<data>'Age is 10 and modulus' 'another string'</data>
 To:
-<data>d2:concatenate('Age is 10 and modulus','another string')</data>
+<data>d2:concatenate('Age is 10 and modulus','another string')</data>`

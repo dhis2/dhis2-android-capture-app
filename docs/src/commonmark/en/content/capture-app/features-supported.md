@@ -230,6 +230,8 @@ This means that any existing attributes in the first TEI should have pass to the
 The ‘breaking the glass’ feature is not yet supported in DHIS2 Android Capture App. If the program is configured as ‘Protected’, the default behavior for Android will be the same as if the program is configured as ‘closed.’ This means that an Android user will not be able to read or edit enrollments of a TEI outside of their capture org units. TEIs registered in a Search OU will be returned by the TE Type search but if the program is closed or protected the user will not be allowed to see or create a new enrollment.
 If Android users must be able to access TEI outside of their data capture org unit, the program should be configured with access level ‘Open.’
 
+![](resources/images/image137.jpg){ width=25%}
+
 ## Supported features Overview
 
 <!-- DHIS2-SECTION-ID:programs_supported -->
