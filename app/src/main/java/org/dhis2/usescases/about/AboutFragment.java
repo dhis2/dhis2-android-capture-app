@@ -1,6 +1,8 @@
 package org.dhis2.usescases.about;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.databinding.FragmentAboutBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.utils.extension.ActivityExtensionKt;
 import org.hisp.dhis.android.core.user.UserCredentials;
 
 import javax.inject.Inject;
@@ -50,11 +53,17 @@ public class AboutFragment extends FragmentGlobalAbstract implements AboutContra
         aboutBinding.aboutContact.setMovementMethod(LinkMovementMethod.getInstance());
         setAppVersion();
         setSDKVersion();
-
+        setPrivacyPolicy();
         aboutBinding.aboutParent.setOnClickListener(v -> {
 
         });
         return aboutBinding.getRoot();
+    }
+
+    private void setPrivacyPolicy() {
+        aboutBinding.privacyPolicy.setOnClickListener(v -> {
+            navigateToPrivacyPolicy();
+        });
     }
 
 
@@ -110,5 +119,14 @@ public class AboutFragment extends FragmentGlobalAbstract implements AboutContra
     @Override
     public String checkUrl() {
         return aboutBinding.aboutConnected.getText().toString();
+    }
+
+    @Override
+    public void navigateToPrivacyPolicy() {
+        Activity currentActivity = getActivity();
+        if (currentActivity != null){
+            Intent intent = new Intent(currentActivity, PolicyView.class);
+            startActivity(intent);
+        }
     }
 }
