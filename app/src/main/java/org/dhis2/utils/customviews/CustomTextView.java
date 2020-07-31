@@ -102,7 +102,6 @@ public class CustomTextView extends FieldLayout {
             if (hasFocus) {
                 activate();
             } else if (focusListener != null && validate()) {
-                dummy.requestFocus();
                 focusListener.onFocusChange(v, hasFocus);
             }
         });

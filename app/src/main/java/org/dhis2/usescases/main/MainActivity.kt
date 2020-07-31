@@ -155,16 +155,12 @@ class MainActivity :
         super.onPause()
     }
 
-    /*User info methods*/
-
     override fun renderUsername(username: String) {
         binding.userName = username
         (binding.navView.getHeaderView(0).findViewById<View>(R.id.user_info) as TextView)
             .text = username
         binding.executePendingBindings()
     }
-
-    /*End of user info methods*/
 
     override fun openDrawer(gravity: Int) {
         if (!binding.mainDrawerLayout.isDrawerOpen(gravity)) {

@@ -37,9 +37,9 @@ public class DataSetTableContract {
 
         void showCompleteToast();
 
-        void closeExpandBottom();
+        void collapseExpandBottom();
 
-        void cancelBottomSheet();
+        void closeBottomSheet();
 
         void completeBottomSheet();
 
@@ -48,6 +48,8 @@ public class DataSetTableContract {
         void showInternalValidationError();
 
         void saveAndFinish();
+
+        boolean isErrorBottomSheetShowing();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -70,9 +72,9 @@ public class DataSetTableContract {
 
         void completeDataSet();
 
-        void closeExpandBottomSheet();
+        void collapseExpandBottomSheet();
 
-        void onCancelBottomSheet();
+        void closeBottomSheet();
 
         void onCompleteBottomSheet();
 

@@ -143,6 +143,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         eventMapManager = new EventMapManager();
         eventMapManager.setOnMapClickListener(this);
         eventMapManager.init(binding.mapView);
+        presenter.init();
     }
 
     @Override
@@ -161,7 +162,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             animations.initMapLoading(binding.mapCarousel);
             binding.toolbarProgress.show();
         }
-        presenter.init();
+        FilterManager.getInstance().publishData();
         if (eventMapManager != null) {
             eventMapManager.onResume();
         }
@@ -172,7 +173,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     protected void onPause() {
-        presenter.onDettach();
         if (eventMapManager != null) {
             eventMapManager.onPause();
         }
@@ -182,6 +182,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        presenter.onDettach();
         if (eventMapManager != null) {
             eventMapManager.onDestroy();
         }
