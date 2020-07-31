@@ -84,7 +84,6 @@
     <string name="re_open">ເປີດຄືນໃໝ່</string>
     <!-- State -->
     <string name="state_synced">ໃຫ້ລະບົບທໍາງານຮ່ວມກັນ</string>
-    <string name="state_to_post">ເພື່ອລົງ</string>
     <string name="state_to_update">ເພື່ອປັບປຸງ</string>
     <string name="state_to_delete">ເພື່ອລືບອອກ</string>
     <string name="state_error">ເກີດການຜິດພາດ</string>

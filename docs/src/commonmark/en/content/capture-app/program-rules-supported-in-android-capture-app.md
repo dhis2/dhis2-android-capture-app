@@ -1,5 +1,7 @@
 # Program rules supported in Android Capture App
 
+<!-- DHIS2-SECTION-ID:programrules -->
+
 The following is a comprehensive list of all Program rule components (variable types and actions) available in DHIS 2, and notes on whether or not these have been implemented in the Android Capture app.
 
 Any issues around using a particular feature with Android are highlighted with an exclamation mark \!.
@@ -11,8 +13,10 @@ Any issues around using a particular feature with Android are highlighted with a
 |![](resources/images/../../admin/icon-na.png)|Not applicable|
 |![](resources/images/../../admin/icon-wip.png)|Work in progress. Feature not completely implemented yet or with unexpected behavior already reported |
 
-
 ## Program rule Variable source types supported
+
+<!-- DHIS2-SECTION-ID:programrules_variables -->
+
 | Variable type| Description of variable type| Program with registration| Program without registration| Notes on implementation|
 |-|---|:-:|:-:|---|
 |Data element from the newest event for a program stage|This source type works the same way as "Data element from the newest event in the current program", except that it only evaluates values from a specific program stage.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-na.png)||
@@ -27,17 +31,19 @@ Any issues around using a particular feature with Android are highlighted with a
 
 ## Program rule Actions supported (Data element in current event)
 
+<!-- DHIS2-SECTION-ID:programrules_actions -->
+
 | Action| Description of action| Program with registration| Program without registration| Notes on implementation|
 |-|---|:-:|:-:|---|
 |Hide Field|Hides an individual data element if the rule is true.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|! If you change the value after the field is hidden, it will revert the action depending on the value type rule engine default value. We recommend its use combined with the hasvalue function.||
 |Hide Section|Hides a whole section and its data elements if the rule is true.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
-|Hide Option|Hide a single option for an option set in a given data element/tracked entity attribute. When combined with <b>show option group</b> the <b>hide option</b> takes precedence|![](resources/images/../../admin/icon-wip.png)|![](resources/images/../../admin/icon-wip.png)||
-|Hide Option Group|Hide all options in a given option group and data element/tracked entity attribute. When combined with <b>show option group</b> the <b>hide option</b> takes precedence |![](resources/images/../../admin/icon-wip.png)|![](resources/images/../../admin/icon-wip.png)||
-|Show option group|Used to show only options from a given option group in a given data element/tracked entity attribute. To show an option group implicitly hides all options that is not part of the group(s) that is shown.|![](resources/images/../../admin/icon-wip.png)|![](resources/images/../../admin/icon-wip.png)||
-|Assign Value|Assigns a value to a specified data element or attribute if the rule is true.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
+|Hide Option|Hide a single option for an option set in a given data element/tracked entity attribute. When combined with <b>show option group</b> the <b>hide option</b> takes precedence|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
+|Hide Option Group|Hide all options in a given option group and data element/tracked entity attribute. When combined with <b>show option group</b> the <b>hide option</b> takes precedence |![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
+|Show option group|Used to show only options from a given option group in a given data element/tracked entity attribute. To show an option group implicitly hides all options that is not part of the group(s) that is shown.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
+|Assign Value|Assigns a value to a specified data element or attribute if the rule is true.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|To assing text, it must be in single quotes. For example: '2+2' will show the text 2+2 and 2+2, without the single quotes will show 4. |
 |Show Warning|Shows pop-up warning to the user if rule is true; does not prevent the user from continuing.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
 |Warning on Complete|Shows a pop-up warning to the user if, at the point &lsquo;complete&rsquo; is clicked, a rule is true; this does not prevent the user from continuing.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
-|Show Error|Shows a pop-up error message to the user as soon as a rule is true, and prevents user from continuing until rule is no longer true.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|The field will be cleared out so that the user is unable to store a value unless it meets the criteria of the program rule.||
+|Show Error|Shows a pop-up error message to the user as soon as a rule is true, and prevents user from continuing until rule is no longer true.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|The value is not saved, but the text is not cleared so that the user can fix it easily.||
 |Error on Complete|Shows a pop-up warning to the user if, when "complete"; is clicked, a rule is true, and prevents user from continuing until rule is no longer true.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
 |Make Field Mandatory|Sets a data element as "mandatory"; if rule is true.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
 |Display Text (Event Programs)|Used to display information that is not an error or a warning, for example feedback.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)| Independently from the source variable type, text will be displayed in the form as the last element of the last section. Text will be displayed as the messages in the indicators tab.||
@@ -50,16 +56,18 @@ Any issues around using a particular feature with Android are highlighted with a
 
 ## Program rule Actions supported (Other variables)
 
+<!-- DHIS2-SECTION-ID:programrules_actions_other -->
+
 | Action| Description of Action| Data Element from the Newest Event in the Current Program (with registration)|Data Element from the Newest Event in the Current Program (without registration)| Data Element from Previous Event (with registration) |Data Element from Previous Event (without registration)| Data Element from the Newest Event for a Program Stage (with registration)|Tracked Entity Atribute (with registration) |Notes on implementation|
 |-|---|:-:|:-:|:-:|:-:|:-:|:-:|---|
 |Hide Field|Hides an individual data element if the rule is true.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
 |Hide Section|Hides a whole section and its data elements if the rule is true.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
 |Hide Option|Hide a single option for an option set in a given data element/tracked entity attribute. When combined with <b>show option group</b> the <b>hide option</b> takes precedence.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
 |Hide Option Group|Hide all options in a given option group and data element/tracked entity attribute.When combined with show option group the hide option takes precedence.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
-|Assign Value|Assigns a value to a specified data element or attribute if the rule is true.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
+|Assign Value|Assigns a value to a specified data element or attribute if the rule is true.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|To assing text, it must be in single quotes. For example: '2+2' will show the text 2+2 and 2+2, without the single quotes will show 4.|
 |Show Warning|Shows pop-up warning to the user if rule is true; does not prevent the user from continuing.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
 |Warning on Complete|Shows a pop-up warning to the user if, at the point "complete" is clicked, a rule is true; this does not prevent the user from continuing.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-na.png)||
-|Show Error|Shows a pop-up error message to the user as soon as a rule is true, and prevents user from continuing until rule is no longer true.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|The rule will let the user to finish the enrollment but will prevent from completing the events until rule is no longer true. The field will be cleared out so that the user is unable to store a value unless it meets the criteria of the program rule.||
+|Show Error|Shows a pop-up error message to the user as soon as a rule is true, and prevents user from continuing until rule is no longer true.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|The rule will let the user to finish the enrollment but will prevent from completing the events until rule is no longer true. The value is not saved, but the text is not cleared so that the user can fix it easily.||
 |Error on Complete|Shows a pop-up warning to the user if, at the point "complete" is clicked, a rule is true; this does not prevent the user from continuing.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-na.png)||
 |Make Field Mandatory|Sets a data element as "mandatory" if rule is true.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
 |Display Text (Event Programs)|Used to display information that is not an error or a warning, for example feedback.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|| Independently from the source variable type, text will be displayed in the form as the last element of the last section. Text will be displayed as the messages in the indicators tab.||
@@ -71,6 +79,8 @@ Any issues around using a particular feature with Android are highlighted with a
 |Schedule Message|Schedule Message will schedule notification at date provided by Expression in the data field.|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|This feature is executed on the server side.||
 
 ## Functions to use in program rule expressions
+
+<!-- DHIS2-SECTION-ID:programrules_functions -->
 
 | Function   | Description of function | Status        | Notes on implementation |
 | ---- | ----------------------------- | :----: | -- |
@@ -101,7 +111,7 @@ Any issues around using a particular feature with Android are highlighted with a
 | d2:hasUserRole\** |Returns true if the current user has this role otherwise false.| ![](resources/images/../../admin/icon-complete.png) | |
 | d2:zScoreWFA\*** |Function calculates z-score based on data provided by WHO weight-for-age indicator. Its value varies between -3.5 to 3.5 depending upon the value of weight.| ![](resources/images/../../admin/icon-complete.png) | |
 
-> Notes:
+> **Note**
 >
 > \* Available in DHIS 2 v2.30
 > 
@@ -110,6 +120,8 @@ Any issues around using a particular feature with Android are highlighted with a
 > \*** Available in DHIS 2 v2.32
 
 ## Standard variables to use in program rule expressions
+
+<!-- DHIS2-SECTION-ID:programrules_standard_variables -->
 
 Available in DHIS2 v2.30
 
@@ -129,15 +141,19 @@ Available in DHIS2 v2.30
 | V{program_stage_id}   | Contains the ID of the current program stage that triggered the rules. This can be used to run rules in specific program stages, or avoid execution in certain stages. When executing the rules in the context of a TEI registration form the variable will be empty.   | ![](resources/images/../../admin/icon-complete.png)      | |
 | V{program_stage_name} | Contains the name of the current program stage that triggered the rules. This can be used to run rules in specific program stages, or avoid execution in certain stages. When executing the rules in the context of a TEI registration form the variable will be empty. | ![](resources/images/../../admin/icon-complete.png)      | |
 
-> Notes:
+> **Notes**
 > 
 > \* Only applies to tracker
 
 ## Differences between the Program Rules in the web and the Android version
 
+<!-- DHIS2-SECTION-ID:programrules_differences -->
+
 As the web and the Android application are currently using a different *program rule engine* there might be programs rule that work in one system and not in the other. In general terms it can be said that the Android *program rule engine* is more strict and so, some Program Rules that work in the web version of DHIS2 will fail in Android. This subsection describes the main differences and how to adapt the rules in order to have them working in both systems.
 
 ### Evaluation of type Boolean
+
+<!-- DHIS2-SECTION-ID:programrules_differences_boolean -->
 
 DHIS2 web version considers the type boolean as 0 or 1 (which can be evaluated to true or false), however Android evaluates them only as true or false. While this makes possible the addition of booleans in web, it will fail in Android; in order to fix this an additional *program rule variable* is needed to transform the boolean into an number that can be operated. Check the table below for examples and possible solutions.
 
@@ -158,7 +174,6 @@ For the examples belows consider the following:
 	* PRV (Program Rule Variable)
 	* PRA (Program Rule Action)
 
-
 | Program Rule Condition(s) | Program Rule Action(s) | Web version | Android version | Comment |
 | ----------- | ----------- | :---: | :---: | ----- |
 | d2:hasValue('yn_prv1') \|\| d2:hasValue('yn_prv2') | Assign fixed value to DE | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | |
@@ -170,12 +185,174 @@ For the examples belows consider the following:
 
 ### Evaluation of numbers
 
-DHIS2 web version evaluate numbers in a more flexible way casting values from integer to floats if required for a division, however, Android take numbers as such (without a casting) which my end up giving unexpected results. Check the table below for examples and possible solutions.
+<!-- DHIS2-SECTION-ID:programrules_differences_numbers -->
 
+DHIS2 web version evaluate numbers in a more flexible way casting values from integer to floats if required for a division, however, Android take numbers as such (without a casting) which my end up giving unexpected results. Check the table below for examples and possible solutions.
 
 | Program Rule Condition(s) | Program Rule Action(s) | Web version | Android version | Comment |
 | ----------- | ----------- | :---: | :---: | ----- |
 | true | Assign value to DE: d2:daysBetween('2020-05-13', '2020-05-17') / 3 | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-negative.png) | The user would expect the division to be calculated as 4/3 with a result of 1.3333. However, Android does not cast 4 to a float (4.0 as the web version does) so the result in Android is a pure 1 as the result of the integer division 4/3 |
 | true | Assign value to DE: d2:daysBetween('2020-05-13', '2020-05-17') / 3.0 | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | Division results in 1.33333 in both web and Android | 
 
----
+## Changes in Program Rules (from 2.2 version )
+
+### Evaluation of 'd2:hasValue'
+
+#### Description
+
+d2:hasValue now works with both single quotes or full variable expression (d2:hasValue('variable_name') and d2:hasValue(#{variable_name}))
+
+#### How to identify via API?
+
+Get programRules where either the condition or the program rule action uses the d2:hasValue function.
+
+>https://example.org/api/programRules?fields=program[name],name,programRuleActions[data],condition&filter=programRuleActions.data:like:hasValue&filter=condition:like:hasValue&rootJunction=OR
+
+`<programRule name="PR01 - Check variable with hasValue(#{variable})">
+<condition>d2:hasValue(#{Age in years})</condition>
+<program name="JB_Testing_2.2"/>
+<programRuleActions>
+<programRuleAction/>
+</programRuleActions>
+</programRule>
+<programRule name="PR01 - Check variable with hasValue('variable')">
+<condition>d2:hasValue('Age in years')</condition>
+<program name="JB_Testing_2.2"/>
+<programRuleActions>
+<programRuleAction/>
+</programRuleActions>
+</programRule>`
+
+#### How to fix it?
+
+The example above shows how different ways of using the hasValue function will have the same effect as from version 2.2. There are no mandatory changes but have in mind that while writing new program rules being consistent might help avoiding problems.
+
+### Evaluation of a variable
+
+#### Description
+
+!#{varible_name} will only work with boolean type variables (BOOLEAN and TRUE_ONLY).
+
+#### How to identify via API?
+
+Get programRulesVariables with dataElements of the type NOT BOOLEAN or TRUE_ONLY
+
+>https://example.org/api/programRuleVariables?fields=name&filter=dataElement.valueType:!in:[TRUE_ONLY,BOOLEAN]&paging=False
+
+Get all programRule.conditions
+>https://example.org/api/programRules?fields=displayName,condition&paging=False
+
+Check manually (or programmatically via a script) if in the list of programRule.conditions (obtained via the second API call) any of the program rules variables (obtained via the first API call) is being used. 
+
+For example, from the first list we get:
+
+`<programRuleVariable name="AdditionalMedication"/>
+<programRuleVariable name="age"/>
+<programRuleVariable name="Age in years"/>
+<programRuleVariable name="AgeYears"/>
+<programRuleVariable name="allergies"/>
+<programRuleVariable name="apgarcomment"/>`
+
+And we can compare with the second list:
+
+`<programRule>
+<condition>!#{Pregant}</condition>
+<displayName>PR03- !#{varible_name} - BOOLEAN</displayName>
+</programRule>
+<programRule>
+<condition>!#{Age in years}</condition>
+<displayName>PR03- !#{varible_name} - NOT BOOLEAN</displayName>
+</programRule>
+<programRule>
+<condition>#{PregnancyStatus} != 'YES'</condition>
+<displayName>Pregnancy status : false</displayName>
+</programRule>`
+
+This shows that a NON BOOLEAN variable is being used wrongly.
+
+#### How to fix it?
+
+Make sure that you are evaluating  BOOLEAN or TRUE_ONLY variables in your conditions. In case the program rule variable is not of that type update your program rule condition with d2:hasValue(#{variable_name}) or d2:hasValue(‘variable_name’)
+
+In the example above the condition should change from:
+
+`<condition>!#{Age in years}</condition>
+To:
+<condition>d2:hasValue(‘Age in years’)</condition>`
+
+### Evaluation of texts
+
+#### Description
+
+In program rule actions (ASSIGN, DISPLAY TEXT, DISPLAY KEY/VALUE PAIR) If the Expression to evaluate and assign/display is a text, it has to be in single quotes.
+
+#### How to identify via API?
+
+Get the Program Rules which actions are of type text, with something on the field data and verify their data content to find strings without quotes.
+
+>https://example.org/api/programRules?fields=program[name],name,programRuleActions[programRuleActionType,content,data]&filter=programRuleActions.programRuleActionType:in:[ASSIGN,DISPLAYTEXT,DISPLAYKEYVALUEPAIR,SHOWWARNING,SHOWERROR]&filter=programRuleActions.data:!null&paging=false
+
+For example we can detect here an error of a text field without quotes in the first Program Rule Action while the second one is correct.
+
+`<programRule name="PR04- !#{varible_name} - BOOLEAN - Assign text without quotes">
+<program name="JB_Testing_2.2"/>
+<programRuleActions>
+<programRuleAction>
+<programRuleActionType>SHOWWARNING</programRuleActionType>
+<data>embarazada</data>
+<content>PR04 text with quotes is: </content>
+</programRuleAction>
+</programRuleActions>
+</programRule>`
+
+`<programRule name="PR04- !#{varible_name} - BOOLEAN - Assign text with quotes">
+<program name="JB_Testing_2.2"/>
+<programRuleActions>
+<programRuleAction>
+<programRuleActionType>SHOWWARNING</programRuleActionType>
+<data>'embarazada'</data>
+<content>PR04 text with quotes is: </content>
+</programRuleAction>
+</programRuleActions>
+</programRule>`
+
+#### How to fix it?
+
+Scan the generated list (via the suggested API calls) to find data components of the Program Rule Action where text is not quoted, then go to each of the identified Program Rules and update them.
+
+### Concatenation of string and objects
+
+#### Description
+
+In program rule actions (ASSIGN, DISPLAY TEXT, DISPLAY KEY/VALUE PAIR) If the Expression to evaluate and assign/display is a text, it has to be in single quotes (same as previous change) but, on top of that, if it requires to concatenate two strings or a combination of functions it is mandatory to use the d2:concatenate function.
+
+#### How to identify via API?
+
+Get the Program Rules which actions are of type text, with any content on the field data and verify their data content to check if in case of two or more strings (or other objects) are being joined the d2:concatenate function is used
+
+Get the Program Rules which actions are of type text and verify their data content to find strings without quotes.
+
+>http://localhost:8034/api/programRules?fields=program[name],name,programRuleActions[programRuleActionType,content,data]&filter=programRuleActions.programRuleActionType:in:[ASSIGN,DISPLAYTEXT,DISPLAYKEYVALUEPAIR,SHOWWARNING,SHOWERROR]&filter=programRuleActions.data:!null&paging=false
+
+For example we can detect here an error of two strings in an action without the use of d2:concatenate.
+
+`<programRule name="PR08- Assign text and variable without concatenate">
+<program name="JB_Testing_2.2"/>
+<programRuleActions>
+<programRuleAction>
+<programRuleActionType>SHOWWARNING</programRuleActionType>
+<data>'Age is 10 and modulus' 'another string'</data>
+<content>PR05 text without concat is: </content>
+</programRuleAction>
+</programRuleActions>
+</programRule>`
+
+#### How to fix it?
+
+Scan the generated list (via the suggested API calls) to find data components of the Program Rule Action where two or more objects are being concatenated and update them to use the d2:concatenate function.
+
+In the example above the data should change from:
+
+`<data>'Age is 10 and modulus' 'another string'</data>
+To:
+<data>d2:concatenate('Age is 10 and modulus','another string')</data>`
