@@ -13,7 +13,7 @@
 User must enter the event and then click the complete icon in the bottom right corner.
 
 ![](resources/images/image37.jpg){ width=25%}
-![](resources/images/image74.jpg){ width=25%}
+![](resources/images/image74.png){ width=25%}
 
 Two options will be presented:
 
@@ -65,12 +65,74 @@ The app will now list the name of the mandatory fields missing when the user tri
 
 It is possible to add notes to events in single event programs and program stage events. Notes are available in a new tab at the data entry form.
 
-![](resources/images/image106.jpg){ width=25%}
+![](resources/images/image106.png){ width=25%}
 ![](resources/images/image107.jpg){ width=25%}
+
+### Maps
+
+#### Map Layers
+
+The possible layers to display in maps are:
+
+- Show events (For programs without registration)
+- Satellite view
+- TEI coordinates (By default in programs with registration)
+- Enrollment Coordinates (Only for programs with registration)
+- Program Stage coordinates (Only for programs with registration)
+- Relationships (Only for programs with registration)
+- Heatmap (Only for programs with registration)
+
+The user can select one or more layers to be displayed.
+
+The maps will display coordinates and polygons.
+
+![](resources/images/image125.png){ width=25%}
+![](resources/images/image136.png){ width=25%}
+
+#### Map Carousel
+
+On the map view of the program, a carousel of cards is displayed, one for each enrolled TEI (Tracker programs) or Event(Event programs).
+
+* TEI cards on the carousel follow the same design as the TEI list view.
+
+* When scrolling horizontally the carousel, the map zooms into the selected coordinates. If coordinates field is empty a message is shown instead.
+
+![](resources/images/image126.jpg){ width=25%} 
+![](resources/images/image133.png){ width=25%}
+
+#### Map Relationships
+
+In tracker, the user can see relationships on a map by tapping the map icon on the relationships tab.
+
+* An arrow is shown on the direction of the relationship.
+* For bidirectional relationships, the arrow points both sides.
+* Each relationship type displays a different color.
+* If one or both TEIs have a polygon as coordinate, the line goes from (and to) the nearest point in the polygon of both TEIs.
+
+![](resources/images/image132.png){ width=25%}
+![](resources/images/image127.png){ width=25%}
 
 ## Program with registration in Android
 
 <!-- DHIS2-SECTION-ID:programs_registration -->
+
+### TEI Card Design
+
+The new TEI Card design includes:
+
+* Last update date
+* Other enrollments in programs with displayFrontPageList
+* At least **3 main attributes**. 
+  * If there are more, there will be an arrow to display the full list (only attributes with displayInList option)
+* Enrollment status label if **completed** or **cancelled**
+* Overdue icon if an overdue event exists with the most recent overdue event date
+* Card image (one of the following options):
+  * Profile picture when available or
+  * First letter of the first attribute or
+  * Tracked Entity Type icon
+  * A hyphen will display if non of the options are available
+
+![](resources/images/image124.png){ width=25%}
 
 ### Complete/Deactivate Enrollment
 
@@ -156,6 +218,19 @@ The TEI Dashboard offers now the possibility to change the list of events from t
 
 ![](resources/images/image108.png){ width=25%}
 ![](resources/images/image109.jpg){ width=25%}
+
+### Inherit Values
+
+When creating a new TEI for a relationship, inherit any program attribute marked with the inherit check in web.
+
+This means that any existing attributes in the first TEI should have pass to the new TEI and be shown in the registration form.
+
+### Breaking the glass
+
+The ‘breaking the glass’ feature is not yet supported in DHIS2 Android Capture App. If the program is configured as ‘Protected’, the default behavior for Android will be the same as if the program is configured as ‘closed.’ This means that an Android user will not be able to read or edit enrollments of a TEI outside of their capture org units. TEIs registered in a Search OU will be returned by the TE Type search but if the program is closed or protected the user will not be allowed to see or create a new enrollment.
+If Android users must be able to access TEI outside of their data capture org unit, the program should be configured with access level ‘Open.’
+
+![](resources/images/image137.jpg){ width=25%}
 
 ## Supported features Overview
 
@@ -257,6 +332,7 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 |Search screen for all TE Type|User is able to search across all program of one tracked entity type (TET). In the Search screen there is a drop down which shows all the programs available for the active TET (active TET is defined by the selection of the program in the home screen). That drop down should also have an option with TET name. (Person in our server). When the user selects that option, the search fields available will only be the TET attributes (no program specific attributes). All search restrictions do not apply, because they belong to the programs.|![](resources/images/../../admin/icon-complete.png)||
 |TEI Dashboard without program|User can see the TEI dashboard without any program by selecting the TEI in the list if the search was without program. The dashboards will show the TET attributes in the details card followed by a list of active enrollments.|![](resources/images/../../admin/icon-complete.png)||
 |TEI enrollment history and new enrollment|User is able to see the complete historical record of the TEI. By clicking on the top right corner icon they will see a list of Active enrolments, followed by a list of past enrolments (completed or cancelled), followed by the programs in which the TEI could be enrolled. Users should be able to navigate to the different enrolments from the list.|![](resources/images/../../admin/icon-complete.png)||
+|Access level-Breaking the glass|If the program is configured with access level protected, and the user searches and finds tracked entity instances that is owned by organisation unit that the user does not have data capture authority for, the user is presented with the option of breaking the glass. The user will gove a reason for breaking the glass, then gain temporary ownership of the tracked entity instance.|![](resources/images/../../admin/icon-incomplete.png)||
 
 ### Program without registration: Single event program
 

@@ -84,34 +84,109 @@ The app has new and improved filters for all listing screens (home, event listin
 
 Filter by period, org. Unit, sync state, event status, category option combination and "assigned to me".
 
-> **Note**
->
->It is possible to filter events based on its assignment to the current user. The “Assigned to me” filter has been added to the single event program list, the TEI list and the TEI Dashboard and the map views. It will only be displayed when the active program is configured to assign events to users.
+![](resources/images/image19.png){ width=25%}
+![](resources/images/image97.png){ width=25%}
+![](resources/images/image123.png){ width=25%}
+![](resources/images/image134.png){ width=25%}
 
-![](resources/images/image96.jpg){ width=25%}
-![](resources/images/image97.jpg){ width=25%}
+Filters will adapt to the different programs and data sets.
 
-Filters will adapt to the different programs and data sets. 
-1. Program without registration: Period, Org. Unit, Sync State, Event Status and, Category Combination.
-2. Program with registration: Period, Org. Unit, and Sync State.
-3. Data Sets: Period, Org. Unit, and Syn State.
+1. Program without registration: Date, Org. Unit, Sync State, Event Status and, Category Combination.
+2. Program with registration: Event Date, Date of enrollment, Org. Unit, Sync, Enrollment Status, Event Status and Assigned to me
+3. Data Sets: Period, Org. Unit, and Sync State.
+
+### Assigned to me
+
+It is possible to filter events based on its assignment to the current user. The “Assigned to me” filter has been added to the single event program list, the TEI list and the TEI Dashboard and the map views. It will only be displayed when the active program is configured to assign events to users.
+
+### Event Date/Date/Period
+
+Filter the Events, TEIs(based on their events) and data sets, the following periods of time are availables:
+- Today
+- This week
+- This month
+- Yesterday
+- Last week
+- Last month
+- Tomorrow
+- Next week
+- Next month
+- From-to
+- Other (Opens a date picker)
+- Anytime
+
+### Org. Unit
+
+Allows the user to type the search or select an org unit from the tree.
+
+### Sync
+
+Filer by:
+- Synced (events, TEIs, Data Sets)
+- Not Synced
+- Sync Error
+- SMS Synced
+
+### Event Status
+
+Filter the events by:
+- Open
+- Schedule
+- Overdue
+- Completed
+- Skipped
+
+Multiple status selection is permited. Once you open a TEI, the filter will be kept in the dashboard and show only the events with the selected status.
+
+Events shown are up to 5 years old.
+
+### Date of Enrollment
+
+The 'Date of Enrollment' will apply to the Enrollment date of the TEI in the program. If there is more than one enrollment date, it should sort the results by the most recent one. The label of this filter will display when available.
+
+### Enrollment Status
+
+The filter 'Enrollment status' offers three options: Active, Completed, Cancelled. Only ona option can be selected at time. If you filter by "completed" and the TEI has more than one enrollment, the app will open the "active"  enrollment. To see the completed one, select the three dot menu at the top right corner of the dashboard and select "program enrollments".
 
 ### Filtering added in TEI Dashboard:
-
-<!-- DHIS2-SECTION-ID:generic_filtering -->
 
 Filters have been added to the TEI dashboard. It is possible to filter the events of a Tracked Entity Instance enrollment per period, organisation unit, sync status, event status, and user assignment.
 
 ![](resources/images/image114.png){ width=25%}
 
+## Sorting
+
+Sorting has been integrated in the filter menu.
+
+The sorting button will be on the filter bars with the following behavior:
+- Only one sorting applies at a time. If the user clicks a different one, the previous one is disabled.
+- The icon for applied sorting shows it is active, the others are inactive.  
+- Repeated clicks keep changing the order to the reverse.
+
+![](resources/images/image135.png){ width=25%}
+
+### Dates (Period, Date, Event Date or Enrollment Date)
+
+- Event Date preceds due date, only use due date when there is no event date.
+- Order from most recent to less recent. Future events (due date) goes first.
+
+### Org units
+
+- List will be sorted in alphabetical order by org unit name.
+
+### Enrollment Status
+
+- List will be sorted in alphabetical order by status name.
+
+![](resources/images/image123.png){ width=25%}
+
 ## Sync Information
 
 <!-- DHIS2-SECTION-ID:generic_sync -->
 
-Allows the user to check sync information for a specific program.
+Allows the user to check sync information for a specific program. Now the synced records will not show any icon. Only unsynced, error or SMS icons will be displayed.
 
 ![](resources/images/image67.png){ width=20%}
-![](resources/images/image68.png){ width=20%}
 ![](resources/images/image69.png){ width=20%}
 ![](resources/images/image70.png){ width=20%}
 
