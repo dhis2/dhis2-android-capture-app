@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teidashboard.entity
+package org.dhis2.usescases.teiFlow.entity
 
 data class EnrollmentListUIModel(
     val program: String,

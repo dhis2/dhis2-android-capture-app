@@ -1,6 +1,5 @@
 package org.dhis2.usescases.teidashboard
 
-import androidx.test.espresso.IdlingRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.R
@@ -8,7 +7,6 @@ import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import org.dhis2.usescases.teidashboard.entity.EnrollmentListUIModel
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
@@ -17,9 +15,6 @@ import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.relationshipRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
-import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -393,89 +388,6 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun shouldEnrollToSameProgramAfterClosedIt() {
-        /**
-         * MNCH /PNC (Adult Woman)
-         * register TEI
-         * add event
-         * close enrollment, check all event are Program Completed
-         * add new enrollment with different date to same program
-         * verify enrollment
-         * verify there's two enrollments (current and past)
-         * check past enrollment all closed events
-         * reopen the past enrollment
-         * check open
-         * check two current enrollments
-         * */
-
-        val teiName = "Marta"
-        val teiLastName = "Stuart"
-        val firstName = "First name"
-        val lastName = "Last name"
-        val date = "Date of birth"
-        val womanProgram = "MNCH / PNC (Adult Woman)"
-
-        val enrollmentListDetails = createEnrollmentList()
-
-        setupCredentials()
-        prepareWomanProgrammeIntentAndLaunchActivity(ruleSearch)
-
-        // add a new TEI
-        searchTeiRobot {
-            searchByPosition(teiName, 0)
-            searchByPosition(teiLastName, 1)
-            clickOnDateField(date)
-            selectSpecificDate(2010, 6, 30)
-            acceptDate()
-            clickOnFab()
-            clickOnFab() //to enroll to program
-            selectSpecificDate(2017, 6 , 30)
-            acceptDate()
-        }
-
-        enrollmentRobot {
-            clickOnSaveEnrollment()
-        }
-
-        teiDashboardRobot {
-            clickOnMenuMoreOptions()
-            clickOnMenuComplete()
-            checkCanNotAddEvent()
-            checkAllEventsAreClosed(3)
-        }
-
-        teiDashboardRobot {
-            clickOnMenuMoreOptions()
-            clickOnMenuProgramEnrollments()
-        }
-
-        enrollmentRobot {
-            clickOnSameProgramForEnrollment(womanProgram)
-            clickOnAcceptEnrollmentDate()
-            scrollToBottomProgramForm()
-            clickOnSaveEnrollment()
-        }
-
-        // check all enrollment information
-        teiDashboardRobot {
-            clickOnMenuMoreOptions()
-            clickOnMenuProgramEnrollments()
-        }
-
-        enrollmentRobot {
-            checkActiveAndPastEnrollmentDetails(enrollmentListDetails)
-            clickOnEnrolledProgram(4) // past enrollment
-        }
-
-        teiDashboardRobot {
-            checkLockCompleteIconIsDisplay()
-            checkCanNotAddEvent()
-            checkAllEventsAreClosed(3)
-        }
-
-    }
-
-    @Test
     fun shouldDeleteEventWhenClickOnDeleteInsideSpecificEvent() {
 
         /**
@@ -520,13 +432,6 @@ class TeiDashboardTest : BaseTest() {
             "Ryder",
             "Female"
         )
-
-    private fun createEnrollmentList() = EnrollmentListUIModel(
-        "MNCH / PNC (Adult Woman)",
-        "Ngelehun CHC",
-        "30/06/2017",
-        ""
-    )
 
     companion object {
         const val NOTE_VALID = "ThisIsJustATest"
