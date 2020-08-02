@@ -387,33 +387,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Test
-    fun shouldDeleteEventWhenClickOnDeleteInsideSpecificEvent() {
-
-        /**
-         * Open and launch TEI
-         * click on event
-         * click on menu
-         * click on Delete
-         * accept dialog
-         * check list of events, event was deleted
-         * */
-
-    }
-
-    @Test
-    fun shouldShowEventDetailsWhenClickOnDetailsInsideSpecificEvent() {
-
-        /**
-         * Open and launch TEI
-         * click on event
-         * click on menu
-         * click on Details
-         * check %, OU and date
-         * */
-
-    }
-
     private fun createExpectedUpperInformation() =
         UpperEnrollmentUIModel(
             "10/1/2021",
