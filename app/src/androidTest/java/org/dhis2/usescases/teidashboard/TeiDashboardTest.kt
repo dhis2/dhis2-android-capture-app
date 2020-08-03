@@ -277,10 +277,6 @@ class TeiDashboardTest : BaseTest() {
         }
 
         eventRobot {
-            clickOnChangeDate()
-            clickOnEditDate()
-            acceptUpdateEventDate()
-            clickOnUpdate()
             waitToDebounce(600)
             fillRadioButtonForm(4)
             clickOnFormFabButton()
@@ -289,7 +285,7 @@ class TeiDashboardTest : BaseTest() {
         }
 
         teiDashboardRobot {
-            checkEventWasCreatedAndClosed(LAB_MONITORING, 3)
+            checkEventWasCreatedAndClosed(LAB_MONITORING, 2)
         }
     }
 
