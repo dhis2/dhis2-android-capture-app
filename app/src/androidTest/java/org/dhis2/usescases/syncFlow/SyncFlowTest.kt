@@ -91,7 +91,6 @@ class SyncFlowTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(4000)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -113,13 +112,10 @@ class SyncFlowTest : BaseTest() {
         }
 
         syncFlowRobot {
-            Thread.sleep(4000)
             clickOnSyncTei(teiName, teiLastName)
             clickOnSyncButton()
-            Thread.sleep(4000)
             checkSyncFailed()
         }
-
     }
 
     @Test
