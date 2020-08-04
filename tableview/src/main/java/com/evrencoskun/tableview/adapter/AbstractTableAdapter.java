@@ -55,6 +55,7 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
     private boolean mHasTotal;
     private int headerHeight;
     public OnScale onScaleListener;
+    public OnTableChange onTableChangeListener;
 
     public AbstractTableAdapter(Context context) {
         mContext = context;
@@ -393,8 +394,20 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
         mColumnsHeaderItems.clear();
     }
 
+    public void clearSelections() {
+        onTableChangeListener.clearSelections();
+    }
+
+    public void setOnTableChangedListener(OnTableChange onTableChangedListener) {
+        this.onTableChangeListener = onTableChangedListener;
+    }
+
     public interface OnScale {
         void scaleTo(int width, int height);
+    }
+
+    public interface OnTableChange {
+        void clearSelections();
     }
 
 

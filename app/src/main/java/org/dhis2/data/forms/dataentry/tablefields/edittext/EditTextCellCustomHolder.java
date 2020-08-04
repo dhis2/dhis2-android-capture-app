@@ -53,22 +53,27 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         });
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus && editTextModel != null && editTextModel.editable() &&
-                    !editText.getText().toString().equals(editTextModel.value()) && validate()) {
-                processor.onNext(
-                        RowAction.create(
-                                editTextModel.uid(),
-                                editText.getText().toString(),
-                                editTextModel.dataElement(),
-                                editTextModel.categoryOptionCombo(),
-                                editTextModel.catCombo(),
-                                editTextModel.row(),
-                                editTextModel.column()
-                        )
-                );
+            if(!hasFocus) {
+                if (editTextModel != null && editTextModel.editable() &&
+                        !editText.getText().toString().equals(editTextModel.value()) && validate()) {
+                    processor.onNext(
+                            RowAction.create(
+                                    editTextModel.uid(),
+                                    editText.getText().toString(),
+                                    editTextModel.dataElement(),
+                                    editTextModel.categoryOptionCombo(),
+                                    editTextModel.catCombo(),
+                                    editTextModel.row(),
+                                    editTextModel.column()
+                            )
+                    );
+                }
+                v.setSelected(false);
+
             }
 
             if (hasFocus) {
+                tableView.getAdapter().clearSelections();
                 tableView.scrollToColumnPosition(getAdapterPosition(),DEFAULT_CELL_OFFSET);
             }
         });

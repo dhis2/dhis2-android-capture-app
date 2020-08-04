@@ -143,6 +143,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             setTableView(tableView)
             initializeRows(accessDataWrite)
             setDataElementDecoration(dataSet.dataElementDecoration())
+            setOnTableChangedListener {
+                clearAllSelections(this)
+            }
         }
 
         binding.tableLayout.addView(tableView)
@@ -374,6 +377,12 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
 
     override fun showAlertDialog(title: String, message: String) {
         super.showInfoDialog(title, message)
+    }
+
+    fun clearAllSelections(currentAdapter: DataSetTableAdapter){
+        adapters.filter { it != currentAdapter }.forEach {
+            it.tableView.selectionHandler.clearSelection()
+        }
     }
 
     override fun highligthHeaderRow(table: Int, row: Int, mandatory: Boolean) {
