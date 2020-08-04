@@ -22,7 +22,7 @@ fun teiFlowRobot(teiFlowRobot: TeiFlowRobot.() -> Unit) {
 
 class TeiFlowRobot : BaseRobot() {
 
-    fun typeOnSearchAtPosition(registerWord: String, position:Int) {
+    private fun typeOnSearchAtPosition(registerWord: String, position:Int) {
         onView(withId(R.id.form_recycler))
             .perform(
                 actionOnItemAtPosition<SearchTEViewHolder>(position, typeChildViewWithId(registerWord, R.id.input_editText))
@@ -30,7 +30,7 @@ class TeiFlowRobot : BaseRobot() {
     }
 
 
-    fun clickOnDateField() {
+    private fun clickOnDateField() {
         onView(withId(R.id.form_recycler))
             .perform(
                 actionOnItemAtPosition<SearchTEViewHolder>(
