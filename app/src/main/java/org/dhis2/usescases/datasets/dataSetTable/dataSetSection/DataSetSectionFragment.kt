@@ -379,7 +379,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         super.showInfoDialog(title, message)
     }
 
-    fun clearAllSelections(currentAdapter: DataSetTableAdapter){
+    private fun clearAllSelections(currentAdapter: DataSetTableAdapter) {
         adapters.filter { it != currentAdapter }.forEach {
             it.tableView.selectionHandler.clearSelection()
         }
