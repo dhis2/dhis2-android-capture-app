@@ -168,14 +168,12 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         if (isOnline && states.isEmpty()) {
             dataSource = trackedEntityInstanceQuery.offlineFirst().getDataSource()
-                    .mapByPage(list -> filterByStatus(list, eventStatuses))
                     .mapByPage(this::filterDeleted)
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
                     .map(tei -> transform(tei, selectedProgram, false, sortingItem));
         } else {
             dataSource = trackedEntityInstanceQuery.offlineOnly().getDataSource()
-                    .mapByPage(list -> filterByStatus(list, eventStatuses))
                     .mapByPage(this::filterDeleted)
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
@@ -214,7 +212,6 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         if (isOnline && states.isEmpty())
             return trackedEntityInstanceQuery.offlineFirst().get().toFlowable()
-                    .map(list -> filterByStatus(list, eventStatuses))
                     .map(this::filterDeleted)
                     .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
                     .map(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
@@ -223,7 +220,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .toList().toFlowable();
         else
             return trackedEntityInstanceQuery.offlineOnly().get().toFlowable()
-                    .map(list -> filterByStatus(list, eventStatuses))
                     .map(this::filterDeleted)
                     .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
                     .map(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
@@ -248,6 +244,13 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         if (!FilterManager.getInstance().getEnrollmentStatusFilters().isEmpty()) {
             trackedEntityInstanceQuery = trackedEntityInstanceQuery.byEnrollmentStatus().in(FilterManager.getInstance().getEnrollmentStatusFilters());
+        }
+
+        if (!FilterManager.getInstance().getEventStatusFilters().isEmpty()) {
+            trackedEntityInstanceQuery = trackedEntityInstanceQuery
+                    .byEventStartDate().eq(DateUtils.yearsBeforeNow(5))
+                    .byEventEndDate().eq(DateUtils.yearsAfterNow(1))
+                    .byEventStatus().in(FilterManager.getInstance().getEventStatusFilters());
         }
 
         OrganisationUnitMode ouMode;
@@ -455,7 +458,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         } else {
             List<ProgramTrackedEntityAttribute> programAttributes = d2.programModule().programTrackedEntityAttributes()
                     .byProgram().eq(selectedProgram.uid())
-//                    .byDisplayInList().isTrue()
+                    .byDisplayInList().isTrue()
                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                     .blockingGet();
             for (ProgramTrackedEntityAttribute programAttribute : programAttributes) {
@@ -712,22 +715,6 @@ public class SearchRepositoryImpl implements SearchRepository {
         return teis;
     }
 
-    private List<TrackedEntityInstance> filterByStatus(List<TrackedEntityInstance> teis, List<EventStatus> eventStatuses) {
-        Iterator<TrackedEntityInstance> iterator = teis.iterator();
-        if (!eventStatuses.isEmpty())
-            while (iterator.hasNext()) {
-                TrackedEntityInstance tei = iterator.next();
-
-                boolean hasEventWithStatus = !d2.eventModule().events().byTrackedEntityInstanceUids(Collections.singletonList(tei.uid())).byStatus().in(eventStatuses).blockingIsEmpty();
-                boolean hasScheduledEvent = !d2.eventModule().events().byTrackedEntityInstanceUids(Collections.singletonList(tei.uid())).byStatus().eq(EventStatus.SCHEDULE)
-                        .byDueDate().before(new Date()).blockingIsEmpty();
-                if (!hasEventWithStatus && !hasScheduledEvent)
-                    iterator.remove();
-            }
-
-        return teis;
-    }
-
     private SearchTeiModel transform(TrackedEntityInstance tei, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
 
         SearchTeiModel searchTei = new SearchTeiModel();
@@ -740,18 +727,19 @@ public class SearchRepositoryImpl implements SearchRepository {
                         .byProgram().eq(selectedProgram.uid())
                         .orderByEnrollmentDate(RepositoryScope.OrderByDirection.DESC)
                         .blockingGet();
-                for(Enrollment enrollment : possibleEnrollments){
-                    if(enrollment.status() == EnrollmentStatus.ACTIVE){
+                for (Enrollment enrollment : possibleEnrollments) {
+                    if (enrollment.status() == EnrollmentStatus.ACTIVE) {
                         searchTei.setCurrentEnrollment(enrollment);
                         break;
                     }
                 }
-                if(searchTei.getSelectedEnrollment()==null) {
+                if (searchTei.getSelectedEnrollment() == null) {
                     searchTei.setCurrentEnrollment(possibleEnrollments.get(0));
                 }
                 searchTei.setOnline(false);
-            } else if (d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(localTei.uid()).one().blockingExists())
+            } else {
                 searchTei.setOnline(false);
+            }
 
             if (offlineOnly)
                 searchTei.setOnline(!offlineOnly);

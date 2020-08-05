@@ -112,7 +112,7 @@ class AlertBottomDialog : BottomSheetDialogFragment() {
                 )
             val behavior = BottomSheetBehavior.from(bottomSheet!!)
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
-            behavior.setPeekHeight(0)
+            behavior.peekHeight = 0
         }
     }
 

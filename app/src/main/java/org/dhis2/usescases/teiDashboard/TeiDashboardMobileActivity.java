@@ -186,7 +186,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     } else {
                         binding.relationshipMapIcon.setImageResource(R.drawable.ic_map);
                     }
-                    relationshipMap.setValue(!relationshipMap.getValue());
+                    boolean showMap = !relationshipMap.getValue();
+                    if(showMap){
+                        binding.toolbarProgress.setVisibility(View.VISIBLE);
+                        binding.toolbarProgress.hide();
+                    }
+                    relationshipMap.setValue(showMap);
                 }
         );
 
@@ -728,5 +733,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 break;
         }
 
+    }
+
+    public void onRelationshipMapLoaded() {
+        binding.toolbarProgress.hide();
     }
 }

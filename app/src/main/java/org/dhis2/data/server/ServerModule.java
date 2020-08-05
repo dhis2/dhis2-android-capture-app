@@ -9,6 +9,8 @@ import org.dhis2.App;
 import org.dhis2.BuildConfig;
 import org.dhis2.data.dagger.PerServer;
 import org.dhis2.data.prefs.PreferenceProviderImpl;
+import org.dhis2.utils.RulesUtilsProvider;
+import org.dhis2.utils.RulesUtilsProviderImpl;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.AnalyticsInterceptor;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
@@ -21,6 +23,8 @@ import org.matomo.sdk.Tracker;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -65,5 +69,11 @@ public class ServerModule {
                 .writeTimeoutInSeconds(3 * 60)
                 .context(context)
                 .build();
+    }
+
+    @Provides
+    @PerServer
+    RulesUtilsProvider rulesUtilsProvider(D2 d2) {
+        return new RulesUtilsProviderImpl(d2);
     }
 }

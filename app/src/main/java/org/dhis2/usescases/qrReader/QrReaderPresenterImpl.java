@@ -1,6 +1,5 @@
 package org.dhis2.usescases.qrReader;
 
-import android.database.Cursor;
 import android.util.Log;
 
 import org.dhis2.data.schedulers.SchedulerProvider;
@@ -11,7 +10,6 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.Coordinates;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElement;
-import org.hisp.dhis.android.core.dataelement.DataElementTableInfo;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.EnrollmentTableInfo;
@@ -20,7 +18,6 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.event.EventTableInfo;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeTableInfo;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueTableInfo;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
@@ -122,7 +119,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         if (d2.dataElementModule().dataElements().uid(attrValue.getString("dataElement")).blockingExists()) {
                             this.dataJson.add(attrValue);
                             DataElement de = d2.dataElementModule().dataElements().uid(attrValue.getString("dataElement")).blockingGet();
-                            attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), de.formName(), true));
+                            attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), de.displayFormName(), true));
                         } else {
                             attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
                         }
@@ -178,7 +175,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     if (d2.dataElementModule().dataElements().uid(attrValue.getString("dataElement")).blockingExists()) {
                         this.dataJson.add(attrValue);
                         DataElement de = d2.dataElementModule().dataElements().uid(attrValue.getString("dataElement")).blockingGet();
-                        attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), de.formName(), true));
+                        attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), de.displayFormName(), true));
                     } else {
                         attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
                     }
@@ -357,7 +354,9 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 if (teiJson.has("trackedEntityType"))
                     teiModelBuilder.trackedEntityType(teiJson.getString("trackedEntityType"));
 
-                TrackedEntityInstance teiModel = teiModelBuilder.build();
+                TrackedEntityInstance teiModel = teiModelBuilder
+                        .deleted(false)
+                        .build();
 
                 if (teiModel != null) {
                     d2.databaseAdapter().insert(TrackedEntityInstanceTableInfo.TABLE_INFO.name(), null, teiModel.toContentValues());
@@ -451,8 +450,8 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                             enrollmentBuilder.program(enrollmentJson.getString("program"));
                         if (enrollmentJson.has("followUp"))
                             enrollmentBuilder.followUp(enrollmentJson.getBoolean("followUp"));
-                        if (enrollmentJson.has("enrollmentStatus"))
-                            enrollmentBuilder.status(EnrollmentStatus.valueOf(enrollmentJson.getString("enrollmentStatus")));
+                        if (enrollmentJson.has("status"))
+                            enrollmentBuilder.status(EnrollmentStatus.valueOf(enrollmentJson.getString("status")));
                         if (enrollmentJson.has("enrollmentDate"))
                             enrollmentBuilder.enrollmentDate(DateUtils.databaseDateFormat().parse(enrollmentJson.getString("enrollmentDate")));
                         if (enrollmentJson.has("dateOfIncident"))
@@ -462,7 +461,9 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         if (enrollmentJson.has("trackedEntityInstance"))
                             enrollmentBuilder.trackedEntityInstance(enrollmentJson.getString("trackedEntityInstance"));
 
-                        Enrollment enrollment = enrollmentBuilder.build();
+                        Enrollment enrollment = enrollmentBuilder
+                                .deleted(false)
+                                .build();
 
                         if (enrollment != null)
                             d2.databaseAdapter().insert(EnrollmentTableInfo.TABLE_INFO.name(), null, enrollment.toContentValues());
@@ -515,7 +516,9 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     if (eventJson.has("dueDate"))
                         eventBuilder.dueDate(DateUtils.databaseDateFormat().parse(eventJson.getString("dueDate")));
 
-                    Event eventModel = eventBuilder.build();
+                    Event eventModel = eventBuilder
+                            .deleted(false)
+                            .build();
 
                     if (eventModel != null)
                         d2.databaseAdapter().insert(EventTableInfo.TABLE_INFO.name(), null, eventModel.toContentValues());
@@ -661,7 +664,9 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
                 eventBuilder.state(State.TO_UPDATE);
 
-                Event event = eventBuilder.build();
+                Event event = eventBuilder
+                        .deleted(false)
+                        .build();
 
                 if (!d2.eventModule().events().uid(event.uid()).blockingExists()) {
                     long result = d2.databaseAdapter().insert(EventTableInfo.TABLE_INFO.name(), null, event.toContentValues());

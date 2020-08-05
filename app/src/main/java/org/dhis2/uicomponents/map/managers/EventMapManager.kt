@@ -80,10 +80,11 @@ class EventMapManager : MapManager() {
         )
         var featureToReturn: Feature? = null
         for (propertyLabel in mainProperties) {
-            val feature = findFeature(EVENTS, propertyLabel, propertyValue)
+            val feature = findFeature(LayerType.EVENT_LAYER.name, propertyLabel, propertyValue)
             if (feature != null) {
                 featureToReturn = feature
-                mapLayerManager.getLayer(EVENTS, true)?.setSelectedItem(featureToReturn)
+                mapLayerManager.getLayer(LayerType.EVENT_LAYER.name, true)
+                    ?.setSelectedItem(featureToReturn)
                 break
             }
             if (featureToReturn != null) {

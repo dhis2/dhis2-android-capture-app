@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
 import io.reactivex.Single
 import org.dhis2.Bindings.applyFilters
+import org.dhis2.data.dhislogic.DhisEventUtils
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
 import org.dhis2.utils.DateUtils
@@ -13,7 +14,6 @@ import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.event.EventStatus
@@ -26,7 +26,8 @@ class TeiDataRepositoryImpl(
     private val d2: D2,
     private val programUid: String?,
     private val teiUid: String,
-    private val enrollmentUid: String?
+    private val enrollmentUid: String?,
+    private val dhisEventUtils: DhisEventUtils
 ) : TeiDataRepository {
 
     override fun getTEIEnrollmentEvents(
@@ -107,6 +108,8 @@ class TeiDataRepositoryImpl(
                     eventRepo = eventRepoSorting(sortingItem, eventRepo)
                     val eventList = eventRepo.blockingGet()
 
+                    val isSelected = programStage.uid() == selectedStage
+
                     eventViewModels.add(
                         EventViewModel(
                             EventViewModelType.STAGE,
@@ -114,8 +117,12 @@ class TeiDataRepositoryImpl(
                             null,
                             eventList.size,
                             if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
-                            programStage.uid() == selectedStage,
-                            checkAddEvent(),
+                            isSelected,
+                            dhisEventUtils.checkAddEventInEnrollment(
+                                enrollmentUid,
+                                programStage,
+                                isSelected
+                            ),
                             orgUnitName = ""
                         )
                     )
@@ -216,10 +223,5 @@ class TeiDataRepositoryImpl(
                 event
             }
         }
-    }
-
-    private fun checkAddEvent(): Boolean {
-        val enrollment = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
-        return !(enrollment == null || enrollment.status() != EnrollmentStatus.ACTIVE)
     }
 }

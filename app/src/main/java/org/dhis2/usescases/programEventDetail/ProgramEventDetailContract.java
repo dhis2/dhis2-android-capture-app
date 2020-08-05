@@ -35,6 +35,8 @@ public class ProgramEventDetailContract {
 
         void setWritePermission(Boolean aBoolean);
 
+        void showFilterProgress();
+
         void setLiveData(LiveData<PagedList<ProgramEventViewModel>> pagedListLiveData);
 
         void setOptionComboAccess(Boolean canCreateEvent);

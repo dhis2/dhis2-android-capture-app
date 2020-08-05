@@ -157,7 +157,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         this.sections = sections;
         if (sections.contains(NO_SECTION) && sections.size() > 1) {
             sections.remove(NO_SECTION);
-            sections.add(getString(R.string.tab_tables));
+            sections.add(getString(R.string.dataset_data));
         }
         viewPagerAdapter.swapData(sections);
         binding.viewPager.setCurrentItem(1);
@@ -166,7 +166,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public void updateTabLayout(String section, int numTables) {
         if (sections.get(0).equals(NO_SECTION)) {
             sections.remove(NO_SECTION);
-            sections.add(getString(R.string.tab_tables));
+            sections.add(getString(R.string.dataset_data));
             viewPagerAdapter.swapData(sections);
             binding.viewPager.setCurrentItem(1);
         }
@@ -236,14 +236,13 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public Observable<Object> observeSaveButtonClicks() {
-        return RxView.clicks(binding.saveButton)
-                .doOnNext(o -> {
-                    if (getCurrentFocus() != null) {
-                        View currentFocus = getCurrentFocus();
-                        currentFocus.clearFocus();
-                        ViewExtensionsKt.closeKeyboard(currentFocus);
-                    }
-                });
+        return RxView.clicks(binding.saveButton).doOnNext(o -> {
+            if (getCurrentFocus() != null) {
+                View currentFocus = getCurrentFocus();
+                currentFocus.clearFocus();
+                ViewExtensionsKt.closeKeyboard(currentFocus);
+            }
+        });
     }
 
     @Override
@@ -371,7 +370,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void closeExpandBottom() {
+    public void collapseExpandBottom() {
         if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
             behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -380,15 +379,19 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void cancelBottomSheet() {
+    public void closeBottomSheet() {
         binding.BSLayout.bottomSheetLayout.setVisibility(View.GONE);
-        binding.saveButton.show();
     }
 
     @Override
     public void completeBottomSheet() {
-        cancelBottomSheet();
+        closeBottomSheet();
         presenter.completeDataSet();
+    }
+
+    @Override
+    public boolean isErrorBottomSheetShowing() {
+        return binding.BSLayout.bottomSheetLayout.getVisibility() == View.VISIBLE;
     }
 
     private void configureShapeDrawable() {
@@ -423,6 +426,8 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                 .translationY(-ExtensionsKt.getDp(48))
                 .start();
     }
+
+
 
     public void showMoreOptions(View view) {
         new AppMenuHelper.Builder()
@@ -470,12 +475,11 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public void showInternalValidationError() {
         AlertBottomDialog.Companion.getInstance()
                 .setTitle(getString(R.string.saved))
-                .setMessage(getString(R.string.validation_internal_error))
-                .setPositiveButton(getString(R.string.yes), () -> {
+                .setMessage(getString(R.string.validation_internal_error_datasets))
+                .setPositiveButton(getString(R.string.button_ok), () -> {
                     presenter.reopenDataSet();
                     return Unit.INSTANCE;
                 })
-                .setNegativeButton(getString(R.string.no), () -> Unit.INSTANCE)
                 .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
     }
 

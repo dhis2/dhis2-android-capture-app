@@ -1,16 +1,22 @@
 # Recommendations for a DHIS 2 mobile deployment
 
-If you plan to deploy the DHIS2 Android App in the field, we strongly recommend you to read the [Mobile Implementation Guidelines](https://s3-eu-west-1.amazonaws.com/content.dhis2.org/Publications/DHIS+2+Mobile+Implementation+Guidelines.pdf) published by UiO. It includes chapters on technology requirements, security and configuration aspects, and testing and roll out recommendations. Below you will find some key aspects briefly introduced, we recommend reading the extended document.
+<!-- DHIS2-SECTION-ID:recommendations -->
+
+If you plan to deploy the DHIS2 Android App in the field, we strongly recommend you to read the [Mobile Implementation Guidelines](https://docs.dhis2.org/master/en/dhis2_android_implementation_guideline/about-this-guide.html) published by UiO. It includes chapters on technology requirements, security and configuration aspects, and testing and roll out recommendations. Below you will find some key aspects briefly introduced, we recommend reading the extended document.
 
 ## Mobile device specifications
+
+<!-- DHIS2-SECTION-ID:recommendations_mdm -->
 
 The Android App is compatible and supported for DHIS 2 versions 2.30, 2.31, 2.32, and 2.33. And has no breaking changes with 2.29.
 
 It requires a device that is running Android v4.4 or higher.
 
-In [this link](https://www.google.com/url?q=https://docs.google.com/document/d/1jZjw-hb1W8sszkPU9yPWrPoow91gEkTb0nyZJh3IJQQ/edit%23&sa=D&ust=1557433016128000) you will find recommendations for new mobile device acquisitions for a Dhis2 Android deployment.
+In [the specific section of the Mobile Implementation Guidelines](https://docs.dhis2.org/master/en/dhis2_android_implementation_guideline/mobile-device-specifications.html) you will find recommendations for new mobile device acquisitions for a Dhis2 Android deployment.
 
 ## Testing and Piloting
+
+<!-- DHIS2-SECTION-ID:recommendations_testing -->
 
 If you plan to deploy the DHIS 2 Android App in the field, you should first do a full round of testing of the app in you own configuration.
 
@@ -19,6 +25,8 @@ The app has been extensively tested with the demo servers, and during Beta testi
 It is strongly advised to carry out a comprehensive testing of the app in your own server before piloting it.
 
 ## How to migrate to Android Capture App
+
+<!-- DHIS2-SECTION-ID:recommendations_migrate -->
 
 If you are ready for deploying the new Android App in the field and your users are already using Event Capture or Tracker Capture, you should follow these steps:
 
