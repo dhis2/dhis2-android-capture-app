@@ -33,9 +33,6 @@ private const val TEI_UID_VALUE_TO_EDIT_EVENT = "PQfMcpmXeFE"
 private const val ENROLLMENT_VALUE_TO_EDIT_EVENT = "Yf47yST5FF2"
 private const val TEI_UID_VALUE_TO_ENROLL = "tIJu6iqQxNV"
 private const val ENROLLMENT_VALUE_TO_ENROLL = "CCBLMntFuzb"
-private const val TE_TYPE = "TRACKED_ENTITY_UID"
-private const val WOMAN_PROGRAM_UID_VALUE = "uy2gU8kT1jF"
-private const val WOMAN_TE_TYPE_VALUE = "nEenWmSyUEp"
 
 fun prepareTeiCompletedProgrammeAndLaunchActivity(
     rule: ActivityTestRule<TeiDashboardMobileActivity>
@@ -124,13 +121,6 @@ fun prepareChildProgrammeIntentAndLaunchActivity(ruleSearch: ActivityTestRule<Se
     Intent().apply {
         putExtra(SearchTETest.CHILD_PROGRAM_UID, SearchTETest.CHILD_PROGRAM_UID_VALUE)
         putExtra(SearchTETest.CHILD_TE_TYPE, SearchTETest.CHILD_TE_TYPE_VALUE)
-    }.also { ruleSearch.launchActivity(it) }
-}
-
-fun prepareWomanProgrammeIntentAndLaunchActivity(ruleSearch: ActivityTestRule<SearchTEActivity>) {
-    Intent().apply {
-        putExtra(PROGRAM_UID, WOMAN_PROGRAM_UID_VALUE)
-        putExtra(TE_TYPE, WOMAN_TE_TYPE_VALUE)
     }.also { ruleSearch.launchActivity(it) }
 }
 

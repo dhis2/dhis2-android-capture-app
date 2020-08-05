@@ -30,11 +30,11 @@ class TeiFlowRobot : BaseRobot() {
     }
 
 
-    private fun clickOnDateField() {
+    private fun clickOnDateField(position: Int) {
         onView(withId(R.id.form_recycler))
             .perform(
                 actionOnItemAtPosition<SearchTEViewHolder>(
-                    2,
+                    position,
                     clickChildViewWithId(R.id.inputEditText)
                 )
             )
@@ -46,7 +46,7 @@ class TeiFlowRobot : BaseRobot() {
 
         typeOnSearchAtPosition(registrationModel.name, 0)
         typeOnSearchAtPosition(registrationModel.lastName,1)
-        clickOnDateField()
+        clickOnDateField(2)
 
         searchTeiRobot {
             selectSpecificDate(registrationDate.year,registrationDate.month,registrationDate.day)
@@ -63,7 +63,6 @@ class TeiFlowRobot : BaseRobot() {
     }
 
     fun enrollToProgram(program: String) {
-
         teiDashboardRobot {
             clickOnMenuMoreOptions()
             clickOnMenuProgramEnrollments()
@@ -88,13 +87,22 @@ class TeiFlowRobot : BaseRobot() {
         }
     }
 
-    fun checkPastEventsAreClosed(totalEvents: Int) {
+    fun checkPastEventsAreClosed(totalEvents: Int, programPosition: Int) {
         enrollmentRobot {
-            clickOnEnrolledProgram(4)
+            clickOnEnrolledProgram(programPosition)
         }
 
         teiDashboardRobot {
             checkLockCompleteIconIsDisplay()
+            checkCanNotAddEvent()
+            checkAllEventsAreClosed(totalEvents)
+        }
+    }
+
+    fun closeEnrollmentAndCheckEvents(totalEvents: Int) {
+        teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnMenuComplete()
             checkCanNotAddEvent()
             checkAllEventsAreClosed(totalEvents)
         }

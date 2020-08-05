@@ -11,7 +11,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
+import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
 import org.dhis2.common.viewactions.typeChildViewWithId
@@ -81,29 +81,17 @@ class EnrollmentRobot : BaseRobot() {
     }
 
     fun checkActiveAndPastEnrollmentDetails(enrollmentListUIModel: EnrollmentListUIModel) {
-        onView(withId(R.id.recycler)).check(matches(hasItem(allOf(
-            hasDescendant(withText(enrollmentListUIModel.program)),
-            hasDescendant(withText(enrollmentListUIModel.orgUnit)))
-        )))
+        checkHeaderAndProgramDetails(enrollmentListUIModel, "Active programs", 1, 2, enrollmentListUIModel.currentEnrollmentDate)
+        checkHeaderAndProgramDetails(enrollmentListUIModel, "Past programs", 3, 4, enrollmentListUIModel.pastEnrollmentDate)
+    }
 
-        onView(withId(R.id.recycler)).check(matches(hasItem(allOf(
+    private fun checkHeaderAndProgramDetails(enrollmentListUIModel: EnrollmentListUIModel, programStatus: String, headerPosition: Int, programPosition: Int, enrollmentDay: String) {
+        onView(withId(R.id.recycler)).check(matches(atPosition(headerPosition, withText(programStatus))))
+        onView(withId(R.id.recycler)).check(matches(allOf(atPosition(programPosition, allOf(
             hasDescendant(withText(enrollmentListUIModel.program)),
             hasDescendant(withText(enrollmentListUIModel.orgUnit)),
-            hasDescendant(withText(enrollmentListUIModel.pastEnrollmentDate))
-        ))))
-
-        //onView(withId(R.id.recycler)).check(matches(atPosition(2, allOf(hasDescendant(withText(R.string.active_programs))))))
-        /*onView(withId(R.id.recycler)).check(matches(allOf(atPosition(2, allOf(
-            hasDescendant(withText(enrollmentListUIModel.program)),
-            hasDescendant(withText(enrollmentListUIModel.orgUnit))
-         //   hasDescendant(withText(enrollmentListUIModel.currentEnrollmentDate))
+            hasDescendant(withText(enrollmentDay))
         )))))
-        onView(withId(R.id.recycler)).check(matches(atPosition(3, allOf(hasDescendant(withText(R.string.past_programs))))))
-        onView(withId(R.id.recycler)).check(matches(atPosition(4, allOf(
-            hasDescendant(withText(enrollmentListUIModel.program)),
-            hasDescendant(withText(enrollmentListUIModel.orgUnit)),
-            hasDescendant(withText(enrollmentListUIModel.pastEnrollmentDate))
-        ))))*/
     }
 
     fun clickOnEnrolledProgram(position: Int) {
@@ -112,6 +100,5 @@ class EnrollmentRobot : BaseRobot() {
                 actionOnItemAtPosition<DashboardProgramViewHolder>(position, click())
             )
     }
-
 
 }
