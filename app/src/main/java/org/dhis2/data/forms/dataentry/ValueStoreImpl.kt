@@ -73,10 +73,11 @@ class ValueStoreImpl(
         }
 
         val teiUid =
-            when(entryMode){
+            when (entryMode) {
                 DataEntryStore.EntryMode.DE -> {
                     val event = d2.eventModule().events().uid(recordUid).blockingGet()
-                    val enrollment = d2.enrollmentModule().enrollments().uid(event.enrollment()).blockingGet()
+                    val enrollment = d2.enrollmentModule().enrollments()
+                        .uid(event.enrollment()).blockingGet()
                     enrollment.trackedEntityInstance()
                 }
                 DataEntryStore.EntryMode.ATTR -> recordUid
