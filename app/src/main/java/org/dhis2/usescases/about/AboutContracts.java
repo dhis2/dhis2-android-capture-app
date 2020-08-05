@@ -11,6 +11,7 @@ public class AboutContracts {
         void renderServerUrl(String serverUrl);
         String checkCredentials();
         String checkUrl();
+        void navigateToPrivacyPolicy();
     }
 
     public interface AboutPresenter {

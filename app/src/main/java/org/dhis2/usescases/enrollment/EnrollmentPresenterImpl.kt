@@ -7,7 +7,6 @@ import io.reactivex.flowables.ConnectableFlowable
 import io.reactivex.functions.BiFunction
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import java.util.concurrent.TimeUnit
 import kotlin.collections.set
 import org.dhis2.Bindings.profilePicturePath
 import org.dhis2.Bindings.toDate
@@ -19,7 +18,7 @@ import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
-import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel
+import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
@@ -292,13 +291,15 @@ class EnrollmentPresenterImpl(
 
             if (field !is SectionViewModel && field !is DisplayViewModel) {
                 val isUnique =
-                    d2.trackedEntityModule().trackedEntityAttributes().uid(field.uid()).blockingGet()?.unique() ?: false
+                    d2.trackedEntityModule().trackedEntityAttributes()
+                        .uid(field.uid()).blockingGet()?.unique() ?: false
                 var uniqueValueAlreadyExist: Boolean
-                if (isUnique && field.value()!=null) {
-                    uniqueValueAlreadyExist = d2.trackedEntityModule().trackedEntityAttributeValues()
+                if (isUnique && field.value() != null) {
+                    uniqueValueAlreadyExist =
+                        d2.trackedEntityModule().trackedEntityAttributeValues()
                         .byTrackedEntityAttribute().eq(field.uid())
                         .byValue().eq(field.value()).blockingGet().size > 1
-                    if(uniqueValueAlreadyExist){
+                    if (uniqueValueAlreadyExist) {
                         uniqueFields[field.uid()] = field.label()
                     }
                 }
@@ -319,8 +320,8 @@ class EnrollmentPresenterImpl(
         }
         val sections = finalList.filterIsInstance<SectionViewModel>()
         sections.takeIf { showErrors }?.forEach { section ->
-            var errors = 0;
-            repeat(mandatoryFields.filter { it.value == section.uid() }.size) { errors++}
+            var errors = 0
+            repeat(mandatoryFields.filter { it.value == section.uid() }.size) { errors++ }
             finalList[finalList.indexOf(section)] = section.withErrors(errors)
         }
         return finalList
@@ -354,8 +355,6 @@ class EnrollmentPresenterImpl(
     fun subscribeToBackButton() {
         disposable.add(
             backButtonProcessor
-                .doOnNext { view.requestFocus() }
-                .debounce(1, TimeUnit.SECONDS, schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { view.performSaveClick() },
@@ -424,7 +423,7 @@ class EnrollmentPresenterImpl(
 
         val fieldMap = fields.map { it.uid() to it }.toMap().toMutableMap()
 
-        RulesUtilsProviderImpl()
+        RulesUtilsProviderImpl(d2)
             .applyRuleEffects(fieldMap, result, this)
 
         fieldMap.values.forEach {
@@ -553,8 +552,8 @@ class EnrollmentPresenterImpl(
             )
             valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, true)
         } else if (!optionsGroupsToHide.containsKey(field) || !optionsGroupsToHide.contains(
-                optionGroupUid
-            )
+            optionGroupUid
+        )
         ) {
             if (optionsGroupToShow[field] != null) {
                 optionsGroupToShow[field]!!.add(optionGroupUid)

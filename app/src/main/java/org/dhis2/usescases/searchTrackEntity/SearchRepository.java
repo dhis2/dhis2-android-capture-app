@@ -6,8 +6,9 @@ import androidx.lifecycle.LiveData;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
+import org.dhis2.utils.filters.sorting.SortingItem;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -36,13 +37,14 @@ public interface SearchRepository {
 
     @NonNull
     LiveData searchTrackedEntities(@Nullable Program selectedProgram,
-                                                              @NonNull String trackedEntityType,
-                                                              @NonNull List<String> orgUnits,
-                                                              @Nonnull List<State> states,
-                                                              @NonNull List<EventStatus> statuses,
-                                                              @Nullable HashMap<String, String> queryData,
-                                                              boolean assignedToMe,
-                                                              boolean isOnline);
+                                   @NonNull String trackedEntityType,
+                                   @NonNull List<String> orgUnits,
+                                   @Nonnull List<State> states,
+                                   @NonNull List<EventStatus> statuses,
+                                   @Nullable HashMap<String, String> queryData,
+                                   @Nullable SortingItem sortingItem,
+                                   boolean assignedToMe,
+                                   boolean isOnline);
 
     @NonNull
     Flowable<List<SearchTeiModel>> searchTeiForMap(@Nullable Program selectedProgram,
@@ -51,11 +53,12 @@ public interface SearchRepository {
                                                    @Nonnull List<State> states,
                                                    @NonNull List<EventStatus> statuses,
                                                    @Nullable HashMap<String, String> queryData,
+                                                   @Nullable SortingItem sortingItem,
                                                    boolean assignedToMe,
                                                    boolean isOnline);
 
     @NonNull
-    Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam, Date enrollmentDate);
+    Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam, Date enrollmentDate, @Nullable String fromRelationshipUid);
 
     Observable<List<OrganisationUnit>> getOrgUnits(@Nullable String selectedProgramUid);
 
@@ -64,4 +67,6 @@ public interface SearchRepository {
     Observable<List<TrackedEntityAttribute>> trackedEntityTypeAttributes();
 
     Observable<TrackedEntityType> getTrackedEntityType(String trackedEntityUid);
+
+    List<EventViewModel> getEventsForMap(List<SearchTeiModel> teis);
 }

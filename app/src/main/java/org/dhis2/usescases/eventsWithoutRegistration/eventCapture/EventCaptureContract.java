@@ -65,6 +65,8 @@ public class EventCaptureContract {
         void updateNoteBadge(int numberOfNotes);
 
         void showLoopWarning();
+
+        void goBack();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -155,8 +157,6 @@ public class EventCaptureContract {
         boolean isEnrollmentCancelled();
 
         boolean isEventEditable(String eventUid);
-
-        boolean optionIsInOptionGroup(String optionUid, String optionGroupToHide);
 
         String getSectionFor(String field);
 

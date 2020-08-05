@@ -1,12 +1,12 @@
 package org.dhis2.data.forms;
 
+import androidx.annotation.NonNull;
+
 import com.google.auto.value.AutoValue;
 
 import org.hisp.dhis.rules.models.RuleAction;
 
 import javax.annotation.Nonnull;
-
-import androidx.annotation.NonNull;
 
 /**
  * QUADRAM. Created by ppajuelo on 28/03/2019.
@@ -30,6 +30,6 @@ public abstract class RuleActionUnsupported extends RuleAction {
     @Nonnull
     public static RuleActionUnsupported create(
             @NonNull String content, @Nonnull String actionValueType) {
-        return new AutoValue_RuleActionUnsupported(content, actionValueType);
+        return new AutoValue_RuleActionUnsupported("", content, actionValueType);
     }
 }

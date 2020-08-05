@@ -4,18 +4,20 @@ import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import java.util.ArrayList
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel
-import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel
+import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
@@ -27,7 +29,6 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import timber.log.Timber
-import java.util.ArrayList
 
 class EnrollmentRepository(
     private val fieldFactory: FieldViewModelFactory,
@@ -92,7 +93,7 @@ class EnrollmentRepository(
     @VisibleForTesting
     fun getFieldsForSingleSection(programUid: String): Single<List<FieldViewModel>> {
         return d2.programModule().programTrackedEntityAttributes().withRenderType()
-            .byProgram().eq(programUid).get()
+            .byProgram().eq(programUid).orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get()
             .toFlowable()
             .flatMapIterable { programTrackedEntityAttributes -> programTrackedEntityAttributes }
             .map { transform(it) }
@@ -103,6 +104,7 @@ class EnrollmentRepository(
                     if (field is OptionSetViewModel) {
                         val options =
                             d2.optionModule().options().byOptionSetUid().eq(field.optionSet())
+                                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                                 .blockingGet()
                         finalFieldList.add(field.withOptions(options))
                     } else {

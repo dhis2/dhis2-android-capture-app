@@ -1,12 +1,13 @@
 package org.dhis2.data.forms.dataentry
 
 import io.reactivex.Flowable
+import java.io.File
 import org.dhis2.Bindings.blockingSetCheck
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
 import org.hisp.dhis.android.core.common.ValueType
-import java.io.File
 
 class ValueStoreImpl(
     private val d2: D2,
@@ -85,7 +86,7 @@ class ValueStoreImpl(
 
         val valueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
             .value(uid, teiUid)
-        var newValue = value?:""
+        var newValue = value ?: ""
         if (d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet().valueType() ==
             ValueType.IMAGE &&
             value != null
@@ -98,7 +99,6 @@ class ValueStoreImpl(
         } else {
             ""
         }
-
         return if (currentValue != newValue) {
             if (!DhisTextUtils.isEmpty(value)) {
                 valueRepository.blockingSetCheck(d2, uid, newValue)
@@ -114,7 +114,7 @@ class ValueStoreImpl(
     private fun saveDataElement(uid: String, value: String?): Flowable<StoreResult> {
         val valueRepository = d2.trackedEntityModule().trackedEntityDataValues()
             .value(recordUid, uid)
-        var newValue = value?:""
+        var newValue = value ?: ""
         if (d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType() ==
             ValueType.IMAGE &&
             value != null
@@ -159,7 +159,7 @@ class ValueStoreImpl(
     }
 
     private fun saveFileResource(path: String): String {
-        val file = File(path)
+        val file = FileResizerHelper.resizeFile(File(path), FileResizerHelper.Dimension.MEDIUM)
         return d2.fileResourceModule().fileResources().blockingAdd(file)
     }
 
@@ -180,7 +180,11 @@ class ValueStoreImpl(
         isInGroup: Boolean
     ): StoreResult {
         val optionsInGroup =
-            d2.optionModule().optionGroups().withOptions().uid(optionGroupUid).blockingGet().options()
+            d2.optionModule().optionGroups()
+                .withOptions()
+                .uid(optionGroupUid)
+                .blockingGet()
+                .options()
                 ?.map { d2.optionModule().options().uid(it.uid()).blockingGet().code()!! }
                 ?: arrayListOf()
         return when (entryMode) {
@@ -206,7 +210,9 @@ class ValueStoreImpl(
         val possibleValues = arrayListOf(option.name()!!, option.code()!!)
         val valueRepository =
             d2.trackedEntityModule().trackedEntityDataValues().value(recordUid, field)
-        return if (valueRepository.blockingExists() && possibleValues.contains(valueRepository.blockingGet().value())) {
+        return if (valueRepository.blockingExists() &&
+            possibleValues.contains(valueRepository.blockingGet().value())
+        ) {
             save(field, null).blockingFirst()
         } else {
             StoreResult(field, ValueStoreResult.VALUE_HAS_NOT_CHANGED)
@@ -218,7 +224,9 @@ class ValueStoreImpl(
         val possibleValues = arrayListOf(option.name()!!, option.code()!!)
         val valueRepository =
             d2.trackedEntityModule().trackedEntityAttributeValues().value(field, recordUid)
-        return if (valueRepository.blockingExists() && possibleValues.contains(valueRepository.blockingGet().value())) {
+        return if (valueRepository.blockingExists() &&
+            possibleValues.contains(valueRepository.blockingGet().value())
+        ) {
             save(field, null).blockingFirst()
         } else {
             StoreResult(field, ValueStoreResult.VALUE_HAS_NOT_CHANGED)
@@ -232,7 +240,9 @@ class ValueStoreImpl(
     ): StoreResult {
         val valueRepository =
             d2.trackedEntityModule().trackedEntityDataValues().value(recordUid, field)
-        return if (valueRepository.blockingExists() && optionCodesToShow.contains(valueRepository.blockingGet().value()) == isInGroup) {
+        return if (valueRepository.blockingExists() &&
+            optionCodesToShow.contains(valueRepository.blockingGet().value()) == isInGroup
+        ) {
             save(field, null).blockingFirst()
         } else {
             StoreResult(field, ValueStoreResult.VALUE_HAS_NOT_CHANGED)
@@ -246,13 +256,14 @@ class ValueStoreImpl(
     ): StoreResult {
         val valueRepository =
             d2.trackedEntityModule().trackedEntityAttributeValues().value(field, recordUid)
-        return if (valueRepository.blockingExists() && optionCodesToShow.contains(valueRepository.blockingGet().value()) == isInGroup) {
+        return if (valueRepository.blockingExists() &&
+            optionCodesToShow.contains(valueRepository.blockingGet().value()) == isInGroup
+        ) {
             save(field, null).blockingFirst()
         } else {
             StoreResult(field, ValueStoreResult.VALUE_HAS_NOT_CHANGED)
         }
     }
-
 
     override fun deleteOptionValues(optionCodeValuesToDelete: List<String>) {
         when (entryMode) {
@@ -272,7 +283,10 @@ class ValueStoreImpl(
             .byEvent().eq(recordUid)
             .byValue().`in`(optionCodeValuesToDelete)
             .blockingGet().filter {
-                d2.dataElementModule().dataElements().uid(it.dataElement()).blockingGet().optionSetUid() != null
+                d2.dataElementModule().dataElements()
+                    .uid(it.dataElement())
+                    .blockingGet()
+                    .optionSetUid() != null
             }.forEach {
                 saveDataElement(it.dataElement()!!, null)
             }
@@ -283,7 +297,8 @@ class ValueStoreImpl(
             .byTrackedEntityInstance().eq(recordUid)
             .byValue().`in`(optionCodeValuesToDelete)
             .blockingGet().filter {
-                d2.trackedEntityModule().trackedEntityAttributes().uid(it.trackedEntityAttribute()).blockingGet().optionSet()?.uid() != null
+                d2.trackedEntityModule().trackedEntityAttributes()
+                    .uid(it.trackedEntityAttribute()).blockingGet().optionSet()?.uid() != null
             }.forEach {
                 saveAttribute(it.trackedEntityAttribute()!!, null)
             }

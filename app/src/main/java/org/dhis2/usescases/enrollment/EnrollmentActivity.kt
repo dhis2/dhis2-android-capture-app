@@ -14,10 +14,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.crashlytics.android.Crashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
+import java.io.File
+import javax.inject.Inject
 import org.dhis2.App
+import org.dhis2.Bindings.isKeyboardOpened
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryAdapter
 import org.dhis2.data.forms.dataentry.DataEntryArguments
@@ -25,10 +29,10 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.databinding.EnrollmentActivityBinding
+import org.dhis2.uicomponents.map.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
-import org.dhis2.usescases.map.MapSelectorActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.CAMERA_REQUEST
@@ -40,20 +44,20 @@ import org.dhis2.utils.Constants.TEI_UID
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.FileResourcesUtil
 import org.dhis2.utils.customviews.AlertBottomDialog
+import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.recyclers.StickyHeaderItemDecoration
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import java.io.File
-import javax.inject.Inject
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     enum class EnrollmentMode { NEW, CHECK }
 
     private var forRelationship: Boolean = false
+
     @Inject
     lateinit var presenter: EnrollmentPresenterImpl
 
@@ -94,6 +98,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*region LIFECYCLE*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         (applicationContext as App).userComponent()!!.plus(
             EnrollmentModule(
                 this,
@@ -103,7 +108,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             )
         ).inject(this)
         forRelationship = intent.getBooleanExtra(FOR_RELATIONSHIP, false)
-        super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.enrollment_activity)
         binding.view = this
 
@@ -120,8 +124,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 false
             ) { itemPosition ->
                 itemPosition >= 0 &&
-                        itemPosition < adapter.itemCount &&
-                        adapter.getItemViewType(itemPosition) == adapter.sectionViewType()
+                    itemPosition < adapter.itemCount &&
+                    adapter.getItemViewType(itemPosition) == adapter.sectionViewType()
             }
         )
         binding.fieldRecycler.adapter = adapter
@@ -164,7 +168,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                         presenter.updateFields()
                     } catch (e: Exception) {
                         e.printStackTrace()
-                        Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            this, getString(R.string.something_wrong), Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
                 CAMERA_REQUEST -> {
@@ -172,8 +178,15 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                         FileResourceDirectoryHelper.getFileResourceDirectory(this),
                         "tempFile.png"
                     )
-                    presenter.saveFile(uuid, if (file.exists()) file.path else null)
-                    presenter.updateFields()
+                    try {
+                        presenter.saveFile(uuid, if (file.exists()) file.path else null)
+                        presenter.updateFields()
+                    } catch (e: Exception) {
+                        Crashlytics.logException(e)
+                        Toast.makeText(
+                            this, getString(R.string.something_wrong), Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
                 RQ_QR_SCANNER -> {
                     scanTextView.updateScanResult(data!!.getStringExtra(Constants.EXTRA_DATA))
@@ -245,10 +258,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         return adapter.asFlowable()
     }
 
-    override fun goBack() {
-        onBackPressed()
-    }
-
     override fun showMissingMandatoryFieldsMessage(
         emptyMandatoryFields: MutableMap<String, String>
     ) {
@@ -267,7 +276,21 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
+    override fun goBack() {
+        hideKeyboard()
+        attemptFinish()
+    }
+
     override fun onBackPressed() {
+        if (!isKeyboardOpened()) {
+            attemptFinish()
+        } else {
+            currentFocus?.apply { clearFocus() }
+            hideKeyboard()
+        }
+    }
+
+    private fun attemptFinish() {
         if (mode == EnrollmentMode.CHECK) {
             presenter.backIsClicked()
         } else {
@@ -355,6 +378,15 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .transform(CircleCrop())
                     .into(binding.teiDataHeader.teiImage)
+                binding.teiDataHeader.teiImage.setOnClickListener {
+                    ImageDetailBottomDialog(
+                        null,
+                        File(profileImage)
+                    ).show(
+                        supportFragmentManager,
+                        ImageDetailBottomDialog.TAG
+                    )
+                }
             }
         } else {
             binding.title.visibility = View.VISIBLE
@@ -396,6 +428,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         val myLayoutManager: LinearLayoutManager =
             binding.fieldRecycler.layoutManager as LinearLayoutManager
+
         val myFirstPositionIndex = myLayoutManager.findFirstVisibleItemPosition()
         val myFirstPositionView = myLayoutManager.findViewByPosition(myFirstPositionIndex)
 
@@ -405,7 +438,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         }
 
         adapter.swap(fields) { }
-
         myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
 

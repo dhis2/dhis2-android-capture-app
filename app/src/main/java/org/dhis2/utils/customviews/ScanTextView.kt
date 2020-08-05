@@ -37,6 +37,7 @@ class ScanTextView @JvmOverloads constructor(
     private lateinit var onScanClick: OnScanClick
     private lateinit var onScanResult: (String?) -> Unit
     var optionSet: String? = null
+    private var renderingType: ValueTypeRenderingType? = null
 
     init {
         init(context)
@@ -67,6 +68,7 @@ class ScanTextView @JvmOverloads constructor(
         ) {
             val intent = Intent(context, ScanActivity::class.java)
             intent.putExtra(Constants.OPTION_SET, optionSet)
+            intent.putExtra(Constants.SCAN_RENDERING_TYPE, renderingType)
             this.onScanClick.onsScanClicked(intent, this)
         }
     }
@@ -133,6 +135,7 @@ class ScanTextView @JvmOverloads constructor(
     }
 
     fun setRenderingType(type: ValueTypeRenderingType?) {
+        renderingType = type
         when (type) {
             ValueTypeRenderingType.BAR_CODE -> {
                 descIcon.setImageResource(R.drawable.ic_form_barcode)

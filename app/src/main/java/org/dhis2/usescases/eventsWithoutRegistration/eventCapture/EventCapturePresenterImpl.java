@@ -16,7 +16,7 @@ import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
-import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel;
+import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
@@ -30,7 +30,6 @@ import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.jetbrains.annotations.NotNull;
@@ -221,26 +220,30 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                     List<String> optionSets = new ArrayList<>();
                                                     for (FieldViewModel fieldViewModel : fields) {
                                                         String fieldSection = getFieldSection(fieldViewModel);
-                                                        if (!fieldMap.containsKey(fieldSection)) {
-                                                            fieldMap.put(fieldSection, new ArrayList<>());
-                                                        }
-                                                        fieldMap.get(fieldSection).add(fieldViewModel);
+                                                        if(!fieldSection.isEmpty() || sectionList.size() == 1) {
+                                                            if (!fieldMap.containsKey(fieldSection)) {
+                                                                fieldMap.put(fieldSection, new ArrayList<>());
+                                                            }
+                                                            fieldMap.get(fieldSection).add(fieldViewModel);
 
-                                                        if (fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)) {
-                                                            totalFields++;
-                                                        } else if (!optionSets.contains(fieldViewModel.optionSet())) {
-                                                            optionSets.add(fieldViewModel.optionSet());
-                                                            totalFields++;
+                                                            if (!(fieldViewModel instanceof DisplayViewModel)) {
+                                                                if (fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)) {
+                                                                    totalFields++;
+                                                                } else if (!optionSets.contains(fieldViewModel.optionSet())) {
+                                                                    optionSets.add(fieldViewModel.optionSet());
+                                                                    totalFields++;
+                                                                }
+                                                            }
+                                                            if (fieldViewModel instanceof UnsupportedViewModel)
+                                                                unsupportedFields++;
                                                         }
-                                                        if (fieldViewModel instanceof UnsupportedViewModel || fieldViewModel instanceof DisplayViewModel)
-                                                            unsupportedFields++;
                                                     }
 
                                                     List<EventSectionModel> eventSectionModels = new ArrayList<>();
                                                     List<FieldViewModel> finalFieldList = new ArrayList<>();
 
                                                     for (FormSectionViewModel sectionModel : sectionList) {
-                                                        if (sectionList.size() > 1 && !sectionsToHide.contains(sectionModel.sectionUid())) {
+                                                        if (sectionList.size() >= 1 && !sectionModel.sectionUid().isEmpty() && !sectionsToHide.contains(sectionModel.sectionUid())) {
                                                             List<FieldViewModel> fieldViewModels = new ArrayList<>();
                                                             if (fieldMap.get(sectionModel.sectionUid()) != null)
                                                                 fieldViewModels.addAll(fieldMap.get(sectionModel.sectionUid()));
@@ -271,11 +274,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                                             cont,
                                                                             sectionModel.renderType()
                                                                     ));
-                                                            if (isOpen) {
+                                                            if (isOpen && fieldMap.get(sectionModel.sectionUid()) != null) {
                                                                 finalFieldList.addAll(fieldMap.get(sectionModel.sectionUid()));
                                                             }
 
-                                                        } else if (sectionList.size() == 1) {
+                                                        } else if (sectionList.size() == 1 && sectionModel.sectionUid().isEmpty()) {
                                                             int cont = 0;
                                                             HashMap<String, Boolean> finalFields = new HashMap<>();
                                                             for (FieldViewModel fieldViewModel : fields) {
@@ -295,7 +298,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                         }
                                                     }
 
-                                                    finalFieldList.add(SectionViewModel.createClosingSection());
+                                                    if(!eventSectionModels.get(0).sectionName().equals("NO_SECTION")) {
+                                                        finalFieldList.add(SectionViewModel.createClosingSection());
+                                                    }
 
                                                     if (fieldMap.containsKey("display") && fieldMap.get("display") != null) {
                                                         finalFieldList.addAll(fieldMap.get("display"));
@@ -408,7 +413,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void onBackClick() {
-        view.back();
+        view.goBack();
     }
 
     @Override

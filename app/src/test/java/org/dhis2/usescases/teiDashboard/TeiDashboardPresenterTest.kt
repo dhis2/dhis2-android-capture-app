@@ -46,6 +46,7 @@ class TeiDashboardPresenterTest {
     private val filterManager: FilterManager = mock()
     private val programUid = "programUid"
     private val teiUid = "teiUid"
+    private val enrollmentUid = "enrollmentUid"
 
     @Before
     fun setup() {
@@ -53,6 +54,7 @@ class TeiDashboardPresenterTest {
             view,
             teiUid,
             programUid,
+            enrollmentUid,
             repository,
             schedulers,
             analyticsHelper,
@@ -78,7 +80,7 @@ class TeiDashboardPresenterTest {
             repository.getTrackedEntityInstance(teiUid)
         ) doReturn Observable.just(trackedEntityInstance)
         whenever(
-            repository.getEnrollment(programUid, teiUid)
+            repository.getEnrollment()
         ) doReturn Observable.just(enrollment)
         whenever(
             repository.getProgramStages(programUid)
@@ -142,7 +144,6 @@ class TeiDashboardPresenterTest {
             filterManager.asFlowable()
         ) doReturn Flowable.just(filterManager)
 
-
         presenter.init()
 
         verify(view).setDataWithOutProgram(presenter.dashboardProgramModel)
@@ -175,7 +176,7 @@ class TeiDashboardPresenterTest {
             repository.getTrackedEntityInstance(teiUid)
         ) doReturn Observable.just(trackedEntityInstance)
         whenever(
-            repository.getEnrollment(programUid, teiUid)
+            repository.getEnrollment()
         ) doReturn Observable.just(enrollment)
         whenever(
             repository.getProgramStages(programUid)
@@ -310,7 +311,7 @@ class TeiDashboardPresenterTest {
     @Test
     fun `Should return true program grouping from preferences if setting set to true`() {
         val typeToken: TypeToken<HashMap<String, Boolean>> =
-            object: TypeToken<HashMap<String, Boolean>>() {}
+            object : TypeToken<HashMap<String, Boolean>>() {}
         val returnedHashMap = hashMapOf(programUid to true)
 
         whenever(
@@ -325,7 +326,7 @@ class TeiDashboardPresenterTest {
     @Test
     fun `Should return false program grouping from preferences if setting is set to false`() {
         val typeToken: TypeToken<HashMap<String, Boolean>> =
-            object: TypeToken<HashMap<String, Boolean>>() {}
+            object : TypeToken<HashMap<String, Boolean>>() {}
         val returnedHashMap = hashMapOf(programUid to false)
 
         whenever(
@@ -338,9 +339,9 @@ class TeiDashboardPresenterTest {
     }
 
     @Test
-    fun `Should return false program grouping if the programUid not = presenter's programUid`() {
+    fun `Should return true program grouping if the programUid not = presenter's programUid`() {
         val typeToken: TypeToken<HashMap<String, Boolean>> =
-            object: TypeToken<HashMap<String, Boolean>>() {}
+            object : TypeToken<HashMap<String, Boolean>>() {}
         val returnedHashMap = hashMapOf("otherProgramUid" to true)
 
         whenever(
@@ -349,7 +350,7 @@ class TeiDashboardPresenterTest {
 
         val isGrouped = presenter.programGrouping
 
-        assert(isGrouped == false)
+        assert(isGrouped == true)
     }
 
     @Test
@@ -358,6 +359,7 @@ class TeiDashboardPresenterTest {
             view,
             teiUid,
             null,
+            enrollmentUid,
             repository,
             schedulers,
             analyticsHelper,
@@ -399,10 +401,10 @@ class TeiDashboardPresenterTest {
     }
 
     @Test
-    fun `Should update the status of the enrollment`(){
+    fun `Should update the status of the enrollment`() {
         whenever(
             repository.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
-        ) doReturn Observable.just(true)
+        ) doReturn Observable.just(StatusChangeResultCode.CHANGED)
 
         presenter.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
 
@@ -414,12 +416,35 @@ class TeiDashboardPresenterTest {
     fun `Should show error message when updating the status of the enrollment returns an error`() {
         whenever(
             repository.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
-        ) doReturn Observable.just(false)
+        ) doReturn Observable.just(StatusChangeResultCode.FAILED)
 
         presenter.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
 
-        verify(view).displayMessage(any())
+        verify(view).displayStatusError(StatusChangeResultCode.FAILED)
         verifyNoMoreInteractions(view)
     }
 
+    @Test
+    fun `Should show permission error when updating the status of the enrollment`() {
+        whenever(
+            repository.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
+        ) doReturn Observable.just(StatusChangeResultCode.WRITE_PERMISSION_FAIL)
+
+        presenter.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
+
+        verify(view).displayStatusError(StatusChangeResultCode.WRITE_PERMISSION_FAIL)
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `Should show active enrollment error when updating the status of the enrollment`() {
+        whenever(
+            repository.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
+        ) doReturn Observable.just(StatusChangeResultCode.ACTIVE_EXIST)
+
+        presenter.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
+
+        verify(view).displayStatusError(StatusChangeResultCode.ACTIVE_EXIST)
+        verifyNoMoreInteractions(view)
+    }
 }

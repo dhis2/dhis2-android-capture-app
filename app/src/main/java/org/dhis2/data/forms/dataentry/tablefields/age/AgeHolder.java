@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
+import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomCellViewBinding;
@@ -12,7 +13,6 @@ import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.customviews.AgeView;
 import org.dhis2.utils.customviews.TableFieldDialog;
 
-import java.text.ParseException;
 import java.util.Date;
 
 import io.reactivex.processors.FlowableProcessor;
@@ -47,12 +47,8 @@ public class AgeHolder extends FormViewHolder {
         this.ageViewModel = ageViewModel;
 
         if (!isEmpty(ageViewModel.value())) {
-            try {
-                Date date = DateUtils.databaseDateFormat().parse(ageViewModel.value());
-                textView.setText(DateUtils.uiDateFormat().format(date));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            Date date = StringExtensionsKt.toDate(ageViewModel.value());
+            textView.setText(DateUtils.uiDateFormat().format(date));
         } else
             textView.setText(null);
 
@@ -87,7 +83,7 @@ public class AgeHolder extends FormViewHolder {
             ageView.setInitialValue(ageViewModel.value());
         }
 
-        ageView.setAgeChangedListener(ageDate -> date = ageDate != null ? DateUtils.databaseDateFormat().format(ageDate) : "");
+        ageView.setAgeChangedListener(ageDate -> date = ageDate != null ? DateUtils.oldUiDateFormat().format(ageDate) : "");
 
         new TableFieldDialog(
                 context,

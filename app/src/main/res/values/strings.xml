@@ -3,11 +3,14 @@
     <string name="app_name">Dhis2</string>
     <string name="logo_text">dhis</string>
     <string name="logo_number">2</string>
-    <string name="google_api" translatable="false">AIzaSyATNJAcNH6YB8ZzkJbzh1vWOgMAKi7KEnQ</string>
     <string name="tab" translatable="false">\u0009</string>
     <string name="default_notification_channel_id" translatable="false">20180901</string>
     <!-- Warnings and error messages -->
     <string name="error">Error</string>
+    <plurals name="error_message">
+        <item quantity="one">Error</item>
+        <item quantity="other">Errors</item>
+    </plurals>
     <string name="error_wrong_server_url">Wrong server url</string>
     <string name="error_wrong_credentials">Wrong credentials</string>
     <string name="error_unexpected_error">Unexpected error</string>
@@ -18,6 +21,7 @@
     <string name="no_reserved_values">There are no more reserved values. Contact your system administrator</string>
     <string name="no_reserved_values_connection">There are no more reserved values. Connect to the network to refill them</string>
     <string name="errors">errors</string>
+    <string name="something_wrong">Something went wrong</string>
     <!-- SyncService strings: -->
     <string name="sync_now">Synchronise now</string>
     <string name="sync_text">Synchronising with server</string>
@@ -104,6 +108,7 @@
     <string name="cancelled">Cancelled</string>
     <string name="re_open">re-open</string>
     <string name="activate">Activate</string>
+    <string name="active">Active</string>
 
     <!-- State -->
     <string name="state_synced">Sync</string>
@@ -112,6 +117,7 @@
     <string name="state_to_delete">To delete</string>
     <string name="state_error">Error</string>
     <string name="action_sync">SYNC</string>
+    <string name="action_send">SEND</string>
     <string name="action_sync_sms">SYNC SMS</string>
 
     <!--Completion-->
@@ -139,6 +145,7 @@
     <string name="cat_option">Cat option</string>
     <string name="field_required">If you set a value, the whole row needs all of values to complete the Data Set.</string>
     <string name="field_mandatory">Some values required are missing. You need set mandatory values to complete the Data Set.</string>
+    <string name="field_mandatory_v2">There are missing mandatory fields. Please, fill them to complete the data set.</string>
     <string name="datavalue_saved">Value is saved!</string>
     <string name="there_is_no_available_period">There is no available periods to select.</string>
     <!--Event Detail-->
@@ -152,6 +159,7 @@
     <string name="confirm_delete_event">Are you sure that you want to delete this event?</string>
     <string name="event_was_deleted">Event deleted successfully</string>
     <string name="total">Total</string>
+    <string name="most_recent_event_date">Most recent event date</string>
 
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Enrollment List</string>
@@ -514,7 +522,7 @@
     <string name="no_conflicts_synced_message">You are up to date! All your data is sent to the server.</string>
     <string name="relationship_error_recursive">You can\'t relate a record with itself</string>
     <string name="unblock_session">Unblock session</string>
-    <string name="data_set_closed">Close</string>
+    <string name="data_set_complete">Complete</string>
     <string name="data_set_open">Open</string>
     <string name="unsupported_value_type">Unsupported value type</string>
     <string name="change_calendar_view">Change calendar view</string>
@@ -596,6 +604,7 @@
     <string name="filters_disabled">No filters applied</string>
     <string name="filters_title_period">Period</string>
     <string name="filters_title_org_unit">Org. Unit</string>
+    <string name="filters_title_sorting">Sorting</string>
     <string name="filters_title_status">Status</string>
     <string name="filters_title_state">Sync</string>
     <string name="filters_title_assigned">Assigned to me</string>
@@ -682,6 +691,7 @@
     <string name="sync_parameters_not_editable">Sync parameters are not editable</string>
     <string name="rv_no_editable">Number of reserved values downloaded is not editable</string>
     <string name="dialog_layer_satellite">Show satellite view</string>
+    <string name="dialog_layer_event">Show events</string>
     <string name="dialog_layer_tei_coordinates">Show tei coordinates</string>
     <string name="dialog_layer_enrollment_coordinates">Show enrollment coordinates</string>
     <string name="dialog_layer_heatmap">Show heatmap layer</string>
@@ -690,4 +700,49 @@
     <string name="filter_sync_not_synced">Not Synced</string>
     <string name="filter_sync_error">Sync Error</string>
     <string name="filter_sync_sms">SMS Synced</string>
+    <string name="dataset_overview">Details</string>
+    <string name="dataset_comments">Comments</string>
+    <string name="saved">Saved!</string>
+    <string name="run_validation_rules">"Do you want to check data quality?"</string>
+    <string name="validation_success_title">"Everything looks good!"</string>
+    <string name="mark_dataset_complete">"Do you also want to complete the data set?"</string>
+    <string name="dataset_completed">"Mark as completed"</string>
+    <string name="name">Name</string>
+    <string name="formula">Formula</string>
+    <string name="complete_anyway">Complete anyway</string>
+    <string name="fk_message">Missing %s %s from %s %s</string>
+    <string name="filters_title_event_status">Event status</string>
+    <string name="filters_title_enrollment_status">Enrollment status</string>
+    <string name="enrollment_date">Enrollment date</string>
+    <string name="action_apply">Apply</string>
+    <string name="dataset_empty_list_can_create">There are no data. Click \"+\" to add new a new record</string>
+    <string name="dataset_emtpy_list_can_not_create">There are no data. You don\'t have permission to add new records.</string>
+    <string name="validation_rules_empty_description">No description or instruction provided</string>
+    <string name="validation_rules_data_to_review">Data to review</string>
+    <string name="dataset_saved_completed">Saved and completed!</string>
+    <string name="status_change_error_active_exist">There is already an active enrollment</string>
+    <string name="enrollment_status_active">Open</string>
+    <string name="enrollment_status_completed">Complete</string>
+    <string name="enrollment_status_cancelled">Cancelled</string>
+    <string name="unknownValue" translatable="false">-</string>
+    <string name="no_data">No data</string>
+    <string name="no_coordinates_item">This %s has no coordinates.</string>
+    <string name="event_data">Data</string>
+    <string name="download_tei_error">The selected %s could not be downloaded.</string>
+    <string name="completed_by">Completed by %s: %s</string>
+    <string name="updated_time">Updated: %s</string>
+    <string name="action_done">Done!</string>
+    <string name="validation_internal_error_datasets">We could not check data quality. Contact your administrator</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="reopen_question">Do you want to re-open the data set?</string>
+    <string name="group_events_by_stage">Group events by stage</string>
+    <string name="show_events_timeline">Show events timeline</string>
+    <string name="filters_title_date">Date</string>
+    <string name="filters_title_event_date">Event date</string>
+    <string name="dataset_data">Data</string>
+    <string name="tei_type_has_no_attributes">%s has no public attributes. Please select a program</string>
+    <string name="privacy_policy_title">Privacy Policy</string>
+    <string name="open_privacy_policy">Click here to check our <a href="">privacy policy</a> </string>
+    <string name="coordinates_error">Coordinates values are not valid</string>
+    <string name="break_glass_error">You cannot enroll TEIs from other org units in this program because it is protected.\nContact your administrator.</string>
 </resources>

@@ -370,10 +370,13 @@
     <color name="color_item_selected_c3">#c3c3c3</color>
     <color name="item_unselected_fdf">#fdfdfe</color>
     <color name="dialog_gray_background">#fafafa</color>
+    <color name="gray_f5f5">#f5f5f5</color>
 
     <color name="warning_color">#F19525</color>
     <color name="error_color">#F11E1E</color>
     <color name="section_error_color">#E91E63</color>
+    <color name="dots_error_selected">#E91E63</color>
+    <color name="dots_error_unselected">#F8BBD0</color>
 
     <color name="state_by_sms">#26215E8C</color>
     <color name="state_error">#26FF0000</color>
@@ -393,6 +396,13 @@
     <color name="completionColor">#F0FFFFFF</color>
     <color name="secondaryColor">#F0858585</color>
     <color name="circleColor">#4D000000</color>
+    <color name="filter_alpha">#32000000</color>
+    <color name="divider_bg">#eeeeee</color>
+    <color name="sorting_attribute_key_color">#DE2C98F0</color>
+    <color name="sorting_attribute_value_color">#612C98F0</color>
+    <color name="track_bg">#1A000000</color>
+    <color name="avatar_main_color">#CFD8DC</color>
+    <color name="avatar_sec_color">#B0BEC5</color>
     <!--endregion-->
 
 </resources>

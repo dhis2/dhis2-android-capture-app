@@ -103,6 +103,7 @@
             tools:openDrawer="end">
 
                 <androidx.core.widget.NestedScrollView
+                    android:id="@+id/ns_event_initial"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
@@ -124,7 +125,6 @@
                                 android:layout_height="48dp"
                                 android:contentDescription='@{name}'
                                 android:padding="4dp"
-                                android:tint="?colorPrimaryDark"
                                 android:background="@drawable/rounded_square"
                                 app:srcCompat="@drawable/ic_clinical_f_outline" />
 
@@ -183,6 +183,7 @@
                         </LinearLayout>
 
                         <LinearLayout
+                            android:layout_marginTop="8dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="horizontal">
@@ -229,7 +230,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical" />
 
-                        <org.dhis2.utils.customviews.CoordinatesView
+                        <org.dhis2.usescases.coodinates.CoordinatesView
                             android:id="@+id/geometry"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

@@ -29,7 +29,6 @@ class SettingsExtensionsTest {
         EVERY_7_DAYS
     )
 
-
     @Test
     fun `Metadata sync period must transform to proper integer`() {
         for (index in MetadataSyncPeriod.values().indices) {

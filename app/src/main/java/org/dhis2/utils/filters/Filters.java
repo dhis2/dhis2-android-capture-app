@@ -6,7 +6,7 @@ public enum Filters {
     SYNC_STATE,
     CAT_OPT_COMB,
     EVENT_STATUS,
-    ASSIGNED_TO_ME
-    //TODO: Include Event, Enrollment and attributes Filters
-
+    ASSIGNED_TO_ME,
+    ENROLLMENT_DATE,
+    ENROLLMENT_STATUS
 }

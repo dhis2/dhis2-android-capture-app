@@ -2,6 +2,7 @@ package org.dhis2.usescases.settings;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.settings.models.DataSettingsViewModel;
+import org.dhis2.usescases.settings.models.ErrorViewModel;
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel;
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel;
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel;
@@ -29,7 +30,7 @@ public class SyncManagerContracts {
 
         void showTutorial();
 
-        void showSyncErrors(List<D2Error> data);
+        void showSyncErrors(List<ErrorViewModel> data);
 
         void showLocalDataDeleted(boolean error);
 

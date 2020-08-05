@@ -8,6 +8,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
+import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.rules.models.RuleActionAssign
@@ -28,12 +29,14 @@ import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 
 class RulesUtilsProviderImplTest {
 
     private lateinit var ruleUtils: RulesUtilsProvider
     private lateinit var testFieldViewModels: MutableMap<String, FieldViewModel>
     private lateinit var fieldFactory: FieldViewModelFactory
+    private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
 
     private val actionCallbacks: RulesActionCallbacks = mock()
 
@@ -41,7 +44,7 @@ class RulesUtilsProviderImplTest {
 
     @Before
     fun setUp() {
-        ruleUtils = RulesUtilsProviderImpl()
+        ruleUtils = RulesUtilsProviderImpl(d2)
         fieldFactory = FieldViewModelFactoryImpl(
             ValueType.values().map { it to it.name }.toMap()
         )
@@ -400,7 +403,7 @@ class RulesUtilsProviderImplTest {
     fun `RuleActionHideOptionGroup should execute callback action`() {
         testRuleEffects.add(
             RuleEffect.create(
-                RuleActionHideOptionGroup.create("content", "optionGroupUid","field"),
+                RuleActionHideOptionGroup.create("content", "optionGroupUid", "field"),
                 "data"
             )
         )

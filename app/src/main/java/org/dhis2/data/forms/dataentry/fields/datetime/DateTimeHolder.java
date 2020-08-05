@@ -38,20 +38,26 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
         if (binding instanceof FormTimeTextBinding) {
             ((FormTimeTextBinding) binding).timeView.setDateListener(this);
-            ((FormTimeTextBinding) binding).timeView.setActivationListener(() ->
-                    setSelectedBackground(isSearchMode));
+            ((FormTimeTextBinding) binding).timeView.setActivationListener(() -> {
+                    setSelectedBackground(isSearchMode);
+                    closeKeyboard(binding.getRoot());
+            });
         }
 
         if (binding instanceof FormDateTextBinding) {
             ((FormDateTextBinding) binding).dateView.setDateListener(this);
-            ((FormDateTextBinding) binding).dateView.setActivationListener(() ->
-                    setSelectedBackground(isSearchMode));
+            ((FormDateTextBinding) binding).dateView.setActivationListener(() -> {
+                setSelectedBackground(isSearchMode);
+                closeKeyboard(binding.getRoot());
+            });
         }
 
         if (binding instanceof FormDateTimeTextBinding) {
             ((FormDateTimeTextBinding) binding).dateTimeView.setDateListener(this);
-            ((FormDateTimeTextBinding) binding).dateTimeView.setActivationListener(() ->
-                    setSelectedBackground(isSearchMode));
+            ((FormDateTimeTextBinding) binding).dateTimeView.setActivationListener(() -> {
+                setSelectedBackground(isSearchMode);
+                closeKeyboard(binding.getRoot());
+            });
         }
     }
 
@@ -120,11 +126,11 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         String dateFormatted = "";
         if (date != null) {
             if (dateTimeViewModel.valueType() == ValueType.DATE)
-                dateFormatted = DateUtils.uiDateFormat().format(date);
+                dateFormatted = DateUtils.oldUiDateFormat().format(date);
             else if (dateTimeViewModel.valueType() == ValueType.TIME)
                 dateFormatted = DateUtils.timeFormat().format(date);
             else {
-                dateFormatted = DateUtils.databaseDateFormatNoMillis().format(date);
+                dateFormatted = DateUtils.databaseDateFormatNoSeconds().format(date);
             }
         }
         RowAction rowAction = RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null, getAdapterPosition());

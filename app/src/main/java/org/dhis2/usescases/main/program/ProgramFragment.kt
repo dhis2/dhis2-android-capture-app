@@ -2,6 +2,7 @@ package org.dhis2.usescases.main.program
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
@@ -42,8 +43,12 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
     @Inject
     lateinit var presenter: ProgramPresenter
+
     @Inject
     lateinit var adapter: ProgramModelAdapter
+
+    @Inject
+    lateinit var animation: ProgramAnimation
 
     // -------------------------------------------
     //region LIFECYCLE
@@ -61,7 +66,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_program, container, false)
-
+        (binding.drawerLayout.background as GradientDrawable).cornerRadius = 0f
         return binding.apply {
             presenter = this@ProgramFragment.presenter
             programRecycler.itemAnimator = null
@@ -78,11 +83,17 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     override fun onResume() {
         super.onResume()
         presenter.init()
+        animation.initBackdropCorners(
+            binding.drawerLayout.background.mutate() as GradientDrawable
+        )
     }
 
     override fun onPause() {
-        super.onPause()
+        animation.reverseBackdropCorners(
+            binding.drawerLayout.background.mutate() as GradientDrawable
+        )
         presenter.dispose()
+        super.onPause()
     }
 
     //endregion
@@ -194,7 +205,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     override fun showSyncDialog(program: ProgramViewModel) {
         val dialog = SyncStatusDialog.Builder()
             .setConflictType(
-                if (program.typeName() != Constants.DATA_SET) {
+                if (program.programType().isNotEmpty()) {
                     SyncStatusDialog.ConflictType.PROGRAM
                 } else {
                     SyncStatusDialog.ConflictType.DATA_SET

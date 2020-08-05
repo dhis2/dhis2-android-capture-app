@@ -1,13 +1,10 @@
 ---
-title: 'DHIS 2 configuration guide for the Android capture app'
+title: 'DHIS 2 Android App Configuration Guide'
 author: 'DHIS 2'
-date:
 year: 2020
-month: January
+month: July
 keywords: [DHIS2, Android]
-commit:
-version: master
-applicable_txt: 'Applicable to version 2.0.0'
+applicable_txt: 'Applicable to version 2.2'
 ---
 <!--DHIS2-SECTION-ID:index-->
 
@@ -23,3 +20,4 @@ applicable_txt: 'Applicable to version 2.0.0'
 !INCLUDE "content/capture-app/program-rules-supported-in-android-capture-app.md"
 !INCLUDE "content/capture-app/program-indicators.md"
 !INCLUDE "content/capture-app/value-types-supported.md"
+!INCLUDE "content/capture-app/app-android-settings-configuration.md"

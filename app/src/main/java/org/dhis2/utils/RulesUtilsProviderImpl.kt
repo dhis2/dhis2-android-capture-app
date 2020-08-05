@@ -2,6 +2,7 @@ package org.dhis2.utils
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
+import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleActionCreateEvent
@@ -20,7 +21,7 @@ import org.hisp.dhis.rules.models.RuleActionShowWarning
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion
 import org.hisp.dhis.rules.models.RuleEffect
 
-class RulesUtilsProviderImpl : RulesUtilsProvider {
+class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
 
     private var currentFieldViewModels: HashMap<String, FieldViewModel>? = null
 
@@ -146,7 +147,8 @@ class RulesUtilsProviderImpl : RulesUtilsProvider {
         val model = fieldViewModels[showError.field()]
 
         if (model != null) {
-            fieldViewModels[showError.field()] = model.withError("${showError.content()} $effectData" )
+            fieldViewModels[showError.field()] =
+                model.withError("${showError.content()} $effectData")
         }
 
         rulesActionCallbacks.setShowError(showError, model)
@@ -206,16 +208,35 @@ class RulesUtilsProviderImpl : RulesUtilsProvider {
     ) {
         if (fieldViewModels[assign.field()] == null) {
             rulesActionCallbacks.setCalculatedValue(assign.content(), ruleEffect.data())
+            rulesActionCallbacks.save(assign.field(), ruleEffect.data())
         } else {
-            val value = fieldViewModels[assign.field()]!!.value()
+            val field = fieldViewModels[assign.field()]!!
+
+            val value =
+                if (field.optionSet() != null && field.value() != null) {
+                    d2.optionModule().options().byOptionSetUid().eq(field.optionSet())
+                        .byDisplayName().eq(field.value())
+                        .one().blockingGet().code()
+                } else {
+                    field.value()
+                }
 
             if (value == null || value != ruleEffect.data()) {
                 rulesActionCallbacks.save(assign.field(), ruleEffect.data())
             }
 
+            val valueToShow =
+                if (field.optionSet() != null && ruleEffect.data().isNotEmpty()) {
+                    d2.optionModule().options().byOptionSetUid().eq(field.optionSet())
+                        .byCode().eq(ruleEffect.data())
+                        .one().blockingGet().displayName()
+                } else {
+                    ruleEffect.data()
+                }
+
             fieldViewModels.put(
                 assign.field(),
-                fieldViewModels[assign.field()]!!.withValue(ruleEffect.data())
+                fieldViewModels[assign.field()]!!.withValue(valueToShow)
             )!!.withEditMode(false)
         }
     }

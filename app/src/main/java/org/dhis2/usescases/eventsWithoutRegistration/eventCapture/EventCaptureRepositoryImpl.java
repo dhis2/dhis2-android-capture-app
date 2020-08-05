@@ -1,29 +1,22 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import org.dhis2.Bindings.RuleExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
-import org.dhis2.R;
+import org.dhis2.data.dhislogic.DhisEventUtils;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.dhis2.data.forms.dataentry.fields.image.ImageHolder;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
-import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel;
+import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
-import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -38,10 +31,6 @@ import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.option.OptionGroup;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.program.ProgramRule;
-import org.hisp.dhis.android.core.program.ProgramRuleAction;
-import org.hisp.dhis.android.core.program.ProgramRuleActionType;
-import org.hisp.dhis.android.core.program.ProgramRuleVariable;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.program.ProgramStageSection;
@@ -49,7 +38,6 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository;
-import org.hisp.dhis.rules.models.Rule;
 import org.hisp.dhis.rules.models.RuleDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEvent;
@@ -58,9 +46,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -68,9 +54,6 @@ import io.reactivex.Single;
 
 import static android.text.TextUtils.isEmpty;
 
-/**
- * QUADRAM. Created by ppajuelo on 19/11/2018.
- */
 public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCaptureRepository {
 
     private final FieldViewModelFactory fieldFactory;
@@ -84,14 +67,15 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private boolean isEventEditable;
     private final HashMap<String, ProgramStageSection> sectionMap;
     private final HashMap<String, ProgramStageDataElement> stageDataElementsMap;
-    private String lastUpdatedUid;
     private RuleEvent.Builder eventBuilder;
     private List<FieldViewModel> sectionFields;
+    private final DhisEventUtils dhisEventUtils;
 
-    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2) {
+    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2,DhisEventUtils dhisEventUtils) {
         this.eventUid = eventUid;
         this.formRepository = formRepository;
         this.d2 = d2;
+        this.dhisEventUtils = dhisEventUtils;
 
         currentEvent = d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).blockingGet();
         currentStage = d2.programModule().programStages().uid(currentEvent.programStage()).blockingGet();
@@ -135,20 +119,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return enrollment == null || enrollment.status() == EnrollmentStatus.ACTIVE;
     }
 
-    private boolean inOrgUnitRange(String eventUid) {
-        Event event = d2.eventModule().events().uid(eventUid).blockingGet();
-        String orgUnitUid = event.organisationUnit();
-        Date eventDate = event.eventDate();
-        boolean inRange = true;
-        OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet();
-        if (eventDate != null && orgUnit.openingDate() != null && eventDate.before(orgUnit.openingDate()))
-            inRange = false;
-        if (eventDate != null && orgUnit.closedDate() != null && eventDate.after(orgUnit.closedDate()))
-            inRange = false;
-
-        return inRange;
-    }
-
     @Override
     public boolean isEnrollmentCancelled() {
         Enrollment enrollment = d2.enrollmentModule().enrollments().uid(d2.eventModule().events().uid(eventUid).blockingGet().enrollment()).blockingGet();
@@ -160,39 +130,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public boolean isEventEditable(String eventUid) {
-        Event event = d2.eventModule().events().uid(eventUid).blockingGet();
-        Program program = d2.programModule().programs().uid(event.program()).blockingGet();
-        ProgramStage stage = d2.programModule().programStages().uid(event.programStage()).blockingGet();
-        boolean isExpired = DateUtils.getInstance().isEventExpired(event.eventDate(), event.completedDate(), event.status(), program.completeEventsExpiryDays(), stage.periodType() != null ? stage.periodType() : program.expiryPeriodType(), program.expiryDays());
-        boolean blockAfterComplete = event.status() == EventStatus.COMPLETED && stage.blockEntryForm();
-        boolean isInCaptureOrgUnit = d2.organisationUnitModule().organisationUnits()
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .byUid().eq(event.organisationUnit()).one().blockingExists();
-        boolean hasCatComboAccess = event.attributeOptionCombo() == null || getCatComboAccess(event);
-
-        return isEnrollmentOpen() && !blockAfterComplete && !isExpired &&
-                getAccessDataWrite() && inOrgUnitRange(eventUid) && isInCaptureOrgUnit && hasCatComboAccess;
-    }
-
-    private boolean getCatComboAccess(Event event) {
-        if (event.attributeOptionCombo() != null) {
-            List<String> optionUid = UidsHelper.getUidsList(d2.categoryModule()
-                    .categoryOptionCombos().withCategoryOptions().uid(event.attributeOptionCombo())
-                    .blockingGet().categoryOptions());
-            List<CategoryOption> options = d2.categoryModule().categoryOptions().byUid().in(optionUid).blockingGet();
-            boolean access = true;
-            Date eventDate = event.eventDate();
-            for (CategoryOption option : options) {
-                if (!option.access().data().write())
-                    access = false;
-                if (eventDate != null && option.startDate() != null && eventDate.before(option.startDate()))
-                    access = false;
-                if (eventDate != null && option.endDate() != null && eventDate.after(option.endDate()))
-                    access = false;
-            }
-            return access;
-        } else
-            return true;
+        return dhisEventUtils.isEventEditable(eventUid);
     }
 
     @Override
@@ -302,6 +240,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 }
             } else if (fieldViewModel instanceof OptionSetViewModel) {
                 List<Option> options = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())
+                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                         .blockingGet();
                 renderList.add(((OptionSetViewModel) fieldViewModel).withOptions(options));
             } else
@@ -512,7 +451,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public void setLastUpdated(String lastUpdatedUid) {
-        this.lastUpdatedUid = lastUpdatedUid;
     }
 
     @Override
@@ -526,18 +464,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return d2.eventModule().events().uid(eventUid).get()
                 .flatMap(event -> d2.trackedEntityModule().trackedEntityDataValues().byEvent().eq(eventUid).byValue().isNotNull().get()
                         .map(values -> RuleExtensionsKt.toRuleDataValue(values, event, d2.dataElementModule().dataElements(), d2.programModule().programRuleVariables(), d2.optionModule().options()))).toFlowable();
-    }
-
-    @Override
-    public boolean optionIsInOptionGroup(String optionUid, String optionGroupToHide) {
-        List<ObjectWithUid> optionGroupOptions = d2.optionModule().optionGroups().withOptions().uid(optionGroupToHide).blockingGet().options();
-        boolean isInGroup = false;
-        if (optionGroupOptions != null)
-            for (ObjectWithUid uidObject : optionGroupOptions)
-                if (uidObject.uid().equals(optionUid))
-                    isInGroup = true;
-
-        return isInGroup;
     }
 
     @Override

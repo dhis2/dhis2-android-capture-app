@@ -36,7 +36,7 @@ import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerTabletAdapter;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataFragment;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
@@ -54,6 +54,10 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM;
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM_ENROLLMENT;
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT;
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT_PROGRAM;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.Constants.TEI_UID;
@@ -65,7 +69,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public static final String UNSELECTED_TAB_COLOR = "#B3FFFFFF";
     public static final int OVERVIEW_POS = 0;
     public static final int INDICATORS_POS = 1;
-    public static final int RELATIONSHIPS_POS= 2;
+    public static final int RELATIONSHIPS_POS = 2;
     public static final int NOTES_POS = 3;
     public static final int INDICATORS_LANDSCAPE_POS = 0;
     public static final int RELATIONSHIPS_LANDSCAPE_POS = 1;
@@ -94,6 +98,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     private MutableLiveData<Boolean> groupByStage;
     private MutableLiveData<Boolean> filtersShowing;
     private MutableLiveData<String> currentEnrollment;
+    private MutableLiveData<Boolean> relationshipMap;
     private float elevation = 0f;
 
     public static Intent intent(Context context,
@@ -122,12 +127,13 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             enrollmentUid = getIntent().getStringExtra(ENROLLMENT_UID);
         }
 
-        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid)).inject(this);
+        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid, enrollmentUid)).inject(this);
         setTheme(presenter.getProgramTheme(R.style.AppTheme));
         super.onCreate(savedInstanceState);
         groupByStage = new MutableLiveData<>(presenter.getProgramGrouping());
         filtersShowing = new MutableLiveData<>(false);
         currentEnrollment = new MutableLiveData<>();
+        relationshipMap = new MutableLiveData<>(false);
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
@@ -173,6 +179,25 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         });
 
         elevation = ViewCompat.getElevation(binding.toolbar);
+
+        binding.relationshipMapIcon.setOnClickListener(v -> {
+                    if (!relationshipMap.getValue()) {
+                        binding.relationshipMapIcon.setImageResource(R.drawable.ic_list);
+                    } else {
+                        binding.relationshipMapIcon.setImageResource(R.drawable.ic_map);
+                    }
+                    boolean showMap = !relationshipMap.getValue();
+                    if(showMap){
+                        binding.toolbarProgress.setVisibility(View.VISIBLE);
+                        binding.toolbarProgress.hide();
+                    }
+                    relationshipMap.setValue(showMap);
+                }
+        );
+
+        relationshipMap().observe(this, value -> {
+            enablePagerScrolling(!value);
+        });
     }
 
     @Override
@@ -230,8 +255,16 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                                 binding.filterCounter.setVisibility(View.GONE);
                                 binding.searchFilterGeneral.setVisibility(View.GONE);
                             } else {
+
                                 binding.filterCounter.setVisibility(View.VISIBLE);
                                 binding.searchFilterGeneral.setVisibility(View.VISIBLE);
+                            }
+                            if (position == RELATIONSHIPS_POS) {
+                                binding.relationshipMapIcon.setVisibility(View.VISIBLE);
+                                enablePagerScrolling(!relationshipMap().getValue());
+                            } else {
+                                binding.relationshipMapIcon.setVisibility(View.GONE);
+                                enablePagerScrolling(true);
                             }
                         }
                     }
@@ -251,12 +284,15 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                             switch (position) {
                                 case INDICATORS_LANDSCAPE_POS:
                                     binding.sectionTitle.setText(getString(R.string.dashboard_indicators));
+                                    binding.relationshipMapIcon.setVisibility(View.GONE);
                                     break;
                                 case RELATIONSHIPS_LANDSCAPE_POS:
                                     binding.sectionTitle.setText(getString(R.string.dashboard_relationships));
+                                    binding.relationshipMapIcon.setVisibility(View.VISIBLE);
                                     break;
                                 case NOTES_LANDSCAPE_POS:
                                     binding.sectionTitle.setText(getString(R.string.dashboard_notes));
+                                    binding.relationshipMapIcon.setVisibility(View.GONE);
                                     break;
                                 default:
                                     break;
@@ -268,12 +304,19 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             binding.teiTablePager.setAdapter(tabletAdapter);
             binding.dotsIndicator.setVisibility(programUid != null ? View.VISIBLE : View.GONE);
 
-            // TODO look into dots Indicator integration with viewPager 2
-            //binding.dotsIndicator.setViewPager(binding.teiPager);
+            binding.dotsIndicator.setViewPager(binding.teiTablePager);
             if (fromRelationship)
                 binding.teiTablePager.setCurrentItem(1, false);
 
             tabLayoutMediator(binding.teiTablePager);
+        }
+    }
+
+    private void enablePagerScrolling(boolean enable) {
+        if (OrientationUtilsKt.isPortrait()) {
+            binding.teiPager.setUserInputEnabled(enable);
+        } else {
+            binding.teiTablePager.setUserInputEnabled(enable);
         }
     }
 
@@ -436,18 +479,19 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.RQ_ENROLLMENTS && resultCode == RESULT_OK) {
-            if (data.hasExtra("GO_TO_ENROLLMENT")) {
+            if (data.hasExtra(GO_TO_ENROLLMENT)) {
                 Intent intent = EnrollmentActivity.Companion.getIntent(this,
-                        data.getStringExtra("GO_TO_ENROLLMENT"),
-                        data.getStringExtra("GO_TO_ENROLLMENT_PROGRAM"),
+                        data.getStringExtra(GO_TO_ENROLLMENT),
+                        data.getStringExtra(GO_TO_ENROLLMENT_PROGRAM),
                         EnrollmentActivity.EnrollmentMode.NEW,
                         false);
                 startActivity(intent);
                 finish();
             }
 
-            if (data.hasExtra("CHANGE_PROGRAM")) {
-                startActivity(intent(this, teiUid, data.getStringExtra("CHANGE_PROGRAM"), null));
+            if (data.hasExtra(CHANGE_PROGRAM)) {
+                startActivity(intent(this, teiUid, data.getStringExtra(CHANGE_PROGRAM),
+                        data.getStringExtra(CHANGE_PROGRAM_ENROLLMENT)));
                 finish();
             }
 
@@ -557,16 +601,16 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         }
 
         int menu;
-        if(enrollmentUid == null) {
+        if (enrollmentUid == null) {
             menu = R.menu.dashboard_tei_menu;
-        } else if (groupByStage.getValue()){
+        } else if (groupByStage.getValue()) {
             menu = R.menu.dashboard_menu_group;
         } else {
             menu = R.menu.dashboard_menu;
         }
         popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
 
-        if(enrollmentUid != null) {
+        if (enrollmentUid != null) {
             EnrollmentStatus status = presenter.getEnrollmentStatus(enrollmentUid);
             if (status == EnrollmentStatus.COMPLETED) {
                 popupMenu.getMenu().findItem(R.id.complete).setVisible(false);
@@ -634,6 +678,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         return groupByStage;
     }
 
+    public LiveData<Boolean> relationshipMap() {
+        return relationshipMap;
+    }
+
     @Override
     public void setFiltersLayoutState() {
         filtersShowing.setValue(!filtersShowing.getValue());
@@ -651,14 +699,14 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     public void hideTabsAndDisableSwipe() {
         binding.tabLayout.setVisibility(View.GONE);
-        binding.teiPager.setUserInputEnabled(false);
+        enablePagerScrolling(false);
         ViewCompat.setElevation(binding.toolbar, 0);
     }
 
     @Override
     public void showTabsAndEnableSwipe() {
         binding.tabLayout.setVisibility(View.VISIBLE);
-        binding.teiPager.setUserInputEnabled(true);
+        enablePagerScrolling(true);
         ViewCompat.setElevation(binding.toolbar, elevation);
     }
 
@@ -669,5 +717,25 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     public LiveData<String> updatedEnrollment() {
         return currentEnrollment;
+    }
+
+    @Override
+    public void displayStatusError(StatusChangeResultCode statusCode) {
+        switch (statusCode) {
+            case FAILED:
+                displayMessage(getString(R.string.something_wrong));
+                break;
+            case ACTIVE_EXIST:
+                displayMessage(getString(R.string.status_change_error_active_exist));
+                break;
+            case WRITE_PERMISSION_FAIL:
+                displayMessage(getString(R.string.permission_denied));
+                break;
+        }
+
+    }
+
+    public void onRelationshipMapLoaded() {
+        binding.toolbarProgress.hide();
     }
 }

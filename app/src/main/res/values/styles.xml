@@ -5,6 +5,10 @@
         <item name="android:colorAccent">@color/colorGreyDefault</item>
     </style>
 
+    <style name="ErrorActivityTheme" parent="AppTheme">
+        <item name="colorAccent">@color/text_black_4d4d4d</item>
+    </style>
+
     <style name="DatePickerTheme" parent="Base.Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">@color/colorGreyDefault</item>
         <item name="android:colorAccent">@color/colorGreyDefault</item>
@@ -69,6 +73,7 @@
         <item name="colorAccent">@color/text_black_333</item>
         <item name="colorControlNormal">@color/text_black_333</item>
         <item name="colorControlActivated">@color/text_black_333</item>
+        <item name="boxBackgroundColor">@color/bg_white_f9f</item>
     </style>
 
     <style name="ValueType_Text">
@@ -184,7 +189,7 @@
     </style>
 
     <style name="ImageFieldLabel">
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textAlignment">textStart</item>
         <item name="android:textStyle">bold</item>
     </style>
@@ -207,6 +212,14 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/padding_12</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <style name="ActionIconSmallPadding" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_6</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
     </style>
@@ -308,4 +321,11 @@
         <item name="android:textSize">10sp</item>
     </style>
 
+    <style name="CustomBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+    </style>
+
+    <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
 </resources>

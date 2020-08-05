@@ -114,9 +114,23 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         super.onDestroy();
     }
 
+
+    @Override
+    public void goBack() {
+        hideKeyboard();
+        attemptFinish();
+    }
+
     @Override
     public void onBackPressed() {
-        clearFocus();
+        if (!ExtensionsKt.isKeyboardOpened(this)) {
+            attemptFinish();
+        } else {
+            hideKeyboard();
+        }
+    }
+
+    private void attemptFinish() {
         if (eventMode == EventMode.NEW) {
             new CustomDialog(
                     this,
@@ -441,11 +455,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     }
                 }
         ).show();
-    }
-
-    @Override
-    public void back() {
-        onBackPressed();
     }
 
     @Override

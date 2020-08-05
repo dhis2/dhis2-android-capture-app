@@ -22,10 +22,7 @@ import org.dhis2.data.forms.dataentry.DataEntryAdapter;
 import org.dhis2.data.forms.dataentry.DataEntryArguments;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.data.forms.dataentry.fields.section.SectionHolder;
-import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.dhis2.data.tuples.Trio;
-import org.dhis2.databinding.FormSectionBinding;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -38,11 +35,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-import kotlin.jvm.functions.Function1;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -57,8 +51,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     private FlowableProcessor<RowAction> flowableProcessor;
     private FlowableProcessor<String> sectionProcessor;
     private FlowableProcessor<Trio<String, String, Integer>> flowableOptions;
-    private FormSectionBinding headerBinding;
-    private SectionHolder headerHolder;
 
     public static EventCaptureFormFragment newInstance(String eventUid) {
         EventCaptureFormFragment fragment = new EventCaptureFormFragment();
@@ -91,6 +83,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         this.flowableOptions = PublishProcessor.create();
 
         binding.actionButton.setOnClickListener(view -> {
+            view.requestFocus();
             presenter.onActionButtonClick();
         });
 
@@ -110,6 +103,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         presenter.onDetach();
     }
 
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -122,7 +116,13 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             dataEntryAdapter.setLastFocusItem(lastFocusItem);
         }
 
+        if (dataEntryAdapter == null) {
+            createDataEntry();
+        }
+
         LinearLayoutManager myLayoutManager = (LinearLayoutManager) binding.formRecycler.getLayoutManager();
+        if (myLayoutManager == null) return;
+
         int myFirstPositionIndex = myLayoutManager.findFirstVisibleItemPosition();
         View myFirstPositionView = myLayoutManager.findViewByPosition(myFirstPositionIndex);
         int offset = 0;
@@ -137,7 +137,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         dataEntryAdapter.swap(updates, () -> { });
 
         myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset);
-
     }
 
     @Override
@@ -207,9 +206,9 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     private void checkLastItem() {
         GridLayoutManager layoutManager = (GridLayoutManager) binding.formRecycler.getLayoutManager();
         int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
-        boolean shouldShowFab =
+        boolean shouldShowFab = lastVisiblePosition != -1 && (
                 lastVisiblePosition == dataEntryAdapter.getItemCount() - 1 ||
-                        dataEntryAdapter.getItemViewType(lastVisiblePosition) == 17;
+                        dataEntryAdapter.getItemViewType(lastVisiblePosition) == 17);
         animateFabButton(shouldShowFab);
     }
 

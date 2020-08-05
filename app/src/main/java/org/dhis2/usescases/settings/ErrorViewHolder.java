@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemErrorDialogBinding;
+import org.dhis2.usescases.settings.models.ErrorViewModel;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 
@@ -19,22 +20,22 @@ public class ErrorViewHolder extends RecyclerView.ViewHolder {
 
     private final ItemErrorDialogBinding binding;
     private final ObservableBoolean sharing;
-    private final FlowableProcessor<Pair<Boolean, D2Error>> processor;
+    private final FlowableProcessor<Pair<Boolean, ErrorViewModel>> processor;
 
     public ErrorViewHolder(@NonNull ItemErrorDialogBinding binding, ObservableBoolean sharing,
-                           FlowableProcessor<Pair<Boolean, D2Error>> processor) {
+                           FlowableProcessor<Pair<Boolean, ErrorViewModel>> processor) {
         super(binding.getRoot());
         this.binding = binding;
         this.sharing = sharing;
         this.processor = processor;
     }
 
-    public void bind(D2Error errorMessageModel) {
+    public void bind(ErrorViewModel errorMessageModel) {
         binding.setSharing(sharing);
-        binding.errorCode.setText(String.valueOf(errorMessageModel.httpErrorCode()));
-        binding.errorDate.setText(DateUtils.dateTimeFormat().format(errorMessageModel.created()));
-        binding.errorMessage.setText(errorMessageModel.errorDescription());
-        binding.errorComponent.setText(errorMessageModel.errorComponent().name());
+        binding.errorCode.setText(String.valueOf(errorMessageModel.getErrorCode()));
+        binding.errorDate.setText(DateUtils.dateTimeFormat().format(errorMessageModel.getCreationDate()));
+        binding.errorMessage.setText(errorMessageModel.getErrorDescription());
+        binding.errorComponent.setText(errorMessageModel.getErrorComponent());
         binding.selected.setOnCheckedChangeListener((buttonView, isChecked) -> processor.onNext(Pair.create(isChecked, errorMessageModel)));
     }
 }
