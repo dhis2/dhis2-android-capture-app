@@ -68,7 +68,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                             )
                     );
                 }
-                v.setSelected(false);
+                setSelected(SelectionState.UNSELECTED);
 
             }
 
