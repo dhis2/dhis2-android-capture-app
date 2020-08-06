@@ -3,6 +3,7 @@ package org.dhis2.usescases.teidashboard.robot
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.hasSibling
@@ -73,6 +74,26 @@ class TeiDashboardRobot : BaseRobot() {
     fun clickOnEventWithPosition(position: Int) {
         onView(withId(R.id.tei_recycler))
             .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, click()))
+    }
+
+    fun clickOnEventWith(eventName: String, eventStatus:Int){
+        onView(withId(R.id.tei_recycler))
+            .perform(actionOnItem<DashboardProgramViewHolder>(allOf(hasDescendant(withText(eventName)), hasDescendant(
+                withText(eventStatus))), click()))
+    }
+
+    fun clickOnEventWith(eventName: String, eventStatus: Int, date: String){
+        onView(withId(R.id.tei_recycler))
+            .perform(actionOnItem<DashboardProgramViewHolder>(allOf(
+                hasDescendant(withText(eventName)),
+                hasDescendant(withText(eventStatus)),
+                hasDescendant(withText(date))),
+                click()))
+    }
+
+    fun clickOnGroupEventByName(name: String){
+        onView(withId(R.id.tei_recycler))
+            .perform(actionOnItem<DashboardProgramViewHolder>(hasDescendant(withText(name)), click()))
     }
 
     fun clickOnFab() {
@@ -299,5 +320,9 @@ class TeiDashboardRobot : BaseRobot() {
             checkEventIsClosed(event)
             event++
         }
+    }
+
+    companion object {
+        const val OPEN_EVENT_STATUS = R.string.event_open
     }
 }

@@ -452,7 +452,7 @@ class SyncStatusDialog private constructor(
         presenter.initGranularSync().observe(
             this,
             Observer { workInfo ->
-                if (workInfo != null && workInfo.size > 0) {
+                if (workInfo != null && workInfo.isNotEmpty()) {
                     manageWorkInfo(workInfo[0])
                 }
             }
