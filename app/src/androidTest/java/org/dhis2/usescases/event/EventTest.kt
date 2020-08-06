@@ -4,6 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -14,6 +15,7 @@ class EventTest: BaseTest() {
     @get:Rule
     val rule = ActivityTestRule(TeiDashboardMobileActivity::class.java, false, false)
 
+    @Ignore
     @Test
     fun shouldDeleteEventWhenClickOnDeleteInsideSpecificEvent() {
 
@@ -28,6 +30,7 @@ class EventTest: BaseTest() {
 
     }
 
+    @Ignore
     @Test
     fun shouldShowEventDetailsWhenClickOnDetailsInsideSpecificEvent() {
 
