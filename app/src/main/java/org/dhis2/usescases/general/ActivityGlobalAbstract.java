@@ -81,6 +81,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     @Inject
     public AnalyticsHelper analyticsHelper;
     public ScanTextView scanTextView;
+    private PinDialog pinDialog;
 
     public void requestLocationPermission(CoordinatesView coordinatesView) {
         this.coordinatesView = coordinatesView;
@@ -137,6 +138,10 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
+        if (pinDialog != null) {
+            pinDialog.dismissAllowingStateLoss();
+            pinDialog = null;
+        }
         lifeCycleObservable.onNext(Status.ON_PAUSE);
     }
 
@@ -163,7 +168,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     }
 
     public void showPinDialog() {
-        new PinDialog(PinDialog.Mode.ASK,
+        pinDialog = new PinDialog(PinDialog.Mode.ASK,
                 (this instanceof LoginActivity),
                 aBoolean -> {
                     startActivity(MainActivity.class, null, true, true, null);
@@ -176,14 +181,15 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
                     }
                     return null;
                 }
-        ).show(getSupportFragmentManager(), PIN_DIALOG_TAG);
+        );
+        pinDialog.show(getSupportFragmentManager(), PIN_DIALOG_TAG);
     }
 
     @Override
     public void showTutorial(boolean shaked) {
-        if(HelpManager.getInstance().isReady()) {
+        if (HelpManager.getInstance().isReady()) {
             HelpManager.getInstance().showHelp();
-        }else{
+        } else {
             showToast(getString(R.string.no_intructions));
         }
     }
