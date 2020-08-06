@@ -10,18 +10,14 @@ import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import kotlinx.android.synthetic.main.widget_datepicker.view.widget_datepicker
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.typeChildViewWithId
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
-
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
-import java.time.Month
-import java.time.Year
 
 fun searchTeiRobot(searchTeiRobot: SearchTeiRobot.() -> Unit) {
     SearchTeiRobot().apply {
@@ -48,13 +44,6 @@ class SearchTeiRobot : BaseRobot() {
                 withText(teiLastName)))))))
     }
 
-    fun searchByField(searchWord:String, field: String) {
-        onView(withId(R.id.form_recycler))
-            .perform(
-                actionOnItem<SearchTEViewHolder>(hasDescendant(withText(field)), typeChildViewWithId(searchWord, R.id.input_editText))
-            )
-    }
-
     fun searchByPosition(searchWord: String, position:Int) {
         onView(withId(R.id.form_recycler))
             .perform(
@@ -63,11 +52,8 @@ class SearchTeiRobot : BaseRobot() {
     }
 
 
-    fun clickOnDateField(field: String) {
+    fun clickOnDateField() {
         onView(withId(R.id.form_recycler))
-            /*.perform(
-                actionOnItem<SearchTEViewHolder>(hasDescendant(withText(field)), clickChildViewWithId(R.id.inputEditText))
-            )*/
             .perform(
                 actionOnItemAtPosition<SearchTEViewHolder>(2, clickChildViewWithId(R.id.inputEditText))
             )

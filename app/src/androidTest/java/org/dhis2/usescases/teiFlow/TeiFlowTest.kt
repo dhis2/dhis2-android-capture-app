@@ -27,20 +27,6 @@ class TeiFlowTest: BaseTest() {
 
     @Test
     fun shouldEnrollToSameProgramAfterClosedIt() {
-        /**
-         * MNCH /PNC (Adult Woman)
-         * register TEI
-         * add event
-         * close enrollment, check all event are Program Completed
-         * add new enrollment with different date to same program
-         * verify enrollment
-         * verify there's two enrollments (current and past)
-         * check past enrollment all closed events
-         * reopen the past enrollment
-         * check open
-         * check two current enrollments
-         * */
-
         val womanProgram = "MNCH / PNC (Adult Woman)"
         val totalEventsPerEnrollment = 3
         val pastProgramPosition = 4

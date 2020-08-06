@@ -22,33 +22,14 @@ fun teiFlowRobot(teiFlowRobot: TeiFlowRobot.() -> Unit) {
 
 class TeiFlowRobot : BaseRobot() {
 
-    private fun typeOnSearchAtPosition(registerWord: String, position:Int) {
-        onView(withId(R.id.form_recycler))
-            .perform(
-                actionOnItemAtPosition<SearchTEViewHolder>(position, typeChildViewWithId(registerWord, R.id.input_editText))
-            )
-    }
-
-
-    private fun clickOnDateField(position: Int) {
-        onView(withId(R.id.form_recycler))
-            .perform(
-                actionOnItemAtPosition<SearchTEViewHolder>(
-                    position,
-                    clickChildViewWithId(R.id.inputEditText)
-                )
-            )
-    }
-
     fun registerTEI(registrationModel: RegisterTEIUIModel) {
         val registrationDate = registrationModel.firstSpecificDate
         val enrollmentDate = registrationModel.enrollmentDate
 
-        typeOnSearchAtPosition(registrationModel.name, 0)
-        typeOnSearchAtPosition(registrationModel.lastName,1)
-        clickOnDateField(2)
-
         searchTeiRobot {
+            searchByPosition(registrationModel.name, 0)
+            searchByPosition(registrationModel.lastName, 1)
+            clickOnDateField()
             selectSpecificDate(registrationDate.year,registrationDate.month,registrationDate.day)
             acceptDate()
             clickOnFab()
@@ -101,6 +82,8 @@ class TeiFlowRobot : BaseRobot() {
 
     fun closeEnrollmentAndCheckEvents(totalEvents: Int) {
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
             clickOnMenuMoreOptions()
             clickOnMenuComplete()
             checkCanNotAddEvent()
