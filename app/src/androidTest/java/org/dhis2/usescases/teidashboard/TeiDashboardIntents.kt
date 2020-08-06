@@ -123,3 +123,4 @@ fun prepareChildProgrammeIntentAndLaunchActivity(ruleSearch: ActivityTestRule<Se
         putExtra(SearchTETest.CHILD_TE_TYPE, SearchTETest.CHILD_TE_TYPE_VALUE)
     }.also { ruleSearch.launchActivity(it) }
 }
+

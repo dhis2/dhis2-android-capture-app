@@ -246,25 +246,25 @@ class TeiDashboardRobot : BaseRobot() {
                     hasDescendant(withText(R.string.event_schedule)))))))
     }
 
-    fun checkEventIsClosed(position: Int) {
+    private fun checkEventIsClosed(position: Int) {
         onView(withId(R.id.tei_recycler))
                 .check(matches(allOf(isDisplayed(), isNotEmpty(),
                         atPosition(position, hasDescendant(withText(R.string.program_completed))))))
     }
 
-    fun checkEventIsOpen(position: Int) {
+    private fun checkEventIsOpen(position: Int) {
         onView(withId(R.id.tei_recycler))
                 .check(matches(allOf(isDisplayed(), isNotEmpty(),
                         atPosition(position, hasDescendant(withText(R.string.event_open))))))
     }
 
-    fun checkEventIsCompleted(position: Int) {
+    private fun checkEventIsCompleted(position: Int) {
         onView(withId(R.id.tei_recycler))
             .check(matches(allOf(isDisplayed(), isNotEmpty(),
                 atPosition(position, hasDescendant(withText(R.string.event_completed))))))
     }
 
-    fun checkEventIsInactivate(position: Int) {
+    private fun checkEventIsInactivate(position: Int) {
         onView(withId(R.id.tei_recycler))
                 .check(matches(allOf(isDisplayed(), isNotEmpty(), atPosition(position, hasDescendant(withText(R.string.program_inactive))))))
     }
