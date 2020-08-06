@@ -1,5 +1,7 @@
 # Mobile Implementation Checklist
 
+<!--DHIS2-SECTION-ID:mobile-implementation-checklist-->
+
 | Task | Completed |
 | -------- | :---: |
 | Analysis of Technology Android App and Server Requirements | ☐ |

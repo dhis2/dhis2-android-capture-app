@@ -1,10 +1,14 @@
-The main new features include:
-- Increase data set row headers
-- Grouping events by program stage in the TEI Dashboard
-- Filter events in the TEI Dashboard
-- Improved error messages when saving events and enrollments
-- QR and Barcode support for data elements and attributes
-- Extended rendering options
-- New form section navigation for events and enrollment
-- Notes for events
-- New filter based on user assignment
+Main new features:
+- Validation rules
+- New sorting and filters
+- Map visualization of TEI, event and relationship lists
+- Inherit values when creating a new TEI for a relationship
+- Pre-selection of current organisation unit when creating events
+- Searchable category options
+- New event and TEI cards
+- Improved data set screen
+- New event status and sync state icons
+- Support for Android Settings DHIS2 web app
+- Expanded error log
+- Database encryption
+- Quality and performance improvements

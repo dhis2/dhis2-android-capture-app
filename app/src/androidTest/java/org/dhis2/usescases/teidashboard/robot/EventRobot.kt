@@ -76,4 +76,10 @@ class EventRobot : BaseRobot() {
             )
     }
 
+    fun clickOnFutureAlertDialog(){
+        clickOnChangeDate()
+        clickOnEditDate()
+        acceptUpdateEventDate()
+        clickOnUpdate()
+    }
 }

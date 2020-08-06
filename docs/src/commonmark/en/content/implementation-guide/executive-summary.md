@@ -1,6 +1,10 @@
 # Executive Summary
 
+<!--DHIS2-SECTION-ID:summary-->
+
 ## Background
+
+<!--DHIS2-SECTION-ID:summary_background-->
 
 The University of Oslo in response to the growing smartphone adoption rates in Sub-Saharan Africa and developing countries, added to the clear leadership of the Android Market Share, decided to build a new Mobile DHIS 2 Android Application, DHIS 2 Capture Android, which was released in September 2018. This work builds upon the lessons learnt from the previous mobile DHIS 2 Android Apps: Data Capture, Tracker Capture, Event Capture and Dashboard.
 
@@ -11,6 +15,8 @@ DHIS 2 Capture Android Application is different from the web-based DHIS 2. The w
 Research shows that a mobile eHealth App can be easily integrated into care, improving productivity. The App should facilitate client follow-up, data reporting, and decision-making. However, the feasibility and usability of the app can be negatively affected by high beneficiary volumes, staff shortages, and problems with the software and the devices. Real time monitoring, program investment and the right human resources will be needed for a successful integration of mobile client data apps for frontline health workers in rural and resource-poor settings [Rothstein JD1 et al. 2014](https://www.hindawi.com/journals/ijta/2016/2515420/).
 
 ## Objectives
+
+<!--DHIS2-SECTION-ID:summary_objectives-->
 
 The objective of this document is to provide a set of guidelines for the deployment of the Mobile DHIS 2 Capture Android Application. The steps of the deployment, which will be described in detail later in the document, include: 
 
@@ -27,5 +33,7 @@ It is also included a document map which groups the sections of the document int
 In the last section, it is included a checklist which summarized its key aspects and facilitates following up this guidelines in your project.
 
 ## Target Audience
+
+<!--DHIS2-SECTION-ID:summary_audience-->
 
 This document is intended to be used by those leading the deployment process from its early phases, and should be shared with those involved in the process.
