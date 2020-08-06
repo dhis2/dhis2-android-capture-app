@@ -42,9 +42,9 @@ class EnrollmentRobot : BaseRobot() {
         onView(withId(R.id.recycler))
             .perform(
                 scrollTo<SearchTEViewHolder>(allOf(hasDescendant(withText(program)), hasDescendant(
-                    withText("ENROLL")))),
+                    withText(ENROLL)))),
                 actionOnItem<DashboardProgramViewHolder>(allOf(hasDescendant(withText(program)), hasDescendant(
-                    withText("ENROLL"))), clickChildViewWithId(R.id.action_button))
+                    withText(ENROLL))), clickChildViewWithId(R.id.action_button))
             )
     }
 
@@ -77,12 +77,12 @@ class EnrollmentRobot : BaseRobot() {
     fun clickOnCalendarItem() {
         onView(withId(R.id.fieldRecycler))
             .perform(actionOnItem<DashboardProgramViewHolder>(
-                hasDescendant(withText("Date of birth*")), clickChildViewWithId(R.id.inputEditText)))
+                hasDescendant(withText(DATE_OF_BIRTH)), clickChildViewWithId(R.id.inputEditText)))
     }
 
     fun checkActiveAndPastEnrollmentDetails(enrollmentListUIModel: EnrollmentListUIModel) {
-        checkHeaderAndProgramDetails(enrollmentListUIModel, "Active programs", 1, 2, enrollmentListUIModel.currentEnrollmentDate)
-        checkHeaderAndProgramDetails(enrollmentListUIModel, "Past programs", 3, 4, enrollmentListUIModel.pastEnrollmentDate)
+        checkHeaderAndProgramDetails(enrollmentListUIModel, ACTIVE_PROGRAMS, 1, 2, enrollmentListUIModel.currentEnrollmentDate)
+        checkHeaderAndProgramDetails(enrollmentListUIModel, PAST_PROGRAMS, 3, 4, enrollmentListUIModel.pastEnrollmentDate)
     }
 
     private fun checkHeaderAndProgramDetails(enrollmentListUIModel: EnrollmentListUIModel, programStatus: String, headerPosition: Int, programPosition: Int, enrollmentDay: String) {
@@ -101,4 +101,10 @@ class EnrollmentRobot : BaseRobot() {
             )
     }
 
+    companion object {
+        const val ACTIVE_PROGRAMS = "Active programs"
+        const val PAST_PROGRAMS = "Past programs"
+        const val ENROLL = "ENROLL"
+        const val DATE_OF_BIRTH = "Date of birth*"
+    }
 }

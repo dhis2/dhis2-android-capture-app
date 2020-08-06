@@ -25,9 +25,12 @@ class TeiFlowTest: BaseTest() {
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
+    private val dateRegistration = createFirstSpecificDate()
+    private val dateEnrollment = createEnrollmentDate()
+    private val currentDate = getCurrentDate()
+
     @Test
     fun shouldEnrollToSameProgramAfterClosedIt() {
-        val womanProgram = "MNCH / PNC (Adult Woman)"
         val totalEventsPerEnrollment = 3
         val pastProgramPosition = 4
         val enrollmentListDetails = createEnrollmentList()
@@ -39,28 +42,23 @@ class TeiFlowTest: BaseTest() {
         teiFlowRobot {
             registerTEI(registerTeiDetails)
             closeEnrollmentAndCheckEvents(totalEventsPerEnrollment)
-            enrollToProgram(womanProgram)
+            enrollToProgram(ADULT_WOMAN_PROGRAM)
             checkActiveAndPastEnrollmentDetails(enrollmentListDetails)
             checkPastEventsAreClosed(totalEventsPerEnrollment, pastProgramPosition)
         }
     }
 
-
-    private val dateRegistration = createFirstSpecificDate()
-    private val dateEnrollment = createEnrollmentDate()
-    private val currentDate = getCurrentDate()
-
     private fun createEnrollmentList() =
         EnrollmentListUIModel(
-            "MNCH / PNC (Adult Woman)",
-            "Ngelehun CHC",
+            ADULT_WOMAN_PROGRAM,
+            ORG_UNIT,
             "30/6/2017",
             currentDate
         )
 
     private fun createRegisterTEI() = RegisterTEIUIModel(
-        "Marta",
-        "Stuart",
+        NAME,
+        LASTNAME,
         dateRegistration,
         dateEnrollment
     )
@@ -78,7 +76,7 @@ class TeiFlowTest: BaseTest() {
     )
 
     private fun getCurrentDate() :String {
-        val sdf = SimpleDateFormat("dd/M/yyyy")
+        val sdf = SimpleDateFormat(DATE_FORMAT)
         val dateFormat = sdf.format(Date())
         return dateFormat.removePrefix("0")
     }
@@ -95,5 +93,12 @@ class TeiFlowTest: BaseTest() {
         const val TE_TYPE = "TRACKED_ENTITY_UID"
         const val WOMAN_PROGRAM_UID_VALUE = "uy2gU8kT1jF"
         const val WOMAN_TE_TYPE_VALUE = "nEenWmSyUEp"
+
+        const val ADULT_WOMAN_PROGRAM = "MNCH / PNC (Adult Woman)"
+        const val ORG_UNIT = "Ngelehun CHC"
+        const val NAME = "Marta"
+        const val LASTNAME = "Stuart"
+
+        const val DATE_FORMAT = "dd/M/yyyy"
     }
 }

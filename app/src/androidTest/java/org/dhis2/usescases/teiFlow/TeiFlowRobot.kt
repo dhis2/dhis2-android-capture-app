@@ -1,13 +1,7 @@
 package org.dhis2.usescases.teiFlow
 
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import org.dhis2.R
+
 import org.dhis2.common.BaseRobot
-import org.dhis2.common.viewactions.clickChildViewWithId
-import org.dhis2.common.viewactions.typeChildViewWithId
-import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.dhis2.usescases.searchte.searchTeiRobot
 import org.dhis2.usescases.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.teiFlow.entity.RegisterTEIUIModel
@@ -90,5 +84,4 @@ class TeiFlowRobot : BaseRobot() {
             checkAllEventsAreClosed(totalEvents)
         }
     }
-
 }
