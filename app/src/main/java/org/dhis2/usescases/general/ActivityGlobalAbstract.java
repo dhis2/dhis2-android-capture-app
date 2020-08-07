@@ -148,20 +148,28 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         super.onResume();
         lifeCycleObservable.onNext(Status.ON_RESUME);
         if (ExtensionsKt.app(this).isSessionBlocked() && !(this instanceof SplashActivity)) {
-            if (getPinDialog() == null) initPinDialog();
-            showPinDialog();
+            if (getPinDialog() == null) {
+                initPinDialog();
+                showPinDialog();
+            }
         }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        lifeCycleObservable.onNext(Status.ON_PAUSE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
         PinDialog dialog = getPinDialog();
         if (dialog != null) {
             dialog.dismissAllowingStateLoss();
         }
-        lifeCycleObservable.onNext(Status.ON_PAUSE);
     }
+
 
     @Override
     protected void onDestroy() {
