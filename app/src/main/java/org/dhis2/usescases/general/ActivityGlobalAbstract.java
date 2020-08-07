@@ -126,11 +126,29 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         super.onCreate(savedInstanceState);
     }
 
+    private void initPinDialog() {
+        pinDialog = new PinDialog(PinDialog.Mode.ASK,
+                (this instanceof LoginActivity),
+                aBoolean -> {
+                    startActivity(MainActivity.class, null, true, true, null);
+                    return null;
+                },
+                () -> {
+                    analyticsHelper.setEvent(AnalyticsConstants.FORGOT_CODE, AnalyticsConstants.CLICK, AnalyticsConstants.FORGOT_CODE);
+                    if (!(this instanceof LoginActivity)) {
+                        startActivity(LoginActivity.class, null, true, true, null);
+                    }
+                    return null;
+                }
+        );
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         lifeCycleObservable.onNext(Status.ON_RESUME);
         if (ExtensionsKt.app(this).isSessionBlocked() && !(this instanceof SplashActivity)) {
+            if (getPinDialog() == null) initPinDialog();
             showPinDialog();
         }
     }
@@ -138,9 +156,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-        if (pinDialog != null) {
-            pinDialog.dismissAllowingStateLoss();
-            pinDialog = null;
+        PinDialog dialog = getPinDialog();
+        if (dialog != null) {
+            dialog.dismissAllowingStateLoss();
         }
         lifeCycleObservable.onNext(Status.ON_PAUSE);
     }
@@ -168,21 +186,11 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     }
 
     public void showPinDialog() {
-        pinDialog = new PinDialog(PinDialog.Mode.ASK,
-                (this instanceof LoginActivity),
-                aBoolean -> {
-                    startActivity(MainActivity.class, null, true, true, null);
-                    return null;
-                },
-                () -> {
-                    analyticsHelper.setEvent(AnalyticsConstants.FORGOT_CODE, AnalyticsConstants.CLICK, AnalyticsConstants.FORGOT_CODE);
-                    if (!(this instanceof LoginActivity)) {
-                        startActivity(LoginActivity.class, null, true, true, null);
-                    }
-                    return null;
-                }
-        );
         pinDialog.show(getSupportFragmentManager(), PIN_DIALOG_TAG);
+    }
+
+    public PinDialog getPinDialog(){
+        return (PinDialog) getSupportFragmentManager().findFragmentByTag(PIN_DIALOG_TAG);
     }
 
     @Override
