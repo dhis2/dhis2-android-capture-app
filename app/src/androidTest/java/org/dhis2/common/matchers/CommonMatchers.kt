@@ -10,6 +10,7 @@ import androidx.test.espresso.Root
 import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers.withClassName
 import com.google.android.material.textfield.TextInputLayout
+import org.dhis2.utils.customviews.CircularCompletionView
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.Description
 import org.hamcrest.Matcher
@@ -111,6 +112,20 @@ fun findChildFabButton(childToClick: Int): Matcher<View> {
 
         override fun describeTo(description: Description) {
             description.appendText("Fab children")
+        }
+    }
+}
+
+
+fun hasCompletedPercentage (percentage: Float): Matcher<View> {
+    return object : TypeSafeMatcher<View>() {
+        override fun matchesSafely(item: View?): Boolean {
+            val circle = (item as CircularCompletionView)
+            return circle.completionPercent == percentage
+        }
+
+        override fun describeTo(description: Description) {
+            description.appendText("Has percentage")
         }
     }
 }
