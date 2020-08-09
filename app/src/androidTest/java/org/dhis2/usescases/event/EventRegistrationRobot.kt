@@ -37,8 +37,22 @@ class EventRegistrationRobot : BaseRobot() {
        onView(withId(R.id.completion)).check(matches(hasCompletedPercentage(eventDetails.completedPercentage)))
        onView(withId(R.id.date_layout)).check(matches(hasDescendant(allOf(withId(R.id.date), withText(eventDetails.eventDate)))))
        onView(withId(R.id.org_unit_layout)).check(matches(hasDescendant(allOf(withId(R.id.org_unit), withText(eventDetails.orgUnit)))))
-       //"Sputum smear microscopy test" "TB visit"
-
    }
 
+    fun clickOnShare() {
+        onView(withId(R.id.shareContainer)).perform(click())
+    }
+
+    private fun clickOnNextQR() {
+        onView(withId(R.id.next)).perform(click())
+    }
+
+    fun clickOnAllQR(listQR: Int) {
+        var qrLength = 1
+
+        while (qrLength < listQR) {
+            clickOnNextQR()
+            qrLength++
+        }
+    }
 }

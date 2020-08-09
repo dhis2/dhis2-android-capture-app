@@ -34,6 +34,12 @@ class EventTest: BaseTest() {
          * check list of events, event was deleted
          * */
 
+        eventRegistrationRobot {
+            openMenuMoreOptions()
+            clickOnDelete()
+
+        }
+
     }
 
     @Test
@@ -51,7 +57,16 @@ class EventTest: BaseTest() {
 
     @Test
     fun shouldShareQRWhenClickOnShare() {
+        val qrList = 3
 
+        prepareEventDetailsIntentAndLaunchActivity(rule)
+
+        eventRegistrationRobot {
+            openMenuMoreOptions()
+            clickOnDetails()
+            clickOnShare()
+            clickOnAllQR(qrList)
+        }
     }
 
     private fun prepareEventDetailsIntentAndLaunchActivity(rule: ActivityTestRule<EventCaptureActivity>) {
