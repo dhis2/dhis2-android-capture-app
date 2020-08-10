@@ -23,6 +23,10 @@ import androidx.work.WorkInfo
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import java.text.ParseException
+import java.util.Calendar
+import java.util.Date
+import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.Bindings
 import org.dhis2.R
@@ -40,14 +44,10 @@ import org.dhis2.utils.analytics.SYNC_GRANULAR_SMS
 import org.dhis2.utils.customviews.MessageAmountDialog
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
-import java.text.ParseException
-import java.util.Calendar
-import java.util.Date
-import javax.inject.Inject
 
 private const val SMS_PERMISSIONS_REQ_ID = 102
 
-class SyncStatusDialog: BottomSheetDialogFragment(), GranularSyncContracts.View {
+class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View {
 
     private lateinit var recordUid: String
     private lateinit var conflictType: ConflictType
@@ -63,11 +63,12 @@ class SyncStatusDialog: BottomSheetDialogFragment(), GranularSyncContracts.View 
         private const val PERIOD_ID_DATA_VALUE = "PERIOD_ID_DATA_VALUE"
         private const val ATTRIBUTE_COMBO_DATA_VALUE = "ATTRIBUTE_COMBO_DATA_VALUE"
 
-        fun newInstance(recordUid: String,
-                        conflictType: ConflictType,
-                        orgUnitDataValue: String? = null,
-                        attributeComboDataValue: String? = null,
-                        periodIdDataValue: String? = null
+        fun newInstance(
+            recordUid: String,
+            conflictType: ConflictType,
+            orgUnitDataValue: String? = null,
+            attributeComboDataValue: String? = null,
+            periodIdDataValue: String? = null
         ) = SyncStatusDialog().apply {
             Bundle().apply {
                 putString(RECORD_UID, recordUid)
@@ -171,7 +172,7 @@ class SyncStatusDialog: BottomSheetDialogFragment(), GranularSyncContracts.View 
                 conflictType,
                 orgUnitDataValue,
                 attributeComboDataValue
-                ).apply { dismissListenerDialog = dismissListener  }
+            ).apply { dismissListenerDialog = dismissListener }
         }
     }
 
