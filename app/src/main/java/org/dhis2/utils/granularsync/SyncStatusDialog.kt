@@ -71,7 +71,7 @@ class SyncStatusDialog: BottomSheetDialogFragment(), GranularSyncContracts.View 
         ) = SyncStatusDialog().apply {
             Bundle().apply {
                 putString(RECORD_UID, recordUid)
-                putString(CONFLICT_TYPE, conflictType.name)
+                putSerializable(CONFLICT_TYPE, conflictType)
                 putString(ORG_UNIT_DATA_VALUE, orgUnitDataValue)
                 putString(PERIOD_ID_DATA_VALUE, periodIdDataValue)
                 putString(ATTRIBUTE_COMBO_DATA_VALUE, attributeComboDataValue)
@@ -177,6 +177,12 @@ class SyncStatusDialog: BottomSheetDialogFragment(), GranularSyncContracts.View 
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        recordUid = arguments?.getString(RECORD_UID) ?: ""
+        conflictType = arguments?.getSerializable(CONFLICT_TYPE) as ConflictType
+        orgUnitDataValue = arguments?.getString(ORG_UNIT_DATA_VALUE)
+        attributeComboDataValue = arguments?.getString(ATTRIBUTE_COMBO_DATA_VALUE)
+        periodIdDataValue = arguments?.getString(PERIOD_ID_DATA_VALUE)
+
         (context.applicationContext as App).serverComponent()!!.plus(
             GranularSyncModule(
                 conflictType,
