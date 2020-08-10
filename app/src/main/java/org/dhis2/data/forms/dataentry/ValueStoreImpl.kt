@@ -1,6 +1,7 @@
 package org.dhis2.data.forms.dataentry
 
 import io.reactivex.Flowable
+import java.io.File
 import org.dhis2.Bindings.blockingSetCheck
 import org.dhis2.Bindings.withValueTypeCheck
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
@@ -8,7 +9,6 @@ import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
 import org.hisp.dhis.android.core.common.ValueType
-import java.io.File
 
 class ValueStoreImpl(
     private val d2: D2,
