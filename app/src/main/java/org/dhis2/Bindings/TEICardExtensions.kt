@@ -205,6 +205,7 @@ fun SearchTeiModel.setTeiImage(
         )
         teiImageView.setImageDrawable(icon)
     } else {
+        teiImageView.setImageDrawable(null)
         teiTextImageView.visibility = View.VISIBLE
         teiTextImageView.text = "?"
         teiTextImageView.setTextColor(
