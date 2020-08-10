@@ -7,9 +7,9 @@ import org.junit.Test
 
 class ValueExtensionsTest {
     @Test
-    fun `Should parse to correct integer format`(){
+    fun `Should parse to correct integer format`() {
         val valueList: List<String?> = arrayListOf(
-           "",
+            "",
             "0.0",
             "1.2",
             "1",
