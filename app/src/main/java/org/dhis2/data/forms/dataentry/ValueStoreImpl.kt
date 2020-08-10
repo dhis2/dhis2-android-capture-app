@@ -73,8 +73,21 @@ class ValueStoreImpl(
             return Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_NOT_UNIQUE))
         }
 
+        val teiUid =
+            when (entryMode) {
+                DataEntryStore.EntryMode.DE -> {
+                    val event = d2.eventModule().events().uid(recordUid).blockingGet()
+                    val enrollment = d2.enrollmentModule().enrollments()
+                        .uid(event.enrollment()).blockingGet()
+                    enrollment.trackedEntityInstance()
+                }
+                DataEntryStore.EntryMode.ATTR -> recordUid
+                DataEntryStore.EntryMode.DV -> null
+            }
+                ?: return Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_HAS_NOT_CHANGED))
+
         val valueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
-            .value(uid, recordUid)
+            .value(uid, teiUid)
         val valueType =
             d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet().valueType()
         var newValue = value.withValueTypeCheck(valueType) ?: ""
