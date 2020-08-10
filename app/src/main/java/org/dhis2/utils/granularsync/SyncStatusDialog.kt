@@ -29,6 +29,8 @@ import java.util.Date
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.Bindings
+import org.dhis2.Bindings.checkSMSPermission
+import org.dhis2.Bindings.showSMS
 import org.dhis2.R
 import org.dhis2.databinding.SyncBottomDialogBinding
 import org.dhis2.usescases.sms.InputArguments
