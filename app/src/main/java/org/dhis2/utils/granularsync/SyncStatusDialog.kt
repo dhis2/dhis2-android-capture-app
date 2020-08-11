@@ -408,21 +408,21 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     }
 
     private fun getInputArguments(): InputArguments {
-            val bundle = Bundle()
-            when (conflictType) {
-                ConflictType.TEI -> InputArguments.setEnrollmentData(bundle, recordUid)
-                ConflictType.EVENT -> InputArguments.setSimpleEventData(bundle, recordUid)
-                ConflictType.DATA_VALUES -> InputArguments.setDataSet(
-                    bundle,
-                    recordUid,
-                    orgUnitDataValue,
-                    periodIdDataValue,
-                    attributeComboDataValue
-                )
-                else -> {
-                }
+        val bundle = Bundle()
+        when (conflictType) {
+            ConflictType.TEI -> InputArguments.setEnrollmentData(bundle, recordUid)
+            ConflictType.EVENT -> InputArguments.setSimpleEventData(bundle, recordUid)
+            ConflictType.DATA_VALUES -> InputArguments.setDataSet(
+                bundle,
+                recordUid,
+                orgUnitDataValue,
+                periodIdDataValue,
+                attributeComboDataValue
+            )
+            else -> {
             }
-            return InputArguments(bundle)
+        }
+        return InputArguments(bundle)
     }
 
     private fun stateChanged(states: List<SmsSendingService.SendingStatus>?) {
