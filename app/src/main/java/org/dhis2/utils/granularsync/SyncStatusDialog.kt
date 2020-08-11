@@ -166,16 +166,14 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 )
             }
 
-        return newInstance(
-                 recordUid,
-                 conflictType,
-                 orgUnitDataValue,
-                 attributeComboDataValue
-             ).apply { dismissListenerDialog = dismissListener }
+            return newInstance(
+                recordUid,
+                conflictType,
+                orgUnitDataValue,
+                attributeComboDataValue
+            ).apply { dismissListenerDialog = dismissListener }
         }
     }
-
-
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
