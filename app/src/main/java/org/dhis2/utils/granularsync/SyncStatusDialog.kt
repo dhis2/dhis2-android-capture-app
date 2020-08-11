@@ -66,29 +66,10 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     private var binding: SyncBottomDialogBinding? = null
     private var adapter: SyncConflictAdapter? = null
     private var syncing: Boolean = false
-    val dialogTag: String
-        get() = attributeComboDataValue ?: recordUid
+
     enum class ConflictType {
         PROGRAM, TEI, EVENT, DATA_SET, DATA_VALUES
     }
-    private val inputArguments: InputArguments
-        get() {
-            val bundle = Bundle()
-            when (conflictType) {
-                ConflictType.TEI -> InputArguments.setEnrollmentData(bundle, recordUid)
-                ConflictType.EVENT -> InputArguments.setSimpleEventData(bundle, recordUid)
-                ConflictType.DATA_VALUES -> InputArguments.setDataSet(
-                    bundle,
-                    recordUid,
-                    orgUnitDataValue,
-                    periodIdDataValue,
-                    attributeComboDataValue
-                )
-                else -> {
-                }
-            }
-            return InputArguments(bundle)
-        }
 
     companion object {
         private const val RECORD_UID = "RECORD_UID"
@@ -426,6 +407,24 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         return true
     }
 
+    private fun getInputArguments(): InputArguments {
+            val bundle = Bundle()
+            when (conflictType) {
+                ConflictType.TEI -> InputArguments.setEnrollmentData(bundle, recordUid)
+                ConflictType.EVENT -> InputArguments.setSimpleEventData(bundle, recordUid)
+                ConflictType.DATA_VALUES -> InputArguments.setDataSet(
+                    bundle,
+                    recordUid,
+                    orgUnitDataValue,
+                    periodIdDataValue,
+                    attributeComboDataValue
+                )
+                else -> {
+                }
+            }
+            return InputArguments(bundle)
+    }
+
     private fun stateChanged(states: List<SmsSendingService.SendingStatus>?) {
         if (states.isNullOrEmpty()) return
 
@@ -433,7 +432,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             adapter!!.addItem(
                 StatusLogItem.create(
                     Date(),
-                    StatusText.getTextSubmissionType(resources, inputArguments) + ": " +
+                    StatusText.getTextSubmissionType(resources, getInputArguments()) + ": " +
                         StatusText.getTextForStatus(resources, it)
                 )
             )
