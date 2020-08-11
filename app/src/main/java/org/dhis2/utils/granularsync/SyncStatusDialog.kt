@@ -51,6 +51,11 @@ private const val SMS_PERMISSIONS_REQ_ID = 102
 
 class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View {
 
+    @Inject
+    lateinit var presenter: GranularSyncContracts.Presenter
+    @Inject
+    lateinit var analyticsHelper: AnalyticsHelper
+
     private lateinit var recordUid: String
     private lateinit var conflictType: ConflictType
     private var orgUnitDataValue: String? = null
@@ -58,48 +63,14 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     private var periodIdDataValue: String? = null
     var dismissListenerDialog: GranularSyncContracts.OnDismissListener? = null
 
-    companion object {
-        private const val RECORD_UID = "RECORD_UID"
-        private const val CONFLICT_TYPE = "CONFLICT_TYPE"
-        private const val ORG_UNIT_DATA_VALUE = "ORG_UNIT_DATA_VALUE"
-        private const val PERIOD_ID_DATA_VALUE = "PERIOD_ID_DATA_VALUE"
-        private const val ATTRIBUTE_COMBO_DATA_VALUE = "ATTRIBUTE_COMBO_DATA_VALUE"
-
-        fun newInstance(
-            recordUid: String,
-            conflictType: ConflictType,
-            orgUnitDataValue: String? = null,
-            attributeComboDataValue: String? = null,
-            periodIdDataValue: String? = null
-        ) = SyncStatusDialog().apply {
-            Bundle().apply {
-                putString(RECORD_UID, recordUid)
-                putSerializable(CONFLICT_TYPE, conflictType)
-                putString(ORG_UNIT_DATA_VALUE, orgUnitDataValue)
-                putString(PERIOD_ID_DATA_VALUE, periodIdDataValue)
-                putString(ATTRIBUTE_COMBO_DATA_VALUE, attributeComboDataValue)
-            }.also { arguments = it }
-        }
-    }
-
-    @Inject
-    lateinit var presenter: GranularSyncContracts.Presenter
-
-    @Inject
-    lateinit var analyticsHelper: AnalyticsHelper
-
     private var binding: SyncBottomDialogBinding? = null
     private var adapter: SyncConflictAdapter? = null
-
     private var syncing: Boolean = false
-
     val dialogTag: String
         get() = attributeComboDataValue ?: recordUid
-
     enum class ConflictType {
         PROGRAM, TEI, EVENT, DATA_SET, DATA_VALUES
     }
-
     private val inputArguments: InputArguments
         get() {
             val bundle = Bundle()
@@ -118,6 +89,31 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             }
             return InputArguments(bundle)
         }
+
+    companion object {
+        private const val RECORD_UID = "RECORD_UID"
+        private const val CONFLICT_TYPE = "CONFLICT_TYPE"
+        private const val ORG_UNIT_DATA_VALUE = "ORG_UNIT_DATA_VALUE"
+        private const val PERIOD_ID_DATA_VALUE = "PERIOD_ID_DATA_VALUE"
+        private const val ATTRIBUTE_COMBO_DATA_VALUE = "ATTRIBUTE_COMBO_DATA_VALUE"
+
+        @JvmStatic
+        fun newInstance(
+            recordUid: String,
+            conflictType: ConflictType,
+            orgUnitDataValue: String? = null,
+            attributeComboDataValue: String? = null,
+            periodIdDataValue: String? = null
+        ) = SyncStatusDialog().apply {
+            Bundle().apply {
+                putString(RECORD_UID, recordUid)
+                putSerializable(CONFLICT_TYPE, conflictType)
+                putString(ORG_UNIT_DATA_VALUE, orgUnitDataValue)
+                putString(PERIOD_ID_DATA_VALUE, periodIdDataValue)
+                putString(ATTRIBUTE_COMBO_DATA_VALUE, attributeComboDataValue)
+            }.also { arguments = it }
+        }
+    }
 
     class Builder {
         private lateinit var recordUid: String
@@ -169,22 +165,26 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                     "DataSets require non null, orgUnit, attributeOptionCombo and periodId"
                 )
             }
-            return newInstance(
-                recordUid,
-                conflictType,
-                orgUnitDataValue,
-                attributeComboDataValue
-            ).apply { dismissListenerDialog = dismissListener }
+
+        return newInstance(
+                 recordUid,
+                 conflictType,
+                 orgUnitDataValue,
+                 attributeComboDataValue
+             ).apply { dismissListenerDialog = dismissListener }
         }
     }
 
+
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        recordUid = arguments?.getString(RECORD_UID) ?: ""
-        conflictType = arguments?.getSerializable(CONFLICT_TYPE) as ConflictType
-        orgUnitDataValue = arguments?.getString(ORG_UNIT_DATA_VALUE)
-        attributeComboDataValue = arguments?.getString(ATTRIBUTE_COMBO_DATA_VALUE)
-        periodIdDataValue = arguments?.getString(PERIOD_ID_DATA_VALUE)
+
+        this.recordUid = arguments?.getString(RECORD_UID) ?: ""
+        this.conflictType = arguments?.getSerializable(CONFLICT_TYPE) as ConflictType
+        this.orgUnitDataValue = arguments?.getString(ORG_UNIT_DATA_VALUE)
+        this.attributeComboDataValue = arguments?.getString(ATTRIBUTE_COMBO_DATA_VALUE)
+        this.periodIdDataValue = arguments?.getString(PERIOD_ID_DATA_VALUE)
 
         (context.applicationContext as App).serverComponent()!!.plus(
             GranularSyncModule(
