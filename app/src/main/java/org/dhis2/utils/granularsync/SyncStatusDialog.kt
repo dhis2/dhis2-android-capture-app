@@ -151,7 +151,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 recordUid,
                 conflictType,
                 orgUnitDataValue,
-                attributeComboDataValue
+                attributeComboDataValue,
+                periodIdDataValue
             ).apply { dismissListenerDialog = dismissListener }
         }
     }
