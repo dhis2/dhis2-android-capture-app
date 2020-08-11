@@ -33,7 +33,7 @@ class EventRegistrationRobot : BaseRobot() {
     }
 
    fun checkEventDetails(eventDetails: EventDetailsUIModel) {
-       //onView(withId(R.id.ns_event_initial)).check(matches(withText("Lab monitoring")))
+       onView(withId(R.id.programStageName)).check(matches(withText(eventDetails.programStage)))
        onView(withId(R.id.completion)).check(matches(hasCompletedPercentage(eventDetails.completedPercentage)))
        onView(withId(R.id.date_layout)).check(matches(hasDescendant(allOf(withId(R.id.date), withText(eventDetails.eventDate)))))
        onView(withId(R.id.org_unit_layout)).check(matches(hasDescendant(allOf(withId(R.id.org_unit), withText(eventDetails.orgUnit)))))

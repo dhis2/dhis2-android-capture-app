@@ -7,6 +7,7 @@ import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.event.entity.EventDetailsUIModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
@@ -34,10 +35,18 @@ class EventTest: BaseTest() {
          * check list of events, event was deleted
          * */
 
+        teiDashboardRobot {
+            clickOnTimelineEvents()
+            clickOnEventWithPosition(1)
+        }
+
         eventRegistrationRobot {
             openMenuMoreOptions()
             clickOnDelete()
+        }
 
+        teiDashboardRobot {
+            //checkEventWasDeleted
         }
 
     }
@@ -76,12 +85,22 @@ class EventTest: BaseTest() {
         }.also { rule.launchActivity(it) }
     }
 
+    private fun prepareEventToDeleteIntentAndLaunchActivity() {
+        Intent().apply {
+            putExtra(PROGRAM_UID, PROGRAM_TB)
+            putExtra(EVENT_UID, EVENT_DETAILS_UID)
+        }.also { rule.launchActivity(it) }
+    }
+
     companion object {
         const val EVENT_UID = "EVENT_UID"
         const val PROGRAM_UID = "PROGRAM_UID"
 
         const val PROGRAM_TB = "ur1Edk5Oe2n"
         const val EVENT_DETAILS_UID =  "ZdRPhMckeJk"
+
+        const val PROGRAM_WOMAN = ""
+        const val A = ""
     }
 
     private fun createEventDetails() = EventDetailsUIModel(
