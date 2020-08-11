@@ -5,10 +5,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.event.entity.EventDetailsUIModel
+import org.dhis2.usescases.event.entity.ProgramStageUIModel
+import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,33 +23,27 @@ class EventTest: BaseTest() {
     @get:Rule
     val ruleTeiDashboard = ActivityTestRule(TeiDashboardMobileActivity::class.java, false, false)
 
-    @Ignore
     @Test
     fun shouldDeleteEventWhenClickOnDeleteInsideSpecificEvent() {
+        val tbVisit = "TB visit"
+        val tbProgramStages = createProgramStageModel()
 
-        /**
-         * Open and launch TEI
-         * click on event
-         * click on menu
-         * click on Delete
-         * accept dialog
-         * check list of events, event was deleted
-         * */
+        prepareEventToDeleteIntentAndLaunchActivity(ruleTeiDashboard)
 
         teiDashboardRobot {
-            clickOnTimelineEvents()
-            clickOnEventWithPosition(1)
+            clickOnStageGroup(tbVisit)
+            clickOnEventGroupByStage(tbVisit)
         }
 
         eventRegistrationRobot {
             openMenuMoreOptions()
             clickOnDelete()
+            clickOnDeleteDialog()
         }
 
         teiDashboardRobot {
-            //checkEventWasDeleted
+           checkEventWasDeletedStageGroup(tbProgramStages)
         }
-
     }
 
     @Test
@@ -78,35 +73,62 @@ class EventTest: BaseTest() {
         }
     }
 
+    private val tbVisitProgramStage =  createTbVisitStageModel()
+    private val labMonitoringProgramStage =  createLabMonitoringStageModel()
+    private val sputumProgramStage =  createSputumStageModel()
+
+    private fun createProgramStageModel() = TEIProgramStagesUIModel(
+        labMonitoringProgramStage,
+        tbVisitProgramStage,
+        sputumProgramStage
+    )
+
+    private fun createTbVisitStageModel() = ProgramStageUIModel(
+        "TB visit",
+        "0 events"
+    )
+
+    private fun createLabMonitoringStageModel() = ProgramStageUIModel(
+        "Lab monitoring",
+        "4 events"
+    )
+
+    private fun createSputumStageModel() = ProgramStageUIModel(
+        "Sputum smear microscopy test",
+        "4 events"
+    )
+
     private fun prepareEventDetailsIntentAndLaunchActivity(rule: ActivityTestRule<EventCaptureActivity>) {
         Intent().apply {
-            putExtra(PROGRAM_UID, PROGRAM_TB)
+            putExtra(PROGRAM_UID, PROGRAM_TB_UID)
             putExtra(EVENT_UID, EVENT_DETAILS_UID)
         }.also { rule.launchActivity(it) }
     }
 
-    private fun prepareEventToDeleteIntentAndLaunchActivity() {
+    private fun prepareEventToDeleteIntentAndLaunchActivity(ruleTeiDashboard: ActivityTestRule<TeiDashboardMobileActivity>) {
         Intent().apply {
-            putExtra(PROGRAM_UID, PROGRAM_TB)
-            putExtra(EVENT_UID, EVENT_DETAILS_UID)
-        }.also { rule.launchActivity(it) }
+            putExtra(PROGRAM_UID, PROGRAM_TB_UID)
+            putExtra(TEI_UID, TEI_EVENT_TO_DELETE_UID)
+            putExtra(ENROLLMENT_UID, ENROLLMENT_EVENT_DELETE_UID)
+        }.also { ruleTeiDashboard.launchActivity(it) }
     }
 
     companion object {
         const val EVENT_UID = "EVENT_UID"
         const val PROGRAM_UID = "PROGRAM_UID"
+        const val TEI_UID = "TEI_UID"
+        const val ENROLLMENT_UID = "ENROLLMENT_UID"
 
-        const val PROGRAM_TB = "ur1Edk5Oe2n"
-        const val EVENT_DETAILS_UID =  "ZdRPhMckeJk"
-
-        const val PROGRAM_WOMAN = ""
-        const val A = ""
+        const val PROGRAM_TB_UID = "ur1Edk5Oe2n"
+        const val EVENT_DETAILS_UID = "y0xoVIzBpnL"
+        const val TEI_EVENT_TO_DELETE_UID = "foc5zag6gbE"
+        const val ENROLLMENT_EVENT_DELETE_UID =  "SolDyMgW3oc"
     }
 
     private fun createEventDetails() = EventDetailsUIModel(
         "Lab monitoring",
         0.75f,
-        "2/8/2020",
+        "28/6/2020",
         "Ngelehun CHC"
     )
 

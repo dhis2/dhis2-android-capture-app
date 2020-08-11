@@ -55,4 +55,8 @@ class EventRegistrationRobot : BaseRobot() {
             qrLength++
         }
     }
+
+    fun clickOnDeleteDialog() {
+        onView(withId(R.id.possitive)).perform(click())
+    }
 }
