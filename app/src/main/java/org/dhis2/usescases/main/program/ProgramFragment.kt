@@ -222,6 +222,10 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
                 })
             .build()
 
-        dialog.show(abstractActivity.supportFragmentManager, dialog.dialogTag)
+        dialog.show(abstractActivity.supportFragmentManager, FRAGMENT_TAG)
+    }
+
+    companion object {
+        const val FRAGMENT_TAG = "SYNC"
     }
 }
