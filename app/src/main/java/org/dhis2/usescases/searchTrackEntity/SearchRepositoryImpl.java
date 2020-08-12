@@ -764,16 +764,18 @@ public class SearchRepositoryImpl implements SearchRepository {
                     TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
                             .uid(attrValue.trackedEntityAttribute())
                             .blockingGet();
-                    String friendlyValue = ValueExtensionsKt.userFriendlyValue(attrValue, d2);
+                    if(attribute!=null) {
+                        String friendlyValue = ValueExtensionsKt.userFriendlyValue(attrValue, d2);
 
-                    attrValueBuilder.value(friendlyValue)
-                            .created(attrValue.created())
-                            .lastUpdated(attrValue.lastUpdated())
-                            .trackedEntityAttribute(attrValue.trackedEntityAttribute())
-                            .trackedEntityInstance(tei.uid());
-                    searchTei.addAttributeValue(attribute.displayFormName(), attrValueBuilder.build());
-                    if (attrIsProfileImage(attrValue.trackedEntityAttribute()))
-                        searchTei.setProfilePicture(attrValue.trackedEntityAttribute());
+                        attrValueBuilder.value(friendlyValue)
+                                .created(attrValue.created())
+                                .lastUpdated(attrValue.lastUpdated())
+                                .trackedEntityAttribute(attrValue.trackedEntityAttribute())
+                                .trackedEntityInstance(tei.uid());
+                        searchTei.addAttributeValue(attribute.displayFormName(), attrValueBuilder.build());
+                        if (attrIsProfileImage(attrValue.trackedEntityAttribute()))
+                            searchTei.setProfilePicture(attrValue.trackedEntityAttribute());
+                    }
                 }
             }
         }

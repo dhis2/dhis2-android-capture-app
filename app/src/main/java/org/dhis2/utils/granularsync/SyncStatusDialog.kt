@@ -1,7 +1,6 @@
 package org.dhis2.utils.granularsync
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.content.pm.PackageManager
@@ -50,52 +49,52 @@ import org.hisp.dhis.android.core.imports.TrackerImportConflict
 
 private const val SMS_PERMISSIONS_REQ_ID = 102
 
-@SuppressLint("ValidFragment")
-class SyncStatusDialog private constructor(
-    private val recordUid: String,
-    private val conflictType: ConflictType,
-    private val orgUnitDataValue: String? = null,
-    private val attributeComboDataValue: String? = null,
-    private val periodIdDataValue: String? = null,
-    private val dismissListener: GranularSyncContracts.OnDismissListener?
-) : BottomSheetDialogFragment(), GranularSyncContracts.View {
+class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View {
 
     @Inject
     lateinit var presenter: GranularSyncContracts.Presenter
-
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
+    private lateinit var recordUid: String
+    private lateinit var conflictType: ConflictType
+    private var orgUnitDataValue: String? = null
+    private var attributeComboDataValue: String? = null
+    private var periodIdDataValue: String? = null
+    var dismissListenerDialog: GranularSyncContracts.OnDismissListener? = null
+
     private var binding: SyncBottomDialogBinding? = null
     private var adapter: SyncConflictAdapter? = null
-
     private var syncing: Boolean = false
-
-    val dialogTag: String
-        get() = attributeComboDataValue ?: recordUid
 
     enum class ConflictType {
         PROGRAM, TEI, EVENT, DATA_SET, DATA_VALUES
     }
 
-    private val inputArguments: InputArguments
-        get() {
-            val bundle = Bundle()
-            when (conflictType) {
-                ConflictType.TEI -> InputArguments.setEnrollmentData(bundle, recordUid)
-                ConflictType.EVENT -> InputArguments.setSimpleEventData(bundle, recordUid)
-                ConflictType.DATA_VALUES -> InputArguments.setDataSet(
-                    bundle,
-                    recordUid,
-                    orgUnitDataValue,
-                    periodIdDataValue,
-                    attributeComboDataValue
-                )
-                else -> {
-                }
-            }
-            return InputArguments(bundle)
+    companion object {
+        private const val RECORD_UID = "RECORD_UID"
+        private const val CONFLICT_TYPE = "CONFLICT_TYPE"
+        private const val ORG_UNIT_DATA_VALUE = "ORG_UNIT_DATA_VALUE"
+        private const val PERIOD_ID_DATA_VALUE = "PERIOD_ID_DATA_VALUE"
+        private const val ATTRIBUTE_COMBO_DATA_VALUE = "ATTRIBUTE_COMBO_DATA_VALUE"
+
+        @JvmStatic
+        fun newInstance(
+            recordUid: String,
+            conflictType: ConflictType,
+            orgUnitDataValue: String? = null,
+            attributeComboDataValue: String? = null,
+            periodIdDataValue: String? = null
+        ) = SyncStatusDialog().apply {
+            Bundle().apply {
+                putString(RECORD_UID, recordUid)
+                putSerializable(CONFLICT_TYPE, conflictType)
+                putString(ORG_UNIT_DATA_VALUE, orgUnitDataValue)
+                putString(PERIOD_ID_DATA_VALUE, periodIdDataValue)
+                putString(ATTRIBUTE_COMBO_DATA_VALUE, attributeComboDataValue)
+            }.also { arguments = it }
         }
+    }
 
     class Builder {
         private lateinit var recordUid: String
@@ -147,15 +146,26 @@ class SyncStatusDialog private constructor(
                     "DataSets require non null, orgUnit, attributeOptionCombo and periodId"
                 )
             }
-            return SyncStatusDialog(
-                recordUid, conflictType,
-                orgUnitDataValue, attributeComboDataValue, periodIdDataValue, dismissListener
-            )
+
+            return newInstance(
+                recordUid,
+                conflictType,
+                orgUnitDataValue,
+                attributeComboDataValue,
+                periodIdDataValue
+            ).apply { dismissListenerDialog = dismissListener }
         }
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+
+        this.recordUid = arguments?.getString(RECORD_UID) ?: ""
+        this.conflictType = arguments?.getSerializable(CONFLICT_TYPE) as ConflictType
+        this.orgUnitDataValue = arguments?.getString(ORG_UNIT_DATA_VALUE)
+        this.attributeComboDataValue = arguments?.getString(ATTRIBUTE_COMBO_DATA_VALUE)
+        this.periodIdDataValue = arguments?.getString(PERIOD_ID_DATA_VALUE)
+
         (context.applicationContext as App).serverComponent()!!.plus(
             GranularSyncModule(
                 conflictType,
@@ -356,7 +366,7 @@ class SyncStatusDialog private constructor(
 
     override fun onDismiss(dialog: DialogInterface) {
         presenter.onDettach()
-        dismissListener?.onDismiss(syncing)
+        dismissListenerDialog?.onDismiss(syncing)
         super.onDismiss(dialog)
     }
 
@@ -398,6 +408,24 @@ class SyncStatusDialog private constructor(
         return true
     }
 
+    private fun getInputArguments(): InputArguments {
+        val bundle = Bundle()
+        when (conflictType) {
+            ConflictType.TEI -> InputArguments.setEnrollmentData(bundle, recordUid)
+            ConflictType.EVENT -> InputArguments.setSimpleEventData(bundle, recordUid)
+            ConflictType.DATA_VALUES -> InputArguments.setDataSet(
+                bundle,
+                recordUid,
+                orgUnitDataValue,
+                periodIdDataValue,
+                attributeComboDataValue
+            )
+            else -> {
+            }
+        }
+        return InputArguments(bundle)
+    }
+
     private fun stateChanged(states: List<SmsSendingService.SendingStatus>?) {
         if (states.isNullOrEmpty()) return
 
@@ -405,7 +433,7 @@ class SyncStatusDialog private constructor(
             adapter!!.addItem(
                 StatusLogItem.create(
                     Date(),
-                    StatusText.getTextSubmissionType(resources, inputArguments) + ": " +
+                    StatusText.getTextSubmissionType(resources, getInputArguments()) + ": " +
                         StatusText.getTextForStatus(resources, it)
                 )
             )
@@ -452,7 +480,7 @@ class SyncStatusDialog private constructor(
         presenter.initGranularSync().observe(
             this,
             Observer { workInfo ->
-                if (workInfo != null && workInfo.isNotEmpty()) {
+                if (workInfo != null && workInfo.size > 0) {
                     manageWorkInfo(workInfo[0])
                 }
             }
@@ -493,8 +521,7 @@ class SyncStatusDialog private constructor(
                 )
                 binding!!.noConflictMessage.text = getString(R.string.no_conflicts_synced_message)
                 Bindings.setStateIcon(binding!!.syncIcon, State.SYNCED, true)
-                binding!!.executePendingBindings()
-                dismissListener!!.onDismiss(true)
+                dismissListenerDialog!!.onDismiss(true)
             }
             WorkInfo.State.FAILED -> {
                 val listStatusLog = ArrayList<StatusLogItem>()
@@ -530,7 +557,7 @@ class SyncStatusDialog private constructor(
                     )
                 }
                 Bindings.setStateIcon(binding!!.syncIcon, State.ERROR, true)
-                dismissListener!!.onDismiss(false)
+                dismissListenerDialog!!.onDismiss(false)
             }
             WorkInfo.State.CANCELLED ->
                 adapter!!.addItem(

@@ -13,6 +13,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -113,7 +114,7 @@ public class EditTextCustomHolder extends FormViewHolder {
         descriptionText = model.description();
         binding.customEdittext.setDescription(descriptionText);
 
-        binding.customEdittext.setText(editTextModel.value());
+        binding.customEdittext.setText(ValueExtensionsKt.withValueTypeCheck(editTextModel.value(), editTextModel.valueType()));
 
         binding.customEdittext.setWarning(model.warning(), model.error());
 
