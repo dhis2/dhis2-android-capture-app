@@ -41,7 +41,7 @@ class SyncFlowTest : BaseTest() {
         setupMockServer()
     }
 
-/*  @Test
+    @Test
     @Ignore("check mockserver and calls")
     fun shouldSuccessfullySyncAChangedTEI() {
         val teiName =  "Scott"
@@ -70,14 +70,14 @@ class SyncFlowTest : BaseTest() {
         }
 
         syncFlowRobot {
-            Thread.sleep(8000)
+            Thread.sleep(6000)
             clickOnSyncTei(teiName, teiLastName)
             clickOnSyncButton()
             Thread.sleep(4000)
             checkSyncWasSuccessfully() //sync failed
         }
 
-    } */
+    }
 
     @Test
     fun shouldShowErrorWhenTEISyncFails() {
@@ -112,6 +112,7 @@ class SyncFlowTest : BaseTest() {
         }
 
         syncFlowRobot {
+            Thread.sleep(8000)
             clickOnSyncTei(teiName, teiLastName)
             clickOnSyncButton()
             checkSyncFailed()
