@@ -1,6 +1,5 @@
 package org.dhis2.usescases.event
 
-import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
@@ -8,6 +7,7 @@ import org.dhis2.usescases.event.entity.EventDetailsUIModel
 import org.dhis2.usescases.event.entity.ProgramStageUIModel
 import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
+import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.Rule
@@ -22,6 +22,9 @@ class EventTest: BaseTest() {
 
     @get:Rule
     val ruleTeiDashboard = ActivityTestRule(TeiDashboardMobileActivity::class.java, false, false)
+
+    @get:Rule
+    val ruleEventDetail = ActivityTestRule(EventInitialActivity::class.java, false, false)
 
     @Test
     fun shouldDeleteEventWhenClickOnDeleteInsideSpecificEvent() {
@@ -63,11 +66,9 @@ class EventTest: BaseTest() {
     fun shouldShareQRWhenClickOnShare() {
         val qrList = 3
 
-        prepareEventDetailsIntentAndLaunchActivity(rule)
+        prepareEventToShareIntentAndLaunchActivity(ruleEventDetail)
 
         eventRegistrationRobot {
-            openMenuMoreOptions()
-            clickOnDetails()
             clickOnShare()
             clickOnAllQR(qrList)
         }
@@ -97,33 +98,6 @@ class EventTest: BaseTest() {
         "Sputum smear microscopy test",
         "4 events"
     )
-
-    private fun prepareEventDetailsIntentAndLaunchActivity(rule: ActivityTestRule<EventCaptureActivity>) {
-        Intent().apply {
-            putExtra(PROGRAM_UID, PROGRAM_TB_UID)
-            putExtra(EVENT_UID, EVENT_DETAILS_UID)
-        }.also { rule.launchActivity(it) }
-    }
-
-    private fun prepareEventToDeleteIntentAndLaunchActivity(ruleTeiDashboard: ActivityTestRule<TeiDashboardMobileActivity>) {
-        Intent().apply {
-            putExtra(PROGRAM_UID, PROGRAM_TB_UID)
-            putExtra(TEI_UID, TEI_EVENT_TO_DELETE_UID)
-            putExtra(ENROLLMENT_UID, ENROLLMENT_EVENT_DELETE_UID)
-        }.also { ruleTeiDashboard.launchActivity(it) }
-    }
-
-    companion object {
-        const val EVENT_UID = "EVENT_UID"
-        const val PROGRAM_UID = "PROGRAM_UID"
-        const val TEI_UID = "TEI_UID"
-        const val ENROLLMENT_UID = "ENROLLMENT_UID"
-
-        const val PROGRAM_TB_UID = "ur1Edk5Oe2n"
-        const val EVENT_DETAILS_UID = "y0xoVIzBpnL"
-        const val TEI_EVENT_TO_DELETE_UID = "foc5zag6gbE"
-        const val ENROLLMENT_EVENT_DELETE_UID =  "SolDyMgW3oc"
-    }
 
     private fun createEventDetails() = EventDetailsUIModel(
         "Lab monitoring",
