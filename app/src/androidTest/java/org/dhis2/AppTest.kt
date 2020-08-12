@@ -8,6 +8,7 @@ import org.dhis2.data.service.workManager.WorkManagerModule
 import org.dhis2.data.user.UserModule
 import org.dhis2.utils.analytics.AnalyticsModule
 import org.hisp.dhis.android.core.D2Manager
+import org.hisp.dhis.android.core.arch.api.internal.ServerURLWrapper
 
 class AppTest : App() {
 
@@ -19,7 +20,8 @@ class AppTest : App() {
 
     @Override
     override fun setUpServerComponent() {
-        D2Manager.setTestingDatabase(DB_TO_IMPORT, "android")
+        ServerURLWrapper.setServerUrl(LOCALHOST_API)
+        D2Manager.setTestingDatabase(DB_TO_IMPORT, USERNAME)
         D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this))
 
         serverComponent = appComponent.plus(ServerModule())
@@ -52,5 +54,7 @@ class AppTest : App() {
 
     companion object {
         const val DB_TO_IMPORT = "127-0-0-1-8080_android_unencrypted.db"
+        const val LOCALHOST_API = "http://127.0.0.1:8080/api/"
+        const val USERNAME = "android"
     }
 }

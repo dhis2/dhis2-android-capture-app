@@ -36,7 +36,6 @@ class SyncFlowRobot : BaseRobot() {
 
     fun checkSyncWasSuccessfully() {
         onView(withId(R.id.noConflictMessage)).check(matches(withText(R.string.no_conflicts_synced_message)))
-        //You are up to date! All your data is sent to the server.
     }
 
     fun checkSyncFailed() {

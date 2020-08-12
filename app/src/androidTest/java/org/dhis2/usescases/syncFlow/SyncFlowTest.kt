@@ -2,21 +2,19 @@ package org.dhis2.usescases.syncFlow
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.common.rules.DataBindingIdlingResourceRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
-import org.dhis2.usescases.login.LoginTest
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.searchTeiRobot
 import org.dhis2.usescases.syncFlow.robot.dataSetRobot
 import org.dhis2.usescases.syncFlow.robot.eventWithoutRegistrationRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import org.dhis2.usescases.teidashboard.TeiDashboardTest
 import org.dhis2.usescases.teidashboard.robot.TeiDashboardRobot.Companion.OPEN_EVENT_STATUS
+import org.dhis2.usescases.teidashboard.robot.TeiDashboardRobot.Companion.OVERDUE_EVENT_STATUS
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
-import org.hisp.dhis.android.core.mockwebserver.ResponseController.API_SYSTEM_INFO_PATH
-import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.POST
 import org.junit.Ignore
 import org.junit.Rule
@@ -28,13 +26,16 @@ import syncFlowRobot
 class SyncFlowTest : BaseTest() {
 
     @get:Rule
-    val ruleTei = ActivityTestRule(TeiDashboardMobileActivity::class.java, false, false)
-    @get:Rule
     val ruleDataSet = ActivityTestRule(DataSetDetailActivity::class.java, false, false)
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
     @get:Rule
     val ruleEventWithoutRegistration = ActivityTestRule(ProgramEventDetailActivity::class.java, false, false)
+
+    @Rule
+    @JvmField
+    val dataBindingIdlingResourceRule = DataBindingIdlingResourceRule(ruleSearch)
+
 
     override fun setUp() {
         super.setUp()
@@ -42,13 +43,10 @@ class SyncFlowTest : BaseTest() {
     }
 
     @Test
-    @Ignore("check mockserver and calls")
     fun shouldSuccessfullySyncAChangedTEI() {
         val teiName =  "Scott"
         val teiLastName =  "Kelley"
-        val tbVisit = 0
 
-        mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, LoginTest.API_SYSTEM_INFO_RESPONSE_OK)
         mockWebServerRobot.addResponse(POST, SYNC_TEI_PATH, API_SYNC_TEI_OK)
 
         setupCredentials()
@@ -56,36 +54,36 @@ class SyncFlowTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(4000)
             clickOnTEI(teiName, teiLastName)
         }
 
         teiDashboardRobot {
-            clickOnEventWithPosition(tbVisit)
+            clickOnGroupEventByName(TB_VISIT)
+            clickOnEventWith(TB_VISIT, OVERDUE_EVENT_STATUS)
+            waitToDebounce(600)
         }
 
         eventRobot {
             clickOnUpdate()
             pressBack()
+            waitToDebounce(600)
         }
 
         syncFlowRobot {
-            Thread.sleep(6000)
             clickOnSyncTei(teiName, teiLastName)
             clickOnSyncButton()
-            Thread.sleep(4000)
-            checkSyncWasSuccessfully() //sync failed
+            Thread.sleep(2000)
+            checkSyncWasSuccessfully()
         }
-
     }
 
     @Test
     fun shouldShowErrorWhenTEISyncFails() {
         val teiName = "Lars"
         val teiLastName = "Overland"
-        val labMonitoring = 1
 
         mockWebServerRobot.addResponse(POST, SYNC_TEI_PATH, API_SYNC_TEI_ERROR)
+
         setupCredentials()
         prepareTBProgrammeIntentAndLaunchActivity(ruleSearch)
 
@@ -112,7 +110,6 @@ class SyncFlowTest : BaseTest() {
         }
 
         syncFlowRobot {
-            Thread.sleep(8000)
             clickOnSyncTei(teiName, teiLastName)
             clickOnSyncButton()
             checkSyncFailed()
@@ -122,7 +119,6 @@ class SyncFlowTest : BaseTest() {
     @Test
     @Ignore("check mockserver and calls")
     fun shouldSuccessfullySyncSavedEvent() {
-
         mockWebServerRobot.addResponse(POST, SYNC_EVENT_PATH, API_SYNC_EVENT_OK)
 
         setupCredentials()
@@ -140,7 +136,7 @@ class SyncFlowTest : BaseTest() {
         syncFlowRobot {
             clickOnEventToSync(0)
             clickOnSyncButton()
-            checkSyncWasSuccessfully() //sync failed
+            checkSyncWasSuccessfully()
         }
     }
 
@@ -211,6 +207,7 @@ class SyncFlowTest : BaseTest() {
 
     companion object {
         const val LAB_MONITORING = "Lab monitoring"
+        const val TB_VISIT = "TB visit"
 
         const val SYNC_TEI_PATH = "/api/trackedEntityInstances?.*"
         const val API_SYNC_TEI_OK = "mocks/syncFlow/teiSync.json"

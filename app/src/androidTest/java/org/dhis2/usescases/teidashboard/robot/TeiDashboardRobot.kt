@@ -324,5 +324,6 @@ class TeiDashboardRobot : BaseRobot() {
 
     companion object {
         const val OPEN_EVENT_STATUS = R.string.event_open
+        const val OVERDUE_EVENT_STATUS = R.string.event_overdue
     }
 }

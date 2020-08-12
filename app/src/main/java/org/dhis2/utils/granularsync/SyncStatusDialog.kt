@@ -493,6 +493,7 @@ class SyncStatusDialog private constructor(
                 )
                 binding!!.noConflictMessage.text = getString(R.string.no_conflicts_synced_message)
                 Bindings.setStateIcon(binding!!.syncIcon, State.SYNCED, true)
+                binding!!.executePendingBindings()
                 dismissListener!!.onDismiss(true)
             }
             WorkInfo.State.FAILED -> {
