@@ -75,12 +75,15 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick,
         PictureView.OnIntentSelected, ScanTextView.OnScanClick {
 
+    private static final String FRAGMENT_TAG = "SYNC";
+
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
     public String uuid;
     @Inject
     public AnalyticsHelper analyticsHelper;
     public ScanTextView scanTextView;
+    private PinDialog pinDialog;
 
     public void requestLocationPermission(CoordinatesView coordinatesView) {
         this.coordinatesView = coordinatesView;
@@ -125,12 +128,32 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         super.onCreate(savedInstanceState);
     }
 
+    private void initPinDialog() {
+        pinDialog = new PinDialog(PinDialog.Mode.ASK,
+                (this instanceof LoginActivity),
+                aBoolean -> {
+                    startActivity(MainActivity.class, null, true, true, null);
+                    return null;
+                },
+                () -> {
+                    analyticsHelper.setEvent(AnalyticsConstants.FORGOT_CODE, AnalyticsConstants.CLICK, AnalyticsConstants.FORGOT_CODE);
+                    if (!(this instanceof LoginActivity)) {
+                        startActivity(LoginActivity.class, null, true, true, null);
+                    }
+                    return null;
+                }
+        );
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         lifeCycleObservable.onNext(Status.ON_RESUME);
         if (ExtensionsKt.app(this).isSessionBlocked() && !(this instanceof SplashActivity)) {
-            showPinDialog();
+            if (getPinDialog() == null) {
+                initPinDialog();
+                showPinDialog();
+            }
         }
     }
 
@@ -139,6 +162,16 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         super.onPause();
         lifeCycleObservable.onNext(Status.ON_PAUSE);
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        PinDialog dialog = getPinDialog();
+        if (dialog != null) {
+            dialog.dismissAllowingStateLoss();
+        }
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -163,27 +196,18 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     }
 
     public void showPinDialog() {
-        new PinDialog(PinDialog.Mode.ASK,
-                (this instanceof LoginActivity),
-                aBoolean -> {
-                    startActivity(MainActivity.class, null, true, true, null);
-                    return null;
-                },
-                () -> {
-                    analyticsHelper.setEvent(AnalyticsConstants.FORGOT_CODE, AnalyticsConstants.CLICK, AnalyticsConstants.FORGOT_CODE);
-                    if (!(this instanceof LoginActivity)) {
-                        startActivity(LoginActivity.class, null, true, true, null);
-                    }
-                    return null;
-                }
-        ).show(getSupportFragmentManager(), PIN_DIALOG_TAG);
+        pinDialog.show(getSupportFragmentManager(), PIN_DIALOG_TAG);
+    }
+
+    public PinDialog getPinDialog(){
+        return (PinDialog) getSupportFragmentManager().findFragmentByTag(PIN_DIALOG_TAG);
     }
 
     @Override
     public void showTutorial(boolean shaked) {
-        if(HelpManager.getInstance().isReady()) {
+        if (HelpManager.getInstance().isReady()) {
             HelpManager.getInstance().showHelp();
-        }else{
+        } else {
             showToast(getString(R.string.no_intructions));
         }
     }
@@ -416,7 +440,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     @Override
     public void showSyncDialog(SyncStatusDialog dialog) {
-        dialog.show(getSupportFragmentManager(), dialog.getDialogTag());
+        dialog.show(getSupportFragmentManager(), FRAGMENT_TAG);
     }
 
     @Override

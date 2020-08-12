@@ -354,7 +354,6 @@
     <string name="login_server_info_title">ທີ່ຢູ່ຂອງເຄື່ອງຄອມພີວເຕີໜ່ວຍແມ່</string>
     <string name="state_warning">ແຈ້ງເຕືອນ</string>
     <string name="action_close">ປິດ</string>
-    <string name="data_set_closed">ປິດ</string>
     <string name="data_set_open">ເປີດ</string>
     <string name="unsupported_value_type">ປະເພດຄ່າບໍ່ຮອງຮັບ</string>
     <string name="data_every_day">ທຸກໆມື້</string>
