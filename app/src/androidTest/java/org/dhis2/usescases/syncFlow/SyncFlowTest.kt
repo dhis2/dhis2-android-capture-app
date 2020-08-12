@@ -32,11 +32,6 @@ class SyncFlowTest : BaseTest() {
     @get:Rule
     val ruleEventWithoutRegistration = ActivityTestRule(ProgramEventDetailActivity::class.java, false, false)
 
-    @Rule
-    @JvmField
-    val dataBindingIdlingResourceRule = DataBindingIdlingResourceRule(ruleSearch)
-
-
     override fun setUp() {
         super.setUp()
         setupMockServer()
