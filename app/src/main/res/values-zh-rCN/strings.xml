@@ -509,7 +509,6 @@
     <string name="no_conflicts_synced_message">已经更新。所有的数据已经发送到服务器。</string>
     <string name="relationship_error_recursive">你不能关联记录到自身。</string>
     <string name="unblock_session">解锁会话</string>
-    <string name="data_set_closed">关闭</string>
     <string name="data_set_open">开放</string>
     <string name="unsupported_value_type">不支持的值类型</string>
     <string name="change_calendar_view">改变日历视图。</string>
