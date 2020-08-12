@@ -5,6 +5,14 @@
     <string name="logo_number">2</string>
     <!-- Warnings and error messages -->
     <string name="error">خطأ</string>
+    <plurals name="error_message">
+        <item quantity="zero">لاتوجد أخطاء</item>
+        <item quantity="one">خطأ</item>
+        <item quantity="two">خطأين</item>
+        <item quantity="few">أخطاء</item>
+        <item quantity="many">أخطاء</item>
+        <item quantity="other">أخطاء</item>
+    </plurals>
     <string name="error_wrong_server_url">رابط الخادم غير صحيح</string>
     <string name="error_wrong_credentials">خطأ في الإعتمادات</string>
     <string name="error_unexpected_error">خطأ غير متوقع</string>
@@ -85,7 +93,7 @@
     <string name="program_completed">تم اكمال البرنامج</string>
     <string name="program_inactive">البرنامج غير نشط</string>
 
-    <string name="event_open">فتح</string>
+    <string name="event_open">مفتوح</string>
     <string name="event_completed">تم اكمال الحدث</string>
     <string name="event_skipped">تم تجاوز الحدث</string>
     <string name="event_schedule">جدولة الحدث</string>
@@ -101,6 +109,7 @@
     <string name="cancelled">تم الإلغاء</string>
     <string name="re_open">إعادة فتح</string>
     <string name="activate">تنشيط</string>
+    <string name="active">فعال</string>
 
     <!-- State -->
     <string name="state_synced">حالة المزامنة</string>
@@ -109,6 +118,7 @@
     <string name="state_to_delete">للحذف</string>
     <string name="state_error">خطأ</string>
     <string name="action_sync">مزامنة</string>
+    <string name="action_send">إرسال</string>
     <string name="action_sync_sms">مزامنة sms</string>
 
     <!--Completion-->
@@ -134,6 +144,7 @@
     <string name="report_period">الفترة الزمنية للتقرير</string>
     <string name="field_required">إذا قمت بتعيين قيمة ، فإن الصف بأكمله يحتاج إلى كل القيم لإكمال مجموعة البيانات.</string>
     <string name="field_mandatory">بعض القيم المطلوبة مفقودة. تحتاج إلى إدخال القيم الإلزامية لتتمكن من الإكمال.</string>
+    <string name="field_mandatory_v2">هناك حقول إلزامية مفقودة. من فضلك املأهم لإكمال حزمة البيانات.</string>
     <string name="datavalue_saved">تم حفظ القيمة!</string>
     <string name="there_is_no_available_period">لا توجد فترات متاحة للاختيار.</string>
     <!--Event Detail-->
@@ -333,14 +344,14 @@
     <string name="share_qr">مشاركة رمز الـ QR</string>
     <string name="tei">TEI</string>
     <string name="teis">TEIs</string>
-    <string name="teiType_search_online">البحث حسب النوع غير ممكن للبحث عبر الإنترنت.\n الرجاء تحديد برنامج من القائمة.</string>
+    <string name="teiType_search_online">البحث حسب النوع غير ممكن للبحث عبر الإنترنت.\n يرجى تحديد برنامج من القائمة.</string>
     <string name="max">الأعلى</string>
     <string name="current">الحالي</string>
     <string name="limit_by_organisation_unit">ضع حداً حسب الوحدة التنظيمية</string>
     <string name="limit_by_program">ضع حداً حسب البرنامج</string>
     <string name="programs_list">قائمة البرنامج</string>
-    <string name="wipe_data">إعادة تعيين بيانات التطبيق &amp;؛ و إعدادات التكوين</string>
-    <string name="add_relationship_error">من غير الممكن إ</string>
+    <string name="wipe_data">إعادة تعيين بيانات التطبيق و إعدادات التكوين</string>
+    <string name="add_relationship_error">من غير الممكن إضافة هذه العلاقة</string>
     <string name="warning_error_on_complete_title">تحقق من هذا!</string>
     <string name="warning_on_complete_title">تحذير</string>
     <string name="error_on_complete_title">خطأ</string>
@@ -451,7 +462,7 @@
     <string name="unselect_enrollment_description">عرض لوحة معلومات بجميع البرامج النشطة</string>
     <string name="CHECK_SYNC_ERRORS">فتح سجل أخطاء المزامنة</string>
     <string name="error_dialog_title">سجل أخطاء المزامنة</string>
-    <string name="share_with">مشاركة مع...</string>
+    <string name="share_with">مشاركة مع…</string>
     <string name="errors_during_sync">فشلت مزامنة التهيئة والتكوين الخاصة بك. قد يكون هناك أخطاء في الخادم الخاص بك. انقر هنا للمزيد من المعلومات.</string>
     <string name="sectionSelectorPrev">السابق</string>
     <string name="sectionSelectorNext">التالي</string>
@@ -497,7 +508,7 @@
     <string name="login_server_info_title">رابط الخادم</string>
     <string name="login_server_info_message">أدخل عنوان URL لخادم DHIS 2 لمؤسستك على النحو الذي حصلت عليه من مسؤول النظام.\n\n أو بدلاً من ذلك ، يمكنك مسح رمز الـ QR الذي يحتوي على عنوان الـ URL لخادمك</string>
     <string name="forgot_your_code">نسيت الرمز الخاص بك؟</string>
-    <string name="event_form_end_options_title">ماذا تريد أن تفعل لهذا الحدث؟</string>
+    <string name="event_form_end_options_title">ما الذي تريد فعله لهذا الحدث؟</string>
     <string name="sectionSelectorEnd">إنهاء</string>
     <string name="resource_not_found">لم يتم العثور على %s</string>
     <string name="relationship_not_found_message">السجل الذي تحاول الوصول إليه غير متوفر. هل تود البحث عنه؟</string>
@@ -512,7 +523,7 @@
     <string name="no_conflicts_synced_message">لديك آخر التحديثات حتى الآن! كل بياناتك تم ارسالها إلى السيرفر</string>
     <string name="relationship_error_recursive">لا يمكنك ربط سجل مع نفسه</string>
     <string name="unblock_session">رفع الحظر عن الجلسة</string>
-    <string name="data_set_closed">إغلاق</string>
+    <string name="data_set_complete">مكتمل</string>
     <string name="data_set_open">فتح</string>
     <string name="unsupported_value_type">نوع القيمة غير مدعوم</string>
     <string name="change_calendar_view">تغيير طريقة عرض التقويم</string>
@@ -566,7 +577,7 @@
     <string name="sms_bar_state_failed">فشل</string>
 
     <string name="start_sync_granular">بدء المزامنة.</string>
-    <string name="syncing">مزامنة...</string>
+    <string name="syncing">مزامنة…</string>
     <string name="end_sync_granular">اكتمال عملية المزامنة</string>
     <string name="error_sync">حدث خطأ أثناء المزامنة.</string>
     <string name="cancel_sync">تزامن ملغي.</string>
@@ -675,6 +686,7 @@
     <string name="sync_parameters_not_editable">عوامل المزامنة غير قابلة للتعديل</string>
     <string name="rv_no_editable">عدد القيم المحجوزة التي تم تنزيلها غير قابل للتعديل</string>
     <string name="dialog_layer_satellite">إظهار عرض القمر الصناعي</string>
+    <string name="dialog_layer_event">إظهار الأحداث</string>
     <string name="dialog_layer_tei_coordinates">إظهار إحداثيات tei</string>
     <string name="dialog_layer_enrollment_coordinates">عرض إحداثيات التسجيل</string>
     <string name="dialog_layer_heatmap">إظهار طبقة مخطط الحرارة</string>
@@ -683,4 +695,46 @@
     <string name="filter_sync_not_synced">الغير متزامنة</string>
     <string name="filter_sync_error">تحوي أخطاء في المزامنة</string>
     <string name="filter_sync_sms">التي تم مزامنتها عبر SMS</string>
+    <string name="dataset_overview">التفاصيل</string>
+    <string name="dataset_comments">التعليقات</string>
+    <string name="saved">تم الحفظ!</string>
+    <string name="run_validation_rules">هل تريد التحقق من جودة البيانات؟</string>
+    <string name="validation_success_title">كل شيء يبدو جيدا!</string>
+    <string name="mark_dataset_complete">هل تريد أيضًا تعيين حزمة البيانات كمكتملة؟</string>
+    <string name="dataset_completed">تعيين كمكتمل</string>
+    <string name="name">الإسم</string>
+    <string name="formula">الصيغة</string>
+    <string name="complete_anyway">إكمال على أية حال</string>
+    <string name="fk_message">%s%s مفقود من %s%s</string>
+    <string name="filters_title_event_status">حالة الحدث</string>
+    <string name="filters_title_enrollment_status">حالة التسجيل</string>
+    <string name="enrollment_date">تاريخ التسجيل</string>
+    <string name="action_apply">تطبيق</string>
+    <string name="dataset_empty_list_can_create">لا توجد بيانات. انقر فوق \"+\" لإضافة سجل جديد</string>
+    <string name="dataset_emtpy_list_can_not_create">لا توجد بيانات. ليس لديك إذن بإضافة سجلات جديدة.</string>
+    <string name="validation_rules_empty_description">لم يتم تعيين وصف أو تعليمات</string>
+    <string name="validation_rules_data_to_review">بيانات للمراجعة</string>
+    <string name="dataset_saved_completed">محفوظ ومكتمل</string>
+    <string name="status_change_error_active_exist">يوجد مسبقاً تسجيل نشط</string>
+    <string name="enrollment_status_active">مفتوح</string>
+    <string name="enrollment_status_completed">مكتمل</string>
+    <string name="enrollment_status_cancelled">تم الإلغاء</string>
+    <string name="no_data">لا توجد بيانات</string>
+    <string name="no_coordinates_item">%s لا يملك أي احداثيات</string>
+    <string name="event_data">بيانات</string>
+    <string name="download_tei_error">تعذر تنزيل %s المحددة</string>
+    <string name="completed_by">تم الإكمال من قبل %s:%s</string>
+    <string name="updated_time">تم التحديث: %s</string>
+    <string name="action_done">تم الإنتهاء!</string>
+    <string name="validation_internal_error_datasets">لم نتمكن من التحقق من جودة البيانات. تواصل مع مديرك</string>
+    <string name="are_you_sure">هل أنت متأكد؟</string>
+    <string name="reopen_question">هل تريد إعادة فتح حزمة البيانات؟</string>
+    <string name="show_events_timeline">عرض الخط الزمني للأحداث</string>
+    <string name="filters_title_date">التاريخ</string>
+    <string name="filters_title_event_date">بيانات الحدث</string>
+    <string name="dataset_data">بيانات</string>
+    <string name="tei_type_has_no_attributes">%s لا يملك أي سمات عامة، يرجى تحديد برنامج</string>
+    <string name="privacy_policy_title">سياسة الخصوصية</string>
+    <string name="open_privacy_policy">إنقر هنا للإطلاع على <a href=""> سياسة الخصوصية الخاصة بنا</a></string>
+    <string name="coordinates_error">قيم الإحداثيات غير صالحة</string>
 </resources>

@@ -553,6 +553,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                             selectedOption -> {
                                                 CategoryOption categoryOption = presenter.getCatOption(selectedOption);
                                                 selectedCatOption.put(category.uid(), categoryOption);
+                                                catSelectorBinding.catCombo.setText(categoryOption.displayName());
                                                 if (selectedCatOption.size() == catCombo.categories().size()) {
                                                     catOptionComboUid = presenter.getCatOptionCombo(categoryOptionCombos, new ArrayList<>(selectedCatOption.values()));
                                                     checkActionButtonVisibility();

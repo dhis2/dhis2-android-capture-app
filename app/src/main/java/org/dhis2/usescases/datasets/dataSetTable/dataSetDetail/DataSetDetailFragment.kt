@@ -49,6 +49,7 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
                 }
             }
         }
+        const val FRAGMENT_TAG = "SYNC"
     }
 
     override fun onAttach(context: Context) {
@@ -105,7 +106,7 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
                         }
                     })
                 .build()
-            syncDialog.show(abstractActivity.supportFragmentManager, syncDialog.dialogTag)
+            syncDialog.show(abstractActivity.supportFragmentManager, FRAGMENT_TAG)
         }
     }
 
