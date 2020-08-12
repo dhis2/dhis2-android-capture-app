@@ -281,22 +281,25 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     new ViewPager2.OnPageChangeCallback() {
                         @Override
                         public void onPageSelected(int position) {
+                            String pageTitle;
                             switch (position) {
                                 case INDICATORS_LANDSCAPE_POS:
-                                    binding.sectionTitle.setText(getString(R.string.dashboard_indicators));
+                                    pageTitle = getString(R.string.dashboard_indicators);
                                     binding.relationshipMapIcon.setVisibility(View.GONE);
                                     break;
                                 case RELATIONSHIPS_LANDSCAPE_POS:
-                                    binding.sectionTitle.setText(getString(R.string.dashboard_relationships));
+                                    pageTitle = getString(R.string.dashboard_relationships);
                                     binding.relationshipMapIcon.setVisibility(View.VISIBLE);
                                     break;
                                 case NOTES_LANDSCAPE_POS:
-                                    binding.sectionTitle.setText(getString(R.string.dashboard_notes));
+                                    pageTitle = getString(R.string.dashboard_notes);
                                     binding.relationshipMapIcon.setVisibility(View.GONE);
                                     break;
                                 default:
+                                    pageTitle = null;
                                     break;
                             }
+                            binding.sectionTitle.post(()-> binding.sectionTitle.setText(pageTitle));
                         }
                     }
             );
