@@ -3,6 +3,7 @@ package org.dhis2.data.forms.dataentry
 import io.reactivex.Flowable
 import java.io.File
 import org.dhis2.Bindings.blockingSetCheck
+import org.dhis2.Bindings.withValueTypeCheck
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
@@ -72,18 +73,30 @@ class ValueStoreImpl(
             return Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_NOT_UNIQUE))
         }
 
+        val teiUid =
+            when (entryMode) {
+                DataEntryStore.EntryMode.DE -> {
+                    val event = d2.eventModule().events().uid(recordUid).blockingGet()
+                    val enrollment = d2.enrollmentModule().enrollments()
+                        .uid(event.enrollment()).blockingGet()
+                    enrollment.trackedEntityInstance()
+                }
+                DataEntryStore.EntryMode.ATTR -> recordUid
+                DataEntryStore.EntryMode.DV -> null
+            }
+                ?: return Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_HAS_NOT_CHANGED))
+
         val valueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
-            .value(uid, recordUid)
-        var newValue = value ?: ""
-        if (d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet().valueType() ==
-            ValueType.IMAGE &&
-            value != null
-        ) {
+            .value(uid, teiUid)
+        val valueType =
+            d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet().valueType()
+        var newValue = value.withValueTypeCheck(valueType) ?: ""
+        if (valueType == ValueType.IMAGE && value != null) {
             newValue = saveFileResource(value)
         }
 
         val currentValue = if (valueRepository.blockingExists()) {
-            valueRepository.blockingGet().value()
+            valueRepository.blockingGet().value().withValueTypeCheck(valueType)
         } else {
             ""
         }
@@ -102,16 +115,14 @@ class ValueStoreImpl(
     private fun saveDataElement(uid: String, value: String?): Flowable<StoreResult> {
         val valueRepository = d2.trackedEntityModule().trackedEntityDataValues()
             .value(recordUid, uid)
-        var newValue = value ?: ""
-        if (d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType() ==
-            ValueType.IMAGE &&
-            value != null
-        ) {
+        val valueType = d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType()
+        var newValue = value.withValueTypeCheck(valueType) ?: ""
+        if (valueType == ValueType.IMAGE && value != null) {
             newValue = saveFileResource(value)
         }
 
         val currentValue = if (valueRepository.blockingExists()) {
-            valueRepository.blockingGet().value()
+            valueRepository.blockingGet().value().withValueTypeCheck(valueType)
         } else {
             ""
         }

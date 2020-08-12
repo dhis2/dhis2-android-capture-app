@@ -449,7 +449,7 @@ class EnrollmentPresenterImpl(
         return ArrayList(fieldMap.values)
     }
 
-    fun getEnrollment(): Enrollment {
+    fun getEnrollment(): Enrollment? {
         return enrollmentObjectRepository.blockingGet()
     }
 

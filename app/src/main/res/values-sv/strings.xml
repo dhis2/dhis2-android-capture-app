@@ -310,7 +310,6 @@
     <string name="login_server_info_title">Server URL</string>
     <string name="state_warning">Varning</string>
     <string name="action_close">Stänga</string>
-    <string name="data_set_closed">Stänga</string>
     <string name="data_set_open">Öppen</string>
     <string name="data_every_day">Dagligen</string>
     <string name="data_every_week">Varje vecka</string>

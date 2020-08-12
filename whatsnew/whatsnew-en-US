@@ -1,14 +1,1 @@
-Main new features:
-- Validation rules
-- New sorting and filters
-- Map visualization of TEI, event and relationship lists
-- Inherit values when creating a new TEI for a relationship
-- Pre-selection of current organisation unit when creating events
-- Searchable category options
-- New event and TEI cards
-- Improved data set screen
-- New event status and sync state icons
-- Support for Android Settings DHIS2 web app
-- Expanded error log
-- Database encryption
-- Quality and performance improvements
+This version includes several quality and performance improvements
