@@ -102,18 +102,18 @@ class PinDialog(
     }
 
     override fun closeDialog() {
-        dismiss()
+        dismissAllowingStateLoss()
     }
 
     override fun dismiss() {
         app().releaseSessionComponent()
-        super.dismiss()
+        dismissAllowingStateLoss()
     }
 
     override fun recoverPin() {
         presenter.logOut()
         forgotPinCallback.invoke()
-        dismiss()
+        dismissAllowingStateLoss()
     }
 
     override fun show(manager: FragmentManager, tag: String?) {

@@ -128,6 +128,23 @@ fun TrackedEntityDataValueObjectRepository.blockingSetCheck(
     }
 }
 
+fun String?.withValueTypeCheck(valueType: ValueType?): String? {
+    return this?.let {
+        if (isEmpty()) return this
+        when (valueType) {
+            ValueType.UNIT_INTERVAL,
+            ValueType.PERCENTAGE,
+            ValueType.INTEGER,
+            ValueType.INTEGER_POSITIVE,
+            ValueType.INTEGER_NEGATIVE,
+            ValueType.INTEGER_ZERO_OR_POSITIVE -> {
+                it.toFloat().toInt().toString()
+            }
+            else -> this
+        }
+    } ?: this
+}
+
 fun TrackedEntityDataValueObjectRepository.blockingGetValueCheck(
     d2: D2,
     deUid: String

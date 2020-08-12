@@ -37,6 +37,8 @@ import javax.inject.Inject;
 
 public class DataSetDetailActivity extends ActivityGlobalAbstract implements DataSetDetailView {
 
+    private static String FRAGMENT_TAG = "SYNC";
+
     private ActivityDatasetDetailBinding binding;
     private String dataSetUid;
     private Boolean accessWriteData;
@@ -209,7 +211,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
                     }
                 }).build();
 
-        dialog.show(getSupportFragmentManager(), dialog.getDialogTag());
+        dialog.show(getSupportFragmentManager(), FRAGMENT_TAG);
     }
 
     @Override

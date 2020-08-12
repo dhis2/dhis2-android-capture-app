@@ -107,6 +107,13 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
             )
         ).inject(this)
+
+        if (presenter.getEnrollment() == null ||
+            presenter.getEnrollment()?.trackedEntityInstance() == null
+        ) {
+            finish()
+        }
+
         forRelationship = intent.getBooleanExtra(FOR_RELATIONSHIP, false)
         binding = DataBindingUtil.setContentView(this, R.layout.enrollment_activity)
         binding.view = this
@@ -191,7 +198,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 RQ_QR_SCANNER -> {
                     scanTextView.updateScanResult(data!!.getStringExtra(Constants.EXTRA_DATA))
                 }
-                RQ_EVENT -> openDashboard(presenter.getEnrollment().uid()!!)
+                RQ_EVENT -> openDashboard(presenter.getEnrollment()!!.uid()!!)
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -211,13 +218,13 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 presenter.getProgram().uid(),
                 eventUid,
                 null,
-                presenter.getEnrollment().trackedEntityInstance(),
+                presenter.getEnrollment()!!.trackedEntityInstance(),
                 null,
-                presenter.getEnrollment().organisationUnit(),
+                presenter.getEnrollment()!!.organisationUnit(),
                 null,
-                presenter.getEnrollment().uid(),
+                presenter.getEnrollment()!!.uid(),
                 0,
-                presenter.getEnrollment().status()
+                presenter.getEnrollment()!!.status()
             )
             val eventInitialIntent = Intent(abstracContext, EventInitialActivity::class.java)
             eventInitialIntent.putExtras(bundle)
@@ -233,7 +240,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             )
             eventCreationIntent.putExtra(
                 Constants.TRACKED_ENTITY_INSTANCE,
-                presenter.getEnrollment().trackedEntityInstance()
+                presenter.getEnrollment()!!.trackedEntityInstance()
             )
             startActivityForResult(eventCreationIntent, RQ_EVENT)
         }
@@ -242,13 +249,13 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     override fun openDashboard(enrollmentUid: String) {
         if (forRelationship) {
             val intent = Intent()
-            intent.putExtra("TEI_A_UID", presenter.getEnrollment().trackedEntityInstance())
+            intent.putExtra("TEI_A_UID", presenter.getEnrollment()!!.trackedEntityInstance())
             setResult(Activity.RESULT_OK, intent)
             finish()
         } else {
             val bundle = Bundle()
             bundle.putString(PROGRAM_UID, presenter.getProgram().uid())
-            bundle.putString(TEI_UID, presenter.getEnrollment().trackedEntityInstance())
+            bundle.putString(TEI_UID, presenter.getEnrollment()!!.trackedEntityInstance())
             bundle.putString(ENROLLMENT_UID, enrollmentUid)
             startActivity(TeiDashboardMobileActivity::class.java, bundle, true, false, null)
         }

@@ -509,7 +509,6 @@
     <string name="no_conflicts_synced_message">Você esta atualizado! Todos os seus dados são enviados para o servidor.</string>
     <string name="relationship_error_recursive">Você não pode relacionar um registro consigo mesmo</string>
     <string name="unblock_session">Desbloquear sessão</string>
-    <string name="data_set_closed">Fechar</string>
     <string name="data_set_open">Abrir</string>
     <string name="unsupported_value_type">Tipo de valor não suportado</string>
     <string name="change_calendar_view">Alterar visualização da agenda</string>
