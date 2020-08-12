@@ -35,10 +35,10 @@ class SyncFlowTest : BaseTest() {
     override fun setUp() {
         super.setUp()
         setupMockServer()
+        turnOnConnectivityAfterLogin()
     }
 
     @Test
-    @Ignore
     fun shouldSuccessfullySyncAChangedTEI() {
         val teiName =  "Scott"
         val teiLastName =  "Kelley"
@@ -74,7 +74,6 @@ class SyncFlowTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldShowErrorWhenTEISyncFails() {
         val teiName = "Lars"
         val teiLastName = "Overland"
