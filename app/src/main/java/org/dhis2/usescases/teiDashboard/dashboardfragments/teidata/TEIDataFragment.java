@@ -522,6 +522,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     public void showNewEventOptions(View anchor, ProgramStage stage) {
         PopupMenu popupMenu = new PopupMenu(context, anchor);
         popupMenu.inflate(R.menu.dashboard_event_creation);
+        popupMenu.getMenu().findItem(R.id.schedulenew).setVisible(!stage.hideDueDate());
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.schedulenew:
