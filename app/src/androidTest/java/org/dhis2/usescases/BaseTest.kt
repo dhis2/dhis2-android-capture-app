@@ -100,6 +100,10 @@ open class BaseTest {
         ServerURLWrapper.setServerUrl("$MOCK_SERVER_URL/$API/")
     }
 
+    fun turnOffConnectivityAfterLogin(){
+        ServerURLWrapper.setServerUrl("none")
+    }
+
     private fun disableIntents() {
         if (isIntentsEnable) {
             Intents.release()

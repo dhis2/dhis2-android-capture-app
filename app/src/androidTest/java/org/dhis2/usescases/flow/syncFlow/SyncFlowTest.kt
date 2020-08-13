@@ -198,6 +198,11 @@ class SyncFlowTest : BaseTest() {
         }
     }
 
+    override fun teardown() {
+        super.teardown()
+        turnOffConnectivityAfterLogin()
+    }
+
     companion object {
         const val LAB_MONITORING = "Lab monitoring"
         const val TB_VISIT = "TB visit"
