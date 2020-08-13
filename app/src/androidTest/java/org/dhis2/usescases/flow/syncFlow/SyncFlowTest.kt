@@ -66,6 +66,7 @@ class SyncFlowTest : BaseTest() {
         syncFlowRobot {
             clickOnSyncTei(teiName, teiLastName)
             clickOnSyncButton()
+            Thread.sleep(2000)
             checkSyncWasSuccessfully()
         }
     }
@@ -197,12 +198,7 @@ class SyncFlowTest : BaseTest() {
             checkSyncFailed()
         }
     }
-
-    override fun teardown() {
-        super.teardown()
-        turnOffConnectivityAfterLogin()
-    }
-
+    
     companion object {
         const val LAB_MONITORING = "Lab monitoring"
         const val TB_VISIT = "TB visit"
