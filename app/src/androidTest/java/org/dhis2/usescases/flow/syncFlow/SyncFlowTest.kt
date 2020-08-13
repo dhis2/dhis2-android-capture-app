@@ -33,7 +33,6 @@ class SyncFlowTest : BaseTest() {
     override fun setUp() {
         super.setUp()
         setupMockServer()
-        turnOnConnectivityAfterLogin()
     }
 
     @Test
@@ -43,6 +42,7 @@ class SyncFlowTest : BaseTest() {
 
         mockWebServerRobot.addResponse(POST, SYNC_TEI_PATH, API_SYNC_TEI_OK)
 
+        turnOnConnectivityAfterLogin()
         setupCredentials()
         prepareTBProgrammeIntentAndLaunchActivity(ruleSearch)
 
@@ -78,6 +78,7 @@ class SyncFlowTest : BaseTest() {
 
         mockWebServerRobot.addResponse(POST, SYNC_TEI_PATH, API_SYNC_TEI_ERROR)
 
+        turnOnConnectivityAfterLogin()
         setupCredentials()
         prepareTBProgrammeIntentAndLaunchActivity(ruleSearch)
 
