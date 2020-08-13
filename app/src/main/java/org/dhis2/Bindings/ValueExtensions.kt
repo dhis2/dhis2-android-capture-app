@@ -1,5 +1,6 @@
 package org.dhis2.Bindings
 
+import org.dhis2.utils.extension.invoke
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
@@ -51,10 +52,44 @@ fun TrackedEntityDataValue?.userFriendlyValue(d2: D2): String? {
     }
 }
 
+fun TrackedEntityDataValue?.valueByPropName(d2: D2, propName: String): String? {
+    if (this == null) {
+        return null
+    } else {
+        if (value().isNullOrEmpty()) {
+            return value()
+        }
+
+        val dataElement = d2.dataElementModule().dataElements()
+            .uid(dataElement())
+            .blockingGet()
+
+        if (check(d2, dataElement.valueType(), dataElement.optionSet()?.uid(), value()!!)) {
+            dataElement.optionSet()?.let {
+                return checkOptionSetValueByPropName(d2, it.uid(), value()!!, propName)
+            } ?: return checkValueTypeValue(d2, dataElement.valueType(), value()!!)
+        } else {
+            return null
+        }
+    }
+}
+
 fun checkOptionSetValue(d2: D2, optionSetUid: String, code: String): String? {
     return d2.optionModule().options()
         .byOptionSetUid().eq(optionSetUid)
         .byCode().eq(code).one().blockingGet()?.displayName()
+}
+
+fun checkOptionSetValueByPropName(d2: D2, optionSetUid: String, code: String, propName: String): String? {
+    val option = d2.optionModule().options()
+        .byOptionSetUid().eq(optionSetUid)
+        .byCode().eq(code).one().blockingGet()
+
+    return try {
+        option.invoke(propName) as String
+    } catch (e:Exception){
+        option.displayName()
+    }
 }
 
 fun checkValueTypeValue(d2: D2, valueType: ValueType?, value: String): String {

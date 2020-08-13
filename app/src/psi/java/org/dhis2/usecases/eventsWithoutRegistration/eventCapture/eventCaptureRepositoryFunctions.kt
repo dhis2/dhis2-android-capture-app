@@ -1,25 +1,33 @@
 package org.dhis2.usecases.eventsWithoutRegistration.eventCapture
 
-import org.dhis2.Bindings.userFriendlyValue
+import org.dhis2.Bindings.valueByPropName
 import org.hisp.dhis.android.core.D2
+import timber.log.Timber
 import java.util.HashMap
+
+class TitlePatternFormatException(message: String?) : Exception(message) {}
 
 fun getProgramStageName(d2: D2, eventUid: String): String {
     val event = d2.eventModule().events().uid(eventUid).blockingGet()
     val programStage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
 
-    val attValue = getProgramStagePatternAttValue(d2,programStage.uid())
+    val attValue = getProgramStagePatternAttValue(d2, programStage.uid())
 
-    return if (attValue.isNotBlank()) {
-        val getDataElementDisplayName = { uid: String ->
-            val teValue = d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid)
-                .blockingGet()
+    return try {
+        if (attValue.isNotBlank()) {
+            val getDataElementValue = { uid: String, prop: String ->
+                val teValue =
+                    d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid)
+                        .blockingGet()
 
-            teValue.userFriendlyValue(d2) ?: ""
+                teValue.valueByPropName(d2, prop) ?: ""
+            }
+
+            getProgramStageNameByAttributeValue(attValue, getDataElementValue)
+        } else {
+            programStage?.displayName() ?: ""
         }
-
-        getProgramStageNameByAttributeValue(attValue, getDataElementDisplayName)
-    } else {
+    } catch (e: Exception) {
         programStage?.displayName() ?: ""
     }
 }
@@ -45,7 +53,7 @@ fun getProgramStagePatternAttValue(d2: D2, programStageUid: String): String {
 }
 
 fun getProgramStagePatternAttributeUid(d2: D2): String {
-    val attributeCode = "HeaderPattern"
+    val attributeCode = "HeaderTitle"
     val attributeSelect = "SELECT uid FROM Attribute WHERE code = '${attributeCode}'";
 
     d2.databaseAdapter().rawQuery(attributeSelect).use { cursor ->
@@ -59,17 +67,27 @@ fun getProgramStagePatternAttributeUid(d2: D2): String {
 
 fun getProgramStageNameByAttributeValue(
     attValue: String,
-    getDataElementDisplayName: (uid: String) -> String
+    getDataElementValue: (uid: String, prop: String) -> String
 ): String {
     val dataElementsMap: MutableMap<String, String> = HashMap()
 
     val matchResults = Regex("\\{\\{(.+?)\\}\\}").findAll(attValue)
 
     matchResults.forEach {
-        val uidToken = it.value
-        if (!dataElementsMap.containsKey(uidToken)) {
-            val uid = uidToken.substring(2, it.value.length - 2)
-            dataElementsMap[uidToken] = getDataElementDisplayName(uid)
+        val tokenWithBrackets = it.value
+        if (!dataElementsMap.containsKey(tokenWithBrackets)) {
+            val tokenItems = tokenWithBrackets.substring(2, it.value.length - 2).split(".")
+
+            if (tokenItems.size == 1) {
+                dataElementsMap[tokenWithBrackets] =
+                    getDataElementValue(tokenItems[0], "displayName")
+            } else if (tokenItems.size == 2) {
+                dataElementsMap[tokenWithBrackets] =
+                    getDataElementValue(tokenItems[0], tokenItems[1])
+            } else {
+                Timber.w("Invalid TitlePattern ")
+                throw TitlePatternFormatException("Invalid TitlePattern")
+            }
         }
     }
 
