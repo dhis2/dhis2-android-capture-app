@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import junit.framework.Assert.assertTrue
+import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
@@ -118,5 +119,58 @@ class EventCapturePresenterTest {
         )
 
         assertTrue(section.isEmpty())
+    }
+
+    @Test
+    fun `Should return current section if sectionsToHide is empty`() {
+        val activeSection = presenter.getNextVisibleSection("activeSection", sections())
+        assertTrue(activeSection == "activeSection")
+    }
+
+    @Test
+    fun `Should return second section if sectionsToHide contains current section`() {
+        presenter.setHideSection("sectionUid_1")
+        val activeSection = presenter.getNextVisibleSection("sectionUid_1", sections())
+        assertTrue(activeSection == "sectionUid_2")
+    }
+
+    @Test
+    fun `Should return visible section if sectionsToHide contains several previous sections`() {
+        presenter.setHideSection("sectionUid_1")
+        presenter.setHideSection("sectionUid_2")
+        val activeSection = presenter.getNextVisibleSection("sectionUid_1", sections())
+        assertTrue(activeSection == "sectionUid_3")
+    }
+
+    @Test
+    fun `Should return empty section if sectionsToHide contains all sections`() {
+        presenter.setHideSection("sectionUid_1")
+        presenter.setHideSection("sectionUid_2")
+        presenter.setHideSection("sectionUid_3")
+        val activeSection = presenter.getNextVisibleSection("sectionUid_1", sections())
+        assertTrue(activeSection.isEmpty())
+    }
+
+    private fun sections(): MutableList<FormSectionViewModel> {
+        return arrayListOf(
+            FormSectionViewModel.createForSection(
+                "eventUid",
+                "sectionUid_1",
+                "sectionName_1",
+                null
+            ),
+            FormSectionViewModel.createForSection(
+                "eventUid",
+                "sectionUid_2",
+                "sectionName_2",
+                null
+            ),
+            FormSectionViewModel.createForSection(
+                "eventUid",
+                "sectionUid_3",
+                "sectionName_3",
+                null
+            )
+        )
     }
 }

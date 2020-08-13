@@ -214,10 +214,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 sectionProcessor.startWith(sectionList.get(0).sectionUid())
                                         .switchMap(section -> fieldFlowable
                                                 .map(fields -> {
-                                                    String activeSection = section;
-                                                    while (sectionsToHide.contains(activeSection)) {
-                                                        activeSection = getNextVisibleSection(activeSection, sectionList);
-                                                    }
+
+                                                    String activeSection = getNextVisibleSection(section,sectionList);
 
                                                     totalFields = 0;
                                                     unsupportedFields = 0;
@@ -354,18 +352,22 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         fieldFlowable.connect();
     }
 
-    private String getNextVisibleSection(String currentSection, List<FormSectionViewModel> sectionList) {
-        String nextSection = currentSection;
-        for (FormSectionViewModel section : sectionList) {
-            if (section.sectionUid().equals(currentSection)) {
-                int nextSectionIndex = sectionList.indexOf(section) + 1;
-                if (nextSectionIndex < sectionList.size() - 1) {
-                    nextSection = sectionList.get(nextSectionIndex).sectionUid();
+    @VisibleForTesting
+    public String getNextVisibleSection(String activeSection, List<FormSectionViewModel> sectionList) {
+        while (sectionsToHide.contains(activeSection)) {
+            for (FormSectionViewModel section : sectionList) {
+                if (section.sectionUid().equals(activeSection)) {
+                    int nextSectionIndex = sectionList.indexOf(section) + 1;
+                    if (nextSectionIndex < sectionList.size()) {
+                        activeSection = sectionList.get(nextSectionIndex).sectionUid();
+                    }else{
+                        activeSection = "";
+                    }
+                    break;
                 }
-                break;
             }
         }
-        return nextSection;
+        return activeSection;
     }
 
     @VisibleForTesting
