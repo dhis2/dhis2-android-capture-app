@@ -1,16 +1,14 @@
-package org.dhis2.usescases.syncFlow
+package org.dhis2.usescases.flow.syncFlow
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import org.dhis2.common.rules.DataBindingIdlingResourceRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.searchTeiRobot
-import org.dhis2.usescases.syncFlow.robot.dataSetRobot
-import org.dhis2.usescases.syncFlow.robot.eventWithoutRegistrationRobot
-import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
+import org.dhis2.usescases.flow.syncFlow.robot.eventWithoutRegistrationRobot
 import org.dhis2.usescases.teidashboard.robot.TeiDashboardRobot.Companion.OPEN_EVENT_STATUS
 import org.dhis2.usescases.teidashboard.robot.TeiDashboardRobot.Companion.OVERDUE_EVENT_STATUS
 import org.dhis2.usescases.teidashboard.robot.eventRobot
@@ -68,7 +66,6 @@ class SyncFlowTest : BaseTest() {
         syncFlowRobot {
             clickOnSyncTei(teiName, teiLastName)
             clickOnSyncButton()
-            Thread.sleep(2000)
             checkSyncWasSuccessfully()
         }
     }
@@ -112,8 +109,8 @@ class SyncFlowTest : BaseTest() {
         }
     }
 
+    @Ignore
     @Test
-    @Ignore("check mockserver and calls")
     fun shouldSuccessfullySyncSavedEvent() {
         mockWebServerRobot.addResponse(POST, SYNC_EVENT_PATH, API_SYNC_EVENT_OK)
 

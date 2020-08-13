@@ -38,6 +38,7 @@ import org.dhis2.utils.Constants.ORG_UNIT
 import org.dhis2.utils.Constants.PERIOD_ID
 import org.dhis2.utils.Constants.UID
 import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType
+import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton
 import timber.log.Timber
 
 class SyncGranularWorker(
@@ -49,6 +50,7 @@ class SyncGranularWorker(
     internal lateinit var presenter: SyncPresenter
 
     override fun doWork(): Result {
+        CountingIdlingResourceSingleton.increment()
         Objects.requireNonNull((applicationContext as App).userComponent())!!
             .plus(SyncGranularRxModule()).inject(this)
 
@@ -61,13 +63,21 @@ class SyncGranularWorker(
             Timber.e(e)
         }
 
-        return when (conflictType) {
-            ConflictType.PROGRAM -> presenter.blockSyncGranularProgram(uid)
-            ConflictType.TEI -> presenter.blockSyncGranularTei(uid)
-            ConflictType.EVENT -> presenter.blockSyncGranularEvent(uid)
-            ConflictType.DATA_SET -> presenter.blockSyncGranularDataSet(
-                uid
-            )
+        val result = when (conflictType) {
+            ConflictType.PROGRAM -> {
+                presenter.blockSyncGranularProgram(uid)
+            }
+            ConflictType.TEI -> {
+                presenter.blockSyncGranularTei(uid)
+            }
+            ConflictType.EVENT -> {
+                presenter.blockSyncGranularEvent(uid)
+            }
+            ConflictType.DATA_SET -> {
+                presenter.blockSyncGranularDataSet(
+                    uid
+                )
+            }
             ConflictType.DATA_VALUES ->
                 presenter.blockSyncGranularDataValues(
                     uid,
@@ -78,5 +88,7 @@ class SyncGranularWorker(
                 )
             else -> Result.failure()
         }
+        CountingIdlingResourceSingleton.decrement()
+        return result
     }
 }

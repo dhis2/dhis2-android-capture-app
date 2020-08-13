@@ -1,4 +1,4 @@
-package org.dhis2.usescases.syncFlow.robot
+package org.dhis2.usescases.flow.syncFlow.robot
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click

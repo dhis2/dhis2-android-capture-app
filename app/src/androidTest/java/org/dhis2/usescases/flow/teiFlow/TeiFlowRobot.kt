@@ -1,10 +1,10 @@
-package org.dhis2.usescases.teiFlow
+package org.dhis2.usescases.flow.teiFlow
 
 
 import org.dhis2.common.BaseRobot
 import org.dhis2.usescases.searchte.searchTeiRobot
-import org.dhis2.usescases.teiFlow.entity.EnrollmentListUIModel
-import org.dhis2.usescases.teiFlow.entity.RegisterTEIUIModel
+import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
+import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 

@@ -1,4 +1,4 @@
-package org.dhis2.usescases.syncFlow
+package org.dhis2.usescases.flow.syncFlow
 
 import android.content.Intent
 import androidx.test.rule.ActivityTestRule
