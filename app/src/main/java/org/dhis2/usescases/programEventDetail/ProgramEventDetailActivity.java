@@ -78,6 +78,8 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View,
         MapboxMap.OnMapClickListener {
 
+    private static final String FRAGMENT_TAG = "SYNC";
+
     private ActivityProgramEventDetailBinding binding;
 
     @Inject
@@ -504,7 +506,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 })
                 .build();
 
-        dialog.show(getSupportFragmentManager(), dialog.getDialogTag());
+        dialog.show(getSupportFragmentManager(), FRAGMENT_TAG);
     }
 
     private void showMap(boolean showMap) {
