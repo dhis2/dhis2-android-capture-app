@@ -36,6 +36,7 @@ class SyncFlowTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldSuccessfullySyncAChangedTEI() {
         val teiName =  "Scott"
         val teiLastName =  "Kelley"
@@ -72,6 +73,7 @@ class SyncFlowTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldShowErrorWhenTEISyncFails() {
         val teiName = "Lars"
         val teiLastName = "Overland"
