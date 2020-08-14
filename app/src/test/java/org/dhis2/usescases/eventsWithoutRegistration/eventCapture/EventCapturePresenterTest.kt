@@ -20,6 +20,7 @@ class EventCapturePresenterTest {
     private lateinit var presenter: EventCapturePresenterImpl
     private val view: EventCaptureContract.View = mock()
     private val eventUid = "eventUid"
+    private val programUid = "programUid"
     private val eventRepository: EventCaptureContract.EventCaptureRepository = mock()
     private val rulesUtilProvider: RulesUtilsProvider = mock()
     private val valueStore: ValueStore = mock()
@@ -30,6 +31,7 @@ class EventCapturePresenterTest {
         presenter = EventCapturePresenterImpl(
             view,
             eventUid,
+            programUid,
             eventRepository,
             rulesUtilProvider,
             valueStore,
