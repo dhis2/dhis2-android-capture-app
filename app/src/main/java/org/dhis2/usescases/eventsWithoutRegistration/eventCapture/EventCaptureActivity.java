@@ -16,6 +16,7 @@ import android.widget.PopupMenu;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 
 import com.google.android.material.badge.BadgeDrawable;
@@ -30,6 +31,7 @@ import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
@@ -98,6 +100,32 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 getIntent().getStringExtra(PROGRAM_UID),
                 getIntent().getStringExtra(Constants.EVENT_UID)
         ));
+        binding.eventTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab.getPosition() ==  binding.eventTabLayout.getTabCount() - 1) {
+                    BadgeDrawable badge = tab.getOrCreateBadge();
+                    if (badge.hasNumber() && badge.getNumber() > 0) {
+                        badge.setBackgroundColor(Color.WHITE);
+                    }
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                if (tab.getPosition() == binding.eventTabLayout.getTabCount() - 1) {
+                    BadgeDrawable badge = tab.getOrCreateBadge();
+                    if (badge.hasNumber() && badge.getNumber() > 0) {
+                        badge.setBackgroundColor(ContextCompat.getColor(EventCaptureActivity.this, R.color.unselected_tab_badge_color));
+                    }
+                }
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                /**/
+            }
+        });
         presenter.initNoteCounter();
         presenter.init();
     }
@@ -472,7 +500,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void updateNoteBadge(int numberOfNotes) {
         BadgeDrawable badge = binding.eventTabLayout.getTabAt(binding.eventTabLayout.getTabCount() - 1).getOrCreateBadge();
         badge.setVisible(numberOfNotes > 0);
-        badge.setBackgroundColor(Color.WHITE);
+        if (binding.eventViewPager.getCurrentItem() == 1) {
+            badge.setBackgroundColor(Color.WHITE);
+        } else {
+            badge.setBackgroundColor(ContextCompat.getColor(this, R.color.unselected_tab_badge_color));
+        }
         badge.setBadgeTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
         badge.setNumber(numberOfNotes);
         badge.setMaxCharacterCount(3);
