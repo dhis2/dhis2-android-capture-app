@@ -8,6 +8,7 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.common.Unit;
+import org.hisp.dhis.android.core.program.Program;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -281,5 +282,10 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         FilterManager.getInstance().addCatOptCombo(
                 eventRepository.getCatOptCombo(selectedCatOptionCombo)
         );
+    }
+
+    @Override
+    public Program getProgram() {
+        return eventRepository.program().blockingFirst();
     }
 }

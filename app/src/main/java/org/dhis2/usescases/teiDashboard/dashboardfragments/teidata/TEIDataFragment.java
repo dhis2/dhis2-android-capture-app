@@ -44,6 +44,7 @@ import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -589,5 +590,20 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             ouTreeIntent.putExtras(bundle);
         }
         this.startActivityForResult(ouTreeIntent, FilterManager.OU_TREE);
+    }
+
+    @Override
+    public void showSyncDialog(String uid) {
+        SyncStatusDialog dialog = new SyncStatusDialog.Builder()
+                .setConflictType(SyncStatusDialog.ConflictType.EVENT)
+                .setUid(uid)
+                .onDismissListener(hasChanged -> {
+                    if (hasChanged)
+                        FilterManager.getInstance().publishData();
+
+                })
+                .build();
+
+        dialog.show(getChildFragmentManager(), uid);
     }
 }

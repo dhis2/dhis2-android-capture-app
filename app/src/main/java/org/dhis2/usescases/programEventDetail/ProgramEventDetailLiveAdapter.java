@@ -9,66 +9,60 @@ import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
 
 import org.dhis2.R;
-import org.dhis2.databinding.ItemProgramEventBinding;
+import org.dhis2.databinding.ItemEventBinding;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
+import org.hisp.dhis.android.core.program.Program;
 
-/**
- * QUADRAM. Created by Cristian on 13/02/2018.
- */
+import kotlin.Unit;
 
-public class ProgramEventDetailLiveAdapter extends PagedListAdapter<ProgramEventViewModel, ProgramEventDetailViewHolder> {
+public class ProgramEventDetailLiveAdapter extends PagedListAdapter<EventViewModel, EventViewHolder> {
 
-    private static final DiffUtil.ItemCallback<ProgramEventViewModel> DIFF_CALLBACK = new DiffUtil.ItemCallback<ProgramEventViewModel>() {
+    private static final DiffUtil.ItemCallback<EventViewModel> DIFF_CALLBACK = new DiffUtil.ItemCallback<EventViewModel>() {
         @Override
-        public boolean areItemsTheSame(@NonNull ProgramEventViewModel oldItem, @NonNull ProgramEventViewModel newItem) {
-            return oldItem.uid() == newItem.uid();
+        public boolean areItemsTheSame(@NonNull EventViewModel oldItem, @NonNull EventViewModel newItem) {
+            return oldItem.getEvent().uid().equals(newItem.getEvent().uid());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull ProgramEventViewModel oldItem, @NonNull ProgramEventViewModel newItem) {
-            return oldItem.uid().equals(newItem.uid()) &&
-                    oldItem.date().equals(newItem.date()) &&
-                    oldItem.isExpired().equals(newItem.isExpired()) &&
-                    oldItem.eventStatus().equals(newItem.eventStatus()) &&
-                    oldItem.eventDisplayData().size() == newItem.eventDisplayData().size();
+        public boolean areContentsTheSame(@NonNull EventViewModel oldItem, @NonNull EventViewModel newItem) {
+            return oldItem.equals(newItem);
         }
     };
+    private final Program program;
     private ProgramEventDetailContract.Presenter presenter;
 
-    public ProgramEventDetailLiveAdapter(ProgramEventDetailContract.Presenter presenter) {
+    public ProgramEventDetailLiveAdapter(Program program, ProgramEventDetailContract.Presenter presenter) {
         super(DIFF_CALLBACK);
         this.presenter = presenter;
+        this.program = program;
     }
 
     @NonNull
     @Override
-    public ProgramEventDetailViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        ItemProgramEventBinding binding = DataBindingUtil.inflate(inflater, R.layout.item_program_event, parent, false);
-        return new ProgramEventDetailViewHolder(binding);
+        ItemEventBinding binding = DataBindingUtil.inflate(inflater, R.layout.item_event, parent, false);
+        return new EventViewHolder(binding,
+                program,
+                eventUid -> {
+                    presenter.onSyncIconClick(eventUid);
+                    return Unit.INSTANCE;
+                },
+                (s, view) -> Unit.INSTANCE,
+                (eventUid, orgUnitUid, eventStatus, view) -> {
+                    presenter.onEventClick(eventUid, orgUnitUid);
+                    return Unit.INSTANCE;
+                }
+        );
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ProgramEventDetailViewHolder holder, int position) {
-        holder.bind(presenter, getItem(position));
+    public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
+        holder.bind(getItem(position), null, () -> {
+            getItem(holder.getAdapterPosition()).toggleValueList();
+            notifyItemChanged(holder.getAdapterPosition());
+            return Unit.INSTANCE;
+        });
     }
-
-   /* @Override
-    public int getItemCount() {
-        return events != null ? events.size() : 0;
-    }*/
-
-  /*  public void setEvents(List<ProgramEventViewModel> events, int currentPage) {
-
-        if (currentPage == 0)
-            this.events = new ArrayList<>();
-
-        this.events.addAll(events);
-
-        notifyDataSetChanged();
-
-    }*/
-
-   /* public void clearData() {
-        this.events.clear();
-    }*/
 }

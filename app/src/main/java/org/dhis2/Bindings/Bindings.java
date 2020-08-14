@@ -185,7 +185,10 @@ public class Bindings {
     public static void setEventIcon(ImageView view, Event event, Enrollment enrollment, ProgramStage eventProgramStage, Program program) {
         if (event != null) {
             EventStatus status = event.status();
-            EnrollmentStatus enrollmentStatus = enrollment.status();
+            EnrollmentStatus enrollmentStatus = EnrollmentStatus.ACTIVE;
+            if(enrollment!=null) {
+                enrollmentStatus = enrollment.status();
+            }
             if (status == null)
                 status = EventStatus.ACTIVE;
             if (enrollmentStatus == null)
