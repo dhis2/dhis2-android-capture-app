@@ -139,7 +139,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true, currentFocusUid));
         rows.add(DISPLAY, new DisplayRow(layoutInflater));
         rows.add(PICTURE, new PictureRow(fragmentManager, layoutInflater, processor, true));
-        rows.add(SCAN_CODE, new ScanTextRow(layoutInflater, processor, true));
+        rows.add(SCAN_CODE, new ScanTextRow(layoutInflater, processor, true, false, currentFocusUid));
         rows.add(SECTION, new SectionRow(layoutInflater, selectedSection, sectionProcessor));
         rows.add(OPTION_SET_SELECT, new OptionSetRow(layoutInflater, processor, true, rendering, currentFocusUid));
     }
@@ -177,7 +177,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true, currentFocusUid));
         rows.add(DISPLAY, new DisplayRow(layoutInflater));
         rows.add(PICTURE, new PictureRow(fragmentManager, layoutInflater, processor, true));
-        rows.add(SCAN_CODE, new ScanTextRow(layoutInflater, processor, true));
+        rows.add(SCAN_CODE, new ScanTextRow(layoutInflater, processor, true, false, currentFocusUid));
         rows.add(SECTION, new SectionRow(layoutInflater, selectedSection, sectionProcessor));
         rows.add(OPTION_SET_SELECT, new OptionSetRow(layoutInflater, processor, true, rendering, currentFocusUid));
     }
@@ -203,15 +203,15 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
             ((SectionHolder) holder).setBottomShadow(
                     position > 0 && getItemViewType(position - 1) != SECTION);
             ((SectionHolder) holder).setLastSectionHeight(
-                    position == getItemCount()-1 && getItemViewType(position - 1) != SECTION);
-            ((SectionHolder)holder).setSectionNumber(getSectionNumber(position));
+                    position == getItemCount() - 1 && getItemViewType(position - 1) != SECTION);
+            ((SectionHolder) holder).setSectionNumber(getSectionNumber(position));
         }
     }
 
-    private int getSectionNumber(int sectionPosition){
+    private int getSectionNumber(int sectionPosition) {
         int sectionNumber = 1;
-        for(int i = 0; i < sectionPosition;i++){
-            if(getItemViewType(i) == SECTION){
+        for (int i = 0; i < sectionPosition; i++) {
+            if (getItemViewType(i) == SECTION) {
                 sectionNumber++;
             }
         }
@@ -293,7 +293,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
                     rendering = ((SectionViewModel) fieldViewModel).rendering();
                     totalFields = ((SectionViewModel) fieldViewModel).totalFields();
                     setOpenSectionPos(updates.indexOf(fieldViewModel), fieldViewModel.uid());
-                } else if (fieldViewModel.uid().equals(lastOpenedSectionUid)){
+                } else if (fieldViewModel.uid().equals(lastOpenedSectionUid)) {
                     openSectionPos = -1;
                 }
             } else if (fieldViewModel instanceof ImageViewModel) {
