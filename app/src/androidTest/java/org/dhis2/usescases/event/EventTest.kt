@@ -56,6 +56,7 @@ class EventTest: BaseTest() {
         prepareEventDetailsIntentAndLaunchActivity(rule)
 
         eventRegistrationRobot {
+            checkEventFormDetails(eventDetails)
             openMenuMoreOptions()
             clickOnDetails()
             checkEventDetails(eventDetails)
@@ -100,10 +101,10 @@ class EventTest: BaseTest() {
     )
 
     private fun createEventDetails() = EventDetailsUIModel(
-        "Lab monitoring",
-        0.75f,
-        "28/6/2020",
-        "Ngelehun CHC"
+        "Alfa",
+        96,
+        "1/3/2020",
+        "OU TEST PARENT"
     )
 
 }

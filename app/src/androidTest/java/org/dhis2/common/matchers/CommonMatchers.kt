@@ -117,11 +117,12 @@ fun findChildFabButton(childToClick: Int): Matcher<View> {
 }
 
 
-fun hasCompletedPercentage (percentage: Float): Matcher<View> {
+fun hasCompletedPercentage (percentage: Int): Matcher<View> {
     return object : TypeSafeMatcher<View>() {
         override fun matchesSafely(item: View?): Boolean {
             val circle = (item as CircularCompletionView)
-            return circle.completionPercent == percentage
+            val percentageTotal = ((circle.completionPercent + circle.secondaryPercent) * 100).toInt()
+            return percentageTotal == percentage
         }
 
         override fun describeTo(description: Description) {

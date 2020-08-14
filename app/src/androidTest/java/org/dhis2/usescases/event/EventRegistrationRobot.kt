@@ -5,6 +5,7 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withSubstring
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
@@ -19,6 +20,15 @@ fun eventRegistrationRobot(eventRegistrationRobot: EventRegistrationRobot.() -> 
 }
 
 class EventRegistrationRobot : BaseRobot() {
+
+    fun checkEventFormDetails(eventDetails: EventDetailsUIModel) {
+        onView(withId(R.id.programStageName)).check(matches(withText(eventDetails.programStage)))
+        onView(withId(R.id.completion)).check(matches(hasCompletedPercentage(eventDetails.completedPercentage)))
+        onView(withId(R.id.eventSecundaryInfo)).check(matches(allOf(
+            withSubstring(eventDetails.eventDate),
+            withSubstring(eventDetails.orgUnit)
+        )))
+    }
 
     fun openMenuMoreOptions() {
         onView(withId(R.id.moreOptions)).perform(click())

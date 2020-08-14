@@ -15,7 +15,7 @@ import org.dhis2.R;
 public class CircularCompletionView extends View {
 
     public float completionPercent = 0;
-    private float secondaryPercent = 0;
+    public float secondaryPercent = 0;
     private Paint paint = new Paint();
     private int radius = 100;
     private int strokeSize = 20;

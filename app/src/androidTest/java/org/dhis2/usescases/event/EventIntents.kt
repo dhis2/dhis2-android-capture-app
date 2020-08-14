@@ -14,14 +14,16 @@ const val PROGRAM_STAGE_UID = "PROGRAM_STAGE_UID"
 
 
 const val PROGRAM_TB_UID = "ur1Edk5Oe2n"
-const val EVENT_DETAILS_UID = "y0xoVIzBpnL"
+const val PROGRAM_XX_TRACKER_UID = "U5KybNCtA3E"
+const val EVENT_DETAILS_UID = "oPCuUeDGaIu"
+const val EVENT_TO_SHARE_UID = "y0xoVIzBpnL"
 const val TEI_EVENT_TO_DELETE_UID = "foc5zag6gbE"
-const val ENROLLMENT_EVENT_DELETE_UID =  "SolDyMgW3oc"
+const val ENROLLMENT_EVENT_DELETE_UID = "SolDyMgW3oc"
 const val PROGRAM_STAGE_TO_SHARE = "EPEcjy3FWmI"
 
 fun prepareEventDetailsIntentAndLaunchActivity(rule: ActivityTestRule<EventCaptureActivity>) {
     Intent().apply {
-        putExtra(PROGRAM_UID, PROGRAM_TB_UID)
+        putExtra(PROGRAM_UID, PROGRAM_XX_TRACKER_UID)
         putExtra(EVENT_UID, EVENT_DETAILS_UID)
     }.also { rule.launchActivity(it) }
 }
@@ -37,7 +39,7 @@ fun prepareEventToDeleteIntentAndLaunchActivity(ruleTeiDashboard: ActivityTestRu
 fun prepareEventToShareIntentAndLaunchActivity(ruleEventDetail: ActivityTestRule<EventInitialActivity>) {
     Intent().apply {
         putExtra(PROGRAM_UID, PROGRAM_TB_UID)
-        putExtra(EVENT_UID, EVENT_DETAILS_UID)
+        putExtra(EVENT_UID, EVENT_TO_SHARE_UID)
         putExtra(PROGRAM_STAGE_UID, PROGRAM_STAGE_TO_SHARE)
     }.also { ruleEventDetail.launchActivity(it) }
 }
