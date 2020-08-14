@@ -651,8 +651,23 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.backdropLayout.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
         }
 
-        binding.executePendingBindings();
         setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
+        binding.executePendingBindings();
+        binding.clearFilter.setImageDrawable(
+                ColorUtils.tintDrawableWithColor(
+                        binding.clearFilter.getDrawable(),
+                        ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY)
+                ));
+        binding.closeFilter.setImageDrawable(
+                ColorUtils.tintDrawableWithColor(
+                        binding.closeFilter.getDrawable(),
+                        ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY)
+                ));
+        binding.progress.setIndeterminateDrawable(
+                ColorUtils.tintDrawableWithColor(
+                        binding.progress.getIndeterminateDrawable(),
+                        ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY)
+                ));
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
