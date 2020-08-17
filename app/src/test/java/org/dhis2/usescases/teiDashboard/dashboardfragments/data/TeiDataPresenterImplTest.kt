@@ -59,7 +59,7 @@ class TeiDataPresenterImplTest {
 
     @Test
     fun `Should hide schedule event when hideDueDate is true`() {
-        val programStage : ProgramStage = mock {
+        val programStage: ProgramStage = mock {
             on { hideDueDate() } doReturn true
         }
 
