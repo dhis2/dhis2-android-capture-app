@@ -31,7 +31,6 @@ import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
@@ -63,6 +62,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.View {
 
     private static final int RQ_GO_BACK = 1202;
+    private static final int NOTES_TAB_POSITION = 1;
 
     private ActivityEventCaptureBinding binding;
     @Inject
@@ -100,6 +100,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 getIntent().getStringExtra(PROGRAM_UID),
                 getIntent().getStringExtra(Constants.EVENT_UID)
         ));
+
         binding.eventTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -500,7 +501,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void updateNoteBadge(int numberOfNotes) {
         BadgeDrawable badge = binding.eventTabLayout.getTabAt(binding.eventTabLayout.getTabCount() - 1).getOrCreateBadge();
         badge.setVisible(numberOfNotes > 0);
-        if (binding.eventViewPager.getCurrentItem() == 1) {
+        if (NOTES_TAB_POSITION == binding.eventViewPager.getCurrentItem()) {
             badge.setBackgroundColor(Color.WHITE);
         } else {
             badge.setBackgroundColor(ContextCompat.getColor(this, R.color.unselected_tab_badge_color));
