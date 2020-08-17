@@ -78,15 +78,12 @@ fun getProgramStageNameByAttributeValue(
         if (!dataElementsMap.containsKey(tokenWithBrackets)) {
             val tokenItems = tokenWithBrackets.substring(2, it.value.length - 2).split(".")
 
-            if (tokenItems.size == 1) {
-                dataElementsMap[tokenWithBrackets] =
-                    getDataElementValue(tokenItems[0], "displayName")
-            } else if (tokenItems.size == 2) {
+            if (tokenItems.size == 2) {
                 dataElementsMap[tokenWithBrackets] =
                     getDataElementValue(tokenItems[0], tokenItems[1])
             } else {
-                Timber.w("Invalid TitlePattern ")
-                throw TitlePatternFormatException("Invalid TitlePattern")
+                dataElementsMap[tokenWithBrackets] =
+                    getDataElementValue(tokenItems[0], "displayName")
             }
         }
     }
