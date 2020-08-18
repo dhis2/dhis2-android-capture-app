@@ -9,12 +9,11 @@ class GetNextVisibleSection {
         allSections: List<FormSectionViewModel>,
         sectionsToHide: List<String>
     ): String {
-
         if (sectionsToHide.isEmpty()) return activeSection
 
         val sectionsToShow = allSections.map { it.sectionUid() }.minus(sectionsToHide)
 
-        return if (sectionsToShow.isEmpty()){
+        return if (sectionsToShow.isEmpty()) {
             EMPTY_SECTION
         } else {
             getNextSectionOrCurrent(sectionsToShow, activeSection)
