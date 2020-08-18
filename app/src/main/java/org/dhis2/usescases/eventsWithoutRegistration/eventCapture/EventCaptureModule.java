@@ -41,8 +41,10 @@ public class EventCaptureModule {
     EventCaptureContract.Presenter providePresenter(@NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
                                                     @NonNull RulesUtilsProvider ruleUtils,
                                                     @NonNull ValueStore valueStore,
-                                                    SchedulerProvider schedulerProvider) {
-        return new EventCapturePresenterImpl(view, eventUid, eventCaptureRepository, ruleUtils, valueStore, schedulerProvider);
+                                                    SchedulerProvider schedulerProvider,
+                                                    GetNextVisibleSection getNextVisibleSection) {
+        return new EventCapturePresenterImpl(view, eventUid, eventCaptureRepository, ruleUtils, valueStore, schedulerProvider,
+                getNextVisibleSection);
     }
 
     @Provides
@@ -75,4 +77,9 @@ public class EventCaptureModule {
         return new ValueStoreImpl(d2, eventUid, DataEntryStore.EntryMode.DE);
     }
 
+    @Provides
+    @PerActivity
+    GetNextVisibleSection getNextVisibleSection() {
+        return new GetNextVisibleSection();
+    }
 }

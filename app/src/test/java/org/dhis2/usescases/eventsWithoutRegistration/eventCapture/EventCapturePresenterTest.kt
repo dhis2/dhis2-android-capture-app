@@ -25,6 +25,7 @@ class EventCapturePresenterTest {
     private val rulesUtilProvider: RulesUtilsProvider = mock()
     private val valueStore: ValueStore = mock()
     private val schedulers = TrampolineSchedulerProvider()
+    private val getNextVisibleSection: GetNextVisibleSection = GetNextVisibleSection()
 
     @Before
     fun setUp() {
@@ -34,7 +35,8 @@ class EventCapturePresenterTest {
             eventRepository,
             rulesUtilProvider,
             valueStore,
-            schedulers
+            schedulers,
+            getNextVisibleSection
         )
     }
 
@@ -123,32 +125,36 @@ class EventCapturePresenterTest {
 
     @Test
     fun `Should return current section if sectionsToHide is empty`() {
-        val activeSection = presenter.getNextVisibleSection("activeSection", sections())
+        val activeSection = getNextVisibleSection.get("activeSection",sections(), emptyList())
         assertTrue(activeSection == "activeSection")
     }
 
     @Test
     fun `Should return second section if sectionsToHide contains current section`() {
-        presenter.setHideSection("sectionUid_1")
-        val activeSection = presenter.getNextVisibleSection("sectionUid_1", sections())
+        val sectionsToHide = listOf("sectionUid_1")
+        val activeSection = getNextVisibleSection.get("sectionUid_1", sections(), sectionsToHide)
         assertTrue(activeSection == "sectionUid_2")
     }
 
     @Test
     fun `Should return visible section if sectionsToHide contains several previous sections`() {
-        presenter.setHideSection("sectionUid_1")
-        presenter.setHideSection("sectionUid_2")
-        val activeSection = presenter.getNextVisibleSection("sectionUid_1", sections())
+        val sectionsToHide = listOf("sectionUid_1", "sectionUid_2")
+        val activeSection = getNextVisibleSection.get("sectionUid_1", sections(), sectionsToHide)
         assertTrue(activeSection == "sectionUid_3")
     }
 
     @Test
     fun `Should return empty section if sectionsToHide contains all sections`() {
-        presenter.setHideSection("sectionUid_1")
-        presenter.setHideSection("sectionUid_2")
-        presenter.setHideSection("sectionUid_3")
-        val activeSection = presenter.getNextVisibleSection("sectionUid_1", sections())
+        val sectionsToHide = listOf("sectionUid_1", "sectionUid_2", "sectionUid_3")
+        val activeSection = getNextVisibleSection.get("sectionUid_1", sections(), sectionsToHide)
         assertTrue(activeSection.isEmpty())
+    }
+
+    @Test
+    fun `Should return current when section is last one and hide section is not empty`() {
+        val sectionsToHide = listOf("sectionUid_2")
+        val activeSection = getNextVisibleSection.get("sectionUid_3", sections(), sectionsToHide)
+        assertTrue(activeSection == "sectionUid_3")
     }
 
     private fun sections(): MutableList<FormSectionViewModel> {

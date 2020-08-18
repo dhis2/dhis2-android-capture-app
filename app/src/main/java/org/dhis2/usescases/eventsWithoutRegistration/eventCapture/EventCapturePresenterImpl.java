@@ -92,12 +92,14 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private boolean assignedValueChanged;
     private int calculationLoop = 0;
     private final int MAX_LOOP_CALCULATIONS = 5;
+    private GetNextVisibleSection getNextVisibleSection;
 
 
     public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
                                      EventCaptureContract.EventCaptureRepository eventCaptureRepository,
                                      RulesUtilsProvider rulesUtils,
-                                     ValueStore valueStore, SchedulerProvider schedulerProvider) {
+                                     ValueStore valueStore, SchedulerProvider schedulerProvider,
+                                     GetNextVisibleSection getNextVisibleSection) {
         this.view = view;
         this.eventUid = eventUid;
         this.eventCaptureRepository = eventCaptureRepository;
@@ -112,6 +114,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.canComplete = true;
         this.sectionList = new ArrayList<>();
         this.compositeDisposable = new CompositeDisposable();
+        this.getNextVisibleSection = getNextVisibleSection;
 
         currentSectionPosition = PublishProcessor.create();
         sectionProcessor = PublishProcessor.create();
@@ -215,8 +218,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                         .switchMap(section -> fieldFlowable
                                                 .map(fields -> {
 
-                                                    String activeSection = getNextVisibleSection(section,sectionList);
-
+                                                    String activeSection = getNextVisibleSection.get(section, sectionList, sectionsToHide);
                                                     totalFields = 0;
                                                     unsupportedFields = 0;
                                                     HashMap<String, List<FieldViewModel>> fieldMap = new HashMap<>();
@@ -360,7 +362,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     int nextSectionIndex = sectionList.indexOf(section) + 1;
                     if (nextSectionIndex < sectionList.size()) {
                         activeSection = sectionList.get(nextSectionIndex).sectionUid();
-                    }else{
+                    } else {
                         activeSection = "";
                     }
                     break;
