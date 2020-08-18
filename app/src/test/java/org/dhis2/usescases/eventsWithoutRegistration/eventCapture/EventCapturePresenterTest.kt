@@ -1,5 +1,4 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
-
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -125,7 +124,7 @@ class EventCapturePresenterTest {
 
     @Test
     fun `Should return current section if sectionsToHide is empty`() {
-        val activeSection = getNextVisibleSection.get("activeSection",sections(), emptyList())
+        val activeSection = getNextVisibleSection.get("activeSection", sections(), emptyList())
         assertTrue(activeSection == "activeSection")
     }
 
