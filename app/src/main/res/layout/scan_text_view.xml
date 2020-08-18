@@ -55,26 +55,32 @@
         <TextView
             android:id="@+id/label"
             style="@style/FieldLabel"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            app:layout_constraintStart_toStartOf="parent"
             android:layout_height="wrap_content"
             android:text="@{label}"
             app:layout_constraintTop_toBottomOf="@id/renderImage"
-            tools:text="@string/lorem" />
+            tools:text="@string/lorem"
+            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"/>
+
+        <ImageView
+            style="@style/ActionIcon"
+            android:id="@+id/descriptionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/ic_info_outline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/renderImage"
+            app:layout_constraintBottom_toTopOf="@id/inputField"
+            app:tint="?colorPrimary" />
 
         <LinearLayout
+            android:id="@+id/inputField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/renderImage"
             android:orientation="horizontal"
             app:layout_constraintTop_toBottomOf="@id/label">
-
-            <ImageView
-                android:id="@+id/descIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginEnd="8dp"
-                tools:srcCompat="@drawable/ic_form_barcode" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/input_layout"
@@ -89,27 +95,32 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
-                    android:maxLines="4"
+                    android:singleLine="true"
                     android:textAlignment="textStart"
                     android:textColor="@color/text_black_333"
+                    tools:text="111-111-111"
                     android:textSize="15sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageView
-                android:id="@+id/delete"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:visibility="gone"
-                app:srcCompat="@drawable/ic_close"
-                app:tint="@color/colorGreyDefault" />
+                android:id="@+id/descIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="12dp"
+                android:layout_marginStart="12dp"
+                tools:srcCompat="@drawable/ic_form_barcode" />
 
             <ImageView
-                android:id="@+id/descriptionLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                app:srcCompat="@drawable/ic_info_outline"
-                app:tint="?colorPrimary" />
+                android:id="@+id/delete"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:visibility="gone"
+                android:layout_gravity="center"
+                tools:visibility="visible"
+                app:srcCompat="@drawable/ic_close"
+                app:tint="@color/colorGreyDefault" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
