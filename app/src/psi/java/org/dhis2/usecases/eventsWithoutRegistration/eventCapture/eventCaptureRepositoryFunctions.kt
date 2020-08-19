@@ -2,10 +2,7 @@ package org.dhis2.usecases.eventsWithoutRegistration.eventCapture
 
 import org.dhis2.Bindings.valueByPropName
 import org.hisp.dhis.android.core.D2
-import timber.log.Timber
 import java.util.HashMap
-
-class TitlePatternFormatException(message: String?) : Exception(message) {}
 
 fun getProgramStageName(d2: D2, eventUid: String): String {
     val event = d2.eventModule().events().uid(eventUid).blockingGet()
@@ -78,15 +75,12 @@ fun getProgramStageNameByAttributeValue(
         if (!dataElementsMap.containsKey(tokenWithBrackets)) {
             val tokenItems = tokenWithBrackets.substring(2, it.value.length - 2).split(".")
 
-            if (tokenItems.size == 1) {
-                dataElementsMap[tokenWithBrackets] =
-                    getDataElementValue(tokenItems[0], "displayName")
-            } else if (tokenItems.size == 2) {
+            if (tokenItems.size == 2) {
                 dataElementsMap[tokenWithBrackets] =
                     getDataElementValue(tokenItems[0], tokenItems[1])
             } else {
-                Timber.w("Invalid TitlePattern ")
-                throw TitlePatternFormatException("Invalid TitlePattern")
+                dataElementsMap[tokenWithBrackets] =
+                    getDataElementValue(tokenItems[0], "displayName")
             }
         }
     }
