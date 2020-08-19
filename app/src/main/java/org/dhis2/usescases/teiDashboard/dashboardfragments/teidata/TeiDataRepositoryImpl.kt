@@ -121,10 +121,14 @@ class TeiDataRepositoryImpl(
                     )
                     if (selectedStage != null && selectedStage == programStage.uid()) {
                         checkEventStatus(eventList).forEach { event ->
+
+                            val programStageDisplayName = getProgramStageName(d2, event.uid())
+                            val editedProgramStage = programStage.toBuilder().displayName(programStageDisplayName).build();
+                            
                             eventViewModels.add(
                                 EventViewModel(
                                     EventViewModelType.EVENT,
-                                    programStage,
+                                    editedProgramStage,
                                     event,
                                     0,
                                     null,
