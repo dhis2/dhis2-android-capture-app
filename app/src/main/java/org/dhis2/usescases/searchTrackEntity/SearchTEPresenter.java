@@ -196,7 +196,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
 
         compositeDisposable.add(view.rowActionss()
-                .subscribeOn(schedulerProvider.ui())
+                .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(data -> {
                             Map<String, String> queryDataBU = new HashMap<>(queryData);
@@ -222,19 +222,24 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         ConnectableFlowable<Pair<HashMap<String, String>, FilterManager>> updaterFlowable = currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(program ->
-                        Flowable.combineLatest(
+                                Flowable.combineLatest(queryProcessor.startWith(queryData),
+                                        FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
+                                        Pair::create).distinct()
+                        
+                /*        Flowable.combineLatest(
                                 queryProcessor.startWith(queryData),
                                 FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
                                 Pair::create
-                        ))
+                        ) */
+                )
                 .onBackpressureLatest()
                 .publish();
 
         compositeDisposable.add(
                 updaterFlowable
-                        .observeOn(schedulerProvider.io())
                         .map(data -> view.isMapVisible())
                         .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 isMapVisible -> {
                                     view.showFilterProgress();
@@ -269,7 +274,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribe(view::setLiveData, Timber::d)
         );
 
-        compositeDisposable.add(
+    /*    compositeDisposable.add(
                 mapDataProcessor
                         .switchMap(unit ->
                                 searchRepository.searchTeiForMap(
@@ -302,12 +307,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 ),
                                 Timber::e,
                                 () -> Timber.d("COMPLETED")
-                        ));
+                        )); */
 
         compositeDisposable.add(
                 queryProcessor
                         .startWith(queryData)
-                        .subscribeOn(schedulerProvider.ui())
+                        .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(data -> view.clearData(), Timber::d)
         );
