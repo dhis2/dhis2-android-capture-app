@@ -20,6 +20,7 @@ class EventCapturePresenterTest {
     private lateinit var presenter: EventCapturePresenterImpl
     private val view: EventCaptureContract.View = mock()
     private val eventUid = "eventUid"
+    private val programUid = "programUid"
     private val eventRepository: EventCaptureContract.EventCaptureRepository = mock()
     private val rulesUtilProvider: RulesUtilsProvider = mock()
     private val valueStore: ValueStore = mock()
@@ -30,6 +31,7 @@ class EventCapturePresenterTest {
         presenter = EventCapturePresenterImpl(
             view,
             eventUid,
+            programUid,
             eventRepository,
             rulesUtilProvider,
             valueStore,
@@ -39,7 +41,9 @@ class EventCapturePresenterTest {
 
     @Test
     fun `Should delete option value if selected in group to hide`() {
-        whenever(eventRepository.getOptionsFromGroups(arrayListOf("optionGroupToHide"))) doReturn arrayListOf(
+        whenever(
+            eventRepository.getOptionsFromGroups(arrayListOf("optionGroupToHide"))
+        ) doReturn arrayListOf(
             "option1",
             "option2"
         )
@@ -90,7 +94,8 @@ class EventCapturePresenterTest {
                 false,
                 null,
                 1,
-                ObjectStyle.builder().build()
+                ObjectStyle.builder().build(),
+                null
             )
         )
 
@@ -111,7 +116,8 @@ class EventCapturePresenterTest {
                 false,
                 null,
                 1,
-                ObjectStyle.builder().build()
+                ObjectStyle.builder().build(),
+                null
             )
         )
 

@@ -4,14 +4,12 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.core.view.ViewCompat;
 import androidx.databinding.ObservableField;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
-import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.Row;
@@ -31,8 +29,8 @@ import org.dhis2.data.forms.dataentry.fields.file.FileViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageHolder;
 import org.dhis2.data.forms.dataentry.fields.image.ImageRow;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
-import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetRow;
-import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel;
+import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetRow;
+import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitRow;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureRow;
@@ -107,6 +105,9 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
     List<Integer> sectionPositions;
     private String rendering = ProgramStageSectionRenderingType.LISTING.name();
     private Integer totalFields = 0;
+    private int openSectionPos = 0;
+    private boolean sectionAlreadyOpen = false;
+    private String lastOpenedSectionUid = "";
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
@@ -291,6 +292,9 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
                 if (((SectionViewModel) fieldViewModel).isOpen()) {
                     rendering = ((SectionViewModel) fieldViewModel).rendering();
                     totalFields = ((SectionViewModel) fieldViewModel).totalFields();
+                    setOpenSectionPos(updates.indexOf(fieldViewModel), fieldViewModel.uid());
+                } else if (fieldViewModel.uid().equals(lastOpenedSectionUid)){
+                    openSectionPos = -1;
                 }
             } else if (fieldViewModel instanceof ImageViewModel) {
                 imageFields++;
@@ -367,5 +371,19 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
 
     public int sectionViewType() {
         return SECTION;
+    }
+
+    private void setOpenSectionPos(int sectionOpened, String openSectionUid) {
+        lastOpenedSectionUid = openSectionUid;
+        sectionAlreadyOpen = openSectionPos == sectionOpened;
+        openSectionPos = sectionOpened;
+    }
+
+    public int getOpenSectionPos() {
+        return openSectionPos;
+    }
+
+    public boolean isSectionAlreadyOpen() {
+        return sectionAlreadyOpen;
     }
 }

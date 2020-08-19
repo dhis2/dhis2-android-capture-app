@@ -308,4 +308,6 @@
         <item name="android:textSize">10sp</item>
     </style>
 
+    <style name="spinner"/>
+
 </resources>

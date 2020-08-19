@@ -1,12 +1,12 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList
 
-import com.nhaarman.mockitokotlin2.doAnswer
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
+import java.util.Date
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -15,7 +15,6 @@ import org.hisp.dhis.android.core.program.Program
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-import java.util.Date
 
 class TeiProgramListRepositoryImplTest {
 
@@ -57,7 +56,6 @@ class TeiProgramListRepositoryImplTest {
         ) doReturn Enrollment.builder()
             .uid("enrollmentUid")
             .build()
-
 
         val testObservable = teiProgramRepository.saveToEnroll(
             "orgUnitUid",
@@ -107,7 +105,6 @@ class TeiProgramListRepositoryImplTest {
             .uid("enrollmentUid")
             .build()
 
-
         val testObservable = teiProgramRepository.saveToEnroll(
             "orgUnitUid",
             "programUid",
@@ -124,5 +121,4 @@ class TeiProgramListRepositoryImplTest {
             DateUtils.getInstance().today
         )
     }
-
 }

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="currentFilter"
+            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.Filters&gt;" />
+
+        <variable
+            name="filterType"
+            type="org.dhis2.utils.filters.Filters" />
+    </data>
+
+
+    <LinearLayout
+        android:id="@+id/orgUnitSearchLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?colorPrimaryDark"
+        android:elevation="1dp"
+        android:padding="16dp"
+        android:orientation="horizontal"
+        android:visibility="@{currentFilter == filterType ? View.VISIBLE : View.GONE}">
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/dataElementsSpinner"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/white"
+            android:dropDownWidth="200dp"
+            style="@style/spinner"/>
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/valueEditText"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.5"
+            android:imeOptions="actionDone"
+            android:textColor="@drawable/edit_text_hint_accent"
+            android:theme="@style/loginInputTextAccent"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            tools:text="hello" />
+    </LinearLayout>
+
+</layout>

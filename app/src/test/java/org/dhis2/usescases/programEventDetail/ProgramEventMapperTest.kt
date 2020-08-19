@@ -11,9 +11,8 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
-import org.junit.Test
-
 import org.junit.Before
+import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 
@@ -57,7 +56,6 @@ class ProgramEventMapperTest {
         assert(event.uid() == result.uid())
         assert(result.eventState() == State.SYNCED)
     }
-
 
     private fun mockOrgUnitName() {
         whenever(
@@ -117,7 +115,6 @@ class ProgramEventMapperTest {
             .attributeOptionCombo("attrComboUid")
             .status(EventStatus.ACTIVE)
             .build()
-
 
     private fun dummyProgramWithExpiryInfo() =
         Program.builder()

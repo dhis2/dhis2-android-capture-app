@@ -23,6 +23,7 @@ import org.dhis2.usescases.main.MainActivity
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.SECURE_SERVER_URL
 import org.dhis2.utils.Constants.SECURE_USER_NAME
+import org.dhis2.utils.DEFAULT_URL
 import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
@@ -42,7 +43,8 @@ class LoginPresenterTest {
     private val preferenceProvider: PreferenceProvider = mock()
     private val goldfinger: FingerPrintController = mock()
     private val view: LoginContracts.View = mock()
-    private val userManager: UserManager = Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
+    private val userManager: UserManager =
+        Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val analyticsHelper: AnalyticsHelper = mock()
 
     @Before
@@ -96,7 +98,7 @@ class LoginPresenterTest {
 
     @Test
     fun `Should set default protocol if server url and username is empty`() {
-        val protocol = "https://"
+        val protocol =  if (DEFAULT_URL.isEmpty()) "https://" else DEFAULT_URL
         whenever(userManager.isUserLoggedIn) doReturn Observable.just(false)
         whenever(preferenceProvider.getBoolean("SessionLocked", false)) doReturn false
         whenever(view.getDefaultServerProtocol()) doReturn protocol
@@ -108,7 +110,7 @@ class LoginPresenterTest {
         loginPresenter.init(userManager)
 
         verify(view).setUrl(protocol)
-        verify(view, times(2)).getDefaultServerProtocol()
+        verify(view).getDefaultServerProtocol()
         verifyNoMoreInteractions(view)
     }
 
@@ -313,14 +315,14 @@ class LoginPresenterTest {
     }
 
     @Test
-    fun `Should clear INITIAL_SYNC_DONE preference if network is available`(){
+    fun `Should clear INITIAL_SYNC_DONE preference if network is available`() {
         val response = Response.success(
             User.builder()
                 .uid("userUid")
                 .build()
         )
         whenever(view.isNetworkAvailable()) doReturn true
-        loginPresenter.handleResponse(response,"userName","serverUrl")
+        loginPresenter.handleResponse(response, "userName", "serverUrl")
         verify(view, times(1)).isNetworkAvailable()
         verify(preferenceProvider, times(1)).setValue(Preference.INITIAL_SYNC_DONE, false)
     }

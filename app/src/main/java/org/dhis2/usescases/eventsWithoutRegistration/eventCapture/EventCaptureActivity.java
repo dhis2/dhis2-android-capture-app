@@ -28,6 +28,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.indicators.EventIndicatorsDialogFragment;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.ColorUtils;
@@ -48,6 +49,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import androidx.fragment.app.FragmentManager;
+import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
 import static org.dhis2.utils.Constants.PROGRAM_UID;
@@ -70,6 +73,17 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     private EventMode eventMode;
     public EventCaptureComponent eventCaptureComponent;
 
+    private String programUid;
+    private String eventUid;
+
+    public String getProgramUid() {
+        return programUid;
+    }
+
+    public String getEventUid() {
+        return eventUid;
+    }
+
     public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid, @NonNull EventMode eventMode) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.EVENT_UID, eventUid);
@@ -80,10 +94,12 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        programUid = getIntent().getStringExtra(Constants.PROGRAM_UID);
+        eventUid = getIntent().getStringExtra(Constants.EVENT_UID);
+
         eventCaptureComponent = (ExtensionsKt.app(this)).userComponent().plus(
                 new EventCaptureModule(
-                        this,
-                        getIntent().getStringExtra(Constants.EVENT_UID)));
+                        this, eventUid, programUid));
         eventCaptureComponent.inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture);
@@ -114,33 +130,44 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         super.onDestroy();
     }
 
+
+    @Override
+    public void goBack() {
+        hideKeyboard();
+        attemptFinish();
+    }
+
     @Override
     public void onBackPressed() {
-        if(!ExtensionsKt.isKeyboardOpened(this)) {
-            if (eventMode == EventMode.NEW) {
-                new CustomDialog(
-                        this,
-                        getString(R.string.title_delete_go_back),
-                        getString(R.string.delete_go_back),
-                        getString(R.string.cancel),
-                        getString(R.string.missing_mandatory_fields_go_back),
-                        RQ_GO_BACK,
-                        new DialogClickListener() {
-                            @Override
-                            public void onPositive() {
-                            }
-
-                            @Override
-                            public void onNegative() {
-                                presenter.deleteEvent();
-                            }
-                        }
-                ).show();
-            } else {
-                finishDataEntry();
-            }
+        if (!ExtensionsKt.isKeyboardOpened(this)) {
+            attemptFinish();
         } else {
             hideKeyboard();
+        }
+    }
+
+    private void attemptFinish() {
+        if (eventMode == EventMode.NEW) {
+            new CustomDialog(
+                    this,
+                    getString(R.string.title_delete_go_back),
+                    getString(R.string.delete_go_back),
+                    getString(R.string.cancel),
+                    getString(R.string.missing_mandatory_fields_go_back),
+                    RQ_GO_BACK,
+                    new DialogClickListener() {
+                        @Override
+                        public void onPositive() {
+                        }
+
+                        @Override
+                        public void onNegative() {
+                            presenter.deleteEvent();
+                        }
+                    }
+            ).show();
+        } else {
+            finishDataEntry();
         }
     }
 
@@ -388,6 +415,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             Timber.e(e);
         }
         popupMenu.getMenuInflater().inflate(R.menu.event_menu, popupMenu.getMenu());
+
+        if(binding.indicators.getVisibility() == View.GONE){
+            popupMenu.getMenu().removeItem(R.id.menu_indicators);
+        }
+
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
@@ -400,6 +432,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 case R.id.menu_overview:
                     goToInitialScreen();
                     break;
+                case R.id.menu_indicators:
+                    showIndicators();
+                    break;
                 default:
                     break;
             }
@@ -407,6 +442,29 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         });
         popupMenu.getMenu().getItem(1).setVisible(presenter.canWrite() && presenter.isEnrollmentOpen());
         popupMenu.show();
+    }
+
+    public void showIndicators(View view) {
+        showIndicators();
+    }
+
+    public void showIndicators() {
+        FragmentManager fm = getSupportFragmentManager();
+
+        EventIndicatorsDialogFragment eventIndicatorsDialogFragment =
+                EventIndicatorsDialogFragment.Companion.create();
+
+        eventIndicatorsDialogFragment.show(fm);
+    }
+
+    @Override
+    public void showIndicatorsIcon() {
+        binding.indicators.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideIndicatorsIcon() {
+        binding.indicators.setVisibility(View.GONE);
     }
 
     @Override
@@ -444,11 +502,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     }
                 }
         ).show();
-    }
-
-    @Override
-    public void goBack() {
-        onBackPressed();
     }
 
     @Override

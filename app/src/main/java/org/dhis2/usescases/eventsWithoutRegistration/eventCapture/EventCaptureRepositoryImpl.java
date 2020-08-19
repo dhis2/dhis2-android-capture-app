@@ -1,29 +1,29 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import android.content.Context;
+import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
 import org.dhis2.Bindings.RuleExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
-import org.dhis2.R;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.dhis2.data.forms.dataentry.fields.image.ImageHolder;
+import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
-import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel;
+import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
+import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -33,11 +33,14 @@ import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.legendset.Legend;
+import org.hisp.dhis.android.core.legendset.LegendSet;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.option.OptionGroup;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramIndicator;
 import org.hisp.dhis.android.core.program.ProgramRule;
 import org.hisp.dhis.android.core.program.ProgramRuleAction;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
@@ -49,7 +52,6 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository;
-import org.hisp.dhis.rules.models.Rule;
 import org.hisp.dhis.rules.models.RuleDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEvent;
@@ -58,15 +60,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
 import static android.text.TextUtils.isEmpty;
+
+import static org.dhis2.usecases.eventsWithoutRegistration.eventCapture.EventCaptureRepositoryFunctionsKt.getProgramStageName;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
@@ -87,6 +92,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private String lastUpdatedUid;
     private RuleEvent.Builder eventBuilder;
     private List<FieldViewModel> sectionFields;
+
+    private static final String SELECT_LEGEND =
+            "SELECT Legend.color FROM Legend \n"
+            + "JOIN ProgramIndicatorLegendSetLink ON ProgramIndicatorLegendSetLink.legendSet = Legend.LegendSet \n"
+            + "JOIN ProgramIndicator ON ProgramIndicator.uid = ProgramIndicatorLegendSetLink.programIndicator \n"
+            + "WHERE ProgramIndicator.uid = ? AND Legend.startValue <= ? AND Legend.endValue > ?";
 
     public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2) {
         this.eventUid = eventUid;
@@ -197,8 +208,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Flowable<String> programStageName() {
-        return Flowable.just(d2.eventModule().events().uid(eventUid).blockingGet())
-                .map(event -> d2.programModule().programStages().uid(event.programStage()).blockingGet().displayName());
+        return Flowable.just(getProgramStageName(d2, eventUid));
     }
 
     @Override
@@ -297,11 +307,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             fieldViewModel.uid() + "." + option.uid(),
                             option.displayName() + ImageViewModel.NAME_CODE_DELIMITATOR + option.code(), ValueType.TEXT, false,
                             fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                            fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, options.size(), objectStyle, fieldViewModel.fieldMask()));
+                            fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, options.size(), objectStyle, fieldViewModel.fieldMask() ,null));
 
                 }
             } else if (fieldViewModel instanceof OptionSetViewModel) {
                 List<Option> options = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())
+                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                         .blockingGet();
                 renderList.add(((OptionSetViewModel) fieldViewModel).withOptions(options));
             } else
@@ -322,8 +333,10 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid);
 
                         String value = null;
+                        String rawValue = null;
                         if (valueRepository.blockingExists()) {
                             value = valueRepository.blockingGet().value();
+                            rawValue = value;
                             String friendlyValue = ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2);
 
                             if (fieldViewModel instanceof OrgUnitViewModel && !isEmpty(value)) {
@@ -332,8 +345,21 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 value = friendlyValue;
                             }
                         }
+
                         boolean editable = fieldViewModel.editable() != null ? fieldViewModel.editable() : true;
-                        fieldViewModel = fieldViewModel.withValue(value).withEditMode(editable || isEventEditable);
+                        fieldViewModel = fieldViewModel
+                                .withValue(value)
+                                .withEditMode(editable || isEventEditable);
+
+                        if (fieldViewModel instanceof EditTextViewModel) {
+                            String colorByLegend = getColorByLegend(rawValue, uid);
+                            fieldViewModel = ((EditTextViewModel)fieldViewModel)
+                                    .withColorByLegend(colorByLegend);
+                        } else if (fieldViewModel instanceof SpinnerViewModel){
+                            String colorByLegend = getColorByLegend(rawValue, uid);
+                            fieldViewModel = ((SpinnerViewModel)fieldViewModel)
+                                    .withColorByLegend(colorByLegend);
+                        }
 
                         return fieldViewModel;
                     }).toList().toFlowable()
@@ -381,6 +407,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         boolean mandatory = programStageDataElement.compulsory() != null ? programStageDataElement.compulsory() : false;
                         String optionSet = de.optionSetUid();
                         String dataValue = valueRepository.blockingExists() ? valueRepository.blockingGet().value() : null;
+                        String rawValue = dataValue;
                         String friendlyValue = dataValue != null ? ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2) : null;
 
                         boolean allowFurureDates = programStageDataElement.allowFutureDate() != null ? programStageDataElement.allowFutureDate() : false;
@@ -408,6 +435,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             dataValue = friendlyValue;
                         }
 
+                        String colorByLegend = getColorByLegend(rawValue, uid);
+
                         ProgramStageSectionRenderingType renderingType = programStageSection != null && programStageSection.renderType() != null &&
                                 programStageSection.renderType().mobile() != null ?
                                 programStageSection.renderType().mobile().type() : null;
@@ -415,11 +444,38 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 valueType, mandatory, optionSet, dataValue,
                                 programStageSection != null ? programStageSection.uid() : null, allowFurureDates,
                                 isEventEditable,
-                                renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask());
+                                renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(), colorByLegend);
                     })
                     .toList().toFlowable()
                     .map(data -> sectionFields = data)
                     .map(this::checkRenderType);
+        }
+    }
+
+    private String getColorByLegend(String value, String dataElementUid) {
+        String color = "";
+        try{
+
+            final DataElement dataElement = d2.dataElementModule().dataElements()
+                    .byUid().eq(dataElementUid)
+                    .withLegendSets()
+                    .one().blockingGet();
+
+            if (dataElement != null && dataElement.valueType().isNumeric() &&
+                    dataElement.legendSets() != null && !dataElement.legendSets().isEmpty()){
+                LegendSet legendSet = dataElement.legendSets().get(0);
+                List<Legend> legends = d2.legendSetModule().legends().byStartValue().smallerThan(
+                        Double.valueOf(value)).byEndValue().biggerThan(Double.valueOf(value))
+                        .byLegendSet().eq(legendSet.uid()).blockingGet();
+
+                if (legends.size() > 0) {
+                    color = legends.get(0).color();
+                }
+            }
+
+            return color;
+        } catch (Exception e){
+            return color;
         }
     }
 
@@ -600,6 +656,30 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             }
         }
         return optionsFromGroups;
+    }
+
+    @Override
+    public Flowable<List<ProgramIndicator>> getIndicators( String programUid )
+    {
+        return d2.programModule().programIndicators().byProgramUid().eq( programUid ).withLegendSets().get()
+                .toFlowable();
+    }
+
+    @Override
+    public Observable<Trio<ProgramIndicator, String, String>> getLegendColorForIndicator( ProgramIndicator indicator,
+            String value )
+    {
+        String piId = indicator != null && indicator.uid() != null ? indicator.uid() : "";
+        String color = "";
+        try (Cursor cursor = d2.databaseAdapter().rawQuery( SELECT_LEGEND, piId, value == null ? "" : value,
+                value == null ? "" : value ))
+        {
+            if ( cursor != null && cursor.moveToFirst() && cursor.getCount() > 0 )
+            {
+                color = cursor.getString( 0 );
+            }
+        }
+        return Observable.just( Trio.create( indicator, value, color ) );
     }
 }
 

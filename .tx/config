@@ -1,7 +1,7 @@
 
 [main]
 host = https://www.transifex.com
-lang_map = fa_AF: prs
+lang_map = fa_AF: prs, uz@Cyrl: uz_Cyrl, uz@Latn: uz_Latn
 
 [dhis2-android-capture-app.strings-xml]
 file_filter = app/src/main/res/values-<lang>/strings.xml

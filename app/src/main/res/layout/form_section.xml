@@ -39,7 +39,6 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:gravity="center"
-                android:background="@drawable/ic_circle"
                 tools:text="99"
                 android:textSize="9sp"
                 android:textColor="?colorAccent"
