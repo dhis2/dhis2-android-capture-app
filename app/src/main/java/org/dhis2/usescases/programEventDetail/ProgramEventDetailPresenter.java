@@ -168,12 +168,11 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
         compositeDisposable.add(
                 eventInfoProcessor
-                        .flatMap(eventInfo -> eventRepository.getInfoForEvent(eventInfo.val0())
-                                .map(eventData -> Pair.create(eventData, eventInfo.val1())))
+                        .flatMap(eventInfo -> eventRepository.getInfoForEvent(eventInfo.val0()))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                view::setEventInfo,
+                                view::updateEventCarouselItem,
                                 throwable -> view.renderError(throwable.getMessage())
                         ));
 

@@ -97,6 +97,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private EventMapManager eventMapManager;
 
     public static final String EXTRA_PROGRAM_UID = "PROGRAM_UID";
+    private String updateEvent;
 
     public static Bundle getBundle(String programUid) {
         Bundle bundle = new Bundle();
@@ -163,8 +164,12 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         if (isMapVisible()) {
             animations.initMapLoading(binding.mapCarousel);
             binding.toolbarProgress.show();
+            if(updateEvent != null) {
+                presenter.getEventInfo(updateEvent, null);
+            }
+        } else {
+            FilterManager.getInstance().publishData();
         }
-        FilterManager.getInstance().publishData();
         if (eventMapManager != null) {
             eventMapManager.onResume();
         }
@@ -434,6 +439,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
+    public void updateEventCarouselItem(ProgramEventViewModel programEventViewModel) {
+        ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateItem(programEventViewModel);
+        animations.endMapLoading(this.binding.mapCarousel);
+        this.binding.toolbarProgress.hide();
+        updateEvent = null;
+    }
+
+    @Override
     public void showMoreOptions(View view) {
         PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
         try {
@@ -484,6 +497,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void navigateToEvent(String eventId, String orgUnit) {
+        this.updateEvent = eventId;
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, programUid);
         bundle.putString(Constants.EVENT_UID, eventId);

@@ -160,6 +160,14 @@ class CarouselAdapter private constructor(
         notifyDataSetChanged()
     }
 
+    fun updateItem(carouselItem : ProgramEventViewModel) {
+        val item = items.filterIsInstance(carouselItem::class.java)
+            .first { it.uid() == carouselItem.uid() }
+        val position = items.indexOf(item)
+        items[position] = carouselItem
+        notifyItemChanged(position)
+    }
+
     fun indexOfFeature(feature: Feature): Int {
         val item = items.firstOrNull {
             when (it) {

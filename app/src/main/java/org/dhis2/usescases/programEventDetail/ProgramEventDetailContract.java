@@ -59,6 +59,8 @@ public class ProgramEventDetailContract {
 
         void startNewEvent();
 
+        void updateEventCarouselItem(ProgramEventViewModel programEventViewModel);
+
         boolean isMapVisible();
 
         void navigateToEvent(String eventId, String orgUnit);
