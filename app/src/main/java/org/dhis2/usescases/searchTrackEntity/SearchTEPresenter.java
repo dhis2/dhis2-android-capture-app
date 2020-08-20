@@ -225,14 +225,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
 
         ConnectableFlowable<Pair<HashMap<String, String>, FilterManager>> updaterFlowable = currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
-                .doOnEach(element -> {Timber.d("outer updaterFlowable before%s", element.getValue());})
+                .doOnEach(element -> {Timber.d("outer updaterFlowable before %s", element.getValue());})
                 .switchMap(program ->
                                 Flowable.combineLatest(queryProcessor.startWith(queryData),
                                         FilterManager.getInstance().asFlowable(),
                                         Pair::create).doOnEach(element -> {Timber.d("inner %s", element.getValue());})
 
                 )
-                .doOnEach(element -> {Timber.d("outer updaterFlowable after%s", element.getValue());})
+                .doOnEach(element -> {Timber.d("outer updaterFlowable after %s", element.getValue());})
                 .onBackpressureLatest()
                 .publish();
 
@@ -310,7 +310,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 ),
                                 Timber::e,
                                 () -> Timber.d("COMPLETED")
-                        )); 
+                        ));
 
         compositeDisposable.add(
                 queryProcessor
