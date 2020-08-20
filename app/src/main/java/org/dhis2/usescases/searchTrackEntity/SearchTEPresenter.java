@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.DatePicker;
 
@@ -185,6 +186,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         return searchRepository.programAttributes(selectedProgram.uid())
                                 .map(data -> Pair.create(data.getTrackedEntityAttributes(), data.getRendering()));
                 })
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         data -> {
                             if (data.val0().isEmpty()) {
@@ -220,23 +223,41 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         Timber::d)
         );
 
-        ConnectableFlowable<Pair<HashMap<String, String>, FilterManager>> updaterFlowable = currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
+        /*
+            Flowable.combineLatest(
+                            filterManager.asFlowable().startWith(filterManager),
+                            sectionFlowable,
+                            groupingFlowable,
+                            Trio::create)
+                            .switchMap(stageAndGrouping ->
+                                    Flowable.zip(
+         */
+
+        /*
+                ConnectableFlowable<Pair<HashMap<String, String>, FilterManager>> updaterFlowable = currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
+                .doOnEach(element -> {Timber.d("outer before"+ element.getValue().toString());})
                 .switchMap(program ->
                                 Flowable.combineLatest(queryProcessor.startWith(queryData),
-                                        FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
-                                        Pair::create).distinct()
-                        
-                /*        Flowable.combineLatest(
-                                queryProcessor.startWith(queryData),
-                                FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
-                                Pair::create
-                        ) */
+                                        FilterManager.getInstance().asFlowable(),
+                                        Pair::create).doOnEach(element -> {Timber.d("inner "+element.getValue().toString());})
+         */
+
+        ConnectableFlowable<Pair<HashMap<String, String>, FilterManager>> updaterFlowable = currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
+                .doOnEach(element -> {Timber.d("outer before"+ element.getValue().toString());})
+                .switchMap(program ->
+                                Flowable.combineLatest(queryProcessor.startWith(queryData),
+                                        FilterManager.getInstance().asFlowable(),
+                                        Pair::create).doOnEach(element -> {Timber.d("inner "+element.getValue().toString());})
+
                 )
+                .doOnEach(element -> {Timber.d("outer after"+element.getValue().toString());})
                 .onBackpressureLatest()
                 .publish();
 
+
         compositeDisposable.add(
                 updaterFlowable
+                        .doOnEach(element -> {Timber.d("Listado "+element.getValue().toString());})
                         .map(data -> view.isMapVisible())
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
@@ -450,6 +471,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void setProgram(Program programSelected) {
+        if (programSelected == selectedProgram) return;
+
         boolean otherProgramSelected;
         if (programSelected == null) {
             otherProgramSelected = selectedProgram != null;
