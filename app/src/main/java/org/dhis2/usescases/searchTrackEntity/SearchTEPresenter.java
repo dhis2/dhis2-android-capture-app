@@ -223,41 +223,23 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         Timber::d)
         );
 
-        /*
-            Flowable.combineLatest(
-                            filterManager.asFlowable().startWith(filterManager),
-                            sectionFlowable,
-                            groupingFlowable,
-                            Trio::create)
-                            .switchMap(stageAndGrouping ->
-                                    Flowable.zip(
-         */
-
-        /*
-                ConnectableFlowable<Pair<HashMap<String, String>, FilterManager>> updaterFlowable = currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
-                .doOnEach(element -> {Timber.d("outer before"+ element.getValue().toString());})
-                .switchMap(program ->
-                                Flowable.combineLatest(queryProcessor.startWith(queryData),
-                                        FilterManager.getInstance().asFlowable(),
-                                        Pair::create).doOnEach(element -> {Timber.d("inner "+element.getValue().toString());})
-         */
 
         ConnectableFlowable<Pair<HashMap<String, String>, FilterManager>> updaterFlowable = currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
-                .doOnEach(element -> {Timber.d("outer before"+ element.getValue().toString());})
+                .doOnEach(element -> {Timber.d("outer updaterFlowable before%s", element.getValue());})
                 .switchMap(program ->
                                 Flowable.combineLatest(queryProcessor.startWith(queryData),
                                         FilterManager.getInstance().asFlowable(),
-                                        Pair::create).doOnEach(element -> {Timber.d("inner "+element.getValue().toString());})
+                                        Pair::create).doOnEach(element -> {Timber.d("inner %s", element.getValue());})
 
                 )
-                .doOnEach(element -> {Timber.d("outer after"+element.getValue().toString());})
+                .doOnEach(element -> {Timber.d("outer updaterFlowable after%s", element.getValue());})
                 .onBackpressureLatest()
                 .publish();
 
 
         compositeDisposable.add(
                 updaterFlowable
-                        .doOnEach(element -> {Timber.d("Listado "+element.getValue().toString());})
+                        .doOnEach(element -> {Timber.d("Listing update %s", element.getValue());})
                         .map(data -> view.isMapVisible())
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
