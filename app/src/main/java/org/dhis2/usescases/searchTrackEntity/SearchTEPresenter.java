@@ -277,7 +277,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribe(view::setLiveData, Timber::d)
         );
 
-    /*    compositeDisposable.add(
+        compositeDisposable.add(
                 mapDataProcessor
                         .switchMap(unit ->
                                 searchRepository.searchTeiForMap(
@@ -310,7 +310,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 ),
                                 Timber::e,
                                 () -> Timber.d("COMPLETED")
-                        )); */
+                        )); 
 
         compositeDisposable.add(
                 queryProcessor
