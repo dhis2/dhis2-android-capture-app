@@ -166,11 +166,11 @@ class CarouselAdapter private constructor(
         notifyDataSetChanged()
     }
 
-    fun updateItem(carouselItem : CarouselItemModel) {
-        allItems.takeIf { it.isNotEmpty() }?.indexOfFirst { it.uid == carouselItem.uid }?.let{
+    fun updateItem(carouselItem: CarouselItemModel) {
+        allItems.takeIf { it.isNotEmpty() }?.indexOfFirst { it.uid == carouselItem.uid }?.let {
             allItems[it] = carouselItem
         }
-        items.indexOfFirst { it.uid == carouselItem.uid }.let{
+        items.indexOfFirst { it.uid == carouselItem.uid }.let {
             items[it] = carouselItem
             notifyItemChanged(it)
         }
@@ -228,7 +228,7 @@ class CarouselAdapter private constructor(
             { _: String, _: String?, _: Boolean -> true },
         var onRelationshipClickListener: (relationshipTeiUid: String) -> Boolean = { false },
         var onEventClickListener: (String?, String?, String?) -> Boolean =
-            { _: String?, _: String?, _:String? -> false },
+            { _: String?, _: String?, _: String? -> false },
         var onProfileImageClick: (String) -> Unit = { },
         var items: MutableList<CarouselItemModel> = arrayListOf(),
         var program: Program? = null
