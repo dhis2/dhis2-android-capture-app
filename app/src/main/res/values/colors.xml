@@ -405,4 +405,5 @@
     <color name="avatar_sec_color">#B0BEC5</color>
     <!--endregion-->
 
+    <color name="unselected_tab_badge_color">#B3FFFFFF</color>
 </resources>

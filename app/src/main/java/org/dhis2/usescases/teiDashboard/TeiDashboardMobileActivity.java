@@ -66,7 +66,6 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
 public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View {
 
-    public static final String UNSELECTED_TAB_COLOR = "#B3FFFFFF";
     public static final int OVERVIEW_POS = 0;
     public static final int INDICATORS_POS = 1;
     public static final int RELATIONSHIPS_POS = 2;
@@ -157,7 +156,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 if (tab.getPosition() == getLastTabPosition()) {
                     BadgeDrawable badge = tab.getOrCreateBadge();
                     if (badge.hasNumber() && badge.getNumber() > 0) {
-                        badge.setBackgroundColor(Color.parseColor(UNSELECTED_TAB_COLOR));
+                        badge.setBackgroundColor(ContextCompat.getColor(TeiDashboardMobileActivity.this, R.color.unselected_tab_badge_color));
                     }
                 }
             }
@@ -187,7 +186,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                         binding.relationshipMapIcon.setImageResource(R.drawable.ic_map);
                     }
                     boolean showMap = !relationshipMap.getValue();
-                    if(showMap){
+                    if (showMap) {
                         binding.toolbarProgress.setVisibility(View.VISIBLE);
                         binding.toolbarProgress.hide();
                     }
@@ -666,7 +665,11 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         if (binding.tabLayout.getTabCount() > 0) {
             BadgeDrawable badge = binding.tabLayout.getTabAt(getLastTabPosition()).getOrCreateBadge();
             badge.setVisible(numberOfNotes > 0);
-            badge.setBackgroundColor(Color.WHITE);
+            if (OrientationUtilsKt.isPortrait() && binding.teiPager.getCurrentItem() == 3) {
+                badge.setBackgroundColor(Color.WHITE);
+            } else {
+                badge.setBackgroundColor(ContextCompat.getColor(this, R.color.unselected_tab_badge_color));
+            }
             badge.setBadgeTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
             badge.setNumber(numberOfNotes);
             badge.setMaxCharacterCount(3);
