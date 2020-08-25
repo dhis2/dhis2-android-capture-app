@@ -30,7 +30,11 @@ class CarouselAdapter private constructor(
     private val onSyncClickListener: (String) -> Boolean,
     private val onTeiClickListener: (String, String?, Boolean) -> Boolean,
     private val onRelationshipClickListener: (relationshipTeiUid: String) -> Boolean,
-    private val onEventClickListener: (teiUid: String?, enrollmentUid: String?) -> Boolean,
+    private val onEventClickListener: (
+        uid: String?,
+        enrollmentUid: String?,
+        eventUid: String?
+    ) -> Boolean,
     private val onProfileImageClick: (String) -> Unit,
     private val allItems: MutableList<CarouselItemModel>
 ) :
@@ -160,12 +164,14 @@ class CarouselAdapter private constructor(
         notifyDataSetChanged()
     }
 
-    fun updateItem(carouselItem : ProgramEventViewModel) {
-        val item = items.filterIsInstance(carouselItem::class.java)
-            .first { it.uid() == carouselItem.uid() }
-        val position = items.indexOf(item)
-        items[position] = carouselItem
-        notifyItemChanged(position)
+    fun updateItem(carouselItem : CarouselItemModel) {
+        allItems.takeIf { it.isNotEmpty() }?.indexOfFirst { it.uid == carouselItem.uid }?.let{
+            allItems[it] = carouselItem
+        }
+        items.indexOfFirst { it.uid == carouselItem.uid }.let{
+            items[it] = carouselItem
+            notifyItemChanged(it)
+        }
     }
 
     fun indexOfFeature(feature: Feature): Int {
@@ -219,8 +225,8 @@ class CarouselAdapter private constructor(
         var onTeiClickListener: (String, String?, Boolean) -> Boolean =
             { _: String, _: String?, _: Boolean -> true },
         var onRelationshipClickListener: (relationshipTeiUid: String) -> Boolean = { false },
-        var onEventClickListener: (String?, String?) -> Boolean =
-            { _: String?, _: String? -> false },
+        var onEventClickListener: (String?, String?, String?) -> Boolean =
+            { _: String?, _: String?, _:String? -> false },
         var onProfileImageClick: (String) -> Unit = { },
         var items: MutableList<CarouselItemModel> = arrayListOf(),
         var program: Program? = null
@@ -256,7 +262,11 @@ class CarouselAdapter private constructor(
         }
 
         fun addOnEventClickListener(
-            onEventClickListener: (teiUid: String?, enrollmentUid: String?) -> Boolean
+            onEventClickListener: (
+                uid: String?,
+                enrollmentUid: String?,
+                eventUid: String?
+            ) -> Boolean
         ) = apply {
             this.onEventClickListener = onEventClickListener
         }

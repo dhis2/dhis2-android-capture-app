@@ -152,6 +152,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private ObjectAnimator animation = null;
     private Set<String> sources;
     private Set<String> eventSources;
+    private String updateTei;
+    private String updateEvent;
 
     //---------------------------------------------------------------------------------------------
 
@@ -232,6 +234,20 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         updateFiltersSearch(presenter.getQueryData().size());
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         filtersAdapter.notifyDataSetChanged();
+
+        presenter.init(tEType);
+
+        teiMapManager = new TeiMapManager(
+                new MapStyle(
+                        presenter.getTEIColor(),
+                        presenter.getSymbolIcon(),
+                        presenter.getEnrollmentColor(),
+                        presenter.getEnrollmentSymbolIcon(),
+                        presenter.getProgramStageStyle(),
+                        ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK)
+                ));
+        teiMapManager.init(binding.mapView);
+        teiMapManager.setOnMapClickListener(this);
     }
 
     @Override
@@ -241,26 +257,26 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             animations.initMapLoading(binding.mapCarousel);
             binding.toolbarProgress.show();
             binding.progressLayout.setVisibility(View.GONE);
-        }
-        if (initSearchNeeded) {
-            presenter.init(tEType);
+            if (updateTei != null) {
+                if (updateEvent != null) {
+                    ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateItem(presenter.getEventInfo(updateEvent, updateTei));
+                } else {
+                    ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateItem(presenter.getTeiInfo(updateTei));
+                }
+                updateEvent = null;
+                updateTei = null;
+            }
+            animations.endMapLoading(binding.mapCarousel);
+            binding.toolbarProgress.hide();
         } else {
-            initSearchNeeded = true;
+            if (initSearchNeeded) {
+                presenter.init(tEType);
+            } else {
+                initSearchNeeded = true;
+            }
         }
         if (teiMapManager != null) {
             teiMapManager.onResume();
-        } else {
-            teiMapManager = new TeiMapManager(
-                    new MapStyle(
-                            presenter.getTEIColor(),
-                            presenter.getSymbolIcon(),
-                            presenter.getEnrollmentColor(),
-                            presenter.getEnrollmentSymbolIcon(),
-                            presenter.getProgramStageStyle(),
-                            ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK)
-                    ));
-            teiMapManager.init(binding.mapView);
-            teiMapManager.setOnMapClickListener(this);
         }
     }
 
@@ -867,6 +883,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     .addOnTeiClickListener(
                             (teiUid, enrollmentUid, isDeleted) -> {
                                 if (binding.mapCarousel.getCarouselEnabled()) {
+                                    updateTei = teiUid;
                                     presenter.onTEIClick(teiUid, enrollmentUid, isDeleted);
                                 }
                                 return true;
@@ -890,8 +907,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         }
                         return true;
                     })
-                    .addOnEventClickListener((teiUid, enrollmentUid) -> {
+                    .addOnEventClickListener((teiUid, enrollmentUid, eventUid) -> {
                         if (binding.mapCarousel.getCarouselEnabled()) {
+                            updateTei = teiUid;
+                            updateEvent = eventUid;
                             presenter.onTEIClick(teiUid, enrollmentUid, false);
                         }
                         return true;

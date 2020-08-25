@@ -30,7 +30,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     private FlowableProcessor<Unit> listDataProcessor;
 
     //Search fields
-    FlowableProcessor<Pair<String, LatLng>> eventInfoProcessor;
+    FlowableProcessor<String> eventInfoProcessor;
     FlowableProcessor<Unit> mapProcessor;
 
     public ProgramEventDetailPresenter(
@@ -168,7 +168,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
         compositeDisposable.add(
                 eventInfoProcessor
-                        .flatMap(eventInfo -> eventRepository.getInfoForEvent(eventInfo.val0()))
+                        .flatMap(eventRepository::getInfoForEvent)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
@@ -226,8 +226,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
-    public void getEventInfo(String eventUid, LatLng latLng) {
-        eventInfoProcessor.onNext(Pair.create(eventUid, latLng));
+    public void getEventInfo(String eventUid) {
+        eventInfoProcessor.onNext(eventUid);
     }
 
     @Override

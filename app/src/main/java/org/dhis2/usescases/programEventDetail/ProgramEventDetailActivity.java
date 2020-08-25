@@ -165,7 +165,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             animations.initMapLoading(binding.mapCarousel);
             binding.toolbarProgress.show();
             if(updateEvent != null) {
-                presenter.getEventInfo(updateEvent, null);
+                presenter.getEventInfo(updateEvent);
             }
         } else {
             FilterManager.getInstance().publishData();
@@ -400,7 +400,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                                 }
                                 return true;
                             })
-                    .addOnEventClickListener((teiUid, orgUnit) -> {
+                    .addOnEventClickListener((teiUid, orgUnit, eventUid) -> {
                         if (binding.mapCarousel.getCarouselEnabled()) {
                             presenter.onEventClick(teiUid, orgUnit);
                         }

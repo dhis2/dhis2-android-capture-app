@@ -83,7 +83,7 @@ public class ProgramEventDetailContract {
 
         void onSyncIconClick(String uid);
 
-        void getEventInfo(String eventUid, LatLng latLng);
+        void getEventInfo(String eventUid);
 
         void getMapData();
 

@@ -14,7 +14,7 @@ import org.dhis2.usescases.programEventDetail.ProgramEventViewModel
 
 class CarouselProgramEventHolder(
     val binding: ItemCarouselProgramEventBinding,
-    val onClick: (eventUid: String?, orgUnitUid: String?) -> Boolean
+    val onClick: (teiUid: String?, orgUnitUid: String?, eventUid: String?) -> Boolean
 ) :
     RecyclerView.ViewHolder(binding.root),
     CarouselBinder<ProgramEventViewModel> {
@@ -22,7 +22,7 @@ class CarouselProgramEventHolder(
     override fun bind(data: ProgramEventViewModel) {
         binding.event = data
         itemView.setOnClickListener {
-            onClick(data.uid(), data.orgUnitUid())
+            onClick(data.uid(), data.orgUnitUid(), data.uid)
         }
 
         val attributesString = SpannableStringBuilder("")

@@ -57,6 +57,8 @@ public interface SearchRepository {
                                                    boolean assignedToMe,
                                                    boolean isOnline);
 
+    SearchTeiModel getTrackedEntityInfo(String teiUid, Program selectedProgram, SortingItem sortingItem);
+
     @NonNull
     Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam, Date enrollmentDate, @Nullable String fromRelationshipUid);
 
@@ -69,4 +71,6 @@ public interface SearchRepository {
     Observable<TrackedEntityType> getTrackedEntityType(String trackedEntityUid);
 
     List<EventViewModel> getEventsForMap(List<SearchTeiModel> teis);
+
+    EventViewModel getEventInfo(String enrollmentUid);
 }

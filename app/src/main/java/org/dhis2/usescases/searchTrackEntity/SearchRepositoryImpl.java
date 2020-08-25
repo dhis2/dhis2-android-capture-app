@@ -690,6 +690,33 @@ public class SearchRepositoryImpl implements SearchRepository {
         return eventViewModels;
     }
 
+    @Override
+    public SearchTeiModel getTrackedEntityInfo(String teiUid, Program selectedProgram, SortingItem sortingItem) {
+        return transform(
+                d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet(),
+                selectedProgram,
+                true,
+                sortingItem
+        );
+
+    }
+
+    @Override
+    public EventViewModel getEventInfo(String uid) {
+        Event event = d2.eventModule().events().uid(uid).blockingGet();
+
+        ProgramStage stage = d2.programModule().programStages()
+                .uid(event.programStage())
+                .blockingGet();
+
+        OrganisationUnit organisationUnit = d2.organisationUnitModule()
+                .organisationUnits()
+                .uid(event.organisationUnit())
+                .blockingGet();
+
+        return new EventViewModel(EventViewModelType.EVENT, stage, event, 0, null, true, true, organisationUnit.displayName());
+    }
+
     private List<TrackedEntityInstance> filterDeleted(List<TrackedEntityInstance> teis) {
         Iterator<TrackedEntityInstance> iterator = teis.iterator();
         while (iterator.hasNext()) {
