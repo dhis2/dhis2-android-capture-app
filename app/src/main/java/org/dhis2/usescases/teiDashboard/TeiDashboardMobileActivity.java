@@ -66,10 +66,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public static final int OVERVIEW_POS = 0;
     public static final int INDICATORS_POS = 1;
     public static final int RELATIONSHIPS_POS= 2;
-    public static final int NOTES_POS = 3;
+    public static final int FEEDBACK_POS= 3;
+    public static final int NOTES_POS = 4;
     public static final int INDICATORS_LANDSCAPE_POS = 0;
     public static final int RELATIONSHIPS_LANDSCAPE_POS = 1;
-    public static final int NOTES_LANDSCAPE_POS = 2;
+    public static final int FEEDBACK_LANDSCAPE_POS= 2;
+    public static final int NOTES_LANDSCAPE_POS = 3;
 
     @Inject
     public TeiDashboardContracts.Presenter presenter;
@@ -255,6 +257,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                                 case RELATIONSHIPS_LANDSCAPE_POS:
                                     binding.sectionTitle.setText(getString(R.string.dashboard_relationships));
                                     break;
+                                case FEEDBACK_LANDSCAPE_POS:
+                                    binding.sectionTitle.setText(getString(R.string.dashboard_feedback));
+                                    break;
                                 case NOTES_LANDSCAPE_POS:
                                     binding.sectionTitle.setText(getString(R.string.dashboard_notes));
                                     break;
@@ -298,6 +303,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             case RELATIONSHIPS_POS:
                 tab.setText(getString(R.string.dashboard_relationships));
                 break;
+            case FEEDBACK_POS:
+                tab.setText(getString(R.string.dashboard_feedback));
+                break;
             case NOTES_POS:
                 tab.setText(getString(R.string.dashboard_notes));
                 break;
@@ -314,6 +322,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     break;
                 case RELATIONSHIPS_LANDSCAPE_POS:
                     tab.setText(getString(R.string.dashboard_relationships));
+                    break;
+                case FEEDBACK_LANDSCAPE_POS:
+                    tab.setText(getString(R.string.dashboard_feedback));
                     break;
                 case NOTES_LANDSCAPE_POS:
                     tab.setText(getString(R.string.dashboard_notes));

@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import java.lang.IllegalStateException
 import org.dhis2.usescases.notes.NotesFragment
+import org.dhis2.usescases.teiDashboard.dashboardfragments.feedback.FeedbackFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment
@@ -18,6 +19,7 @@ class DashboardPagerAdapter(
 
     private var indicatorsFragment: IndicatorsFragment? = null
     private var relationshipFragment: RelationshipFragment? = null
+    private var feedbackFragment: FeedbackFragment? = null
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
@@ -34,7 +36,14 @@ class DashboardPagerAdapter(
                 }
                 relationshipFragment!!
             }
-            3 -> NotesFragment.newTrackerInstance(currentProgram!!, teiUid)
+            3 -> {
+                if (feedbackFragment == null) {
+                    feedbackFragment = FeedbackFragment()
+                }
+                feedbackFragment!!
+
+            }
+            4 -> NotesFragment.newTrackerInstance(currentProgram!!, teiUid)
             else -> throw IllegalStateException("Fragment not supported")
         }
     }
@@ -42,6 +51,6 @@ class DashboardPagerAdapter(
     override fun getItemCount() = if (currentProgram != null) MOBILE_DASHBOARD_SIZE else 1
 
     companion object {
-        const val MOBILE_DASHBOARD_SIZE = 4
+        const val MOBILE_DASHBOARD_SIZE = 5
     }
 }

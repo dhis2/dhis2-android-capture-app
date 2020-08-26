@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import java.lang.IllegalStateException
 import org.dhis2.usescases.notes.NotesFragment
+import org.dhis2.usescases.teiDashboard.dashboardfragments.feedback.FeedbackFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment
 
@@ -19,7 +20,8 @@ class DashboardPagerTabletAdapter(
         return when (position) {
             0 -> IndicatorsFragment()
             1 -> RelationshipFragment()
-            2 -> NotesFragment.newTrackerInstance(currentProgram!!, teiUid)
+            2 -> FeedbackFragment()
+            3 -> NotesFragment.newTrackerInstance(currentProgram!!, teiUid)
             else -> throw IllegalStateException("Fragment not supported")
         }
     }
@@ -31,7 +33,7 @@ class DashboardPagerTabletAdapter(
     }
 
     companion object {
-        const val MOBILE_DASHBOARD_SIZE = 3
+        const val MOBILE_DASHBOARD_SIZE = 4
         const val NO_FRAGMENT_DUE_TO_NO_PROGRAM_SELECTED = 0
     }
 }

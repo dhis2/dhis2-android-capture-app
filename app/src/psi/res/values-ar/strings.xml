@@ -3,5 +3,5 @@
     <string name="app_name">PSI dhis2</string>
     <string name="logo_text">PSI dhis2</string>
     <string name="logo_number"></string>
-    <string name="dashboard_feedback">Phản hồi</string>
+    <string name="dashboard_feedback">ردود الفعل</string>
 </resources>
