@@ -10,6 +10,7 @@ import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
+import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.utils.RulesUtilsProvider
 import org.hisp.dhis.android.core.common.ObjectStyle
@@ -24,6 +25,7 @@ class EventCapturePresenterTest {
     private val rulesUtilProvider: RulesUtilsProvider = mock()
     private val valueStore: ValueStore = mock()
     private val schedulers = TrampolineSchedulerProvider()
+    private val preferences: PreferenceProvider = mock()
 
     @Before
     fun setUp() {
@@ -33,7 +35,8 @@ class EventCapturePresenterTest {
             eventRepository,
             rulesUtilProvider,
             valueStore,
-            schedulers
+            schedulers,
+            preferences
         )
     }
 
