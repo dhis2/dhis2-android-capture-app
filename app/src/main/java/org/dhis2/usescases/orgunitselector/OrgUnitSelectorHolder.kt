@@ -23,10 +23,10 @@ internal class OrgUnitSelectorHolder(private val binding: ItemOuTreeBinding) :
         } else {
             binding.icon.setImageResource(R.drawable.ic_add_circle)
         }
+    }
 
-        binding.checkBox.setOnCheckedChangeListener { _, b ->
-            FilterManager.getInstance().addIfCan(node.content, b)
-            node.isChecked = FilterManager.getInstance().exist(node.content)
-        }
+    fun nodeCheckboxClick(node: TreeNode, isChecked: Boolean) {
+        FilterManager.getInstance().addIfCan(node.content, isChecked)
+        node.isChecked = FilterManager.getInstance().exist(node.content)
     }
 }

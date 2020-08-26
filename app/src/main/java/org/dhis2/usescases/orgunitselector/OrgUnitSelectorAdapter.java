@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 class OrgUnitSelectorAdapter extends RecyclerView.Adapter<OrgUnitSelectorHolder> {
+    private ItemOuTreeBinding binding;
     private List<TreeNode> treeNodes;
     private final OnOrgUnitClick listener;
 
@@ -25,9 +26,9 @@ class OrgUnitSelectorAdapter extends RecyclerView.Adapter<OrgUnitSelectorHolder>
     @NonNull
     @Override
     public OrgUnitSelectorHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new OrgUnitSelectorHolder(ItemOuTreeBinding.inflate(
-                LayoutInflater.from(parent.getContext()), parent, false
-        ));
+        binding = ItemOuTreeBinding
+                .inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new OrgUnitSelectorHolder(binding);
     }
 
     @Override
@@ -38,6 +39,9 @@ class OrgUnitSelectorAdapter extends RecyclerView.Adapter<OrgUnitSelectorHolder>
                     holder.getAdapterPosition() >= 0)
                         listener.onOrgUnitClick(treeNodes.get(holder.getAdapterPosition()), holder.getAdapterPosition());
                 }
+        );
+        binding.checkBox.setOnCheckedChangeListener((buttonView, isChecked) ->
+            holder.nodeCheckboxClick(treeNodes.get(holder.getAdapterPosition()), isChecked)
         );
     }
 
