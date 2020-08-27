@@ -36,7 +36,9 @@ class ScanTextHolder(
             optionSet = model.optionSet()
             setOnScannerListener { value ->
                 this.setText(value)
-                clearCurrentSelection()
+                if (!isSearchMode) {
+                    clearCurrentSelection()
+                }
                 val rowAction = RowAction.create(
                     model.uid(), value,
                     adapterPosition

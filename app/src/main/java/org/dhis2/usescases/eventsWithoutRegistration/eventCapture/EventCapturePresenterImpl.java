@@ -228,7 +228,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                     List<String> optionSets = new ArrayList<>();
                                                     for (FieldViewModel fieldViewModel : fields) {
                                                         String fieldSection = getFieldSection(fieldViewModel);
-                                                        if(!fieldSection.isEmpty() || sectionList.size() == 1) {
+                                                        if (!fieldSection.isEmpty() || sectionList.size() == 1) {
                                                             if (!fieldMap.containsKey(fieldSection)) {
                                                                 fieldMap.put(fieldSection, new ArrayList<>());
                                                             }
@@ -306,7 +306,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                         }
                                                     }
 
-                                                    if(!eventSectionModels.get(0).sectionName().equals("NO_SECTION")) {
+                                                    if (!eventSectionModels.get(0).sectionName().equals("NO_SECTION")) {
                                                         finalFieldList.add(SectionViewModel.createClosingSection());
                                                     }
 

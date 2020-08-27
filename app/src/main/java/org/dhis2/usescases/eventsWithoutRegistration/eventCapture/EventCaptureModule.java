@@ -77,4 +77,9 @@ public class EventCaptureModule {
         return new ValueStoreImpl(d2, eventUid, DataEntryStore.EntryMode.DE);
     }
 
+    @Provides
+    @PerActivity
+    GetNextVisibleSection getNextVisibleSection() {
+        return new GetNextVisibleSection();
+    }
 }
