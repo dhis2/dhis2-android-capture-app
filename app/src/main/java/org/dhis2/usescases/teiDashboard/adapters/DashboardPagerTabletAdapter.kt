@@ -3,8 +3,8 @@ package org.dhis2.usescases.teiDashboard.adapters
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import org.dhis2.usecases.teiDashboard.MOBILE_DASHBOARD_LANDSCAPE_SIZE
-import org.dhis2.usecases.teiDashboard.createLandscapeTabFragment
+import org.dhis2.usescases.teiDashboard.MOBILE_DASHBOARD_LANDSCAPE_SIZE
+import org.dhis2.usescases.teiDashboard.createLandscapeTabFragment
 
 class DashboardPagerTabletAdapter(
     fa: FragmentActivity,

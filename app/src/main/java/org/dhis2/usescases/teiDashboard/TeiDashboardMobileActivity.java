@@ -54,8 +54,8 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
-import static org.dhis2.usecases.teiDashboard.TeiDashboardFunctionsKt.getLandscapeTabTitle;
-import static org.dhis2.usecases.teiDashboard.TeiDashboardFunctionsKt.getPortraitTabTitle;
+import static org.dhis2.usescases.teiDashboard.TeiDashboardFunctionsKt.getLandscapeTabTitle;
+import static org.dhis2.usescases.teiDashboard.TeiDashboardFunctionsKt.getPortraitTabTitle;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.Constants.TEI_UID;
