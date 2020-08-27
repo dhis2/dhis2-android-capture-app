@@ -157,6 +157,8 @@
     <string name="confirm_delete_event">هل أنت متأكد أنك تريد حذف هذا الحدث؟</string>
     <string name="event_was_deleted">تم حذف الحدث بنجاح</string>
     <string name="total">الإجمالي</string>
+    <string name="most_recent_event_date">تاريخ أحدث حدث</string>
+
     <!--TEI Enrollment list-->
     <string name="enrollment_list">قائمة التسجيل</string>
     <string name="active_programs">البرامج النشطة</string>
@@ -604,6 +606,7 @@
     <string name="filters_disabled">لم يتم تطبيق عوامل تصفية</string>
     <string name="filters_title_period">الفترة الزمنية</string>
     <string name="filters_title_org_unit">الوحدة التنظيمية</string>
+    <string name="filters_title_sorting">فرز</string>
     <string name="filters_title_status">الحالة</string>
     <string name="filters_title_state">حالة المزامنة</string>
     <string name="filters_title_assigned">تم تعيينه لي</string>
@@ -728,6 +731,7 @@
     <string name="validation_internal_error_datasets">لم نتمكن من التحقق من جودة البيانات. تواصل مع مديرك</string>
     <string name="are_you_sure">هل أنت متأكد؟</string>
     <string name="reopen_question">هل تريد إعادة فتح حزمة البيانات؟</string>
+    <string name="group_events_by_stage">تجميع الأحداث حسب المرحلة</string>
     <string name="show_events_timeline">عرض الخط الزمني للأحداث</string>
     <string name="filters_title_date">التاريخ</string>
     <string name="filters_title_event_date">بيانات الحدث</string>
@@ -736,4 +740,5 @@
     <string name="privacy_policy_title">سياسة الخصوصية</string>
     <string name="open_privacy_policy">إنقر هنا للإطلاع على <a href=""> سياسة الخصوصية الخاصة بنا</a></string>
     <string name="coordinates_error">قيم الإحداثيات غير صالحة</string>
-    </resources>
+    <string name="break_glass_error">لا يمكنك تسجيل TEIs من وحدات تنظيمية أخرى في هذا البرنامج لأنه محمي. \n اتصل بالمسؤول.</string>
+</resources>
