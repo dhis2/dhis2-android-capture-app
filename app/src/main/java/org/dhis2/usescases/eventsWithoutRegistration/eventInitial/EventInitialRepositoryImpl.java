@@ -65,8 +65,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     Iterator<OrganisationUnit> iterator = organisationUnits.iterator();
                     while (iterator.hasNext()) {
                         OrganisationUnit organisationUnit = iterator.next();
-                        if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.uiDateFormat().parse(date))
-                                || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(DateUtils.uiDateFormat().parse(date)))
+                        if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.databaseDateFormat().parse(date))
+                                || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(DateUtils.databaseDateFormat().parse(date)))
                             iterator.remove();
                     }
                     return organisationUnits;

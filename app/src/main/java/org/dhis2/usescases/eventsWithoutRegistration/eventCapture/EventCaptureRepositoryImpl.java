@@ -146,9 +146,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     @Override
-    public Flowable<String> orgUnit() {
+    public Flowable<OrganisationUnit> orgUnit() {
         return Flowable.just(d2.eventModule().events().uid(eventUid).blockingGet())
-                .map(event -> d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet().displayName());
+                .map(event -> d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet());
     }
 
 
