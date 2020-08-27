@@ -92,12 +92,14 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private boolean assignedValueChanged;
     private int calculationLoop = 0;
     private final int MAX_LOOP_CALCULATIONS = 5;
+    private GetNextVisibleSection getNextVisibleSection;
 
 
     public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
                                      EventCaptureContract.EventCaptureRepository eventCaptureRepository,
                                      RulesUtilsProvider rulesUtils,
-                                     ValueStore valueStore, SchedulerProvider schedulerProvider) {
+                                     ValueStore valueStore, SchedulerProvider schedulerProvider,
+                                     GetNextVisibleSection getNextVisibleSection) {
         this.view = view;
         this.eventUid = eventUid;
         this.eventCaptureRepository = eventCaptureRepository;
@@ -112,6 +114,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.canComplete = true;
         this.sectionList = new ArrayList<>();
         this.compositeDisposable = new CompositeDisposable();
+        this.getNextVisibleSection = getNextVisibleSection;
 
         currentSectionPosition = PublishProcessor.create();
         sectionProcessor = PublishProcessor.create();
@@ -214,13 +217,15 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 sectionProcessor.startWith(sectionList.get(0).sectionUid())
                                         .switchMap(section -> fieldFlowable
                                                 .map(fields -> {
+
+                                                    String activeSection = getNextVisibleSection.get(section, sectionList, sectionsToHide);
                                                     totalFields = 0;
                                                     unsupportedFields = 0;
                                                     HashMap<String, List<FieldViewModel>> fieldMap = new HashMap<>();
                                                     List<String> optionSets = new ArrayList<>();
                                                     for (FieldViewModel fieldViewModel : fields) {
                                                         String fieldSection = getFieldSection(fieldViewModel);
-                                                        if(!fieldSection.isEmpty() || sectionList.size() == 1) {
+                                                        if (!fieldSection.isEmpty() || sectionList.size() == 1) {
                                                             if (!fieldMap.containsKey(fieldSection)) {
                                                                 fieldMap.put(fieldSection, new ArrayList<>());
                                                             }
@@ -263,7 +268,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
                                                             eventSectionModels.add(EventSectionModel.create(sectionModel.label(), sectionModel.sectionUid(), cont, finalFields.keySet().size()));
 
-                                                            boolean isOpen = sectionModel.sectionUid().equals(section);
+                                                            boolean isOpen = sectionModel.sectionUid().equals(activeSection);
                                                             finalFieldList.add(
                                                                     SectionViewModel.create(
                                                                             sectionModel.sectionUid(),
@@ -298,7 +303,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                         }
                                                     }
 
-                                                    if(!eventSectionModels.get(0).sectionName().equals("NO_SECTION")) {
+                                                    if (!eventSectionModels.get(0).sectionName().equals("NO_SECTION")) {
                                                         finalFieldList.add(SectionViewModel.createClosingSection());
                                                     }
 
@@ -347,6 +352,24 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         );
 
         fieldFlowable.connect();
+    }
+
+    @VisibleForTesting
+    public String getNextVisibleSection(String activeSection, List<FormSectionViewModel> sectionList) {
+        while (sectionsToHide.contains(activeSection)) {
+            for (FormSectionViewModel section : sectionList) {
+                if (section.sectionUid().equals(activeSection)) {
+                    int nextSectionIndex = sectionList.indexOf(section) + 1;
+                    if (nextSectionIndex < sectionList.size()) {
+                        activeSection = sectionList.get(nextSectionIndex).sectionUid();
+                    } else {
+                        activeSection = "";
+                    }
+                    break;
+                }
+            }
+        }
+        return activeSection;
     }
 
     @VisibleForTesting
