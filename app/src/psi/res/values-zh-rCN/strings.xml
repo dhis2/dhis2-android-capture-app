@@ -4,4 +4,6 @@
     <string name="logo_text">PSI dhis2</string>
     <string name="logo_number"></string>
     <string name="dashboard_feedback">反應</string>
+    <string name="program_type_configuration_error_message">當前程序中存在程序類型配置錯誤。 請檢查服務器中的程序並執行同步配置</string>
+    <string name="unexpected_error_message">發生意外的錯誤。 查看您的配置或與管理員聯繫</string>
 </resources>

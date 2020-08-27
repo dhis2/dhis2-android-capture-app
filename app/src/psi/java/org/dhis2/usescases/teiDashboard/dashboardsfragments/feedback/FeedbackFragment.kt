@@ -5,15 +5,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.databinding.DataBindingUtil
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.databinding.FragmentFeedbackBinding
-import org.dhis2.usescases.teiDashboard.adapters.FeedbackPagerAdapter
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import org.dhis2.usescases.teiDashboard.adapters.FeedbackPagerAdapter
 import javax.inject.Inject
 
 class FeedbackFragment : FragmentGlobalAbstract(), FeedbackPresenter.FeedbackView {
@@ -78,24 +80,30 @@ class FeedbackFragment : FragmentGlobalAbstract(), FeedbackPresenter.FeedbackVie
     }
 
     override fun render(state: FeedbackState) {
-        return when (state){
+        return when (state) {
             is FeedbackState.Loading -> renderLoading()
             is FeedbackState.Loaded -> renderLoaded(state.feedbackProgram)
-            is FeedbackState.ConfigurationError -> renderError("There are a program type configuration error in program ${state.programUid}. Please review the program in the server and to execute sync configuration")
-            is FeedbackState.UnexpectedError ->renderError("An unexpected error has occurred. Review your configuration or contact with your administrator")
+            is FeedbackState.ConfigurationError -> renderError(
+                getString(R.string.program_type_configuration_error_message)
+            )
+            is FeedbackState.UnexpectedError -> renderError(getString(R.string.unexpected_error_message))
         }
-    }
-
-    private fun renderError(text: String) {
-        binding.spinner.visibility = View.GONE
-    }
-
-    private fun renderLoaded(feedbackProgram: FeedbackProgram) {
-        binding.spinner.visibility = View.GONE
-        setUpTabs(feedbackProgram.programType)
     }
 
     private fun renderLoading() {
         binding.spinner.visibility = View.VISIBLE
+        binding.errorFeedback.visibility = View.GONE
+    }
+
+    private fun renderError(text: String) {
+        binding.spinner.visibility = View.GONE
+        binding.errorFeedback.visibility = View.VISIBLE
+        binding.errorFeedback.text = text
+    }
+
+    private fun renderLoaded(feedbackProgram: FeedbackProgram) {
+        binding.errorFeedback.visibility = View.GONE
+        binding.spinner.visibility = View.GONE
+        setUpTabs(feedbackProgram.programType)
     }
 }

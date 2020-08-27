@@ -4,4 +4,6 @@
     <string name="logo_text">PSI dhis2</string>
     <string name="logo_number"></string>
     <string name="dashboard_feedback">Respons</string>
+    <string name="program_type_configuration_error_message">Det finns ett konfigurationsfel för programtyp i det aktuella programmet. Kontrollera programmet på servern och utför synkroniseringskonfiguration</string>
+    <string name="unexpected_error_message">Ett oväntat fel har uppstått. Granska din konfiguration eller kontakta din administratör</string>
 </resources>
