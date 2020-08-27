@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.fragment.app.Fragment
 import org.dhis2.R
 import org.dhis2.usescases.notes.NotesFragment
-import org.dhis2.usescases.teiDashboard.dashboardfragments.feedback.FeedbackFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment

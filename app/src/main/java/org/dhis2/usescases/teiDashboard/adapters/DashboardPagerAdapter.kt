@@ -14,7 +14,7 @@ class DashboardPagerAdapter(
 ) : FragmentStateAdapter(fa) {
 
     override fun createFragment(position: Int): Fragment {
-        return createPortraitTabFragment(currentProgram,teiUid, enrollmentUid,position);
+        return createPortraitTabFragment(currentProgram,teiUid, enrollmentUid,position)
     }
 
     override fun getItemCount() = if (currentProgram != null) MOBILE_DASHBOARD_PORTRAIT_SIZE else 1

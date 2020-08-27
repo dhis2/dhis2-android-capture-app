@@ -14,7 +14,7 @@ class DashboardPagerTabletAdapter(
 ) : FragmentStateAdapter(fa) {
 
     override fun createFragment(position: Int): Fragment {
-        return createLandscapeTabFragment(currentProgram,teiUid,position);
+        return createLandscapeTabFragment(currentProgram,teiUid,position)
     }
 
     override fun getItemCount() = if (currentProgram != null) {
