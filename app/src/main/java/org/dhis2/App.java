@@ -37,7 +37,7 @@ import org.dhis2.data.user.UserModule;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginContracts;
 import org.dhis2.usescases.login.LoginModule;
-import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
+import org.dhis2.usescases.teiDashboard.TeiDashboardComponentFlavor;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.UtilsModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
@@ -90,7 +90,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     @Nullable
     @PerActivity
-    private TeiDashboardComponent dashboardComponent;
+    private TeiDashboardComponentFlavor dashboardComponent;
 
     @Nullable
     private SessionComponent sessionComponent;
@@ -250,7 +250,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     // Dashboard component
     ////////////////////////////////////////////////////////////////////////
     @NonNull
-    public TeiDashboardComponent createDashboardComponent(@NonNull TeiDashboardModule dashboardModule) {
+    public TeiDashboardComponentFlavor createDashboardComponent(@NonNull TeiDashboardModule dashboardModule) {
         if (dashboardComponent != null) {
             this.recreated = true;
         }
@@ -259,7 +259,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     }
 
     @Nullable
-    public TeiDashboardComponent dashboardComponent() {
+    public TeiDashboardComponentFlavor dashboardComponent() {
         return dashboardComponent;
     }
 
