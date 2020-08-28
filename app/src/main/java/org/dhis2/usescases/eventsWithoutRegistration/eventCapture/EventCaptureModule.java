@@ -15,6 +15,7 @@ import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.D2;
@@ -41,8 +42,9 @@ public class EventCaptureModule {
     EventCaptureContract.Presenter providePresenter(@NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
                                                     @NonNull RulesUtilsProvider ruleUtils,
                                                     @NonNull ValueStore valueStore,
-                                                    SchedulerProvider schedulerProvider) {
-        return new EventCapturePresenterImpl(view, eventUid, eventCaptureRepository, ruleUtils, valueStore, schedulerProvider);
+                                                    SchedulerProvider schedulerProvider,
+                                                    PreferenceProvider preferences) {
+        return new EventCapturePresenterImpl(view, eventUid, eventCaptureRepository, ruleUtils, valueStore, schedulerProvider, preferences);
     }
 
     @Provides
@@ -74,5 +76,4 @@ public class EventCaptureModule {
     ValueStore valueStore(@NonNull D2 d2) {
         return new ValueStoreImpl(d2, eventUid, DataEntryStore.EntryMode.DE);
     }
-
 }
