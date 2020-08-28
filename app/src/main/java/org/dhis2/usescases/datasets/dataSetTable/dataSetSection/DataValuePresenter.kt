@@ -291,10 +291,11 @@ class DataValuePresenter(
                     var editable = true
                     for (disabledDataElement in dataTableModel.dataElementDisabled()!!)
                         if (disabledDataElement.categoryOptionCombo() != null &&
-                            disabledDataElement.categoryOptionCombo()!!.uid()
-                            == categoryOptionCombo.uid() &&
-                            disabledDataElement.dataElement()!!.uid() == dataElement.uid() ||
-                            disabledDataElement.dataElement()!!.uid() == dataElement.uid()
+                            disabledDataElement.categoryOptionCombo()!!.uid() ==
+                            categoryOptionCombo.uid() &&
+                            disabledDataElement.dataElement()!!.uid() == dataElement.uid() &&
+                            disabledDataElement.categoryOptionCombo()!!.uid() ==
+                            categoryOptionCombo.uid()
                         ) {
                             editable = false
                         }
