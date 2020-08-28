@@ -39,6 +39,8 @@ public class EventCaptureContract {
 
         EventCaptureContract.Presenter getPresenter();
 
+        void updateProgramStageName(String stageName);
+
         void updatePercentage(float primaryValue, float secondaryValue);
 
         void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldViewModel> emptyMandatoryFields);
