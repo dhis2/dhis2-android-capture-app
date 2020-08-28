@@ -172,7 +172,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> {
-                                    if (data.size()> 0){
+                                    if (SHOW_INDICATORS_IN_EVENT && data.size()> 0){
                                         view.showIndicatorsIcon();
                                     } else {
                                         view.hideIndicatorsIcon();
