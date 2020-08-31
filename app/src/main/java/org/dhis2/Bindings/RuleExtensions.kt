@@ -86,15 +86,24 @@ fun List<ProgramRuleVariable>.toRuleVariableList(
     dataElementRepository: DataElementCollectionRepository
 ): List<RuleVariable> {
     return filter {
-        if (it.dataElement() != null) {
-            dataElementRepository.uid(it.dataElement()?.uid()).blockingExists()
-        } else if (it.trackedEntityAttribute() != null) {
-            attributeRepository.uid(it.trackedEntityAttribute()?.uid()).blockingExists()
-        } else it.dataElement() == null && it.trackedEntityAttribute() == null && it.programRuleVariableSourceType() == ProgramRuleVariableSourceType.CALCULATED_VALUE
+        when {
+            it.dataElement() != null -> {
+                dataElementRepository.uid(it.dataElement()?.uid()).blockingExists()
+            }
+            it.trackedEntityAttribute() != null -> {
+                attributeRepository.uid(it.trackedEntityAttribute()?.uid()).blockingExists()
+            }
+            else -> isCalculatedValue(it)
+        }
     }.map {
         it.toRuleVariable(attributeRepository, dataElementRepository)
     }
 }
+
+private fun isCalculatedValue(it: ProgramRuleVariable) =
+    it.dataElement() == null &&
+        it.trackedEntityAttribute() == null &&
+        it.programRuleVariableSourceType() == ProgramRuleVariableSourceType.CALCULATED_VALUE
 
 fun ProgramRule.toRuleEngineObject(): Rule {
     return Rule.create(
