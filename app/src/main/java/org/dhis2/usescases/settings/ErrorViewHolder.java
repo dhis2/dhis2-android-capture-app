@@ -36,6 +36,10 @@ public class ErrorViewHolder extends RecyclerView.ViewHolder {
         binding.errorDate.setText(DateUtils.dateTimeFormat().format(errorMessageModel.getCreationDate()));
         binding.errorMessage.setText(errorMessageModel.getErrorDescription());
         binding.errorComponent.setText(errorMessageModel.getErrorComponent());
-        binding.selected.setOnCheckedChangeListener((buttonView, isChecked) -> processor.onNext(Pair.create(isChecked, errorMessageModel)));
+        binding.selected.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            errorMessageModel.setSelected(isChecked);
+            processor.onNext(Pair.create(isChecked, errorMessageModel));
+        });
+        binding.selected.setChecked(errorMessageModel.isSelected());
     }
 }
