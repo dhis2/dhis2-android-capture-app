@@ -1,0 +1,36 @@
+{
+  "responseType": "ImportSummary",
+  "status": "SUCCESS",
+  "importOptions": {
+    "idSchemes": {},
+    "dryRun": false,
+    "async": false,
+    "importStrategy": "CREATE_AND_UPDATE",
+    "mergeMode": "REPLACE",
+    "reportMode": "FULL",
+    "skipExistingCheck": false,
+    "sharing": false,
+    "skipNotifications": false,
+    "skipAudit": false,
+    "datasetAllowsPeriods": false,
+    "strictPeriods": false,
+    "strictDataElements": false,
+    "strictCategoryOptionCombos": false,
+    "strictAttributeOptionCombos": false,
+    "strictOrganisationUnits": false,
+    "requireCategoryOptionCombo": false,
+    "requireAttributeOptionCombo": false,
+    "skipPatternValidation": false,
+    "ignoreEmptyCollection": false,
+    "force": false,
+    "firstRowIsHeader": true,
+    "skipLastUpdated": false
+  },
+  "description": "Import process complete.",
+  "importCount": {
+    "imported": 1,
+    "updated": 0,
+    "ignored": 0,
+    "deleted": 0
+  }
+}

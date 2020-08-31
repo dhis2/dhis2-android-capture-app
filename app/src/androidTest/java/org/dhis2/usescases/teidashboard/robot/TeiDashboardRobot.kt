@@ -78,6 +78,26 @@ class TeiDashboardRobot : BaseRobot() {
             .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, click()))
     }
 
+    fun clickOnEventWith(eventName: String, eventStatus:Int){
+        onView(withId(R.id.tei_recycler))
+            .perform(actionOnItem<DashboardProgramViewHolder>(allOf(hasDescendant(withText(eventName)), hasDescendant(
+                withText(eventStatus))), click()))
+    }
+
+    fun clickOnEventWith(eventName: String, eventStatus: Int, date: String){
+        onView(withId(R.id.tei_recycler))
+            .perform(actionOnItem<DashboardProgramViewHolder>(allOf(
+                hasDescendant(withText(eventName)),
+                hasDescendant(withText(eventStatus)),
+                hasDescendant(withText(date))),
+                click()))
+    }
+
+    fun clickOnGroupEventByName(name: String){
+        onView(withId(R.id.tei_recycler))
+            .perform(actionOnItem<DashboardProgramViewHolder>(hasDescendant(withText(name)), click()))
+    }
+
     fun clickOnFab() {
         onView(withId(R.id.fab)).perform(click())
     }
@@ -325,5 +345,10 @@ class TeiDashboardRobot : BaseRobot() {
                 hasItem(allOf(hasDescendant(withText(secondProgramStage.name)), hasDescendant(withText(secondProgramStage.events)))),
                 hasItem(allOf(hasDescendant(withText(thirdProgramStage.name)), hasDescendant(withText(thirdProgramStage.events))))
             )))
+    }
+
+    companion object {
+        const val OPEN_EVENT_STATUS = R.string.event_open
+        const val OVERDUE_EVENT_STATUS = R.string.event_overdue
     }
 }

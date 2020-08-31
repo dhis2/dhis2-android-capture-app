@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiFlow
+package org.dhis2.usescases.flow.teiFlow
 
 import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -6,9 +6,9 @@ import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import org.dhis2.usescases.teiFlow.entity.DateRegistrationUIModel
-import org.dhis2.usescases.teiFlow.entity.EnrollmentListUIModel
-import org.dhis2.usescases.teiFlow.entity.RegisterTEIUIModel
+import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
+import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
+import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
