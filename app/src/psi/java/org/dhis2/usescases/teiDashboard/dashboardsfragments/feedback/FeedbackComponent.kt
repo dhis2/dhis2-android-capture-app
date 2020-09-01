@@ -7,4 +7,6 @@ import org.dhis2.data.dagger.PerFragment
 @Subcomponent(modules = [FeedbackModule::class])
 interface FeedbackComponent {
     fun inject(feedbackFragment: FeedbackFragment)
+    fun inject(feedbackFragment: FeedbackContentFragment) {
+    }
 }

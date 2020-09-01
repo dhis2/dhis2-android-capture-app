@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -9,10 +10,31 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:paddingTop="48dp">
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/failed_check_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:layoutDirection="rtl"
+            android:text="@string/feedback_show_only_failed"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/feedback_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@+id/failed_check_box"
+            tools:listitem="@layout/item_feedback" />
 
         <TextView
-            android:id="@+id/empty_feedback"
+            android:id="@+id/msg_feedback"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -27,7 +49,7 @@
             android:id="@+id/spinner"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            app:layout_constraintBottom_toTopOf="@id/empty_feedback"
+            app:layout_constraintBottom_toTopOf="@id/msg_feedback"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:progressColor="@{@color/colorPrimary}"

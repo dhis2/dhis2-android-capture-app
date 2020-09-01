@@ -11,10 +11,16 @@ class FeedbackModule() {
 
     @Provides
     @PerFragment
-    fun providesPresenter(
+    fun providesFeedbackPresenter(
         feedbackProgramRepository: FeedbackProgramRepository
     ): FeedbackPresenter {
         return FeedbackPresenter(feedbackProgramRepository)
+    }
+
+    @Provides
+    @PerFragment
+    fun providesFeedbackContentPresenter(): FeedbackContentPresenter {
+        return FeedbackContentPresenter()
     }
 
     @Provides

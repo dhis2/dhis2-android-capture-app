@@ -5,32 +5,35 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
+import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.databinding.FragmentFeedbackContentBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
+import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import tellh.com.recyclertreeview_lib.TreeNode
+import tellh.com.recyclertreeview_lib.TreeViewAdapter
+import tellh.com.recyclertreeview_lib.TreeViewAdapter.OnTreeNodeListener
+import javax.inject.Inject
 
-class FeedbackContentFragment : FragmentGlobalAbstract() {
+class FeedbackContentFragment : FragmentGlobalAbstract(),
+    FeedbackContentPresenter.FeedbackContentView {
 
-/*    @Inject
-    lateinit var presenter: IndicatorsPresenter*/
-
+    @Inject
+    lateinit var presenter: FeedbackContentPresenter
     private lateinit var binding: FragmentFeedbackContentBinding
-    //private lateinit var adapter: IndicatorsAdapter
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-/*        val activity = context as TeiDashboardMobileActivity
+
         if (((context.applicationContext) as App).dashboardComponent() != null) {
             ((context.applicationContext) as App).dashboardComponent()!!
-                .plus(
-                    IndicatorsModule(
-                        activity.programUid,
-                        activity.teiUid, this
-                    )
-                )
+                .plus(FeedbackModule())
                 .inject(this)
-        }*/
+        }
     }
 
     override fun onCreateView(
@@ -43,48 +46,90 @@ class FeedbackContentFragment : FragmentGlobalAbstract() {
             R.layout.fragment_feedback_content, container, false
         )
 
-        val programType  = arguments?.getSerializable(PROGRAM_TYPE) as ProgramType
+/*        val programType  = arguments?.getSerializable(PROGRAM_TYPE) as ProgramType
 
         if (programType == ProgramType.RDQA){
             binding.emptyFeedback.text = (arguments?.getSerializable(RDQA_FILTER) as RdqaFeedbackFilter).name
         } else {
             binding.emptyFeedback.text = (arguments?.getSerializable(HNQIS_FILTER) as HnqisFeedbackFilter).name
-        }
+        }*/
 
-        //adapter = IndicatorsAdapter()
-        //binding.indicatorsRecycler.adapter = adapter
+        binding.feedbackRecyclerView.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                DividerItemDecoration.VERTICAL
+            )
+        )
+
         return binding.root
     }
 
     override fun onResume() {
+        val activity = context as TeiDashboardMobileActivity
+        presenter.attach(this, activity.programUid)
         super.onResume()
-        //binding.spinner.visibility = View.VISIBLE
-        //presenter.init()
     }
 
     override fun onPause() {
-        //presenter.onDettach()
+        presenter.detach()
         super.onPause()
     }
 
-/*    override fun swapIndicators(indicators: List<Trio<ProgramIndicator, String, String>>) {
-        if (adapter != null) {
-            adapter.setIndicators(indicators)
+    override fun render(state: FeedbackContentState) {
+        return when (state) {
+            is FeedbackContentState.Loading -> renderLoading()
+            is FeedbackContentState.Loaded -> renderLoaded(state.feedback)
+            is FeedbackContentState.UnexpectedError -> renderError(getString(R.string.unexpected_error_message))
         }
+    }
 
+    private fun renderLoading() {
+        binding.spinner.visibility = View.VISIBLE
+        binding.msgFeedback.visibility = View.GONE
+    }
+
+    private fun renderError(text: String) {
+        binding.spinner.visibility = View.GONE
+        binding.msgFeedback.visibility = View.VISIBLE
+        binding.msgFeedback.text = text
+    }
+
+    private fun renderLoaded(nodes: List<TreeNode<*>>) {
+        binding.msgFeedback.visibility = View.GONE
         binding.spinner.visibility = View.GONE
 
-        if (!indicators.isNullOrEmpty()) {
-            binding.emptyIndicators.visibility = View.GONE
-        } else {
-            binding.emptyIndicators.visibility = View.VISIBLE
-        }
-    }*/
+        setFeedbackAdapter(nodes)
+    }
+
+    private fun setFeedbackAdapter(nodes: List<TreeNode<*>>) {
+        val adapter =
+            TreeViewAdapter(nodes, listOf(FeedbackItemNodeBinder(), FeedbackHelpItemNodeBinder()))
+        binding.feedbackRecyclerView.adapter = adapter
+
+        adapter.setOnTreeNodeListener(object : OnTreeNodeListener {
+            override fun onClick(node: TreeNode<*>, holder: RecyclerView.ViewHolder): Boolean {
+                if (!node.isLeaf) {
+                    //Update and toggle the node.
+                    onToggle(!node.isExpand, holder)
+                }
+                return false
+            }
+
+            override fun onToggle(isExpand: Boolean, holder: RecyclerView.ViewHolder) {
+                val dirViewHolder: FeedbackItemNodeBinder.ViewHolder =
+                    holder as FeedbackItemNodeBinder.ViewHolder
+                val arrow: ImageView = dirViewHolder.arrow
+                val rotateDegree = if (isExpand) 180 else -180
+                arrow.animate().rotationBy(rotateDegree.toFloat())
+                    .start()
+            }
+        })
+    }
 
     companion object {
-        private const val PROGRAM_TYPE  = "program_type"
-        private const val RDQA_FILTER  = "rdqa_filter"
-        private const val HNQIS_FILTER  = "hnqis_filter"
+        private const val PROGRAM_TYPE = "program_type"
+        private const val RDQA_FILTER = "rdqa_filter"
+        private const val HNQIS_FILTER = "hnqis_filter"
 
         fun newInstanceByRDQA(
             RdqaFeedbackFilter: RdqaFeedbackFilter
