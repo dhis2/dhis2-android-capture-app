@@ -134,15 +134,23 @@ class FeedbackAdapter(private val nodes: List<TreeNode<*>>) :
         fun bindView(node: TreeNode.Leaf<*>) {
             val feedbackHelpItem: FeedbackHelpItem = node.content as FeedbackHelpItem
 
-            val markwon = Markwon.create(itemView.context);
-            markwon.setMarkdown(helpText, feedbackHelpItem.text);
+            val markwon = Markwon.create(itemView.context)
+            markwon.setMarkdown(helpText, feedbackHelpItem.text)
+
+            refreshShowingAll(feedbackHelpItem)
 
             arrow.setOnClickListener {
-                val isExpand = helpText.maxLines == Int.MAX_VALUE
+                feedbackHelpItem.showingAll = !feedbackHelpItem.showingAll
+                refreshShowingAll(feedbackHelpItem)
+            }
+        }
 
-                helpText.maxLines = if (isExpand) 2 else Int.MAX_VALUE
-                val rotateDegree = if (isExpand) 180 else -180
-                arrow.animate().rotationBy(rotateDegree.toFloat()).start()
+        private fun refreshShowingAll(feedbackHelpItem: FeedbackHelpItem) {
+            helpText.maxLines = if (feedbackHelpItem.showingAll) Int.MAX_VALUE else 2
+            if (feedbackHelpItem.showingAll) {
+                arrow.setImageResource(R.drawable.ic_arrow_downward)
+            } else {
+                arrow.setImageResource(R.drawable.ic_arrow_upward)
             }
         }
     }

@@ -8,7 +8,7 @@ data class FeedbackItemValue(val data: String?, val color: String)
 
 data class FeedbackItem(val name: String, val value: FeedbackItemValue? = null)
 
-data class FeedbackHelpItem(val text: String)
+data class FeedbackHelpItem(val text: String, var showingAll: Boolean = false)
 
 sealed class TreeNode<T>(val content: T) {
     var parent: TreeNode<*>? = null
