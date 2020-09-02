@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -7,6 +8,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.core.functional.Either
+import org.dhis2.core.ui.tree.TreeNode
+import timber.log.Timber
 
 sealed class FeedbackContentState {
     object Loading : FeedbackContentState()
@@ -32,7 +35,8 @@ class FeedbackContentPresenter() :
         cancel()
     }
 
-    private fun loadFeedback(uid: String) = launch() {
+    private fun loadFeedback(uid: String) = launch {
+        Timber.d("loadFeedback")
         render(FeedbackContentState.Loading)
 
         val result = withContext(Dispatchers.IO) { getFeedback() }
