@@ -59,9 +59,9 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
         super.onResume()
     }
 
-    override fun onPause() {
+    override fun onDestroy() {
         presenter.detach()
-        super.onPause()
+        super.onDestroy()
     }
 
     override fun render(state: FeedbackContentState) {
