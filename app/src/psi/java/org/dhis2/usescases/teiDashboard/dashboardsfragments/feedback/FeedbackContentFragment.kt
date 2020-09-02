@@ -105,6 +105,7 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
         val adapter =
             TreeViewAdapter(nodes, listOf(FeedbackItemNodeBinder(), FeedbackHelpItemNodeBinder()))
         binding.feedbackRecyclerView.adapter = adapter
+        binding.feedbackRecyclerView.itemAnimator = null
 
         adapter.setOnTreeNodeListener(object : OnTreeNodeListener {
             override fun onClick(node: TreeNode<*>, holder: RecyclerView.ViewHolder): Boolean {
