@@ -5,18 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.databinding.FragmentFeedbackContentBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import tellh.com.recyclertreeview_lib.TreeNode
-import tellh.com.recyclertreeview_lib.TreeViewAdapter
-import tellh.com.recyclertreeview_lib.TreeViewAdapter.OnTreeNodeListener
 import javax.inject.Inject
 
 class FeedbackContentFragment : FragmentGlobalAbstract(),
@@ -45,14 +40,6 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
             inflater,
             R.layout.fragment_feedback_content, container, false
         )
-
-/*        val programType  = arguments?.getSerializable(PROGRAM_TYPE) as ProgramType
-
-        if (programType == ProgramType.RDQA){
-            binding.emptyFeedback.text = (arguments?.getSerializable(RDQA_FILTER) as RdqaFeedbackFilter).name
-        } else {
-            binding.emptyFeedback.text = (arguments?.getSerializable(HNQIS_FILTER) as HnqisFeedbackFilter).name
-        }*/
 
         binding.feedbackRecyclerView.addItemDecoration(
             DividerItemDecoration(
@@ -102,29 +89,8 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
     }
 
     private fun setFeedbackAdapter(nodes: List<TreeNode<*>>) {
-        val adapter =
-            TreeViewAdapter(nodes, listOf(FeedbackItemNodeBinder(), FeedbackHelpItemNodeBinder()))
+        val adapter = FeedbackAdapter(nodes)
         binding.feedbackRecyclerView.adapter = adapter
-        binding.feedbackRecyclerView.itemAnimator = null
-
-        adapter.setOnTreeNodeListener(object : OnTreeNodeListener {
-            override fun onClick(node: TreeNode<*>, holder: RecyclerView.ViewHolder): Boolean {
-                if (!node.isLeaf) {
-                    //Update and toggle the node.
-                    onToggle(!node.isExpand, holder)
-                }
-                return false
-            }
-
-            override fun onToggle(isExpand: Boolean, holder: RecyclerView.ViewHolder) {
-                val dirViewHolder: FeedbackItemNodeBinder.ViewHolder =
-                    holder as FeedbackItemNodeBinder.ViewHolder
-                val arrow: ImageView = dirViewHolder.arrow
-                val rotateDegree = if (isExpand) 180 else -180
-                arrow.animate().rotationBy(rotateDegree.toFloat())
-                    .start()
-            }
-        })
     }
 
     companion object {

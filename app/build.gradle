@@ -274,7 +274,6 @@ dependencies {
     //FLEXBOX
     implementation "com.google.android:flexbox:${libraries.flexbox}"
 
-    implementation "com.github.TellH:RecyclerTreeView:${libraries.recyclerTreeView}"
     implementation "io.noties.markwon:core:${libraries.markwon}"
 
     //PIN LOCK

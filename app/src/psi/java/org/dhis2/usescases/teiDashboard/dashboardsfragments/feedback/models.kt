@@ -1,42 +1,39 @@
 package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 
-import org.dhis2.R
-import tellh.com.recyclertreeview_lib.LayoutItemType
-
 enum class ProgramType { HNQIS, RDQA }
 
 data class FeedbackProgram(val uid: String, val programType: ProgramType)
 
-class FeedbackItemValue(val data: String?, val color: String)
+data class FeedbackItemValue(val data: String?, val color: String)
 
-class FeedbackItem(val name: String, val value: FeedbackItemValue? = null) : LayoutItemType {
-    override fun getLayoutId(): Int {
-        return R.layout.item_feedback
-    }
-}
+data class FeedbackItem(val name: String, val value: FeedbackItemValue? = null)
 
-class FeedbackHelpItem(val text: String) : LayoutItemType {
-    override fun getLayoutId(): Int {
-        return R.layout.item_help_feedback
-    }
-}
+data class FeedbackHelpItem(val text: String)
 
-/*
-class FeedbackNode<T>(value:T){
-    var value:T = value
-    var parent:FeedbackNode<T>? = null
+sealed class TreeNode<T>(val content: T) {
+    var parent: TreeNode<*>? = null
 
-    var children:MutableList<FeedbackNode<T>> = mutableListOf()
-
-    fun addChild(node:FeedbackNode<T>){
-        children.add(node)
-        node.parent = this
-    }
-    override fun toString(): String {
-        var s = "$value"
-        if (children.isNotEmpty()) {
-            s += " {" + children.map { it.toString() } + " }"
+    val level: Int
+        get() {
+            return if (parent == null) {
+                0
+            } else {
+                val numParents = parent!!.level
+                numParents + 1
+            }
         }
-        return s
+
+    class Branch<T>(
+        content: T,
+        val children: List<TreeNode<*>> = listOf(),
+        var expanded: Boolean = false
+    ) : TreeNode<T>(content) {
+        init {
+            children.forEach {
+                it.parent = this
+            }
+        }
     }
-}*/
+
+    class Leaf<T>(content: T) : TreeNode<T>(content)
+}

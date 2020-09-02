@@ -7,8 +7,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.core.functional.Either
-import tellh.com.recyclertreeview_lib.LayoutItemType
-import tellh.com.recyclertreeview_lib.TreeNode
 
 sealed class FeedbackContentState {
     object Loading : FeedbackContentState()
@@ -53,41 +51,48 @@ class FeedbackContentPresenter() :
     private fun getFeedback(): Either<Exception, List<TreeNode<*>>> {
         val feedbackHelpText = "**Quickly plagiarize inexpensive** portals after [bleeding-edge synergy](http://eyeseetea.com). Professionally leverage existing plug-and-play services for cross-media scenarios. Completely customize seamless content through transparent methodologies. Collaboratively reconceptualize vertical processes rather than competitive expertise. Monotonectally reinvent accurate relationships after out-of-the-box data.\nAppropriately pontificate go forward applications via cost effective testing procedures. Appropriately scale installed base best practices whereas distributed imperatives. Synergistically revolutionize adaptive e-markets vis-a-vis cost."
 
-        val nodes: MutableList<TreeNode<*>> = ArrayList()
-        val children = listOf(
-            TreeNode(FeedbackItem("Completeness. Quickly plagiarize inexpensive portals af<ter bleeding-edge synergy.", FeedbackItemValue("Partty","#FFC700"))).addChild(TreeNode(FeedbackHelpItem(feedbackHelpText))),
-            TreeNode(FeedbackItem("Timeliness", FeedbackItemValue("100%","#0CE922"))).addChild(TreeNode(FeedbackHelpItem(feedbackHelpText))),
-            TreeNode(FeedbackItem("Integrity", FeedbackItemValue("No Indication","#0CE922"))).addChild(TreeNode(FeedbackHelpItem(feedbackHelpText))),
-            TreeNode(FeedbackItem("Confidentiality", FeedbackItemValue("Partty","#FFC700"))).addChild(TreeNode(FeedbackHelpItem(feedbackHelpText))),
-            TreeNode(FeedbackItem("Precision", FeedbackItemValue("No - no at all","#BA4E4E"))).addChild(TreeNode(FeedbackHelpItem(feedbackHelpText))),
-            TreeNode(FeedbackItem("Accuracy", FeedbackItemValue("67 %","#BA4E4E"))).addChild(TreeNode(FeedbackHelpItem(feedbackHelpText)))
+        val children1 = listOf(
+            TreeNode.Branch(FeedbackItem("Completeness", FeedbackItemValue("Partty","#FFC700")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Timeliness", FeedbackItemValue("100%","#0CE922")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Integrity", FeedbackItemValue("No Indication","#0CE922")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Confidentiality", FeedbackItemValue("Partty","#FFC700")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Precision", FeedbackItemValue("No - no at all","#BA4E4E")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Accuracy", FeedbackItemValue("67 %","#BA4E4E")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText))))
         )
 
-        val node1 = TreeNode(FeedbackItem("ART New"))
-        children.forEach {
-            node1.addChild(it)
-        }
-        nodes.add(node1)
+        val children2 = listOf(
+            TreeNode.Branch(FeedbackItem("Completeness", FeedbackItemValue("Partty","#FFC700")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Timeliness", FeedbackItemValue("100%","#0CE922")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Integrity", FeedbackItemValue("No Indication","#0CE922")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Confidentiality", FeedbackItemValue("Partty","#FFC700")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Precision", FeedbackItemValue("No - no at all","#BA4E4E")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Accuracy", FeedbackItemValue("67 %","#BA4E4E")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText))))
+        )
 
-        val node2 = TreeNode(FeedbackItem("HTC"))
-        children.forEach {
-            node2.addChild(it)
-        }
-        nodes.add(node2)
+        val children3 = listOf(
+            TreeNode.Branch(FeedbackItem("Completeness", FeedbackItemValue("Partty","#FFC700")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Timeliness", FeedbackItemValue("100%","#0CE922")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Integrity", FeedbackItemValue("No Indication","#0CE922")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Confidentiality", FeedbackItemValue("Partty","#FFC700")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Precision", FeedbackItemValue("No - no at all","#BA4E4E")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Accuracy", FeedbackItemValue("67 %","#BA4E4E")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText))))
+        )
 
-        val node3 = TreeNode(FeedbackItem("HTC Count"))
-        children.forEach {
-            node3.addChild(it)
-        }
-        nodes.add(node3)
+        val children4 = listOf(
+            TreeNode.Branch(FeedbackItem("Completeness", FeedbackItemValue("Partty","#FFC700")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Timeliness", FeedbackItemValue("100%","#0CE922")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Integrity", FeedbackItemValue("No Indication","#0CE922")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Confidentiality", FeedbackItemValue("Partty","#FFC700")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Precision", FeedbackItemValue("No - no at all","#BA4E4E")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
+            TreeNode.Branch(FeedbackItem("Accuracy", FeedbackItemValue("67 %","#BA4E4E")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText))))
+        )
 
-        val node4 = TreeNode(FeedbackItem("HIVST Stock Count"))
-        children.forEach {
-            node4.addChild(it)
-        }
-        nodes.add(node4)
+        val node1 = TreeNode.Branch(FeedbackItem("ART New"),children1)
+        val node2 = TreeNode.Branch(FeedbackItem("HTC"),children2)
+        val node3 = TreeNode.Branch(FeedbackItem("HTC Count"),children3)
+        val node4 = TreeNode.Branch(FeedbackItem("HIVST Stock Count"),children4)
 
-        return Either.Right(nodes)
+        return Either.Right(listOf(node1,node2,node3,node4))
     }
 
     private fun handleFailure() {
