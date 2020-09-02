@@ -485,7 +485,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void onClearClick() {
         queryData.clear();
-        setProgram(selectedProgram);
+        view.setFabIcon(true);
+        currentProgram.onNext(selectedProgram.uid());
+        queryProcessor.onNext(new HashMap<>());
     }
 
 
