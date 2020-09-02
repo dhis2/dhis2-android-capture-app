@@ -239,11 +239,13 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                             fieldMap.get(fieldSection).add(fieldViewModel);
 
                                                             if (!(fieldViewModel instanceof DisplayViewModel)) {
-                                                                if (fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)) {
-                                                                    totalFields++;
-                                                                } else if (!optionSets.contains(fieldViewModel.optionSet())) {
-                                                                    optionSets.add(fieldViewModel.optionSet());
-                                                                    totalFields++;
+                                                                if (!sectionsToHide.contains(fieldViewModel.programStageSection())) {
+                                                                    if (fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)) {
+                                                                        totalFields++;
+                                                                    } else if (!optionSets.contains(fieldViewModel.optionSet())) {
+                                                                        optionSets.add(fieldViewModel.optionSet());
+                                                                        totalFields++;
+                                                                    }
                                                                 }
                                                             }
                                                             if (fieldViewModel instanceof UnsupportedViewModel)
