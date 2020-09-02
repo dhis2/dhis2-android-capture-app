@@ -9,6 +9,6 @@ import dagger.Subcomponent;
 
 @PerActivity
 @Subcomponent(modules = TeiDashboardModule.class)
-public interface TeiDashboardComponentFlavor extends TeiDashboardComponent{
+public interface TeiDashboardComponentFlavor extends TeiDashboardComponent {
     @NotNull FeedbackComponent plus(FeedbackModule feedbackModule);
 }

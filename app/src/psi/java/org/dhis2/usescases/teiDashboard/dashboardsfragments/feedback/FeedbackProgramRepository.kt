@@ -18,7 +18,7 @@ class D2FeedbackProgramRepository(private val d2: D2) : FeedbackProgramRepositor
         return try {
             val programTypeText = getProgramTypeAttValue(uid)
 
-            if (programTypeText.isNotBlank()){
+            if (programTypeText.isNotBlank()) {
                 Either.Right(
                     FeedbackProgram(
                         uid,

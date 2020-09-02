@@ -9,7 +9,7 @@ import org.dhis2.R
 import org.dhis2.core.ui.tree.TreeAdapterBinder
 import org.dhis2.core.ui.tree.TreeNode
 
-class FeedbackHelpItemBinder : TreeAdapterBinder (FeedbackHelpItem::class.java){
+class FeedbackHelpItemBinder : TreeAdapterBinder(FeedbackHelpItem::class.java) {
     override val layoutId: Int
         get() = R.layout.item_help_feedback
 

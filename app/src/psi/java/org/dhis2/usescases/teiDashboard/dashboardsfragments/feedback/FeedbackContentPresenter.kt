@@ -53,50 +53,139 @@ class FeedbackContentPresenter() :
     }
 
     private fun getFeedback(): Either<Exception, List<TreeNode<*>>> {
-        val feedbackHelpText = "**Quickly plagiarize inexpensive** portals after [bleeding-edge synergy](http://eyeseetea.com). Professionally leverage existing plug-and-play services for cross-media scenarios. Completely customize seamless content through transparent methodologies. Collaboratively reconceptualize vertical processes rather than competitive expertise. Monotonectally reinvent accurate relationships after out-of-the-box data.\nAppropriately pontificate go forward applications via cost effective testing procedures. Appropriately scale installed base best practices whereas distributed imperatives. Synergistically revolutionize adaptive e-markets vis-a-vis cost."
+        val feedbackHelpText =
+            "**Quickly plagiarize inexpensive** portals after [bleeding-edge synergy](http://eyeseetea.com). Professionally leverage existing plug-and-play services for cross-media scenarios. Completely customize seamless content through transparent methodologies. Collaboratively reconceptualize vertical processes rather than competitive expertise. Monotonectally reinvent accurate relationships after out-of-the-box data.\nAppropriately pontificate go forward applications via cost effective testing procedures. Appropriately scale installed base best practices whereas distributed imperatives. Synergistically revolutionize adaptive e-markets vis-a-vis cost."
 
         val children1 = listOf(
-            TreeNode.Branch(FeedbackItem("Completeness", FeedbackItemValue("Partty","#FFC700")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Timeliness", FeedbackItemValue("100%","#0CE922")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Integrity", FeedbackItemValue("No Indication","#0CE922")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Confidentiality", FeedbackItemValue("Partty","#FFC700")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Precision", FeedbackItemValue("No - no at all","#BA4E4E")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Accuracy", FeedbackItemValue("67 %","#BA4E4E")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText))))
+            TreeNode.Branch(
+                FeedbackItem("Completeness", FeedbackItemValue("Partty", "#FFC700")),
+                listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem("Timeliness", FeedbackItemValue("100%", "#0CE922")),
+                listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem(
+                    "Integrity",
+                    FeedbackItemValue("No Indication", "#0CE922")
+                ), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem("Confidentiality", FeedbackItemValue("Partty", "#FFC700")),
+                listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem(
+                    "Precision",
+                    FeedbackItemValue("No - no at all", "#BA4E4E")
+                ), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem("Accuracy", FeedbackItemValue("67 %", "#BA4E4E")),
+                listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            )
         )
 
         val children2 = listOf(
-            TreeNode.Branch(FeedbackItem("Completeness", FeedbackItemValue("Partty","#FFC700")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Timeliness", FeedbackItemValue("100%","#0CE922")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Integrity", FeedbackItemValue("No Indication","#0CE922")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Confidentiality", FeedbackItemValue("Partty","#FFC700")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Precision", FeedbackItemValue("No - no at all","#BA4E4E")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Accuracy", FeedbackItemValue("67 %","#BA4E4E")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText))))
+            TreeNode.Branch(
+                FeedbackItem("Completeness", FeedbackItemValue("Partty", "#FFC700")),
+                listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem("Timeliness", FeedbackItemValue("100%", "#0CE922")),
+                listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem(
+                    "Integrity",
+                    FeedbackItemValue("No Indication", "#0CE922")
+                ), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem("Confidentiality", FeedbackItemValue("Partty", "#FFC700")),
+                listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem(
+                    "Precision",
+                    FeedbackItemValue("No - no at all", "#BA4E4E")
+                ), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem("Accuracy", FeedbackItemValue("67 %", "#BA4E4E")),
+                listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            )
         )
 
         val children3 = listOf(
-            TreeNode.Branch(FeedbackItem("Completeness", FeedbackItemValue("Partty","#FFC700")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Timeliness", FeedbackItemValue("100%","#0CE922")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Integrity", FeedbackItemValue("No Indication","#0CE922")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Confidentiality", FeedbackItemValue("Partty","#FFC700")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Precision", FeedbackItemValue("No - no at all","#BA4E4E")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Accuracy", FeedbackItemValue("67 %","#BA4E4E")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText))))
+            TreeNode.Branch(
+                FeedbackItem("Completeness", FeedbackItemValue("Partty", "#FFC700")),
+                listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem("Timeliness", FeedbackItemValue("100%", "#0CE922")),
+                listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem(
+                    "Integrity",
+                    FeedbackItemValue("No Indication", "#0CE922")
+                ), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem("Confidentiality", FeedbackItemValue("Partty", "#FFC700")),
+                listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem(
+                    "Precision",
+                    FeedbackItemValue("No - no at all", "#BA4E4E")
+                ), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem("Accuracy", FeedbackItemValue("67 %", "#BA4E4E")),
+                listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            )
         )
 
         val children4 = listOf(
-            TreeNode.Branch(FeedbackItem("Completeness", FeedbackItemValue("Partty","#FFC700")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Timeliness", FeedbackItemValue("100%","#0CE922")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Integrity", FeedbackItemValue("No Indication","#0CE922")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Confidentiality", FeedbackItemValue("Partty","#FFC700")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Precision", FeedbackItemValue("No - no at all","#BA4E4E")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))),
-            TreeNode.Branch(FeedbackItem("Accuracy", FeedbackItemValue("67 %","#BA4E4E")), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText))))
+            TreeNode.Branch(
+                FeedbackItem("Completeness", FeedbackItemValue("Partty", "#FFC700")),
+                listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem("Timeliness", FeedbackItemValue("100%", "#0CE922")),
+                listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem(
+                    "Integrity",
+                    FeedbackItemValue("No Indication", "#0CE922")
+                ), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem("Confidentiality", FeedbackItemValue("Partty", "#FFC700")),
+                listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem(
+                    "Precision",
+                    FeedbackItemValue("No - no at all", "#BA4E4E")
+                ), listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            ),
+            TreeNode.Branch(
+                FeedbackItem("Accuracy", FeedbackItemValue("67 %", "#BA4E4E")),
+                listOf(TreeNode.Leaf(FeedbackHelpItem(feedbackHelpText)))
+            )
         )
 
-        val node1 = TreeNode.Branch(FeedbackItem("ART New"),children1)
-        val node2 = TreeNode.Branch(FeedbackItem("HTC"),children2)
-        val node3 = TreeNode.Branch(FeedbackItem("HTC Count"),children3)
-        val node4 = TreeNode.Branch(FeedbackItem("HIVST Stock Count"),children4)
+        val node1 = TreeNode.Branch(FeedbackItem("ART New"), children1)
+        val node2 = TreeNode.Branch(FeedbackItem("HTC"), children2)
+        val node3 = TreeNode.Branch(FeedbackItem("HTC Count"), children3)
+        val node4 = TreeNode.Branch(FeedbackItem("HIVST Stock Count"), children4)
 
-        return Either.Right(listOf(node1,node2,node3,node4))
+        return Either.Right(listOf(node1, node2, node3, node4))
     }
 
     private fun handleFailure() {
