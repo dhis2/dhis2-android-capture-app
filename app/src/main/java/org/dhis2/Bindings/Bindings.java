@@ -214,7 +214,7 @@ public class Bindings {
                     drawableResource = enrollmentStatus == EnrollmentStatus.ACTIVE ? R.drawable.ic_event_status_skipped : R.drawable.ic_event_status_skipped_read;
                     break;
                 case SCHEDULE:
-                    drawableResource = enrollmentStatus == EnrollmentStatus.ACTIVE ? R.drawable.ic_event_status_open : R.drawable.ic_event_status_open_read;
+                    drawableResource = enrollmentStatus == EnrollmentStatus.ACTIVE ? R.drawable.ic_event_status_schedule : R.drawable.ic_event_status_schedule_read;
                     break;
                 default:
                     drawableResource = R.drawable.ic_event_status_open_read;
@@ -227,6 +227,7 @@ public class Bindings {
                             drawableResource
                     )
             );
+            view.setTag(drawableResource);
         }
     }
 
