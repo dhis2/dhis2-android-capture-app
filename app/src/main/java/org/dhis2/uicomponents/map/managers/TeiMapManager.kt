@@ -21,14 +21,13 @@ import org.dhis2.uicomponents.map.layer.MapLayerManager
 import org.dhis2.uicomponents.map.model.MapStyle
 import org.hisp.dhis.android.core.common.FeatureType
 
-class TeiMapManager(
-    private val mapStyle: MapStyle
-) : MapManager() {
+class TeiMapManager : MapManager() {
 
     private lateinit var carouselAdapter: CarouselAdapter
     private lateinit var boundingBox: BoundingBox
     private lateinit var teiFeatureCollections: HashMap<String, FeatureCollection>
     private lateinit var eventsFeatureCollection: Map<String, FeatureCollection>
+    var mapStyle: MapStyle? = null
 
     companion object {
         const val TEIS_SOURCE_ID = "TEIS_SOURCE_ID"
@@ -58,13 +57,13 @@ class TeiMapManager(
 
     override fun loadDataForStyle() {
         style?.apply {
-            mapStyle.teiSymbolIcon?.let {
+            mapStyle?.teiSymbolIcon?.let {
                 addImage(
                     MapLayerManager.TEI_ICON_ID,
                     TeiMarkers.getMarker(
                         mapView.context,
                         it,
-                        mapStyle.teiColor
+                        mapStyle!!.teiColor
                     )
                 )
                 addImage(
@@ -72,27 +71,27 @@ class TeiMapManager(
                     TeiMarkers.getMarker(
                         mapView.context,
                         it,
-                        mapStyle.teiColor
+                        mapStyle!!.teiColor
                     )
                 )
             }
-            mapStyle.enrollmentSymbolIcon?.let {
+            mapStyle?.enrollmentSymbolIcon?.let {
                 addImage(
                     MapLayerManager.ENROLLMENT_ICON_ID,
                     TeiMarkers.getMarker(
                         mapView.context,
                         it,
-                        mapStyle.enrollmentColor
+                        mapStyle!!.enrollmentColor
                     )
                 )
             }
-            mapStyle.stagesStyle.keys.forEach { key ->
+            mapStyle?.stagesStyle?.keys?.forEach { key ->
                 addImage(
                     "${MapLayerManager.STAGE_ICON_ID}_$key",
                     TeiMarkers.getMarker(
                         mapView.context,
-                        mapStyle.stagesStyle[key]!!.stageIcon,
-                        mapStyle.stagesStyle[key]!!.stageColor
+                        mapStyle!!.stagesStyle[key]!!.stageIcon,
+                        mapStyle!!.stagesStyle[key]!!.stageColor
                     )
                 )
             }

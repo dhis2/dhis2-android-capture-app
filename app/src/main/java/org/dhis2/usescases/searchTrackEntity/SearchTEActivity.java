@@ -235,17 +235,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         filtersAdapter.notifyDataSetChanged();
 
-        presenter.init(tEType);
-
-        teiMapManager = new TeiMapManager(
-                new MapStyle(
-                        presenter.getTEIColor(),
-                        presenter.getSymbolIcon(),
-                        presenter.getEnrollmentColor(),
-                        presenter.getEnrollmentSymbolIcon(),
-                        presenter.getProgramStageStyle(),
-                        ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK)
-                ));
+        teiMapManager = new TeiMapManager();
         teiMapManager.init(binding.mapView);
         teiMapManager.setOnMapClickListener(this);
     }
@@ -268,12 +258,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             }
             animations.endMapLoading(binding.mapCarousel);
             binding.toolbarProgress.hide();
+        }
+        if (initSearchNeeded) {
+            presenter.init(tEType);
         } else {
-            if (initSearchNeeded) {
-                presenter.init(tEType);
-            } else {
-                initSearchNeeded = true;
-            }
+            initSearchNeeded = true;
         }
         if (teiMapManager != null) {
             teiMapManager.onResume();
@@ -603,6 +592,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
             }
         });
+        teiMapManager.setMapStyle(
+                new MapStyle(
+                        presenter.getTEIColor(),
+                        presenter.getSymbolIcon(),
+                        presenter.getEnrollmentColor(),
+                        presenter.getEnrollmentSymbolIcon(),
+                        presenter.getProgramStageStyle(),
+                        ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK)
+                ));
     }
 
     private void updateMapVisibility(Program newProgram) {

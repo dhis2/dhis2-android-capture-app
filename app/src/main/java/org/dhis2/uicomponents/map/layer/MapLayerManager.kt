@@ -52,7 +52,7 @@ class MapLayerManager {
         this.featureType = featureType
     }
 
-    fun withMapStyle(mapStyle: MapStyle) = apply {
+    fun withMapStyle(mapStyle: MapStyle?) = apply {
         this.mapStyle = mapStyle
     }
 
