@@ -58,7 +58,7 @@ class SearchTEPresenterTest {
     }
 
     @Test
-    fun `Should set fabIcon to search if displayFrontPageList and minAttributes is ok`() {
+    fun `Should set fabIcon to search if displayFrontPageList and queryData is empty`() {
         presenter.setProgramForTesting(
             Program.builder()
                 .uid("uid")
@@ -71,6 +71,23 @@ class SearchTEPresenterTest {
 
         verify(view).clearData()
         verify(view).updateFiltersSearch(0)
+        verify(view).setFabIcon(true)
+    }
+
+    @Test
+    fun `Should set fabIcon to search if displayFrontPageList and minAttributes is ok`() {
+        presenter.setProgramForTesting(
+            Program.builder()
+                .uid("uid")
+                .displayFrontPageList(true)
+                .minAttributesRequiredToSearch(1)
+                .build()
+        )
+        presenter.queryData["uid"] = "value"
+        presenter.onFabClick(true)
+
+        verify(view).clearData()
+        verify(view).updateFiltersSearch(1)
         verify(view).setFabIcon(false)
     }
 
@@ -83,11 +100,11 @@ class SearchTEPresenterTest {
                 .minAttributesRequiredToSearch(0)
                 .build()
         )
-
+        presenter.queryData["uid"] = "value"
         presenter.onFabClick(true)
 
         verify(view).clearData()
-        verify(view).updateFiltersSearch(0)
+        verify(view).updateFiltersSearch(1)
         verify(view).setFabIcon(false)
     }
 

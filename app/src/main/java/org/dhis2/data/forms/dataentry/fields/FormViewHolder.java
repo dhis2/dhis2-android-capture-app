@@ -94,4 +94,9 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
             currentUid.setValue(fieldUid);
         }
     }
+
+    public void clearCurrentSelection(){
+        selectedFieldUid = "";
+        currentUid.setValue("");
+    }
 }

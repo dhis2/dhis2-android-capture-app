@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiFlow.entity
+package org.dhis2.usescases.flow.teiFlow.entity
 
 data class DateRegistrationUIModel(
     val year: Int,

@@ -42,9 +42,10 @@ public class OptionSetPopUp extends PopupMenu {
         this.optionGroupsToShow = model.getOptionGroupsToShow() != null ? model.getOptionGroupsToShow() : new ArrayList<>();
         setOnDismissListener(menu -> dismiss());
         setOnMenuItemClickListener(item -> {
+            dismiss();
             Option selectedOption = optionsMap.get(item.getTitle().toString());
             optionSetView.onSelectOption(selectedOption);
-            return false;
+            return true;
         });
         disposable = new CompositeDisposable();
 

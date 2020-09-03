@@ -110,6 +110,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     private DashboardProgramModel dashboardModel;
     private TeiDashboardMobileActivity activity;
     private FiltersAdapter filtersAdapter;
+    private PopupMenu popupMenu;
 
     public static TEIDataFragment newInstance(String programUid, String teiUid, String enrollmentUid) {
         TEIDataFragment fragment = new TEIDataFragment();
@@ -521,8 +522,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void showNewEventOptions(View anchor, ProgramStage stage) {
-        PopupMenu popupMenu = new PopupMenu(context, anchor);
+        popupMenu = new PopupMenu(context, anchor);
         popupMenu.inflate(R.menu.dashboard_event_creation);
+
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.schedulenew:
@@ -539,6 +541,11 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         });
         popupMenu.show();
 
+    }
+
+    @Override
+    public void hideDueDate(){
+        popupMenu.getMenu().findItem(R.id.schedulenew).setVisible(false);
     }
 
     private void goToEventInitial(EventCreationType eventCreationType, ProgramStage programStage) {

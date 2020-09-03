@@ -62,7 +62,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_SHARE;
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
  */
-class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
+public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     private final D2 d2;
     private final DashboardRepository dashboardRepository;
@@ -433,6 +433,9 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     @Override
     public void onAddNewEvent(@NonNull View anchor, @NonNull ProgramStage stage) {
         view.showNewEventOptions(anchor, stage);
+        if (stage.hideDueDate() != null && stage.hideDueDate()){
+            view.hideDueDate();
+        }
     }
 
     @Override

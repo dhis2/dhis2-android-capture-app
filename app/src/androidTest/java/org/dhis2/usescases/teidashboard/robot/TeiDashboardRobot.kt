@@ -3,6 +3,7 @@ package org.dhis2.usescases.teidashboard.robot
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.hasSibling
@@ -13,9 +14,11 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
+import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
 import org.dhis2.common.matchers.clickOnTab
 import org.dhis2.common.matchers.isToast
+import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
@@ -73,6 +76,26 @@ class TeiDashboardRobot : BaseRobot() {
     fun clickOnEventWithPosition(position: Int) {
         onView(withId(R.id.tei_recycler))
             .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, click()))
+    }
+
+    fun clickOnEventWith(eventName: String, eventStatus:Int){
+        onView(withId(R.id.tei_recycler))
+            .perform(actionOnItem<DashboardProgramViewHolder>(allOf(hasDescendant(withText(eventName)), hasDescendant(
+                withText(eventStatus))), click()))
+    }
+
+    fun clickOnEventWith(eventName: String, eventStatus: Int, date: String){
+        onView(withId(R.id.tei_recycler))
+            .perform(actionOnItem<DashboardProgramViewHolder>(allOf(
+                hasDescendant(withText(eventName)),
+                hasDescendant(withText(eventStatus)),
+                hasDescendant(withText(date))),
+                click()))
+    }
+
+    fun clickOnGroupEventByName(name: String){
+        onView(withId(R.id.tei_recycler))
+            .perform(actionOnItem<DashboardProgramViewHolder>(hasDescendant(withText(name)), click()))
     }
 
     fun clickOnFab() {
@@ -299,5 +322,33 @@ class TeiDashboardRobot : BaseRobot() {
             checkEventIsClosed(event)
             event++
         }
+    }
+
+    fun clickOnStageGroup(programStageName: String) {
+        onView(withId(R.id.tei_recycler))
+            .perform(actionOnItem<DashboardProgramViewHolder>(hasDescendant(withText(programStageName)), click()))
+    }
+
+    fun clickOnEventGroupByStage(eventName: String) {
+        onView(withId(R.id.tei_recycler))
+            .perform(actionOnItem<DashboardProgramViewHolder>(hasDescendant(allOf(withText(eventName), withId(R.id.event_name))), click()))
+    }
+
+    fun checkEventWasDeletedStageGroup(teiProgramStages: TEIProgramStagesUIModel) {
+        val firstProgramStage = teiProgramStages.programStage_first
+        val secondProgramStage = teiProgramStages.programStage_second
+        val thirdProgramStage = teiProgramStages.programStage_third
+
+        onView(withId(R.id.tei_recycler))
+            .check(matches(allOf(
+                hasItem(allOf(hasDescendant(withText(firstProgramStage.name)), hasDescendant(withText(firstProgramStage.events)))),
+                hasItem(allOf(hasDescendant(withText(secondProgramStage.name)), hasDescendant(withText(secondProgramStage.events)))),
+                hasItem(allOf(hasDescendant(withText(thirdProgramStage.name)), hasDescendant(withText(thirdProgramStage.events))))
+            )))
+    }
+
+    companion object {
+        const val OPEN_EVENT_STATUS = R.string.event_open
+        const val OVERDUE_EVENT_STATUS = R.string.event_overdue
     }
 }
