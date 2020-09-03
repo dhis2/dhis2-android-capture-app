@@ -11,7 +11,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.clickChildViewWithId
-import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewHolder
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.hamcrest.Matchers.allOf
 
 fun eventWithoutRegistrationRobot(eventWithoutRegistrationRobot: EventWithoutRegistrationRobot.() -> Unit) {
@@ -24,10 +24,10 @@ class EventWithoutRegistrationRobot : BaseRobot() {
 
     fun clickOnEvent() {
         onView(withId(R.id.recycler)).perform(
-            scrollTo<ProgramEventDetailViewHolder>(
+            scrollTo<EventViewHolder>(
                 allOf(hasDescendant(withText("teiName")), hasDescendant(withText("teiLastName")))
             ),
-            actionOnItem<ProgramEventDetailViewHolder>(
+            actionOnItem<EventViewHolder>(
                 allOf(hasDescendant(withText("teiName")), hasDescendant(withText("teiLastName"))), clickChildViewWithId(R.id.status_icon)
             )
         )
@@ -35,7 +35,7 @@ class EventWithoutRegistrationRobot : BaseRobot() {
 
     fun clickOnEventAtPosition(position: Int) {
         onView(withId(R.id.recycler))
-            .perform(actionOnItemAtPosition<ProgramEventDetailViewHolder>(position, click()))
+            .perform(actionOnItemAtPosition<EventViewHolder>(position, click()))
     }
 
     fun clickOnSaveFab() {

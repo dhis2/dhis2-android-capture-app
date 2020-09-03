@@ -133,7 +133,7 @@ class TeiDashboardRobot : BaseRobot() {
         onView(withId(R.id.tei_recycler))
             .check(matches(allOf(isDisplayed(), isNotEmpty(),
                 atPosition(0, hasDescendant(
-                    hasSibling(allOf(withId(R.id.event_name), withText(eventName))))))))
+                    hasSibling(allOf(withId(R.id.programStageName), withText(eventName))))))))
     }
 
     fun clickOnMenuDeactivate() {
@@ -331,7 +331,7 @@ class TeiDashboardRobot : BaseRobot() {
 
     fun clickOnEventGroupByStage(eventName: String) {
         onView(withId(R.id.tei_recycler))
-            .perform(actionOnItem<DashboardProgramViewHolder>(hasDescendant(allOf(withText(eventName), withId(R.id.event_name))), click()))
+            .perform(actionOnItem<DashboardProgramViewHolder>(hasDescendant(allOf(withText(eventName), withId(R.id.programStageName))), click()))
     }
 
     fun checkEventWasDeletedStageGroup(teiProgramStages: TEIProgramStagesUIModel) {
