@@ -45,6 +45,48 @@ class SearchSortingValueSetterTest {
     }
 
     @Test
+    fun `Sorting by event date should return correct key value for online result`() {
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq("")
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq("")
+                .byDeleted()
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq("")
+                .byDeleted().isFalse
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq("")
+                .byDeleted().isFalse
+                .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq("")
+                .byDeleted().isFalse
+                .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
+                .blockingGet()
+        ) doReturn emptyList()
+
+        val result = searchSortingValueSetter.setSortingItem(
+            onlineSearchTeiModel(),
+            SortingItem(Filters.PERIOD, SortingStatus.ASC)
+        )
+
+        result.apply {
+            assertTrue(this != null)
+            assertTrue(this?.first == "eventLabel")
+            assertTrue(this?.second == "-")
+        }
+    }
+
+    @Test
     fun `Sorting by event date should return correct key value`() {
         whenever(
             d2.eventModule().events()
@@ -395,6 +437,15 @@ class SearchSortingValueSetterTest {
                     .enrollmentDate(Date.from(Instant.parse("2020-01-01T00:00:00.00Z")))
                     .build()
             )
+            tei = TrackedEntityInstance.builder()
+                .uid("teiUid")
+                .organisationUnit("teiOrgUnit")
+                .build()
+        }
+    }
+
+    private fun onlineSearchTeiModel(): SearchTeiModel {
+        return SearchTeiModel().apply {
             tei = TrackedEntityInstance.builder()
                 .uid("teiUid")
                 .organisationUnit("teiOrgUnit")
