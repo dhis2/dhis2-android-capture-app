@@ -11,6 +11,7 @@ import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.BitmapUtils
+import org.dhis2.Bindings.dp
 import java.util.ArrayList
 import java.util.HashMap
 import org.dhis2.R
@@ -167,7 +168,7 @@ class TeiMapManager(
                     .asBitmap()
                     .load(it.getStringProperty(TEI_IMAGE))
                     .transform(CircleCrop())
-                    .into(object : CustomTarget<Bitmap>(50, 50) {
+                    .into(object : CustomTarget<Bitmap>(23.dp, 23.dp) {
                         override fun onResourceReady(
                             resource: Bitmap,
                             transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
