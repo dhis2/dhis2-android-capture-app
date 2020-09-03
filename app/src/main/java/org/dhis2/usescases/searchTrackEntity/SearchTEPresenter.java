@@ -228,7 +228,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .doOnEach(element -> {Timber.d("outer updaterFlowable before %s", element.getValue());})
                 .switchMap(program ->
                                 Flowable.combineLatest(queryProcessor.startWith(queryData),
-                                        FilterManager.getInstance().asFlowable(),
+                                        FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
                                         Pair::create).doOnEach(element -> {Timber.d("inner %s", element.getValue());})
 
                 )
