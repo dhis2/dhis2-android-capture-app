@@ -26,12 +26,16 @@ class FeedbackFragment : FragmentGlobalAbstract(), FeedbackPresenter.FeedbackVie
     private lateinit var binding: FragmentFeedbackBinding
     private lateinit var adapter: FeedbackPagerAdapter
 
+    private lateinit var activity: TeiDashboardMobileActivity
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
+        activity = context as TeiDashboardMobileActivity
+
         if (((context.applicationContext) as App).dashboardComponent() != null) {
             ((context.applicationContext) as App).dashboardComponent()!!
-                .plus(FeedbackModule())
+                .plus(FeedbackModule(activity.programUid,activity.teiUid,activity.enrollmentUid))
                 .inject(this)
         }
     }

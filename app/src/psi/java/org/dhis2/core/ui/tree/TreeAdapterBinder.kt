@@ -2,6 +2,7 @@ package org.dhis2.core.ui.tree
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import org.dhis2.core.types.TreeNode
 
 abstract class TreeAdapterBinder(val contentJavaClass: Class<*>) {
     abstract val layoutId: Int

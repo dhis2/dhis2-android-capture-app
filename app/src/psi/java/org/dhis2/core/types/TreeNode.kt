@@ -1,4 +1,4 @@
-package org.dhis2.core.ui.tree
+package org.dhis2.core.types
 
 sealed class TreeNode<T>(val content: T) {
     var parent: TreeNode<*>? = null

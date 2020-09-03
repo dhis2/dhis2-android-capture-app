@@ -8,7 +8,7 @@ import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.R
 import org.dhis2.core.ui.tree.TreeAdapterBinder
-import org.dhis2.core.ui.tree.TreeNode
+import org.dhis2.core.types.TreeNode
 
 class FeedbackItemBinder : TreeAdapterBinder(FeedbackItem::class.java) {
     override val layoutId: Int
@@ -44,7 +44,11 @@ class FeedbackItemBinder : TreeAdapterBinder(FeedbackItem::class.java) {
                 value.visibility = View.GONE
             } else {
                 value.text = feedbackItem.value.data
-                value.setBackgroundColor(Color.parseColor(feedbackItem.value.color))
+
+                if (feedbackItem.value.color!= null){
+                    value.setBackgroundColor(Color.parseColor(feedbackItem.value.color))
+                }
+
                 value.visibility = View.VISIBLE
             }
 

@@ -3,6 +3,7 @@ package org.dhis2.core.ui.tree
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import org.dhis2.core.types.TreeNode
 
 class TreeAdapter(
     private val nodes: List<TreeNode<*>>,

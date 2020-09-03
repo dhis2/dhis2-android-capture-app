@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import io.noties.markwon.Markwon
 import org.dhis2.R
 import org.dhis2.core.ui.tree.TreeAdapterBinder
-import org.dhis2.core.ui.tree.TreeNode
+import org.dhis2.core.types.TreeNode
 
 class FeedbackHelpItemBinder : TreeAdapterBinder(FeedbackHelpItem::class.java) {
     override val layoutId: Int
