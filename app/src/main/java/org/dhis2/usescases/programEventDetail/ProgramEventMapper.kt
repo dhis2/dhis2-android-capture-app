@@ -1,5 +1,7 @@
 package org.dhis2.usescases.programEventDetail
 
+import java.util.Date
+import javax.inject.Inject
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.dhislogic.DhisEventUtils
 import org.dhis2.data.tuples.Pair
@@ -12,8 +14,6 @@ import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
-import java.util.Date
-import javax.inject.Inject
 
 class ProgramEventMapper @Inject constructor(val d2: D2, val dhisEventUtils: DhisEventUtils) {
 

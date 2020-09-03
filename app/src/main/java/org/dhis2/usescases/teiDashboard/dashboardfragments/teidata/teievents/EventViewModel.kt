@@ -1,8 +1,8 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents
 
+import java.util.Date
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.ProgramStage
-import java.util.Date
 
 data class EventViewModel(
     val type: EventViewModelType,
