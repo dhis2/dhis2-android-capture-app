@@ -15,7 +15,6 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import java.util.Date
 import junit.framework.Assert.assertTrue
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.tuples.Pair
@@ -28,9 +27,7 @@ import org.dhis2.utils.filters.sorting.SortingStatus
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.FeatureType
-import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
-import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Before
