@@ -11,9 +11,9 @@ import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.BitmapUtils
-import org.dhis2.Bindings.dp
 import java.util.ArrayList
 import java.util.HashMap
+import org.dhis2.Bindings.dp
 import org.dhis2.R
 import org.dhis2.uicomponents.map.TeiMarkers
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
