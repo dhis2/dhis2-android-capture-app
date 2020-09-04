@@ -1,14 +1,14 @@
 package org.dhis2.uicomponents.map.carousel
 
-import android.text.Spannable
+import android.graphics.Color
+import android.text.SpannableString
 import android.text.SpannableStringBuilder
+import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
 import org.dhis2.R
-import org.dhis2.data.tuples.Pair
 import org.dhis2.databinding.ItemCarouselProgramEventBinding
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel
 
@@ -25,12 +25,27 @@ class CarouselProgramEventHolder(
             onClick(data.uid(), data.orgUnitUid())
         }
 
-        val attributesString = SpannableStringBuilder("")
-        data.eventDisplayData().forEach {
-            attributesString.append(setAttributes(it))
+        val stringBuilder = SpannableStringBuilder()
+        data.eventDisplayData().forEachIndexed { index, nameValuePair ->
+            val value = SpannableString(nameValuePair.val1())
+            val colorToUse = if (index % 2 == 0) {
+                    Color.parseColor("#8A333333")
+                } else {
+                    Color.parseColor("#61333333")
+                }
+            value.setSpan(
+                ForegroundColorSpan(colorToUse),
+                0,
+                value.length,
+                Spanned.SPAN_INCLUSIVE_INCLUSIVE
+            )
+            stringBuilder.append(value)
+            if (index != data.eventDisplayData().size - 1) {
+                stringBuilder.append(" ")
+            }
         }
         binding.dataValue.text = when {
-            attributesString.isNotEmpty() -> attributesString
+            stringBuilder.isNotEmpty() -> stringBuilder
             else -> itemView.context.getString(R.string.no_data)
         }
 
@@ -43,23 +58,6 @@ class CarouselProgramEventHolder(
                 )
         } else {
             binding.noCoordinatesLabel.root.visibility = View.INVISIBLE
-        }
-    }
-
-    private fun setAttributes(attribute: Pair<String, String>): SpannableStringBuilder {
-        val attributeValue = if (attribute.val1().isNullOrEmpty()) {
-            "-"
-        } else {
-            attribute.val1()
-        }
-        return SpannableStringBuilder("${attribute.val0()} $attributeValue  ").apply {
-            setSpan(
-                ForegroundColorSpan(
-                    ContextCompat.getColor(itemView.context, R.color.text_black_8A3)
-                ),
-                0, attribute.val0().length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
         }
     }
 }
