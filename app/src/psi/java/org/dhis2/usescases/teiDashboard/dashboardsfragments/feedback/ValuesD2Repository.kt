@@ -20,31 +20,52 @@ class ValuesD2Repository(private val d2: D2) : ValuesRepository {
         val dataElements =
             d2.dataElementModule().dataElements().get().blockingGet()
 
-        return teiDataValues.map { teiValue ->
-            val dataElement =
-                dataElements.first { it.uid() == teiValue.dataElement() }
-            val colorByLegend = getColorByLegend(teiValue.value()!!, teiValue.dataElement()!!)
-            val deAttributeValues = getDataElementAttributeValues(teiValue.dataElement()!!)
+        val dataElementsWithFeedbackOrder =
+            getDataElementsWithFeedbackOrder(dataElements, feedbackOrderAttributeCode)
 
-            val deFeedbackHelp = deAttributeValues.firstOrNull {
-                it.attribute().code() == feedbackTextAttributeCode
+        return teiDataValues.filter { dataElementsWithFeedbackOrder.contains(it.dataElement()) }
+            .map { teiValue ->
+                val dataElement =
+                    dataElements.first { it.uid() == teiValue.dataElement() }
+                val colorByLegend = getColorByLegend(teiValue.value()!!, teiValue.dataElement()!!)
+                val deAttributeValues = getDataElementAttributeValues(teiValue.dataElement()!!)
+
+                val deFeedbackHelp = deAttributeValues.firstOrNull {
+                    it.attribute().code() == feedbackTextAttributeCode
+                }
+
+                val deFeedbackOrder = deAttributeValues.firstOrNull {
+                    it.attribute().code() == feedbackOrderAttributeCode
+                }
+
+                val deName: String =
+                    if (dataElement.formName() == null) dataElement.displayName()!! else dataElement.formName()!!
+
+                Value(
+                    teiValue.dataElement()!!,
+                    deName,
+                    teiValue.userFriendlyValue(d2)!!,
+                    FeedbackOrder(deFeedbackOrder!!.value()),
+                    colorByLegend,
+                    deFeedbackHelp?.value()
+                )
             }
+    }
 
-            val deFeedbackOrder = deAttributeValues.firstOrNull {
-                it.attribute().code() == feedbackOrderAttributeCode
-            }
+    private fun getDataElementsWithFeedbackOrder(
+        dataElements: MutableList<DataElement>,
+        feedbackOrderAttributeCode: String
+    ): List<String> {
+        return dataElements.map {
+            val deAttributeValues = getDataElementAttributeValues(it.uid())
 
-            val deName: String =
-                if (dataElement.formName() == null) dataElement.displayName()!! else dataElement.formName()!!
-
-            Value(
-                deName,
-                teiValue.userFriendlyValue(d2)!!,
-                colorByLegend,
-                deFeedbackHelp?.value(),
-                deFeedbackOrder?.value()
-            )
-        }.filter { value ->  value.feedbackOrder?.isNotBlank() ?: false }
+            it.toBuilder().attributeValues(deAttributeValues).build()
+        }.filter {
+            if (it.attributeValues() == null) false else it.attributeValues()!!
+                .any { attributeValue ->
+                    attributeValue.attribute().code() == feedbackOrderAttributeCode
+                }
+        }.map { it.uid() }
     }
 
     private fun getColorByLegend(value: String, dataElementUid: String): String? {

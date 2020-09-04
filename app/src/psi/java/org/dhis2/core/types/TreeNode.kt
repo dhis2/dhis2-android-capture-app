@@ -13,15 +13,27 @@ sealed class TreeNode<T>(val content: T) {
             }
         }
 
-    class Branch<T>(
+    class Node<T>(
         content: T,
-        val children: List<TreeNode<*>> = listOf(),
+        initialChildren: List<TreeNode<*>> = mutableListOf(),
         var expanded: Boolean = false
     ) : TreeNode<T>(content) {
+        private val internalChildren: MutableList<TreeNode<*>> = initialChildren.toMutableList()
+
         init {
             children.forEach {
                 it.parent = this
             }
+        }
+
+        val children: List<TreeNode<*>>
+            get() {
+                return internalChildren.toList()
+            }
+
+        fun addChild(node:TreeNode<*>){
+            internalChildren.add(node);
+            node.parent = this
         }
     }
 

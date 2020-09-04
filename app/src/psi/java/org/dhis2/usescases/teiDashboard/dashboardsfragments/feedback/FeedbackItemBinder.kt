@@ -22,13 +22,13 @@ class FeedbackItemBinder : TreeAdapterBinder(FeedbackItem::class.java) {
         holder: RecyclerView.ViewHolder,
         node: TreeNode<*>
     ) {
-        val branch = node as TreeNode.Branch
+        val branch = node as TreeNode.Node
 
         with(holder as ViewHolder) {
             val feedbackItem: FeedbackItem = node.content as FeedbackItem
             name.text = (feedbackItem.name)
 
-            if (node.children.isNotEmpty() && node.children[0] is TreeNode.Branch) {
+            if (node.children.isNotEmpty() && node.children[0] is TreeNode.Node) {
                 TextViewCompat.setTextAppearance(
                     name,
                     R.style.TextAppearance_MaterialComponents_Body1

@@ -21,7 +21,7 @@ class TreeAdapter(
         for (node in nodes) {
             displayNodes.add(node)
 
-            if (node is TreeNode.Branch && node.expanded) {
+            if (node is TreeNode.Node && node.expanded) {
                 findDisplayNodes(node.children)
             }
         }
@@ -56,7 +56,7 @@ class TreeAdapter(
         viewHolder.itemView.setOnClickListener {
             val node = displayNodes[viewHolder.adapterPosition]
 
-            if (node is TreeNode.Branch) {
+            if (node is TreeNode.Node) {
                 node.expanded = !node.expanded
                 refresh()
             }

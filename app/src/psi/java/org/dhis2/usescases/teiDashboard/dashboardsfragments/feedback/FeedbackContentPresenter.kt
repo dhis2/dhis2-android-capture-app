@@ -7,6 +7,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.core.types.TreeNode
+import timber.log.Timber
 
 sealed class FeedbackContentState {
     object Loading : FeedbackContentState()
@@ -50,7 +51,10 @@ class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
     private fun handleFailure(failure: FeedbackFailure) {
         when (failure) {
             is FeedbackFailure.NotFound -> render(FeedbackContentState.NotFound)
-            is FeedbackFailure.UnexpectedError -> render(FeedbackContentState.UnexpectedError)
+            is FeedbackFailure.UnexpectedError -> {
+                render(FeedbackContentState.UnexpectedError)
+                Timber.d(failure.error)
+            }
         }
     }
 
