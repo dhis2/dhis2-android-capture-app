@@ -29,10 +29,10 @@ class CarouselProgramEventHolder(
         data.eventDisplayData().forEachIndexed { index, nameValuePair ->
             val value = SpannableString(nameValuePair.val1())
             val colorToUse = if (index % 2 == 0) {
-                    Color.parseColor("#8A333333")
-                } else {
-                    Color.parseColor("#61333333")
-                }
+                Color.parseColor("#8A333333")
+            } else {
+                Color.parseColor("#61333333")
+            }
             value.setSpan(
                 ForegroundColorSpan(colorToUse),
                 0,
