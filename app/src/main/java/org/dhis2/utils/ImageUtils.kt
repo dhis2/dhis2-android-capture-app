@@ -27,7 +27,7 @@ class ImageUtils {
 
         return File(
             FileResourceDirectoryHelper.getFileResourceDirectory(context), "tempFile.png"
-        ).apply { writeBitmap(bitmap, Bitmap.CompressFormat.PNG, 85) }
+        ).apply { writeBitmap(bitmap, Bitmap.CompressFormat.JPEG, 100) }
     }
 
     private fun rotateImage(source: Bitmap, angle: Float): Bitmap? {
