@@ -215,6 +215,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycle}"
     implementation "androidx.work:work-runtime:2.2.0"
     implementation "androidx.work:work-rxjava2:2.2.0"
+    implementation "androidx.exifinterface:exifinterface:1.2.0"
 
 
     releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
@@ -335,7 +336,7 @@ dependencies {
     //Test
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.test.espresso:espresso-idling-resource:3.2.0'
-
+    implementation 'androidx.test.espresso.idling:idling-concurrent:3.2.0'
 
     testImplementation "androidx.arch.core:core-testing:2.0.0"
     testImplementation "androidx.test:core:1.2.0"

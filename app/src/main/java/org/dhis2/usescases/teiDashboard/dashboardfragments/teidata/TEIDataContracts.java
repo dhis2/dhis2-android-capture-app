@@ -76,6 +76,8 @@ public class TEIDataContracts {
         void openOrgUnitTreeSelector(String programUid);
 
         void setEnrollment(Enrollment enrollment);
+
+        void showSyncDialog(String uid);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -117,6 +119,8 @@ public class TEIDataContracts {
         void getEnrollment(String enrollmentUid);
 
         boolean hasAssignment();
+
+        void onSyncDialogClick(String eventUid);
     }
 
 }

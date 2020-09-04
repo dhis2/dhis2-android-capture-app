@@ -17,6 +17,7 @@ import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton
 import org.hisp.dhis.android.core.D2Manager
+import org.hisp.dhis.android.core.arch.api.internal.ServerURLWrapper
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
@@ -95,6 +96,14 @@ open class BaseTest {
         }
     }
 
+    fun turnOnConnectivityAfterLogin(){
+        ServerURLWrapper.setServerUrl("$MOCK_SERVER_URL/$API/")
+    }
+
+    fun turnOffConnectivityAfterLogin(){
+        ServerURLWrapper.setServerUrl("none")
+    }
+
     private fun disableIntents() {
         if (isIntentsEnable) {
             Intents.release()
@@ -122,5 +131,6 @@ open class BaseTest {
         @JvmField
         val disableAnimationsTestRule = DisableAnimations()
         const val MOCK_SERVER_URL = "http://127.0.0.1:8080"
+        const val API = "api"
     }
 }

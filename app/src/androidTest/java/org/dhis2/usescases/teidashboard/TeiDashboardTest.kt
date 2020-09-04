@@ -28,7 +28,7 @@ class TeiDashboardTest : BaseTest() {
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
-    @Test
+   @Test
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
         setupCredentials()
 
@@ -381,7 +381,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Test
+   @Test
     fun shouldDeleteEnrollmentSuccessfully() {
 
         val teiName = "Anna"

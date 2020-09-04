@@ -471,4 +471,9 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                 typeToken,
                 new HashMap<>());
     }
+
+    @Override
+    public void onSyncDialogClick(String eventUid) {
+        view.showSyncDialog(eventUid);
+    }
 }

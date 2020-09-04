@@ -34,7 +34,8 @@ class EventTest: BaseTest() {
         prepareEventToDeleteIntentAndLaunchActivity(ruleTeiDashboard)
 
         teiDashboardRobot {
-            clickOnStageGroup(tbVisit)
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
             clickOnEventGroupByStage(tbVisit)
         }
 
@@ -45,6 +46,8 @@ class EventTest: BaseTest() {
         }
 
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnGroupByStage()
            checkEventWasDeletedStageGroup(tbProgramStages)
         }
     }

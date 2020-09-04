@@ -684,7 +684,21 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .uid(event.organisationUnit())
                     .blockingGet();
 
-            eventViewModels.add(new EventViewModel(EventViewModelType.EVENT, stage, event, 0, null, true, true, organisationUnit.displayName()));
+            eventViewModels.add(
+                    new EventViewModel(
+                            EventViewModelType.EVENT,
+                            stage,
+                            event,
+                            0,
+                            null,
+                            true,
+                            true,
+                            organisationUnit.displayName(),
+                            null,
+                            null,
+                            false,
+                            false
+                    ));
         }
 
         return eventViewModels;
@@ -791,7 +805,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
                             .uid(attrValue.trackedEntityAttribute())
                             .blockingGet();
-                    if(attribute!=null) {
+                    if (attribute != null) {
                         String friendlyValue = ValueExtensionsKt.userFriendlyValue(attrValue, d2);
 
                         attrValueBuilder.value(friendlyValue)

@@ -185,7 +185,10 @@ public class Bindings {
     public static void setEventIcon(ImageView view, Event event, Enrollment enrollment, ProgramStage eventProgramStage, Program program) {
         if (event != null) {
             EventStatus status = event.status();
-            EnrollmentStatus enrollmentStatus = enrollment.status();
+            EnrollmentStatus enrollmentStatus = EnrollmentStatus.ACTIVE;
+            if(enrollment!=null) {
+                enrollmentStatus = enrollment.status();
+            }
             if (status == null)
                 status = EventStatus.ACTIVE;
             if (enrollmentStatus == null)
@@ -211,7 +214,7 @@ public class Bindings {
                     drawableResource = enrollmentStatus == EnrollmentStatus.ACTIVE ? R.drawable.ic_event_status_skipped : R.drawable.ic_event_status_skipped_read;
                     break;
                 case SCHEDULE:
-                    drawableResource = enrollmentStatus == EnrollmentStatus.ACTIVE ? R.drawable.ic_event_status_open : R.drawable.ic_event_status_open_read;
+                    drawableResource = enrollmentStatus == EnrollmentStatus.ACTIVE ? R.drawable.ic_event_status_schedule : R.drawable.ic_event_status_schedule_read;
                     break;
                 default:
                     drawableResource = R.drawable.ic_event_status_open_read;
@@ -224,6 +227,7 @@ public class Bindings {
                             drawableResource
                     )
             );
+            view.setTag(drawableResource);
         }
     }
 
