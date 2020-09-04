@@ -73,8 +73,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.Nonnull;
-
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -148,7 +146,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     public LiveData<PagedList<SearchTeiModel>> searchTrackedEntities(@Nullable Program selectedProgram,
                                                                      @NonNull String trackedEntityType,
                                                                      @NonNull List<String> orgUnits,
-                                                                     @Nonnull List<State> states,
+                                                                    @NonNull List<State> states,
                                                                      @NonNull List<EventStatus> eventStatuses,
                                                                      @Nullable HashMap<String, String> queryData,
                                                                      @Nullable SortingItem sortingItem,
@@ -194,7 +192,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     public Flowable<List<SearchTeiModel>> searchTeiForMap(@Nullable Program selectedProgram,
                                                           @NonNull String trackedEntityType,
                                                           @NonNull List<String> orgUnits,
-                                                          @Nonnull List<State> states,
+                                                         @NonNull List<State> states,
                                                           @NonNull List<EventStatus> eventStatuses,
                                                           @Nullable HashMap<String, String> queryData,
                                                           @Nullable SortingItem sortingItem,
@@ -231,7 +229,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private TrackedEntityInstanceQueryCollectionRepository getFilteredRepository(@Nullable Program selectedProgram,
                                                                                  @NonNull String trackedEntityType,
                                                                                  @NonNull List<String> orgUnits,
-                                                                                 @Nonnull List<State> states,
+                                                                                @NonNull List<State> states,
                                                                                  @Nullable HashMap<String, String> queryData,
                                                                                  boolean assignedToMe,
                                                                                  @Nullable SortingItem sortingItem) {

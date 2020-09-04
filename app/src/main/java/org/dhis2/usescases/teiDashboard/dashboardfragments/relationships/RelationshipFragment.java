@@ -50,7 +50,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 import static android.app.Activity.RESULT_OK;
@@ -287,8 +286,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     @Override
     public void setFeatureCollection(
-            @Nonnull String currentTei,
-            @Nonnull List<RelationshipUiComponentModel> relationships,
+           @NonNull String currentTei,
+           @NonNull List<RelationshipUiComponentModel> relationships,
             @NotNull kotlin.Pair<? extends Map<String, FeatureCollection>, ? extends BoundingBox> map) {
         relationshipMapManager.update(
                 map.getFirst(),

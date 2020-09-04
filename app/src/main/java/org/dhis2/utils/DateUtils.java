@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Nonnull;
-
 import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
@@ -215,7 +213,7 @@ public class DateUtils {
         return new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION_NO_SECONDS, Locale.US);
     }
 
-    @Nonnull
+   @NonNull
     public static Boolean dateHasNoSeconds(String dateTime) {
         try {
             databaseDateFormatNoSeconds().parse(dateTime);

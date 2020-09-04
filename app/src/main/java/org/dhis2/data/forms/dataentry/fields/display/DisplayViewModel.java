@@ -8,8 +8,6 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 
-import javax.annotation.Nonnull;
-
 @AutoValue
 public abstract class DisplayViewModel extends FieldViewModel {
 
@@ -34,7 +32,7 @@ public abstract class DisplayViewModel extends FieldViewModel {
         return new AutoValue_DisplayViewModel(uid(), label(), mandatory(), value(), null, null, false, null, warning(), error,   description(),null, null);
     }
 
-    @Nonnull
+   @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_DisplayViewModel(uid(), label(), mandatory(), data, null, null, false, null, warning(), error(),   description(),null, null);

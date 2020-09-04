@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.DatePicker;
 
@@ -61,7 +60,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -225,21 +224,29 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
 
         ConnectableFlowable<Pair<HashMap<String, String>, FilterManager>> updaterFlowable = currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
-                .doOnEach(element -> {Timber.d("outer updaterFlowable before %s", element.getValue());})
+                .doOnEach(element -> {
+                    Timber.d("outer updaterFlowable before %s", element.getValue());
+                })
                 .switchMap(program ->
-                                Flowable.combineLatest(queryProcessor.startWith(queryData),
-                                        FilterManager.getInstance().asFlowable(),
-                                        Pair::create).doOnEach(element -> {Timber.d("inner %s", element.getValue());})
+                        Flowable.combineLatest(queryProcessor.startWith(queryData),
+                                FilterManager.getInstance().asFlowable(),
+                                Pair::create).doOnEach(element -> {
+                            Timber.d("inner %s", element.getValue());
+                        })
 
                 )
-                .doOnEach(element -> {Timber.d("outer updaterFlowable after %s", element.getValue());})
+                .doOnEach(element -> {
+                    Timber.d("outer updaterFlowable after %s", element.getValue());
+                })
                 .onBackpressureLatest()
                 .publish();
 
 
         compositeDisposable.add(
                 updaterFlowable
-                        .doOnEach(element -> {Timber.d("Listing update %s", element.getValue());})
+                        .doOnEach(element -> {
+                            Timber.d("Listing update %s", element.getValue());
+                        })
                         .map(data -> view.isMapVisible())
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
@@ -393,8 +400,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         } else if (selectedProgram == null) {
             if (!teiTypeHasAttributesToDisplay) {
                 messageId = String.format(view.getContext().getString(R.string.tei_type_has_no_attributes), getTrackedEntityName().displayName());
-            }
-            else if (size == 0 && queryData.isEmpty() && view.fromRelationshipTEI() == null)
+            } else if (size == 0 && queryData.isEmpty() && view.fromRelationshipTEI() == null)
                 messageId = view.getContext().getString(R.string.search_init);
             else if (size == 0) {
                 messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
@@ -531,8 +537,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         if (selectedProgram != null) {
             if (selectedProgram.displayFrontPageList() && queryData.isEmpty()) {
                 return false;
-            }
-            else if (selectedProgram.displayFrontPageList() && !queryData.isEmpty() && queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
+            } else if (selectedProgram.displayFrontPageList() && !queryData.isEmpty() && queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
                 return false;
             } else if (!selectedProgram.displayFrontPageList() && queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
                 return false;
@@ -549,12 +554,20 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void onEnrollClick() {
         if (selectedProgram != null)
-            if (selectedProgram.access().data().write() != null && selectedProgram.access().data().write())
+            if (canCreateTei())
                 enroll(selectedProgram.uid(), null);
             else
                 view.displayMessage(view.getContext().getString(R.string.search_access_error));
         else
             view.displayMessage(view.getContext().getString(R.string.search_program_not_selected));
+    }
+
+    private boolean canCreateTei() {
+        boolean programAccess = selectedProgram.access().data().write() != null && selectedProgram.access().data().write();
+        boolean teTypeAccess = d2.trackedEntityModule().trackedEntityTypes().uid(
+                selectedProgram.trackedEntityType().uid()
+        ).blockingGet().access().data().write();
+        return programAccess && teTypeAccess;
     }
 
     private void enroll(String programUid, String uid) {
@@ -759,9 +772,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 view.downloadProgress(),
                                 Timber::d,
                                 () -> {
-                                    if(d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingExists()) {
+                                    if (d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingExists()) {
                                         openDashboard(teiUid, enrollmentUid);
-                                    }else{
+                                    } else {
                                         view.couldNotDownload(trackedEntity.displayName());
                                     }
                                 })

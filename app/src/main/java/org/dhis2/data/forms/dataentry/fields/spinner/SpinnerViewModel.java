@@ -10,8 +10,6 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 /**
  * QUADRAM. Created by frodriguez on 1/24/2018.
  */
@@ -54,7 +52,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
         return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), editable(), warning, error(), description(), objectStyle(), null, hint(), optionSet(), numberOfOptions());
     }
 
-    @Nonnull
+   @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), data, programStageSection(), allowFutureDate(), false, warning(), error(), description(), objectStyle(), null, hint(), optionSet(), numberOfOptions());

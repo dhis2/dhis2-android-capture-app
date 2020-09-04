@@ -19,8 +19,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -39,7 +37,7 @@ public interface SearchRepository {
     LiveData searchTrackedEntities(@Nullable Program selectedProgram,
                                    @NonNull String trackedEntityType,
                                    @NonNull List<String> orgUnits,
-                                   @Nonnull List<State> states,
+                                  @NonNull List<State> states,
                                    @NonNull List<EventStatus> statuses,
                                    @Nullable HashMap<String, String> queryData,
                                    @Nullable SortingItem sortingItem,
@@ -50,7 +48,7 @@ public interface SearchRepository {
     Flowable<List<SearchTeiModel>> searchTeiForMap(@Nullable Program selectedProgram,
                                                    @NonNull String trackedEntityType,
                                                    @NonNull List<String> orgUnits,
-                                                   @Nonnull List<State> states,
+                                                  @NonNull List<State> states,
                                                    @NonNull List<EventStatus> statuses,
                                                    @Nullable HashMap<String, String> queryData,
                                                    @Nullable SortingItem sortingItem,
