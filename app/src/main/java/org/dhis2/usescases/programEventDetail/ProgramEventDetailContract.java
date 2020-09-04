@@ -9,6 +9,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -37,7 +38,7 @@ public class ProgramEventDetailContract {
 
         void showFilterProgress();
 
-        void setLiveData(LiveData<PagedList<ProgramEventViewModel>> pagedListLiveData);
+        void setLiveData(LiveData<PagedList<EventViewModel>> pagedListLiveData);
 
         void setOptionComboAccess(Boolean canCreateEvent);
 
@@ -90,5 +91,7 @@ public class ProgramEventDetailContract {
         boolean hasAssignment();
 
         void filterCatOptCombo(String selectedCatOptionCombo);
+
+        Program getProgram();
     }
 }
