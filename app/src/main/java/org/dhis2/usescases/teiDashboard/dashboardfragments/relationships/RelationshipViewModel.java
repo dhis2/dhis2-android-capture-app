@@ -1,6 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
-import android.graphics.drawable.Drawable;
+import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
@@ -10,8 +10,6 @@ import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 @AutoValue
 public abstract class RelationshipViewModel {

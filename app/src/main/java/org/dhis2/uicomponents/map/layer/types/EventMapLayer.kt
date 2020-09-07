@@ -80,10 +80,14 @@ class EventMapLayer(
 
     private fun setVisibility(visibility: String) {
         when (featureType) {
-            FeatureType.POINT ->
+            FeatureType.POINT -> {
                 pointLayer.setProperties(PropertyFactory.visibility(visibility))
-            FeatureType.POLYGON ->
+                selectedPointLayer.setProperties(PropertyFactory.visibility(visibility))
+            }
+            FeatureType.POLYGON -> {
                 polygonLayer.setProperties(PropertyFactory.visibility(visibility))
+                selectedPolygonLayer.setProperties(PropertyFactory.visibility(visibility))
+            }
             else -> Unit
         }
         visible = visibility == Property.VISIBLE

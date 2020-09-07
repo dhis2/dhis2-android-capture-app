@@ -41,8 +41,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -84,12 +82,12 @@ public class EventInitialPresenter
 
     private String programId;
 
-    public EventInitialPresenter(@Nonnull EventInitialContract.View view,
+    public EventInitialPresenter(@NonNull EventInitialContract.View view,
                                  @NonNull EventSummaryRepository eventSummaryRepository,
                                  @NonNull EventInitialRepository eventInitialRepository,
                                  @NonNull SchedulerProvider schedulerProvider,
-                                 @Nonnull PreferenceProvider preferenceProvider,
-                                 @Nonnull AnalyticsHelper analyticsHelper) {
+                                @NonNull PreferenceProvider preferenceProvider,
+                                @NonNull AnalyticsHelper analyticsHelper) {
 
         this.view = view;
         this.eventInitialRepository = eventInitialRepository;

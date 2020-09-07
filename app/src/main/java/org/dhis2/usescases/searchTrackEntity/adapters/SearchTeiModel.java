@@ -7,6 +7,7 @@ import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -201,5 +202,11 @@ public class SearchTeiModel implements CarouselItemModel {
 
     public String getTeTypeName() {
         return teTypeName;
+    }
+
+    @NotNull
+    @Override
+    public String uid() {
+        return tei.uid();
     }
 }

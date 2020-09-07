@@ -11,8 +11,8 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailViewHolder
-import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewHolder
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.hamcrest.Matchers.allOf
 
 fun syncFlowRobot(syncFlowRobot: SyncFlowRobot.() -> Unit) {
@@ -45,7 +45,7 @@ class SyncFlowRobot : BaseRobot() {
     fun clickOnEventToSync(position: Int) {
         onView(withId(R.id.recycler))
             .perform(
-                actionOnItemAtPosition<ProgramEventDetailViewHolder>(position, clickChildViewWithId(R.id.sync_icon))
+                actionOnItemAtPosition<EventViewHolder>(position, clickChildViewWithId(R.id.sync_icon))
             )
     }
 

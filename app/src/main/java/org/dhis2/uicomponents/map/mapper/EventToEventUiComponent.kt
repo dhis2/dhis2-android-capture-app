@@ -24,7 +24,7 @@ class EventToEventUiComponent {
             }
     }
 
-    private fun map(eventViewModel: EventViewModel, tei: SearchTeiModel): EventUiComponentModel {
+    fun map(eventViewModel: EventViewModel, tei: SearchTeiModel): EventUiComponentModel {
         val eventUid = eventViewModel.event!!.uid()
         val lastUpdated = eventViewModel.lastUpdate
 

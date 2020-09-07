@@ -1,6 +1,11 @@
 package org.dhis2.uicomponents.map.managers
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import androidx.appcompat.content.res.AppCompatResources
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.bumptech.glide.request.target.CustomTarget
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
@@ -8,6 +13,7 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.BitmapUtils
 import java.util.ArrayList
 import java.util.HashMap
+import org.dhis2.Bindings.dp
 import org.dhis2.R
 import org.dhis2.uicomponents.map.TeiMarkers
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
@@ -15,20 +21,21 @@ import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.Companion.RELATIONSHIP_UID
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.ENROLLMENT_UID
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.TEI_IMAGE
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.TEI_UID
 import org.dhis2.uicomponents.map.layer.LayerType
 import org.dhis2.uicomponents.map.layer.MapLayerManager
 import org.dhis2.uicomponents.map.model.MapStyle
 import org.hisp.dhis.android.core.common.FeatureType
 
-class TeiMapManager(
-    private val mapStyle: MapStyle
-) : MapManager() {
+class TeiMapManager : MapManager() {
 
     private lateinit var carouselAdapter: CarouselAdapter
     private lateinit var boundingBox: BoundingBox
     private lateinit var teiFeatureCollections: HashMap<String, FeatureCollection>
     private lateinit var eventsFeatureCollection: Map<String, FeatureCollection>
+    var mapStyle: MapStyle? = null
+    private var teiImages: HashMap<String, Bitmap> = hashMapOf()
 
     companion object {
         const val TEIS_SOURCE_ID = "TEIS_SOURCE_ID"
@@ -58,41 +65,33 @@ class TeiMapManager(
 
     override fun loadDataForStyle() {
         style?.apply {
-            mapStyle.teiSymbolIcon?.let {
-                addImage(
-                    MapLayerManager.TEI_ICON_ID,
-                    TeiMarkers.getMarker(
-                        mapView.context,
-                        it,
-                        mapStyle.teiColor
-                    )
-                )
+            mapStyle?.teiSymbolIcon?.let {
                 addImage(
                     RelationshipMapManager.RELATIONSHIP_ICON,
                     TeiMarkers.getMarker(
                         mapView.context,
                         it,
-                        mapStyle.teiColor
+                        mapStyle!!.teiColor
                     )
                 )
             }
-            mapStyle.enrollmentSymbolIcon?.let {
+            mapStyle?.enrollmentSymbolIcon?.let {
                 addImage(
                     MapLayerManager.ENROLLMENT_ICON_ID,
                     TeiMarkers.getMarker(
                         mapView.context,
                         it,
-                        mapStyle.enrollmentColor
+                        mapStyle!!.enrollmentColor
                     )
                 )
             }
-            mapStyle.stagesStyle.keys.forEach { key ->
+            mapStyle?.stagesStyle?.keys?.forEach { key ->
                 addImage(
                     "${MapLayerManager.STAGE_ICON_ID}_$key",
                     TeiMarkers.getMarker(
                         mapView.context,
-                        mapStyle.stagesStyle[key]!!.stageIcon,
-                        mapStyle.stagesStyle[key]!!.stageColor
+                        mapStyle!!.stagesStyle[key]!!.stageIcon,
+                        mapStyle!!.stagesStyle[key]!!.stageColor
                     )
                 )
             }
@@ -127,9 +126,29 @@ class TeiMapManager(
             )!!,
             true
         )
+
+        mapView.addOnStyleImageMissingListener { id ->
+            teiFeatureCollections[TEIS_SOURCE_ID]?.features()
+                ?.firstOrNull { id == it.getStringProperty(TEI_UID) }
+                ?.let {
+                    teiImages[id]?.let { it1 -> style?.addImageAsync(id, it1) }
+                } ?: mapStyle?.teiSymbolIcon?.let {
+                style?.addImageAsync(
+                    id,
+                    TeiMarkers.getMarker(
+                        mapView.context,
+                        it,
+                        mapStyle!!.teiColor
+                    )
+                )
+            }
+        }
+        teiFeatureCollections[TEIS_SOURCE_ID]?.let {
+            setSymbolManager(it)
+            setTeiImages(it)
+        }
         setSource()
         setLayer()
-        teiFeatureCollections[TEIS_SOURCE_ID]?.let { setSymbolManager(it) }
     }
 
     override fun setSource() {
@@ -138,6 +157,29 @@ class TeiMapManager(
                 ?: style?.addSource(GeoJsonSource(it, teiFeatureCollections[it]))
         }
         initCameraPosition(boundingBox)
+    }
+
+    private fun setTeiImages(featureCollection: FeatureCollection) {
+        featureCollection.features()
+            ?.filter { it.getStringProperty(TEI_IMAGE)?.isNotEmpty() ?: false }
+            ?.forEach {
+                Glide.with(mapView.context)
+                    .asBitmap()
+                    .load(it.getStringProperty(TEI_IMAGE))
+                    .transform(CircleCrop())
+                    .into(object : CustomTarget<Bitmap>(23.dp, 23.dp) {
+                        override fun onResourceReady(
+                            resource: Bitmap,
+                            transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
+                        ) {
+                            teiImages[it.getStringProperty(TEI_UID)] = TeiMarkers.getMarker(
+                                mapView.context,
+                                resource
+                            )
+                        }
+                        override fun onLoadCleared(placeholder: Drawable?) {}
+                    })
+            }
     }
 
     private fun updateStyleSources() {

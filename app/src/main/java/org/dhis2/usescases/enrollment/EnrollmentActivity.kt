@@ -43,6 +43,7 @@ import org.dhis2.utils.Constants.RQ_QR_SCANNER
 import org.dhis2.utils.Constants.TEI_UID
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.FileResourcesUtil
+import org.dhis2.utils.ImageUtils
 import org.dhis2.utils.customviews.AlertBottomDialog
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.recyclers.StickyHeaderItemDecoration
@@ -181,10 +182,13 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                     }
                 }
                 CAMERA_REQUEST -> {
-                    val file = File(
+                    val imageFile = File(
                         FileResourceDirectoryHelper.getFileResourceDirectory(this),
                         "tempFile.png"
                     )
+
+                    val file = ImageUtils().rotateImage(this, imageFile)
+
                     try {
                         presenter.saveFile(uuid, if (file.exists()) file.path else null)
                         presenter.updateFields()

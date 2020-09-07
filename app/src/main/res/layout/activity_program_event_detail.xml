@@ -223,7 +223,7 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/progressLayout"
-                    tools:listitem="@layout/item_program_event" />
+                    tools:listitem="@layout/item_event" />
 
                 <com.mapbox.mapboxsdk.maps.MapView
                     android:id="@+id/mapView"
