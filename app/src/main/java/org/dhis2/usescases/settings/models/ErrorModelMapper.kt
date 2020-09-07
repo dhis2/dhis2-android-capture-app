@@ -35,7 +35,7 @@ class ErrorModelMapper(private val fkMessage: String) {
         return ErrorViewModel(
             conflict.created(),
             conflict.errorCode(),
-            conflict.displayDescription(),
+            conflict.displayDescription()?:conflict.conflict(),
             conflict.status()?.name
         )
     }
