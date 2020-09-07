@@ -24,6 +24,7 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
     private lateinit var binding: FragmentFeedbackContentBinding
 
     private lateinit var activity: TeiDashboardMobileActivity
+    private lateinit var feedbackMode: FeedbackMode
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -32,7 +33,7 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
 
         if (((context.applicationContext) as App).dashboardComponent() != null) {
             ((context.applicationContext) as App).dashboardComponent()!!
-                .plus(FeedbackModule(activity.programUid,activity.teiUid,activity.enrollmentUid))
+                .plus(FeedbackModule(activity.programUid, activity.teiUid, activity.enrollmentUid))
                 .inject(this)
         }
     }
@@ -47,6 +48,10 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
             R.layout.fragment_feedback_content, container, false
         )
 
+        val programType = arguments?.getSerializable(PROGRAM_TYPE) as ProgramType
+
+        initFeedbackMode(programType)
+
         binding.feedbackRecyclerView.addItemDecoration(
             DividerItemDecoration(
                 context,
@@ -58,7 +63,7 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
     }
 
     override fun onResume() {
-        presenter.attach(this)
+        presenter.attach(this, feedbackMode)
         super.onResume()
     }
 
@@ -73,6 +78,22 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
             is FeedbackContentState.Loaded -> renderLoaded(state.feedback)
             is FeedbackContentState.NotFound -> renderError(getString(R.string.empty_tei_no_add))
             is FeedbackContentState.UnexpectedError -> renderError(getString(R.string.unexpected_error_message))
+        }
+    }
+
+    private fun initFeedbackMode(programType: ProgramType) {
+        feedbackMode = if (programType == ProgramType.RDQA) {
+            val rdqaFeedbackFilter = (arguments?.getSerializable(RDQA_FILTER) as RdqaFeedbackFilter)
+            if (rdqaFeedbackFilter == RdqaFeedbackFilter.BY_INDICATOR) FeedbackMode.ByEvent() else FeedbackMode.ByTechnicalArea
+        } else {
+            val hnqisFeedbackFilter =
+                (arguments?.getSerializable(HNQIS_FILTER) as HnqisFeedbackFilter)
+
+            when (hnqisFeedbackFilter) {
+                HnqisFeedbackFilter.CRITICAL -> FeedbackMode.ByEvent(true)
+                HnqisFeedbackFilter.NON_CRITICAL -> FeedbackMode.ByEvent(false)
+                HnqisFeedbackFilter.ALL -> FeedbackMode.ByEvent()
+            }
         }
     }
 

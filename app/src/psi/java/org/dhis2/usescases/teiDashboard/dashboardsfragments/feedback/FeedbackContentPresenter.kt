@@ -19,10 +19,12 @@ sealed class FeedbackContentState {
 class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
     CoroutineScope by MainScope() {
 
+    private lateinit var feedbackMode: FeedbackMode
     private var view: FeedbackContentView? = null
 
-    fun attach(view: FeedbackContentView) {
+    fun attach(view: FeedbackContentView, feedbackMode: FeedbackMode) {
         this.view = view
+        this.feedbackMode = feedbackMode;
 
         loadFeedback()
     }
@@ -35,7 +37,7 @@ class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
     private fun loadFeedback() = launch {
         render(FeedbackContentState.Loading)
 
-        val result = withContext(Dispatchers.IO) { getFeedback() }
+        val result = withContext(Dispatchers.IO) { getFeedback(feedbackMode) }
 
         result.fold(
             { failure -> handleFailure(failure) },

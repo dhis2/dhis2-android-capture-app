@@ -9,21 +9,26 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 class ValuesD2Repository(private val d2: D2) : ValuesRepository {
     val dataElements: List<DataElement> = d2.dataElementModule().dataElements().get().blockingGet()
 
-    override fun getByEvent(eventUid: String): List<Value> {
+    override fun getByEvent(eventUid: String, compulsoryFilter: Boolean?): List<Value> {
         val feedbackOrderAttributeCode = "FeedbackOrder"
         val feedbackTextAttributeCode = "FeedbackText"
 
         val teiDataValues =
-            d2.trackedEntityModule().trackedEntityDataValues().byEvent().eq(eventUid).get()
-                .blockingGet()
-
-        val dataElements =
-            d2.dataElementModule().dataElements().get().blockingGet()
+            d2.trackedEntityModule().trackedEntityDataValues().byEvent().eq(eventUid)
+                .get().blockingGet()
 
         val dataElementsWithFeedbackOrder =
             getDataElementsWithFeedbackOrder(dataElements, feedbackOrderAttributeCode)
 
-        return teiDataValues.filter { dataElementsWithFeedbackOrder.contains(it.dataElement()) }
+        val dataElementsFilter =
+            if (compulsoryFilter == null) dataElementsWithFeedbackOrder
+            else getDataElementsWithMandatoryFilter(
+                eventUid,
+                dataElementsWithFeedbackOrder,
+                compulsoryFilter
+            )
+
+        return teiDataValues.filter { dataElementsFilter.contains(it.dataElement()) }
             .map { teiValue ->
                 val dataElement =
                     dataElements.first { it.uid() == teiValue.dataElement() }
@@ -53,7 +58,7 @@ class ValuesD2Repository(private val d2: D2) : ValuesRepository {
     }
 
     private fun getDataElementsWithFeedbackOrder(
-        dataElements: MutableList<DataElement>,
+        dataElements: List<DataElement>,
         feedbackOrderAttributeCode: String
     ): List<String> {
         return dataElements.map {
@@ -66,6 +71,26 @@ class ValuesD2Repository(private val d2: D2) : ValuesRepository {
                     attributeValue.attribute().code() == feedbackOrderAttributeCode
                 }
         }.map { it.uid() }
+    }
+
+    private fun getDataElementsWithMandatoryFilter(
+        eventUid: String,
+        dataElementsWithFeedbackOrder: List<String>,
+        compulsoryFilter: Boolean
+    ): List<String> {
+        val event = d2.eventModule().events().byUid().eq(eventUid)
+            .one().blockingGet()
+
+        val stageDataElements = d2.programModule().programStageDataElements()
+            .byProgramStage().eq(event.programStage()).byCompulsory().eq(compulsoryFilter)
+            .blockingGet()
+
+        return stageDataElements.map { programStageDE ->
+            d2.dataElementModule().dataElements()
+                .uid(programStageDE.dataElement()?.uid()).blockingGet().uid()
+        }.filter { deUid ->
+            dataElementsWithFeedbackOrder.contains(deUid)
+        }
     }
 
     private fun getColorByLegend(value: String, dataElementUid: String): String? {
