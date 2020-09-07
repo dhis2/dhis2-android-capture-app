@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
@@ -58,6 +59,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     private ImageButton clearButton;
     private String currentValue;
     private FragmentManager fm;
+    private CardView imageCard;
 
     public PictureView(Context context) {
         super(context);
@@ -96,11 +98,13 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
         image = findViewById(R.id.image);
         image.setOnClickListener(view -> showFullPicture());
         addImageBtn = findViewById(R.id.addImageBtn);
+        imageCard = findViewById(R.id.imageCard);
         addImageBtn.setOnClickListener(this);
         clearButton = findViewById(R.id.clear);
         clearButton.setOnClickListener(view -> {
                     if (isEditable && removeFile()) {
-                        image.setVisibility(View.GONE);
+                        addImageBtn.setVisibility(VISIBLE);
+                        imageCard.setVisibility(View.GONE);
                         Glide.with(this).clear(image);
                         imageListener.onSelected(null, null, uid);
                     }
@@ -160,14 +164,14 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
         if (!isEmpty(value)) {
 
             Glide.with(image).clear(image);
-            clearButton.setVisibility(View.VISIBLE);
 
             File file = new File(value);
 
             if (file.exists()) {
                 Pair<Integer, Integer> dimensions = FileExtensionsKt.widthAndHeight(file, ExtensionsKt.getDp(200));
                 currentValue = value;
-                image.setVisibility(View.VISIBLE);
+                addImageBtn.setVisibility(GONE);
+                imageCard.setVisibility(View.VISIBLE);
                 Glide.with(image)
                         .load(file)
                         .apply(new RequestOptions().centerCrop())
@@ -177,6 +181,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
                         .apply(RequestOptions.overrideOf(dimensions.component1(), dimensions.component2()))
                         .skipMemoryCache(true)
                         .into(image);
+                clearButton.setVisibility(VISIBLE);
             }
         } else
             clearButton.setVisibility(View.GONE);
