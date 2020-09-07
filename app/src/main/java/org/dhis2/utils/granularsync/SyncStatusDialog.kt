@@ -273,7 +273,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         val listStatusLog = ArrayList<StatusLogItem>()
 
         for (tracker in conflicts)
-            listStatusLog.add(StatusLogItem.create(tracker.created()!!, tracker.conflict()!!))
+            listStatusLog.add(StatusLogItem.create(tracker.created()!!, tracker.displayDescription()!!))
 
         adapter!!.addItems(listStatusLog)
         setNetworkMessage()
