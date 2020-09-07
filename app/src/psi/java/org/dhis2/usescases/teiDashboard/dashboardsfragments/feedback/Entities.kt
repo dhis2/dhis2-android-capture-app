@@ -7,7 +7,7 @@ data class FeedbackOrder(val value: String) : Comparable<FeedbackOrder> {
             null
         else
             orderItems.subList(0, orderItems.size - 1)
-        .joinToString(".")
+                .joinToString(".")
 
     override fun compareTo(other: FeedbackOrder): Int {
         var result: Int? = null
@@ -41,12 +41,13 @@ data class FeedbackOrder(val value: String) : Comparable<FeedbackOrder> {
 }
 
 data class Value(
-    val dataElement:String,
+    val dataElement: String,
     val name: String,
     val value: String,
     val feedbackOrder: FeedbackOrder,
     val colorByLegend: String? = null,
-    val feedbackHelp: String? = null
+    val feedbackHelp: String? = null,
+    val eventUid: String
 )
 
-data class Event(val name: String, val values: List<Value>)
+data class Event(val uid: String, val name: String, val values: List<Value> = listOf())

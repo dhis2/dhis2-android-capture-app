@@ -52,7 +52,8 @@ class ValuesD2Repository(private val d2: D2) : ValuesRepository {
                     teiValue.userFriendlyValue(d2)!!,
                     FeedbackOrder(deFeedbackOrder!!.value()),
                     colorByLegend,
-                    deFeedbackHelp?.value()
+                    deFeedbackHelp?.value(),
+                    eventUid
                 )
             }
     }

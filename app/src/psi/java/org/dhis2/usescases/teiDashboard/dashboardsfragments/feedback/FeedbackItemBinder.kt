@@ -47,6 +47,8 @@ class FeedbackItemBinder : TreeAdapterBinder(FeedbackItem::class.java) {
 
                 if (feedbackItem.value.color!= null){
                     value.setBackgroundColor(Color.parseColor(feedbackItem.value.color))
+                } else {
+                    value.setBackgroundColor(Color.TRANSPARENT)
                 }
 
                 value.visibility = View.VISIBLE

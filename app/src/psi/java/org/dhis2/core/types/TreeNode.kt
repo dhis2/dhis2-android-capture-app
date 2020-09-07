@@ -32,7 +32,7 @@ sealed class TreeNode<T>(val content: T) {
             }
 
         fun addChild(node:TreeNode<*>){
-            internalChildren.add(node);
+            internalChildren.add(node)
             node.parent = this
         }
     }

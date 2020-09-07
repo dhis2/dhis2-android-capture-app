@@ -22,7 +22,12 @@ class GetFeedback(
 ) {
     operator fun invoke(feedbackMode: FeedbackMode): Either<FeedbackFailure, List<TreeNode<FeedbackItem>>> {
         return try {
-            val events = getEnrollmentEvents()
+            val compulsoryFilter = when (feedbackMode) {
+                is FeedbackMode.ByEvent -> feedbackMode.criticalFilter
+                is FeedbackMode.ByTechnicalArea -> null
+            }
+
+            val events = getEnrollmentEvents(compulsoryFilter)
 
             if (events.isEmpty()) {
                 Either.Left(FeedbackFailure.NotFound)
@@ -36,34 +41,43 @@ class GetFeedback(
 
     private fun createFeedback(
         feedbackMode: FeedbackMode,
-        teiEvents: List<EventViewModel>
+        teiEvents: List<Event>
     ): List<TreeNode<FeedbackItem>> {
         return when (feedbackMode) {
-            is FeedbackMode.ByEvent -> createFeedbackByEvent(teiEvents, feedbackMode.criticalFilter)
-            is FeedbackMode.ByTechnicalArea -> createFeedbackByEvent(
-                teiEvents
-            )
+            is FeedbackMode.ByEvent -> createFeedbackByEvent(teiEvents)
+            is FeedbackMode.ByTechnicalArea -> createFeedbackByTechnicalAre(teiEvents)
         }
     }
 
     private fun createFeedbackByEvent(
-        teiEvents: List<EventViewModel>,
-        criticalFilter: Boolean? = null
+        teiEvents: List<Event>
     ): List<TreeNode<FeedbackItem>> {
         return teiEvents.map { event ->
-            val eventUid = event.event?.uid()!!
-            val values = valuesRepository.getByEvent(eventUid, criticalFilter)
+            val children = mapToTreeNodes(event.values)
 
-            val children = mapToTreeNodes(values)
-
-            TreeNode.Node(FeedbackItem(event.stage?.displayName()!!, null, eventUid), children)
+            TreeNode.Node(FeedbackItem(event.name, null, event.uid), children)
         }
     }
 
-    private fun mapToTreeNodes(values: List<Value>): List<TreeNode<*>> {
+    private fun createFeedbackByTechnicalAre(
+        teiEvents: List<Event>
+    ): List<TreeNode<FeedbackItem>> {
+
+        val distinctValues = teiEvents.flatMap { it.values }.distinctBy { it.dataElement }
+        val treeNodes = mapToTreeNodes(distinctValues, false)
+
+        addEventsToLastNodes(treeNodes, teiEvents)
+
+        return treeNodes
+    }
+
+    private fun mapToTreeNodes(
+        values: List<Value>,
+        withValue: Boolean = true
+    ): List<TreeNode<FeedbackItem>> {
         val treeNodes = mutableListOf<TreeNode<FeedbackItem>>()
 
-        val nodesMap = values.associate { it.feedbackOrder.value to mapToTreeNode(it) }
+        val nodesMap = values.associate { it.feedbackOrder.value to mapToTreeNode(it, withValue) }
 
         values.sortedBy { it.feedbackOrder }.forEach { eventValue ->
             val currentNode = nodesMap[eventValue.feedbackOrder.value]!!
@@ -97,18 +111,47 @@ class GetFeedback(
         return treeNodes
     }
 
-    private fun mapToTreeNode(eventValue: Value): TreeNode.Node<FeedbackItem> {
+    private fun addEventsToLastNodes(treeNodes: List<TreeNode<FeedbackItem>>, events: List<Event>) {
+        treeNodes.forEach { treeNode ->
+            if (treeNode is TreeNode.Node &&
+                (treeNode.children.isEmpty() || treeNode.children[0] is TreeNode.Leaf)) {
+                events.filter { event ->
+                    event.values.any { v -> v.dataElement == treeNode.content.code }
+                }.map { event ->
+                    val eventValue = event.values.first { it.dataElement == treeNode.content.code }
+
+                    FeedbackItem(
+                        event.name,
+                        FeedbackItemValue(eventValue.value, eventValue.colorByLegend),
+                        event.uid
+                    )
+                }.forEach {
+                    treeNode.addChild(TreeNode.Node(it))
+                }
+            } else if (treeNode is TreeNode.Node) {
+                addEventsToLastNodes(treeNode.children as List<TreeNode<FeedbackItem>>, events)
+            }
+        }
+    }
+
+    private fun mapToTreeNode(
+        eventValue: Value,
+        withValue: Boolean = true
+    ): TreeNode.Node<FeedbackItem> {
         return TreeNode.Node(
             FeedbackItem(
                 eventValue.name,
-                FeedbackItemValue(eventValue.value, eventValue.colorByLegend),
+                if (withValue) FeedbackItemValue(
+                    eventValue.value,
+                    eventValue.colorByLegend
+                ) else null,
                 eventValue.dataElement
             )
         )
     }
 
-    private fun getEnrollmentEvents(): List<EventViewModel> {
-        return teiDataRepository.getTEIEnrollmentEvents(
+    private fun getEnrollmentEvents(compulsoryValues: Boolean?): List<Event> {
+        val enrolmentEvents = teiDataRepository.getTEIEnrollmentEvents(
             null,
             false,
             mutableListOf(),
@@ -118,9 +161,15 @@ class GetFeedback(
             mutableListOf(),
             mutableListOf()
         ).blockingGet()
+
+        return enrolmentEvents.map {
+            val values = valuesRepository.getByEvent(it.event!!.uid(), compulsoryValues)
+
+            Event(it.event.uid(), it.stage?.displayName()!!, values)
+        }
     }
 }
 
 interface ValuesRepository {
-    fun getByEvent(eventUid: String, onlyMandatory: Boolean?): List<Value>
+    fun getByEvent(eventUid: String, compulsoryFilter: Boolean? = null): List<Value>
 }
