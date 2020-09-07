@@ -60,6 +60,8 @@ public class ProgramEventDetailContract {
 
         void startNewEvent();
 
+        void updateEventCarouselItem(ProgramEventViewModel programEventViewModel);
+
         boolean isMapVisible();
 
         void navigateToEvent(String eventId, String orgUnit);
@@ -82,7 +84,7 @@ public class ProgramEventDetailContract {
 
         void onSyncIconClick(String uid);
 
-        void getEventInfo(String eventUid, LatLng latLng);
+        void getEventInfo(String eventUid);
 
         void getMapData();
 

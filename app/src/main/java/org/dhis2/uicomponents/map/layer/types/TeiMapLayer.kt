@@ -138,7 +138,10 @@ class TeiMapLayer(
 
     private fun setVisibility(visibility: String) {
         when (featureType) {
-            FeatureType.POINT -> pointLayer.setProperties(PropertyFactory.visibility(visibility))
+            FeatureType.POINT -> {
+                pointLayer.setProperties(PropertyFactory.visibility(visibility))
+                selectedPointLayer.setProperties(PropertyFactory.visibility(visibility))
+            }
             FeatureType.POLYGON -> {
                 polygonLayer.setProperties(PropertyFactory.visibility(visibility))
                 polygonBorderLayer.setProperties(PropertyFactory.visibility(visibility))

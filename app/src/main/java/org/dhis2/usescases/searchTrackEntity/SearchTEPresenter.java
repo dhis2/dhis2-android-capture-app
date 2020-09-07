@@ -980,4 +980,17 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             view.setFiltersVisibility(filtersActive);
         }
     }
+
+    @Override
+    public SearchTeiModel getTeiInfo(String teiUid) {
+        return searchRepository.getTrackedEntityInfo(teiUid, selectedProgram, FilterManager.getInstance().getSortingItem());
+    }
+
+    @Override
+    public EventUiComponentModel getEventInfo(String eventUid, String teiUid) {
+        return eventToEventUiComponent.map(
+                searchRepository.getEventInfo(eventUid),
+                searchRepository.getTrackedEntityInfo(teiUid, selectedProgram, FilterManager.getInstance().getSortingItem())
+        );
+    }
 }
