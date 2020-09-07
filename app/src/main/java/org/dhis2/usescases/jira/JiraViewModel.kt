@@ -8,9 +8,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.prefs.PreferenceProviderImpl
@@ -93,7 +94,7 @@ class JiraViewModel : ViewModel(), JiraActions {
         val basic = String.format("Basic %s", session.value)
         val request = JiraIssueListRequest(prefs.getString(Constants.JIRA_USER, userName.value), 20)
         val requestBody =
-            RequestBody.create(MediaType.parse("application/json"), Gson().toJson(request))
+            RequestBody.create("application/json".toMediaTypeOrNull(), Gson().toJson(request))
         issueService.getJiraIssues(basic, requestBody).enqueue(getJiraIssueListCallback())
     }
 
@@ -145,7 +146,7 @@ class JiraViewModel : ViewModel(), JiraActions {
         val issueRequest = IssueRequest(summary.value, description.value)
         val basic = String.format("Basic %s", session.value)
         val requestBody =
-            RequestBody.create(MediaType.parse("application/json"), Gson().toJson(issueRequest))
+            Gson().toJson(issueRequest).toRequestBody("application/json".toMediaTypeOrNull())
         issueService.createIssue(basic, requestBody).enqueue(getIssueCallback())
     }
 

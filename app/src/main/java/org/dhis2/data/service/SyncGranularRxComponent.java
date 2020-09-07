@@ -1,13 +1,13 @@
 package org.dhis2.data.service;
 
-import org.dhis2.data.dagger.PerService;
+import androidx.annotation.NonNull;
 
-import javax.annotation.Nonnull;
+import org.dhis2.data.dagger.PerService;
 
 import dagger.Subcomponent;
 
 @PerService
 @Subcomponent(modules = SyncGranularRxModule.class)
 public interface SyncGranularRxComponent {
-    void inject(@Nonnull SyncGranularWorker syncGranularWorker);
+    void inject(@NonNull SyncGranularWorker syncGranularWorker);
 }

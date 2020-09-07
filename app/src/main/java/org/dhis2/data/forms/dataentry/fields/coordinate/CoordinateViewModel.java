@@ -9,8 +9,6 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 
-import javax.annotation.Nonnull;
-
 /**
  * QUADRAM. Created by frodriguez on 1/24/2018.
  */
@@ -42,7 +40,7 @@ public abstract class CoordinateViewModel extends FieldViewModel {
         return new AutoValue_CoordinateViewModel(uid(), label(), mandatory(), value(), programStageSection(), null, editable(), null, warning(), error, description(), objectStyle(), null, featureType());
     }
 
-    @Nonnull
+   @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_CoordinateViewModel(uid(), label(), mandatory(), data, programStageSection(), null, false, null, warning(), error(), description(), objectStyle(), null, featureType());

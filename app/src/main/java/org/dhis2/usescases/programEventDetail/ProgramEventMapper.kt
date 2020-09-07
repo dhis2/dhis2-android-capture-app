@@ -12,6 +12,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 
@@ -109,7 +110,9 @@ class ProgramEventMapper @Inject constructor(val d2: D2, val dhisEventUtils: Dhi
                 }
             } else {
                 stageSections.forEach {
-                    dataElementsOrder.addAll(UidsHelper.getUidsList(it.dataElements()))
+                    dataElementsOrder.addAll(
+                        UidsHelper.getUidsList(it.dataElements() as Collection<DataElement>)
+                    )
                 }
             }
 

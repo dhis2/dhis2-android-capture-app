@@ -17,7 +17,8 @@ class SettingsExtensionsTest {
         EVERY_HOUR,
         EVERY_12_HOUR,
         EVERY_24_HOUR,
-        EVERY_7_DAYS
+        EVERY_7_DAYS,
+        0
     )
 
     private val dataSyncingPeriods = arrayListOf(
@@ -26,7 +27,7 @@ class SettingsExtensionsTest {
         EVERY_6_HOUR,
         EVERY_12_HOUR,
         EVERY_24_HOUR,
-        EVERY_7_DAYS
+        0
     )
 
     @Test

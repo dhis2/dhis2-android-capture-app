@@ -11,11 +11,6 @@ import org.hisp.dhis.android.core.common.ValueType;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.Nonnull;
-
-/**
- * QUADRAM. Created by frodriguez on 1/24/2018.
- */
 @AutoValue
 public abstract class RadioButtonViewModel extends FieldViewModel {
 
@@ -81,7 +76,7 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
         return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning, error(), description(),dataElement(),listCategoryOption(), storeBy(), row(), column(),categoryOptionCombo(),catCombo(), mandatory(), valueType());
     }
 
-    @Nonnull
+   @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_RadioButtonViewModel(uid(), label(), data, programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(),dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(),catCombo(), mandatory(), valueType());
