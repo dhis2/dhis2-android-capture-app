@@ -23,6 +23,10 @@ import androidx.work.WorkInfo
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import java.text.ParseException
+import java.util.Calendar
+import java.util.Date
+import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.checkSMSPermission
@@ -42,10 +46,6 @@ import org.dhis2.utils.analytics.SYNC_GRANULAR_SMS
 import org.dhis2.utils.customviews.MessageAmountDialog
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
-import java.text.ParseException
-import java.util.Calendar
-import java.util.Date
-import javax.inject.Inject
 
 private const val SMS_PERMISSIONS_REQ_ID = 102
 
@@ -138,10 +138,10 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         fun build(): SyncStatusDialog {
             if (conflictType == ConflictType.DATA_VALUES &&
                 (
-                        orgUnitDataValue == null ||
-                                attributeComboDataValue == null ||
-                                periodIdDataValue == null
-                        )
+                    orgUnitDataValue == null ||
+                        attributeComboDataValue == null ||
+                        periodIdDataValue == null
+                    )
             ) {
                 throw NullPointerException(
                     "DataSets require non null, orgUnit, attributeOptionCombo and periodId"
@@ -441,7 +441,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 StatusLogItem.create(
                     Date(),
                     StatusText.getTextSubmissionType(resources, getInputArguments()) + ": " +
-                            StatusText.getTextForStatus(resources, it)
+                        StatusText.getTextForStatus(resources, it)
                 )
             )
         }
