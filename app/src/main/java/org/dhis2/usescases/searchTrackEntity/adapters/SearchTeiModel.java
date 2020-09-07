@@ -206,7 +206,7 @@ public class SearchTeiModel implements CarouselItemModel {
 
     @NotNull
     @Override
-    public String getUid() {
+    public String uid() {
         return tei.uid();
     }
 }

@@ -17,6 +17,5 @@ data class EventUiComponentModel(
     val teiDefaultIcon: String,
     val orgUnitName: String
 ) : CarouselItemModel {
-    override val uid: String
-        get() = eventUid
+    override fun uid(): String = eventUid
 }

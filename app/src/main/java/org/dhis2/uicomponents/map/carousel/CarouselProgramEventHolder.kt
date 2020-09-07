@@ -22,7 +22,7 @@ class CarouselProgramEventHolder(
     override fun bind(data: ProgramEventViewModel) {
         binding.event = data
         itemView.setOnClickListener {
-            onClick(data.uid(), data.orgUnitUid(), data.uid)
+            onClick(data.uid(), data.orgUnitUid(), data.uid())
         }
 
         val stringBuilder = SpannableStringBuilder()

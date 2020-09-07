@@ -167,10 +167,10 @@ class CarouselAdapter private constructor(
     }
 
     fun updateItem(carouselItem: CarouselItemModel) {
-        allItems.takeIf { it.isNotEmpty() }?.indexOfFirst { it.uid == carouselItem.uid }?.let {
+        allItems.takeIf { it.isNotEmpty() }?.indexOfFirst { it.uid() == carouselItem.uid() }?.let {
             allItems[it] = carouselItem
         }
-        items.indexOfFirst { it.uid == carouselItem.uid }.let {
+        items.indexOfFirst { it.uid() == carouselItem.uid() }.let {
             items[it] = carouselItem
             notifyItemChanged(it)
         }
