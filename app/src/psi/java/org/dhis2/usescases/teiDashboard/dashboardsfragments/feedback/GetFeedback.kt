@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 import org.dhis2.core.functional.Either
 import org.dhis2.core.types.TreeNode
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import java.lang.IllegalStateException
 
 sealed class FeedbackFailure {
@@ -12,7 +11,7 @@ sealed class FeedbackFailure {
 }
 
 sealed class FeedbackMode {
-    data class ByEvent(val criticalFilter: Boolean? = null) : FeedbackMode()
+    object ByEvent : FeedbackMode()
     object ByTechnicalArea : FeedbackMode()
 }
 
@@ -20,19 +19,19 @@ class GetFeedback(
     private val teiDataRepository: TeiDataRepository,
     private val valuesRepository: ValuesRepository
 ) {
-    operator fun invoke(feedbackMode: FeedbackMode): Either<FeedbackFailure, List<TreeNode<FeedbackItem>>> {
+    operator fun invoke(
+        feedbackMode: FeedbackMode,
+        criticalFilter: Boolean?,
+        onlyFailedFilter: Boolean
+    ): Either<FeedbackFailure, List<TreeNode<FeedbackItem>>> {
         return try {
-            val compulsoryFilter = when (feedbackMode) {
-                is FeedbackMode.ByEvent -> feedbackMode.criticalFilter
-                is FeedbackMode.ByTechnicalArea -> null
-            }
 
-            val events = getEnrollmentEvents(compulsoryFilter)
+            val events = getEnrollmentEvents(criticalFilter)
 
             if (events.isEmpty()) {
                 Either.Left(FeedbackFailure.NotFound)
             } else {
-                Either.Right(createFeedback(feedbackMode, events))
+                Either.Right(createFeedback(feedbackMode, events, onlyFailedFilter))
             }
         } catch (e: Exception) {
             Either.Left(FeedbackFailure.UnexpectedError(e))
@@ -41,16 +40,20 @@ class GetFeedback(
 
     private fun createFeedback(
         feedbackMode: FeedbackMode,
-        teiEvents: List<Event>
+        teiEvents: List<Event>,
+        onlyFailedFilter: Boolean
     ): List<TreeNode<FeedbackItem>> {
         return when (feedbackMode) {
-            is FeedbackMode.ByEvent -> createFeedbackByEvent(teiEvents)
-            is FeedbackMode.ByTechnicalArea -> createFeedbackByTechnicalAre(teiEvents)
+            is FeedbackMode.ByEvent -> createFeedbackByEvent(teiEvents, onlyFailedFilter)
+            is FeedbackMode.ByTechnicalArea -> createFeedbackByTechnicalAre(
+                teiEvents, onlyFailedFilter
+            )
         }
     }
 
     private fun createFeedbackByEvent(
-        teiEvents: List<Event>
+        teiEvents: List<Event>,
+        onlyFailed: Boolean
     ): List<TreeNode<FeedbackItem>> {
 
         val teiEventsWithValues = teiEvents.filter { it.values.isNotEmpty() }
@@ -63,7 +66,8 @@ class GetFeedback(
     }
 
     private fun createFeedbackByTechnicalAre(
-        teiEvents: List<Event>
+        teiEvents: List<Event>,
+        onlyFailed: Boolean
     ): List<TreeNode<FeedbackItem>> {
 
         val distinctValues = teiEvents.flatMap { it.values }.distinctBy { it.dataElement }
@@ -117,7 +121,7 @@ class GetFeedback(
                         event.uid
                     )
                 }.forEach {
-                    treeNode.addChild(TreeNode.Node(it))
+                    treeNode.addChild(TreeNode.Leaf(it))
                 }
             } else if (treeNode is TreeNode.Node) {
                 addEventsToLastNodes(treeNode.children as List<TreeNode<FeedbackItem>>, events)

@@ -11,7 +11,9 @@ import timber.log.Timber
 
 sealed class FeedbackContentState {
     object Loading : FeedbackContentState()
-    data class Loaded(val feedback: List<TreeNode<*>>) : FeedbackContentState()
+    data class Loaded(val feedback: List<TreeNode<*>>, val onlyFailedFilter: Boolean) :
+        FeedbackContentState()
+
     object NotFound : FeedbackContentState()
     object UnexpectedError : FeedbackContentState()
 }
@@ -19,15 +21,22 @@ sealed class FeedbackContentState {
 class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
     CoroutineScope by MainScope() {
 
-    private lateinit var feedbackMode: FeedbackMode
     private var view: FeedbackContentView? = null
-    private var lastFeedback: List<TreeNode<FeedbackItem>> = listOf()
+    private lateinit var feedbackMode: FeedbackMode
+    private var criticalFilter: Boolean? = null
+    private var lastLoaded: FeedbackContentState.Loaded? = null
 
-    fun attach(view: FeedbackContentView, feedbackMode: FeedbackMode) {
+    fun attach(
+        view: FeedbackContentView,
+        feedbackMode: FeedbackMode,
+        criticalFilter: Boolean?,
+        onlyFailedFilter: Boolean
+    ) {
         this.view = view
-        this.feedbackMode = feedbackMode;
+        this.feedbackMode = feedbackMode
+        this.criticalFilter = criticalFilter
 
-        loadFeedback()
+        loadFeedback(onlyFailedFilter)
     }
 
     fun detach() {
@@ -35,44 +44,46 @@ class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
         cancel()
     }
 
-    private fun loadFeedback() = launch {
+    fun changeOnlyFailedFilter(value: Boolean) {
+        loadFeedback(value)
+    }
+
+    private fun loadFeedback(onlyFailedFilter: Boolean) = launch {
         render(FeedbackContentState.Loading)
 
-        val result = withContext(Dispatchers.IO) { getFeedback(feedbackMode) }
+        val result = withContext(Dispatchers.IO) {
+            getFeedback(feedbackMode, criticalFilter, onlyFailedFilter)
+        }
 
         result.fold(
             { failure -> handleFailure(failure) },
             { feedback ->
 
-                if (lastFeedback.isNotEmpty()){
+                if (lastLoaded != null && lastLoaded!!.feedback.isNotEmpty()) {
                     tryMaintainCurrentExpandedItems(feedback)
                 }
 
-                lastFeedback = feedback
-                render(
-                    FeedbackContentState.Loaded(
-                        feedback
-                    )
-                )
+                lastLoaded = FeedbackContentState.Loaded(feedback, onlyFailedFilter)
+                render(lastLoaded!!)
             })
     }
 
     private fun tryMaintainCurrentExpandedItems(feedback: List<TreeNode<FeedbackItem>>) {
-        val flattedLastFeedback = flatTreeNodes(lastFeedback)
-        val flattedFeedback =  flatTreeNodes(feedback)
+        val flattedLastFeedback = flatTreeNodes(lastLoaded!!.feedback)
+        val flattedFeedback = flatTreeNodes(feedback)
 
-        flattedFeedback.forEach{ current ->
-            val last = flattedLastFeedback.firstOrNull{ last ->
+        flattedFeedback.forEach { current ->
+            val last = flattedLastFeedback.firstOrNull { last ->
                 last.content == current.content && last.content.code == current.content.code
             }
 
-            if (last != null){
+            if (last != null) {
                 (current as TreeNode.Node).expanded = (last as TreeNode.Node).expanded
             }
         }
     }
 
-    private fun flatTreeNodes(nodes: List<TreeNode<*>>):List<TreeNode<FeedbackItem>> {
+    private fun flatTreeNodes(nodes: List<TreeNode<*>>): List<TreeNode<FeedbackItem>> {
         var flattedNodes: MutableList<TreeNode<*>> = mutableListOf()
 
         for (node in nodes) {

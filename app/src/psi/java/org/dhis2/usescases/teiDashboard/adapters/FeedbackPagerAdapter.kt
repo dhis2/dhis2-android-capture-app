@@ -5,7 +5,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback.FeedbackContentFragment
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback.HnqisFeedbackFilter
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback.ProgramType
-import org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback.RdqaFeedbackFilter
+import org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback.RdqaFeedbackMode
 
 class FeedbackPagerAdapter(
     fragment: Fragment,
@@ -22,9 +22,9 @@ class FeedbackPagerAdapter(
 
     private fun createFragmentByRDQA(position: Int): Fragment {
         return when (position) {
-            RDQA_BY_INDICATOR_POS -> FeedbackContentFragment.newInstanceByRDQA(RdqaFeedbackFilter.BY_INDICATOR)
+            RDQA_BY_INDICATOR_POS -> FeedbackContentFragment.newInstanceByRDQA(RdqaFeedbackMode.BY_INDICATOR)
             RDQA_BY_TECHNICAL_ARE_POS -> FeedbackContentFragment.newInstanceByRDQA(
-                RdqaFeedbackFilter.BY_TECHNICAL_AREA
+                RdqaFeedbackMode.BY_TECHNICAL_AREA
             )
             else -> throw IllegalStateException("Fragment not supported")
         }

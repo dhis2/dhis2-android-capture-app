@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
+import kotlinx.android.synthetic.main.form_bottom_dialog.view.*
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.core.ui.tree.TreeAdapter
@@ -22,9 +23,7 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
     @Inject
     lateinit var presenter: FeedbackContentPresenter
     private lateinit var binding: FragmentFeedbackContentBinding
-
     private lateinit var activity: TeiDashboardMobileActivity
-    private lateinit var feedbackMode: FeedbackMode
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -48,10 +47,6 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
             R.layout.fragment_feedback_content, container, false
         )
 
-        val programType = arguments?.getSerializable(PROGRAM_TYPE) as ProgramType
-
-        initFeedbackMode(programType)
-
         binding.feedbackRecyclerView.addItemDecoration(
             DividerItemDecoration(
                 context,
@@ -59,11 +54,20 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
             )
         )
 
+        binding.failedCheckBox.setOnClickListener {
+            presenter.changeOnlyFailedFilter(binding.failedCheckBox.isChecked)
+        }
+
         return binding.root
     }
 
     override fun onResume() {
-        presenter.attach(this, feedbackMode)
+        val programType = arguments?.getSerializable(PROGRAM_TYPE) as ProgramType
+
+        val feedbackMode = initFeedbackMode(programType)
+        val criticalFilter: Boolean? = initCriticalQuestionFilter(programType)
+
+        presenter.attach(this, feedbackMode, criticalFilter, binding.failedCheckBox.isChecked)
         super.onResume()
     }
 
@@ -81,18 +85,26 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
         }
     }
 
-    private fun initFeedbackMode(programType: ProgramType) {
-        feedbackMode = if (programType == ProgramType.RDQA) {
-            val rdqaFeedbackFilter = (arguments?.getSerializable(RDQA_FILTER) as RdqaFeedbackFilter)
-            if (rdqaFeedbackFilter == RdqaFeedbackFilter.BY_INDICATOR) FeedbackMode.ByEvent() else FeedbackMode.ByTechnicalArea
+    private fun initFeedbackMode(programType: ProgramType): FeedbackMode {
+        return if (programType == ProgramType.RDQA) {
+            val rdqaFeedbackFilter = (arguments?.getSerializable(RDQA_MODE) as RdqaFeedbackMode)
+            if (rdqaFeedbackFilter == RdqaFeedbackMode.BY_INDICATOR) FeedbackMode.ByEvent else FeedbackMode.ByTechnicalArea
+        } else {
+            FeedbackMode.ByEvent
+        }
+    }
+
+    private fun initCriticalQuestionFilter(programType: ProgramType): Boolean? {
+        return if (programType == ProgramType.RDQA) {
+            null
         } else {
             val hnqisFeedbackFilter =
                 (arguments?.getSerializable(HNQIS_FILTER) as HnqisFeedbackFilter)
 
             when (hnqisFeedbackFilter) {
-                HnqisFeedbackFilter.CRITICAL -> FeedbackMode.ByEvent(true)
-                HnqisFeedbackFilter.NON_CRITICAL -> FeedbackMode.ByEvent(false)
-                HnqisFeedbackFilter.ALL -> FeedbackMode.ByEvent()
+                HnqisFeedbackFilter.CRITICAL -> true
+                HnqisFeedbackFilter.NON_CRITICAL -> false
+                HnqisFeedbackFilter.ALL -> null
             }
         }
     }
@@ -125,17 +137,17 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
 
     companion object {
         private const val PROGRAM_TYPE = "program_type"
-        private const val RDQA_FILTER = "rdqa_filter"
+        private const val RDQA_MODE = "rdqa_mode"
         private const val HNQIS_FILTER = "hnqis_filter"
 
         fun newInstanceByRDQA(
-            RdqaFeedbackFilter: RdqaFeedbackFilter
+            RdqaFeedbackMode: RdqaFeedbackMode
         ): FeedbackContentFragment {
             val fragment = FeedbackContentFragment()
 
             val args = Bundle()
             args.putSerializable(PROGRAM_TYPE, ProgramType.RDQA)
-            args.putSerializable(RDQA_FILTER, RdqaFeedbackFilter)
+            args.putSerializable(RDQA_MODE, RdqaFeedbackMode)
             fragment.arguments = args
 
             return fragment
