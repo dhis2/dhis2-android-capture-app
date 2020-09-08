@@ -101,7 +101,9 @@ public class CustomTextView extends FieldLayout {
         descIcon = findViewById(R.id.descIcon);
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
-            selectItem(hasFocus);
+            if (isBgTransparent) {
+                selectItem(hasFocus);
+            }
             if (hasFocus) {
                 activate();
             } else if (focusListener != null && validate()) {
@@ -142,8 +144,6 @@ public class CustomTextView extends FieldLayout {
                     editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(50000)});
                     editText.setLines(1);
                     editText.setEllipsize(TextUtils.TruncateAt.END);
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_text);
                     break;
                 case LONG_TEXT:
                     editText.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -155,8 +155,6 @@ public class CustomTextView extends FieldLayout {
                     editText.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
                     editText.setSingleLine(false);
                     editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_text);
                     break;
                 case LETTER:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
