@@ -17,7 +17,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
@@ -26,6 +25,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.BR;
 import org.dhis2.R;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.ObjectStyleUtils;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -59,6 +59,7 @@ public class CustomTextView extends FieldLayout {
     private boolean isLongText;
     private View descriptionLabel;
     private View dummy;
+    private TextView labelText;
 
     public CustomTextView(Context context) {
         super(context);
@@ -95,10 +96,12 @@ public class CustomTextView extends FieldLayout {
         icon = findViewById(R.id.renderImage);
         descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
         dummy = findViewById(R.id.dummyFocusView);
+        labelText = findViewById(R.id.label);
 
         descIcon = findViewById(R.id.descIcon);
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
+            selectItem(hasFocus);
             if (hasFocus) {
                 activate();
             } else if (focusListener != null && validate()) {
@@ -371,5 +374,13 @@ public class CustomTextView extends FieldLayout {
     public void setOnLongActionListener(View.OnLongClickListener listener) {
         if (!editText.isFocusable())
             editText.setOnLongClickListener(listener);
+    }
+
+    public void selectItem(boolean selected) {
+        if (selected) {
+            labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+        } else {
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
+        }
     }
 }
