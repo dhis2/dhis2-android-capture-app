@@ -29,11 +29,15 @@
             app:tabSelectedTextColor="?colorPrimary"
             app:tabIndicatorColor="?colorPrimary" />
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/feedback_pager"
+        <org.dhis2.core.ui.viewpager2.NestedScrollableHost
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false" />
+            android:layout_height="match_parent">
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/feedback_pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false" />
+        </org.dhis2.core.ui.viewpager2.NestedScrollableHost>
 
         <TextView
             android:id="@+id/error_feedback"
