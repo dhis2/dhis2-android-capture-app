@@ -90,7 +90,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/label"
-            android:background="#DEFFFFFF"
+            android:background="@drawable/bottomsheet_bg"
             tools:hint="hint">
 
             <org.dhis2.utils.customviews.TextInputAutoCompleteTextView
