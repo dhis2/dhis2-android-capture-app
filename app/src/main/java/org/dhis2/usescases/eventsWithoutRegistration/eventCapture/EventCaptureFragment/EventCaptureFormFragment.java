@@ -114,12 +114,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void saveOpenedSection(@Nullable String sectionUid) {
         dataEntryAdapter.saveOpenedSection(sectionUid);
-        if(dataEntryAdapter.getSavedPosition() != -1) {
-            LinearLayoutManager myLayoutManager = (LinearLayoutManager) binding.formRecycler.getLayoutManager();
-            myLayoutManager.scrollToPositionWithOffset(dataEntryAdapter.getSavedPosition(),50);
-            binding.formRecycler.smoothScrollToPosition(dataEntryAdapter.getSavedPosition());
-            dataEntryAdapter.saveOpenedSection(null);
-        }
     }
 
     @Override
@@ -131,16 +125,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
         if (dataEntryAdapter == null) {
             createDataEntry();
-        }
-
-        LinearLayoutManager myLayoutManager = (LinearLayoutManager) binding.formRecycler.getLayoutManager();
-        if (myLayoutManager == null) return;
-
-        int myFirstPositionIndex = myLayoutManager.findFirstVisibleItemPosition();
-        View myFirstPositionView = myLayoutManager.findViewByPosition(myFirstPositionIndex);
-        int offset = 0;
-        if (myFirstPositionView != null) {
-            offset = myFirstPositionView.getTop();
         }
 
         if (dataEntryAdapter == null) {
