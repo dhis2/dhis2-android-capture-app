@@ -119,10 +119,6 @@ public class CustomTextView extends FieldLayout {
     private void configureViews() {
 
         editText.setFilters(new InputFilter[]{});
-
-        TextInputLayout.LayoutParams lp = new TextInputLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.weight = 1f;
-        inputLayout.setLayoutParams(lp);
         editText.setMaxLines(1);
         editText.setVerticalScrollBarEnabled(false);
 
@@ -155,6 +151,9 @@ public class CustomTextView extends FieldLayout {
                     editText.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
                     editText.setSingleLine(false);
                     editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+                    findViewById(R.id.clear_button).setOnClickListener(v -> {
+                        editText.getText().clear();
+                    });
                     break;
                 case LETTER:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
