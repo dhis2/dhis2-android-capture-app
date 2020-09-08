@@ -52,7 +52,10 @@ class GetFeedback(
     private fun createFeedbackByEvent(
         teiEvents: List<Event>
     ): List<TreeNode<FeedbackItem>> {
-        return teiEvents.map { event ->
+
+        val teiEventsWithValues = teiEvents.filter { it.values.isNotEmpty() }
+
+        return teiEventsWithValues.map { event ->
             val children = mapToTreeNodes(event.values)
 
             TreeNode.Node(FeedbackItem(event.name, null, event.uid), children)
@@ -95,26 +98,14 @@ class GetFeedback(
             }
         }
 
-        // Add help text to the last depth children
-        nodesMap.forEach { entry ->
-            val node = entry.value
-
-            if (node.children.isEmpty()) {
-                val eventValue = values.first { it.dataElement == node.content.code }
-
-                if (eventValue.feedbackHelp != null) {
-                    node.addChild(TreeNode.Leaf(FeedbackHelpItem(eventValue.feedbackHelp)))
-                }
-            }
-        }
-
         return treeNodes
     }
 
     private fun addEventsToLastNodes(treeNodes: List<TreeNode<FeedbackItem>>, events: List<Event>) {
         treeNodes.forEach { treeNode ->
             if (treeNode is TreeNode.Node &&
-                (treeNode.children.isEmpty() || treeNode.children[0] is TreeNode.Leaf)) {
+                (treeNode.children.isEmpty() || treeNode.children[0] is TreeNode.Leaf)
+            ) {
                 events.filter { event ->
                     event.values.any { v -> v.dataElement == treeNode.content.code }
                 }.map { event ->
@@ -146,7 +137,9 @@ class GetFeedback(
                     eventValue.colorByLegend
                 ) else null,
                 eventValue.dataElement
-            )
+            ), if (eventValue.feedbackHelp != null) listOf(
+                TreeNode.Leaf(FeedbackHelpItem(eventValue.feedbackHelp))
+            ) else mutableListOf()
         )
     }
 
