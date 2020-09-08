@@ -52,6 +52,7 @@ class EventCaptureFormPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
+                        view.saveOpenedSection(it)
                         activityPresenter.goToSection(it)
                     },
                     Timber::e
