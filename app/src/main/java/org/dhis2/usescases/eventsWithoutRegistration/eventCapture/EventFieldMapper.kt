@@ -128,6 +128,7 @@ class EventFieldMapper {
             )
         }
 
+        finalFields = HashMap()
         for (fieldViewModel in fieldViewModels) {
             finalFields[getCorrectUid(fieldViewModel)] =
                 !isEmpty(fieldViewModel.value())
