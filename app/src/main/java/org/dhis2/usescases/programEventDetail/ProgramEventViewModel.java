@@ -21,9 +21,6 @@ import java.util.List;
 public abstract class ProgramEventViewModel implements CarouselItemModel {
 
     @NonNull
-    public abstract String uid();
-
-    @NonNull
     public abstract String orgUnitUid();
 
     @NonNull

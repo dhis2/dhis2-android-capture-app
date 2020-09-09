@@ -48,6 +48,25 @@ class EnrollmentRepository(
     private val enrollmentRepository: EnrollmentObjectRepository =
         d2.enrollmentModule().enrollments().uid(enrollmentUid)
 
+    private val canEditAttributes: Boolean
+
+    init {
+        canEditAttributes = getAttributeAccess()
+    }
+
+    private fun getAttributeAccess(): Boolean {
+        val selectedProgram = d2.programModule().programs().uid(
+            enrollmentRepository.blockingGet().program()
+        ).blockingGet()
+        val programAccess =
+            selectedProgram.access().data().write() != null && selectedProgram.access().data()
+                .write()
+        val teTypeAccess = d2.trackedEntityModule().trackedEntityTypes().uid(
+            selectedProgram.trackedEntityType()?.uid()
+        ).blockingGet().access().data().write()
+        return programAccess && teTypeAccess
+    }
+
     override fun enrollmentSectionUids(): Flowable<MutableList<String>> {
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
             .flatMap { enrollment ->
@@ -200,7 +219,7 @@ class EnrollmentRepository(
             dataValue,
             sectionUid,
             programTrackedEntityAttribute.allowFutureDate() ?: false,
-            !generated,
+            !generated && canEditAttributes,
             null,
             attribute.displayDescription(),
             programTrackedEntityAttribute.renderType()?.mobile(),

@@ -95,13 +95,15 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private int calculationLoop = 0;
     private final int MAX_LOOP_CALCULATIONS = 5;
     private PreferenceProvider preferences;
+    private GetNextVisibleSection getNextVisibleSection;
 
 
     public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
                                      EventCaptureContract.EventCaptureRepository eventCaptureRepository,
                                      RulesUtilsProvider rulesUtils,
                                      ValueStore valueStore, SchedulerProvider schedulerProvider,
-                                     PreferenceProvider preferences) {
+                                     PreferenceProvider preferences,
+                                     GetNextVisibleSection getNextVisibleSection) {
         this.view = view;
         this.eventUid = eventUid;
         this.eventCaptureRepository = eventCaptureRepository;
@@ -117,6 +119,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.sectionList = new ArrayList<>();
         this.compositeDisposable = new CompositeDisposable();
         this.preferences = preferences;
+        this.getNextVisibleSection = getNextVisibleSection;
 
         currentSectionPosition = PublishProcessor.create();
         sectionProcessor = PublishProcessor.create();
@@ -222,6 +225,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 sectionProcessor.startWith(sectionList.get(0).sectionUid())
                                         .switchMap(section -> fieldFlowable
                                                 .map(fields -> {
+                                                    String activeSection = getNextVisibleSection.get(section, sectionList, sectionsToHide);
                                                     totalFields = 0;
                                                     unsupportedFields = 0;
                                                     HashMap<String, List<FieldViewModel>> fieldMap = new HashMap<>();
@@ -235,11 +239,13 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                             fieldMap.get(fieldSection).add(fieldViewModel);
 
                                                             if (!(fieldViewModel instanceof DisplayViewModel)) {
-                                                                if (fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)) {
-                                                                    totalFields++;
-                                                                } else if (!optionSets.contains(fieldViewModel.optionSet())) {
-                                                                    optionSets.add(fieldViewModel.optionSet());
-                                                                    totalFields++;
+                                                                if (!sectionsToHide.contains(fieldViewModel.programStageSection())) {
+                                                                    if (fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)) {
+                                                                        totalFields++;
+                                                                    } else if (!optionSets.contains(fieldViewModel.optionSet())) {
+                                                                        optionSets.add(fieldViewModel.optionSet());
+                                                                        totalFields++;
+                                                                    }
                                                                 }
                                                             }
                                                             if (fieldViewModel instanceof UnsupportedViewModel)
@@ -271,7 +277,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
                                                             eventSectionModels.add(EventSectionModel.create(sectionModel.label(), sectionModel.sectionUid(), cont, finalFields.keySet().size()));
 
-                                                            boolean isOpen = sectionModel.sectionUid().equals(section);
+                                                            boolean isOpen = sectionModel.sectionUid().equals(activeSection);
                                                             finalFieldList.add(
                                                                     SectionViewModel.create(
                                                                             sectionModel.sectionUid(),
@@ -720,7 +726,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     public void setShowError(@NonNull RuleActionShowError showError, @Nullable FieldViewModel model) {
         canComplete = false;
         errors.put(eventCaptureRepository.getSectionFor(showError.field()), showError.field());
-        save(showError.field(), null);
     }
 
     @Override

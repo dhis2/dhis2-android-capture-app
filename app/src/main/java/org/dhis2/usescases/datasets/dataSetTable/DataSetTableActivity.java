@@ -325,7 +325,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                         binding.saveButton.animate()
                                 .translationY(0)
                                 .start();
-                        binding.saveButton.hide();
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         animateArrowUp();

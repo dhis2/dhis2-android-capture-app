@@ -1,15 +1,13 @@
 package org.dhis2.data.forms.dataentry.fields.section;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 @AutoValue
 public abstract class SectionViewModel extends FieldViewModel {
@@ -119,7 +117,7 @@ public abstract class SectionViewModel extends FieldViewModel {
         return this;
     }
 
-    @Nonnull
+   @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return this;

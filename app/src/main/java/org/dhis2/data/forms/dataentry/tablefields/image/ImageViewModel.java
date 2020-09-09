@@ -8,11 +8,6 @@ import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
-/**
- * QUADRAM. Created by ppajuelo on 31/05/2018.
- */
 @AutoValue
 public abstract class ImageViewModel extends FieldViewModel {
 
@@ -46,7 +41,7 @@ public abstract class ImageViewModel extends FieldViewModel {
                 allowFutureDate(), editable(), optionSet(), warning, error(),description(),dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(), catCombo());
     }
 
-    @Nonnull
+   @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_ImageViewModel(uid(), label(), mandatory(), data, programStageSection(),

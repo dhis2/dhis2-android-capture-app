@@ -46,6 +46,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.orgunitselector.OUTreeActivity;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventMode;
@@ -97,6 +98,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private EventMapManager eventMapManager;
 
     public static final String EXTRA_PROGRAM_UID = "PROGRAM_UID";
+    private String updateEvent;
 
     public static Bundle getBundle(String programUid) {
         Bundle bundle = new Bundle();
@@ -119,7 +121,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.setPresenter(presenter);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
 
-        liveAdapter = new ProgramEventDetailLiveAdapter(presenter);
+        liveAdapter = new ProgramEventDetailLiveAdapter(presenter.getProgram(),presenter);
         binding.recycler.setAdapter(liveAdapter);
         binding.recycler.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
@@ -163,8 +165,12 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         if (isMapVisible()) {
             animations.initMapLoading(binding.mapCarousel);
             binding.toolbarProgress.show();
+            if(updateEvent != null) {
+                presenter.getEventInfo(updateEvent);
+            }
+        } else {
+            FilterManager.getInstance().publishData();
         }
-        FilterManager.getInstance().publishData();
         if (eventMapManager != null) {
             eventMapManager.onResume();
         }
@@ -215,7 +221,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void showFilterProgress() {
         runOnUiThread(() -> {
-            if (isMapVisible()){
+            if (isMapVisible()) {
                 binding.toolbarProgress.setVisibility(View.VISIBLE);
                 binding.toolbarProgress.show();
             } else {
@@ -225,7 +231,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public void setLiveData(LiveData<PagedList<ProgramEventViewModel>> pagedListLiveData) {
+    public void setLiveData(LiveData<PagedList<EventViewModel>> pagedListLiveData) {
         pagedListLiveData.observe(this, pagedList -> {
             binding.programProgress.setVisibility(View.GONE);
             liveAdapter.submitList(pagedList, () -> {
@@ -395,7 +401,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                                 }
                                 return true;
                             })
-                    .addOnEventClickListener((teiUid, orgUnit) -> {
+                    .addOnEventClickListener((teiUid, orgUnit, eventUid) -> {
                         if (binding.mapCarousel.getCarouselEnabled()) {
                             presenter.onEventClick(teiUid, orgUnit);
                         }
@@ -431,6 +437,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         currentMarker = new MarkerView(eventInfo.val1(), view);
         eventMapManager.getMarkerViewManager().addMarker(currentMarker);
+    }
+
+    @Override
+    public void updateEventCarouselItem(ProgramEventViewModel programEventViewModel) {
+        ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateItem(programEventViewModel);
+        animations.endMapLoading(this.binding.mapCarousel);
+        this.binding.toolbarProgress.hide();
+        updateEvent = null;
     }
 
     @Override
@@ -484,6 +498,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void navigateToEvent(String eventId, String orgUnit) {
+        this.updateEvent = eventId;
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, programUid);
         bundle.putString(Constants.EVENT_UID, eventId);

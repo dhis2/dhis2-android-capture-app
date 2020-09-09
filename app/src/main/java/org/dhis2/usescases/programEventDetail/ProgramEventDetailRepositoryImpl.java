@@ -11,6 +11,7 @@ import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
 import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.filters.sorting.SortingStatus;
 import org.hisp.dhis.android.core.D2;
@@ -51,7 +52,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @NonNull
     @Override
-    public LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(
+    public LiveData<PagedList<EventViewModel>> filteredProgramEvents(
             List<DatePeriod> dateFilter,
             List<String> orgUnitFilter,
             List<CategoryOptionCombo> catOptCombList,
@@ -76,7 +77,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
         eventRepo = eventRepoSorting(sortingItem, eventRepo);
 
-        DataSource dataSource = eventRepo.withTrackedEntityDataValues().getDataSource().map(event -> mapper.eventToProgramEvent(event));
+        DataSource dataSource = eventRepo.withTrackedEntityDataValues().getDataSource().map(event -> mapper.eventToEventViewModel(event));
 
         return new LivePagedListBuilder(new DataSource.Factory() {
             @Override

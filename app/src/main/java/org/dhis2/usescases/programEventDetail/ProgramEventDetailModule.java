@@ -44,12 +44,6 @@ public class ProgramEventDetailModule {
 
     @Provides
     @PerActivity
-    ProgramEventDetailAdapter provideProgramEventDetailAdapter(ProgramEventDetailContract.Presenter presenter) {
-        return new ProgramEventDetailAdapter(presenter);
-    }
-
-    @Provides
-    @PerActivity
     MapGeometryToFeature provideMapGeometryToFeature(){
         return new MapGeometryToFeature(new MapPointToFeature(), new MapPolygonToFeature());
     }

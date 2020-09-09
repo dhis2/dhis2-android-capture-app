@@ -11,7 +11,9 @@ data class RelationshipUiComponentModel(
     val from: TeiMap,
     val to: TeiMap,
     val canBeDeleted: Boolean? = true
-) : CarouselItemModel
+) : CarouselItemModel {
+    override fun uid(): String = relationshipUid
+}
 
 data class TeiMap(
     val teiUid: String?,

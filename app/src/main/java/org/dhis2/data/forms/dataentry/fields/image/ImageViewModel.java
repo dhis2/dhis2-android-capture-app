@@ -7,8 +7,6 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 
-import javax.annotation.Nonnull;
-
 @AutoValue
 public abstract class ImageViewModel extends FieldViewModel {
 
@@ -38,7 +36,7 @@ public abstract class ImageViewModel extends FieldViewModel {
                 allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null);
     }
 
-    @Nonnull
+   @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_ImageViewModel(uid(), label(), mandatory(), data, programStageSection(),

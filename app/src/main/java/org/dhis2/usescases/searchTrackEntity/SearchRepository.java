@@ -19,8 +19,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -39,7 +37,7 @@ public interface SearchRepository {
     LiveData searchTrackedEntities(@Nullable Program selectedProgram,
                                    @NonNull String trackedEntityType,
                                    @NonNull List<String> orgUnits,
-                                   @Nonnull List<State> states,
+                                  @NonNull List<State> states,
                                    @NonNull List<EventStatus> statuses,
                                    @Nullable HashMap<String, String> queryData,
                                    @Nullable SortingItem sortingItem,
@@ -50,12 +48,14 @@ public interface SearchRepository {
     Flowable<List<SearchTeiModel>> searchTeiForMap(@Nullable Program selectedProgram,
                                                    @NonNull String trackedEntityType,
                                                    @NonNull List<String> orgUnits,
-                                                   @Nonnull List<State> states,
+                                                  @NonNull List<State> states,
                                                    @NonNull List<EventStatus> statuses,
                                                    @Nullable HashMap<String, String> queryData,
                                                    @Nullable SortingItem sortingItem,
                                                    boolean assignedToMe,
                                                    boolean isOnline);
+
+    SearchTeiModel getTrackedEntityInfo(String teiUid, Program selectedProgram, SortingItem sortingItem);
 
     @NonNull
     Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam, Date enrollmentDate, @Nullable String fromRelationshipUid);
@@ -69,4 +69,6 @@ public interface SearchRepository {
     Observable<TrackedEntityType> getTrackedEntityType(String trackedEntityUid);
 
     List<EventViewModel> getEventsForMap(List<SearchTeiModel> teis);
+
+    EventViewModel getEventInfo(String enrollmentUid);
 }

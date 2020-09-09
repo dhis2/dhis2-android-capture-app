@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
-import com.evrencoskun.tableview.filter.Filter;
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
@@ -176,5 +175,9 @@ public class SearchTEContractsModule {
         void restoreQueryData(HashMap<String, String> queryData);
 
         void deleteRelationship(String relationshipUid);
+
+        SearchTeiModel getTeiInfo(String teiUid);
+
+        EventUiComponentModel getEventInfo(String eventUid, String teiUid);
     }
 }

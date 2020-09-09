@@ -8,8 +8,6 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 
-import javax.annotation.Nonnull;
-
 /**
  * QUADRAM. Created by frodriguez on 1/24/2018.
  */
@@ -44,7 +42,7 @@ public abstract class DateTimeViewModel extends FieldViewModel {
                 allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null, valueType());
     }
 
-    @Nonnull
+   @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_DateTimeViewModel(uid(), label(), mandatory(), data, programStageSection(),
