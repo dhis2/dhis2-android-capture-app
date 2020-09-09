@@ -1,4 +1,4 @@
-Android Capture App for DHIS 2 (v2.1.1) - Patch version
+Android Capture App for DHIS 2 (v2.2.2) - Patch version
 
 <table>
 <tbody>
@@ -13,18 +13,27 @@ Android Capture App for DHIS 2 (v2.1.1) - Patch version
 <td colspan="2" bgcolor="white">
 
 ## Bugs fixed
-**[ANDROAPP-3271](https://jira.dhis2.org/browse/ANDROAPP-3271) Reserved values being deleted when pattern changes
-**[ANDROAPP-3253](https://jira.dhis2.org/browse/ANDROAPP-3253) Fixed crash while creating/viewing enrollment
-**[ANDROAPP-3270](https://jira.dhis2.org/browse/ANDROAPP-3270) Fixed crash in sync dialog
-**[ANDROAPP-3259](https://jira.dhis2.org/browse/ANDROAPP-3259) Fixed crash in search screen
-**[ANDROAPP-3257](https://jira.dhis2.org/browse/ANDROAPP-3257) Fixed icons in search screen TEI cards
-**[ANDROAPP-3254](https://jira.dhis2.org/browse/ANDROAPP-3254) Fixed crash in pin dialog
-**[ANDROAPP-3250](https://jira.dhis2.org/browse/ANDROAPP-3250) Selected category option did not render in event initial screen
-**[ANDROAPP-3264](https://jira.dhis2.org/browse/ANDROAPP-3264) Assigned values to integer fields showing decimals
-**[ANDROAPP-3258](https://jira.dhis2.org/browse/ANDROAPP-3258) Event form not loading due to attribute assignment
-## Other additions
-In addition, the <strong>Android SDK</strong> has been updated to <strong>v1.2.1</strong>
-You can find in Jira details on the [bugs fixed](https://jira.dhis2.org/issues/?filter=11888) in this version.
+**[ANDROAPP-3277](https://jira.dhis2.org/browse/ANDROAPP-3277) Calculated values not working
+**[ANDROAPP-3253](https://jira.dhis2.org/browse/ANDROAPP-3287) Sync error log sharing selects several items
+**[ANDROAPP-3270](https://jira.dhis2.org/browse/ANDROAPP-3256) Reduce number of API search requests
+**[ANDROAPP-3259](https://jira.dhis2.org/browse/ANDROAPP-3296) Org. Unit tree selector not handling selection correctly
+**[ANDROAPP-3257](https://jira.dhis2.org/browse/ANDROAPP-3308) Fixed crash when using event date sorting
+**[ANDROAPP-3254](https://jira.dhis2.org/browse/ANDROAPP-3095) Option sets behave different when there is search box or not
+**[ANDROAPP-3254](https://jira.dhis2.org/browse/ANDROAPP-3276) User is able to schedule event regardless 'Hide due date' configuration
+**[ANDROAPP-3250](https://jira.dhis2.org/browse/ANDROAPP-3295) Cannot use Calculated Values variables in rule engine actions
+**[ANDROAPP-3264](https://jira.dhis2.org/browse/ANDROAPP-3116) Fix note badge color when tab is not selected
+**[ANDROAPP-3258](https://jira.dhis2.org/browse/ANDROAPP-2669) Icons in the event list top menu do not change color
+**[ANDROAPP-3258](https://jira.dhis2.org/browse/ANDROAPP-3275) Indicator name is not always displayed
+**[ANDROAPP-3258](https://jira.dhis2.org/browse/ANDROAPP-3160) Tab labels not showing when opening dashboard
+**[ANDROAPP-3258](https://jira.dhis2.org/browse/ANDROAPP-3274) User is not forced to search before creating new enrollment
+**[ANDROAPP-3258](https://jira.dhis2.org/browse/ANDROAPP-3227) Fix backdrop rounded corners
+**[ANDROAPP-3258](https://jira.dhis2.org/browse/ANDROAPP-3033) Open second section if first one is hidden
+**[ANDROAPP-3258](https://jira.dhis2.org/browse/ANDROAPP-3232) Updating event date deletes OU information
+**[ANDROAPP-3258](https://jira.dhis2.org/browse/ANDROAPP-3306) Percentage indicator is not consistent
+**[ANDROAPP-3258](https://jira.dhis2.org/browse/ANDROAPP-3307) No action when using "reset search" button
+**[ANDROAPP-3258](https://jira.dhis2.org/browse/ANDROAPP-3309) Mandatory fields message hides 'save' button in data sets
+
+You can find in Jira details on the [bugs fixed](https://jira.dhis2.org/issues/?filter=11898) in this version.
 
 Remember to check the [documentation](https://www.dhis2.org/android-documentation) for detailed information of the features included in the App and how to configure DHIS2 to use it.
 
