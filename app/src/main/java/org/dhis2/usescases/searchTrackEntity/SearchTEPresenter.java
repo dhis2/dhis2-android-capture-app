@@ -228,11 +228,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                     Timber.d("outer updaterFlowable before %s", element.getValue());
                 })
                 .switchMap(program ->
-                        Flowable.combineLatest(queryProcessor.startWith(queryData),
-                                FilterManager.getInstance().asFlowable(),
-                                Pair::create).doOnEach(element -> {
-                            Timber.d("inner %s", element.getValue());
-                        })
+                                Flowable.combineLatest(queryProcessor.startWith(queryData),
+                                        FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
+                                        Pair::create).doOnEach(element -> {Timber.d("inner %s", element.getValue());})
 
                 )
                 .doOnEach(element -> {
@@ -491,7 +489,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void onClearClick() {
         queryData.clear();
-        setProgram(selectedProgram);
+        view.setFabIcon(true);
+        currentProgram.onNext(selectedProgram.uid());
+        queryProcessor.onNext(new HashMap<>());
     }
 
 

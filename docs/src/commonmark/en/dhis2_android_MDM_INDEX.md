@@ -1,8 +1,8 @@
 ---
-title: 'DHIS 2 - Mobile Device Management guides'
+title: 'DHIS 2 Mobile Device Management guides'
 author: 'DHIS 2'
 year: 2020
-month: Jun
+month: Aug
 keywords: [DHIS2, Android, MDM]
 applicable_txt: 'Applicable to any version'
 ---
