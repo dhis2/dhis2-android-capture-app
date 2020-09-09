@@ -118,7 +118,6 @@ public final class DataEntryAdapter extends RecyclerView.Adapter<ViewHolder> {
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
                             @NonNull DataEntryArguments dataEntryArguments) {
-//        super(new DataEntryDiff());
         setHasStableIds(true);
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
@@ -156,7 +155,6 @@ public final class DataEntryAdapter extends RecyclerView.Adapter<ViewHolder> {
                             @NonNull FlowableProcessor<RowAction> processor,
                             @NonNull FlowableProcessor<String> sectionProcessor,
                             @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet) {
-//        super(new DataEntryDiff());
         setHasStableIds(true);
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
