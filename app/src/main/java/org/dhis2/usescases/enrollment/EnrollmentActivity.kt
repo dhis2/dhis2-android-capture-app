@@ -473,7 +473,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     override fun showProgress() {
         runOnUiThread {
-//            binding.toolbarProgress.visibility = View.VISIBLE
             binding.toolbarProgress.show()
         }
     }
@@ -481,7 +480,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     override fun hideProgress() {
         runOnUiThread {
             binding.toolbarProgress.hide()
-//            binding.toolbarProgress.visibility = View.GONE
         }
     }
 }
