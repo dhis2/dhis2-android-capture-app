@@ -21,8 +21,8 @@ class GetFeedback(
 ) {
     operator fun invoke(
         feedbackMode: FeedbackMode,
-        criticalFilter: Boolean?,
-        onlyFailedFilter: Boolean
+        criticalFilter: Boolean? = null,
+        onlyFailedFilter: Boolean = false
     ): Either<FeedbackFailure, List<TreeNode<FeedbackItem>>> {
         return try {
 
