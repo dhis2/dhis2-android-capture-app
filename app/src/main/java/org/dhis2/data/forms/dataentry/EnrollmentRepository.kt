@@ -206,6 +206,21 @@ class EnrollmentRepository(
             }
         }
 
+        val conflicts = d2.importModule().trackerImportConflicts()
+            .byEnrollmentUid().eq(enrollmentUid)
+            .blockingGet()
+
+        val conflict = conflicts
+            .find { it.trackedEntityAttribute() == attribute.uid() }
+
+        val error = conflict?.let {
+            if (it.value() == dataValue) {
+                it.displayDescription()
+            } else {
+                null
+            }
+        }
+
         if (valueType == ValueType.ORGANISATION_UNIT && !DhisTextUtils.isEmpty(dataValue)) {
             dataValue = attrValueRepository.blockingGet().value() + "_ou_" + dataValue
         }
@@ -230,6 +245,8 @@ class EnrollmentRepository(
 
         return if (warning != null) {
             fieldViewModel.withWarning(warning)
+        } else if (!error.isNullOrEmpty()) {
+            fieldViewModel.withError(error)
         } else {
             fieldViewModel
         }
