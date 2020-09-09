@@ -85,11 +85,13 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
     public void clearBackground(boolean isSarchMode) {
         if (!isSarchMode) {
             itemView.setBackgroundResource(R.color.form_field_background);
+            itemView.setActivated(false);
         }
     }
 
     public void setSelectedBackground(boolean isSarchMode) {
         if (!isSarchMode) {
+            itemView.setActivated(true);
             selectedFieldUid = fieldUid;
             currentUid.setValue(fieldUid);
         }
