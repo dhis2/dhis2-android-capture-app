@@ -470,4 +470,18 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             presenter.finish(mode)
         }
     }
+
+    override fun showProgress() {
+        runOnUiThread {
+//            binding.toolbarProgress.visibility = View.VISIBLE
+            binding.toolbarProgress.show()
+        }
+    }
+
+    override fun hideProgress() {
+        runOnUiThread {
+            binding.toolbarProgress.hide()
+//            binding.toolbarProgress.visibility = View.GONE
+        }
+    }
 }

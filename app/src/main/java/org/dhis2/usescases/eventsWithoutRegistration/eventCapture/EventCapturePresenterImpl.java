@@ -253,6 +253,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .subscribeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> {
+                                    view.showProgress();
                                     currentSection.set(data);
                                     showCalculationProcessor.onNext(true);
                                 },
@@ -737,5 +738,15 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void setLastUpdatedUid(@NonNull String lastUpdatedUid) {
         eventCaptureRepository.setLastUpdated(lastUpdatedUid);
+    }
+
+    @Override
+    public void hideProgress() {
+        view.hideProgress();
+    }
+
+    @Override
+    public void showProgress() {
+        view.showProgress();
     }
 }

@@ -136,6 +136,8 @@ class EnrollmentPresenterImpl(
 
         disposable.add(
             view.rowActions().onBackpressureBuffer()
+                .doOnNext { view.showProgress() }
+                .observeOn(schedulerProvider.io())
                 .flatMap { rowAction ->
                     when (rowAction.id()) {
                         EnrollmentRepository.ENROLLMENT_DATE_UID -> {
@@ -243,6 +245,7 @@ class EnrollmentPresenterImpl(
                 .subscribe({
                     view.showFields(it)
                     view.setSaveButtonVisible(true)
+                    view.hideProgress()
                     view.setSelectedSection(selectedSection)
                 }) {
                     Timber.tag(TAG).e(it)

@@ -29,4 +29,6 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun setResultAndFinish()
     fun requestFocus()
     fun performSaveClick()
+    fun showProgress()
+    fun hideProgress()
 }
