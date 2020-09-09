@@ -55,11 +55,9 @@ class GetFeedbackTest {
         givenOneEventWithValues(
             "ART New", listOf(
                 listOf("1", "Completeness", "Partly", "#FFC700", "Feedback Completeness"),
-                listOf("2", "Integrity", "No Indication", "#0CE922", "Feedback Integrity"),
-                listOf("3", "Timeliness", "100%", "#0CE922", "Feedback Timeliness"),
-                listOf("4", "Confidentiality", "Partly", "#FFC700", "Feedback Confidentiality"),
-                listOf("5", "Precision", "No - no at all", "#BA4E4E", "Feedback Precision"),
-                listOf("6", "Accuracy", "67%", "#BA4E4E", "Accuracy Precision")
+                listOf("2", "Timeliness", "100%", "#0CE922", "Feedback Timeliness"),
+                listOf("1.1", "Completeness 1.1", "86%", "#FFC700", "Feedback Completeness 1.1"),
+                listOf("1.2", "Completeness 1.2", "56%", "#c80f26", "Feedback Completeness 1.2")
             )
         )
 
@@ -71,32 +69,40 @@ class GetFeedbackTest {
                 FeedbackItem("ART New", null, "ART New UID"),
                 listOf(
                     TreeNode.Node(
-                        FeedbackItem("Completeness", FeedbackItemValue("Partly", "#FFC700")),
-                        listOf(TreeNode.Leaf(FeedbackHelpItem("Feedback Completeness")))
-                    ),
-                    TreeNode.Node(
-                        FeedbackItem("Timeliness", FeedbackItemValue("100%", "#0CE922")),
-                        listOf(TreeNode.Leaf(FeedbackHelpItem("Feedback Timeliness")))
+                        FeedbackItem(
+                            "Completeness", FeedbackItemValue("Partly", "#FFC700"),
+                            "Completeness_DE"
+                        ),
+                        listOf(
+                            TreeNode.Leaf(FeedbackHelpItem("Feedback Completeness")),
+                            TreeNode.Node(
+                                FeedbackItem(
+                                    "Completeness 1.1", FeedbackItemValue("86%", "#FFC700"),
+                                    "Completeness 1.1_DE"
+                                ),
+                                listOf(
+                                    TreeNode.Leaf(FeedbackHelpItem("Feedback Completeness 1.1"))
+                                )
+                            ),
+                            TreeNode.Node(
+                                FeedbackItem(
+                                    "Completeness 1.2", FeedbackItemValue("56%", "#c80f26"),
+                                    "Completeness 1.2_DE"
+                                ),
+                                listOf(
+                                    TreeNode.Leaf(FeedbackHelpItem("Feedback Completeness 1.2"))
+                                )
+                            )
+                        )
                     ),
                     TreeNode.Node(
                         FeedbackItem(
-                            "Integrity",
-                            FeedbackItemValue("No Indication", "#0CE922")
-                        ), listOf(TreeNode.Leaf(FeedbackHelpItem("Feedback Integrity")))
-                    ),
-                    TreeNode.Node(
-                        FeedbackItem("Confidentiality", FeedbackItemValue("Partly", "#FFC700")),
-                        listOf(TreeNode.Leaf(FeedbackHelpItem("Feedback Confidentiality")))
-                    ),
-                    TreeNode.Node(
-                        FeedbackItem(
-                            "Precision",
-                            FeedbackItemValue("No - no at all", "#BA4E4E")
-                        ), listOf(TreeNode.Leaf(FeedbackHelpItem("Feedback Precision")))
-                    ),
-                    TreeNode.Node(
-                        FeedbackItem("Accuracy", FeedbackItemValue("67%", "#BA4E4E")),
-                        listOf(TreeNode.Leaf(FeedbackHelpItem("Feedback Accuracy")))
+                            "Timeliness", FeedbackItemValue("100%", "#0CE922"),
+                            "Timeliness_DE"
+                        ),
+                        listOf(
+                            TreeNode.Leaf(FeedbackHelpItem("Feedback Timeliness"))
+                        )
                     )
                 )
             )
@@ -104,7 +110,7 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> Assert.assertEquals(expectedFeedback, feedback) })
+            { feedback -> Assert.assertEquals(expectedFeedback.toList(), feedback.toList()) })
     }
 
     private fun givenThatThereNotEvents() {
