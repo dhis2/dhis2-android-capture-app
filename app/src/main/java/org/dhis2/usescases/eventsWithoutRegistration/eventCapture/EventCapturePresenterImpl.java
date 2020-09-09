@@ -223,8 +223,14 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 eventCaptureRepository.eventSections()
                         .flatMap(sectionList ->
                                 sectionProcessor.startWith(sectionList.get(0).sectionUid())
-                                        .switchMap(section -> fieldFlowable
-                                                .map(fields -> fieldMapper.map(fields, sectionList, sectionsToHide, getNextVisibleSection.get(section,sectionList,sectionsToHide)))))
+                                        .switchMap(section ->
+                                                fieldFlowable.map(fields ->
+                                                        fieldMapper.map(
+                                                                fields,
+                                                                sectionList,
+                                                                sectionsToHide,
+                                                                getNextVisibleSection.get(section, sectionList, sectionsToHide)
+                                                        ))))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(sectionsAndFields -> {
