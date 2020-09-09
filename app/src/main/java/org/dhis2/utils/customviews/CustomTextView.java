@@ -101,9 +101,6 @@ public class CustomTextView extends FieldLayout {
         descIcon = findViewById(R.id.descIcon);
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (isBgTransparent) {
-                selectItem(hasFocus);
-            }
             if (hasFocus) {
                 activate();
             } else if (focusListener != null && validate()) {
@@ -373,8 +370,10 @@ public class CustomTextView extends FieldLayout {
             editText.setOnLongClickListener(listener);
     }
 
-    public void selectItem(boolean selected) {
-        if (selected) {
+    @Override
+    public void dispatchSetActivated(boolean activated) {
+        super.dispatchSetActivated(activated);
+        if (activated) {
             labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
         } else {
             labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));

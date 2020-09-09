@@ -27,7 +27,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
         android:padding="5dp"
         tools:background="?attr/colorPrimary">
 
@@ -109,7 +108,7 @@
                 android:textAlignment="textStart"
                 android:textColor="@color/text_black_DE3"
                 android:textIsSelectable="true"
-                android:textSize="12sp"
+                android:textSize="@dimen/form_edit_text_size"
                 tools:text="hello" />
         </com.google.android.material.textfield.TextInputLayout>
 

@@ -28,7 +28,6 @@
         android:id="@+id/rootView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:padding="5dp"
@@ -112,7 +111,7 @@
                     android:maxLines="1"
                     android:textColor="?colorAccent"
                     android:textIsSelectable="true"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/form_edit_text_size"
                     tools:text="@string/lorem" />
 
             </com.google.android.material.textfield.TextInputLayout>
