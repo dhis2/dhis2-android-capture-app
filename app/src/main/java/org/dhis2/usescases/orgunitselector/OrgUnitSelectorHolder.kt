@@ -9,7 +9,14 @@ import org.dhis2.utils.filters.FilterManager
 internal class OrgUnitSelectorHolder(private val binding: ItemOuTreeBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(node: TreeNode) {
+    private lateinit var node: TreeNode
+
+    fun bind(
+        node: TreeNode
+    ) {
+        this.node = node
+        binding.checkBox.setOnCheckedChangeListener(null)
+
         binding.ouName.text = node.content.displayName()
         node.isChecked = FilterManager.getInstance().exist(node.content)
         val marginParams = binding.root.layoutParams as ViewGroup.MarginLayoutParams
@@ -23,10 +30,9 @@ internal class OrgUnitSelectorHolder(private val binding: ItemOuTreeBinding) :
         } else {
             binding.icon.setImageResource(R.drawable.ic_add_circle)
         }
-    }
 
-    fun nodeCheckboxClick(node: TreeNode, isChecked: Boolean) {
-        FilterManager.getInstance().addIfCan(node.content, isChecked)
-        node.isChecked = FilterManager.getInstance().exist(node.content)
+        binding.checkBox.setOnCheckedChangeListener { _, isChecked ->
+            FilterManager.getInstance().addIfCan(node.content, isChecked)
+        }
     }
 }

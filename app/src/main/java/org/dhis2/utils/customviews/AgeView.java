@@ -6,8 +6,10 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.ViewDataBinding;
 import androidx.room.util.StringUtil;
 
@@ -18,6 +20,7 @@ import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.AgeCustomViewAccentBinding;
 import org.dhis2.databinding.AgeCustomViewBinding;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
 
@@ -48,6 +51,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     private OnAgeSet listener;
     private String label;
     private TextInputLayout inputLayout;
+    private TextView labelText;
 
     public AgeView(Context context) {
         super(context);
@@ -106,6 +110,16 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
                 break;
         }
 
+    }
+
+    @Override
+    public void dispatchSetActivated(boolean activated) {
+        super.dispatchSetActivated(activated);
+        if (activated) {
+            labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+        } else {
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
+        }
     }
 
     private void showCustomCalendar(View view) {
@@ -228,6 +242,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         day = findViewById(R.id.input_days);
         month = findViewById(R.id.input_month);
         year = findViewById(R.id.input_year);
+        labelText = findViewById(R.id.label);
         selectedCalendar = Calendar.getInstance();
         dateFormat = DateUtils.uiDateFormat();
 

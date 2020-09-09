@@ -7,6 +7,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -14,6 +17,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import org.dhis2.databinding.DateTimeViewBinding;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
 
@@ -41,6 +45,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     private boolean allowFutureDates;
     private Date date;
     DatePickerDialog dateDialog;
+    private TextView labelText;
 
     public DateTimeView(Context context) {
         super(context);
@@ -117,6 +122,9 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         inputLayout = findViewById(R.id.inputLayout);
         icon = findViewById(R.id.descIcon);
         editText = findViewById(R.id.inputEditText);
+        ImageView clearButton = findViewById(R.id.clear_button);
+        labelText = findViewById(R.id.label);
+        inputLayout.setHint(getContext().getString(R.string.choose_date));
         icon.setImageResource(R.drawable.ic_form_date_time);
         selectedCalendar = Calendar.getInstance();
         dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
@@ -124,6 +132,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this);
         editText.setOnClickListener(this);
+        clearButton.setOnClickListener(v -> { clearDate(); });
     }
 
     @Override
@@ -142,15 +151,23 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         showCustomCalendar(view);
     }
 
+    @Override
+    public void dispatchSetActivated(boolean activated) {
+        super.dispatchSetActivated(activated);
+        if (activated) {
+            labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+        } else {
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
+        }
+    }
+
     private void showCustomCalendar(View view) {
 
         DatePickerUtils.getDatePickerDialog(getContext(), label, date, allowFutureDates,
                 new DatePickerUtils.OnDatePickerClickListener() {
                     @Override
                     public void onNegativeClick() {
-                        editText.setText(null);
-                        listener.onDateSelected(null);
-                        date = null;
+                        clearDate();
                     }
 
                     @Override
@@ -193,5 +210,11 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     public void setEditable(Boolean editable) {
         editText.setEnabled(editable);
+    }
+
+    private void clearDate() {
+        editText.setText(null);
+        listener.onDateSelected(null);
+        date = null;
     }
 }
