@@ -54,12 +54,18 @@ class EventFieldMapper {
         finalFields = HashMap()
     }
 
-    private fun setFieldMap(fields: List<FieldViewModel>, sectionList: List<FormSectionViewModel>,sectionsToHide: List<String?>) {
+    private fun setFieldMap(
+        fields: List<FieldViewModel>,
+        sectionList: List<FormSectionViewModel>,
+        sectionsToHide: List<String?>
+    ) {
         fields.forEach { field ->
             val fieldSection = getFieldSection(field)
             if (fieldSection.isNotEmpty() || sectionList.size == 1) {
                 updateFieldMap(fieldSection, field)
-                if (field !is DisplayViewModel && !sectionsToHide.contains(field.programStageSection())) {
+                if (field !is DisplayViewModel &&
+                    !sectionsToHide.contains(field.programStageSection())
+                ) {
                     if (fieldIsNotOptionSetOrImage(field)) {
                         totalFields++
                     } else if (!optionSets.contains(field.optionSet())) {
