@@ -62,9 +62,9 @@
     </style>
 
     <style name="loginInputText"><!--parent="TextAppearance.AppCompat"-->
-        <item name="android:textColorHint">@color/text_black_808</item>
+        <item name="android:textColorHint">@color/text_black_DE3</item>
         <item name="colorAccent">@color/text_black_333</item>
-        <item name="colorControlNormal">@color/text_black_333</item>
+        <item name="colorControlNormal">@color/text_black_DE3</item>
         <item name="colorControlActivated">?colorPrimary</item>
     </style>
 
