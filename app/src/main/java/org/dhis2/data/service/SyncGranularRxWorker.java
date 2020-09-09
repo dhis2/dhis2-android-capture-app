@@ -64,7 +64,7 @@ public class SyncGranularRxWorker extends RxWorker {
                             calendar.setTimeInMillis(conflict.created().getTime());
                             String date = DateUtils.databaseDateFormat().format(calendar.getTime());
                             mergeDateConflicts.add(
-                                    date + "/" + conflict.conflict());
+                                    date + "/" + conflict.displayDescription());
                         }
                         Data data = new Data.Builder().putStringArray("conflict",
                                 mergeDateConflicts.toArray(new String[mergeDateConflicts.size()])).build();

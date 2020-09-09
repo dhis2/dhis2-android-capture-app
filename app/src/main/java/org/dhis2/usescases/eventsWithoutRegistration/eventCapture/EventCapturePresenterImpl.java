@@ -93,13 +93,15 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private int calculationLoop = 0;
     private final int MAX_LOOP_CALCULATIONS = 5;
     private PreferenceProvider preferences;
+    private GetNextVisibleSection getNextVisibleSection;
 
 
     public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
                                      EventCaptureContract.EventCaptureRepository eventCaptureRepository,
                                      RulesUtilsProvider rulesUtils,
                                      ValueStore valueStore, SchedulerProvider schedulerProvider,
-                                     PreferenceProvider preferences) {
+                                     PreferenceProvider preferences,
+                                     GetNextVisibleSection getNextVisibleSection) {
         this.view = view;
         this.eventUid = eventUid;
         this.eventCaptureRepository = eventCaptureRepository;
@@ -115,6 +117,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.sectionList = new ArrayList<>();
         this.compositeDisposable = new CompositeDisposable();
         this.preferences = preferences;
+        this.getNextVisibleSection = getNextVisibleSection;
 
         currentSectionPosition = PublishProcessor.create();
         sectionProcessor = PublishProcessor.create();
@@ -221,7 +224,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .flatMap(sectionList ->
                                 sectionProcessor.startWith(sectionList.get(0).sectionUid())
                                         .switchMap(section -> fieldFlowable
-                                                .map(fields -> fieldMapper.map(fields, sectionList, sectionsToHide, section))))
+                                                .map(fields -> fieldMapper.map(fields, sectionList, sectionsToHide, getNextVisibleSection.get(section,sectionList,sectionsToHide)))))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(sectionsAndFields -> {
@@ -626,7 +629,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     public void setShowError(@NonNull RuleActionShowError showError, @Nullable FieldViewModel model) {
         canComplete = false;
         errors.put(eventCaptureRepository.getSectionFor(showError.field()), showError.field());
-        save(showError.field(), null);
     }
 
     @Override
