@@ -43,8 +43,10 @@ public class EventCaptureModule {
                                                     @NonNull RulesUtilsProvider ruleUtils,
                                                     @NonNull ValueStore valueStore,
                                                     SchedulerProvider schedulerProvider,
-                                                    PreferenceProvider preferences) {
-        return new EventCapturePresenterImpl(view, eventUid, eventCaptureRepository, ruleUtils, valueStore, schedulerProvider, preferences);
+                                                    PreferenceProvider preferences,
+                                                    GetNextVisibleSection getNextVisibleSection) {
+        return new EventCapturePresenterImpl(view, eventUid, eventCaptureRepository, ruleUtils, valueStore, schedulerProvider,
+                preferences,  getNextVisibleSection);
     }
 
     @Provides
@@ -75,5 +77,11 @@ public class EventCaptureModule {
     @PerActivity
     ValueStore valueStore(@NonNull D2 d2) {
         return new ValueStoreImpl(d2, eventUid, DataEntryStore.EntryMode.DE);
+    }
+
+    @Provides
+    @PerActivity
+    GetNextVisibleSection getNextVisibleSection() {
+        return new GetNextVisibleSection();
     }
 }
