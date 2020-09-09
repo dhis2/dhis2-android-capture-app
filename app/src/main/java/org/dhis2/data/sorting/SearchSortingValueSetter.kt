@@ -48,7 +48,7 @@ class SearchSortingValueSetter(
     ): Pair<String, String>? {
         var eventDate = unknownLabel
         val sortedEvents = d2.eventModule().events()
-            .byEnrollmentUid().eq(teiModel.selectedEnrollment.uid())
+            .byEnrollmentUid().eq(teiModel.selectedEnrollment?.uid() ?: "")
             .byDeleted().isFalse
             .orderByTimeline(
                 if (sortingStatus === SortingStatus.ASC) {

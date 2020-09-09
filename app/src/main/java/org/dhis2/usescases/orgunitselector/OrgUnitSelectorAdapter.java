@@ -4,8 +4,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.ListAdapter;
 
 import org.dhis2.databinding.ItemOuTreeBinding;
 import org.dhis2.utils.filters.FilterManager;
@@ -13,38 +12,37 @@ import org.dhis2.utils.filters.FilterManager;
 import java.util.ArrayList;
 import java.util.List;
 
-class OrgUnitSelectorAdapter extends RecyclerView.Adapter<OrgUnitSelectorHolder> {
-    private List<TreeNode> treeNodes;
+class OrgUnitSelectorAdapter extends ListAdapter<TreeNode, OrgUnitSelectorHolder> {
     private final OnOrgUnitClick listener;
 
-    public OrgUnitSelectorAdapter(List<TreeNode> organisationUnits, OnOrgUnitClick ouClickListener) {
-        this.treeNodes = organisationUnits;
+    public OrgUnitSelectorAdapter(OnOrgUnitClick ouClickListener) {
+        super(new TreeNodeCallback());
         this.listener = ouClickListener;
     }
 
     @NonNull
     @Override
     public OrgUnitSelectorHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new OrgUnitSelectorHolder(ItemOuTreeBinding.inflate(
-                LayoutInflater.from(parent.getContext()), parent, false
-        ));
+        org.dhis2.databinding.ItemOuTreeBinding binding = ItemOuTreeBinding
+                .inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new OrgUnitSelectorHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull OrgUnitSelectorHolder holder, int position) {
-        holder.bind(treeNodes.get(holder.getAdapterPosition()));
+        holder.bind(getItem(holder.getAdapterPosition()));
         holder.itemView.setOnClickListener(view -> {
-                    if (treeNodes.size() > holder.getAdapterPosition() &&
-                    holder.getAdapterPosition() >= 0)
-                        listener.onOrgUnitClick(treeNodes.get(holder.getAdapterPosition()), holder.getAdapterPosition());
+                    if (getItemCount() > holder.getAdapterPosition() &&
+                            holder.getAdapterPosition() >= 0)
+                        listener.onOrgUnitClick(getItem(holder.getAdapterPosition()), holder.getAdapterPosition());
                 }
         );
     }
 
     public void addOrgUnits(int location, List<TreeNode> nodes) {
-        List<TreeNode> nodesCopy = new ArrayList<>(treeNodes);
+        List<TreeNode> nodesCopy = new ArrayList<>(getCurrentList());
         nodesCopy.get(location).setOpen(!nodesCopy.get(location).isOpen());
-        notifyItemChanged(location);
+
         if (!nodesCopy.get(location).isOpen()) {
             TreeNode parent = nodesCopy.get(location);
             List<TreeNode> deleteList = new ArrayList<>();
@@ -62,20 +60,13 @@ class OrgUnitSelectorAdapter extends RecyclerView.Adapter<OrgUnitSelectorHolder>
             nodesCopy.addAll(location + 1, nodes);
         }
 
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new TreeNodeCallback(treeNodes, nodesCopy));
-        diffResult.dispatchUpdatesTo(this);
-        treeNodes.clear();
-        treeNodes.addAll(nodesCopy);
-    }
-
-    @Override
-    public int getItemCount() {
-        return treeNodes.size();
+        submitList(nodesCopy);
     }
 
     public void clearAll() {
         FilterManager.getInstance().removeAll();
-        for (TreeNode treeNode:treeNodes) {
+        for (int i = 0; i < getItemCount(); i++) {
+            TreeNode treeNode = getItem(i);
             treeNode.setChecked(false);
         }
         notifyDataSetChanged();

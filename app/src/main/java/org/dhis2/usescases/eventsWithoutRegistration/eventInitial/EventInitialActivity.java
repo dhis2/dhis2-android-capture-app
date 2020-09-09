@@ -25,6 +25,8 @@ import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
+import org.dhis2.data.prefs.Preference;
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
@@ -100,6 +102,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Inject
     EventInitialContract.Presenter presenter;
+
+    @Inject
+    PreferenceProvider preferences;
 
     private Event eventModel;
 
@@ -775,7 +780,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (organisationUnit != null) {
             this.selectedOrgUnit = organisationUnit.uid();
             binding.orgUnit.setText(organisationUnit.displayName());
-            binding.orgUnit.setEnabled(eventUid == null);
+            if (eventCreationType != EventCreationType.DEFAULT) {
+                binding.orgUnit.setEnabled(eventUid == null);
+            }
         } else
             binding.orgUnit.setText("");
     }
@@ -800,6 +807,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setOrgUnit(String orgUnitId, String orgUnitName) {
+        preferences.setValue(Preference.CURRENT_ORG_UNIT, orgUnitId);
         this.selectedOrgUnit = orgUnitId;
         binding.orgUnit.setText(orgUnitName);
     }

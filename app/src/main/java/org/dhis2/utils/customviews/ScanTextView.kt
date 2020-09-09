@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.scan_text_view.view.delete
 import kotlinx.android.synthetic.main.scan_text_view.view.descIcon
 import org.dhis2.BR
 import org.dhis2.Bindings.Bindings
+import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
 import org.dhis2.databinding.ScanTextViewAccentBinding
 import org.dhis2.databinding.ScanTextViewBinding
@@ -36,6 +37,7 @@ class ScanTextView @JvmOverloads constructor(
     private lateinit var binding: ViewDataBinding
     private lateinit var onScanClick: OnScanClick
     private lateinit var onScanResult: (String?) -> Unit
+    private lateinit var qrIcon: ImageView
     var optionSet: String? = null
     private var renderingType: ValueTypeRenderingType? = null
 
@@ -50,12 +52,22 @@ class ScanTextView @JvmOverloads constructor(
         }
 
         this.editText = binding.root.findViewById(R.id.input_editText)
+        this.qrIcon = binding.root.findViewById(R.id.descIcon)
         this.iconView = binding.root.findViewById(R.id.renderImage)
         this.inputLayout = binding.root.findViewById(R.id.input_layout)
         this.descriptionLabel = binding.root.findViewById(R.id.descriptionLabel)
 
-        editText.setOnClickListener {
+        qrIcon.setOnClickListener {
             checkCameraPermission()
+        }
+
+        editText.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                closeKeyboard()
+                onScanResult.invoke(editText.text.toString())
+            } else {
+                activationListener.onActivation()
+            }
         }
         onScanClick = context as OnScanClick
     }
@@ -90,7 +102,7 @@ class ScanTextView @JvmOverloads constructor(
 
     fun updateEditable(isEditable: Boolean) {
         editText.isEnabled = isEditable
-        editText.isFocusable = false
+        editText.isFocusable = true
         editText.isClickable = isEditable
         when {
             !isEditable -> delete.visibility = View.GONE
@@ -129,7 +141,7 @@ class ScanTextView @JvmOverloads constructor(
     fun setDescription(description: String?) {
         descriptionLabel.visibility =
             when {
-                label.length > 16 || description != null -> View.VISIBLE
+                description != null -> View.VISIBLE
                 else -> View.GONE
             }
     }

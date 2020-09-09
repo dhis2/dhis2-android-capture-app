@@ -33,6 +33,8 @@ public class TEIDataContracts {
 
     public interface View extends AbstractActivityContracts.View {
 
+        void hideDueDate();
+
         Consumer<List<EventViewModel>> setEvents();
 
         Consumer<ProgramStage> displayGenerateEvent();

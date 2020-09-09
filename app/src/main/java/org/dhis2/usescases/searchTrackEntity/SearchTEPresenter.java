@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.DatePicker;
 
@@ -185,6 +186,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         return searchRepository.programAttributes(selectedProgram.uid())
                                 .map(data -> Pair.create(data.getTrackedEntityAttributes(), data.getRendering()));
                 })
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         data -> {
                             if (data.val0().isEmpty()) {
@@ -196,7 +199,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
 
         compositeDisposable.add(view.rowActionss()
-                .subscribeOn(schedulerProvider.ui())
+                .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(data -> {
                             Map<String, String> queryDataBU = new HashMap<>(queryData);
@@ -220,21 +223,26 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         Timber::d)
         );
 
+
         ConnectableFlowable<Pair<HashMap<String, String>, FilterManager>> updaterFlowable = currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
+                .doOnEach(element -> {Timber.d("outer updaterFlowable before %s", element.getValue());})
                 .switchMap(program ->
-                        Flowable.combineLatest(
-                                queryProcessor.startWith(queryData),
-                                FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
-                                Pair::create
-                        ))
+                                Flowable.combineLatest(queryProcessor.startWith(queryData),
+                                        FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
+                                        Pair::create).doOnEach(element -> {Timber.d("inner %s", element.getValue());})
+
+                )
+                .doOnEach(element -> {Timber.d("outer updaterFlowable after %s", element.getValue());})
                 .onBackpressureLatest()
                 .publish();
 
+
         compositeDisposable.add(
                 updaterFlowable
-                        .observeOn(schedulerProvider.io())
+                        .doOnEach(element -> {Timber.d("Listing update %s", element.getValue());})
                         .map(data -> view.isMapVisible())
                         .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 isMapVisible -> {
                                     view.showFilterProgress();
@@ -307,7 +315,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         compositeDisposable.add(
                 queryProcessor
                         .startWith(queryData)
-                        .subscribeOn(schedulerProvider.ui())
+                        .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(data -> view.clearData(), Timber::d)
         );
@@ -445,6 +453,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void setProgram(Program programSelected) {
+        if (programSelected == selectedProgram) return;
+
         boolean otherProgramSelected;
         if (programSelected == null) {
             otherProgramSelected = selectedProgram != null;
@@ -475,7 +485,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void onClearClick() {
         queryData.clear();
-        setProgram(selectedProgram);
+        view.setFabIcon(true);
+        currentProgram.onNext(selectedProgram.uid());
+        queryProcessor.onNext(new HashMap<>());
     }
 
 
@@ -519,7 +531,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private boolean compliesWithMinAttributesToSearch() {
         if (selectedProgram != null) {
-            if (selectedProgram.displayFrontPageList() && !queryData.isEmpty() && queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
+            if (selectedProgram.displayFrontPageList() && queryData.isEmpty()) {
+                return false;
+            }
+            else if (selectedProgram.displayFrontPageList() && !queryData.isEmpty() && queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
                 return false;
             } else if (!selectedProgram.displayFrontPageList() && queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
                 return false;
