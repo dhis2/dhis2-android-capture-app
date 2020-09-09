@@ -17,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.annotation.ColorInt;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -32,13 +31,13 @@ import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdap
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.imports.ImportStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
@@ -186,7 +185,7 @@ public class Bindings {
         if (event != null) {
             EventStatus status = event.status();
             EnrollmentStatus enrollmentStatus = EnrollmentStatus.ACTIVE;
-            if(enrollment!=null) {
+            if (enrollment != null) {
                 enrollmentStatus = enrollment.status();
             }
             if (status == null)
@@ -482,15 +481,12 @@ public class Bindings {
 
     public static void setObjectStyle(View view, View itemView, ObjectStyle objectStyle) {
         Resources resources = view.getContext().getResources();
-        if (objectStyle != null && objectStyle.icon() != null) {
-            String iconName = objectStyle.icon().startsWith("ic_") ? objectStyle.icon() : "ic_" + objectStyle.icon();
-            int icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
+
+        if (objectStyle != null) {
+            int icon = new ResourceManager(view.getContext())
+                    .getObjectStyleDrawableResource(objectStyle.icon(), R.drawable.ic_program_default);
             if (view instanceof ImageView)
                 ((ImageView) view).setImageResource(icon);
-        } else if (objectStyle != null && objectStyle.icon() == null) {
-            Drawable drawable = resources.getDrawable(R.drawable.ic_program_default);
-            if (view instanceof ImageView)
-                ((ImageView) view).setImageDrawable(drawable);
         }
 
         if (objectStyle != null && objectStyle.color() != null) {

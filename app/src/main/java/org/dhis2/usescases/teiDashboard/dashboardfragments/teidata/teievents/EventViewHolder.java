@@ -136,6 +136,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
                         style.icon(),
                         R.drawable.ic_program_default
                 ));
+        binding.stageIconImage.setColorFilter(ColorUtils.getContrastColor(color));
     }
 
     private void initValues(boolean valueListIsOpen, List<Pair<String, String>> dataElementValues) {
