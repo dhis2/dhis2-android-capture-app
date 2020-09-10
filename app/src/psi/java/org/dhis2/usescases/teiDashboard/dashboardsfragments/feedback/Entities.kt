@@ -47,6 +47,7 @@ data class Value(
     val feedbackOrder: FeedbackOrder,
     val colorByLegend: String? = null,
     val feedbackHelp: String? = null,
+    val success: Boolean,
     val eventUid: String
 )
 

@@ -1,6 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.core.types.TreeNode
@@ -40,7 +40,7 @@ class GetFeedbackTest {
     }
 
     @Test
-    fun `should not return feedback if there are events without values`() {
+    fun `should not return feedback if It's by event and there are events without values`() {
         givenAnEventsWithoutValues()
 
         val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
@@ -53,13 +53,26 @@ class GetFeedbackTest {
     }
 
     @Test
+    fun `should not return feedback if It's by technical area and there are events without values`() {
+        givenAnEventsWithoutValues()
+
+        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val feedbackResult =
+            getFeedback(FeedbackMode.ByTechnicalArea, null, false)
+
+        feedbackResult.fold(
+            { failure -> Assert.fail("$failure should be success") },
+            { feedback -> Assert.assertEquals(listOf<List<TreeNode<FeedbackItem>>>(), feedback) })
+    }
+
+    @Test
     fun `should return expected feedback by events`() {
         givenOneEventWithValues(
             "ART New", listOf(
-                listOf("1", "Completeness", "Partly", "#FFC700", "Feedback Completeness"),
-                listOf("2", "Timeliness", "100%", "#0CE922", "Feedback Timeliness"),
-                listOf("1.1", "Completeness 1.1", "86%", "#FFC700", "Feedback Completeness 1.1"),
-                listOf("1.2", "Completeness 1.2", "56%", "#c80f26", "Feedback Completeness 1.2")
+                listOf("1", "Completeness", "Partly", "#FFC700", "Feedback Completeness", "OK"),
+                listOf("2", "Timeliness", "100%", "#0CE922", "Feedback Timeliness", "OK"),
+                listOf("1.1", "Completeness 1.1", "86%", "#FFC700", "Feedback 1.1", "OK"),
+                listOf("1.2", "Completeness 1.2", "56%", "#c80f26", "Feedback 1.2", "OK")
             )
         )
 
@@ -81,7 +94,7 @@ class GetFeedbackTest {
                             "Completeness 1.1_DE"
                         )
                     ) {
-                        leaf(FeedbackHelpItem("Feedback Completeness 1.1"))
+                        leaf(FeedbackHelpItem("Feedback 1.1"))
                     }
                     node(
                         FeedbackItem(
@@ -89,7 +102,7 @@ class GetFeedbackTest {
                             "Completeness 1.2_DE"
                         )
                     ) {
-                        leaf(FeedbackHelpItem("Feedback Completeness 1.2"))
+                        leaf(FeedbackHelpItem("Feedback 1.2"))
                     }
                 }
                 node(
@@ -105,17 +118,79 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> Assert.assertEquals(expectedFeedback.toList(), feedback.toList()) })
+            { feedback -> assertFeedback(expectedFeedback, feedback) })
+    }
+
+    @Test
+    fun `should not return feedback if It's by events and only failed filter is true and all values are success`() {
+        givenOneEventWithValues(
+            "ART New", listOf(
+                listOf("1", "Completeness", "Partly", "#FFC700", "Feedback Completeness", "OK"),
+                listOf("2", "Timeliness", "100%", "#0CE922", "Feedback Timeliness", "OK")
+            )
+        )
+
+        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val feedbackResult =
+            getFeedback(FeedbackMode.ByEvent, null, true)
+
+        val expectedFeedback =
+            listOf<TreeNode.Node<FeedbackItem>>()
+
+        feedbackResult.fold(
+            { failure -> Assert.fail("$failure should be success") },
+            { feedback -> assertFeedback(expectedFeedback, feedback) })
+    }
+
+    @Test
+    fun `should return only failed by events if It's by events and only failed filter is true`() {
+        givenOneEventWithValues(
+            "ART New", listOf(
+                listOf("1", "Completeness", "Partly", "#FFC700", "Feedback Completeness", "FAIL"),
+                listOf("2", "Timeliness", "100%", "#0CE922", "Feedback Timeliness", "OK"),
+                listOf("3", "Precision", "86%", "#FFC700", "Feedback Precision", "OK"),
+                listOf("4", "Accuracy", "56%", "#c80f26", "Feedback Accuracy", "FAIL")
+            )
+        )
+
+        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val feedbackResult =
+            getFeedback(FeedbackMode.ByEvent, null, true)
+
+        val expectedFeedback = listOf(
+            root(FeedbackItem("ART New", null, "ART New UID")) {
+                node(
+                    FeedbackItem(
+                        "Completeness", FeedbackItemValue("Partly", "#FFC700"),
+                        "Completeness_DE"
+                    )
+                ) {
+                    leaf(FeedbackHelpItem("Feedback Completeness"))
+                }
+                node(
+                    FeedbackItem(
+                        "Accuracy", FeedbackItemValue("56%", "#c80f26"),
+                        "Accuracy_DE"
+                    )
+                ) {
+                    leaf(FeedbackHelpItem("Feedback Accuracy"))
+                }
+            }
+        )
+
+        feedbackResult.fold(
+            { failure -> Assert.fail("$failure should be success") },
+            { feedback -> assertFeedback(expectedFeedback, feedback) })
     }
 
     @Test
     fun `should return expected feedback by technical area`() {
         givenOneEventWithValues(
             "ART New", listOf(
-                listOf("1", "Completeness", "Partly", "#FFC700", "Feedback Completeness"),
-                listOf("2", "Timeliness", "100%", "#0CE922", "Feedback Timeliness"),
-                listOf("1.1", "Completeness 1.1", "86%", "#FFC700", "Feedback Completeness 1.1"),
-                listOf("1.2", "Completeness 1.2", "56%", "#c80f26", "Feedback Completeness 1.2")
+                listOf("1", "Completeness", "Partly", "#FFC700", "Feedback Completeness", "OK"),
+                listOf("2", "Timeliness", "100%", "#0CE922", "Feedback Timeliness", "OK"),
+                listOf("1.1", "Completeness 1.1", "86%", "#FFC700", "Feedback 1.1", "OK"),
+                listOf("1.2", "Completeness 1.2", "56%", "#c80f26", "Feedback 1.2", "OK")
             )
         )
 
@@ -126,7 +201,7 @@ class GetFeedbackTest {
             root(FeedbackItem("Completeness", null, "Completeness_DE")) {
                 leaf(FeedbackHelpItem("Feedback Completeness"))
                 node(FeedbackItem("Completeness 1.1", null, "Completeness 1.1_DE")) {
-                    leaf(FeedbackHelpItem("Feedback Completeness 1.1"))
+                    leaf(FeedbackHelpItem("Feedback 1.1"))
                     leaf(
                         FeedbackItem(
                             "ART New",
@@ -136,7 +211,7 @@ class GetFeedbackTest {
                     )
                 }
                 node(FeedbackItem("Completeness 1.2", null, "Completeness 1.2_DE")) {
-                    leaf(FeedbackHelpItem("Feedback Completeness 1.2"))
+                    leaf(FeedbackHelpItem("Feedback 1.2"))
                     leaf(
                         FeedbackItem(
                             "ART New",
@@ -154,13 +229,21 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback ->
-                val gson = Gson()
-                val feedbackJson = gson.toJson(feedback)
-                val expectedFeedbackJson = gson.toJson(expectedFeedback)
+            { feedback -> assertFeedback(expectedFeedback, feedback) })
+    }
 
-                Assert.assertEquals(expectedFeedback.toList(), feedback.toList())
-            })
+    private fun assertFeedback(
+        expectedFeedback: List<TreeNode.Node<FeedbackItem>>,
+        feedback: List<TreeNode.Node<FeedbackItem>>
+    ) {
+        val gson = GsonBuilder().setPrettyPrinting().create()
+
+        Assert.assertEquals(
+            "AssertionError: \n " +
+                "Expected: \n ${gson.toJson(expectedFeedback)} \n" +
+                "Actual: \n ${gson.toJson(feedback)}  \n",
+                expectedFeedback.toList(), feedback.toList()
+        )
     }
 
     private fun givenThatThereNotEvents() {
@@ -219,7 +302,7 @@ class GetFeedbackTest {
         val values = valuesData.map {
             Value(
                 "${it[1]}_DE", it[1], it[2], FeedbackOrder(it[0]), it[3], it[4],
-                "$stageName UID"
+                it[5] != "FAIL", "$stageName UID"
             )
         }
 

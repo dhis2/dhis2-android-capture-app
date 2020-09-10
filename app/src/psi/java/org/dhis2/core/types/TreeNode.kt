@@ -1,7 +1,7 @@
 package org.dhis2.core.types
 
 sealed class TreeNode<T>(val content: T) {
-    var parent: TreeNode<*>? = null
+    protected var parent: TreeNode<*>? = null
 
     val level: Int
         get() {
@@ -33,6 +33,7 @@ sealed class TreeNode<T>(val content: T) {
 
         fun node(content: N, initialize: (Node<N>.() -> Unit)? = null) {
             val child = Node(content)
+
             addChild(child)
             if (initialize != null) {
                 child.initialize()
@@ -47,6 +48,12 @@ sealed class TreeNode<T>(val content: T) {
             internalChildren.add(node)
             node.parent = this
         }
+
+/*        fun depthFilter( predicate: (TreeNode<*>)->Boolean ): Node<N>{
+            return Node(this.content,this.children.filter {
+                predicate(it)
+            }, this.expanded)
+        }*/
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true

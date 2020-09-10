@@ -5,6 +5,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.attribute.Attribute
 import org.hisp.dhis.android.core.attribute.AttributeValue
 import org.hisp.dhis.android.core.dataelement.DataElement
+import org.hisp.dhis.android.core.legendset.Legend
 
 class ValuesD2Repository(private val d2: D2) : ValuesRepository {
     val dataElements: List<DataElement> = d2.dataElementModule().dataElements().get().blockingGet()
@@ -12,6 +13,7 @@ class ValuesD2Repository(private val d2: D2) : ValuesRepository {
     override fun getByEvent(eventUid: String, compulsoryFilter: Boolean?): List<Value> {
         val feedbackOrderAttributeCode = "FeedbackOrder"
         val feedbackTextAttributeCode = "FeedbackText"
+        val failLegendSuffix = "FAIL"
 
         val teiDataValues =
             d2.trackedEntityModule().trackedEntityDataValues().byEvent().eq(eventUid)
@@ -32,7 +34,7 @@ class ValuesD2Repository(private val d2: D2) : ValuesRepository {
             .map { teiValue ->
                 val dataElement =
                     dataElements.first { it.uid() == teiValue.dataElement() }
-                val colorByLegend = getColorByLegend(teiValue.value()!!, teiValue.dataElement()!!)
+                val assignedLegend = getAssignedLegend(teiValue.value()!!, teiValue.dataElement()!!)
                 val deAttributeValues = getDataElementAttributeValues(teiValue.dataElement()!!)
 
                 val deFeedbackHelp = deAttributeValues.firstOrNull {
@@ -51,8 +53,9 @@ class ValuesD2Repository(private val d2: D2) : ValuesRepository {
                     deName,
                     teiValue.userFriendlyValue(d2)!!,
                     FeedbackOrder(deFeedbackOrder!!.value()),
-                    colorByLegend,
+                    assignedLegend?.color(),
                     deFeedbackHelp?.value(),
+                    assignedLegend?.name()?.split("_")?.last() != failLegendSuffix,
                     eventUid
                 )
             }
@@ -94,8 +97,8 @@ class ValuesD2Repository(private val d2: D2) : ValuesRepository {
         }
     }
 
-    private fun getColorByLegend(value: String, dataElementUid: String): String? {
-        var color: String? = null
+    private fun getAssignedLegend(value: String, dataElementUid: String): Legend? {
+        var legend: Legend? = null
 
         return try {
             val dataElement = d2.dataElementModule().dataElements()
@@ -113,12 +116,12 @@ class ValuesD2Repository(private val d2: D2) : ValuesRepository {
                     .byLegendSet().eq(legendSet.uid()).blockingGet()
 
                 if (legends.size > 0) {
-                    color = legends[0].color()
+                    legend = legends[0]
                 }
             }
-            color
+            legend
         } catch (e: Exception) {
-            color
+            legend
         }
     }
 

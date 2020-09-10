@@ -23,7 +23,7 @@ class GetFeedback(
         feedbackMode: FeedbackMode,
         criticalFilter: Boolean? = null,
         onlyFailedFilter: Boolean = false
-    ): Either<FeedbackFailure, List<TreeNode<FeedbackItem>>> {
+    ): Either<FeedbackFailure, List<TreeNode.Node<FeedbackItem>>> {
         return try {
 
             val events = getEnrollmentEvents(criticalFilter)
@@ -42,10 +42,10 @@ class GetFeedback(
         feedbackMode: FeedbackMode,
         teiEvents: List<Event>,
         onlyFailedFilter: Boolean
-    ): List<TreeNode<FeedbackItem>> {
+    ): List<TreeNode.Node<FeedbackItem>> {
         return when (feedbackMode) {
             is FeedbackMode.ByEvent -> createFeedbackByEvent(teiEvents, onlyFailedFilter)
-            is FeedbackMode.ByTechnicalArea -> createFeedbackByTechnicalAre(
+            is FeedbackMode.ByTechnicalArea -> createFeedbackByTechnicalArea(
                 teiEvents, onlyFailedFilter
             )
         }
@@ -54,21 +54,35 @@ class GetFeedback(
     private fun createFeedbackByEvent(
         teiEvents: List<Event>,
         onlyFailed: Boolean
-    ): List<TreeNode<FeedbackItem>> {
+    ): List<TreeNode.Node<FeedbackItem>> {
+        return teiEvents.map { event ->
+            val children = mapToTreeNodes(event.values).filter { node ->
+                val value = event.values.first { it.dataElement == node.content.code }
 
-        val teiEventsWithValues = teiEvents.filter { it.values.isNotEmpty() }
+                !onlyFailed || (onlyFailed && !value.success)
+            }
 
-        return teiEventsWithValues.map { event ->
-            val children = mapToTreeNodes(event.values)
+//           val predicate = { treeNode: TreeNode<*> ->
+//                treeNode.content is FeedbackHelpItem ||
+//                    (treeNode.content is FeedbackItem && )
+//            }
+//
+//            val filteredChildren=children.filter { node->
+//                val value = event.values.first { it.dataElement == node.content.code }
+//
+//                !onlyFailed ||
+//                    (onlyFailed && !value.success &&
+//                        node.depthFilter { predicate(it) }.children.isNotEmpty())
+//            }
 
             TreeNode.Node(FeedbackItem(event.name, null, event.uid), children)
-        }
+        }.filter { it.children.isNotEmpty() }
     }
 
-    private fun createFeedbackByTechnicalAre(
+    private fun createFeedbackByTechnicalArea(
         teiEvents: List<Event>,
         onlyFailed: Boolean
-    ): List<TreeNode<FeedbackItem>> {
+    ): List<TreeNode.Node<FeedbackItem>> {
 
         val distinctValues = teiEvents.flatMap { it.values }.distinctBy { it.dataElement }
         val treeNodes = mapToTreeNodes(distinctValues, false)
@@ -81,8 +95,8 @@ class GetFeedback(
     private fun mapToTreeNodes(
         values: List<Value>,
         withValue: Boolean = true
-    ): List<TreeNode<FeedbackItem>> {
-        val treeNodes = mutableListOf<TreeNode<FeedbackItem>>()
+    ): List<TreeNode.Node<FeedbackItem>> {
+        val treeNodes = mutableListOf<TreeNode.Node<FeedbackItem>>()
 
         val nodesMap = values.associate { it.feedbackOrder.value to mapToTreeNode(it, withValue) }
 
