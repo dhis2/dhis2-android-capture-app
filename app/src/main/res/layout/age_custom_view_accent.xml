@@ -71,6 +71,7 @@
             app:layout_constraintTop_toBottomOf="@id/label">
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/inputLayout"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="2"
@@ -91,6 +92,7 @@
 
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/yearInputLayout"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -110,6 +112,7 @@
 
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/monthInputLayout"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -129,7 +132,7 @@
 
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/inputLayout"
+                android:id="@+id/dayInputLayout"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

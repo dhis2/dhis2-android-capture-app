@@ -224,6 +224,8 @@ public class CustomTextView extends FieldLayout {
         editText.setFocusableInTouchMode(editable);
         editText.setClickable(editable);
         editText.setEnabled(editable);
+
+        setEditable(editable, labelText, inputLayout, editText, descIcon, descriptionLabel);
     }
 
     public void setWarning(String warning, String error) {
@@ -256,7 +258,7 @@ public class CustomTextView extends FieldLayout {
         }
     }
 
-    public void setHint(String hint){
+    public void setHint(String hint) {
         binding.setVariable(BR.fieldHint, hint);
     }
 

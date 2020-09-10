@@ -59,12 +59,18 @@ public abstract class FieldLayout extends RelativeLayout {
             activationListener.onActivation();
     }
 
-    public void setActivationListener(OnActivation onActivationListener){
+    public void setActivationListener(OnActivation onActivationListener) {
         this.activationListener = onActivationListener;
     }
 
     public interface OnActivation {
         void onActivation();
+    }
+
+    public void setEditable(boolean editable, View... views) {
+        for (View view : views) {
+            view.setAlpha(editable ? 1 : 0.5f);
+        }
     }
 }
 

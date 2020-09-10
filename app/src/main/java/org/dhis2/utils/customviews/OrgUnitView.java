@@ -108,6 +108,12 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
         editText.setEnabled(isEditable);
         editText.setFocusable(false);
         editText.setClickable(isEditable);
+
+        setEditable(isEditable,
+                findViewById(R.id.label),
+                editText,
+                inputLayout,
+                descriptionLabel);
     }
 
     public void setValue(String valueUid, String valueName) {
