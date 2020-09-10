@@ -234,6 +234,7 @@ class EnrollmentPresenterImpl(
                 .flatMap { sectionList ->
                     view.sectionFlowable().startWith(sectionList[0])
                         .map { setCurrentSection(it) }
+                        .doOnNext { view.showProgress() }
                         .switchMap { section ->
                             fields.map { fieldList ->
                                 return@map setFieldsToShow(section, fieldList)
