@@ -319,6 +319,9 @@ class EnrollmentPresenterImpl(
             }
         }
         val sections = finalList.filterIsInstance<SectionViewModel>()
+        if (mandatoryFields.isNotEmpty()) {
+            showErrors = true
+        }
         sections.takeIf { showErrors }?.forEach { section ->
             var errors = 0
             repeat(mandatoryFields.filter { it.value == section.uid() }.size) { errors++ }

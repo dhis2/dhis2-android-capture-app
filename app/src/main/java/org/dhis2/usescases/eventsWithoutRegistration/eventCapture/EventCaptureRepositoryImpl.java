@@ -323,7 +323,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         String dataValue = valueRepository.blockingExists() ? valueRepository.blockingGet().value() : null;
                         String friendlyValue = dataValue != null ? ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2) : null;
 
-                        boolean allowFurureDates = programStageDataElement.allowFutureDate() != null ? programStageDataElement.allowFutureDate() : false;
+                        boolean allowFutureDates = programStageDataElement.allowFutureDate() != null ? programStageDataElement.allowFutureDate() : false;
                         String formName = de.displayFormName();
                         String description = de.displayDescription();
 
@@ -369,7 +369,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         FieldViewModel fieldViewModel =
                                 fieldFactory.create(uid, formName == null ? displayName : formName,
                                         valueType, mandatory, optionSet, dataValue,
-                                        programStageSection != null ? programStageSection.uid() : null, allowFurureDates,
+                                        programStageSection != null ? programStageSection.uid() : null, allowFutureDates,
                                         isEventEditable,
                                         renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask());
 
