@@ -54,8 +54,10 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
                 if(fieldWasSelectedManually() || currentSelectedItem(fieldUid)){
                     Drawable bgDrawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg);
                     itemView.setBackground(bgDrawable);
+                    itemView.setActivated(true);
                 } else {
                     itemView.setBackgroundResource(R.color.form_field_background);
+                    itemView.setActivated(false);
                 }
             });
 
@@ -91,7 +93,6 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
 
     public void setSelectedBackground(boolean isSarchMode) {
         if (!isSarchMode) {
-            itemView.setActivated(true);
             selectedFieldUid = fieldUid;
             currentUid.setValue(fieldUid);
         }

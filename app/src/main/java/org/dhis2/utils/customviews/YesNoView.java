@@ -11,6 +11,8 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
@@ -19,6 +21,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import org.dhis2.BR;
 import org.dhis2.R;
+import org.dhis2.utils.ColorUtils;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
@@ -31,7 +34,7 @@ public class YesNoView extends FieldLayout {
 
     private ViewDataBinding binding;
 
-    private LinearLayout checksLayout;
+    private ConstraintLayout checksLayout;
     private RadioGroup radioGroup;
     private RadioButton yes;
     private RadioButton no;
@@ -269,6 +272,16 @@ public class YesNoView extends FieldLayout {
     @Override
     protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+    }
+
+    @Override
+    public void dispatchSetActivated(boolean activated) {
+        super.dispatchSetActivated(activated);
+        if (activated) {
+            labelView.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+        } else {
+            labelView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
+        }
     }
 
     public void setInitialValue(String value) {

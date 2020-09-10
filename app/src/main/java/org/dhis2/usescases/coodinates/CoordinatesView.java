@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
@@ -30,6 +31,7 @@ import org.dhis2.databinding.FormCoordinatesAccentBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
 import org.dhis2.uicomponents.map.geometry.LngLatValidatorKt;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -59,6 +61,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private TextInputEditText polygon;
     private FeatureType featureType;
     private Geometry currentGeometry;
+    private TextView labelText;
 
     public CoordinatesView(Context context) {
         super(context);
@@ -109,6 +112,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
         errorView = findViewById(R.id.errorMessage);
         clearButton = findViewById(R.id.clearButton);
+        labelText = findViewById(R.id.label);
 
         latitude.setOnEditorActionListener((v, actionId, event) -> {
             if (validateCoordinates()) {
@@ -177,11 +181,13 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                         }
                     }
                 }
+            } else {
+                activate();
             }
         });
 
         latitude.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus)
+            if (!hasFocus) {
                 if (!latitude.getText().toString().isEmpty()) {
                     Double lat = DoubleExtensionsKt.truncate(getLatitude());
                     latitude.setText(lat.toString());
@@ -194,6 +200,9 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                         }
                     }
                 }
+            } else {
+                activate();
+            }
         });
     }
 
@@ -343,6 +352,16 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         if (hasFocus) {
             activate();
             latitude.performClick();
+        }
+    }
+
+    @Override
+    public void dispatchSetActivated(boolean activated) {
+        super.dispatchSetActivated(activated);
+        if (activated) {
+            labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+        } else {
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
         }
     }
 

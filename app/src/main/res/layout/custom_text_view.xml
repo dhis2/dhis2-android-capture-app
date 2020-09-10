@@ -29,7 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="70dp"
-        android:padding="5dp">
+        android:paddingTop="32dp">
 
         <View
             android:id="@+id/dummyFocusView"
@@ -85,7 +85,6 @@
             app:layout_constraintTop_toBottomOf="@id/label"
             android:layout_marginHorizontal="12dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/renderImage"
             android:orientation="horizontal">
 
             <com.google.android.material.textfield.TextInputLayout
@@ -96,7 +95,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint='@{fieldHint}'
-                android:textColorHint="@color/text_black_DE3"
                 tools:hint="hint">
 
                 <org.dhis2.utils.customviews.TextInputAutoCompleteTextView
@@ -107,7 +105,6 @@
                     android:imeOptions="actionNext"
                     android:maxLines="1"
                     android:textAlignment="textStart"
-                    android:textColor="@color/text_black_DE3"
                     android:textSize="@dimen/form_edit_text_size"
                     android:textIsSelectable="true"
                     tools:text="hello" />
@@ -119,8 +116,10 @@
                 android:id="@+id/descIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:padding="10dp"
                 android:visibility="gone"
-                tools:visibility="visible" />
+                tools:visibility="visible"
+                tools:src="@drawable/ic_form_email"/>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

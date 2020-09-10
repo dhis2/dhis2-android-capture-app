@@ -28,7 +28,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp">
+        android:paddingTop="32dp">
         <View
             android:id="@+id/dummyFocusView"
             android:layout_width="wrap_content"
