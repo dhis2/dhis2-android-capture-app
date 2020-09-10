@@ -243,10 +243,10 @@ class EnrollmentRepository(
             attribute.fieldMask()
         )
 
-        return if (warning != null) {
-            fieldViewModel.withWarning(warning)
-        } else if (!error.isNullOrEmpty()) {
+        return if (!error.isNullOrEmpty()) {
             fieldViewModel.withError(error)
+        } else if (warning != null) {
+            fieldViewModel.withWarning(warning)
         } else {
             fieldViewModel
         }
