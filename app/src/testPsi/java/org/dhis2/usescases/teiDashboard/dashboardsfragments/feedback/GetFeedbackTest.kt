@@ -113,6 +113,78 @@ class GetFeedbackTest {
             { feedback -> Assert.assertEquals(expectedFeedback.toList(), feedback.toList()) })
     }
 
+    @Test
+    fun `should return expected feedback by technical area`() {
+        givenOneEventWithValues(
+            "ART New", listOf(
+                listOf("1", "Completeness", "Partly", "#FFC700", "Feedback Completeness"),
+                listOf("2", "Timeliness", "100%", "#0CE922", "Feedback Timeliness"),
+                listOf("1.1", "Completeness 1.1", "86%", "#FFC700", "Feedback Completeness 1.1"),
+                listOf("1.2", "Completeness 1.2", "56%", "#c80f26", "Feedback Completeness 1.2")
+            )
+        )
+
+        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val feedbackResult = getFeedback(FeedbackMode.ByTechnicalArea)
+
+        val expectedFeedback = listOf(
+            TreeNode.Node(
+                FeedbackItem(
+                    "Completeness", null,"Completeness_DE"
+                ),
+                listOf(
+                    TreeNode.Leaf(FeedbackHelpItem("Feedback Completeness")),
+                    TreeNode.Node(
+                        FeedbackItem(
+                            "Completeness 1.1", null, "Completeness 1.1_DE"
+                        ),
+                        listOf(
+                            TreeNode.Leaf(FeedbackHelpItem("Feedback Completeness 1.1")),
+                            TreeNode.Leaf(
+                                FeedbackItem(
+                                    "ART New",
+                                    FeedbackItemValue("86%", "#FFC700"),
+                                    "ART New UID"
+                                )
+                            )
+                        )
+                    ),
+                    TreeNode.Node(
+                        FeedbackItem(
+                            "Completeness 1.2", null, "Completeness 1.2_DE"
+                        ),
+                        listOf(
+                            TreeNode.Leaf(FeedbackHelpItem("Feedback Completeness 1.2")),
+                            TreeNode.Leaf(
+                                FeedbackItem(
+                                    "ART New",
+                                    FeedbackItemValue("56%", "#c80f26"),
+                                    "ART New UID"
+                                )
+                            )
+                        )
+                    )
+                )
+            ),
+            TreeNode.Node(
+                FeedbackItem(
+                    "Timeliness", null, "Timeliness_DE"
+                ),
+                listOf(
+                    TreeNode.Leaf(FeedbackHelpItem("Feedback Timeliness")),
+                    TreeNode.Leaf(
+                        FeedbackItem("ART New", FeedbackItemValue("100%", "#0CE922"), "ART New UID")
+                    )
+                )
+            )
+
+        )
+
+        feedbackResult.fold(
+            { failure -> Assert.fail("$failure should be success") },
+            { feedback -> Assert.assertEquals(expectedFeedback.toList(), feedback.toList()) })
+    }
+
     private fun givenThatThereNotEvents() {
         whenever(
             teiDataRepository.getTEIEnrollmentEvents(
@@ -174,8 +246,5 @@ class GetFeedbackTest {
         }
 
         whenever(valuesRepository.getByEvent("$stageName UID")).thenReturn(values)
-    }
-
-    companion object {
     }
 }

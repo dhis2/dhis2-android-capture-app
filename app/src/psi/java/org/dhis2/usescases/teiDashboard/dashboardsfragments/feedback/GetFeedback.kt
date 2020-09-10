@@ -108,7 +108,8 @@ class GetFeedback(
     private fun addEventsToLastNodes(treeNodes: List<TreeNode<FeedbackItem>>, events: List<Event>) {
         treeNodes.forEach { treeNode ->
             if (treeNode is TreeNode.Node &&
-                (treeNode.children.isEmpty() || treeNode.children[0] is TreeNode.Leaf)
+                (treeNode.children.isEmpty() ||
+                    (treeNode.children.size == 1 && treeNode.children[0] is TreeNode.Leaf))
             ) {
                 events.filter { event ->
                     event.values.any { v -> v.dataElement == treeNode.content.code }
