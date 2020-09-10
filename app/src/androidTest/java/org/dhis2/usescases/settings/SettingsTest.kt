@@ -99,6 +99,7 @@ class SettingsTest : BaseTest() {
         settingsRobot {
             waitToDebounce(1000)
             clickOnOpenSyncErrorLog()
+            waitToDebounce(1000)
             checkLogViewIsDisplayed()
         }
     }
