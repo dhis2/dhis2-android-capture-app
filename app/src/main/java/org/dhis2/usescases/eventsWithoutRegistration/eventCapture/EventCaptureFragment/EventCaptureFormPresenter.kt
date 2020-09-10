@@ -24,6 +24,7 @@ class EventCaptureFormPresenter(
             view.dataEntryFlowable()
                 .onBackpressureBuffer()
                 .distinctUntilChanged()
+                .doOnNext { activityPresenter.showProgress() }
                 .observeOn(schedulerProvider.io())
                 .switchMap { action ->
                     if (action.lastFocusPosition() != null && action.lastFocusPosition() >= 0) {
@@ -52,6 +53,7 @@ class EventCaptureFormPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
+                        view.saveOpenedSection(it)
                         activityPresenter.goToSection(it)
                     },
                     Timber::e
@@ -65,6 +67,7 @@ class EventCaptureFormPresenter(
                 .subscribe(
                     { fields ->
                         view.showFields(fields, lastFocusItem)
+                        activityPresenter.hideProgress()
                         selectedSection ?: fields
                             .mapNotNull { it.programStageSection() }
                             .firstOrNull()

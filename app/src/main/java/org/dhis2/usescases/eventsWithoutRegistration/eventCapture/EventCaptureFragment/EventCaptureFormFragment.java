@@ -3,8 +3,10 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureF
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,6 +112,11 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     }
 
     @Override
+    public void saveOpenedSection(@Nullable String sectionUid) {
+        dataEntryAdapter.saveOpenedSection(sectionUid);
+    }
+
+    @Override
     public void showFields(@NonNull List<FieldViewModel> updates, @NonNull String lastFocusItem) {
 
         if (!isEmpty(lastFocusItem)) {
@@ -120,23 +127,11 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             createDataEntry();
         }
 
-        LinearLayoutManager myLayoutManager = (LinearLayoutManager) binding.formRecycler.getLayoutManager();
-        if (myLayoutManager == null) return;
-
-        int myFirstPositionIndex = myLayoutManager.findFirstVisibleItemPosition();
-        View myFirstPositionView = myLayoutManager.findViewByPosition(myFirstPositionIndex);
-        int offset = 0;
-        if (myFirstPositionView != null) {
-            offset = myFirstPositionView.getTop();
-        }
-
         if (dataEntryAdapter == null) {
             createDataEntry();
         }
 
         dataEntryAdapter.swap(updates, () -> { });
-
-        myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset);
     }
 
     @Override

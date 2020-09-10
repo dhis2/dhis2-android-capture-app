@@ -8,6 +8,7 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.common.Unit;
+import org.hisp.dhis.android.core.program.Program;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -30,7 +31,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     private FlowableProcessor<Unit> listDataProcessor;
 
     //Search fields
-    FlowableProcessor<Pair<String, LatLng>> eventInfoProcessor;
+    FlowableProcessor<String> eventInfoProcessor;
     FlowableProcessor<Unit> mapProcessor;
 
     public ProgramEventDetailPresenter(
@@ -168,12 +169,11 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
         compositeDisposable.add(
                 eventInfoProcessor
-                        .flatMap(eventInfo -> eventRepository.getInfoForEvent(eventInfo.val0())
-                                .map(eventData -> Pair.create(eventData, eventInfo.val1())))
+                        .flatMap(eventRepository::getInfoForEvent)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                view::setEventInfo,
+                                view::updateEventCarouselItem,
                                 throwable -> view.renderError(throwable.getMessage())
                         ));
 
@@ -227,8 +227,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
-    public void getEventInfo(String eventUid, LatLng latLng) {
-        eventInfoProcessor.onNext(Pair.create(eventUid, latLng));
+    public void getEventInfo(String eventUid) {
+        eventInfoProcessor.onNext(eventUid);
     }
 
     @Override
@@ -281,5 +281,10 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         FilterManager.getInstance().addCatOptCombo(
                 eventRepository.getCatOptCombo(selectedCatOptionCombo)
         );
+    }
+
+    @Override
+    public Program getProgram() {
+        return eventRepository.program().blockingFirst();
     }
 }

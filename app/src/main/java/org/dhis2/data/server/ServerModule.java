@@ -63,10 +63,10 @@ public class ServerModule {
         return D2Configuration.builder()
                 .appName(BuildConfig.APPLICATION_ID)
                 .appVersion(BuildConfig.VERSION_NAME)
-                .connectTimeoutInSeconds(3 * 60)
-                .readTimeoutInSeconds(3 * 60)
+                .connectTimeoutInSeconds(10 * 60)
+                .readTimeoutInSeconds(10 * 60)
                 .networkInterceptors(interceptors)
-                .writeTimeoutInSeconds(3 * 60)
+                .writeTimeoutInSeconds(10 * 60)
                 .context(context)
                 .build();
     }

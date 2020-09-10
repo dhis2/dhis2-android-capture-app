@@ -7,12 +7,6 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 
 import com.google.auto.value.AutoValue;
 
-import javax.annotation.Nonnull;
-
-/**
- * QUADRAM. Created by ppajuelo on 19/03/2018.
- */
-
 @AutoValue
 public abstract class FileViewModel extends FieldViewModel {
     public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, String description, ObjectStyle objectStyle) {
@@ -40,7 +34,7 @@ public abstract class FileViewModel extends FieldViewModel {
                 allowFutureDate(), editable(), optionSet(), warning, error(),description(), objectStyle(), null);
     }
 
-    @Nonnull
+   @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_FileViewModel(uid(), label(), mandatory(), data, programStageSection(),

@@ -30,7 +30,7 @@ class RulesRepository(private val d2: D2) {
     // USER ROLES
     fun supplementaryData(orgUnitUid: String): Single<Map<String, List<String>>> {
         return Single.fromCallable {
-            val supData = HashMap<String, MutableList<String>>()
+            val supData = HashMap<String, List<String>>()
 
             d2.organisationUnitModule().organisationUnits()
                 .withOrganisationUnitGroups().uid(orgUnitUid).blockingGet()
@@ -46,7 +46,7 @@ class RulesRepository(private val d2: D2) {
             val userRoleUids =
                 UidsHelper.getUidsList(d2.userModule().userRoles().blockingGet())
             supData["USER"] = userRoleUids
-            supData["android_version"] = arrayListOf(Build.VERSION.SDK_INT.toString())
+            supData["android_version"] = listOf(Build.VERSION.SDK_INT.toString())
 
             supData
         }

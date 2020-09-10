@@ -16,10 +16,6 @@
             type="java.lang.String" />
 
         <variable
-            name="isEditable"
-            type="androidx.databinding.ObservableBoolean" />
-
-        <variable
             name="fieldHint"
             type="String" />
     </data>
@@ -52,6 +48,15 @@
             tools:srcCompat="@drawable/sierra_leone"
             tools:visibility="visible" />
 
+        <View
+            android:id="@+id/fieldBackground"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="12dp"
+            android:background="@drawable/bottomsheet_bg"
+            app:layout_constraintBottom_toBottomOf="@id/input_layout"
+            app:layout_constraintTop_toBottomOf="@id/renderImage"/>
+
         <TextView
             android:id="@+id/label"
             style="@style/FieldLabel"
@@ -63,8 +68,8 @@
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/renderImage"
+            app:layout_constraintStart_toStartOf="@id/fieldBackground"
+            app:layout_constraintTop_toTopOf="@id/fieldBackground"
             tools:text="@string/lorem" />
 
         <ImageView
@@ -74,7 +79,7 @@
             android:layout_marginEnd="16dp"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@+id/label"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/clear_button"
             app:layout_constraintStart_toEndOf="@id/label"
             app:layout_constraintTop_toTopOf="@+id/label"
             app:srcCompat="@drawable/ic_info_outline"
@@ -89,18 +94,16 @@
             android:hint='@{fieldHint}'
             android:textColorHint="@color/text_black_DE3"
             android:theme="@style/loginInputText"
-            android:layout_marginHorizontal="16dp"
+            android:layout_marginHorizontal="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/label"
-            android:background="@drawable/bottomsheet_bg"
             tools:hint="hint">
 
             <org.dhis2.utils.customviews.TextInputAutoCompleteTextView
                 android:id="@+id/input_editText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:enabled="@{isEditable.get()}"
                 android:gravity="start"
                 android:imeOptions="actionNext"
                 android:paddingTop="8dp"
@@ -116,8 +119,8 @@
             android:id="@+id/clear_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="@id/input_layout"
-            app:layout_constraintTop_toTopOf="@id/input_layout"
+            app:layout_constraintEnd_toEndOf="@id/fieldBackground"
+            app:layout_constraintTop_toTopOf="@id/fieldBackground"
             android:padding="12dp"
             app:srcCompat="@drawable/ic_clear"
             app:tint="@color/default_field_icon_color" />

@@ -5,8 +5,6 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 public abstract class FieldViewModel {
 
     @NonNull
@@ -52,16 +50,16 @@ public abstract class FieldViewModel {
     @Nullable
     public abstract String description();
 
-    @Nonnull
+   @NonNull
     public abstract FieldViewModel withValue(String data);
 
-    @Nonnull
+   @NonNull
     public abstract String dataElement();
 
-    @Nonnull
+   @NonNull
     public abstract List<String> listCategoryOption();
 
-    @Nonnull
+   @NonNull
     public abstract String storeBy();
 
     public abstract int row();

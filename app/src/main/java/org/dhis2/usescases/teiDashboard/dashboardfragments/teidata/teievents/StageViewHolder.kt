@@ -38,6 +38,8 @@ internal class StageViewHolder(
                 R.drawable.ic_program_default
             )
         )
+        binding.programStageIcon.setColorFilter(ColorUtils.getContrastColor(color))
+
         binding.lastUpdatedEvent.text = eventItem.lastUpdate.toDateSpan(itemView.context)
 
         binding.addStageButton.visibility =

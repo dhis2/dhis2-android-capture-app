@@ -12,8 +12,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepo
 
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
-
 import io.reactivex.Flowable;
 import timber.log.Timber;
 
@@ -81,7 +79,7 @@ public final class DataValueStore implements DataEntryStore {
         }
     }
 
-    private valueType getValueType(@Nonnull String uid) {
+    private valueType getValueType(@NonNull String uid) {
         return d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists() ? ATTR : DATA_ELEMENT;
     }
 
