@@ -1,8 +1,10 @@
 package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 
+import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.core.types.TreeNode
+import org.dhis2.core.types.root
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
@@ -65,47 +67,40 @@ class GetFeedbackTest {
         val feedbackResult = getFeedback(FeedbackMode.ByEvent)
 
         val expectedFeedback = listOf(
-            TreeNode.Node(
-                FeedbackItem("ART New", null, "ART New UID"),
-                listOf(
-                    TreeNode.Node(
-                        FeedbackItem(
-                            "Completeness", FeedbackItemValue("Partly", "#FFC700"),
-                            "Completeness_DE"
-                        ),
-                        listOf(
-                            TreeNode.Leaf(FeedbackHelpItem("Feedback Completeness")),
-                            TreeNode.Node(
-                                FeedbackItem(
-                                    "Completeness 1.1", FeedbackItemValue("86%", "#FFC700"),
-                                    "Completeness 1.1_DE"
-                                ),
-                                listOf(
-                                    TreeNode.Leaf(FeedbackHelpItem("Feedback Completeness 1.1"))
-                                )
-                            ),
-                            TreeNode.Node(
-                                FeedbackItem(
-                                    "Completeness 1.2", FeedbackItemValue("56%", "#c80f26"),
-                                    "Completeness 1.2_DE"
-                                ),
-                                listOf(
-                                    TreeNode.Leaf(FeedbackHelpItem("Feedback Completeness 1.2"))
-                                )
-                            )
-                        )
-                    ),
-                    TreeNode.Node(
-                        FeedbackItem(
-                            "Timeliness", FeedbackItemValue("100%", "#0CE922"),
-                            "Timeliness_DE"
-                        ),
-                        listOf(
-                            TreeNode.Leaf(FeedbackHelpItem("Feedback Timeliness"))
-                        )
+            root(FeedbackItem("ART New", null, "ART New UID")) {
+                node(
+                    FeedbackItem(
+                        "Completeness", FeedbackItemValue("Partly", "#FFC700"),
+                        "Completeness_DE"
                     )
-                )
-            )
+                ) {
+                    leaf(FeedbackHelpItem("Feedback Completeness"))
+                    node(
+                        FeedbackItem(
+                            "Completeness 1.1", FeedbackItemValue("86%", "#FFC700"),
+                            "Completeness 1.1_DE"
+                        )
+                    ) {
+                        leaf(FeedbackHelpItem("Feedback Completeness 1.1"))
+                    }
+                    node(
+                        FeedbackItem(
+                            "Completeness 1.2", FeedbackItemValue("56%", "#c80f26"),
+                            "Completeness 1.2_DE"
+                        )
+                    ) {
+                        leaf(FeedbackHelpItem("Feedback Completeness 1.2"))
+                    }
+                }
+                node(
+                    FeedbackItem(
+                        "Timeliness", FeedbackItemValue("100%", "#0CE922"),
+                        "Timeliness_DE"
+                    )
+                ) {
+                    leaf(FeedbackHelpItem("Feedback Timeliness"))
+                }
+            }
         )
 
         feedbackResult.fold(
@@ -128,61 +123,44 @@ class GetFeedbackTest {
         val feedbackResult = getFeedback(FeedbackMode.ByTechnicalArea)
 
         val expectedFeedback = listOf(
-            TreeNode.Node(
-                FeedbackItem(
-                    "Completeness", null,"Completeness_DE"
-                ),
-                listOf(
-                    TreeNode.Leaf(FeedbackHelpItem("Feedback Completeness")),
-                    TreeNode.Node(
+            root(FeedbackItem("Completeness", null, "Completeness_DE")) {
+                leaf(FeedbackHelpItem("Feedback Completeness"))
+                node(FeedbackItem("Completeness 1.1", null, "Completeness 1.1_DE")) {
+                    leaf(FeedbackHelpItem("Feedback Completeness 1.1"))
+                    leaf(
                         FeedbackItem(
-                            "Completeness 1.1", null, "Completeness 1.1_DE"
-                        ),
-                        listOf(
-                            TreeNode.Leaf(FeedbackHelpItem("Feedback Completeness 1.1")),
-                            TreeNode.Leaf(
-                                FeedbackItem(
-                                    "ART New",
-                                    FeedbackItemValue("86%", "#FFC700"),
-                                    "ART New UID"
-                                )
-                            )
-                        )
-                    ),
-                    TreeNode.Node(
-                        FeedbackItem(
-                            "Completeness 1.2", null, "Completeness 1.2_DE"
-                        ),
-                        listOf(
-                            TreeNode.Leaf(FeedbackHelpItem("Feedback Completeness 1.2")),
-                            TreeNode.Leaf(
-                                FeedbackItem(
-                                    "ART New",
-                                    FeedbackItemValue("56%", "#c80f26"),
-                                    "ART New UID"
-                                )
-                            )
+                            "ART New",
+                            FeedbackItemValue("86%", "#FFC700"),
+                            "ART New UID"
                         )
                     )
-                )
-            ),
-            TreeNode.Node(
-                FeedbackItem(
-                    "Timeliness", null, "Timeliness_DE"
-                ),
-                listOf(
-                    TreeNode.Leaf(FeedbackHelpItem("Feedback Timeliness")),
-                    TreeNode.Leaf(
-                        FeedbackItem("ART New", FeedbackItemValue("100%", "#0CE922"), "ART New UID")
+                }
+                node(FeedbackItem("Completeness 1.2", null, "Completeness 1.2_DE")) {
+                    leaf(FeedbackHelpItem("Feedback Completeness 1.2"))
+                    leaf(
+                        FeedbackItem(
+                            "ART New",
+                            FeedbackItemValue("56%", "#c80f26"),
+                            "ART New UID"
+                        )
                     )
-                )
-            )
-
+                }
+            },
+            root(FeedbackItem("Timeliness", null, "Timeliness_DE")) {
+                leaf(FeedbackHelpItem("Feedback Timeliness"))
+                leaf(FeedbackItem("ART New", FeedbackItemValue("100%", "#0CE922"), "ART New UID"))
+            }
         )
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> Assert.assertEquals(expectedFeedback.toList(), feedback.toList()) })
+            { feedback ->
+                val gson = Gson()
+                val feedbackJson = gson.toJson(feedback)
+                val expectedFeedbackJson = gson.toJson(expectedFeedback)
+
+                Assert.assertEquals(expectedFeedback.toList(), feedback.toList())
+            })
     }
 
     private fun givenThatThereNotEvents() {

@@ -13,11 +13,11 @@ sealed class TreeNode<T>(val content: T) {
             }
         }
 
-    class Node<T>(
-        content: T,
+    class Node<N>(
+        content: N,
         initialChildren: List<TreeNode<*>> = mutableListOf(),
         var expanded: Boolean = false
-    ) : TreeNode<T>(content) {
+    ) : TreeNode<N>(content) {
         private val internalChildren: MutableList<TreeNode<*>> = initialChildren.toMutableList()
 
         init {
@@ -31,7 +31,19 @@ sealed class TreeNode<T>(val content: T) {
                 return internalChildren.toList()
             }
 
-        fun addChild(node:TreeNode<*>){
+        fun node(content: N, initialize: (Node<N>.() -> Unit)? = null) {
+            val child = Node(content)
+            addChild(child)
+            if (initialize != null) {
+                child.initialize()
+            }
+        }
+
+        fun <L> leaf(content: L) {
+            addChild(Leaf(content))
+        }
+
+        fun addChild(node: TreeNode<*>) {
             internalChildren.add(node)
             node.parent = this
         }
@@ -56,7 +68,7 @@ sealed class TreeNode<T>(val content: T) {
         }
     }
 
-    class Leaf<T>(content: T) : TreeNode<T>(content) {
+    class Leaf<L>(content: L) : TreeNode<L>(content) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
@@ -71,4 +83,12 @@ sealed class TreeNode<T>(val content: T) {
             return javaClass.hashCode()
         }
     }
+}
+
+fun <N> root(content: N, initialize: (TreeNode.Node<N>.() -> Unit)? = null): TreeNode.Node<N> {
+    val node = TreeNode.Node(content)
+    if (initialize != null) {
+        node.initialize()
+    }
+    return node
 }
