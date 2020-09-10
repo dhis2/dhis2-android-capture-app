@@ -87,6 +87,7 @@ class SettingsTest : BaseTest() {
         }
     }
 
+    @Ignore
     @Test
     fun shouldSuccessfullyOpenLogs() {
         startActivity()
