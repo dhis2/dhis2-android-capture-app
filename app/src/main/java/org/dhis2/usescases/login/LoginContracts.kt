@@ -47,7 +47,6 @@ class LoginContracts {
 
         fun openAccountRecovery()
 
-        fun displayAlertDialog()
         fun alreadyAuthenticated()
         fun showCredentialsData(type: Goldfinger.Type, vararg args: String)
         fun showEmptyCredentialsMessage()
