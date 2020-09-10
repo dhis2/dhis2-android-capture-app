@@ -69,7 +69,9 @@ public abstract class FieldLayout extends RelativeLayout {
 
     public void setEditable(boolean editable, View... views) {
         for (View view : views) {
-            view.setAlpha(editable ? 1 : 0.5f);
+            if(view!=null) {
+                view.setAlpha(editable ? 1 : 0.5f);
+            }
         }
     }
 }

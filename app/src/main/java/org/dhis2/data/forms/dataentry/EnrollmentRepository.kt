@@ -219,7 +219,7 @@ class EnrollmentRepository(
             dataValue,
             sectionUid,
             programTrackedEntityAttribute.allowFutureDate() ?: false,
-            /*!generated && canEditAttributes*/false,
+            !generated && canEditAttributes,
             null,
             attribute.displayDescription(),
             programTrackedEntityAttribute.renderType()?.mobile(),

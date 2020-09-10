@@ -335,6 +335,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         findViewById(R.id.location2).setEnabled(editable);
 
         setEditable(editable,
+                labelText,
                 latitudeInputLayout,
                 latitude,
                 longitudeInputLayout,

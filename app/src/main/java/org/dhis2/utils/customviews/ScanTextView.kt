@@ -79,9 +79,9 @@ class ScanTextView @JvmOverloads constructor(
 
     private fun checkCameraPermission() {
         if (ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.CAMERA
-        ) == PERMISSION_GRANTED
+                context,
+                Manifest.permission.CAMERA
+            ) == PERMISSION_GRANTED
         ) {
             val intent = Intent(context, ScanActivity::class.java)
             intent.putExtra(Constants.OPTION_SET, optionSet)
@@ -112,6 +112,14 @@ class ScanTextView @JvmOverloads constructor(
         when {
             !isEditable -> delete.visibility = View.GONE
         }
+
+        setEditable(
+            isEditable,
+            editText,
+            labelText,
+            descriptionLabel,
+            qrIcon
+        )
     }
 
     fun setText(text: String?) {
@@ -160,7 +168,8 @@ class ScanTextView @JvmOverloads constructor(
             ValueTypeRenderingType.QR_CODE -> {
                 descIcon.setImageResource(R.drawable.ic_form_qr)
             }
-            else -> {}
+            else -> {
+            }
         }
     }
 

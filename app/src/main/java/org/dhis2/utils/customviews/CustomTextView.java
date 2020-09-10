@@ -225,7 +225,8 @@ public class CustomTextView extends FieldLayout {
         editText.setClickable(editable);
         editText.setEnabled(editable);
 
-        setEditable(editable, labelText, inputLayout, editText, descIcon, descriptionLabel);
+        setEditable(editable, labelText,
+                inputLayout, editText, descIcon, descriptionLabel, findViewById(R.id.clear_button));
     }
 
     public void setWarning(String warning, String error) {
