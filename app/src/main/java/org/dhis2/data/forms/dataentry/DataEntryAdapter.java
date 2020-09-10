@@ -202,6 +202,7 @@ public final class DataEntryAdapter extends RecyclerView.Adapter<ViewHolder> {
         if (!(holder instanceof SectionHolder)) {
             if (!(holder instanceof ImageHolder)) {
                 holder.itemView.setBackgroundResource(R.color.form_field_background);
+                holder.itemView.setActivated(false);
             }
         } else {
             ((SectionHolder) holder).setBottomShadow(
