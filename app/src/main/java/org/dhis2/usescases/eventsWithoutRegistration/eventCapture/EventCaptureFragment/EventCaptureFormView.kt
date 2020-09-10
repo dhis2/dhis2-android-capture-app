@@ -11,4 +11,6 @@ interface EventCaptureFormView {
         fields: MutableList<FieldViewModel>,
         lastFocusItem: String
     )
+
+    fun saveOpenedSection(it: String?)
 }

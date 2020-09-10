@@ -7,6 +7,7 @@ import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -16,6 +17,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
 
 import java.text.ParseException;
@@ -24,6 +26,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ViewDataBinding;
@@ -38,6 +41,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     private TextInputEditText editText;
     private TextInputLayout inputLayout;
     private ViewDataBinding binding;
+    private TextView labelText;
 
     private OnDateSelected listener;
 
@@ -61,10 +65,14 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     }
 
     private void setLayout() {
-        binding = DataBindingUtil.inflate(inflater, R.layout.time_view, this, true);
+        binding = DataBindingUtil.inflate(inflater, R.layout.date_time_view, this, true);
         editText = findViewById(R.id.inputEditText);
         inputLayout = findViewById(R.id.inputLayout);
-        ((ImageView) findViewById(R.id.descIcon)).setImageResource(R.drawable.ic_form_date);
+        labelText = findViewById(R.id.label);
+        inputLayout.setHint(getContext().getString(R.string.select_time));
+        ((ImageView) findViewById(R.id.descIcon)).setImageResource(R.drawable.ic_form_time);
+        ImageView clearButton = findViewById(R.id.clear_button);
+        clearButton.setOnClickListener( v -> { clearTime();});
         editText.setFocusable(false); //Makes editText not editable
         editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this::onFocusChanged);
@@ -172,12 +180,20 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         dialog.setTitle(label);
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getContext().getString(R.string.date_dialog_clear), (timeDialog, which) -> {
-            editText.setText(null);
-            listener.onDateSelected(null);
-            date=null;
+            clearTime();
         });
 
         dialog.show();
+    }
+
+    @Override
+    public void dispatchSetActivated(boolean activated) {
+        super.dispatchSetActivated(activated);
+        if (activated) {
+            labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+        } else {
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
+        }
     }
 
     public TextInputEditText getEditText() {
@@ -186,5 +202,11 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
 
     public void setEditable(Boolean editable) {
         editText.setEnabled(editable);
+    }
+
+    private void clearTime() {
+        editText.setText(null);
+        listener.onDateSelected(null);
+        date=null;
     }
 }

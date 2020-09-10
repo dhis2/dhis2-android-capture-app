@@ -6,9 +6,11 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.DatePicker;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -16,6 +18,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
@@ -47,6 +50,8 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     private String description;
     private Date date;
     private TextInputLayout inputLayout;
+    private ImageView clearButton;
+    private TextView labelText;
 
     public DateView(Context context) {
         super(context);
@@ -75,12 +80,16 @@ public class DateView extends FieldLayout implements View.OnClickListener {
 
         inputLayout = findViewById(R.id.inputLayout);
         editText = findViewById(R.id.inputEditText);
+        clearButton = findViewById(R.id.clear_button);
+        labelText = findViewById(R.id.label);
+        inputLayout.setHint(getContext().getString(R.string.choose_date));
         ((ImageView) findViewById(R.id.descIcon)).setImageResource(R.drawable.ic_form_date);
         selectedCalendar = Calendar.getInstance();
         editText.setFocusable(false); //Makes editText not editable
         editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this::onFocusChanged);
         editText.setOnClickListener(this);
+        clearButton.setOnClickListener( v -> { clearDate(); });
     }
 
     public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale){
@@ -172,15 +181,23 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         showCustomCalendar();
     }
 
+    @Override
+    public void dispatchSetActivated(boolean activated) {
+        super.dispatchSetActivated(activated);
+        if (activated) {
+            labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+        } else {
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
+        }
+    }
+
     private void showCustomCalendar() {
 
         DatePickerUtils.getDatePickerDialog(getContext(), label, date, allowFutureDates,
                 new DatePickerUtils.OnDatePickerClickListener() {
                     @Override
                     public void onNegativeClick() {
-                        editText.setText(null);
-                        listener.onDateSelected(null);
-                        date = null;
+                        clearDate();
                     }
 
                     @Override
@@ -198,6 +215,12 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                         date = null;
                     }
                 }).show();
+    }
+
+    private void clearDate() {
+        editText.setText(null);
+        listener.onDateSelected(null);
+        date = null;
     }
 
     public TextInputEditText getEditText() {

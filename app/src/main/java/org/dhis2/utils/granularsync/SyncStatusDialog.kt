@@ -53,6 +53,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
     @Inject
     lateinit var presenter: GranularSyncContracts.Presenter
+
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
@@ -272,8 +273,14 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
         val listStatusLog = ArrayList<StatusLogItem>()
 
-        for (tracker in conflicts)
-            listStatusLog.add(StatusLogItem.create(tracker.created()!!, tracker.conflict()!!))
+        for (tracker in conflicts) {
+            listStatusLog.add(
+                StatusLogItem.create(
+                    tracker.created()!!,
+                    tracker.displayDescription() ?: tracker.conflict() ?: ""
+                )
+            )
+        }
 
         adapter!!.addItems(listStatusLog)
         setNetworkMessage()

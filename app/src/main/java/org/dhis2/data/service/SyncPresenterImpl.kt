@@ -215,7 +215,7 @@ class SyncPresenterImpl(
                 val calendar = Calendar.getInstance()
                 calendar.timeInMillis = it.created()?.time ?: 0
                 val date = DateUtils.databaseDateFormat().format(calendar.time)
-                mergeDateConflicts.add(date + "/" + it.conflict())
+                mergeDateConflicts.add(date + "/" + it.displayDescription())
             }
 
             val data = Data.Builder()
