@@ -90,7 +90,7 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
                     ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY));
             int icon = new ResourceManager(itemView.getContext())
                     .getObjectStyleDrawableResource(
-                            enrollment.icon(),
+                            programModel.icon(),
                             R.drawable.ic_program_default
                     );
 
