@@ -19,7 +19,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp">
+        android:paddingTop="32dp">
 
 
         <ImageView
@@ -105,8 +105,7 @@
                 app:layout_constraintTop_toTopOf="@id/input_layout"
                 android:layout_gravity="center"
                 android:paddingHorizontal="11dp"
-                app:srcCompat="@drawable/ic_clear"
-                app:tint="@color/default_field_icon_color" />
+                app:srcCompat="@drawable/ic_close" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -5,9 +5,11 @@ import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ViewDataBinding;
@@ -21,6 +23,7 @@ import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.databinding.FormSpinnerAccentBinding;
 import org.dhis2.databinding.FormSpinnerBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.option.Option;
@@ -38,6 +41,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
     private View delete;
     private OnSelectedOption listener;
     private int numberOfOptions = 0;
+    private TextView labelText;
 
     public OptionSetView(Context context) {
         super(context);
@@ -65,6 +69,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         this.inputLayout = binding.getRoot().findViewById(R.id.input_layout);
         this.descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
         this.delete = binding.getRoot().findViewById(R.id.delete);
+        this.labelText = binding.getRoot().findViewById(R.id.label);
 
         if (renderType != null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
             iconView.setVisibility(View.VISIBLE);
@@ -120,6 +125,16 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         setValueOption(option.displayName(), option.code());
     }
 
+    @Override
+    public void dispatchSetActivated(boolean activated) {
+        super.dispatchSetActivated(activated);
+        if (activated) {
+            labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+        } else {
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
+        }
+    }
+
     private void setValueOption(String optionDisplayName, String optionCode) {
 
         editText.setText(optionDisplayName);
@@ -154,7 +169,9 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         if (value != null && value.contains("_os_"))
             value = value.split("_os_")[0];
 
+        inputLayout.setHintAnimationEnabled(false);
         editText.setText(value);
+        inputLayout.setHintAnimationEnabled(true);
 
         if (delete != null && editText.getText() != null && !editText.getText().toString().isEmpty()) {
             delete.setVisibility(View.VISIBLE);

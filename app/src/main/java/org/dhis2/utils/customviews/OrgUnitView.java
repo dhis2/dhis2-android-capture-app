@@ -5,8 +5,11 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RemoteViews;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentManager;
 
@@ -17,6 +20,7 @@ import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.databinding.CustomTextViewAccentBinding;
 import org.dhis2.databinding.CustomTextViewBinding;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.customviews.orgUnitCascade.OrgUnitCascadeDialog;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
@@ -33,6 +37,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
     private OnDataChanged listener;
     private String value;
     private FragmentManager fm;
+    private TextView labelText;
 
     public OrgUnitView(Context context) {
         super(context);
@@ -59,6 +64,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
         this.iconView = binding.getRoot().findViewById(R.id.renderImage);
         this.inputLayout = binding.getRoot().findViewById(R.id.input_layout);
         this.descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
+        this.labelText = binding.getRoot().findViewById(R.id.label);
 
         if (renderType != null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
             iconView.setVisibility(View.VISIBLE);
@@ -152,6 +158,16 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
     public void textChangedConsumer(String selectedOrgUnitUid, String selectedOrgUnitName) {
         editText.setText(selectedOrgUnitName);
         listener.onDataChanged(selectedOrgUnitUid);
+    }
+
+    @Override
+    public void dispatchSetActivated(boolean activated) {
+        super.dispatchSetActivated(activated);
+        if (activated) {
+            labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+        } else {
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
+        }
     }
 
     @Override
