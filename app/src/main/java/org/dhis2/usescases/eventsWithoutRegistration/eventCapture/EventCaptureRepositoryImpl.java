@@ -26,6 +26,7 @@ import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.option.OptionGroup;
@@ -322,7 +323,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         String dataValue = valueRepository.blockingExists() ? valueRepository.blockingGet().value() : null;
                         String friendlyValue = dataValue != null ? ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2) : null;
 
-                        boolean allowFurureDates = programStageDataElement.allowFutureDate() != null ? programStageDataElement.allowFutureDate() : false;
+                        boolean allowFutureDates = programStageDataElement.allowFutureDate() != null ? programStageDataElement.allowFutureDate() : false;
                         String formName = de.displayFormName();
                         String description = de.displayDescription();
 
@@ -341,6 +342,20 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                         ObjectStyle objectStyle = de.style() != null ? de.style() : ObjectStyle.builder().build();
 
+                        List<TrackerImportConflict> conflicts =
+                                d2.importModule().trackerImportConflicts()
+                                        .byEventUid().eq(eventUid)
+                                        .blockingGet();
+
+                        String error = "";
+                        for (TrackerImportConflict conflict: conflicts) {
+                            if (conflict.event().equals(eventUid) && conflict.dataElement().equals(de.uid())) {
+                                if (conflict.value().equals(dataValue)) {
+                                    error = conflict.displayDescription();
+                                }
+                            }
+                        }
+
                         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
                             dataValue = dataValue + "_ou_" + friendlyValue;
                         } else {
@@ -350,11 +365,20 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         ProgramStageSectionRenderingType renderingType = programStageSection != null && programStageSection.renderType() != null &&
                                 programStageSection.renderType().mobile() != null ?
                                 programStageSection.renderType().mobile().type() : null;
-                        return fieldFactory.create(uid, formName == null ? displayName : formName,
-                                valueType, mandatory, optionSet, dataValue,
-                                programStageSection != null ? programStageSection.uid() : null, allowFurureDates,
-                                isEventEditable,
-                                renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask());
+
+                        FieldViewModel fieldViewModel =
+                                fieldFactory.create(uid, formName == null ? displayName : formName,
+                                        valueType, mandatory, optionSet, dataValue,
+                                        programStageSection != null ? programStageSection.uid() : null, allowFutureDates,
+                                        isEventEditable,
+                                        renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask());
+
+                        if (!error.isEmpty()) {
+                            return fieldViewModel.withError(error);
+                        } else {
+                            return fieldViewModel;
+                        }
+
                     })
                     .toList().toFlowable()
                     .map(data -> sectionFields = data)
