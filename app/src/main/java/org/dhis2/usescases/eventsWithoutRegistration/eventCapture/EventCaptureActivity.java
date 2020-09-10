@@ -523,4 +523,22 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .setCancelable(false)
                 .show();
     }
+
+    @Override
+    public void showProgress(){
+        runOnUiThread(() -> {
+            binding.toolbarProgress.setVisibility(View.VISIBLE);
+            binding.toolbarProgress.show();
+        });
+
+    }
+
+    @Override
+    public void hideProgress(){
+        runOnUiThread(() -> {
+            binding.toolbarProgress.hide();
+            binding.toolbarProgress.setVisibility(View.GONE);
+        });
+
+    }
 }
