@@ -544,7 +544,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public void hideDueDate(){
+    public void hideDueDate() {
         popupMenu.getMenu().findItem(R.id.schedulenew).setVisible(false);
     }
 
@@ -560,9 +560,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         bundle.putSerializable(EVENT_PERIOD_TYPE, programStage.periodType());
         bundle.putString(Constants.PROGRAM_STAGE_UID, programStage.uid());
         bundle.putInt(EVENT_SCHEDULE_INTERVAL, programStage.standardInterval() != null ? programStage.standardInterval() : 0);
-        intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
         intent.putExtras(bundle);
-        activity.startActivity(intent);
+        startActivityForResult(intent, REQ_EVENT);
     }
 
     private void showHideFilters(boolean showFilters) {

@@ -75,14 +75,12 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton
-                    android:id="@+id/urlInfo"
+                    android:id="@+id/clearUrl"
                     style="@style/ActionIconNoPadding"
-                    android:onClick="@{()-> presenter.onUrlInfoClick()}"
-                    android:tint="#5C5C5C"
                     app:layout_constraintBottom_toBottomOf="@id/server_url"
                     app:layout_constraintStart_toEndOf="@id/server_url"
                     app:layout_constraintTop_toTopOf="@id/server_url"
-                    app:srcCompat="@drawable/ic_info_outline"
+                    app:srcCompat="@drawable/ic_close"
                     tools:ignore="ContentDescription" />
 
                 <ImageView

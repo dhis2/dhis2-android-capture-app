@@ -41,7 +41,6 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     private ViewDataBinding binding;
 
     private Calendar selectedCalendar;
-    DatePickerDialog dateDialog;
 
     private OnDateSelected listener;
 
@@ -229,5 +228,14 @@ public class DateView extends FieldLayout implements View.OnClickListener {
 
     public void setEditable(Boolean editable) {
         editText.setEnabled(editable);
+
+        setEditable(editable,
+                labelText,
+                inputLayout,
+                editText,
+                findViewById(R.id.descIcon),
+                findViewById(R.id.descriptionLabel),
+                clearButton
+        );
     }
 }

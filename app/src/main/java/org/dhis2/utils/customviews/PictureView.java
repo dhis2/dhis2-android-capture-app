@@ -29,7 +29,6 @@ import com.google.android.material.button.MaterialButton;
 
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.FileExtensionsKt;
-import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -248,6 +247,13 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     public void setEditable(Boolean editable) {
         isEditable = editable;
+
+        setEditable(editable,
+                findViewById(R.id.label),
+                findViewById(R.id.descriptionLabel),
+                addImageBtn,
+                clearButton
+        );
     }
 
     public void setFragmentManager(FragmentManager fm) {

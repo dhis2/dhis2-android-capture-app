@@ -44,8 +44,8 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     private OnDateSelected listener;
     private boolean allowFutureDates;
     private Date date;
-    DatePickerDialog dateDialog;
     private TextView labelText;
+    private View clearButton;
 
     public DateTimeView(Context context) {
         super(context);
@@ -122,7 +122,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         inputLayout = findViewById(R.id.inputLayout);
         icon = findViewById(R.id.descIcon);
         editText = findViewById(R.id.inputEditText);
-        ImageView clearButton = findViewById(R.id.clear_button);
+        clearButton = findViewById(R.id.clear_button);
         labelText = findViewById(R.id.label);
         inputLayout.setHint(getContext().getString(R.string.choose_date));
         icon.setImageResource(R.drawable.ic_form_date_time);
@@ -210,6 +210,15 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     public void setEditable(Boolean editable) {
         editText.setEnabled(editable);
+
+        setEditable(editable,
+                labelText,
+                inputLayout,
+                editText,
+                findViewById(R.id.descIcon),
+                findViewById(R.id.descriptionLabel),
+                clearButton
+        );
     }
 
     private void clearDate() {
