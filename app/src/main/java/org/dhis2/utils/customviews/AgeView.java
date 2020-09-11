@@ -11,7 +11,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.ViewDataBinding;
-import androidx.room.util.StringUtil;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -27,8 +26,6 @@ import org.dhis2.utils.DateUtils;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -52,6 +49,10 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     private String label;
     private TextInputLayout inputLayout;
     private TextView labelText;
+    private View descriptionLabel;
+    private View yearInputLayout;
+    private View monthInputLayout;
+    private View dayInputLayout;
 
     public AgeView(Context context) {
         super(context);
@@ -238,6 +239,9 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
             binding = AgeCustomViewBinding.inflate(inflater, this, true);
 
         inputLayout = findViewById(R.id.inputLayout);
+        yearInputLayout = findViewById(R.id.yearInputLayout);
+        monthInputLayout = findViewById(R.id.monthInputLayout);
+        dayInputLayout = findViewById(R.id.dayInputLayout);
         date = findViewById(R.id.date_picker);
         day = findViewById(R.id.input_days);
         month = findViewById(R.id.input_month);
@@ -245,6 +249,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         labelText = findViewById(R.id.label);
         selectedCalendar = Calendar.getInstance();
         dateFormat = DateUtils.uiDateFormat();
+        descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
 
         date.setFocusable(false); //Makes editText not editable
         date.setClickable(true);//  but clickable
@@ -286,6 +291,19 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         day.setEnabled(editable);
         month.setEnabled(editable);
         year.setEnabled(editable);
+
+        setEditable(editable,
+                labelText,
+                descriptionLabel,
+                date,
+                inputLayout,
+                day,
+                dayInputLayout,
+                month,
+                monthInputLayout,
+                year,
+                yearInputLayout
+                );
     }
 
     public void clearValues() {

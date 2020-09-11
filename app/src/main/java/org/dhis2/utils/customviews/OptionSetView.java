@@ -163,6 +163,14 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
             delete.setEnabled(isEditable);
             delete.setVisibility(isEditable ? View.VISIBLE : View.GONE);
         }
+
+        setEditable(isEditable,
+                editText,
+                inputLayout,
+                descriptionLabel,
+                labelText,
+                delete
+        );
     }
 
     public void setValue(String value) {
@@ -196,7 +204,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
             if (mandatory)
                 labelBuilder.append("*");
             this.label = labelBuilder.toString();
-            binding.setVariable(BR.label,this.label);
+            binding.setVariable(BR.label, this.label);
         }
     }
 

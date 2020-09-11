@@ -168,7 +168,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         clearButton.setOnClickListener(this);
 
         longitude.setOnFocusChangeListener((v, hasFocus) -> {
-            if(!hasFocus) {
+            if (!hasFocus) {
                 if (!longitude.getText().toString().isEmpty()) {
                     Double lon = DoubleExtensionsKt.truncate(getLongitude());
                     longitude.setText(lon.toString());
@@ -187,7 +187,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         });
 
         latitude.setOnFocusChangeListener((v, hasFocus) -> {
-            if(!hasFocus) {
+            if (!hasFocus) {
                 if (!latitude.getText().toString().isEmpty()) {
                     Double lat = DoubleExtensionsKt.truncate(getLatitude());
                     latitude.setText(lat.toString());
@@ -294,7 +294,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             case R.id.clearButton:
                 clearValueData();
                 updateLocation(null);
-                if (errorView.getVisibility()== VISIBLE) {
+                if (errorView.getVisibility() == VISIBLE) {
                     setError(null);
                 }
                 break;
@@ -303,8 +303,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     public void getLocation() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if(this.getContext() instanceof ActivityGlobalAbstract){
-                ((ActivityGlobalAbstract)this.getContext()).requestLocationPermission(this);
+            if (this.getContext() instanceof ActivityGlobalAbstract) {
+                ((ActivityGlobalAbstract) this.getContext()).requestLocationPermission(this);
             }
         } else {
 
@@ -333,6 +333,19 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         clearButton.setVisibility(editable ? View.VISIBLE : View.GONE);
         findViewById(R.id.location1).setEnabled(editable);
         findViewById(R.id.location2).setEnabled(editable);
+
+        setEditable(editable,
+                labelText,
+                latitudeInputLayout,
+                latitude,
+                longitudeInputLayout,
+                longitude,
+                findViewById(R.id.formLabel),
+                findViewById(R.id.location1),
+                findViewById(R.id.location2),
+                clearButton,
+                findViewById(R.id.descriptionLabel)
+        );
     }
 
     @Override

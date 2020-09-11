@@ -9,6 +9,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.res.ResourcesCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
+import androidx.databinding.ViewDataBinding;
+
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -26,10 +31,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import androidx.core.content.res.ResourcesCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableField;
-import androidx.databinding.ViewDataBinding;
 import timber.log.Timber;
 
 /**
@@ -48,6 +49,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     private String label;
     private String description;
     private Date date;
+    private View clearButton;
 
     public TimeView(Context context) {
         super(context);
@@ -71,17 +73,19 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         labelText = findViewById(R.id.label);
         inputLayout.setHint(getContext().getString(R.string.select_time));
         ((ImageView) findViewById(R.id.descIcon)).setImageResource(R.drawable.ic_form_time);
-        ImageView clearButton = findViewById(R.id.clear_button);
-        clearButton.setOnClickListener( v -> { clearTime();});
+        clearButton = findViewById(R.id.clear_button);
+        clearButton.setOnClickListener(v -> {
+            clearTime();
+        });
         editText.setFocusable(false); //Makes editText not editable
         editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this::onFocusChanged);
         editText.setOnClickListener(this);
     }
 
-    public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale){
+    public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale) {
         binding = DataBindingUtil.inflate(inflater, R.layout.custom_cell_view, this, true);
-        ((CustomCellViewBinding)binding).setTableScale(tableScale);
+        ((CustomCellViewBinding) binding).setTableScale(tableScale);
         editText = findViewById(R.id.inputEditText);
         editText.setFocusable(false); //Makes editText not editable
         editText.setClickable(true);//  but clickable
@@ -133,7 +137,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         editText.requestFocus();
     }
 
-    public void setMandatory(){
+    public void setMandatory() {
         ImageView mandatory = binding.getRoot().findViewById(R.id.ic_mandatory);
         mandatory.setVisibility(View.VISIBLE);
     }
@@ -200,13 +204,23 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         return editText;
     }
 
+
     public void setEditable(Boolean editable) {
         editText.setEnabled(editable);
+
+        setEditable(editable,
+                labelText,
+                inputLayout,
+                editText,
+                findViewById(R.id.descIcon),
+                findViewById(R.id.descriptionLabel),
+                clearButton
+        );
     }
 
     private void clearTime() {
         editText.setText(null);
         listener.onDateSelected(null);
-        date=null;
+        date = null;
     }
 }
