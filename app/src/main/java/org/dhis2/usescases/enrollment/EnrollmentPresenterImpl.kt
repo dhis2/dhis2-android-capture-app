@@ -71,7 +71,7 @@ class EnrollmentPresenterImpl(
     private var mandatoryFields = mutableMapOf<String, String>()
     private var uniqueFields = mutableMapOf<String, String>()
     private val backButtonProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
-    private var showErrors: Boolean = false
+    private var showErrors: Pair<Boolean, Boolean> = Pair(first = false, second = false)
 
     fun init() {
         view.setSaveButtonVisible(false)
@@ -312,23 +312,26 @@ class EnrollmentPresenterImpl(
                 }
                 if (field.mandatory() && field.value().isNullOrEmpty()) {
                     mandatoryFields[field.label()] = field.programStageSection() ?: section
+                    iterator.set(field.withWarning("This field is mandatory"))
                 }
             }
 
-            if (field !is SectionViewModel && !field.programStageSection().equals(
-                section
-            )
-            ) {
+            if (field !is SectionViewModel && !field.programStageSection().equals(section)) {
                 iterator.remove()
             }
         }
         val sections = finalList.filterIsInstance<SectionViewModel>()
         if (mandatoryFields.isNotEmpty()) {
-            showErrors = true
+            showErrors = Pair(true, showErrors.second)
         }
-        sections.takeIf { showErrors }?.forEach { section ->
+        sections.takeIf { showErrors.first || showErrors.second }?.forEach { section ->
             var errors = 0
-            repeat(mandatoryFields.filter { it.value == section.uid() }.size) { errors++ }
+            if (showErrors.first) {
+                repeat(mandatoryFields.filter { it.value == section.uid() }.size) { errors++ }
+            }
+            if (showErrors.second) {
+                repeat(errorFields.filter { it.value == section.uid() }.size) { errors++ }
+            }
             finalList[finalList.indexOf(section)] = section.withErrors(errors)
         }
         return finalList
@@ -405,7 +408,8 @@ class EnrollmentPresenterImpl(
         val event = d2.eventModule().events().uid(eventUid).blockingGet()
         val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
         val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
-            d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet().isDefault == false
+            d2.categoryModule().categoryCombos().uid(catComboUid)
+            .blockingGet().isDefault == false
         val needsCoordinates =
             stage.featureType() != null && stage.featureType() != FeatureType.NONE
 
@@ -595,12 +599,13 @@ class EnrollmentPresenterImpl(
                 false
             }
             mandatoryFields.isNotEmpty() -> {
-                showErrors = true
+                showErrors = Pair(true, showErrors.second)
                 fieldsFlowable.onNext(true)
                 view.showMissingMandatoryFieldsMessage(mandatoryFields)
                 false
             }
             this.errorFields.isNotEmpty() -> {
+                showErrors = Pair(showErrors.first, true)
                 view.showErrorFieldsMessage(errorFields.values.toList())
                 false
             }

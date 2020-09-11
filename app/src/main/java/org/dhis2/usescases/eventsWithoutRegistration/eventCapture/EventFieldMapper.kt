@@ -9,10 +9,13 @@ import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel
 import org.dhis2.utils.DhisTextUtils.Companion.isEmpty
+import org.jetbrains.annotations.NotNull
 
 const val DISPLAY_FIELD_KEY = "DISPLAY_FIELD_KEY"
 
-class EventFieldMapper {
+class EventFieldMapper(
+    private val mandatoryFieldWarning: String
+) {
 
     var totalFields: Int = 0
     var unsupportedFields: Int = 0
@@ -23,13 +26,16 @@ class EventFieldMapper {
     private lateinit var finalFields: MutableMap<String, Boolean>
 
     fun map(
-        fields: List<FieldViewModel>,
-        sectionList: List<FormSectionViewModel>,
-        sectionsToHide: List<String?>,
-        currentSection: String
-    ): Pair<List<EventSectionModel>, List<FieldViewModel>> {
+        fields: @NotNull MutableList<out FieldViewModel>,
+        sectionList: @NotNull MutableList<out FormSectionViewModel>,
+        sectionsToHide: @NotNull MutableList<String>,
+        currentSection: @NotNull String,
+        errors: @NotNull MutableMap<String, String>,
+        emptyMandatoryFields: MutableMap<String, FieldViewModel>,
+        showErrors: Pair<Boolean, Boolean>
+    ): @NotNull Pair<MutableList<EventSectionModel>, MutableList<FieldViewModel>> {
         clearAll()
-        setFieldMap(fields, sectionList, sectionsToHide)
+        setFieldMap(fields, sectionList, sectionsToHide, showErrors.first, emptyMandatoryFields)
         sectionList.forEach {
             handleSection(fields, sectionList, sectionsToHide, it, currentSection)
         }
@@ -39,6 +45,22 @@ class EventFieldMapper {
         }
         if (fieldMap.containsKey(DISPLAY_FIELD_KEY) && fieldMap[DISPLAY_FIELD_KEY] != null) {
             finalFieldList.addAll(fieldMap[DISPLAY_FIELD_KEY] as Collection<FieldViewModel>)
+        }
+
+        val sections = finalFieldList.filterIsInstance<SectionViewModel>()
+
+        sections.takeIf { showErrors.first || showErrors.second }?.forEach { section ->
+            var errorCounter = 0
+            if (showErrors.first) {
+                repeat(
+                    emptyMandatoryFields
+                        .filter { it.value.programStageSection() == section.uid() }.size
+                ) { errorCounter++ }
+            }
+            if (showErrors.second) {
+                repeat(errors.filter { it.key == section.uid() }.size) { errorCounter++ }
+            }
+            finalFieldList[finalFieldList.indexOf(section)] = section.withErrors(errorCounter)
         }
 
         return Pair(eventSectionModels, finalFieldList)
@@ -57,12 +79,21 @@ class EventFieldMapper {
     private fun setFieldMap(
         fields: List<FieldViewModel>,
         sectionList: List<FormSectionViewModel>,
-        sectionsToHide: List<String?>
+        sectionsToHide: List<String?>,
+        showMandatoryErrors: Boolean,
+        emptyMandatoryFields: MutableMap<String, FieldViewModel>
     ) {
         fields.forEach { field ->
             val fieldSection = getFieldSection(field)
             if (fieldSection.isNotEmpty() || sectionList.size == 1) {
-                updateFieldMap(fieldSection, field)
+                updateFieldMap(
+                    fieldSection,
+                    if (showMandatoryErrors && emptyMandatoryFields.containsKey(field.uid())) {
+                        field.withWarning(mandatoryFieldWarning)
+                    } else {
+                        field
+                    }
+                )
                 if (field !is DisplayViewModel &&
                     !sectionsToHide.contains(field.programStageSection())
                 ) {
