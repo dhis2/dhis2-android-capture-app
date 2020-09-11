@@ -245,6 +245,7 @@ public class DashboardRepositoryImpl
     public Observable<List<TrackedEntityAttributeValue>> getTEIAttributeValues(String programUid, String teiUid) {
         if (programUid != null) {
             return d2.programModule().programTrackedEntityAttributes()
+                    .byDisplayInList().isTrue()
                     .byProgram().eq(programUid)
                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get()
                     .map(programTrackedEntityAttributes -> {

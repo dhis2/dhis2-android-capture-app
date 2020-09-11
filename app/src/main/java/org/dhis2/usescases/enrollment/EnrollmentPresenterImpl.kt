@@ -326,13 +326,25 @@ class EnrollmentPresenterImpl(
         }
         sections.takeIf { showErrors.first || showErrors.second }?.forEach { section ->
             var errors = 0
+            var warnings = 0
             if (showErrors.first) {
-                repeat(mandatoryFields.filter { it.value == section.uid() }.size) { errors++ }
+                repeat(mandatoryFields.filter { it.value == section.uid() }.size) { warnings++ }
             }
             if (showErrors.second) {
                 repeat(errorFields.filter { it.value == section.uid() }.size) { errors++ }
             }
-            finalList[finalList.indexOf(section)] = section.withErrors(errors)
+            finalList[finalList.indexOf(section)] = section.withErrorsAndWarnings(
+                if (errors != 0) {
+                    errors
+                } else {
+                    null
+                },
+                if (warnings != 0) {
+                    warnings
+                } else {
+                    null
+                }
+            )
         }
         return finalList
     }

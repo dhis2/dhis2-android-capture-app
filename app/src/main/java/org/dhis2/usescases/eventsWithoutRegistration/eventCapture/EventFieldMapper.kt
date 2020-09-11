@@ -51,16 +51,29 @@ class EventFieldMapper(
 
         sections.takeIf { showErrors.first || showErrors.second }?.forEach { section ->
             var errorCounter = 0
+            var mandatoryCounter = 0
             if (showErrors.first) {
                 repeat(
                     emptyMandatoryFields
                         .filter { it.value.programStageSection() == section.uid() }.size
-                ) { errorCounter++ }
+                ) { mandatoryCounter++ }
             }
             if (showErrors.second) {
                 repeat(errors.filter { it.key == section.uid() }.size) { errorCounter++ }
             }
-            finalFieldList[finalFieldList.indexOf(section)] = section.withErrors(errorCounter)
+            finalFieldList[finalFieldList.indexOf(section)] =
+                section.withErrorsAndWarnings(
+                    if (errorCounter != 0) {
+                        errorCounter
+                    } else {
+                        null
+                    },
+                    if (mandatoryCounter != 0) {
+                        mandatoryCounter
+                    } else {
+                        null
+                    }
+                )
         }
 
         return Pair(eventSectionModels, finalFieldList)
