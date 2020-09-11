@@ -336,10 +336,6 @@ class LoginPresenter(
         view.openAccountRecovery()
     }
 
-    fun onUrlInfoClick() {
-        view.displayAlertDialog()
-    }
-
     fun getAutocompleteData(
         testingCredentials: List<TestingCredential>
     ): Pair<MutableList<String>, MutableList<String>> {

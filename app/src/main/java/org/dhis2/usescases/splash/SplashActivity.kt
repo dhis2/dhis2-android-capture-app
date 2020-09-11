@@ -1,6 +1,8 @@
 package org.dhis2.usescases.splash
 
+import android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE
 import android.os.Bundle
+import android.os.Debug
 import android.text.TextUtils.isEmpty
 import android.view.LayoutInflater
 import android.view.View
@@ -62,7 +64,14 @@ class SplashActivity : ActivityGlobalAbstract(), SplashView {
         super.onResume()
 
         if (BuildConfig.DEBUG || !RootBeer(this).isRootedWithoutBusyBoxCheck) {
-            presenter.init()
+            if (!isDebuggerEnable() || !detectDebugger()) {
+                presenter.init()
+            } else {
+                showRootedDialog(
+                    getString(R.string.security_title),
+                    getString(R.string.security_debugger_message)
+                )
+            }
         } else {
             showRootedDialog(
                 getString(R.string.security_title),
@@ -124,6 +133,22 @@ class SplashActivity : ActivityGlobalAbstract(), SplashView {
             startActivity(SyncActivity::class.java, null, true, true, null)
         } else {
             startActivity(LoginActivity::class.java, null, true, true, null)
+        }
+    }
+
+    private fun isDebuggerEnable(): Boolean {
+        return if (!BuildConfig.DEBUG) {
+            context.applicationContext.applicationInfo.flags and FLAG_DEBUGGABLE != 0
+        } else {
+            false
+        }
+    }
+
+    private fun detectDebugger(): Boolean {
+        return if (!BuildConfig.DEBUG) {
+            Debug.isDebuggerConnected()
+        } else {
+            false
         }
     }
 }

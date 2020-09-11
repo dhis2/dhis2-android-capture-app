@@ -305,12 +305,23 @@ public class YesNoView extends FieldLayout {
 
     public void setEditable(Boolean editable) {
         for (int i = 0; i < radioGroup.getChildCount(); i++) {
-            radioGroup.getChildAt(i).setEnabled(editable);
+            View view = radioGroup.getChildAt(i);
+            view.setEnabled(editable);
+            setEditable(editable,view);
         }
         checkYes.setEnabled(editable);
         checkNo.setEnabled(editable);
         yesOnlyToggle.setEnabled(editable);
         clearButton.setEnabled(editable);
+
+        setEditable(editable,
+                labelView,
+                checkYes,
+                checkNo,
+                yesOnlyToggle,
+                clearButton,
+                findViewById(R.id.descriptionLabel)
+                );
     }
 
     public interface OnValueChanged {

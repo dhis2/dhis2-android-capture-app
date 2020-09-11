@@ -112,6 +112,14 @@ class ScanTextView @JvmOverloads constructor(
         when {
             !isEditable -> delete.visibility = View.GONE
         }
+
+        setEditable(
+            isEditable,
+            editText,
+            labelText,
+            descriptionLabel,
+            qrIcon
+        )
     }
 
     fun setText(text: String?) {
@@ -160,7 +168,8 @@ class ScanTextView @JvmOverloads constructor(
             ValueTypeRenderingType.QR_CODE -> {
                 descIcon.setImageResource(R.drawable.ic_form_qr)
             }
-            else -> {}
+            else -> {
+            }
         }
     }
 
