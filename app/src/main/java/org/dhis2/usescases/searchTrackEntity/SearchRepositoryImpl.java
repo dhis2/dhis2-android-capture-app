@@ -72,6 +72,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -86,6 +87,14 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final ResourceManager resources;
     private final D2 d2;
     private final SearchSortingValueSetter sortingValueSetter;
+    private TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery;
+    private Program savedSelectedProgram;
+    private String savedTrackedEntityType;
+    private List<String> savedOrgUnits = new ArrayList<>();
+    private SortingItem savedSortingItem;
+    private List<State> savedStates = new ArrayList<>();
+    private HashMap<String, String> savedQueryData = new HashMap<>();
+    private boolean savedAssignedToMe;
 
 
     SearchRepositoryImpl(String teiType, D2 d2, ResourceManager resources, SearchSortingValueSetter sortingValueSetter) {
@@ -153,25 +162,36 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                      boolean assignedToMe,
                                                                      boolean isOnline) {
 
-        TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery =
-                getFilteredRepository(selectedProgram,
-                        trackedEntityType,
-                        orgUnits,
-                        states,
-                        queryData,
-                        assignedToMe,
-                        sortingItem);
+        boolean allowCache = false;
+        if (!Objects.equals(this.savedSelectedProgram, selectedProgram)
+                || !Objects.equals(this.savedTrackedEntityType, trackedEntityType)
+                || !Objects.equals(this.savedOrgUnits, orgUnits)
+                || !Objects.equals(this.savedStates, states)
+                || !Objects.equals(this.savedQueryData, queryData)
+                || this.savedAssignedToMe != assignedToMe
+                || !Objects.equals(this.savedSortingItem, sortingItem)
+        ) {
+            trackedEntityInstanceQuery = getFilteredRepository(selectedProgram,
+                    trackedEntityType,
+                    orgUnits,
+                    states,
+                    queryData,
+                    assignedToMe,
+                    sortingItem);
+        } else {
+            allowCache = true;
+        }
 
         DataSource<TrackedEntityInstance, SearchTeiModel> dataSource;
 
         if (isOnline && states.isEmpty()) {
-            dataSource = trackedEntityInstanceQuery.offlineFirst().getDataSource()
+            dataSource = trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst().getDataSource()
                     .mapByPage(this::filterDeleted)
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
                     .map(tei -> transform(tei, selectedProgram, false, sortingItem));
         } else {
-            dataSource = trackedEntityInstanceQuery.offlineOnly().getDataSource()
+            dataSource = trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly().getDataSource()
                     .mapByPage(this::filterDeleted)
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
@@ -233,6 +253,17 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                                  @Nullable HashMap<String, String> queryData,
                                                                                  boolean assignedToMe,
                                                                                  @Nullable SortingItem sortingItem) {
+
+        this.savedSelectedProgram = selectedProgram;
+        this.savedTrackedEntityType = trackedEntityType;
+        this.savedOrgUnits.clear();
+        this.savedOrgUnits.addAll(orgUnits);
+        this.savedStates.clear();
+        this.savedStates.addAll(states);
+        this.savedQueryData.clear();
+        this.savedQueryData.putAll(queryData);
+        this.savedAssignedToMe = assignedToMe;
+        this.savedSortingItem = sortingItem;
 
         TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery = d2.trackedEntityModule().trackedEntityInstanceQuery();
         if (selectedProgram != null)
