@@ -46,8 +46,13 @@ class SectionHolder(
         formBinding.apply {
             sectionName.text = viewModel.label()
             openIndicator.scaleY = if (viewModel.isOpen) 1f else -1f
-            when (viewModel.errors()) {
-                null, 0 -> sectionFieldsInfo.apply {
+
+            if (viewModel.errors() == null && viewModel.warnings() == null) {
+                sectionFieldsErrorInfo.visibility = View.GONE
+                sectionFieldsWarningErrorInfo.visibility = View.GONE
+                sectionFieldsWarningInfo.visibility = View.GONE
+                sectionFieldsInfo.visibility = View.VISIBLE
+                sectionFieldsInfo.apply {
                     text = String.format(
                         "%s/%s",
                         viewModel.completedFields(),
@@ -63,18 +68,25 @@ class SectionHolder(
                         }
                     )
                 }
-                else -> sectionFieldsInfo.apply {
-                    text = String.format(
-                        "%s %s",
-                        viewModel.errors(),
-                        itemView.context.getString(R.string.errors)
-                    )
-                    background =
-                        ContextCompat.getDrawable(itemView.context, R.drawable.bg_section_error)
-                    setTextColor(
-                        ResourcesCompat.getColor(root.resources, R.color.white, null)
-                    )
-                }
+            } else if (viewModel.errors() != null && viewModel.warnings() != null) {
+                sectionFieldsErrorInfo.visibility = View.GONE
+                sectionFieldsWarningErrorInfo.visibility = View.VISIBLE
+                sectionFieldsWarningInfo.visibility = View.VISIBLE
+                sectionFieldsInfo.visibility = View.GONE
+                sectionFieldsWarningErrorInfo.chipText = viewModel.errors().toString()
+                sectionFieldsWarningInfo.chipText = viewModel.warnings().toString()
+            } else if (viewModel.errors() != null && viewModel.warnings() == null) {
+                sectionFieldsErrorInfo.visibility = View.VISIBLE
+                sectionFieldsWarningErrorInfo.visibility = View.GONE
+                sectionFieldsWarningInfo.visibility = View.GONE
+                sectionFieldsInfo.visibility = View.GONE
+                sectionFieldsErrorInfo.chipText = viewModel.errors().toString()
+            } else {
+                sectionFieldsErrorInfo.visibility = View.GONE
+                sectionFieldsWarningErrorInfo.visibility = View.GONE
+                sectionFieldsWarningInfo.visibility = View.VISIBLE
+                sectionFieldsInfo.visibility = View.GONE
+                sectionFieldsWarningInfo.chipText = viewModel.warnings().toString()
             }
         }
 

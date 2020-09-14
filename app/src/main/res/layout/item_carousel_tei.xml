@@ -364,7 +364,7 @@
                             android:background="@drawable/rounded_square"
                             android:backgroundTint="?colorPrimaryLight"
                             android:padding="2dp"
-                            app:srcCompat="@drawable/ic_child_health_positive" />
+                            app:srcCompat="@drawable/ic_menu_info" />
                     </LinearLayout>
 
                     <ImageView
