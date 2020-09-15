@@ -137,7 +137,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         }
         setUpServerComponent();
         setUpRxPlugin();
-//        initAcra();
+        initAcra();
         initCustomCrashActivity();
         TrackHelper.track().download().identifier(new DownloadTracker.Extra.ApkChecksum(this)).with(getTracker());
     }
