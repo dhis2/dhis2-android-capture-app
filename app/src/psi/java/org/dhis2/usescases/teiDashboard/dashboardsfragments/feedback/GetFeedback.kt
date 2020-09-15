@@ -87,9 +87,11 @@ class GetFeedback(
         val distinctValues = teiEvents.flatMap { it.values }.distinctBy { it.dataElement }
         val treeNodes = mapToTreeNodes(distinctValues, false)
 
-        addEventsToLastNodes(treeNodes, teiEvents)
+        addEventsToLastNodes(treeNodes, teiEvents, onlyFailed)
 
-        return treeNodes
+        return treeNodes.filter {
+            it.children.any { child -> child.content is FeedbackItem }
+        }
     }
 
     private fun mapToTreeNodes(
@@ -119,14 +121,22 @@ class GetFeedback(
         return treeNodes
     }
 
-    private fun addEventsToLastNodes(treeNodes: List<TreeNode<FeedbackItem>>, events: List<Event>) {
+    private fun addEventsToLastNodes(
+        treeNodes: List<TreeNode<FeedbackItem>>,
+        events: List<Event>,
+        onlyFailed: Boolean
+    ) {
         treeNodes.forEach { treeNode ->
             if (treeNode is TreeNode.Node &&
                 (treeNode.children.isEmpty() ||
                     (treeNode.children.size == 1 && treeNode.children[0] is TreeNode.Leaf))
             ) {
                 events.filter { event ->
-                    event.values.any { v -> v.dataElement == treeNode.content.code }
+                    val eventValue =
+                        event.values.firstOrNull { it.dataElement == treeNode.content.code }
+
+                    eventValue != null && (!onlyFailed || onlyFailed && !eventValue.success)
+
                 }.map { event ->
                     val eventValue = event.values.first { it.dataElement == treeNode.content.code }
 
@@ -139,7 +149,11 @@ class GetFeedback(
                     treeNode.addChild(TreeNode.Leaf(it))
                 }
             } else if (treeNode is TreeNode.Node) {
-                addEventsToLastNodes(treeNode.children as List<TreeNode<FeedbackItem>>, events)
+                addEventsToLastNodes(
+                    treeNode.children as List<TreeNode<FeedbackItem>>,
+                    events,
+                    onlyFailed
+                )
             }
         }
     }
