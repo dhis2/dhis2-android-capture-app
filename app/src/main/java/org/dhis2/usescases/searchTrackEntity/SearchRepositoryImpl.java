@@ -146,7 +146,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     public LiveData<PagedList<SearchTeiModel>> searchTrackedEntities(@Nullable Program selectedProgram,
                                                                      @NonNull String trackedEntityType,
                                                                      @NonNull List<String> orgUnits,
-                                                                    @NonNull List<State> states,
+                                                                     @NonNull List<State> states,
                                                                      @NonNull List<EventStatus> eventStatuses,
                                                                      @Nullable HashMap<String, String> queryData,
                                                                      @Nullable SortingItem sortingItem,
@@ -192,7 +192,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     public Flowable<List<SearchTeiModel>> searchTeiForMap(@Nullable Program selectedProgram,
                                                           @NonNull String trackedEntityType,
                                                           @NonNull List<String> orgUnits,
-                                                         @NonNull List<State> states,
+                                                          @NonNull List<State> states,
                                                           @NonNull List<EventStatus> eventStatuses,
                                                           @Nullable HashMap<String, String> queryData,
                                                           @Nullable SortingItem sortingItem,
@@ -229,7 +229,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private TrackedEntityInstanceQueryCollectionRepository getFilteredRepository(@Nullable Program selectedProgram,
                                                                                  @NonNull String trackedEntityType,
                                                                                  @NonNull List<String> orgUnits,
-                                                                                @NonNull List<State> states,
+                                                                                 @NonNull List<State> states,
                                                                                  @Nullable HashMap<String, String> queryData,
                                                                                  boolean assignedToMe,
                                                                                  @Nullable SortingItem sortingItem) {
@@ -695,6 +695,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                             null,
                             null,
                             false,
+                            false,
+                            false,
                             false
                     ));
         }
@@ -726,7 +728,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .uid(event.organisationUnit())
                 .blockingGet();
 
-        return new EventViewModel(EventViewModelType.EVENT, stage, event, 0, null, true, true, organisationUnit.displayName(), null, null, false, false);
+        return new EventViewModel(EventViewModelType.EVENT, stage, event, 0, null, true, true, organisationUnit.displayName(), null, null, false, false, false, false);
     }
 
     private List<TrackedEntityInstance> filterDeleted(List<TrackedEntityInstance> teis) {
