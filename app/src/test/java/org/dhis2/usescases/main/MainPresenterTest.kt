@@ -118,6 +118,12 @@ class MainPresenterTest {
         verify(view).openDrawer(any())
     }
 
+    @Test
+    fun `should return to home section when user taps back in a different section`() {
+        presenter.onNavigateBackToHome()
+        verify(view).goToHome()
+    }
+
     private fun presenterMocks() {
         // UserModule
         whenever(d2.userModule()) doReturn mock()
