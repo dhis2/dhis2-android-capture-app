@@ -87,12 +87,10 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout"
-            style="@style/ValueType_Text"
             android:paddingTop="10dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint='@{fieldHint}'
-            android:textColorHint="@color/text_black_DE3"
             android:theme="@style/loginInputText"
             android:layout_marginHorizontal="12dp"
             app:layout_constraintEnd_toEndOf="parent"
