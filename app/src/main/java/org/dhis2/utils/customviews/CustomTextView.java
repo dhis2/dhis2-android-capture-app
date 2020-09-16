@@ -223,7 +223,7 @@ public class CustomTextView extends FieldLayout {
         editText.setFocusable(editable);
         editText.setFocusableInTouchMode(editable);
         editText.setClickable(editable);
-        editText.setEnabled(editable);
+//        editText.setEnabled(editable);
 
         setEditable(editable, labelText,
                 inputLayout, editText, descIcon, descriptionLabel, findViewById(R.id.clear_button));
