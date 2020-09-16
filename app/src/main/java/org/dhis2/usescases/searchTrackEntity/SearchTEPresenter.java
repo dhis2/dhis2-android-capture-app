@@ -242,9 +242,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         compositeDisposable.add(
                 updaterFlowable
-                        .doOnEach(element -> {
-                            Timber.d("Listing update %s", element.getValue());
-                        })
                         .map(data -> view.isMapVisible())
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
@@ -457,7 +454,16 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void setProgram(Program programSelected) {
+        String previousProgramName = selectedProgram.name();
+        String currentProgramName = programSelected.name();
+
         if (programSelected == selectedProgram) return;
+        if (previousProgramName != null && previousProgramName.equals(currentProgramName)) return;
+
+    /*    if (programSelected != null && selectedProgram != null
+                && programSelected.name() != null &&
+                programSelected.name().equals(selectedProgram.name())) return; */
+    //    if (programSelected.name().equals(selectedProgram.name())) return;
 
         boolean otherProgramSelected;
         if (programSelected == null) {
@@ -493,7 +499,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         currentProgram.onNext(selectedProgram.uid());
         queryProcessor.onNext(new HashMap<>());
     }
-
 
     //endregion
 
