@@ -44,8 +44,8 @@ sealed class TreeNode<T>(val content: T) {
             addChild(Leaf(content))
         }
 
-        fun addChild(node: TreeNode<*>) {
-            internalChildren.add(node)
+        fun addChild(node: TreeNode<*>, index: Int = internalChildren.size) {
+            internalChildren.add(index, node)
             node.parent = this
         }
 

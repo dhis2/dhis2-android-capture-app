@@ -26,7 +26,7 @@ class GetFeedbackTest {
     lateinit var valuesRepository: ValuesRepository
 
     @Test
-    fun `should return not found failure if there are not events`() {
+    fun `should return not found failure if It's by event and there are not events`() {
         givenThatThereNotEvents()
 
         val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
@@ -183,7 +183,7 @@ class GetFeedbackTest {
         )
 
         val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
-        val feedbackResult = getFeedback(FeedbackMode.ByEvent,null, true)
+        val feedbackResult = getFeedback(FeedbackMode.ByEvent, null, true)
 
         val expectedFeedback = listOf(
             root(FeedbackItem("ART New", null, "ART New UID")) {
@@ -220,6 +220,20 @@ class GetFeedbackTest {
     }
 
     @Test
+    fun `should return not found failure if It's by technical area and there are not events`() {
+        givenThatThereNotEvents()
+
+        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+
+        val feedbackResult =
+            getFeedback(FeedbackMode.ByTechnicalArea)
+
+        feedbackResult.fold(
+            { failure -> Assert.assertTrue(failure is FeedbackFailure.NotFound) },
+            { success -> Assert.fail("$success should be FeedbackFailure.NotFound") })
+    }
+
+    @Test
     fun `should not return feedback if It's by technical area and there are events without values`() {
         givenAnEventsWithoutValues()
 
@@ -249,6 +263,13 @@ class GetFeedbackTest {
         val expectedFeedback = listOf(
             root(FeedbackItem("Completeness", null, "Completeness_DE")) {
                 leaf(FeedbackHelpItem("Feedback Completeness"))
+                leaf(
+                    FeedbackItem(
+                        "ART New",
+                        FeedbackItemValue("Partly", "#FFC700", true),
+                        "ART New UID"
+                    )
+                )
                 node(FeedbackItem("Completeness 1.1", null, "Completeness 1.1_DE")) {
                     leaf(FeedbackHelpItem("Feedback 1.1"))
                     leaf(
@@ -345,6 +366,45 @@ class GetFeedbackTest {
                     )
                 )
             }
+        )
+
+        feedbackResult.fold(
+            { failure -> Assert.fail("$failure should be success") },
+            { feedback -> assertFeedback(expectedFeedback, feedback) })
+    }
+
+    @Test
+    fun `should return only failed by events if by technical area and only failed filter is true and there are DE hierarchy`() {
+        givenOneEventWithValues(
+            "ART New", listOf(
+                listOf("1", "Completeness", "Partly", "#FFC700", "Feedback Completeness", "OK"),
+                listOf("2", "Timeliness", "100%", "#0CE922", "Feedback Timeliness", "OK"),
+                listOf("1.1", "Completeness 1.1", "86%", "#FFC700", "Feedback 1.1", "FAIL"),
+                listOf("1.2", "Completeness 1.2", "84%", "#c80f26", "Feedback 1.2", "OK"),
+                listOf("1.1.1", "Completeness 1.1.1", "56%", "#c80f26", "Feedback 1.1.1", "OK")
+            )
+        )
+
+        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val feedbackResult = getFeedback(FeedbackMode.ByTechnicalArea, null, true)
+
+        val expectedFeedback = listOf(
+            root(
+                FeedbackItem("Completeness", null, "Completeness_DE")
+            ) {
+                leaf(FeedbackHelpItem("Feedback Completeness"))
+                node(FeedbackItem("Completeness 1.1", null, "Completeness 1.1_DE")) {
+                    leaf(FeedbackHelpItem("Feedback 1.1"))
+                    leaf(
+                        FeedbackItem(
+                            "ART New",
+                            FeedbackItemValue("86%", "#FFC700", false),
+                            "ART New UID"
+                        )
+                    )
+                }
+            }
+
         )
 
         feedbackResult.fold(

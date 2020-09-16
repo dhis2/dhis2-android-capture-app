@@ -56,16 +56,9 @@ class GetFeedback(
     ): List<TreeNode.Node<FeedbackItem>> {
         val feedbackByEvent = teiEvents.map { event ->
             val children = mapToTreeNodes(event.values)
-/*
-                .filter { node ->
-                    val value = event.values.first { it.dataElement == node.content.code }
-
-                    !onlyFailed || (onlyFailed && !value.success)
-                }
-*/
 
             TreeNode.Node(FeedbackItem(event.name, null, event.uid), children)
-        }//.filter { it.children.isNotEmpty() }
+        }
 
         val filteredFeedbackByEvent =
             if (onlyFailed) filterOnlyFailed(feedbackByEvent) else feedbackByEvent
@@ -82,13 +75,17 @@ class GetFeedback(
     ): List<TreeNode.Node<FeedbackItem>> {
 
         val distinctValues = teiEvents.flatMap { it.values }.distinctBy { it.dataElement }
-        val treeNodes = mapToTreeNodes(distinctValues, false)
+        val feedbackByTechnicalArea = mapToTreeNodes(distinctValues, false)
 
-        addEventsToLastNodes(treeNodes, teiEvents, onlyFailed)
+        addEventsToDE(feedbackByTechnicalArea, teiEvents)
 
-        return treeNodes.filter {
-            it.children.any { child -> child.content is FeedbackItem }
-        }
+        val filteredFeedbackByTechnicalArea =
+            if (onlyFailed) filterOnlyFailed(feedbackByTechnicalArea) else feedbackByTechnicalArea
+
+        return (filteredFeedbackByTechnicalArea as List<TreeNode.Node<FeedbackItem>>)
+            .filter {
+                it.children.any { child -> child.content is FeedbackItem }
+            }
     }
 
     private fun filterOnlyFailed(
@@ -152,22 +149,14 @@ class GetFeedback(
         return treeNodes
     }
 
-    private fun addEventsToLastNodes(
+    private fun addEventsToDE(
         treeNodes: List<TreeNode<FeedbackItem>>,
-        events: List<Event>,
-        onlyFailed: Boolean
+        events: List<Event>
     ) {
         treeNodes.forEach { treeNode ->
-            if (treeNode is TreeNode.Node &&
-                (treeNode.children.isEmpty() ||
-                    (treeNode.children.size == 1 && treeNode.children[0] is TreeNode.Leaf))
-            ) {
+            if (treeNode is TreeNode.Node) {
                 events.filter { event ->
-                    val eventValue =
-                        event.values.firstOrNull { it.dataElement == treeNode.content.code }
-
-                    eventValue != null && (!onlyFailed || onlyFailed && !eventValue.success)
-
+                    event.values.any { it.dataElement == treeNode.content.code }
                 }.map { event ->
                     val eventValue = event.values.first { it.dataElement == treeNode.content.code }
 
@@ -181,13 +170,16 @@ class GetFeedback(
                         event.uid
                     )
                 }.forEach {
-                    treeNode.addChild(TreeNode.Leaf(it))
+                    val index =
+                        if (treeNode.children.isNotEmpty() && treeNode.children[0] is TreeNode.Leaf) 1
+                        else 0
+
+                    treeNode.addChild(TreeNode.Leaf(it),index)
                 }
-            } else if (treeNode is TreeNode.Node) {
-                addEventsToLastNodes(
+
+                addEventsToDE(
                     treeNode.children as List<TreeNode<FeedbackItem>>,
-                    events,
-                    onlyFailed
+                    events
                 )
             }
         }
