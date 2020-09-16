@@ -748,4 +748,14 @@
     <string name="add_image">Add Image</string>
     <string name="field_is_mandatory">This field is mandatory</string>
     <string name="security_debugger_message">For security reasons, this version of the app is not allow to be used with adb. Please use the training version.</string>
+
+    <string name="customactivityoncrash_error_activity_error_occurred_explanation">Oops! Something was not as planned.\nLet us get you back in action.</string>
+    <string name="customactivityoncrash_error_activity_restart_app">Go back</string>
+    <string name="customactivityoncrash_error_activity_close_app">Close app</string>
+    <string name="customactivityoncrash_error_activity_error_details">More details</string>
+    <string name="customactivityoncrash_error_activity_error_details_title">More details</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">Close</string>
+    <string name="customactivityoncrash_error_activity_error_details_copy">Copy to clipboard</string>
+    <string name="customactivityoncrash_error_activity_error_details_copied">Copied to clipboard</string>
+    <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Error information</string>
 </resources>
