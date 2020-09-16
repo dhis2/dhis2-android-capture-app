@@ -1,8 +1,10 @@
 package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 
+import com.airbnb.lottie.animation.content.Content
 import org.dhis2.core.functional.Either
 import org.dhis2.core.types.TreeNode
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
+import timber.log.Timber
 import java.lang.IllegalStateException
 
 sealed class FeedbackFailure {
@@ -55,28 +57,26 @@ class GetFeedback(
         teiEvents: List<Event>,
         onlyFailed: Boolean
     ): List<TreeNode.Node<FeedbackItem>> {
-        return teiEvents.map { event ->
-            val children = mapToTreeNodes(event.values).filter { node ->
-                val value = event.values.first { it.dataElement == node.content.code }
+        val feedbackByEvent = teiEvents.map { event ->
+            val children = mapToTreeNodes(event.values)
+/*
+                .filter { node ->
+                    val value = event.values.first { it.dataElement == node.content.code }
 
-                !onlyFailed || (onlyFailed && !value.success)
-            }
-
-//           val predicate = { treeNode: TreeNode<*> ->
-//                treeNode.content is FeedbackHelpItem ||
-//                    (treeNode.content is FeedbackItem && )
-//            }
-//
-//            val filteredChildren=children.filter { node->
-//                val value = event.values.first { it.dataElement == node.content.code }
-//
-//                !onlyFailed ||
-//                    (onlyFailed && !value.success &&
-//                        node.depthFilter { predicate(it) }.children.isNotEmpty())
-//            }
+                    !onlyFailed || (onlyFailed && !value.success)
+                }
+*/
 
             TreeNode.Node(FeedbackItem(event.name, null, event.uid), children)
-        }.filter { it.children.isNotEmpty() }
+        }//.filter { it.children.isNotEmpty() }
+
+        val filteredFeedbackByEvent =
+            if (onlyFailed) filterOnlyFailed(feedbackByEvent) else feedbackByEvent
+
+        return (filteredFeedbackByEvent as List<TreeNode.Node<FeedbackItem>>)
+            .filter {
+                it.children.any { child -> child.content is FeedbackItem }
+            }
     }
 
     private fun createFeedbackByTechnicalArea(
@@ -91,6 +91,40 @@ class GetFeedback(
 
         return treeNodes.filter {
             it.children.any { child -> child.content is FeedbackItem }
+        }
+    }
+
+    private fun filterOnlyFailed(
+        nodes: List<TreeNode<*>>
+    ): List<TreeNode<*>> {
+        val newNodes = mutableListOf<TreeNode<*>>()
+
+        val predicate = { node: TreeNode<*> ->
+            (node.content is FeedbackItem && node.content.value != null &&
+                !node.content.value.success) ||
+                node.content is FeedbackHelpItem ||
+                node is TreeNode.Node && anyChildrenIsFailed(node)
+        }
+
+        for (node in nodes) {
+            if (predicate(node)) {
+                when (node) {
+                    is TreeNode.Node ->
+                        newNodes.add(TreeNode.Node(node.content, filterOnlyFailed(node.children)))
+                    is TreeNode.Leaf -> newNodes.add(TreeNode.Leaf(node.content))
+                }
+            }
+        }
+
+        return newNodes
+    }
+
+    private fun anyChildrenIsFailed(node: TreeNode<*>): Boolean {
+        return node is TreeNode.Node && node.children.any { child ->
+            (child.content is FeedbackItem && child.content.value != null &&
+                !child.content.value.success) ||
+                (child is TreeNode.Node && anyChildrenIsFailed(child))
+
         }
     }
 
@@ -142,7 +176,11 @@ class GetFeedback(
 
                     FeedbackItem(
                         event.name,
-                        FeedbackItemValue(eventValue.value, eventValue.colorByLegend),
+                        FeedbackItemValue(
+                            eventValue.value,
+                            eventValue.colorByLegend,
+                            eventValue.success
+                        ),
                         event.uid
                     )
                 }.forEach {
@@ -167,7 +205,8 @@ class GetFeedback(
                 eventValue.name,
                 if (withValue) FeedbackItemValue(
                     eventValue.value,
-                    eventValue.colorByLegend
+                    eventValue.colorByLegend,
+                    eventValue.success
                 ) else null,
                 eventValue.dataElement
             ), if (eventValue.feedbackHelp != null) listOf(

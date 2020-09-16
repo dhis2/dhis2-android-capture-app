@@ -70,14 +70,14 @@ class GetFeedbackTest {
             root(FeedbackItem("ART New", null, "ART New UID")) {
                 node(
                     FeedbackItem(
-                        "Completeness", FeedbackItemValue("Partly", "#FFC700"),
+                        "Completeness", FeedbackItemValue("Partly", "#FFC700", true),
                         "Completeness_DE"
                     )
                 ) {
                     leaf(FeedbackHelpItem("Feedback Completeness"))
                     node(
                         FeedbackItem(
-                            "Completeness 1.1", FeedbackItemValue("86%", "#FFC700"),
+                            "Completeness 1.1", FeedbackItemValue("86%", "#FFC700", true),
                             "Completeness 1.1_DE"
                         )
                     ) {
@@ -85,7 +85,7 @@ class GetFeedbackTest {
                     }
                     node(
                         FeedbackItem(
-                            "Completeness 1.2", FeedbackItemValue("56%", "#c80f26"),
+                            "Completeness 1.2", FeedbackItemValue("56%", "#c80f26", true),
                             "Completeness 1.2_DE"
                         )
                     ) {
@@ -94,7 +94,7 @@ class GetFeedbackTest {
                 }
                 node(
                     FeedbackItem(
-                        "Timeliness", FeedbackItemValue("100%", "#0CE922"),
+                        "Timeliness", FeedbackItemValue("100%", "#0CE922", true),
                         "Timeliness_DE"
                     )
                 ) {
@@ -148,7 +148,7 @@ class GetFeedbackTest {
             root(FeedbackItem("ART New", null, "ART New UID")) {
                 node(
                     FeedbackItem(
-                        "Completeness", FeedbackItemValue("Partly", "#FFC700"),
+                        "Completeness", FeedbackItemValue("Partly", "#FFC700", false),
                         "Completeness_DE"
                     )
                 ) {
@@ -156,11 +156,60 @@ class GetFeedbackTest {
                 }
                 node(
                     FeedbackItem(
-                        "Accuracy", FeedbackItemValue("56%", "#c80f26"),
+                        "Accuracy", FeedbackItemValue("56%", "#c80f26", false),
                         "Accuracy_DE"
                     )
                 ) {
                     leaf(FeedbackHelpItem("Feedback Accuracy"))
+                }
+            }
+        )
+
+        feedbackResult.fold(
+            { failure -> Assert.fail("$failure should be success") },
+            { feedback -> assertFeedback(expectedFeedback, feedback) })
+    }
+
+    @Test
+    fun `should return only failed by events if It's by events and only failed filter is true and there are DE hierarchy`() {
+        givenOneEventWithValues(
+            "ART New", listOf(
+                listOf("1", "Completeness", "Partly", "#FFC700", "Feedback Completeness", "OK"),
+                listOf("2", "Timeliness", "100%", "#0CE922", "Feedback Timeliness", "OK"),
+                listOf("1.1", "Completeness 1.1", "86%", "#FFC700", "Feedback 1.1", "OK"),
+                listOf("1.2", "Completeness 1.2", "84%", "#c80f26", "Feedback 1.2", "OK"),
+                listOf("1.1.1", "Completeness 1.1.1", "56%", "#c80f26", "Feedback 1.1.1", "FAIL")
+            )
+        )
+
+        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val feedbackResult = getFeedback(FeedbackMode.ByEvent,null, true)
+
+        val expectedFeedback = listOf(
+            root(FeedbackItem("ART New", null, "ART New UID")) {
+                node(
+                    FeedbackItem(
+                        "Completeness", FeedbackItemValue("Partly", "#FFC700", true),
+                        "Completeness_DE"
+                    )
+                ) {
+                    leaf(FeedbackHelpItem("Feedback Completeness"))
+                    node(
+                        FeedbackItem(
+                            "Completeness 1.1", FeedbackItemValue("86%", "#FFC700", true),
+                            "Completeness 1.1_DE"
+                        )
+                    ) {
+                        leaf(FeedbackHelpItem("Feedback 1.1"))
+                        node(
+                            FeedbackItem(
+                                "Completeness 1.1.1", FeedbackItemValue("56%", "#c80f26", false),
+                                "Completeness 1.1.1_DE"
+                            )
+                        ) {
+                            leaf(FeedbackHelpItem("Feedback 1.1.1"))
+                        }
+                    }
                 }
             }
         )
@@ -205,7 +254,7 @@ class GetFeedbackTest {
                     leaf(
                         FeedbackItem(
                             "ART New",
-                            FeedbackItemValue("86%", "#FFC700"),
+                            FeedbackItemValue("86%", "#FFC700", true),
                             "ART New UID"
                         )
                     )
@@ -215,7 +264,7 @@ class GetFeedbackTest {
                     leaf(
                         FeedbackItem(
                             "ART New",
-                            FeedbackItemValue("56%", "#c80f26"),
+                            FeedbackItemValue("56%", "#c80f26", true),
                             "ART New UID"
                         )
                     )
@@ -223,7 +272,13 @@ class GetFeedbackTest {
             },
             root(FeedbackItem("Timeliness", null, "Timeliness_DE")) {
                 leaf(FeedbackHelpItem("Feedback Timeliness"))
-                leaf(FeedbackItem("ART New", FeedbackItemValue("100%", "#0CE922"), "ART New UID"))
+                leaf(
+                    FeedbackItem(
+                        "ART New",
+                        FeedbackItemValue("100%", "#0CE922", true),
+                        "ART New UID"
+                    )
+                )
             }
         )
 
@@ -271,12 +326,24 @@ class GetFeedbackTest {
         val expectedFeedback = listOf(
             root(FeedbackItem("Completeness", null, "Completeness_DE")) {
                 leaf(FeedbackHelpItem("Feedback Completeness"))
-                leaf(FeedbackItem("ART New", FeedbackItemValue("Partly", "#FFC700"), "ART New UID"))
+                leaf(
+                    FeedbackItem(
+                        "ART New",
+                        FeedbackItemValue("Partly", "#FFC700", false),
+                        "ART New UID"
+                    )
+                )
 
             },
             root(FeedbackItem("Accuracy", null, "Accuracy_DE")) {
                 leaf(FeedbackHelpItem("Feedback Accuracy"))
-                leaf(FeedbackItem("ART New", FeedbackItemValue("56%", "#c80f26"), "ART New UID"))
+                leaf(
+                    FeedbackItem(
+                        "ART New",
+                        FeedbackItemValue("56%", "#c80f26", false),
+                        "ART New UID"
+                    )
+                )
             }
         )
 
