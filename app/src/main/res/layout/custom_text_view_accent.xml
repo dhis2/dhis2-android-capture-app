@@ -30,7 +30,8 @@
         android:layout_height="wrap_content"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:paddingTop="32dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
         tools:background="?attr/colorPrimary">
 
         <View
