@@ -254,7 +254,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                                         TrackedEntityAttributeValue.builder()
                                                 .trackedEntityAttribute(programAttribute.trackedEntityAttribute().uid())
                                                 .trackedEntityInstance(teiUid)
-                                                .value("-")
+                                                .value("")
                                                 .build()
                                 );
                             }
