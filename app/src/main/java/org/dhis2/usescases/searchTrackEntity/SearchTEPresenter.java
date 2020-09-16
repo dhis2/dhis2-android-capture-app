@@ -159,7 +159,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     if (selectedProgram != null) {
                                         setProgram(selectedProgram);
                                     } else {
-                                        setProgram(null);
+                                        setProgram(ALL_PERSONS);
                                     }
                                     view.setPrograms(programs);
                                 }, Timber::d
@@ -260,6 +260,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         compositeDisposable.add(
                 listDataProcessor
+                        .doOnEach(element -> Timber.d("listDataProcessor %s", element.getValue()))
                         .switchMap(map -> {
                             CountingIdlingResourceSingleton.INSTANCE.increment();
                             return Flowable.just(searchRepository.searchTrackedEntities(
@@ -454,7 +455,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void setProgram(Program programSelected) {
-
         if (programSelected != ALL_PERSONS){
             String previousProgramUid = selectedProgram.uid();
             String currentProgramUid = programSelected.uid();
@@ -974,6 +974,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @RestrictTo(RestrictTo.Scope.TESTS)
+    @Override
     public void setProgramForTesting(Program program) {
         selectedProgram = program;
     }

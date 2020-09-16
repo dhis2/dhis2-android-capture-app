@@ -179,5 +179,7 @@ public class SearchTEContractsModule {
         SearchTeiModel getTeiInfo(String teiUid);
 
         EventUiComponentModel getEventInfo(String eventUid, String teiUid);
+
+        void setProgramForTesting(Program program);
     }
 }
