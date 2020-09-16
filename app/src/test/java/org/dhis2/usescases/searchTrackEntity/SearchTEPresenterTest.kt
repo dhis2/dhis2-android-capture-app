@@ -43,6 +43,7 @@ class SearchTEPresenterTest {
             )
                 .displayFrontPageList(true)
                 .minAttributesRequiredToSearch(0).build()
+
         presenter = SearchTEPresenter(
             view,
             d2,

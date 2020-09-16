@@ -82,6 +82,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SEARCH_TEI;
 
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
+    private static final Program ALL_PERSONS = null;
     private static final int MAX_NO_SELECTED_PROGRAM_RESULTS = 5;
     private final SearchRepository searchRepository;
     private final D2 d2;
@@ -157,11 +158,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     Collections.sort(programs, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
                                     if (selectedProgram != null) {
                                         setProgram(selectedProgram);
-                                        view.setPrograms(programs);
                                     } else {
                                         setProgram(null);
-                                        view.setPrograms(programs);
                                     }
+                                    view.setPrograms(programs);
                                 }, Timber::d
                         ));
 
@@ -454,16 +454,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void setProgram(Program programSelected) {
-        String previousProgramName = selectedProgram.name();
-        String currentProgramName = programSelected.name();
 
-        if (programSelected == selectedProgram) return;
-        if (previousProgramName != null && previousProgramName.equals(currentProgramName)) return;
-
-    /*    if (programSelected != null && selectedProgram != null
-                && programSelected.name() != null &&
-                programSelected.name().equals(selectedProgram.name())) return; */
-    //    if (programSelected.name().equals(selectedProgram.name())) return;
+        if (programSelected != ALL_PERSONS){
+            String previousProgramUid = selectedProgram.uid();
+            String currentProgramUid = programSelected.uid();
+            if (isPreviousAndCurrentProgramTheSame(programSelected,
+                    previousProgramUid,
+                    currentProgramUid))
+                return;
+        }
 
         boolean otherProgramSelected;
         if (programSelected == null) {
@@ -492,6 +491,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         initAssignmentFilter();
     }
 
+    private boolean isPreviousAndCurrentProgramTheSame(Program programSelected, String previousProgramUid, String currentProgramUid) {
+        return previousProgramUid != null && previousProgramUid.equals(currentProgramUid) ||
+                programSelected == selectedProgram;
+    }
+
     @Override
     public void onClearClick() {
         queryData.clear();
@@ -499,8 +503,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         currentProgram.onNext(selectedProgram.uid());
         queryProcessor.onNext(new HashMap<>());
     }
-
-    //endregion
 
     @Override
     public void onBackClick() {
