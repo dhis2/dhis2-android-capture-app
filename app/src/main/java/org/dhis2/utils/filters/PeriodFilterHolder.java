@@ -173,7 +173,7 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
                 if (dates != null)
                     FilterManager.getInstance().addPeriod(Collections.singletonList(DatePeriod.builder().startDate(dates[0]).endDate(dates[1]).build()));
                 else
-                    FilterManager.getInstance().addPeriod(null);
+                    FilterManager.getInstance().addPeriod(Collections.emptyList());
             }
 
             if (id != FilterManager.getInstance().getPeriodIdSelected()) {

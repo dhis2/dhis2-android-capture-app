@@ -9,6 +9,9 @@ import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
+import com.evrencoskun.tableview.filter.Filter;
+
+import org.apache.commons.lang3.SerializationUtils;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.TrackedEntityInstanceExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
@@ -17,6 +20,7 @@ import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.StoreResult;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
+import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
@@ -88,13 +92,8 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final D2 d2;
     private final SearchSortingValueSetter sortingValueSetter;
     private TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery;
-    private Program savedSelectedProgram;
-    private String savedTrackedEntityType;
-    private List<String> savedOrgUnits = new ArrayList<>();
-    private SortingItem savedSortingItem;
-    private List<State> savedStates = new ArrayList<>();
-    private HashMap<String, String> savedQueryData = new HashMap<>();
-    private boolean savedAssignedToMe;
+    private SearchParametersModel savedSearchParameters;
+    private FilterManager savedFilters;
 
 
     SearchRepositoryImpl(String teiType, D2 d2, ResourceManager resources, SearchSortingValueSetter sortingValueSetter) {
@@ -152,50 +151,29 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @NonNull
     @Override
-    public LiveData<PagedList<SearchTeiModel>> searchTrackedEntities(@Nullable Program selectedProgram,
-                                                                     @NonNull String trackedEntityType,
-                                                                     @NonNull List<String> orgUnits,
-                                                                    @NonNull List<State> states,
-                                                                     @NonNull List<EventStatus> eventStatuses,
-                                                                     @Nullable HashMap<String, String> queryData,
-                                                                     @Nullable SortingItem sortingItem,
-                                                                     boolean assignedToMe,
-                                                                     boolean isOnline) {
+    public LiveData<PagedList<SearchTeiModel>> searchTrackedEntities(SearchParametersModel searchParametersModel, boolean isOnline) {
 
         boolean allowCache = false;
-        if (!Objects.equals(this.savedSelectedProgram, selectedProgram)
-                || !Objects.equals(this.savedTrackedEntityType, trackedEntityType)
-                || !Objects.equals(this.savedOrgUnits, orgUnits)
-                || !Objects.equals(this.savedStates, states)
-                || !Objects.equals(this.savedQueryData, queryData)
-                || this.savedAssignedToMe != assignedToMe
-                || !Objects.equals(this.savedSortingItem, sortingItem)
-        ) {
-            trackedEntityInstanceQuery = getFilteredRepository(selectedProgram,
-                    trackedEntityType,
-                    orgUnits,
-                    states,
-                    queryData,
-                    assignedToMe,
-                    sortingItem);
+        if (!searchParametersModel.equals(savedSearchParameters) || !FilterManager.getInstance().sameFilters(savedFilters)) {
+            trackedEntityInstanceQuery = getFilteredRepository(searchParametersModel);
         } else {
             allowCache = true;
         }
 
         DataSource<TrackedEntityInstance, SearchTeiModel> dataSource;
 
-        if (isOnline && states.isEmpty()) {
+        if (isOnline && FilterManager.getInstance().getStateFilters().isEmpty()) {
             dataSource = trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst().getDataSource()
                     .mapByPage(this::filterDeleted)
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
-                    .map(tei -> transform(tei, selectedProgram, false, sortingItem));
+                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
+                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
+                    .map(tei -> transform(tei, searchParametersModel.getSelectedProgram(), false, FilterManager.getInstance().getSortingItem()));
         } else {
             dataSource = trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly().getDataSource()
                     .mapByPage(this::filterDeleted)
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
-                    .map(tei -> transform(tei, selectedProgram, true, sortingItem));
+                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
+                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
+                    .map(tei -> transform(tei, searchParametersModel.getSelectedProgram(), true, FilterManager.getInstance().getSortingItem()));
         }
 
         return new LivePagedListBuilder<>(new DataSource.Factory<TrackedEntityInstance, SearchTeiModel>() {
@@ -209,67 +187,44 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @NonNull
     @Override
-    public Flowable<List<SearchTeiModel>> searchTeiForMap(@Nullable Program selectedProgram,
-                                                          @NonNull String trackedEntityType,
-                                                          @NonNull List<String> orgUnits,
-                                                         @NonNull List<State> states,
-                                                          @NonNull List<EventStatus> eventStatuses,
-                                                          @Nullable HashMap<String, String> queryData,
-                                                          @Nullable SortingItem sortingItem,
-                                                          boolean assignedToMe,
-                                                          boolean isOnline) {
+    public Flowable<List<SearchTeiModel>> searchTeiForMap(SearchParametersModel searchParametersModel, boolean isOnline) {
 
-        TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery =
-                getFilteredRepository(selectedProgram,
-                        trackedEntityType,
-                        orgUnits,
-                        states,
-                        queryData,
-                        assignedToMe,
-                        sortingItem);
+        boolean allowCache = false;
+        if (!searchParametersModel.equals(savedSearchParameters) || !FilterManager.getInstance().equals(savedFilters)) {
+            trackedEntityInstanceQuery = getFilteredRepository(searchParametersModel);
+        } else {
+            allowCache = true;
+        }
 
-        if (isOnline && states.isEmpty())
-            return trackedEntityInstanceQuery.offlineFirst().get().toFlowable()
+        if (isOnline && FilterManager.getInstance().getStateFilters().isEmpty())
+            return trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst().get().toFlowable()
                     .map(this::filterDeleted)
-                    .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
-                    .map(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
+                    .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
+                    .map(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
                     .flatMapIterable(list -> list)
-                    .map(tei -> transform(tei, selectedProgram, false, sortingItem))
+                    .map(tei -> transform(tei, searchParametersModel.getSelectedProgram(), false, FilterManager.getInstance().getSortingItem()))
                     .toList().toFlowable();
         else
-            return trackedEntityInstanceQuery.offlineOnly().get().toFlowable()
+            return trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly().get().toFlowable()
                     .map(this::filterDeleted)
-                    .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
-                    .map(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
+                    .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
+                    .map(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
                     .flatMapIterable(list -> list)
-                    .map(tei -> transform(tei, selectedProgram, true, sortingItem))
+                    .map(tei -> transform(tei, searchParametersModel.getSelectedProgram(), true, FilterManager.getInstance().getSortingItem()))
                     .toList().toFlowable();
     }
 
-    private TrackedEntityInstanceQueryCollectionRepository getFilteredRepository(@Nullable Program selectedProgram,
-                                                                                 @NonNull String trackedEntityType,
-                                                                                 @NonNull List<String> orgUnits,
-                                                                                @NonNull List<State> states,
-                                                                                 @Nullable HashMap<String, String> queryData,
-                                                                                 boolean assignedToMe,
-                                                                                 @Nullable SortingItem sortingItem) {
+    private TrackedEntityInstanceQueryCollectionRepository getFilteredRepository(SearchParametersModel searchParametersModel) {
 
-        this.savedSelectedProgram = selectedProgram;
-        this.savedTrackedEntityType = trackedEntityType;
-        this.savedOrgUnits.clear();
-        this.savedOrgUnits.addAll(orgUnits);
-        this.savedStates.clear();
-        this.savedStates.addAll(states);
-        this.savedQueryData.clear();
-        this.savedQueryData.putAll(queryData);
-        this.savedAssignedToMe = assignedToMe;
-        this.savedSortingItem = sortingItem;
+
+        this.savedSearchParameters = searchParametersModel.copy();
+        this.savedFilters = FilterManager.getInstance().copy();
 
         TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery = d2.trackedEntityModule().trackedEntityInstanceQuery();
-        if (selectedProgram != null)
-            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgram().eq(selectedProgram.uid());
+        if (searchParametersModel.getSelectedProgram() != null)
+            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgram().eq(searchParametersModel.getSelectedProgram().uid());
         else
-            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byTrackedEntityType().eq(trackedEntityType);
+            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byTrackedEntityType().eq(searchParametersModel.getTrackedEntityType());
 
         if (!FilterManager.getInstance().getEnrollmentStatusFilters().isEmpty()) {
             trackedEntityInstanceQuery = trackedEntityInstanceQuery.byEnrollmentStatus().in(FilterManager.getInstance().getEnrollmentStatusFilters());
@@ -283,33 +238,35 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
 
         OrganisationUnitMode ouMode;
-        if (orgUnits.isEmpty()) {
-            orgUnits.addAll(
-                    UidsHelper.getUidsList(d2.organisationUnitModule().organisationUnits()
+        List<String> orgUnits = new ArrayList<>();
+        if (FilterManager.getInstance().getOrgUnitUidsFilters().isEmpty()) {
+            orgUnits.addAll(UidsHelper.getUidsList(d2.organisationUnitModule().organisationUnits()
                             .byRootOrganisationUnit(true)
                             .blockingGet()));
             ouMode = OrganisationUnitMode.DESCENDANTS;
-        } else
+        } else {
+            orgUnits.addAll(FilterManager.getInstance().getOrgUnitUidsFilters());
             ouMode = OrganisationUnitMode.SELECTED;
+        }
 
         trackedEntityInstanceQuery = trackedEntityInstanceQuery
                 .byOrgUnits().in(orgUnits)
                 .byOrgUnitMode().eq(ouMode);
 
-        if (!states.isEmpty())
+        if (!FilterManager.getInstance().getStateFilters().isEmpty())
             trackedEntityInstanceQuery = trackedEntityInstanceQuery
-                    .byStates().in(states);
+                    .byStates().in(FilterManager.getInstance().getStateFilters());
 
         List<DatePeriod> periods = FilterManager.getInstance().getEnrollmentPeriodFilters();
 
         if (!periods.isEmpty()) {
-            queryData.remove(Constants.ENROLLMENT_DATE_UID);
+            searchParametersModel.getQueryData().remove(Constants.ENROLLMENT_DATE_UID);
             trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramStartDate().eq(periods.get(0).startDate());
             trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramEndDate().eq(periods.get(0).endDate());
-        } else if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
+        } else if (searchParametersModel.getQueryData() != null && !isEmpty(searchParametersModel.getQueryData().get(Constants.ENROLLMENT_DATE_UID))) {
             try {
-                Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(Constants.ENROLLMENT_DATE_UID));
-                queryData.remove(Constants.ENROLLMENT_DATE_UID);
+                Date enrollmentDate = DateUtils.uiDateFormat().parse(searchParametersModel.getQueryData().get(Constants.ENROLLMENT_DATE_UID));
+                searchParametersModel.getQueryData().remove(Constants.ENROLLMENT_DATE_UID);
                 trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramStartDate().eq(enrollmentDate);
                 trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramEndDate().eq(enrollmentDate);
                 periods.add(DatePeriod.create(enrollmentDate, enrollmentDate));
@@ -319,9 +276,9 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
         }
 
-        for (int i = 0; i < queryData.keySet().size(); i++) {
-            String dataId = queryData.keySet().toArray()[i].toString();
-            String dataValue = queryData.get(dataId);
+        for (int i = 0; i < searchParametersModel.getQueryData().keySet().size(); i++) {
+            String dataId = searchParametersModel.getQueryData().keySet().toArray()[i].toString();
+            String dataValue = searchParametersModel.getQueryData().get(dataId);
             if (dataValue.contains("_os_")) {
                 dataValue = dataValue.split("_os_")[1];
                 trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
@@ -329,34 +286,34 @@ public class SearchRepositoryImpl implements SearchRepository {
                 trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).like(dataValue);
         }
 
-        if (assignedToMe) {
+        if (FilterManager.getInstance().getAssignedFilter()) {
             trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAssignedUserMode().eq(AssignedUserMode.CURRENT);
         }
 
-        if (sortingItem != null) {
-            switch (sortingItem.component1()) {
+        if (FilterManager.getInstance().getSortingItem() != null) {
+            switch (FilterManager.getInstance().getSortingItem().component1()) {
                 case ORG_UNIT:
-                    if (sortingItem.getSortingStatus() == SortingStatus.ASC)
+                    if (FilterManager.getInstance().getSortingItem().getSortingStatus() == SortingStatus.ASC)
                         trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByOrganisationUnitName().eq(RepositoryScope.OrderByDirection.ASC);
-                    if (sortingItem.getSortingStatus() == SortingStatus.DESC)
+                    if (FilterManager.getInstance().getSortingItem().getSortingStatus() == SortingStatus.DESC)
                         trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByOrganisationUnitName().eq(RepositoryScope.OrderByDirection.DESC);
                     break;
                 case ENROLLMENT_DATE:
-                    if (sortingItem.getSortingStatus() == SortingStatus.ASC)
+                    if (FilterManager.getInstance().getSortingItem().getSortingStatus() == SortingStatus.ASC)
                         trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEnrollmentDate().eq(RepositoryScope.OrderByDirection.ASC);
-                    if (sortingItem.getSortingStatus() == SortingStatus.DESC)
+                    if (FilterManager.getInstance().getSortingItem().getSortingStatus() == SortingStatus.DESC)
                         trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEnrollmentDate().eq(RepositoryScope.OrderByDirection.DESC);
                     break;
                 case PERIOD:
-                    if (sortingItem.getSortingStatus() == SortingStatus.ASC)
+                    if (FilterManager.getInstance().getSortingItem().getSortingStatus() == SortingStatus.ASC)
                         trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEventDate().eq(RepositoryScope.OrderByDirection.ASC);
-                    if (sortingItem.getSortingStatus() == SortingStatus.DESC)
+                    if (FilterManager.getInstance().getSortingItem().getSortingStatus() == SortingStatus.DESC)
                         trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEventDate().eq(RepositoryScope.OrderByDirection.DESC);
                     break;
                 case ENROLLMENT_STATUS:
-                    if (sortingItem.getSortingStatus() == SortingStatus.ASC)
+                    if (FilterManager.getInstance().getSortingItem().getSortingStatus() == SortingStatus.ASC)
                         trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEnrollmentStatus().eq(RepositoryScope.OrderByDirection.ASC);
-                    if (sortingItem.getSortingStatus() == SortingStatus.DESC)
+                    if (FilterManager.getInstance().getSortingItem().getSortingStatus() == SortingStatus.DESC)
                         trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEnrollmentStatus().eq(RepositoryScope.OrderByDirection.DESC);
                     break;
                 default:
