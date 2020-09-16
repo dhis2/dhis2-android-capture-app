@@ -14,10 +14,10 @@ sealed class TreeNode<T>(val content: T) {
         }
 
     class Node<N>(
-        content: N,
+        private val nodeContent: N,
         initialChildren: List<TreeNode<*>> = mutableListOf(),
         var expanded: Boolean = false
-    ) : TreeNode<N>(content) {
+    ) : TreeNode<N>(nodeContent) {
         private val internalChildren: MutableList<TreeNode<*>> = initialChildren.toMutableList()
 
         init {
@@ -49,12 +49,6 @@ sealed class TreeNode<T>(val content: T) {
             node.parent = this
         }
 
-/*        fun depthFilter( predicate: (TreeNode<*>)->Boolean ): Node<N>{
-            return Node(this.content,this.children.filter {
-                predicate(it)
-            }, this.expanded)
-        }*/
-
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
@@ -75,21 +69,7 @@ sealed class TreeNode<T>(val content: T) {
         }
     }
 
-    class Leaf<L>(content: L) : TreeNode<L>(content) {
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as Leaf<*>
-
-            if (content != other.content) return false
-            return true
-        }
-
-        override fun hashCode(): Int {
-            return javaClass.hashCode()
-        }
-    }
+    data class Leaf<L>(private val leafContent: L) : TreeNode<L>(leafContent)
 }
 
 fun <N> root(content: N, initialize: (TreeNode.Node<N>.() -> Unit)? = null): TreeNode.Node<N> {

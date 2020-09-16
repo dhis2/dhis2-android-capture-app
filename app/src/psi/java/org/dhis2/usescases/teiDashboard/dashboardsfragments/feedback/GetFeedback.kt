@@ -1,11 +1,8 @@
 package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 
-import com.airbnb.lottie.animation.content.Content
 import org.dhis2.core.functional.Either
 import org.dhis2.core.types.TreeNode
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
-import timber.log.Timber
-import java.lang.IllegalStateException
 
 sealed class FeedbackFailure {
     object NotFound : FeedbackFailure()
