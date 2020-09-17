@@ -343,7 +343,7 @@
                     android:background="@drawable/rounded_square"
                     android:backgroundTint="?colorPrimaryLight"
                     android:padding="2dp"
-                    app:srcCompat="@drawable/ic_child_health_positive" />
+                    tools:src="@drawable/ic_dhis" />
             </LinearLayout>
 
             <ImageView

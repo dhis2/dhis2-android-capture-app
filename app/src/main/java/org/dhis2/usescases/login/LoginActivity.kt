@@ -23,7 +23,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.StringWriter
 import javax.inject.Inject
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.HttpUrl
 import org.dhis2.App
 import org.dhis2.Bindings.app
 import org.dhis2.Bindings.buildInfo
@@ -137,7 +137,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private fun checkUrl(urlString: String): Boolean {
         return URLUtil.isValidUrl(urlString) &&
             Patterns.WEB_URL.matcher(urlString).matches() &&
-            urlString.toHttpUrlOrNull() != null
+            HttpUrl.parse(urlString) != null
     }
 
     override fun setTestingCredentials() {
