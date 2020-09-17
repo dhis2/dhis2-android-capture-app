@@ -185,8 +185,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         return searchRepository.programAttributes(selectedProgram.uid())
                                 .map(data -> Pair.create(data.getTrackedEntityAttributes(), data.getRendering()));
                 })
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         data -> {
                             if (data.val0().isEmpty()) {
@@ -198,7 +196,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
 
         compositeDisposable.add(view.rowActionss()
-                .subscribeOn(schedulerProvider.io())
+                .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(data -> {
                             Map<String, String> queryDataBU = new HashMap<>(queryData);
@@ -242,9 +240,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         compositeDisposable.add(
                 updaterFlowable
+                        .observeOn(schedulerProvider.io())
                         .map(data -> view.isMapVisible())
                         .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 isMapVisible -> {
                                     view.showFilterProgress();
@@ -318,7 +316,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         compositeDisposable.add(
                 queryProcessor
                         .startWith(queryData)
-                        .subscribeOn(schedulerProvider.io())
+                        .subscribeOn(schedulerProvider.ui())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(data -> view.clearData(), Timber::d)
         );
