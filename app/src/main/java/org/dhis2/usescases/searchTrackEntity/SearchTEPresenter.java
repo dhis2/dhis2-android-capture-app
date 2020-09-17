@@ -479,13 +479,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             preferences.removeValue(Preference.CURRENT_ORG_UNIT);
             queryData.clear();
         }
-
-        if (queryData.isEmpty()) {
-            queryProcessor.onNext(new HashMap<>());
-        } else {
-            queryProcessor.onNext(queryData);
-        }
-
         initAssignmentFilter();
     }
 
