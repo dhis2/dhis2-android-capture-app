@@ -215,12 +215,15 @@ class MainActivity :
 
     override fun onBackPressed() {
         when {
-            fragId != R.id.menu_home -> changeFragment(R.id.menu_home)
-            isPinLayoutVisible -> {
-                isPinLayoutVisible = false
-            }
+            fragId != R.id.menu_home -> presenter.onNavigateBackToHome()
+            isPinLayoutVisible -> isPinLayoutVisible = false
             else -> super.onBackPressed()
         }
+    }
+
+    override fun goToHome() {
+        changeFragment(R.id.menu_home)
+        initCurrentScreen()
     }
 
     override fun changeFragment(id: Int) {
