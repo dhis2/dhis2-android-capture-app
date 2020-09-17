@@ -1,6 +1,5 @@
 package org.dhis2.utils.customviews;
 
-import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.util.AttributeSet;
@@ -9,6 +8,7 @@ import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -68,6 +68,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     public void setDescription(String description) {
         binding.setDescription(description);
+        binding.descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
     }
 
     public void initData(String data) {
@@ -132,7 +133,9 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this);
         editText.setOnClickListener(this);
-        clearButton.setOnClickListener(v -> { clearDate(); });
+        clearButton.setOnClickListener(v -> {
+            clearDate();
+        });
     }
 
     @Override
@@ -210,11 +213,15 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     public void setEditable(Boolean editable) {
         editText.setEnabled(editable);
+        clearButton.setEnabled(editable);
+        editText.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.text_black_DE3)
+        );
 
         setEditable(editable,
                 labelText,
                 inputLayout,
-                editText,
                 findViewById(R.id.descIcon),
                 findViewById(R.id.descriptionLabel),
                 clearButton

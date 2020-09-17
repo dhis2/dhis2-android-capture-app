@@ -110,7 +110,7 @@ public class CustomTextView extends FieldLayout {
     }
 
     public void setDescription(String description) {
-        descriptionLabel.setVisibility(label.length() > 16 || description != null ? View.VISIBLE : View.GONE);
+        descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
     }
 
     private void configureViews() {
@@ -207,10 +207,13 @@ public class CustomTextView extends FieldLayout {
         editText.setFocusable(editable);
         editText.setFocusableInTouchMode(editable);
         editText.setClickable(editable);
-        editText.setEnabled(editable);
+
+        if (findViewById(R.id.clear_button) != null) {
+            findViewById(R.id.clear_button).setVisibility(editable ? View.VISIBLE : View.GONE);
+        }
 
         setEditable(editable, labelText,
-                inputLayout, editText, descIcon, descriptionLabel, findViewById(R.id.clear_button));
+                inputLayout, descIcon, descriptionLabel, findViewById(R.id.clear_button));
     }
 
     public void setWarning(String warning, String error) {

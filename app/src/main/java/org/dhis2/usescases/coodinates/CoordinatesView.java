@@ -334,12 +334,20 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         findViewById(R.id.location1).setEnabled(editable);
         findViewById(R.id.location2).setEnabled(editable);
 
+        latitude.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.text_black_DE3)
+        );
+
+        longitude.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.text_black_DE3)
+        );
+
         setEditable(editable,
                 labelText,
                 latitudeInputLayout,
-                latitude,
                 longitudeInputLayout,
-                longitude,
                 findViewById(R.id.formLabel),
                 findViewById(R.id.location1),
                 findViewById(R.id.location2),
