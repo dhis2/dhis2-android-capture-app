@@ -313,7 +313,7 @@ class EnrollmentPresenterImpl(
                 }
                 if (field.mandatory() && field.value().isNullOrEmpty()) {
                     mandatoryFields[field.label()] = field.programStageSection() ?: section
-                    if(showErrors.first) {
+                    if (showErrors.first) {
                         iterator.set(field.withWarning(mandatoryWarning))
                     }
                 }
