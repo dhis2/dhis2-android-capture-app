@@ -297,7 +297,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="10dp"
-                android:tint="@color/colorGreyDefault"
+                app:tint="@color/colorGreyDefault"
                 android:visibility="@{isOnline?View.VISIBLE:View.GONE}"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/syncState"

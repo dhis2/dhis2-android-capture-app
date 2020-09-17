@@ -25,14 +25,17 @@ class SearchTEViewHolder(
             ).show() else presenter.onSyncIconClick(teiModel.tei.uid())
         }
 
+        binding.download.setOnClickListener {
+            presenter.downloadTei(
+                teiModel.tei.uid(),
+                teiModel.selectedEnrollment?.uid()
+            )
+        }
+
         itemView.setOnClickListener {
             presenter.onTEIClick(
                 teiModel.tei.uid(),
-                if (teiModel.selectedEnrollment != null) {
-                    teiModel.selectedEnrollment.uid()
-                } else {
-                    null
-                },
+                teiModel.selectedEnrollment?.uid(),
                 teiModel.isOnline
             )
         }
