@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
@@ -50,6 +51,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     private String description;
     private Date date;
     private View clearButton;
+    private View descriptionLabel;
 
     public TimeView(Context context) {
         super(context);
@@ -71,6 +73,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         editText = findViewById(R.id.inputEditText);
         inputLayout = findViewById(R.id.inputLayout);
         labelText = findViewById(R.id.label);
+        descriptionLabel = findViewById(R.id.descriptionLabel);
         inputLayout.setHint(getContext().getString(R.string.select_time));
         ((ImageView) findViewById(R.id.descIcon)).setImageResource(R.drawable.ic_form_time);
         clearButton = findViewById(R.id.clear_button);
@@ -106,6 +109,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
 
     public void setDescription(String description) {
         this.description = description;
+        descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
         binding.setVariable(BR.description, description);
         binding.executePendingBindings();
     }
@@ -207,13 +211,16 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
 
     public void setEditable(Boolean editable) {
         editText.setEnabled(editable);
-
+        clearButton.setEnabled(editable);
+        editText.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.text_black_DE3)
+        );
         setEditable(editable,
                 labelText,
                 inputLayout,
-                editText,
                 findViewById(R.id.descIcon),
-                findViewById(R.id.descriptionLabel),
+                descriptionLabel,
                 clearButton
         );
     }
