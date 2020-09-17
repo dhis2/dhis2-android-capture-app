@@ -135,7 +135,9 @@ class EnrollmentPresenterImpl(
         )
 
         disposable.add(
-            view.rowActions().onBackpressureBuffer()
+            view.rowActions()
+                .onBackpressureBuffer()
+                .distinctUntilChanged()
                 .doOnNext { view.showProgress() }
                 .observeOn(schedulerProvider.io())
                 .flatMap { rowAction ->
