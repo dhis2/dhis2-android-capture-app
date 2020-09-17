@@ -25,12 +25,12 @@ class GetFeedback(
     ): Either<FeedbackFailure, List<TreeNode.Node<FeedbackItem>>> {
         return try {
 
-            val events = getEnrollmentEvents(criticalFilter)
+            val events = getEnrollmentEvents()
 
             if (events.isEmpty()) {
                 Either.Left(FeedbackFailure.NotFound)
             } else {
-                Either.Right(createFeedback(feedbackMode, events, onlyFailedFilter))
+                Either.Right(createFeedback(feedbackMode, events, criticalFilter, onlyFailedFilter))
             }
         } catch (e: Exception) {
             Either.Left(FeedbackFailure.UnexpectedError(e))
@@ -40,10 +40,15 @@ class GetFeedback(
     private fun createFeedback(
         feedbackMode: FeedbackMode,
         teiEvents: List<Event>,
+        criticalFilter: Boolean?,
         onlyFailedFilter: Boolean
     ): List<TreeNode.Node<FeedbackItem>> {
         return when (feedbackMode) {
-            is FeedbackMode.ByEvent -> createFeedbackByEvent(teiEvents, onlyFailedFilter)
+            is FeedbackMode.ByEvent -> createFeedbackByEvent(
+                teiEvents,
+                criticalFilter,
+                onlyFailedFilter
+            )
             is FeedbackMode.ByTechnicalArea -> createFeedbackByTechnicalArea(
                 teiEvents, onlyFailedFilter
             )
@@ -52,6 +57,7 @@ class GetFeedback(
 
     private fun createFeedbackByEvent(
         teiEvents: List<Event>,
+        criticalFilter: Boolean?,
         onlyFailed: Boolean
     ): List<TreeNode.Node<FeedbackItem>> {
         val feedbackByEvent = teiEvents.map { event ->
@@ -61,7 +67,7 @@ class GetFeedback(
         }
 
         val filteredFeedbackByEvent =
-            if (onlyFailed) filterOnlyFailed(feedbackByEvent) else feedbackByEvent
+            filterFeedback(criticalFilter, onlyFailed, feedbackByEvent)
 
         return (filteredFeedbackByEvent as List<TreeNode.Node<FeedbackItem>>)
             .filter {
@@ -80,7 +86,7 @@ class GetFeedback(
         addEventsToDE(feedbackByTechnicalArea, teiEvents)
 
         val filteredFeedbackByTechnicalArea =
-            if (onlyFailed) filterOnlyFailed(feedbackByTechnicalArea) else feedbackByTechnicalArea
+            filterFeedback(null, onlyFailed, feedbackByTechnicalArea)
 
         return (filteredFeedbackByTechnicalArea as List<TreeNode.Node<FeedbackItem>>)
             .filter {
@@ -88,23 +94,32 @@ class GetFeedback(
             }
     }
 
-    private fun filterOnlyFailed(
+    private fun filterFeedback(
+        criticalFilter: Boolean?,
+        onlyFailed: Boolean,
         nodes: List<TreeNode<*>>
     ): List<TreeNode<*>> {
         val newNodes = mutableListOf<TreeNode<*>>()
 
         val predicate = { node: TreeNode<*> ->
-            (node.content is FeedbackItem && node.content.value != null &&
-                !node.content.value.success) ||
+            (((node.content is FeedbackItem && node.content.value != null &&
+                !node.content.value.success && onlyFailed) || !onlyFailed) &&
+                ((node.content is FeedbackItem && node.content.value != null &&
+                    node.content.value.critical == criticalFilter) || criticalFilter == null)) ||
                 node.content is FeedbackHelpItem ||
-                node is TreeNode.Node && anyChildrenIsFailed(node)
+                node is TreeNode.Node && anyChildrenIsFailed(criticalFilter, onlyFailed, node)
         }
 
         for (node in nodes) {
             if (predicate(node)) {
                 when (node) {
                     is TreeNode.Node ->
-                        newNodes.add(TreeNode.Node(node.content, filterOnlyFailed(node.children)))
+                        newNodes.add(
+                            TreeNode.Node(
+                                node.content,
+                                filterFeedback(criticalFilter, onlyFailed, node.children)
+                            )
+                        )
                     is TreeNode.Leaf -> newNodes.add(TreeNode.Leaf(node.content))
                 }
             }
@@ -113,11 +128,17 @@ class GetFeedback(
         return newNodes
     }
 
-    private fun anyChildrenIsFailed(node: TreeNode<*>): Boolean {
+    private fun anyChildrenIsFailed(
+        criticalFilter: Boolean?,
+        onlyFailed: Boolean,
+        node: TreeNode<*>
+    ): Boolean {
         return node is TreeNode.Node && node.children.any { child ->
-            (child.content is FeedbackItem && child.content.value != null &&
-                !child.content.value.success) ||
-                (child is TreeNode.Node && anyChildrenIsFailed(child))
+            (((child.content is FeedbackItem && child.content.value != null &&
+                !child.content.value.success && onlyFailed) || !onlyFailed) &&
+                ((child.content is FeedbackItem && child.content.value != null &&
+                    child.content.value.critical == criticalFilter) || criticalFilter == null)) ||
+                (child is TreeNode.Node && anyChildrenIsFailed(criticalFilter, onlyFailed, child))
 
         }
     }
@@ -165,7 +186,8 @@ class GetFeedback(
                         FeedbackItemValue(
                             eventValue.value,
                             eventValue.colorByLegend,
-                            eventValue.success
+                            eventValue.success,
+                            eventValue.critical
                         ),
                         event.uid
                     )
@@ -174,7 +196,7 @@ class GetFeedback(
                         if (treeNode.children.isNotEmpty() && treeNode.children[0] is TreeNode.Leaf) 1
                         else 0
 
-                    treeNode.addChild(TreeNode.Leaf(it),index)
+                    treeNode.addChild(TreeNode.Leaf(it), index)
                 }
 
                 addEventsToDE(
@@ -195,7 +217,8 @@ class GetFeedback(
                 if (withValue) FeedbackItemValue(
                     eventValue.value,
                     eventValue.colorByLegend,
-                    eventValue.success
+                    eventValue.success,
+                    eventValue.critical
                 ) else null,
                 eventValue.dataElement
             ), if (eventValue.feedbackHelp != null) listOf(
@@ -204,7 +227,7 @@ class GetFeedback(
         )
     }
 
-    private fun getEnrollmentEvents(compulsoryValues: Boolean?): List<Event> {
+    private fun getEnrollmentEvents(): List<Event> {
         val enrolmentEvents = teiDataRepository.getTEIEnrollmentEvents(
             null,
             false,
@@ -217,7 +240,7 @@ class GetFeedback(
         ).blockingGet()
 
         return enrolmentEvents.map {
-            val values = valuesRepository.getByEvent(it.event!!.uid(), compulsoryValues)
+            val values = valuesRepository.getByEvent(it.event!!.uid())
 
             Event(it.event.uid(), it.stage?.displayName()!!, values)
         }
@@ -225,5 +248,5 @@ class GetFeedback(
 }
 
 interface ValuesRepository {
-    fun getByEvent(eventUid: String, compulsoryFilter: Boolean? = null): List<Value>
+    fun getByEvent(eventUid: String): List<Value>
 }

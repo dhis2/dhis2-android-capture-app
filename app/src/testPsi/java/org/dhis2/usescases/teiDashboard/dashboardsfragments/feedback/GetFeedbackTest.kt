@@ -56,10 +56,10 @@ class GetFeedbackTest {
     fun `should return expected feedback by events`() {
         givenOneEventWithValues(
             "ART New", listOf(
-                listOf("1", "Completeness", "Partly", "#FFC700", "Feedback Completeness", "OK"),
-                listOf("2", "Timeliness", "100%", "#0CE922", "Feedback Timeliness", "OK"),
-                listOf("1.1", "Completeness 1.1", "86%", "#FFC700", "Feedback 1.1", "OK"),
-                listOf("1.2", "Completeness 1.2", "56%", "#c80f26", "Feedback 1.2", "OK")
+                listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "OK", "CRITICAL"),
+                listOf("2", "DE 2", "100%", "#0CE922", "Feedback DE 2", "OK", "CRITICAL"),
+                listOf("1.1", "DE 1.1", "86%", "#FFC700", "Feedback DE 1.1", "OK", "CRITICAL"),
+                listOf("1.2", "DE 1.2", "56%", "#c80f26", "Feedback DE 1.2", "OK", "CRITICAL")
             )
         )
 
@@ -70,35 +70,35 @@ class GetFeedbackTest {
             root(FeedbackItem("ART New", null, "ART New UID")) {
                 node(
                     FeedbackItem(
-                        "Completeness", FeedbackItemValue("Partly", "#FFC700", true),
-                        "Completeness_DE"
+                        "DE 1", FeedbackItemValue("Partly", "#FFC700", true, true),
+                        "DE 1_UID"
                     )
                 ) {
-                    leaf(FeedbackHelpItem("Feedback Completeness"))
+                    leaf(FeedbackHelpItem("Feedback DE 1"))
                     node(
                         FeedbackItem(
-                            "Completeness 1.1", FeedbackItemValue("86%", "#FFC700", true),
-                            "Completeness 1.1_DE"
+                            "DE 1.1", FeedbackItemValue("86%", "#FFC700", true, true),
+                            "DE 1.1_UID"
                         )
                     ) {
-                        leaf(FeedbackHelpItem("Feedback 1.1"))
+                        leaf(FeedbackHelpItem("Feedback DE 1.1"))
                     }
                     node(
                         FeedbackItem(
-                            "Completeness 1.2", FeedbackItemValue("56%", "#c80f26", true),
-                            "Completeness 1.2_DE"
+                            "DE 1.2", FeedbackItemValue("56%", "#c80f26", true, true),
+                            "DE 1.2_UID"
                         )
                     ) {
-                        leaf(FeedbackHelpItem("Feedback 1.2"))
+                        leaf(FeedbackHelpItem("Feedback DE 1.2"))
                     }
                 }
                 node(
                     FeedbackItem(
-                        "Timeliness", FeedbackItemValue("100%", "#0CE922", true),
-                        "Timeliness_DE"
+                        "DE 2", FeedbackItemValue("100%", "#0CE922", true, true),
+                        "DE 2_UID"
                     )
                 ) {
-                    leaf(FeedbackHelpItem("Feedback Timeliness"))
+                    leaf(FeedbackHelpItem("Feedback DE 2"))
                 }
             }
         )
@@ -112,8 +112,8 @@ class GetFeedbackTest {
     fun `should not return feedback if It's by events and only failed filter is true and all values are success`() {
         givenOneEventWithValues(
             "ART New", listOf(
-                listOf("1", "Completeness", "Partly", "#FFC700", "Feedback Completeness", "OK"),
-                listOf("2", "Timeliness", "100%", "#0CE922", "Feedback Timeliness", "OK")
+                listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "OK", "CRITICAL"),
+                listOf("2", "DE 2", "100%", "#0CE922", "Feedback DE 2", "OK", "CRITICAL")
             )
         )
 
@@ -133,10 +133,10 @@ class GetFeedbackTest {
     fun `should return only failed by events if It's by events and only failed filter is true`() {
         givenOneEventWithValues(
             "ART New", listOf(
-                listOf("1", "Completeness", "Partly", "#FFC700", "Feedback Completeness", "FAIL"),
-                listOf("2", "Timeliness", "100%", "#0CE922", "Feedback Timeliness", "OK"),
-                listOf("3", "Precision", "86%", "#FFC700", "Feedback Precision", "OK"),
-                listOf("4", "Accuracy", "56%", "#c80f26", "Feedback Accuracy", "FAIL")
+                listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "FAIL", "CRITICAL"),
+                listOf("2", "DE 2", "100%", "#0CE922", "Feedback DE 2", "OK", "CRITICAL"),
+                listOf("3", "DE 3", "86%", "#FFC700", "Feedback DE 3", "OK", "CRITICAL"),
+                listOf("4", "DE 4", "56%", "#c80f26", "Feedback DE 4", "FAIL", "CRITICAL")
             )
         )
 
@@ -148,19 +148,19 @@ class GetFeedbackTest {
             root(FeedbackItem("ART New", null, "ART New UID")) {
                 node(
                     FeedbackItem(
-                        "Completeness", FeedbackItemValue("Partly", "#FFC700", false),
-                        "Completeness_DE"
+                        "DE 1", FeedbackItemValue("Partly", "#FFC700", false, true),
+                        "DE 1_UID"
                     )
                 ) {
-                    leaf(FeedbackHelpItem("Feedback Completeness"))
+                    leaf(FeedbackHelpItem("Feedback DE 1"))
                 }
                 node(
                     FeedbackItem(
-                        "Accuracy", FeedbackItemValue("56%", "#c80f26", false),
-                        "Accuracy_DE"
+                        "DE 4", FeedbackItemValue("56%", "#c80f26", false, true),
+                        "DE 4_UID"
                     )
                 ) {
-                    leaf(FeedbackHelpItem("Feedback Accuracy"))
+                    leaf(FeedbackHelpItem("Feedback DE 4"))
                 }
             }
         )
@@ -174,11 +174,11 @@ class GetFeedbackTest {
     fun `should return only failed by events if It's by events and only failed filter is true and there are DE hierarchy`() {
         givenOneEventWithValues(
             "ART New", listOf(
-                listOf("1", "Completeness", "Partly", "#FFC700", "Feedback Completeness", "OK"),
-                listOf("2", "Timeliness", "100%", "#0CE922", "Feedback Timeliness", "OK"),
-                listOf("1.1", "Completeness 1.1", "86%", "#FFC700", "Feedback 1.1", "OK"),
-                listOf("1.2", "Completeness 1.2", "84%", "#c80f26", "Feedback 1.2", "OK"),
-                listOf("1.1.1", "Completeness 1.1.1", "56%", "#c80f26", "Feedback 1.1.1", "FAIL")
+                listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "OK", "CRITICAL"),
+                listOf("2", "DE 2", "100%", "#0CE922", "Feedback DE 2", "OK", "CRITICAL"),
+                listOf("1.1", "DE 1.1", "86%", "#FFC700", "Feedback DE 1.1", "OK", "CRITICAL"),
+                listOf("1.2", "DE 1.2", "84%", "#c80f26", "Feedback DE 1.2", "OK", "CRITICAL"),
+                listOf("1.1.1", "DE 1.1.1", "56%", "#c80", "Feedback DE 1.1.1", "FAIL", "CRITICAL")
             )
         )
 
@@ -189,25 +189,249 @@ class GetFeedbackTest {
             root(FeedbackItem("ART New", null, "ART New UID")) {
                 node(
                     FeedbackItem(
-                        "Completeness", FeedbackItemValue("Partly", "#FFC700", true),
-                        "Completeness_DE"
+                        "DE 1", FeedbackItemValue("Partly", "#FFC700", true, true),
+                        "DE 1_UID"
                     )
                 ) {
-                    leaf(FeedbackHelpItem("Feedback Completeness"))
+                    leaf(FeedbackHelpItem("Feedback DE 1"))
                     node(
                         FeedbackItem(
-                            "Completeness 1.1", FeedbackItemValue("86%", "#FFC700", true),
-                            "Completeness 1.1_DE"
+                            "DE 1.1", FeedbackItemValue("86%", "#FFC700", true, true),
+                            "DE 1.1_UID"
                         )
                     ) {
-                        leaf(FeedbackHelpItem("Feedback 1.1"))
+                        leaf(FeedbackHelpItem("Feedback DE 1.1"))
                         node(
                             FeedbackItem(
-                                "Completeness 1.1.1", FeedbackItemValue("56%", "#c80f26", false),
-                                "Completeness 1.1.1_DE"
+                                "DE 1.1.1", FeedbackItemValue("56%", "#c80", false, true),
+                                "DE 1.1.1_UID"
                             )
                         ) {
-                            leaf(FeedbackHelpItem("Feedback 1.1.1"))
+                            leaf(FeedbackHelpItem("Feedback DE 1.1.1"))
+                        }
+                    }
+                }
+            }
+        )
+
+        feedbackResult.fold(
+            { failure -> Assert.fail("$failure should be success") },
+            { feedback -> assertFeedback(expectedFeedback, feedback) })
+    }
+
+    @Test
+    fun `should not return feedback if It's by events and critical is true and all values are non critical`() {
+        givenOneEventWithValues(
+            "ART New", listOf(
+                listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "OK", "NON CRITICAL"),
+                listOf("2", "DE 2", "100%", "#0CE922", "Feedback DE 2", "OK", "NON CRITICAL")
+            )
+        )
+
+        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val feedbackResult =
+            getFeedback(FeedbackMode.ByEvent, true, false)
+
+        val expectedFeedback =
+            listOf<TreeNode.Node<FeedbackItem>>()
+
+        feedbackResult.fold(
+            { failure -> Assert.fail("$failure should be success") },
+            { feedback -> assertFeedback(expectedFeedback, feedback) })
+    }
+
+    @Test
+    fun `should not return feedback if It's by events and critical is false and all values are critical`() {
+        givenOneEventWithValues(
+            "ART New", listOf(
+                listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "OK", "CRITICAL"),
+                listOf("2", "DE 2", "100%", "#0CE922", "Feedback DE 2", "OK", "CRITICAL")
+            )
+        )
+
+        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val feedbackResult =
+            getFeedback(FeedbackMode.ByEvent, false, false)
+
+        val expectedFeedback =
+            listOf<TreeNode.Node<FeedbackItem>>()
+
+        feedbackResult.fold(
+            { failure -> Assert.fail("$failure should be success") },
+            { feedback -> assertFeedback(expectedFeedback, feedback) })
+    }
+
+    @Test
+    fun `should return only critical by events if It's by events and critical filter is true`() {
+        givenOneEventWithValues(
+            "ART New", listOf(
+                listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "OK", "CRITICAL"),
+                listOf("2", "DE 2", "100%", "#0CE922", "Feedback DE 2", "OK", "NON CRITICAL"),
+                listOf("3", "DE 3", "86%", "#FFC700", "Feedback DE 3", "OK", "NON CRITICAL"),
+                listOf("4", "DE 4", "56%", "#c80f26", "Feedback DE 4", "FAIL", "CRITICAL")
+            )
+        )
+
+        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val feedbackResult =
+            getFeedback(FeedbackMode.ByEvent, true, false)
+
+        val expectedFeedback = listOf(
+            root(FeedbackItem("ART New", null, "ART New UID")) {
+                node(
+                    FeedbackItem(
+                        "DE 1", FeedbackItemValue("Partly", "#FFC700", true, true),
+                        "DE 1_UID"
+                    )
+                ) {
+                    leaf(FeedbackHelpItem("Feedback DE 1"))
+                }
+                node(
+                    FeedbackItem(
+                        "DE 4", FeedbackItemValue("56%", "#c80f26", false, true),
+                        "DE 4_UID"
+                    )
+                ) {
+                    leaf(FeedbackHelpItem("Feedback DE 4"))
+                }
+            }
+        )
+
+        feedbackResult.fold(
+            { failure -> Assert.fail("$failure should be success") },
+            { feedback -> assertFeedback(expectedFeedback, feedback) })
+    }
+
+    @Test
+    fun `should return only non critical by events if It's by events and critical filter is false`() {
+        givenOneEventWithValues(
+            "ART New", listOf(
+                listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "OK", "NON CRITICAL"),
+                listOf("2", "DE 2", "100%", "#0CE922", "Feedback DE 2", "OK", "CRITICAL"),
+                listOf("3", "DE 3", "86%", "#FFC700", "Feedback DE 3", "OK", "CRITICAL"),
+                listOf("4", "DE 4", "56%", "#c80f26", "Feedback DE 4", "FAIL", "NON CRITICAL")
+            )
+        )
+
+        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val feedbackResult =
+            getFeedback(FeedbackMode.ByEvent, false, false)
+
+        val expectedFeedback = listOf(
+            root(FeedbackItem("ART New", null, "ART New UID")) {
+                node(
+                    FeedbackItem(
+                        "DE 1", FeedbackItemValue("Partly", "#FFC700", true, false),
+                        "DE 1_UID"
+                    )
+                ) {
+                    leaf(FeedbackHelpItem("Feedback DE 1"))
+                }
+                node(
+                    FeedbackItem(
+                        "DE 4", FeedbackItemValue("56%", "#c80f26", false, false),
+                        "DE 4_UID"
+                    )
+                ) {
+                    leaf(FeedbackHelpItem("Feedback DE 4"))
+                }
+            }
+        )
+
+        feedbackResult.fold(
+            { failure -> Assert.fail("$failure should be success") },
+            { feedback -> assertFeedback(expectedFeedback, feedback) })
+    }
+
+    @Test
+    fun `should return only critical by events if It's by events and critical filter is true and there are DE hierarchy`() {
+        givenOneEventWithValues(
+            "ART New", listOf(
+                listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "OK", "NON CRITICAL"),
+                listOf("2", "DE 2", "100%", "#0CE922", "Feedback DE 2", "OK", "NON CRITICAL"),
+                listOf("1.1", "DE 1.1", "86%", "#FFC700", "Feedback DE 1.1", "FAIL", "NON CRITICAL"),
+                listOf("1.2", "DE 1.2", "84%", "#c80f26", "Feedback DE 1.2", "OK", "NON CRITICAL"),
+                listOf("1.1.1", "DE 1.1.1", "56%", "#c80", "Feedback DE 1.1.1", "FAIL", "CRITICAL")
+            )
+        )
+
+        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val feedbackResult =
+            getFeedback(FeedbackMode.ByEvent, true, false)
+
+        val expectedFeedback = listOf(
+            root(FeedbackItem("ART New", null, "ART New UID")) {
+                node(
+                    FeedbackItem(
+                        "DE 1", FeedbackItemValue("Partly", "#FFC700", true, false),
+                        "DE 1_UID"
+                    )
+                ) {
+                    leaf(FeedbackHelpItem("Feedback DE 1"))
+                    node(
+                        FeedbackItem(
+                            "DE 1.1", FeedbackItemValue("86%", "#FFC700", false, false),
+                            "DE 1.1_UID"
+                        )
+                    ) {
+                        leaf(FeedbackHelpItem("Feedback DE 1.1"))
+                        node(
+                            FeedbackItem(
+                                "DE 1.1.1", FeedbackItemValue("56%", "#c80", false, true),
+                                "DE 1.1.1_UID"
+                            )
+                        ) {
+                            leaf(FeedbackHelpItem("Feedback DE 1.1.1"))
+                        }
+                    }
+                }
+            }
+        )
+
+        feedbackResult.fold(
+            { failure -> Assert.fail("$failure should be success") },
+            { feedback -> assertFeedback(expectedFeedback, feedback) })
+    }
+
+    @Test
+    fun `should return only non critical by events if It's by events and critical filter is false and there are DE hierarchy`() {
+        givenOneEventWithValues(
+            "ART New", listOf(
+                listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "OK", "CRITICAL"),
+                listOf("2", "DE 2", "100%", "#0CE922", "Feedback DE 2", "OK", "CRITICAL"),
+                listOf("1.1", "DE 1.1", "86%", "#FFC700", "Feedback DE 1.1", "FAIL", "CRITICAL"),
+                listOf("1.2", "DE 1.2", "84%", "#c80f26", "Feedback DE 1.2", "OK", "CRITICAL"),
+                listOf("1.1.1", "DE 1.1.1", "56%", "#c80", "Feedback DE 1.1.1", "FAIL", "NON CRITICAL")
+            )
+        )
+
+        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val feedbackResult =
+            getFeedback(FeedbackMode.ByEvent, false, false)
+
+        val expectedFeedback = listOf(
+            root(FeedbackItem("ART New", null, "ART New UID")) {
+                node(
+                    FeedbackItem(
+                        "DE 1", FeedbackItemValue("Partly", "#FFC700", true, true),
+                        "DE 1_UID"
+                    )
+                ) {
+                    leaf(FeedbackHelpItem("Feedback DE 1"))
+                    node(
+                        FeedbackItem(
+                            "DE 1.1", FeedbackItemValue("86%", "#FFC700", false, true),
+                            "DE 1.1_UID"
+                        )
+                    ) {
+                        leaf(FeedbackHelpItem("Feedback DE 1.1"))
+                        node(
+                            FeedbackItem(
+                                "DE 1.1.1", FeedbackItemValue("56%", "#c80", false, false),
+                                "DE 1.1.1_UID"
+                            )
+                        ) {
+                            leaf(FeedbackHelpItem("Feedback DE 1.1.1"))
                         }
                     }
                 }
@@ -250,10 +474,10 @@ class GetFeedbackTest {
     fun `should return expected feedback by technical area`() {
         givenOneEventWithValues(
             "ART New", listOf(
-                listOf("1", "Completeness", "Partly", "#FFC700", "Feedback Completeness", "OK"),
-                listOf("2", "Timeliness", "100%", "#0CE922", "Feedback Timeliness", "OK"),
-                listOf("1.1", "Completeness 1.1", "86%", "#FFC700", "Feedback 1.1", "OK"),
-                listOf("1.2", "Completeness 1.2", "56%", "#c80f26", "Feedback 1.2", "OK")
+                listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "OK", "CRITICAL"),
+                listOf("2", "DE 2", "100%", "#0CE922", "Feedback DE 2", "OK", "CRITICAL"),
+                listOf("1.1", "DE 1.1", "86%", "#FFC700", "Feedback DE 1.1", "OK", "CRITICAL"),
+                listOf("1.2", "DE 1.2", "56%", "#c80f26", "Feedback DE 1.2", "OK", "CRITICAL")
             )
         )
 
@@ -261,42 +485,42 @@ class GetFeedbackTest {
         val feedbackResult = getFeedback(FeedbackMode.ByTechnicalArea)
 
         val expectedFeedback = listOf(
-            root(FeedbackItem("Completeness", null, "Completeness_DE")) {
-                leaf(FeedbackHelpItem("Feedback Completeness"))
+            root(FeedbackItem("DE 1", null, "DE 1_UID")) {
+                leaf(FeedbackHelpItem("Feedback DE 1"))
                 leaf(
                     FeedbackItem(
                         "ART New",
-                        FeedbackItemValue("Partly", "#FFC700", true),
+                        FeedbackItemValue("Partly", "#FFC700", true, true),
                         "ART New UID"
                     )
                 )
-                node(FeedbackItem("Completeness 1.1", null, "Completeness 1.1_DE")) {
-                    leaf(FeedbackHelpItem("Feedback 1.1"))
+                node(FeedbackItem("DE 1.1", null, "DE 1.1_UID")) {
+                    leaf(FeedbackHelpItem("Feedback DE 1.1"))
                     leaf(
                         FeedbackItem(
                             "ART New",
-                            FeedbackItemValue("86%", "#FFC700", true),
+                            FeedbackItemValue("86%", "#FFC700", true, true),
                             "ART New UID"
                         )
                     )
                 }
-                node(FeedbackItem("Completeness 1.2", null, "Completeness 1.2_DE")) {
-                    leaf(FeedbackHelpItem("Feedback 1.2"))
+                node(FeedbackItem("DE 1.2", null, "DE 1.2_UID")) {
+                    leaf(FeedbackHelpItem("Feedback DE 1.2"))
                     leaf(
                         FeedbackItem(
                             "ART New",
-                            FeedbackItemValue("56%", "#c80f26", true),
+                            FeedbackItemValue("56%", "#c80f26", true, true),
                             "ART New UID"
                         )
                     )
                 }
             },
-            root(FeedbackItem("Timeliness", null, "Timeliness_DE")) {
-                leaf(FeedbackHelpItem("Feedback Timeliness"))
+            root(FeedbackItem("DE 2", null, "DE 2_UID")) {
+                leaf(FeedbackHelpItem("Feedback DE 2"))
                 leaf(
                     FeedbackItem(
                         "ART New",
-                        FeedbackItemValue("100%", "#0CE922", true),
+                        FeedbackItemValue("100%", "#0CE922", true, true),
                         "ART New UID"
                     )
                 )
@@ -312,8 +536,8 @@ class GetFeedbackTest {
     fun `should not return feedback if It's by technical area and only failed filter is true and all values are success`() {
         givenOneEventWithValues(
             "ART New", listOf(
-                listOf("1", "Completeness", "Partly", "#FFC700", "Feedback Completeness", "OK"),
-                listOf("2", "Timeliness", "100%", "#0CE922", "Feedback Timeliness", "OK")
+                listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "OK", "CRITICAL"),
+                listOf("2", "DE 2", "100%", "#0CE922", "Feedback DE 2", "OK", "CRITICAL")
             )
         )
 
@@ -333,10 +557,10 @@ class GetFeedbackTest {
     fun `should return only failed by technical area if It's by events and only failed filter is true`() {
         givenOneEventWithValues(
             "ART New", listOf(
-                listOf("1", "Completeness", "Partly", "#FFC700", "Feedback Completeness", "FAIL"),
-                listOf("2", "Timeliness", "100%", "#0CE922", "Feedback Timeliness", "OK"),
-                listOf("3", "Precision", "86%", "#FFC700", "Feedback Precision", "OK"),
-                listOf("4", "Accuracy", "56%", "#c80f26", "Feedback Accuracy", "FAIL")
+                listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "FAIL", "CRITICAL"),
+                listOf("2", "DE 2", "100%", "#0CE922", "Feedback DE 2", "OK", "CRITICAL"),
+                listOf("3", "DE 3", "86%", "#FFC700", "Feedback DE 3", "OK", "CRITICAL"),
+                listOf("4", "DE 4", "56%", "#c80f26", "Feedback DE 4", "FAIL", "CRITICAL")
             )
         )
 
@@ -345,23 +569,23 @@ class GetFeedbackTest {
             getFeedback(FeedbackMode.ByTechnicalArea, null, true)
 
         val expectedFeedback = listOf(
-            root(FeedbackItem("Completeness", null, "Completeness_DE")) {
-                leaf(FeedbackHelpItem("Feedback Completeness"))
+            root(FeedbackItem("DE 1", null, "DE 1_UID")) {
+                leaf(FeedbackHelpItem("Feedback DE 1"))
                 leaf(
                     FeedbackItem(
                         "ART New",
-                        FeedbackItemValue("Partly", "#FFC700", false),
+                        FeedbackItemValue("Partly", "#FFC700", false, true),
                         "ART New UID"
                     )
                 )
 
             },
-            root(FeedbackItem("Accuracy", null, "Accuracy_DE")) {
-                leaf(FeedbackHelpItem("Feedback Accuracy"))
+            root(FeedbackItem("DE 4", null, "DE 4_UID")) {
+                leaf(FeedbackHelpItem("Feedback DE 4"))
                 leaf(
                     FeedbackItem(
                         "ART New",
-                        FeedbackItemValue("56%", "#c80f26", false),
+                        FeedbackItemValue("56%", "#c80f26", false, true),
                         "ART New UID"
                     )
                 )
@@ -377,11 +601,11 @@ class GetFeedbackTest {
     fun `should return only failed by events if by technical area and only failed filter is true and there are DE hierarchy`() {
         givenOneEventWithValues(
             "ART New", listOf(
-                listOf("1", "Completeness", "Partly", "#FFC700", "Feedback Completeness", "OK"),
-                listOf("2", "Timeliness", "100%", "#0CE922", "Feedback Timeliness", "OK"),
-                listOf("1.1", "Completeness 1.1", "86%", "#FFC700", "Feedback 1.1", "FAIL"),
-                listOf("1.2", "Completeness 1.2", "84%", "#c80f26", "Feedback 1.2", "OK"),
-                listOf("1.1.1", "Completeness 1.1.1", "56%", "#c80f26", "Feedback 1.1.1", "OK")
+                listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "OK", "CRITICAL"),
+                listOf("2", "DE 2", "100%", "#0CE922", "Feedback DE 2", "OK", "CRITICAL"),
+                listOf("1.1", "DE 1.1", "86%", "#FFC700", "Feedback DE 1.1", "FAIL", "CRITICAL"),
+                listOf("1.2", "DE 1.2", "84%", "#c80f26", "Feedback DE 1.2", "OK", "CRITICAL"),
+                listOf("1.1.1", "DE 1.1.1", "56%", "#c80f26", "Feedback DE 1.1.1", "OK", "CRITICAL")
             )
         )
 
@@ -390,15 +614,15 @@ class GetFeedbackTest {
 
         val expectedFeedback = listOf(
             root(
-                FeedbackItem("Completeness", null, "Completeness_DE")
+                FeedbackItem("DE 1", null, "DE 1_UID")
             ) {
-                leaf(FeedbackHelpItem("Feedback Completeness"))
-                node(FeedbackItem("Completeness 1.1", null, "Completeness 1.1_DE")) {
-                    leaf(FeedbackHelpItem("Feedback 1.1"))
+                leaf(FeedbackHelpItem("Feedback DE 1"))
+                node(FeedbackItem("DE 1.1", null, "DE 1.1_UID")) {
+                    leaf(FeedbackHelpItem("Feedback DE 1.1"))
                     leaf(
                         FeedbackItem(
                             "ART New",
-                            FeedbackItemValue("86%", "#FFC700", false),
+                            FeedbackItemValue("86%", "#FFC700", false, true),
                             "ART New UID"
                         )
                     )
@@ -481,8 +705,8 @@ class GetFeedbackTest {
 
         val values = valuesData.map {
             Value(
-                "${it[1]}_DE", it[1], it[2], FeedbackOrder(it[0]), it[3], it[4],
-                it[5] != "FAIL", "$stageName UID"
+                "${it[1]}_UID", it[1], it[2], FeedbackOrder(it[0]), it[3], it[4],
+                it[5] != "FAIL", it[6] == "CRITICAL", "$stageName UID"
             )
         }
 

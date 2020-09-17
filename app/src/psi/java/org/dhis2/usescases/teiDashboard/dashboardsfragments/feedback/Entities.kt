@@ -48,6 +48,7 @@ data class Value(
     val colorByLegend: String? = null,
     val feedbackHelp: String? = null,
     val success: Boolean,
+    val critical: Boolean,
     val eventUid: String
 )
 

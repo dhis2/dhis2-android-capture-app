@@ -10,7 +10,7 @@ import org.hisp.dhis.android.core.legendset.Legend
 class ValuesD2Repository(private val d2: D2) : ValuesRepository {
     val dataElements: List<DataElement> = d2.dataElementModule().dataElements().get().blockingGet()
 
-    override fun getByEvent(eventUid: String, compulsoryFilter: Boolean?): List<Value> {
+    override fun getByEvent(eventUid: String): List<Value> {
         val feedbackOrderAttributeCode = "FeedbackOrder"
         val feedbackTextAttributeCode = "FeedbackText"
         val failLegendSuffix = "FAIL"
@@ -22,15 +22,10 @@ class ValuesD2Repository(private val d2: D2) : ValuesRepository {
         val dataElementsWithFeedbackOrder =
             getDataElementsWithFeedbackOrder(dataElements, feedbackOrderAttributeCode)
 
-        val dataElementsFilter =
-            if (compulsoryFilter == null) dataElementsWithFeedbackOrder
-            else getDataElementsWithMandatoryFilter(
-                eventUid,
-                dataElementsWithFeedbackOrder,
-                compulsoryFilter
-            )
+        val dataElementsWithMandatory =
+            getDataElementsWithMandatoryFilter(eventUid, dataElementsWithFeedbackOrder)
 
-        return teiDataValues.filter { dataElementsFilter.contains(it.dataElement()) }
+        return teiDataValues.filter { dataElementsWithFeedbackOrder.contains(it.dataElement()) }
             .map { teiValue ->
                 val dataElement =
                     dataElements.first { it.uid() == teiValue.dataElement() }
@@ -56,6 +51,7 @@ class ValuesD2Repository(private val d2: D2) : ValuesRepository {
                     assignedLegend?.color(),
                     deFeedbackHelp?.value(),
                     assignedLegend?.name()?.split("_")?.last() != failLegendSuffix,
+                    dataElementsWithMandatory.contains(teiValue.dataElement()!!),
                     eventUid
                 )
             }
@@ -79,14 +75,13 @@ class ValuesD2Repository(private val d2: D2) : ValuesRepository {
 
     private fun getDataElementsWithMandatoryFilter(
         eventUid: String,
-        dataElementsWithFeedbackOrder: List<String>,
-        compulsoryFilter: Boolean
+        dataElementsWithFeedbackOrder: List<String>
     ): List<String> {
         val event = d2.eventModule().events().byUid().eq(eventUid)
             .one().blockingGet()
 
         val stageDataElements = d2.programModule().programStageDataElements()
-            .byProgramStage().eq(event.programStage()).byCompulsory().eq(compulsoryFilter)
+            .byProgramStage().eq(event.programStage()).byCompulsory().eq(true)
             .blockingGet()
 
         return stageDataElements.map { programStageDE ->
