@@ -369,9 +369,11 @@ public class FilterManager {
     }
 
     public void clearAssignToMe() {
-        assignedFilter = false;
-        assignedToMeApplied.set(0);
-        filterProcessor.onNext(this);
+        if(assignedFilter) {
+            assignedFilter = false;
+            assignedToMeApplied.set(0);
+            filterProcessor.onNext(this);
+        }
     }
 
     public void clearEnrollmentDate() {

@@ -39,8 +39,6 @@ class EnrollmentDateFilterHolder extends FilterHolder implements CompoundButton.
         super.bind();
         filterIcon.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_calendar_positive));
 
-        setListeners(localBinding.periodLayout);
-
         switch (FilterManager.getInstance().getEnrollmentPeriodIdSelected()) {
             case R.id.today:
                 localBinding.periodLayout.today.setChecked(true);
@@ -80,6 +78,7 @@ class EnrollmentDateFilterHolder extends FilterHolder implements CompoundButton.
             default:
                 localBinding.periodLayout.anytime.setChecked(true);
         }
+        setListeners(localBinding.periodLayout);
     }
 
     private void setListeners(FilterPeriodBinding periodLayout) {
