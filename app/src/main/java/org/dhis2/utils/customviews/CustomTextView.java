@@ -17,6 +17,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
@@ -207,6 +208,11 @@ public class CustomTextView extends FieldLayout {
         editText.setFocusable(editable);
         editText.setFocusableInTouchMode(editable);
         editText.setClickable(editable);
+        editText.setEnabled(editable);
+        editText.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.text_black_DE3)
+        );
 
         if (findViewById(R.id.clear_button) != null) {
             findViewById(R.id.clear_button).setVisibility(editable ? View.VISIBLE : View.GONE);
