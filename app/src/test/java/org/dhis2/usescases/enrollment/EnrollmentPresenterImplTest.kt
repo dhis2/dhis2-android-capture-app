@@ -64,7 +64,8 @@ class EnrollmentPresenterImplTest {
             schedulers,
             formRepository,
             valueStore,
-            analyticsHelper
+            analyticsHelper,
+            "This field is mandatory"
         )
     }
 
