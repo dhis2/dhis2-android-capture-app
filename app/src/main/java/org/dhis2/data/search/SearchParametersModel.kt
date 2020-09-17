@@ -8,7 +8,7 @@ data class SearchParametersModel(
     val trackedEntityType: String,
     val queryData: HashMap<String, String>?
 ) {
-    fun copy() : SearchParametersModel = copy(
+    fun copy(): SearchParametersModel = copy(
         queryData = hashMapOf<String, String>().apply { queryData?.let { putAll(it) } }
     )
 }
