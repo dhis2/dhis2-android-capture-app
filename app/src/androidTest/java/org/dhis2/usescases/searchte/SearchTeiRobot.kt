@@ -29,7 +29,7 @@ class SearchTeiRobot : BaseRobot() {
 
     fun closeSearchForm () {
         onView(withId(R.id.close_filter)).perform(click())
-        waitToDebounce(500)
+        waitToDebounce(1000)
     }
 
     fun clickOnTEI(teiName: String, teiLastName: String) {
