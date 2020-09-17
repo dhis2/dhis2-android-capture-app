@@ -177,9 +177,13 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         if (value != null && value.contains("_os_"))
             value = value.split("_os_")[0];
 
-        inputLayout.setHintAnimationEnabled(false);
+        if (inputLayout != null) {
+            inputLayout.setHintAnimationEnabled(false);
+        }
         editText.setText(value);
-        inputLayout.setHintAnimationEnabled(true);
+        if (inputLayout != null) {
+            inputLayout.setHintAnimationEnabled(true);
+        }
 
         if (delete != null && editText.getText() != null && !editText.getText().toString().isEmpty()) {
             delete.setVisibility(View.VISIBLE);
