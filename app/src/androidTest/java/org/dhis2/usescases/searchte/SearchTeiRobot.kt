@@ -29,10 +29,10 @@ class SearchTeiRobot : BaseRobot() {
 
     fun closeSearchForm () {
         onView(withId(R.id.close_filter)).perform(click())
-        waitToDebounce(1500)
     }
 
     fun clickOnTEI(teiName: String, teiLastName: String) {
+        waitToDebounce(1500)
         onView(withId(R.id.scrollView)).perform(
             scrollTo<SearchTEViewHolder>(allOf(hasDescendant(withText(teiName)), hasDescendant(withText(teiLastName)))),
             actionOnItem<SearchTEViewHolder>(allOf(hasDescendant(withText(teiName)), hasDescendant(withText(teiLastName))), click())
