@@ -48,10 +48,6 @@ public interface DashboardRepository {
 
     boolean setFollowUp(String enrollmentUid);
 
-    Consumer<Pair<String, Boolean>> handleNote();
-
-    Observable<List<TrackedEntityAttributeValue>> mainTrackedEntityAttributes(String teiUid);
-
     Event updateState(Event event, EventStatus newStatus);
 
     Flowable<Enrollment> completeEnrollment(@NonNull String enrollmentUid);

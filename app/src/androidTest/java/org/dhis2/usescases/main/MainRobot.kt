@@ -55,6 +55,11 @@ class MainRobot : BaseRobot() {
         Intents.intended(allOf(IntentMatchers.hasComponent(LoginActivity::class.java.name)))
     }
 
+    fun checkHomeIsDisplayed() {
+        onView(withId(R.id.program_recycler))
+            .check(matches(isDisplayed()))
+    }
+
     fun filterByPeriodToday() {
         onView(withId(R.id.filter)).perform(click())
         onView(withId(R.id.filterLayout))

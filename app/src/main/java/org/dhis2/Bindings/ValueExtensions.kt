@@ -132,14 +132,12 @@ fun String?.withValueTypeCheck(valueType: ValueType?): String? {
     return this?.let {
         if (isEmpty()) return this
         when (valueType) {
-            ValueType.UNIT_INTERVAL,
             ValueType.PERCENTAGE,
             ValueType.INTEGER,
             ValueType.INTEGER_POSITIVE,
             ValueType.INTEGER_NEGATIVE,
-            ValueType.INTEGER_ZERO_OR_POSITIVE -> {
-                it.toFloat().toInt().toString()
-            }
+            ValueType.INTEGER_ZERO_OR_POSITIVE -> it.toFloat().toInt().toString()
+            ValueType.UNIT_INTERVAL -> it.toFloat().toString()
             else -> this
         }
     } ?: this
