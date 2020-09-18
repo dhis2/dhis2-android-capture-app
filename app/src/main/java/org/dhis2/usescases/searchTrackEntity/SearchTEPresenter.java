@@ -83,6 +83,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SEARCH_TEI;
 
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
+    private static final Program ALL_PERSONS = null;
     private static final int MAX_NO_SELECTED_PROGRAM_RESULTS = 5;
     private final SearchRepository searchRepository;
     private final D2 d2;
@@ -158,11 +159,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     Collections.sort(programs, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
                                     if (selectedProgram != null) {
                                         setProgram(selectedProgram);
-                                        view.setPrograms(programs);
                                     } else {
-                                        setProgram(null);
-                                        view.setPrograms(programs);
+                                        setProgram(ALL_PERSONS);
                                     }
+                                    view.setPrograms(programs);
                                 }, Timber::d
                         ));
 
@@ -186,8 +186,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         return searchRepository.programAttributes(selectedProgram.uid())
                                 .map(data -> Pair.create(data.getTrackedEntityAttributes(), data.getRendering()));
                 })
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         data -> {
                             if (data.val0().isEmpty()) {
@@ -199,7 +197,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
 
         compositeDisposable.add(view.rowActionss()
-                .subscribeOn(schedulerProvider.io())
+                .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(data -> {
                             Map<String, String> queryDataBU = new HashMap<>(queryData);
@@ -243,12 +241,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         compositeDisposable.add(
                 updaterFlowable
-                        .doOnEach(element -> {
-                            Timber.d("Listing update %s", element.getValue());
-                        })
+                        .observeOn(schedulerProvider.io())
                         .map(data -> view.isMapVisible())
                         .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 isMapVisible -> {
                                     view.showFilterProgress();
@@ -264,6 +259,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         compositeDisposable.add(
                 listDataProcessor
+                        .doOnEach(element -> Timber.d("listDataProcessor %s", element.getValue()))
                         .switchMap(map -> {
                             CountingIdlingResourceSingleton.INSTANCE.increment();
                             return Flowable.just(searchRepository.searchTrackedEntities(
@@ -315,7 +311,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         compositeDisposable.add(
                 queryProcessor
                         .startWith(queryData)
-                        .subscribeOn(schedulerProvider.io())
+                        .subscribeOn(schedulerProvider.ui())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(data -> view.clearData(), Timber::d)
         );
@@ -452,7 +448,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void setProgram(Program programSelected) {
-        if (programSelected == selectedProgram) return;
+        if (programSelected != ALL_PERSONS){
+            String previousProgramUid = selectedProgram.uid();
+            String currentProgramUid = programSelected.uid();
+            if (isPreviousAndCurrentProgramTheSame(programSelected,
+                    previousProgramUid,
+                    currentProgramUid))
+                return;
+        }
 
         boolean otherProgramSelected;
         if (programSelected == null) {
@@ -471,14 +474,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             preferences.removeValue(Preference.CURRENT_ORG_UNIT);
             queryData.clear();
         }
-
-        if (queryData.isEmpty()) {
-            queryProcessor.onNext(new HashMap<>());
-        } else {
-            queryProcessor.onNext(queryData);
-        }
-
         initAssignmentFilter();
+    }
+
+    private boolean isPreviousAndCurrentProgramTheSame(Program programSelected, String previousProgramUid, String currentProgramUid) {
+        return previousProgramUid != null && previousProgramUid.equals(currentProgramUid) ||
+                programSelected == selectedProgram;
     }
 
     @Override
@@ -488,9 +489,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         currentProgram.onNext(selectedProgram != null ? selectedProgram.uid() : "");
         queryProcessor.onNext(new HashMap<>());
     }
-
-
-    //endregion
 
     @Override
     public void onBackClick() {
@@ -962,6 +960,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @RestrictTo(RestrictTo.Scope.TESTS)
+    @Override
     public void setProgramForTesting(Program program) {
         selectedProgram = program;
     }

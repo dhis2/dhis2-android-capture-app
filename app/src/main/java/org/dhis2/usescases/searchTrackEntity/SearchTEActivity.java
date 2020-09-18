@@ -516,14 +516,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.scrollView.setVisibility(View.VISIBLE);
                     relationshipLiveAdapter.submitList(data.val0());
                     binding.progressLayout.setVisibility(View.GONE);
-                    CountingIdlingResourceSingleton.INSTANCE.decrement();
                 } else {
                     binding.progressLayout.setVisibility(View.GONE);
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
                     binding.scrollView.setVisibility(View.GONE);
-                    CountingIdlingResourceSingleton.INSTANCE.decrement();
                 }
+                CountingIdlingResourceSingleton.INSTANCE.decrement();
                 if (!presenter.getQueryData().isEmpty() && data.val2())
                     setFabIcon(false);
             });
