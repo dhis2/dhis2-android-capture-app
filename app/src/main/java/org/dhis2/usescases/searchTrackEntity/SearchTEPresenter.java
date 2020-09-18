@@ -490,7 +490,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void onClearClick() {
         queryData.clear();
         view.setFabIcon(true);
-        currentProgram.onNext(selectedProgram.uid());
+        currentProgram.onNext(selectedProgram != null ? selectedProgram.uid() : "");
         queryProcessor.onNext(new HashMap<>());
     }
 
