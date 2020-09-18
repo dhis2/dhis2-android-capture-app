@@ -57,7 +57,8 @@ class EnrollmentPresenterImpl(
     private val schedulerProvider: SchedulerProvider,
     val formRepository: EnrollmentFormRepository,
     private val valueStore: ValueStore,
-    private val analyticsHelper: AnalyticsHelper
+    private val analyticsHelper: AnalyticsHelper,
+    private val mandatoryWarning: String
 ) : RulesActionCallbacks {
 
     private val disposable = CompositeDisposable()
@@ -314,7 +315,9 @@ class EnrollmentPresenterImpl(
                 }
                 if (field.mandatory() && field.value().isNullOrEmpty()) {
                     mandatoryFields[field.label()] = field.programStageSection() ?: section
-                    iterator.set(field.withWarning("This field is mandatory"))
+                    if (showErrors.first) {
+                        iterator.set(field.withWarning(mandatoryWarning))
+                    }
                 }
             }
 
@@ -323,9 +326,7 @@ class EnrollmentPresenterImpl(
             }
         }
         val sections = finalList.filterIsInstance<SectionViewModel>()
-        if (mandatoryFields.isNotEmpty()) {
-            showErrors = Pair(true, showErrors.second)
-        }
+
         sections.takeIf { showErrors.first || showErrors.second }?.forEach { section ->
             var errors = 0
             var warnings = 0
