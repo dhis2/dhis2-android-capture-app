@@ -29,7 +29,7 @@ class SearchTeiRobot : BaseRobot() {
 
     fun closeSearchForm () {
         onView(withId(R.id.close_filter)).perform(click())
-        waitToDebounce(1500)
+        waitToDebounce(1000)
     }
 
     fun clickOnTEI(teiName: String, teiLastName: String) {
@@ -46,6 +46,7 @@ class SearchTeiRobot : BaseRobot() {
     }
 
     fun searchByPosition(searchWord: String, position:Int) {
+        waitToDebounce(1000)
         onView(withId(R.id.form_recycler))
             .perform(
                 actionOnItemAtPosition<SearchTEViewHolder>(position, typeChildViewWithId(searchWord, R.id.input_editText))
