@@ -28,7 +28,7 @@ fun searchTeiRobot(searchTeiRobot: SearchTeiRobot.() -> Unit) {
 class SearchTeiRobot : BaseRobot() {
 
     fun closeSearchForm () {
-        waitToDebounce(2000)
+        waitToDebounce(2500)
         onView(withId(R.id.close_filter)).perform(click())
     }
 
