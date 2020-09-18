@@ -123,7 +123,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         liveAdapter = new ProgramEventDetailLiveAdapter(presenter.getProgram(),presenter);
         binding.recycler.setAdapter(liveAdapter);
-        binding.recycler.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.EVENT);
         filtersAdapter.addEventStatus();

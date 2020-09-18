@@ -130,7 +130,9 @@ class TeiDataRepositoryImpl(
                         )
                     )
                     if (selectedStage != null && selectedStage == programStage.uid()) {
-                        checkEventStatus(eventList).forEach { event ->
+                        checkEventStatus(eventList).forEachIndexed { index, event ->
+                            val showTopShadow = index == 0
+                            val showBottomShadow = index == eventList.size - 1
                             eventViewModels.add(
                                 EventViewModel(
                                     EventViewModelType.EVENT,
@@ -148,7 +150,9 @@ class TeiDataRepositoryImpl(
                                         event.uid(),
                                         programStage.uid()
                                     ),
-                                    groupedByStage = true
+                                    groupedByStage = true,
+                                    showTopShadow = showTopShadow,
+                                    showBottomShadow = showBottomShadow
                                 )
                             )
                         }
@@ -171,10 +175,12 @@ class TeiDataRepositoryImpl(
             .byDeleted().isFalse
             .get()
             .map { eventList ->
-                checkEventStatus(eventList).forEach { event ->
+                checkEventStatus(eventList).forEachIndexed { index, event ->
                     val stageUid = d2.programModule().programStages()
                         .uid(event.programStage())
                         .blockingGet()
+                    val showTopShadow = index == 0
+                    val showBottomShadow = index == eventList.size - 1
                     eventViewModels.add(
                         EventViewModel(
                             EventViewModelType.EVENT,

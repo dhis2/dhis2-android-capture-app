@@ -683,6 +683,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                             null,
                             null,
                             false,
+                            false,
+                            false,
                             false
                     ));
         }
@@ -714,7 +716,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .uid(event.organisationUnit())
                 .blockingGet();
 
-        return new EventViewModel(EventViewModelType.EVENT, stage, event, 0, null, true, true, organisationUnit.displayName(), null, null, false, false);
+        return new EventViewModel(EventViewModelType.EVENT, stage, event, 0, null, true, true, organisationUnit.displayName(), null, null, false, false, false, false);
     }
 
     private List<TrackedEntityInstance> filterDeleted(List<TrackedEntityInstance> teis) {
