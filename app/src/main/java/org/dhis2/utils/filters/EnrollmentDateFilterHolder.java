@@ -167,7 +167,7 @@ class EnrollmentDateFilterHolder extends FilterHolder implements CompoundButton.
                     periodList.add(DatePeriod.builder().startDate(dates[0]).endDate(dates[1]).build());
                     FilterManager.getInstance().addEnrollmentPeriod(periodList);
                 } else
-                    FilterManager.getInstance().addEnrollmentPeriod(null);
+                    FilterManager.getInstance().addEnrollmentPeriod(Collections.emptyList());
             }
 
             if (id != FilterManager.getInstance().getEnrollmentPeriodIdSelected()) {

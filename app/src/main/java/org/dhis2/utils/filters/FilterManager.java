@@ -13,15 +13,17 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import kotlin.Pair;
 
-public class FilterManager {
+public class FilterManager implements Serializable {
 
     public static final int OU_TREE = 1986;
 
@@ -109,6 +111,32 @@ public class FilterManager {
         ouTreeProcessor = PublishProcessor.create();
         periodRequestProcessor = PublishProcessor.create();
         catOptComboRequestProcessor = PublishProcessor.create();
+    }
+
+    public FilterManager copy() {
+        FilterManager copy = new FilterManager();
+        copy.ouFilters = getOrgUnitFilters();
+        copy.stateFilters = getStateFilters();
+        copy.periodFilters = getPeriodFilters();
+        copy.enrollmentPeriodFilters = getEnrollmentPeriodFilters();
+        copy.catOptComboFilters = getCatOptComboFilters();
+        copy.eventStatusFilters = getEventStatusFilters();
+        copy.enrollmentStatusFilters = getEnrollmentStatusFilters();
+        copy.assignedFilter = getAssignedFilter();
+        copy.sortingItem = getSortingItem();
+        return copy;
+    }
+
+    public boolean sameFilters(FilterManager filterManager) {
+        return Objects.equals(filterManager.ouFilters, this.ouFilters) &&
+                Objects.equals(filterManager.stateFilters, this.stateFilters) &&
+                Objects.equals(filterManager.periodFilters, this.periodFilters) &&
+                Objects.equals(filterManager.enrollmentPeriodFilters, this.enrollmentPeriodFilters) &&
+                Objects.equals(filterManager.catOptComboFilters, this.catOptComboFilters) &&
+                Objects.equals(filterManager.eventStatusFilters, this.eventStatusFilters) &&
+                Objects.equals(filterManager.enrollmentStatusFilters, this.enrollmentStatusFilters) &&
+                filterManager.assignedFilter == this.assignedFilter &&
+                Objects.equals(filterManager.sortingItem, this.sortingItem);
     }
 
     public void setPeriodIdSelected(int selected) {

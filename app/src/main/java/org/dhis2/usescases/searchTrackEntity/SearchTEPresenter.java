@@ -21,6 +21,7 @@ import org.dhis2.R;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.data.tuples.Trio;
@@ -266,14 +267,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .switchMap(map -> {
                             CountingIdlingResourceSingleton.INSTANCE.increment();
                             return Flowable.just(searchRepository.searchTrackedEntities(
-                                    selectedProgram,
-                                    trackedEntityType,
-                                    FilterManager.getInstance().getOrgUnitUidsFilters(),
-                                    FilterManager.getInstance().getStateFilters(),
-                                    FilterManager.getInstance().getEventStatusFilters(),
-                                    queryData,
-                                    FilterManager.getInstance().getSortingItem(),
-                                    FilterManager.getInstance().getAssignedFilter(),
+                                    new SearchParametersModel(
+                                            selectedProgram,
+                                            trackedEntityType,
+                                            queryData
+                                    ),
                                     NetworkUtils.isOnline(view.getContext())));
                         })
                         .doOnError(this::handleError)
@@ -286,14 +284,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 mapDataProcessor
                         .switchMap(unit ->
                                 searchRepository.searchTeiForMap(
-                                        selectedProgram,
-                                        trackedEntityType,
-                                        FilterManager.getInstance().getOrgUnitUidsFilters(),
-                                        FilterManager.getInstance().getStateFilters(),
-                                        FilterManager.getInstance().getEventStatusFilters(),
-                                        queryData,
-                                        FilterManager.getInstance().getSortingItem(),
-                                        FilterManager.getInstance().getAssignedFilter(),
+                                        new SearchParametersModel(
+                                                selectedProgram,
+                                                trackedEntityType,
+                                                queryData
+                                        ),
                                         NetworkUtils.isOnline(view.getContext())))
                         .map(teis -> new kotlin.Pair<>(teis, searchRepository.getEventsForMap(teis)))
                         .map(teis -> {
