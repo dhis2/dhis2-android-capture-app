@@ -349,7 +349,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                         String error = "";
                         for (TrackerImportConflict conflict: conflicts) {
-                            if (conflict.event().equals(eventUid) && conflict.dataElement().equals(de.uid())) {
+                            if (conflict.event()!=null && conflict.event().equals(eventUid) &&
+                                    conflict.dataElement() != null && conflict.dataElement().equals(de.uid())) {
                                 if (conflict.value().equals(dataValue)) {
                                     error = conflict.displayDescription();
                                 }

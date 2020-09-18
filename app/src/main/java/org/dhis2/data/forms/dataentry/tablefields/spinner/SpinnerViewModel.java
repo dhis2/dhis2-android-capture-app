@@ -49,7 +49,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
    @NonNull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_SpinnerViewModel(uid(),label(),mandatory(),data,programStageSection(),allowFutureDate(),editable(),warning(),error(),description(),dataElement(),listCategoryOption(),storeBy(), row(), column(),categoryOptionCombo(), catCombo(),hint(),optionSet());
+        return new AutoValue_SpinnerViewModel(uid(),label(),mandatory(),data,programStageSection(),allowFutureDate(),false,warning(),error(),description(),dataElement(),listCategoryOption(),storeBy(), row(), column(),categoryOptionCombo(), catCombo(),hint(),optionSet());
     }
 
     public void setOptionsToHide(List<String> optionsToHide, List<String> optionsGroupsToHide) {

@@ -9,6 +9,7 @@ import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentManager;
@@ -55,6 +56,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
     }
 
     public void setLayoutData(boolean isBgTransparent, String renderType) {
+        this.isBgTransparent = isBgTransparent;
         if (isBgTransparent)
             binding = CustomTextViewBinding.inflate(inflater, this, true);
         else
@@ -114,10 +116,12 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
         editText.setEnabled(isEditable);
         editText.setFocusable(false);
         editText.setClickable(isEditable);
-
+        editText.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.text_black_DE3)
+        );
         setEditable(isEditable,
                 findViewById(R.id.label),
-                editText,
                 inputLayout,
                 descriptionLabel);
     }
@@ -157,7 +161,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
     }
 
     public void setDescription(String description) {
-        descriptionLabel.setVisibility(label.length() > 16 || description != null ? View.VISIBLE : View.GONE);
+        descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
     }
 
     @Override

@@ -69,7 +69,7 @@ public class OrgUnitHolder extends FormViewHolder {
             label.append("*");
         this.inputLayout.setHint(label.toString());
 
-        if (label.length() > 16 || viewModel.description() != null)
+        if (viewModel.description() != null)
             description.setVisibility(View.VISIBLE);
         else
             description.setVisibility(View.GONE);

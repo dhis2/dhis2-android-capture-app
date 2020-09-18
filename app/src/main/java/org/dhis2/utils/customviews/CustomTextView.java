@@ -17,6 +17,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
@@ -110,7 +111,7 @@ public class CustomTextView extends FieldLayout {
     }
 
     public void setDescription(String description) {
-        descriptionLabel.setVisibility(label.length() > 16 || description != null ? View.VISIBLE : View.GONE);
+        descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
     }
 
     private void configureViews() {
@@ -123,14 +124,10 @@ public class CustomTextView extends FieldLayout {
             switch (valueType) {
                 case PHONE_NUMBER:
                     editText.setInputType(InputType.TYPE_CLASS_PHONE);
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_number);
                     break;
                 case EMAIL:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT |
                             InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_email);
                     break;
                 case TEXT:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -163,32 +160,22 @@ public class CustomTextView extends FieldLayout {
                                     return source;
                                 return "";
                             }});
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_letter);
                     break;
                 case NUMBER:
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER |
                             InputType.TYPE_NUMBER_FLAG_DECIMAL |
                             InputType.TYPE_NUMBER_FLAG_SIGNED);
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_number);
                     break;
                 case INTEGER_NEGATIVE:
                 case INTEGER:
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_number);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
                     break;
                 case INTEGER_ZERO_OR_POSITIVE:
                 case INTEGER_POSITIVE:
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_number);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                     editText.setKeyListener(DigitsKeyListener.getInstance(false, false));
                     break;
                 case UNIT_INTERVAL:
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_number);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                     break;
                 case PERCENTAGE:
@@ -197,8 +184,6 @@ public class CustomTextView extends FieldLayout {
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                     break;
                 case URL:
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_i_url);
                     editText.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);
                     break;
                 default:
@@ -224,9 +209,17 @@ public class CustomTextView extends FieldLayout {
         editText.setFocusableInTouchMode(editable);
         editText.setClickable(editable);
         editText.setEnabled(editable);
+        editText.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.text_black_DE3)
+        );
+
+        if (findViewById(R.id.clear_button) != null) {
+            findViewById(R.id.clear_button).setVisibility(editable ? View.VISIBLE : View.GONE);
+        }
 
         setEditable(editable, labelText,
-                inputLayout, editText, descIcon, descriptionLabel, findViewById(R.id.clear_button));
+                inputLayout, descIcon, descriptionLabel, findViewById(R.id.clear_button));
     }
 
     public void setWarning(String warning, String error) {
