@@ -24,7 +24,7 @@ Specifications for mobile devices to use the new DHIS 2 Capture Android App depl
 <td>**Brand**</td>
 <td colspan="3">If you are going to be responsible for managing a lot of devices, it is easier to stick to one brand</td>
 </tr>
-<tr>
+<tr>jaboto-patch-1
 <td>**OS**</td>
 <td colspan="2"> 
 Minimum Supported: Android 4.4 (not recommended) <br />
@@ -110,3 +110,7 @@ External USB 3G/4G dongle or Wifi hotspot <br />
 </tr>
 </tbody>
 </table>
+
+> **Note**
+> 
+> Please note that currently the DHIS2 Mobile application relies on some (Google Play Services)[https://developers.google.com/android/guides/overview] and therefore will not work on devices not running this service. This is common in late Huawei phones and AOSP devices. 
