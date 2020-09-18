@@ -24,7 +24,7 @@ Specifications for mobile devices to use the new DHIS 2 Capture Android App depl
 <td>**Brand**</td>
 <td colspan="3">If you are going to be responsible for managing a lot of devices, it is easier to stick to one brand</td>
 </tr>
-<tr>jaboto-patch-1
+<tr>
 <td>**OS**</td>
 <td colspan="2"> 
 Minimum Supported: Android 4.4 (not recommended) <br />
