@@ -31,19 +31,6 @@ sealed class TreeNode<T>(val content: T) {
                 return internalChildren.toList()
             }
 
-        fun node(content: N, initialize: (Node<N>.() -> Unit)? = null) {
-            val child = Node(content)
-
-            addChild(child)
-            if (initialize != null) {
-                child.initialize()
-            }
-        }
-
-        fun <L> leaf(content: L) {
-            addChild(Leaf(content))
-        }
-
         fun addChild(node: TreeNode<*>, index: Int = internalChildren.size) {
             internalChildren.add(index, node)
             node.parent = this
@@ -70,12 +57,4 @@ sealed class TreeNode<T>(val content: T) {
     }
 
     data class Leaf<L>(private val leafContent: L) : TreeNode<L>(leafContent)
-}
-
-fun <N> root(content: N, initialize: (TreeNode.Node<N>.() -> Unit)? = null): TreeNode.Node<N> {
-    val node = TreeNode.Node(content)
-    if (initialize != null) {
-        node.initialize()
-    }
-    return node
 }
