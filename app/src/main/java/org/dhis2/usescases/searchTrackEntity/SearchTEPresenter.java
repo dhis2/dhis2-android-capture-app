@@ -83,7 +83,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SEARCH_TEI;
 
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
-    private static final Program ALL_PERSONS = null;
+    private static final Program ALL_TE_TYPES = null;
     private static final int MAX_NO_SELECTED_PROGRAM_RESULTS = 5;
     private final SearchRepository searchRepository;
     private final D2 d2;
@@ -160,7 +160,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     if (selectedProgram != null) {
                                         setProgram(selectedProgram);
                                     } else {
-                                        setProgram(ALL_PERSONS);
+                                        setProgram(ALL_TE_TYPES);
                                     }
                                     view.setPrograms(programs);
                                 }, Timber::d
@@ -447,25 +447,25 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //endregion
 
     @Override
-    public void setProgram(Program programSelected) {
-        if (programSelected != ALL_PERSONS){
-            String previousProgramUid = selectedProgram.uid();
-            String currentProgramUid = programSelected.uid();
-            if (isPreviousAndCurrentProgramTheSame(programSelected,
+    public void setProgram(Program newProgramSelected) {
+        if (newProgramSelected != ALL_TE_TYPES) {
+            String previousProgramUid = selectedProgram != null ? selectedProgram.uid() : "";
+            String currentProgramUid = newProgramSelected.uid();
+            if (isPreviousAndCurrentProgramTheSame(newProgramSelected,
                     previousProgramUid,
                     currentProgramUid))
                 return;
         }
 
         boolean otherProgramSelected;
-        if (programSelected == null) {
+        if (newProgramSelected == null) {
             otherProgramSelected = selectedProgram != null;
         } else {
-            otherProgramSelected = !programSelected.equals(selectedProgram);
+            otherProgramSelected = !newProgramSelected.equals(selectedProgram);
         }
-        selectedProgram = programSelected;
-        currentProgram.onNext(programSelected != null ? programSelected.uid() : "");
-        view.clearList(programSelected == null ? null : programSelected.uid());
+        selectedProgram = newProgramSelected;
+        currentProgram.onNext(newProgramSelected != null ? newProgramSelected.uid() : "");
+        view.clearList(newProgramSelected == null ? null : newProgramSelected.uid());
         view.clearData();
         view.setFabIcon(true);
         showList = true;

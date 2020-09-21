@@ -384,7 +384,8 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-   @Test
+    @Ignore
+    @Test
     fun shouldDeleteEnrollmentSuccessfully() {
         val teiName = "Anna"
         val teiLastName = "Jones"
