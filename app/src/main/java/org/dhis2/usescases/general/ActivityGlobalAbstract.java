@@ -157,7 +157,10 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     }
 
     private void shouldCheckPIN() {
-        if (!comesFromImageSource) {
+        if (comesFromImageSource) {
+            ExtensionsKt.app(this).disableBackGroundFlag();
+            comesFromImageSource = false;
+        } else {
             if (ExtensionsKt.app(this).isSessionBlocked() && !(this instanceof SplashActivity)) {
                 if (getPinDialog() == null) {
                     initPinDialog();
@@ -165,7 +168,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
                 }
             }
         }
-        comesFromImageSource = false;
     }
 
     @Override
