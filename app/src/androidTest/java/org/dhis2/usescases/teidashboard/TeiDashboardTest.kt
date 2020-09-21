@@ -15,6 +15,7 @@ import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.relationshipRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -323,6 +324,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    @Ignore
     @Test
     fun shouldSuccessfullyCreateRelationshipWhenClickAdd() {
         val teiName = "Tim"
@@ -358,6 +360,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    @Ignore
     @Test
     fun shouldDeleteTeiSuccessfully() {
         val teiName = "Anthony"
@@ -381,7 +384,8 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-   @Test
+    @Ignore
+    @Test
     fun shouldDeleteEnrollmentSuccessfully() {
         val teiName = "Anna"
         val teiLastName = "Jones"
