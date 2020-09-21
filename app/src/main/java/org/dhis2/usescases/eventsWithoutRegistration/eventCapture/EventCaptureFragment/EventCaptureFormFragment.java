@@ -165,8 +165,9 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         binding.formRecycler.addItemDecoration(
                 new StickyHeaderItemDecoration(binding.formRecycler,
                         false, itemPosition -> itemPosition >= 0 &&
-                                itemPosition < dataEntryAdapter.getItemCount() &&
-                                dataEntryAdapter.getItemViewType(itemPosition) == dataEntryAdapter.sectionViewType()
+                        itemPosition < dataEntryAdapter.getItemCount() &&
+                        dataEntryAdapter.getItemViewType(itemPosition) == dataEntryAdapter.sectionViewType() &&
+                        dataEntryAdapter.getSectionSize() > 1
                 )
         );
         binding.formRecycler.setAdapter(dataEntryAdapter);
