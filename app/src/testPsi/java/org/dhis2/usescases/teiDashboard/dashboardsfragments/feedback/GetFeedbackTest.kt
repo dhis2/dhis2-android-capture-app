@@ -351,7 +351,7 @@ class GetFeedbackTest {
             "ART New", listOf(
                 listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "OK", "NON CRITICAL"),
                 listOf("2", "DE 2", "100%", "#0CE922", "Feedback DE 2", "OK", "NON CRITICAL"),
-                listOf("1.1", "DE 1.1", "86%", "#FFC700", "Feedback DE 1.1", "FAIL", "NON CRITICAL"),
+                listOf("1.1", "DE 1.1", "86%", "#FFC700", "Feedback 1.1", "FAIL", "NON CRITICAL"),
                 listOf("1.2", "DE 1.2", "84%", "#c80f26", "Feedback DE 1.2", "OK", "NON CRITICAL"),
                 listOf("1.1.1", "DE 1.1.1", "56%", "#c80", "Feedback DE 1.1.1", "FAIL", "CRITICAL")
             )
@@ -376,7 +376,7 @@ class GetFeedbackTest {
                             "DE 1.1_UID"
                         )
                     ) {
-                        leaf(FeedbackHelpItem("Feedback DE 1.1"))
+                        leaf(FeedbackHelpItem("Feedback 1.1"))
                         node(
                             FeedbackItem(
                                 "DE 1.1.1", FeedbackItemValue("56%", "#c80", false, true),
@@ -403,7 +403,7 @@ class GetFeedbackTest {
                 listOf("2", "DE 2", "100%", "#0CE922", "Feedback DE 2", "OK", "CRITICAL"),
                 listOf("1.1", "DE 1.1", "86%", "#FFC700", "Feedback DE 1.1", "FAIL", "CRITICAL"),
                 listOf("1.2", "DE 1.2", "84%", "#c80f26", "Feedback DE 1.2", "OK", "CRITICAL"),
-                listOf("1.1.1", "DE 1.1.1", "56%", "#c80", "Feedback DE 1.1.1", "FAIL", "NON CRITICAL")
+                listOf("1.1.1", "DE 1.1.1", "56%", "#c80", "Feedback 1.1.1", "FAIL", "NON CRITICAL")
             )
         )
 
@@ -433,7 +433,7 @@ class GetFeedbackTest {
                                 "DE 1.1.1_UID"
                             )
                         ) {
-                            leaf(FeedbackHelpItem("Feedback DE 1.1.1"))
+                            leaf(FeedbackHelpItem("Feedback 1.1.1"))
                         }
                     }
                 }

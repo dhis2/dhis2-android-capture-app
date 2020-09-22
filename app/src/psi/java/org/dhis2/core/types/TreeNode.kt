@@ -1,30 +1,12 @@
 package org.dhis2.core.types
 
 sealed class TreeNode<T>(val content: T) {
-    protected var parent: TreeNode<*>? = null
-
-    val level: Int
-        get() {
-            return if (parent == null) {
-                0
-            } else {
-                val parentLevel = parent!!.level
-                parentLevel + 1
-            }
-        }
-
     class Node<N>(
         private val nodeContent: N,
         initialChildren: List<TreeNode<*>> = mutableListOf(),
         var expanded: Boolean = false
     ) : TreeNode<N>(nodeContent) {
         private val internalChildren: MutableList<TreeNode<*>> = initialChildren.toMutableList()
-
-        init {
-            children.forEach {
-                it.parent = this
-            }
-        }
 
         val children: List<TreeNode<*>>
             get() {
@@ -33,7 +15,6 @@ sealed class TreeNode<T>(val content: T) {
 
         fun addChild(node: TreeNode<*>, index: Int = internalChildren.size) {
             internalChildren.add(index, node)
-            node.parent = this
         }
 
         override fun equals(other: Any?): Boolean {

@@ -12,17 +12,19 @@ class TreeAdapter(
     RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
 
     private var displayNodes: MutableList<TreeNode<*>> = mutableListOf()
+    private var levelByNodes = HashMap<TreeNode<*>, Int>()
 
     init {
         findDisplayNodes(nodes)
     }
 
-    private fun findDisplayNodes(nodes: List<TreeNode<*>>) {
+    private fun findDisplayNodes(nodes: List<TreeNode<*>>, level: Int = 0) {
         for (node in nodes) {
             displayNodes.add(node)
+            levelByNodes[node] = level
 
             if (node is TreeNode.Node && node.expanded) {
-                findDisplayNodes(node.children)
+                findDisplayNodes(node.children, level + 1)
             }
         }
     }
@@ -67,8 +69,9 @@ class TreeAdapter(
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         val node = displayNodes[position]
+        val level = levelByNodes[node] ?: 0
 
-        viewHolder.itemView.setPadding(node.level * 25, 0, 0, 0)
+        viewHolder.itemView.setPadding(level * 25, 0, 0, 0)
 
         binders.first() {
             it.contentJavaClass == node.content!!::class.java
