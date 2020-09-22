@@ -60,6 +60,7 @@ class GetFeedback(
         criticalFilter: Boolean?,
         onlyFailed: Boolean
     ): List<TreeNode.Node<FeedbackItem>> {
+
         val feedbackByEvent = teiEvents.map { event ->
             val children = mapToTreeNodes(event.values)
 
@@ -81,9 +82,7 @@ class GetFeedback(
     ): List<TreeNode.Node<FeedbackItem>> {
 
         val distinctValues = teiEvents.flatMap { it.values }.distinctBy { it.dataElement }
-        val feedbackByTechnicalArea = mapToTreeNodes(distinctValues, false)
-
-        addEventsToDE(feedbackByTechnicalArea, teiEvents)
+        val feedbackByTechnicalArea = mapToTreeNodes(distinctValues, teiEvents)
 
         val filteredFeedbackByTechnicalArea =
             filterFeedback(null, onlyFailed, feedbackByTechnicalArea)
@@ -145,72 +144,72 @@ class GetFeedback(
 
     private fun mapToTreeNodes(
         values: List<Value>,
-        withValue: Boolean = true
+        eventsToLeaf: List<Event> = listOf()
     ): List<TreeNode.Node<FeedbackItem>> {
-        val treeNodes = mutableListOf<TreeNode.Node<FeedbackItem>>()
+        val treeNodesByParent = HashMap<String, MutableList<TreeNode.Node<FeedbackItem>>>()
+        val topTreeNodes = mutableListOf<TreeNode.Node<FeedbackItem>>()
 
-        val nodesMap = values.associate { it.feedbackOrder.value to mapToTreeNode(it, withValue) }
+        values.sortedWith(compareByDescending<Value> { it.feedbackOrder.level }.thenBy { it.feedbackOrder })
+            .forEach { eventValue ->
+                val eventsLeafByValue = createEventsLeafByValue(eventValue, eventsToLeaf)
 
-        values.sortedBy { it.feedbackOrder }.forEach { eventValue ->
-            val currentNode = nodesMap[eventValue.feedbackOrder.value]!!
+                val children =
+                    treeNodesByParent[eventValue.feedbackOrder.value] ?: listOf<TreeNode<*>>()
 
-            if (eventValue.feedbackOrder.parent == null) {
-                treeNodes.add(currentNode)
-            } else {
-                val currentParent = nodesMap[eventValue.feedbackOrder.parent]
-
-                if (currentParent == null) {
-                    throw IllegalStateException("The data element with order ${eventValue.feedbackOrder.value} has not parent")
-                } else {
-                    currentParent.addChild(currentNode)
-                }
-            }
-        }
-
-        return treeNodes
-    }
-
-    private fun addEventsToDE(
-        treeNodes: List<TreeNode<FeedbackItem>>,
-        events: List<Event>
-    ) {
-        treeNodes.forEach { treeNode ->
-            if (treeNode is TreeNode.Node) {
-                events.filter { event ->
-                    event.values.any { it.dataElement == treeNode.content.code }
-                }.map { event ->
-                    val eventValue = event.values.first { it.dataElement == treeNode.content.code }
-
-                    FeedbackItem(
-                        event.name,
-                        FeedbackItemValue(
-                            eventValue.value,
-                            eventValue.colorByLegend,
-                            eventValue.success,
-                            eventValue.critical
-                        ),
-                        event.uid
+                val currentNode =
+                    mapValueToTreeNode(
+                        eventValue,
+                        eventsToLeaf.isEmpty(),
+                        eventsLeafByValue + children
                     )
-                }.forEach {
-                    val index =
-                        if (treeNode.children.isNotEmpty() && treeNode.children[0] is TreeNode.Leaf) 1
-                        else 0
 
-                    treeNode.addChild(TreeNode.Leaf(it), index)
+                if (eventValue.feedbackOrder.parent == null) {
+                    topTreeNodes.add(currentNode)
+                } else {
+
+                    if (treeNodesByParent.containsKey(eventValue.feedbackOrder.parent)) {
+                        treeNodesByParent[eventValue.feedbackOrder.parent]?.add(currentNode)
+                    } else {
+                        treeNodesByParent[eventValue.feedbackOrder.parent] =
+                            mutableListOf(currentNode)
+                    }
                 }
-
-                addEventsToDE(
-                    treeNode.children as List<TreeNode<FeedbackItem>>,
-                    events
-                )
             }
+
+        return topTreeNodes
+    }
+
+    private fun createEventsLeafByValue(eventValue: Value, eventsToLeaf: List<Event>)
+        : List<TreeNode.Leaf<FeedbackItem>> {
+        return eventsToLeaf.filter { event ->
+            event.values.any { it.dataElement == eventValue.dataElement }
+        }.map { event ->
+            val eventValue = event.values.first { it.dataElement == eventValue.dataElement }
+
+            TreeNode.Leaf(
+                FeedbackItem(
+                    event.name,
+                    FeedbackItemValue(
+                        eventValue.value,
+                        eventValue.colorByLegend,
+                        eventValue.success,
+                        eventValue.critical
+                    ),
+                    event.uid
+                )
+            )
         }
     }
 
-    private fun mapToTreeNode(
+    private fun mapValueToTreeNode(
         eventValue: Value,
-        withValue: Boolean = true
+        withValue: Boolean,
+        children: List<TreeNode<*>>
     ): TreeNode.Node<FeedbackItem> {
+
+        val finalChildren = if (eventValue.feedbackHelp != null)
+            listOf(TreeNode.Leaf(FeedbackHelpItem(eventValue.feedbackHelp))) + children else children
+
         return TreeNode.Node(
             FeedbackItem(
                 eventValue.name,
@@ -221,9 +220,7 @@ class GetFeedback(
                     eventValue.critical
                 ) else null,
                 eventValue.dataElement
-            ), if (eventValue.feedbackHelp != null) listOf(
-                TreeNode.Leaf(FeedbackHelpItem(eventValue.feedbackHelp))
-            ) else mutableListOf()
+            ), finalChildren
         )
     }
 

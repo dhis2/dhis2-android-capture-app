@@ -2,6 +2,8 @@ package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 
 data class FeedbackOrder(val value: String) : Comparable<FeedbackOrder> {
     private val orderItems: List<Int> = value.split(".").map { it.toInt() }
+    val level: Int = orderItems.size - 1
+
     val parent =
         if (orderItems.size == 1)
             null
