@@ -499,9 +499,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             binding.cardFront.teiImage.setVisibility(View.VISIBLE);
             Glide.with(this)
                     .load(new File(filePath))
-                    .placeholder(
-                            ObjectStyleUtils.getIconResource(context, defaultIcon, R.drawable.photo_temp_gray)
-                    )
                     .error(
                             ObjectStyleUtils.getIconResource(context, defaultIcon, R.drawable.photo_temp_gray)
                     )
