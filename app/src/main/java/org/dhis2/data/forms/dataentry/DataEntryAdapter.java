@@ -395,4 +395,8 @@ public final class DataEntryAdapter extends RecyclerView.Adapter<ViewHolder> {
             return sectionPositions.get(openSection);
         }
     }
+
+    public int getSectionSize() {
+        return sectionPositions.size();
+    }
 }
