@@ -6,7 +6,7 @@ typealias leaf<L> = TreeNode.Leaf<L>
 sealed class TreeNode<T>(val content: T) {
     data class Node<N>(
         private val nodeContent: N,
-        val children: List<TreeNode<*>> = mutableListOf(),
+        val children: List<TreeNode<*>> = listOf(),
         var expanded: Boolean = false
     ) : TreeNode<N>(nodeContent)
 
