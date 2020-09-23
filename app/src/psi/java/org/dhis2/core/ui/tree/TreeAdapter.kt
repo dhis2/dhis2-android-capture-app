@@ -3,25 +3,24 @@ package org.dhis2.core.ui.tree
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.core.types.TreeNode
-import org.dhis2.core.types.expand
+import org.dhis2.core.types.Tree
 
 class TreeAdapter(
-    root: TreeNode.Root<*>,
+    root: Tree.Root<*>,
     private val binders: List<TreeAdapterBinder>,
-    private val onTreeClickListener: (TreeNode<*>) -> Unit,
+    private val onTreeClickListener: (Tree<*>) -> Unit,
     private val displayRoot: Boolean = false
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
 
-    private var displayNodes: MutableList<TreeNode<*>> = mutableListOf()
-    private var levelByNodes = HashMap<TreeNode<*>, Int>()
+    private var displayNodes: MutableList<Tree<*>> = mutableListOf()
+    private var levelByNodes = HashMap<Tree<*>, Int>()
 
     init {
         findDisplayNodes(root)
     }
 
-    private fun findDisplayNodes(root: TreeNode.Root<*>) {
+    private fun findDisplayNodes(root: Tree.Root<*>) {
         if (displayRoot) {
             displayNodes.add(root)
             levelByNodes[root] = 0
@@ -32,12 +31,12 @@ class TreeAdapter(
         }
     }
 
-    private fun findDisplayNodes(nodes: List<TreeNode<*>>, level: Int = 0) {
+    private fun findDisplayNodes(nodes: List<Tree<*>>, level: Int = 0) {
         for (node in nodes) {
             displayNodes.add(node)
             levelByNodes[node] = level
 
-            if (node is TreeNode.Node && node.expanded) {
+            if (node is Tree.Node && node.expanded) {
                 findDisplayNodes(node.children, level + 1)
             }
         }
@@ -66,7 +65,7 @@ class TreeAdapter(
         viewHolder.itemView.setOnClickListener {
             val node = displayNodes[viewHolder.adapterPosition]
 
-            if (node is TreeNode.Node) {
+            if (node is Tree.Node) {
                 onTreeClickListener(node)
             }
         }

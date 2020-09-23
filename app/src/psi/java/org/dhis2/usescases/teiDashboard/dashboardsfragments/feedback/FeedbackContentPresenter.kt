@@ -6,13 +6,13 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.dhis2.core.types.TreeNode
+import org.dhis2.core.types.Tree
 import org.dhis2.core.types.expand
 import timber.log.Timber
 
 sealed class FeedbackContentState {
     object Loading : FeedbackContentState()
-    data class Loaded(val feedback: TreeNode.Root<*>, val onlyFailedFilter: Boolean) :
+    data class Loaded(val feedback: Tree.Root<*>, val onlyFailedFilter: Boolean) :
         FeedbackContentState()
 
     object NotFound : FeedbackContentState()
@@ -49,8 +49,8 @@ class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
         loadFeedback(value)
     }
 
-    fun expand(node: TreeNode<*>){
-        if (lastLoaded != null && node is TreeNode.Node){
+    fun expand(node: Tree<*>){
+        if (lastLoaded != null && node is Tree.Node){
             lastLoaded = lastLoaded!!.copy(feedback = lastLoaded!!.feedback.expand(node))
             render(lastLoaded!!)
         }
@@ -76,11 +76,11 @@ class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
             })
     }
 
-    private fun tryMaintainCurrentExpandedItems(feedback: TreeNode.Root<*>): TreeNode.Root<*>{
+    private fun tryMaintainCurrentExpandedItems(feedback: Tree.Root<*>): Tree.Root<*>{
         val flattedLastFeedback = flatTreeNodes(lastLoaded!!.feedback.children)
         val flattedFeedback = flatTreeNodes(feedback.children)
 
-        var root: TreeNode.Root<*> = feedback
+        var root: Tree.Root<*> = feedback
 
         flattedFeedback.forEach { current ->
             val last = flattedLastFeedback.firstOrNull { last ->
@@ -95,18 +95,18 @@ class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
         return root
     }
 
-    private fun flatTreeNodes(nodes: List<TreeNode<*>>): List<TreeNode.Node<FeedbackItem>> {
-        var flattedNodes: MutableList<TreeNode<*>> = mutableListOf()
+    private fun flatTreeNodes(nodes: List<Tree<*>>): List<Tree.Node<FeedbackItem>> {
+        var flattedNodes: MutableList<Tree<*>> = mutableListOf()
 
         for (node in nodes) {
             flattedNodes.add(node)
 
-            if (node is TreeNode.Node && node.children.isNotEmpty()) {
+            if (node is Tree.Node && node.children.isNotEmpty()) {
                 flattedNodes.addAll(flatTreeNodes(node.children))
             }
         }
 
-        return flattedNodes.filterIsInstance<TreeNode.Node<FeedbackItem>>()
+        return flattedNodes.filterIsInstance<Tree.Node<FeedbackItem>>()
     }
 
     private fun handleFailure(failure: FeedbackFailure) {

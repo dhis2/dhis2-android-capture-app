@@ -7,11 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
-import kotlinx.android.synthetic.main.form_bottom_dialog.view.*
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.core.ui.tree.TreeAdapter
-import org.dhis2.core.types.TreeNode
+import org.dhis2.core.types.Tree
 import org.dhis2.databinding.FragmentFeedbackContentBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
@@ -122,7 +121,7 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
         binding.failedCheckBox.isEnabled = false
     }
 
-    private fun renderLoaded(feedback: TreeNode.Root<*>) {
+    private fun renderLoaded(feedback: Tree.Root<*>) {
         binding.msgFeedback.visibility = View.GONE
         binding.spinner.visibility = View.GONE
         binding.failedCheckBox.isEnabled = true
@@ -130,7 +129,7 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
         setFeedbackAdapter(feedback)
     }
 
-    private fun setFeedbackAdapter(feedback: TreeNode.Root<*>) {
+    private fun setFeedbackAdapter(feedback: Tree.Root<*>) {
         val adapter = TreeAdapter(feedback, listOf(FeedbackItemBinder(), FeedbackHelpItemBinder()),
             {
                 presenter.expand(it)

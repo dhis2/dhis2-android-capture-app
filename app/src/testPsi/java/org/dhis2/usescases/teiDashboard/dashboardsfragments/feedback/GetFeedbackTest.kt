@@ -3,7 +3,7 @@ package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 import com.google.gson.GsonBuilder
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
-import org.dhis2.core.types.TreeNode
+import org.dhis2.core.types.Tree
 import org.dhis2.core.types.leaf
 import org.dhis2.core.types.node
 import org.dhis2.core.types.root
@@ -49,7 +49,7 @@ class GetFeedbackTest {
             getFeedback(FeedbackMode.ByEvent, null, false)
 
         val expectedFeedback = root(
-            null, listOf<TreeNode.Node<FeedbackItem>>()
+            null, listOf<Tree.Node<FeedbackItem>>()
         )
 
         feedbackResult.fold(
@@ -130,7 +130,7 @@ class GetFeedbackTest {
             getFeedback(FeedbackMode.ByEvent, null, true)
 
         val expectedFeedback = root(
-            null, listOf<TreeNode.Node<FeedbackItem>>()
+            null, listOf<Tree.Node<FeedbackItem>>()
         )
 
         feedbackResult.fold(
@@ -258,7 +258,7 @@ class GetFeedbackTest {
 
         val expectedFeedback = root(
             null,
-            listOf<TreeNode.Node<FeedbackItem>>()
+            listOf<Tree.Node<FeedbackItem>>()
         )
 
         feedbackResult.fold(
@@ -281,7 +281,7 @@ class GetFeedbackTest {
 
         val expectedFeedback = root(
             null,
-            listOf<TreeNode.Node<FeedbackItem>>()
+            listOf<Tree.Node<FeedbackItem>>()
         )
 
         feedbackResult.fold(
@@ -517,7 +517,7 @@ class GetFeedbackTest {
             getFeedback(FeedbackMode.ByTechnicalArea, null, false)
 
         val expectedFeedback = root(
-            null, listOf<TreeNode.Node<FeedbackItem>>()
+            null, listOf<Tree.Node<FeedbackItem>>()
         )
 
         feedbackResult.fold(
@@ -611,7 +611,7 @@ class GetFeedbackTest {
 
         val expectedFeedback = root(
             null,
-            listOf<TreeNode.Node<FeedbackItem>>()
+            listOf<Tree.Node<FeedbackItem>>()
         )
 
         feedbackResult.fold(
@@ -720,8 +720,8 @@ class GetFeedbackTest {
     }
 
     private fun assertFeedback(
-        expectedFeedback: TreeNode.Root<*>,
-        feedback: TreeNode.Root<*>
+        expectedFeedback: Tree.Root<*>,
+        feedback: Tree.Root<*>
     ) {
         val gson = GsonBuilder().setPrettyPrinting().create()
 

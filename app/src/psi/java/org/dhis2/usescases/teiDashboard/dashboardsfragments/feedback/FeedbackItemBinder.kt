@@ -9,7 +9,7 @@ import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.R
 import org.dhis2.core.ui.tree.TreeAdapterBinder
-import org.dhis2.core.types.TreeNode
+import org.dhis2.core.types.Tree
 
 class FeedbackItemBinder : TreeAdapterBinder(FeedbackItem::class.java) {
     override val layoutId: Int
@@ -21,7 +21,7 @@ class FeedbackItemBinder : TreeAdapterBinder(FeedbackItem::class.java) {
 
     override fun bindView(
         holder: RecyclerView.ViewHolder,
-        node: TreeNode<*>
+        node: Tree<*>
     ) {
         with(holder as ViewHolder) {
             val feedbackItem: FeedbackItem = node.content as FeedbackItem
@@ -35,9 +35,9 @@ class FeedbackItemBinder : TreeAdapterBinder(FeedbackItem::class.java) {
 
     private fun renderColor(
         itemView: View,
-        node: TreeNode<*>
+        node: Tree<*>
     ) {
-        if (node is TreeNode.Leaf) {
+        if (node is Tree.Leaf || (node is Tree.Node && node.children.isEmpty())) {
             itemView.setBackgroundColor(
                 ContextCompat.getColor(
                     itemView.context,
@@ -52,9 +52,9 @@ class FeedbackItemBinder : TreeAdapterBinder(FeedbackItem::class.java) {
     private fun renderName(
         nameView: TextView,
         feedbackItem: FeedbackItem,
-        node: TreeNode<*>
+        node: Tree<*>
     ) {
-        if (node is TreeNode.Node && node.children.isNotEmpty() && node.children[0] is TreeNode.Node) {
+        if (node is Tree.Node && node.children.isNotEmpty() && node.children[0] is Tree.Node) {
             TextViewCompat.setTextAppearance(
                 nameView,
                 R.style.TextAppearance_MaterialComponents_Body1
@@ -91,16 +91,16 @@ class FeedbackItemBinder : TreeAdapterBinder(FeedbackItem::class.java) {
 
     private fun renderArrow(
         arrow: ImageView,
-        node: TreeNode<*>
+        node: Tree<*>
     ) {
-        if (node is TreeNode.Node && node.expanded) {
+        if (node is Tree.Node && node.expanded) {
             arrow.setImageResource(R.drawable.ic_arrow_up)
         } else {
             arrow.setImageResource(R.drawable.ic_arrow_down)
         }
 
         arrow.visibility =
-            if (node is TreeNode.Node && node.children.isNotEmpty()) View.VISIBLE else View.INVISIBLE
+            if (node is Tree.Node && node.children.isNotEmpty()) View.VISIBLE else View.INVISIBLE
     }
 
     internal class ViewHolder(rootView: View) : RecyclerView.ViewHolder(rootView) {
