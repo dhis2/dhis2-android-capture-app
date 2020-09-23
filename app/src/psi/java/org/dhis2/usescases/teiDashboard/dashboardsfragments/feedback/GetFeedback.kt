@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 
 import org.dhis2.core.functional.Either
 import org.dhis2.core.types.TreeNode
+import org.dhis2.core.types.root
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
 
 sealed class FeedbackFailure {
@@ -22,7 +23,7 @@ class GetFeedback(
         feedbackMode: FeedbackMode,
         criticalFilter: Boolean? = null,
         onlyFailedFilter: Boolean = false
-    ): Either<FeedbackFailure, List<TreeNode.Node<FeedbackItem>>> {
+    ): Either<FeedbackFailure, TreeNode.Root<*>> {
         return try {
 
             val events = getEnrollmentEvents()
@@ -42,7 +43,7 @@ class GetFeedback(
         teiEvents: List<Event>,
         criticalFilter: Boolean?,
         onlyFailedFilter: Boolean
-    ): List<TreeNode.Node<FeedbackItem>> {
+    ): TreeNode.Root<*> {
         return when (feedbackMode) {
             is FeedbackMode.ByEvent -> createFeedbackByEvent(
                 teiEvents,
@@ -59,7 +60,7 @@ class GetFeedback(
         teiEvents: List<Event>,
         criticalFilter: Boolean?,
         onlyFailed: Boolean
-    ): List<TreeNode.Node<FeedbackItem>> {
+    ): TreeNode.Root<*> {
 
         val feedbackByEvent = teiEvents.map { event ->
             val children = mapToTreeNodes(event.values)
@@ -70,16 +71,19 @@ class GetFeedback(
         val filteredFeedbackByEvent =
             filterFeedback(criticalFilter, onlyFailed, feedbackByEvent)
 
-        return (filteredFeedbackByEvent as List<TreeNode.Node<FeedbackItem>>)
-            .filter {
-                it.children.any { child -> child.content is FeedbackItem }
-            }
+        val nonEmptyFeedback =
+            (filteredFeedbackByEvent as List<TreeNode.Node<FeedbackItem>>)
+                .filter {
+                    it.children.any { child -> child.content is FeedbackItem }
+                }
+
+        return root(null, nonEmptyFeedback)
     }
 
     private fun createFeedbackByTechnicalArea(
         teiEvents: List<Event>,
         onlyFailed: Boolean
-    ): List<TreeNode.Node<FeedbackItem>> {
+    ): TreeNode.Root<*> {
 
         val level0DistinctValues = teiEvents.flatMap {
             it.values
@@ -100,10 +104,13 @@ class GetFeedback(
         val filteredFeedbackByTechnicalArea =
             filterFeedback(null, onlyFailed, feedbackByTechnicalArea)
 
-        return (filteredFeedbackByTechnicalArea as List<TreeNode.Node<FeedbackItem>>)
-            .filter {
-                it.children.any { child -> child.content is FeedbackItem }
-            }
+        val nonEmptyFeedback =
+            (filteredFeedbackByTechnicalArea as List<TreeNode.Node<FeedbackItem>>)
+                .filter {
+                    it.children.any { child -> child.content is FeedbackItem }
+                }
+
+        return root(null, nonEmptyFeedback)
     }
 
     private fun filterFeedback(

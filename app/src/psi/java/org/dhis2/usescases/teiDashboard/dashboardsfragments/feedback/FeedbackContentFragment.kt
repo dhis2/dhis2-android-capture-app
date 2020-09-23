@@ -122,16 +122,21 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
         binding.failedCheckBox.isEnabled = false
     }
 
-    private fun renderLoaded(nodes: List<TreeNode<*>>) {
+    private fun renderLoaded(feedback: TreeNode.Root<*>) {
         binding.msgFeedback.visibility = View.GONE
         binding.spinner.visibility = View.GONE
         binding.failedCheckBox.isEnabled = true
 
-        setFeedbackAdapter(nodes)
+        setFeedbackAdapter(feedback)
     }
 
-    private fun setFeedbackAdapter(nodes: List<TreeNode<*>>) {
-        val adapter = TreeAdapter(nodes, listOf(FeedbackItemBinder(), FeedbackHelpItemBinder()))
+    private fun setFeedbackAdapter(feedback: TreeNode.Root<*>) {
+        val adapter = TreeAdapter(feedback, listOf(FeedbackItemBinder(), FeedbackHelpItemBinder()),
+            {
+                presenter.expand(it)
+            })
+
+
         binding.feedbackRecyclerView.adapter = adapter
     }
 
