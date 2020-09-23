@@ -11,6 +11,10 @@ data class FeedbackOrder(val value: String) : Comparable<FeedbackOrder> {
             orderItems.subList(0, orderItems.size - 1)
                 .joinToString(".")
 
+    fun isDescendantOf(feedbackOrder: FeedbackOrder): Boolean {
+        return this.value.startsWith(feedbackOrder.value) && this != feedbackOrder
+    }
+
     override fun compareTo(other: FeedbackOrder): Int {
         var result: Int? = null
         var position = 0
@@ -40,6 +44,8 @@ data class FeedbackOrder(val value: String) : Comparable<FeedbackOrder> {
 
         return result
     }
+
+
 }
 
 data class Value(

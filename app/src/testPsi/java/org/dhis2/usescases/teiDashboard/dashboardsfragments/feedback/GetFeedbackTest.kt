@@ -516,35 +516,30 @@ class GetFeedbackTest {
                 FeedbackItem("DE 1", null, "DE 1_UID"),
                 children = listOf(
                     leaf(FeedbackHelpItem("Feedback DE 1")),
-                    leaf(
+                    node(
                         FeedbackItem(
                             "ART New",
                             FeedbackItemValue("Partly", "#FFC700", true, true),
                             "ART New UID"
-                        )
-                    ),
-                    node(
-                        FeedbackItem("DE 1.1", null, "DE 1.1_UID"),
-                        children = listOf(
-                            leaf(FeedbackHelpItem("Feedback DE 1.1")),
-                            leaf(
+                        ), children = listOf(
+                            node(
                                 FeedbackItem(
-                                    "ART New",
+                                    "DE 1.1",
                                     FeedbackItemValue("86%", "#FFC700", true, true),
-                                    "ART New UID"
+                                    "DE 1.1_UID"
+                                ),
+                                children = listOf(
+                                    leaf(FeedbackHelpItem("Feedback DE 1.1"))
                                 )
-                            )
-                        )
-                    ),
-                    node(
-                        FeedbackItem("DE 1.2", null, "DE 1.2_UID"),
-                        children = listOf(
-                            leaf(FeedbackHelpItem("Feedback DE 1.2")),
-                            leaf(
+                            ),
+                            node(
                                 FeedbackItem(
-                                    "ART New",
+                                    "DE 1.2",
                                     FeedbackItemValue("56%", "#c80f26", true, true),
-                                    "ART New UID"
+                                    "DE 1.2_UID"
+                                ),
+                                children = listOf(
+                                    leaf(FeedbackHelpItem("Feedback DE 1.2"))
                                 )
                             )
                         )
@@ -555,7 +550,7 @@ class GetFeedbackTest {
                 FeedbackItem("DE 2", null, "DE 2_UID"),
                 children = listOf(
                     leaf(FeedbackHelpItem("Feedback DE 2")),
-                    leaf(
+                    node(
                         FeedbackItem(
                             "ART New",
                             FeedbackItemValue("100%", "#0CE922", true, true),
@@ -593,7 +588,7 @@ class GetFeedbackTest {
     }
 
     @Test
-    fun `should return only failed by technical area if It's by events and only failed filter is true`() {
+    fun `should return only failed by technical area if It's by technical area and only failed filter is true`() {
         givenOneEventWithValues(
             "ART New", listOf(
                 listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "FAIL", "CRITICAL"),
@@ -612,7 +607,7 @@ class GetFeedbackTest {
                 FeedbackItem("DE 1", null, "DE 1_UID"),
                 children = listOf(
                     leaf(FeedbackHelpItem("Feedback DE 1")),
-                    leaf(
+                    node(
                         FeedbackItem(
                             "ART New",
                             FeedbackItemValue("Partly", "#FFC700", false, true),
@@ -625,7 +620,7 @@ class GetFeedbackTest {
                 FeedbackItem("DE 4", null, "DE 4_UID"),
                 children = listOf(
                     leaf(FeedbackHelpItem("Feedback DE 4")),
-                    leaf(
+                    node(
                         FeedbackItem(
                             "ART New",
                             FeedbackItemValue("56%", "#c80f26", false, true),
@@ -642,7 +637,7 @@ class GetFeedbackTest {
     }
 
     @Test
-    fun `should return only failed by events if by technical area and only failed filter is true and there are DE hierarchy`() {
+    fun `should return only failed by technical area if by technical area and only failed filter is true and there are DE hierarchy`() {
         givenOneEventWithValues(
             "ART New", listOf(
                 listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "OK", "CRITICAL"),
@@ -662,14 +657,19 @@ class GetFeedbackTest {
                 children = listOf(
                     leaf(FeedbackHelpItem("Feedback DE 1")),
                     node(
-                        FeedbackItem("DE 1.1", null, "DE 1.1_UID"),
-                        children = listOf(
-                            leaf(FeedbackHelpItem("Feedback DE 1.1")),
-                            leaf(
+                        FeedbackItem(
+                            "ART New",
+                            FeedbackItemValue("Partly", "#FFC700", true, true),
+                            "ART New UID"
+                        ), children = listOf(
+                            node(
                                 FeedbackItem(
-                                    "ART New",
+                                    "DE 1.1",
                                     FeedbackItemValue("86%", "#FFC700", false, true),
-                                    "ART New UID"
+                                    "DE 1.1_UID"
+                                ),
+                                children = listOf(
+                                    leaf(FeedbackHelpItem("Feedback DE 1.1"))
                                 )
                             )
                         )

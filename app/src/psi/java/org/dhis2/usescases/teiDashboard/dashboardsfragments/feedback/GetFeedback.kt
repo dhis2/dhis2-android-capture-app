@@ -81,8 +81,21 @@ class GetFeedback(
         onlyFailed: Boolean
     ): List<TreeNode.Node<FeedbackItem>> {
 
-        val distinctValues = teiEvents.flatMap { it.values }.distinctBy { it.dataElement }
-        val feedbackByTechnicalArea = mapToTreeNodes(distinctValues, teiEvents)
+        val level0DistinctValues = teiEvents.flatMap {
+            it.values
+        }.distinctBy {
+            it.dataElement
+        }.filter { it.feedbackOrder.level == 0 }
+
+        val feedbackByTechnicalArea = level0DistinctValues.map {
+            val eventsChildren =
+                createEventsChildrenByDataElement(it.dataElement, teiEvents)
+
+            val finalChildren = if (it.feedbackHelp != null)
+                listOf(TreeNode.Leaf(FeedbackHelpItem(it.feedbackHelp))) + eventsChildren else eventsChildren
+
+            TreeNode.Node(FeedbackItem(it.name, null, it.dataElement), finalChildren)
+        }
 
         val filteredFeedbackByTechnicalArea =
             filterFeedback(null, onlyFailed, feedbackByTechnicalArea)
@@ -144,59 +157,61 @@ class GetFeedback(
 
     private fun mapToTreeNodes(
         values: List<Value>,
-        eventsToLeaf: List<Event> = listOf()
+        topLevel: Int = 0
     ): List<TreeNode.Node<FeedbackItem>> {
-        val treeNodesByParent = HashMap<String, MutableList<TreeNode.Node<FeedbackItem>>>()
-        val topTreeNodes = mutableListOf<TreeNode.Node<FeedbackItem>>()
+        val treeNodesByParent = HashMap<String?, MutableList<TreeNode.Node<FeedbackItem>>>()
 
-        values.sortedWith(compareByDescending<Value> { it.feedbackOrder.level }.thenBy { it.feedbackOrder })
+        values
+            .sortedWith(compareByDescending<Value> { it.feedbackOrder.level }.thenBy { it.feedbackOrder })
             .forEach { eventValue ->
-                val eventsLeafByValue = createEventsLeafByValue(eventValue, eventsToLeaf)
-
                 val children =
                     treeNodesByParent[eventValue.feedbackOrder.value] ?: listOf<TreeNode<*>>()
 
                 val currentNode =
-                    mapValueToTreeNode(
-                        eventValue,
-                        eventsToLeaf.isEmpty(),
-                        eventsLeafByValue + children
-                    )
+                    mapValueToTreeNode(eventValue, true, children)
 
-                if (eventValue.feedbackOrder.parent == null) {
-                    topTreeNodes.add(currentNode)
-                } else {
+                val treeNodesByParentList =
+                    treeNodesByParent.getOrPut(eventValue.feedbackOrder.parent, { mutableListOf() })
 
-                    if (treeNodesByParent.containsKey(eventValue.feedbackOrder.parent)) {
-                        treeNodesByParent[eventValue.feedbackOrder.parent]?.add(currentNode)
-                    } else {
-                        treeNodesByParent[eventValue.feedbackOrder.parent] =
-                            mutableListOf(currentNode)
-                    }
-                }
+                treeNodesByParentList.add(currentNode)
             }
 
-        return topTreeNodes
+        val topTreeEntries =
+            treeNodesByParent.filter { entry ->
+                val parentFeedbackOrder =
+                    if (entry.key == null) null else FeedbackOrder(entry.key!!)
+
+                (topLevel == 0 && parentFeedbackOrder == null) ||
+                    (topLevel == parentFeedbackOrder!!.level + 1)
+            }
+
+        return topTreeEntries.flatMap { it.value.toList() }
     }
 
-    private fun createEventsLeafByValue(eventValue: Value, eventsToLeaf: List<Event>)
-        : List<TreeNode.Leaf<FeedbackItem>> {
+    private fun createEventsChildrenByDataElement(dataElement: String, eventsToLeaf: List<Event>)
+        : List<TreeNode.Node<FeedbackItem>> {
         return eventsToLeaf.filter { event ->
-            event.values.any { it.dataElement == eventValue.dataElement }
+            event.values.any { it.dataElement == dataElement }
         }.map { event ->
-            val eventValue = event.values.first { it.dataElement == eventValue.dataElement }
+            val eventValueLevel0 = event.values.first { it.dataElement == dataElement }
 
-            TreeNode.Leaf(
+            val descendantLevel0Values = event.values.filter { value ->
+                value.feedbackOrder.isDescendantOf(eventValueLevel0.feedbackOrder)
+            }
+
+            val children = mapToTreeNodes(descendantLevel0Values, 1)
+
+            TreeNode.Node(
                 FeedbackItem(
                     event.name,
                     FeedbackItemValue(
-                        eventValue.value,
-                        eventValue.colorByLegend,
-                        eventValue.success,
-                        eventValue.critical
+                        eventValueLevel0.value,
+                        eventValueLevel0.colorByLegend,
+                        eventValueLevel0.success,
+                        eventValueLevel0.critical
                     ),
                     event.uid
-                )
+                ), children
             )
         }
     }
