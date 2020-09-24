@@ -115,6 +115,17 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     }
 
     public void initData(String data) {
+        if (data != null) {
+            date = null;
+            try {
+                date = DateUtils.timeFormat().parse(data);
+            } catch (ParseException e) {
+                Timber.e(e);
+            }
+
+
+            data = date != null ? DateUtils.timeFormat().format(date) : data;
+        }
         editText.setText(data);
     }
 
