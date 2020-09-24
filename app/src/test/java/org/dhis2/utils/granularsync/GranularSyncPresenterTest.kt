@@ -9,6 +9,7 @@ import java.util.Date
 import junit.framework.Assert.assertTrue
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.common.Access
@@ -36,7 +37,7 @@ class GranularSyncPresenterTest {
     private val trampolineSchedulerProvider = TrampolineSchedulerProvider()
     private val workManager = mock(WorkManagerController::class.java)
     private val programRepoMock = mock(ReadOnlyOneObjectRepositoryFinalImpl::class.java)
-
+    private val errorMapper: ErrorModelMapper = mock()
     private val testProgram = getProgram()
 
     @Test
@@ -50,7 +51,8 @@ class GranularSyncPresenterTest {
             null,
             null,
             null,
-            workManager
+            workManager,
+            errorMapper
         )
         Mockito.`when`(d2.programModule()).thenReturn(mock(ProgramModule::class.java))
         Mockito.`when`(d2.programModule().programs())
@@ -75,7 +77,8 @@ class GranularSyncPresenterTest {
             null,
             null,
             null,
-            workManager
+            workManager,
+            errorMapper
         )
 
         whenever(d2.programModule()) doReturn mock()
@@ -141,7 +144,8 @@ class GranularSyncPresenterTest {
             null,
             null,
             null,
-            workManager
+            workManager,
+            errorMapper
         )
 
         val state = presenter.getStateFromCanditates(arrayListOf())
@@ -175,7 +179,8 @@ class GranularSyncPresenterTest {
             null,
             null,
             null,
-            workManager
+            workManager,
+            errorMapper
         )
 
         val state = presenter.getStateFromCanditates(arrayListOf())
@@ -209,7 +214,8 @@ class GranularSyncPresenterTest {
             null,
             null,
             null,
-            workManager
+            workManager,
+            errorMapper
         )
 
         val state = presenter.getStateFromCanditates(arrayListOf(State.TO_POST))
