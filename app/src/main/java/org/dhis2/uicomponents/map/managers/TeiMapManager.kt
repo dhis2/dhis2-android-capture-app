@@ -55,11 +55,8 @@ class TeiMapManager : MapManager() {
         this.teiFeatureCollections.putAll(this.eventsFeatureCollection)
         this.boundingBox = boundingBox
         this.carouselAdapter = carouselAdapter
-        if (isMapReady()) {
-            when {
-                mapLayerManager.mapLayers.isNotEmpty() -> updateStyleSources()
-                else -> loadDataForStyle()
-            }
+        teiFeatureCollections[TEIS_SOURCE_ID]?.let {
+            setTeiImages(it)
         }
     }
 
@@ -145,10 +142,18 @@ class TeiMapManager : MapManager() {
         }
         teiFeatureCollections[TEIS_SOURCE_ID]?.let {
             setSymbolManager(it)
-            setTeiImages(it)
         }
         setSource()
         setLayer()
+    }
+
+    private fun loadMap() {
+        if (isMapReady()) {
+            when {
+                mapLayerManager.mapLayers.isNotEmpty() -> updateStyleSources()
+                else -> loadDataForStyle()
+            }
+        }
     }
 
     override fun setSource() {
@@ -160,26 +165,30 @@ class TeiMapManager : MapManager() {
     }
 
     private fun setTeiImages(featureCollection: FeatureCollection) {
-        featureCollection.features()
+        val featuresWithImages = featureCollection.features()
             ?.filter { it.getStringProperty(TEI_IMAGE)?.isNotEmpty() ?: false }
-            ?.forEach {
-                Glide.with(mapView.context)
-                    .asBitmap()
-                    .load(it.getStringProperty(TEI_IMAGE))
-                    .transform(CircleCrop())
-                    .into(object : CustomTarget<Bitmap>(23.dp, 23.dp) {
-                        override fun onResourceReady(
-                            resource: Bitmap,
-                            transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
-                        ) {
-                            teiImages[it.getStringProperty(TEI_UID)] = TeiMarkers.getMarker(
-                                mapView.context,
-                                resource
-                            )
+
+        featuresWithImages?.forEachIndexed { index, feature ->
+            Glide.with(mapView.context)
+                .asBitmap()
+                .load(feature.getStringProperty(TEI_IMAGE))
+                .transform(CircleCrop())
+                .into(object : CustomTarget<Bitmap>(23.dp, 23.dp) {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
+                    ) {
+                        teiImages[feature.getStringProperty(TEI_UID)] = TeiMarkers.getMarker(
+                            mapView.context,
+                            resource
+                        )
+                        if (index == featuresWithImages.size - 1) {
+                            loadMap()
                         }
-                        override fun onLoadCleared(placeholder: Drawable?) {}
-                    })
-            }
+                    }
+                    override fun onLoadCleared(placeholder: Drawable?) {}
+                })
+        }
     }
 
     private fun updateStyleSources() {

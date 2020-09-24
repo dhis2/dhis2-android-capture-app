@@ -162,7 +162,6 @@ fun SearchTeiModel.setTeiImage(
         teiTextImageView.visibility = View.GONE
         Glide.with(context)
             .load(file)
-            .placeholder(placeHolderId)
             .error(placeHolderId)
             .transition(DrawableTransitionOptions.withCrossFade())
             .transform(CircleCrop())
