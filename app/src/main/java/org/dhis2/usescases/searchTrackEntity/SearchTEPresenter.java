@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.widget.DatePicker;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -61,8 +62,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.Nullable;
-
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -113,6 +112,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection;
     private EventToEventUiComponent eventToEventUiComponent;
     private boolean teiTypeHasAttributesToDisplay = true;
+    private boolean isSearching;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -367,9 +367,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
             if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() == 0 && queryData.size() == 0) {
-                messageId = view.getContext().getString(R.string.search_attr);
-            }
-            if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size()) {
+                if (isSearching) {
+                    if (size == 0) {
+                        messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+                        canRegister = true;
+                    }
+                } else {
+                    messageId = view.getContext().getString(R.string.search_init);
+                }
+            } else if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size()) {
                 messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
             } else if (selectedProgram.maxTeiCountToReturn() != 0 && size > selectedProgram.maxTeiCountToReturn()) {
                 messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
@@ -484,6 +490,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onClearClick() {
+        isSearching = true;
         queryData.clear();
         view.setFabIcon(true);
         currentProgram.onNext(selectedProgram != null ? selectedProgram.uid() : "");
@@ -500,6 +507,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         if (!needsSearch)
             onEnrollClick();
         else {
+            isSearching = true;
             analyticsHelper.setEvent(SEARCH_TEI, CLICK, SEARCH_TEI);
             view.clearData();
 
@@ -535,7 +543,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             } else if (!selectedProgram.displayFrontPageList() && queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
                 return false;
             } else if (!selectedProgram.displayFrontPageList() && queryData.size() == 0 && selectedProgram.minAttributesRequiredToSearch() == 0) {
-                return false;
+                return true;
             } else {
                 return true;
             }
