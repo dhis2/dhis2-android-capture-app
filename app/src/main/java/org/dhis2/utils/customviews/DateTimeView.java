@@ -72,28 +72,6 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     }
 
     public void initData(String data) {
-        if (data != null) {
-            date = null;
-            try {
-                date = DateUtils.databaseDateFormat().parse(data);
-            } catch (ParseException e) {
-                Timber.w(e);
-            }
-
-            if (date == null)
-                try {
-                    if (DateUtils.dateHasNoSeconds(data))
-                        date = DateUtils.databaseDateFormatNoSeconds().parse(data);
-                    else
-                        date = DateUtils.databaseDateFormatNoMillis().parse(data);
-                } catch (ParseException e) {
-                    Timber.e(e);
-                }
-
-            data = DateUtils.dateTimeFormat().format(date);
-        } else {
-            editText.setText("");
-        }
         editText.setText(data);
     }
 
