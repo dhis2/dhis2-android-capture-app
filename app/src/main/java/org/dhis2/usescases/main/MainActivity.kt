@@ -354,7 +354,7 @@ class MainActivity :
                 R.anim.fragment_exit_right
             )
             transaction.replace(R.id.fragment_container, activeFragment!!, tag)
-                .commitAllowingStateLoss()
+                .commitNowAllowingStateLoss()
             binding.title.text = tag
         }
 
