@@ -2,8 +2,6 @@ package org.dhis2.Bindings
 
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
-import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueObjectRepository
@@ -74,7 +72,7 @@ fun checkValueTypeValue(d2: D2, valueType: ValueType?, value: String): String {
                 ""
             }
         ValueType.DATE ->
-                DateUtils.uiDateFormat().format(DateUtils.oldUiDateFormat().parse(value))
+            DateUtils.uiDateFormat().format(DateUtils.oldUiDateFormat().parse(value))
         ValueType.DATETIME ->
             DateUtils.dateTimeFormat().format(DateUtils.databaseDateFormatNoSeconds().parse(value))
         ValueType.TIME ->
