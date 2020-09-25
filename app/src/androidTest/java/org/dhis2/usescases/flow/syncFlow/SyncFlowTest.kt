@@ -4,13 +4,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
+import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
+import org.dhis2.usescases.flow.syncFlow.robot.eventWithoutRegistrationRobot
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.searchTeiRobot
-import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
-import org.dhis2.usescases.flow.syncFlow.robot.eventWithoutRegistrationRobot
-import org.dhis2.usescases.teidashboard.robot.TeiDashboardRobot.Companion.OPEN_EVENT_STATUS
-import org.dhis2.usescases.teidashboard.robot.TeiDashboardRobot.Companion.OVERDUE_EVENT_STATUS
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.POST
@@ -25,10 +23,13 @@ class SyncFlowTest : BaseTest() {
 
     @get:Rule
     val ruleDataSet = ActivityTestRule(DataSetDetailActivity::class.java, false, false)
+
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
+
     @get:Rule
-    val ruleEventWithoutRegistration = ActivityTestRule(ProgramEventDetailActivity::class.java, false, false)
+    val ruleEventWithoutRegistration =
+        ActivityTestRule(ProgramEventDetailActivity::class.java, false, false)
 
     override fun setUp() {
         super.setUp()
@@ -36,10 +37,9 @@ class SyncFlowTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldSuccessfullySyncAChangedTEI() {
-        val teiName =  "Scott"
-        val teiLastName =  "Kelley"
+        val teiName = "Scott"
+        val teiLastName = "Kelley"
 
         mockWebServerRobot.addResponse(POST, SYNC_TEI_PATH, API_SYNC_TEI_OK)
 
@@ -54,26 +54,22 @@ class SyncFlowTest : BaseTest() {
 
         teiDashboardRobot {
             clickOnGroupEventByName(TB_VISIT)
-            clickOnEventWith(TB_VISIT, OVERDUE_EVENT_STATUS)
-            waitToDebounce(600)
+            clickOnEventWith(TB_VISIT_EVENT_DATE, ORG_UNIT)
         }
 
         eventRobot {
             clickOnUpdate()
             pressBack()
-            waitToDebounce(600)
         }
 
         syncFlowRobot {
             clickOnSyncTei(teiName, teiLastName)
             clickOnSyncButton()
-            Thread.sleep(2000)
             checkSyncWasSuccessfully()
         }
     }
 
     @Test
-    @Ignore
     fun shouldShowErrorWhenTEISyncFails() {
         val teiName = "Lars"
         val teiLastName = "Overland"
@@ -91,15 +87,13 @@ class SyncFlowTest : BaseTest() {
 
         teiDashboardRobot {
             clickOnGroupEventByName(LAB_MONITORING)
-            clickOnEventWith(LAB_MONITORING, OPEN_EVENT_STATUS)
-            waitToDebounce(600)
+            clickOnEventWith(LAB_MONITORING_EVENT_DATE, ORG_UNIT)
         }
 
         eventRobot {
             fillRadioButtonForm(4)
             clickOnFormFabButton()
             clickOnFinishAndComplete()
-            waitToDebounce(600)
         }
 
         teiDashboardRobot {
@@ -201,10 +195,13 @@ class SyncFlowTest : BaseTest() {
             checkSyncFailed()
         }
     }
-    
+
     companion object {
-        const val LAB_MONITORING = "Lab monitoring"
+        const val ORG_UNIT = "Ngelehun CHC"
         const val TB_VISIT = "TB visit"
+        const val TB_VISIT_EVENT_DATE = "3/7/2019"
+        const val LAB_MONITORING = "Lab monitoring"
+        const val LAB_MONITORING_EVENT_DATE = "28/6/2020"
 
         const val SYNC_TEI_PATH = "/api/trackedEntityInstances?.*"
         const val API_SYNC_TEI_OK = "mocks/syncFlow/teiSync.json"
