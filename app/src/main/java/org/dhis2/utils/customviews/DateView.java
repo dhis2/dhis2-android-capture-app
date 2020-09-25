@@ -138,7 +138,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
             data = data.replace("'", ""); //TODO: Check why it is happening
             if (data.length() == 10) //has format yyyy-MM-dd
                 try {
-                    date = DateUtils.uiDateFormat().parse(data);
+                    date = DateUtils.oldUiDateFormat().parse(data);
                 } catch (ParseException e) {
                     Timber.e(e);
                 }
@@ -180,6 +180,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+        requestFocus();
         activate();
         showCustomCalendar();
     }
