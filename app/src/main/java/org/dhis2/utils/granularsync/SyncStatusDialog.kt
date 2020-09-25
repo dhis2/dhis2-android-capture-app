@@ -45,6 +45,7 @@ import org.dhis2.utils.analytics.SYNC_GRANULAR
 import org.dhis2.utils.analytics.SYNC_GRANULAR_ONLINE
 import org.dhis2.utils.analytics.SYNC_GRANULAR_SMS
 import org.dhis2.utils.customviews.MessageAmountDialog
+import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 
@@ -505,6 +506,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         binding!!.synsStatusRecycler.visibility = View.VISIBLE
         when (workInfo.state) {
             WorkInfo.State.ENQUEUED -> {
+                CountingIdlingResourceSingleton.countingIdlingResource.increment()
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     binding!!.syncIcon.setImageResource(R.drawable.animator_sync_grey)
                     if (binding!!.syncIcon.drawable is AnimatedVectorDrawable) {
@@ -536,6 +538,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 binding!!.noConflictMessage.text = getString(R.string.no_conflicts_synced_message)
                 Bindings.setStateIcon(binding!!.syncIcon, State.SYNCED, true)
                 dismissListenerDialog!!.onDismiss(true)
+                CountingIdlingResourceSingleton.countingIdlingResource.decrement()
             }
             WorkInfo.State.FAILED -> {
                 val listStatusLog = ArrayList<StatusLogItem>()
@@ -573,6 +576,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 }
                 Bindings.setStateIcon(binding!!.syncIcon, State.ERROR, true)
                 dismissListenerDialog!!.onDismiss(false)
+                CountingIdlingResourceSingleton.countingIdlingResource.decrement()
             }
             WorkInfo.State.CANCELLED ->
                 adapter!!.addItem(

@@ -50,7 +50,6 @@ class SyncGranularWorker(
     internal lateinit var presenter: SyncPresenter
 
     override fun doWork(): Result {
-        CountingIdlingResourceSingleton.countingIdlingResource.increment()
         Objects.requireNonNull((applicationContext as App).userComponent())!!
             .plus(SyncGranularRxModule()).inject(this)
 
@@ -88,7 +87,6 @@ class SyncGranularWorker(
                 )
             else -> Result.failure()
         }
-        CountingIdlingResourceSingleton.countingIdlingResource.decrement()
         return result
     }
 }
