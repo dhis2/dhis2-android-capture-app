@@ -115,13 +115,13 @@ public class FilterManager implements Serializable {
 
     public FilterManager copy() {
         FilterManager copy = new FilterManager();
-        copy.ouFilters = getOrgUnitFilters();
-        copy.stateFilters = getStateFilters();
-        copy.periodFilters = getPeriodFilters();
-        copy.enrollmentPeriodFilters = getEnrollmentPeriodFilters();
-        copy.catOptComboFilters = getCatOptComboFilters();
-        copy.eventStatusFilters = getEventStatusFilters();
-        copy.enrollmentStatusFilters = getEnrollmentStatusFilters();
+        copy.ouFilters = new ArrayList<>(getOrgUnitFilters());
+        copy.stateFilters = new ArrayList<>(getStateFilters());
+        copy.periodFilters = new ArrayList<>(getPeriodFilters());
+        copy.enrollmentPeriodFilters = new ArrayList<>(getEnrollmentPeriodFilters());
+        copy.catOptComboFilters = new ArrayList<>(getCatOptComboFilters());
+        copy.eventStatusFilters = new ArrayList<>(getEventStatusFilters());
+        copy.enrollmentStatusFilters = new ArrayList<>(getEnrollmentStatusFilters());
         copy.assignedFilter = getAssignedFilter();
         copy.sortingItem = getSortingItem();
         return copy;
