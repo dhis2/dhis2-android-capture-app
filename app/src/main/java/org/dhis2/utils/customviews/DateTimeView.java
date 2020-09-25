@@ -90,7 +90,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
                     Timber.e(e);
                 }
 
-            data = DateUtils.dateTimeFormat().format(date);
+            data = date != null ? DateUtils.dateTimeFormat().format(date) : data;
         } else {
             editText.setText("");
         }
