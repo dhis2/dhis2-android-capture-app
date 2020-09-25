@@ -23,7 +23,7 @@ class MainTest : BaseTest() {
         super.setUp()
     }
 
-    @Test
+  @Test
     fun checkHomeScreenRecyclerviewHasElements() {
         startActivity()
         homeRobot {
@@ -34,12 +34,13 @@ class MainTest : BaseTest() {
     @Test
     fun shouldRedirectToLoginIfClickOnLogOut() {
         setupCredentials()
-        enableIntents()
         startActivity()
 
         homeRobot {
             clickOnNavigationDrawerMenu()
             clickOnLogout()
+            enableIntents()
+            waitToDebounce(LOGOUT_WAITING)
             checkLogInIsLaunched()
         }
     }
@@ -59,5 +60,9 @@ class MainTest : BaseTest() {
 
     private fun startActivity() {
         rule.launchActivity(null)
+    }
+
+    companion object {
+        const val LOGOUT_WAITING = 2000L
     }
 }

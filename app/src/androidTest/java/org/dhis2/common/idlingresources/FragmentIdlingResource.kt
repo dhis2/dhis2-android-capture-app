@@ -17,8 +17,9 @@ class FragmentIdlingResource(
     }
 
     override fun isIdleNow(): Boolean {
-        val fragment = manager.findFragmentByTag(tag)
-        val idle = (fragment == null)
+        val fragmentAbout = manager.findFragmentByTag(tag)
+
+        val idle = (fragmentAbout == null)
         if (idle) {
             resourceCallback?.onTransitionToIdle()
         }
