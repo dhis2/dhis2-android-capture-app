@@ -539,7 +539,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             }
             WorkInfo.State.FAILED -> {
                 val listStatusLog = ArrayList<StatusLogItem>()
-                if (/*workInfo.outputData.keyValueMap["conflict"] != null*/false) {
+                if (workInfo.outputData.keyValueMap["conflict"] != null) {
                     for (tracker in workInfo.outputData.getStringArray("conflict")!!) {
                         try {
                             listStatusLog.add(
