@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
+import java.time.Instant
 import java.util.Collections
 import java.util.Date
 import junit.framework.Assert.assertTrue
@@ -18,6 +19,11 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration
+import org.hisp.dhis.android.core.imports.ImportStatus
+import org.hisp.dhis.android.core.imports.TrackerImportConflict
+import org.hisp.dhis.android.core.maintenance.D2Error
+import org.hisp.dhis.android.core.maintenance.D2ErrorCode
+import org.hisp.dhis.android.core.maintenance.ForeignKeyViolation
 import org.hisp.dhis.android.core.program.AccessLevel
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramCollectionRepository
@@ -37,7 +43,7 @@ class GranularSyncPresenterTest {
     private val trampolineSchedulerProvider = TrampolineSchedulerProvider()
     private val workManager = mock(WorkManagerController::class.java)
     private val programRepoMock = mock(ReadOnlyOneObjectRepositoryFinalImpl::class.java)
-    private val errorMapper: ErrorModelMapper = mock()
+    private val errorMapper: ErrorModelMapper = ErrorModelMapper("%s %s %s %s")
     private val testProgram = getProgram()
 
     @Test
@@ -221,6 +227,61 @@ class GranularSyncPresenterTest {
         val state = presenter.getStateFromCanditates(arrayListOf(State.TO_POST))
 
         assertTrue(state == State.TO_UPDATE)
+    }
+
+    @Test
+    fun `Should get list of sync errors order by date`() {
+        val presenter = GranularSyncPresenterImpl(
+            d2,
+            trampolineSchedulerProvider,
+            SyncStatusDialog.ConflictType.PROGRAM,
+            "test_uid",
+            null,
+            null,
+            null,
+            workManager,
+            errorMapper
+        )
+
+        whenever(
+            d2.maintenanceModule().d2Errors().blockingGet()
+        ) doReturn arrayListOf(
+            D2Error.builder()
+                .created(Date.from(Instant.parse("2020-01-01T00:00:00.00Z")))
+                .errorCode(D2ErrorCode.API_RESPONSE_PROCESS_ERROR)
+                .httpErrorCode(500)
+                .errorDescription("ErrorDescription")
+                .build()
+        )
+        whenever(
+            d2.importModule().trackerImportConflicts().blockingGet()
+        ) doReturn arrayListOf(
+            TrackerImportConflict.builder()
+                .created(Date.from(Instant.parse("2020-01-01T00:00:00.00Z")))
+                .errorCode("API")
+                .displayDescription("DisplayDescription")
+                .conflict("Conflict")
+                .status(ImportStatus.ERROR)
+                .build()
+        )
+        whenever(
+            d2.maintenanceModule().foreignKeyViolations().blockingGet()
+        ) doReturn arrayListOf(
+            ForeignKeyViolation.builder()
+                .created(Date.from(Instant.parse("2020-01-02T12:00:00.00Z")))
+                .toTable("ToTable")
+                .fromTable("FromTable")
+                .notFoundValue("NotFoundValue")
+                .fromObjectUid("FromObjectUid")
+                .build()
+        )
+
+        val errors = presenter.syncErrors()
+
+        assertTrue(errors.size == 3)
+        assertTrue(errors[0].errorCode == "500")
+        assertTrue(errors[1].errorCode == "FK")
+        assertTrue(errors[2].errorCode == "API")
     }
 
     private fun getMockedCompleteRegistrations(

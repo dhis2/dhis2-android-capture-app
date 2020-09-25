@@ -486,8 +486,7 @@ class GranularSyncPresenterImpl(
     }
 
     override fun syncErrors(): List<ErrorViewModel> {
-        val errors: MutableList<ErrorViewModel> = arrayListOf()
-        return errors.apply {
+        return arrayListOf<ErrorViewModel>().apply {
             addAll(
                 errorMapper.mapD2Error(
                     d2.maintenanceModule().d2Errors().blockingGet()
@@ -504,7 +503,7 @@ class GranularSyncPresenterImpl(
                 )
             )
             sortByDescending {
-                it.creationDate
+                it.creationDate?.time
             }
         }
     }
