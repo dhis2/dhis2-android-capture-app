@@ -48,6 +48,7 @@ class SettingsTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldFindEditDisabledWhenClickOnSyncConfiguration() {
         startActivity()
 
@@ -78,6 +79,7 @@ class SettingsTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldRefillValuesWhenClickOnReservedValues() {
         startActivity()
 
