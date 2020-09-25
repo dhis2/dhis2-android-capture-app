@@ -100,10 +100,8 @@
     <string name="cancelled">已取消</string>
     <string name="re_open">重新打开</string>
     <string name="activate">激活</string>
-
     <!-- State -->
     <string name="state_synced">同步</string>
-    <string name="state_to_post">发帖</string>
     <string name="state_to_update">更新</string>
     <string name="state_to_delete">删除</string>
     <string name="state_error">错误</string>
@@ -147,7 +145,6 @@
     <string name="confirm_delete_event">你确定删除事件</string>
     <string name="event_was_deleted">事件删除成功</string>
     <string name="total">总共</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">注册清单</string>
     <string name="active_programs">活动项目</string>
@@ -509,7 +506,6 @@
     <string name="no_conflicts_synced_message">已经更新。所有的数据已经发送到服务器。</string>
     <string name="relationship_error_recursive">你不能关联记录到自身。</string>
     <string name="unblock_session">解锁会话</string>
-    <string name="data_set_open">开放</string>
     <string name="unsupported_value_type">不支持的值类型</string>
     <string name="change_calendar_view">改变日历视图。</string>
     <string name="data_every_fifteen_minutes">15分钟</string>
@@ -644,7 +640,7 @@
     <string name="program_selector">项目注册</string>
     <string name="select_time">选择时间</string>
     <string name="enter_letter">输入字符</string>
-    <string name="enter_unit_interval">输入0–1之间的数</string>
+    <string name="enter_unit_interval">输入0-1之间的数</string>
     <string name="enter_percentage">输入百分比</string>
     <string name="enter_phone_number">输入电话号码</string>
     <string name="enter_email">输入电子邮件</string>
@@ -674,4 +670,4 @@
     <string name="dialog_layer_tei_coordinates">显示跟踪实体坐标</string>
     <string name="dialog_layer_enrollment_coordinates">显示注册坐标</string>
     <string name="dialog_layer_heatmap">显示热力图</string>
-</resources>
+    </resources>
