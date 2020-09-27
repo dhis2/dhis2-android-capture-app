@@ -6,7 +6,7 @@
     <!-- Warnings and error messages -->
     <string name="error">خطأ</string>
     <plurals name="error_message">
-        <item quantity="zero">لا توجد أخطاء</item>
+        <item quantity="zero">أخطاء</item>
         <item quantity="one">خطأ</item>
         <item quantity="two">خطأين</item>
         <item quantity="few">أخطاء</item>
@@ -39,8 +39,8 @@
     <string name="sync_error_title">خطأ في المزامنة</string>
     <string name="sync_error_text">حدث خطأ أثناء المزامنة. يرجى اعادة المحاولة.</string>
     <string name="metadata_sync_error">فشل: حدث خطأ في عملية المزامنة. إذا كنت متصلاً بالشبكة يرجى المحاولة مرة أخرى. إذا استمر الخطأ ، فاتصل بالمسؤول.</string>
-    <string name="data_sync_warning">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن يوجد تعارضات في بعض الحقول. قم بمزامنة الإعدادات و التكوين الخاص بك وحاول مرة أخرى. تحقق من حالة المزامنة: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
-    <string name="data_sync_warning_program">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن يوجد تعارضات في بعض الحقول. قم بمزامنة الإعدادات والتكوين الخاص بك وحاول مرة أخرى. إذا استمر التحذير ، فتحقق من حالة المزامنة: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
+    <string name="data_sync_warning">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن يوجد تعارضات في بعض الحقول. قم بعمل مزامنة للإعدادات و التكوين الخاص بك وحاول مرة أخرى. تحقق من حالة المزامنة: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
+    <string name="data_sync_warning_program">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن يوجد تعارضات في بعض الحقول. قم بعمل مزامنة للإعدادات و التكوين الخاص بك وحاول مرة أخرى. إذا استمر التحذير ، فتحقق من حالة المزامنة: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
     <string name="data_sync_error">خطأ: تعذر مزامنة بعض بياناتك. تحقق من حالة المزامنة: يتم وضع علامة @ على البرامج التي بها أخطاء، و $ على TEI والأحداث التي فيها تعارض\".</string>
     <string name="data_sync_error_program">خطأ: تعذر مزامنة بعض بياناتك. تحقق من حالة المزامنة: يتم وضع علامة $ على الأحداث و TEI التي تحوي على تعارضات\".</string>
 
@@ -144,7 +144,7 @@
     <string name="report_period">الفترة الزمنية للتقرير</string>
     <string name="field_required">إذا قمت بتعيين قيمة ، فإن الصف بأكمله يحتاج إلى كل القيم لإكمال مجموعة البيانات.</string>
     <string name="field_mandatory">بعض القيم المطلوبة مفقودة. تحتاج إلى إدخال القيم الإلزامية لتتمكن من الإكمال.</string>
-    <string name="field_mandatory_v2">هناك حقول إلزامية مفقودة. من فضلك املأهم لإكمال حزمة البيانات.</string>
+    <string name="field_mandatory_v2">هناك حقول إلزامية مفقودة. من فضلك قم بملؤها لإكمال حزمة البيانات.</string>
     <string name="datavalue_saved">تم حفظ القيمة!</string>
     <string name="there_is_no_available_period">لا توجد فترات متاحة للاختيار.</string>
     <!--Event Detail-->
@@ -218,7 +218,7 @@
     <string name="settings_sms_result_timeout_hint">ثواني</string>
     <string name="settings_sms_result_sender_hint">رقم</string>
     <string name="settings_sms_receiver_number_hint">رقم</string>
-    <string name="settings_sms_module_switch">تمكين إرسال الرسائل النصية</string>
+    <string name="settings_sms_module_switch">تمكين إرسال SMS</string>
     <string name="settings_sms_response_wait_switch">انتظر لرد ونتيجة SMS</string>
     <plurals name="settings_specific_programs">
         <item quantity="zero">يوجد %s برامج ذات إعدادات محددة</item>
@@ -230,7 +230,7 @@
     </plurals>
     <string name="settings_sync_period">فترة المزامنة</string>
     <string name="settings_limit_scope">الإعدادات محدودة</string>
-    <string name="settings_limit_globally">بشكل عام</string>
+    <string name="settings_limit_globally">شامل</string>
     <string name="settings_limit_program">لكل برنامج</string>
     <string name="settings_limit_ou">لكل وحدة تنظيمية</string>
     <string name="settings_limit_ou_program">لكل وحدة تنظيمية وبرنامج</string>
@@ -241,15 +241,15 @@
     <string name="settingsSyncMetadata">مزامنة الإعدادات و التكوين</string>
     <string name="settingsSyncParameters">مزامنة العوامل</string>
     <string name="settingsReservedValues">القيم المحجوزة</string>
-    <string name="settingsReservedValues_descr">هنا يمكنك رؤية عدد القيم المتاحة بلا اتصال بالإنترنت وحجز قيم جديدة.</string>
+    <string name="settingsReservedValues_descr">هنا يمكنك رؤية عدد القيم المتاحة في وضع عدم الاتصال بالإنترنت وحجز قيم جديدة.</string>
     <string name="settingsErrorLog">فتح سجل أخطاء المزامنة</string>
     <string name="settingsErrorLog_descr">يحتوي هذا السجل على جميع الأخطاء الناتجة عن مزامنة بياناتك والبيانات الوصفية.</string>
     <string name="settingsDeleteLocalData">حذف البيانات المحفوظة محلياً في هذا الجهاز</string>
     <string name="settingsDeleteLocalData_descr">سيتم حذف جميع بيانات التطبيق المخزنة في الجهاز. سيتم فقدان البيانات التي لم يتم مزامنتها مع الخادم.</string>
     <string name="settingsReset">إعادة تعيين بيانات التطبيق و معلومات الإعدادات والتكوين</string>
-    <string name="settingsReset_descr">سيتم حذف بيانات التهيئة والتطبيق المخزنة في الجهاز. سيُطلب منك تسجيل الدخول مرة أخرى وستفقد البيانات التي لم يتم مزامنتها مع الخادم.</string>
-    <string name="settingsSms">إعدادات الرسائل النصية القصيرة</string>
-    <string name="settingsSms_descr">فحص وتعديل العوامل المتعلقة ببوابة الرسائل القصيرة</string>
+    <string name="settingsReset_descr">سيتم حذف بيانات الإعدادت والتطبيق المخزنة في الجهاز. سيُطلب منك تسجيل الدخول مرة أخرى وستفقد البيانات التي لم يتم مزامنتها مع الخادم.</string>
+    <string name="settingsSms">إعدادات SMS</string>
+    <string name="settingsSms_descr">فحص وتعديل العوامل المتعلقة ببوابة sms</string>
     <!--endregion-->
 
     <string name="enrollmment_date">تاريخ التسجيل</string>
@@ -503,7 +503,7 @@
     <string name="org_unit_selection_warning">يجب تحديد وحدة تنظيمية واحدة على الأقل</string>
     <string name="send_user_name_title">إرسال البيانات</string>
     <string name="send_user_name_mesage">ساعد DHIS2 في تحسين هذا التطبيق من خلال مشاركة سجلات الأخطاء المرتبطة بمعرف المستخدم الخاص بك.</string>
-    <string name="check_mandatory_field">التحقق من الحقول</string>
+    <string name="check_mandatory_field">تحقق من الحقول</string>
     <string name="error_no_network_during_sync">فقدان الإتصال بالإنترنت أثناء عملية مزامنة الإعدادات والتكوين. يرجى معاودة المحاولة في وقت لاحق</string>
     <string name="action_agree">قبول</string>
     <string name="login_server_info_title">رابط الخادم</string>
@@ -563,7 +563,7 @@
     <string name="sms_error_no_user_login">المستخدم لم يقم بتسجيل الدخول</string>
     <string name="sms_error_module_disabled">وحدة الرسائل القصيرة غير مفعلة</string>
     <string name="sms_error_ongoing_sunmission">جاري إرسال رسالة SMS أخرى</string>
-    <string name="sms_metadata_empty">لم تبدأ وحدة SMS ، لم يتم العثور على البيانات الوصفية المطلوبة</string>
+    <string name="sms_metadata_empty">لم تبدأ وحدة الرسائل القصيرة، لم يتم العثور على البيانات الوصفية المطلوبة</string>
     <string name="sms_completed">مكتمل</string>
     <string name="sms_count_error">لم يتم قبول عدد الرسائل القصيرة</string>
     <string name="sms_state_started">بدء إرسال الرسالة القصيرة</string>
@@ -622,7 +622,7 @@
     <string name="filter_period_form_to">من - إلى</string>
     <string name="filter_period_other">أخرى</string>
     <string name="filter_period_any">في أي وقت</string>
-    <string name="data_values_error_sync_message">فشلت المزامنة. تحقق من قيم البيانات وحاول حل المشكلة ثم حاول مرة أخرى. إذا استمرت المشكلة بالظهور اتصل بمسؤول النظام</string>
+    <string name="data_values_error_sync_message">فشلت المزامنة. تحقق من قيم البيانات وحاول اصلاح المشكلة ثم حاول مرة أخرى. إذا استمرت المشكلة بالظهور اتصل بمسؤول النظام</string>
     <string name="sms_synced_message">تم إرسال هذه البيانات إلى الخادم ولكن ليس مضموناً أنه تم تخزينها</string>
     <string name="filter_event_status_open">المفتوحة</string>
     <string name="filter_event_status_schedule">المجدولة زمنياً</string>
@@ -635,8 +635,8 @@
     <string name="enrollment_data_hide">إخفاء بيانات التسجيل</string>
     <string name="enrollment_data_show">إظهار بيانات التسجيل</string>
     <string name="enrollment_data_section_label">بيانات التسجيل</string>
-    <string name="sms_enabled">وحدة الرسائل مفعلة</string>
-    <string name="sms_disabled">وحدة الرسائل غير مفعلة</string>
+    <string name="sms_enabled">وحدة الرسائل القصيرة مفعلة</string>
+    <string name="sms_disabled">وحدة الرسائل القصيرة غير مفعلة</string>
     <string name="sms_downloading_data">تحميل البيانات لوحدة الرسائل القصيرة. يرجى الإنتظار</string>
     <string name="sms_empty_gateway">لايمكن ترك بوابة عبور رسائل sms فارغ</string>
     <string name="granular_sync_enrollments_empty">لا توجد تسجيلات ليتم رفعها</string>
@@ -742,6 +742,17 @@
     <string name="coordinates_error">قيم الإحداثيات غير صالحة</string>
     <string name="break_glass_error">لا يمكنك تسجيل TEIs من وحدات تنظيمية أخرى في هذا البرنامج لأنه محمي. \n اتصل بالمسؤول.</string>
     <string name="add_image">إضافة صورة</string>
+    <string name="field_is_mandatory">هذا الحقل إلزامي</string>
     <string name="security_debugger_message">لأسباب أمنية ، لا يُسمح باستخدام هذه النسخة من التطبيق مع adb. الرجاء استخدام نسخة هذا التطبيق المخصصة للتدريب.</string>
 
-    </resources>
+    <string name="customactivityoncrash_error_activity_error_occurred_explanation">للأسف! شيء ما لم يسير كما هو مخطط له.\n دعنا نعيدك إلى العمل.</string>
+    <string name="customactivityoncrash_error_activity_restart_app">رجوع</string>
+    <string name="customactivityoncrash_error_activity_close_app">إغلاق التطبيق</string>
+    <string name="customactivityoncrash_error_activity_error_details">تفاصيل أكثر</string>
+    <string name="customactivityoncrash_error_activity_error_details_title">تفاصيل أكثر</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">إغلاق</string>
+    <string name="customactivityoncrash_error_activity_error_details_copy">نسخ إلى الحافظة</string>
+    <string name="customactivityoncrash_error_activity_error_details_copied">تم النسخ إلى الحافظة</string>
+    <string name="customactivityoncrash_error_activity_error_details_clipboard_label">معلومات الخطأ</string>
+    
+</resources>
