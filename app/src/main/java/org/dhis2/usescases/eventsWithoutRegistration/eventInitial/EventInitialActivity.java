@@ -501,6 +501,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.geometry.setCurrentLocationListener(geometry -> {
             Timber.tag("EVENTINITIAL").d("NEW GEOMETRY");
             this.newGeometry = geometry;
+            preferences.setValue(Preference.EVENT_COORDINATE_CHANGED,true);
         });
         binding.geometry.setMapListener(
                 (CoordinatesView.OnMapPositionClick) binding.geometry.getContext()

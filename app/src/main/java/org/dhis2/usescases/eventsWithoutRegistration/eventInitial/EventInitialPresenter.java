@@ -86,8 +86,8 @@ public class EventInitialPresenter
                                  @NonNull EventSummaryRepository eventSummaryRepository,
                                  @NonNull EventInitialRepository eventInitialRepository,
                                  @NonNull SchedulerProvider schedulerProvider,
-                                @NonNull PreferenceProvider preferenceProvider,
-                                @NonNull AnalyticsHelper analyticsHelper) {
+                                 @NonNull PreferenceProvider preferenceProvider,
+                                 @NonNull AnalyticsHelper analyticsHelper) {
 
         this.view = view;
         this.eventInitialRepository = eventInitialRepository;
@@ -238,6 +238,7 @@ public class EventInitialPresenter
 
     @Override
     public void onBackClick() {
+        preferences.setValue(Preference.EVENT_COORDINATE_CHANGED, false);
         if (eventId != null)
             analyticsHelper.setEvent(BACK_EVENT, CLICK, CREATE_EVENT);
         view.back();

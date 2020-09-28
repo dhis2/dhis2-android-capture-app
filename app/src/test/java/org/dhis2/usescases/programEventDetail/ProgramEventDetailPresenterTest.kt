@@ -1,4 +1,3 @@
-
 package org.dhis2.usescases.programEventDetail
 
 import androidx.lifecycle.MutableLiveData
@@ -16,6 +15,7 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import junit.framework.Assert.assertTrue
+import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
@@ -41,10 +41,17 @@ class ProgramEventDetailPresenterTest {
     private val repository: ProgramEventDetailRepository = mock()
     private val scheduler = TrampolineSchedulerProvider()
     private val filterManager: FilterManager = FilterManager.getInstance()
+    private val preferenceProvider: PreferenceProvider = mock()
 
     @Before
     fun setUp() {
-        presenter = ProgramEventDetailPresenter(view, repository, scheduler, filterManager)
+        presenter = ProgramEventDetailPresenter(
+            view,
+            repository,
+            scheduler,
+            filterManager,
+            preferenceProvider
+        )
     }
 
     @Test
@@ -110,12 +117,14 @@ class ProgramEventDetailPresenterTest {
 
         verify(view).navigateToEvent("eventId", "orgUnit")
     }
+
     @Test
     fun `Should start new event`() {
         presenter.addEvent()
 
         verify(view).startNewEvent()
     }
+
     @Test
     fun `Should go back when back button is pressed`() {
         presenter.onBackClick()
