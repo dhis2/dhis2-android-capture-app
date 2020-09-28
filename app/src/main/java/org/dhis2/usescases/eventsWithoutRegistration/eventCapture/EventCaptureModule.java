@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.dhislogic.DhisEventUtils;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
@@ -14,6 +15,7 @@ import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.D2;
@@ -42,16 +44,21 @@ public class EventCaptureModule {
     EventCaptureContract.Presenter providePresenter(@NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
                                                     @NonNull RulesUtilsProvider ruleUtils,
                                                     @NonNull ValueStore valueStore,
-                                                    SchedulerProvider schedulerProvider) {
-        return new EventCapturePresenterImpl(view, eventUid,programUid, eventCaptureRepository, ruleUtils, valueStore, schedulerProvider);
+                                                    SchedulerProvider schedulerProvider,
+                                                    PreferenceProvider preferences,
+                                                    GetNextVisibleSection getNextVisibleSection) {
+        return new EventCapturePresenterImpl(view, eventUid, programUid, eventCaptureRepository, ruleUtils, valueStore, schedulerProvider,
+                preferences,  getNextVisibleSection);
     }
 
     @Provides
     @PerActivity
     EventCaptureContract.EventCaptureRepository provideRepository(Context context,
-                                                                  FormRepository formRepository, D2 d2) {
+                                                                  FormRepository formRepository,
+                                                                  D2 d2,
+                                                                  DhisEventUtils eventUtils) {
         FieldViewModelFactory fieldFactory = new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context));
-        return new EventCaptureRepositoryImpl(fieldFactory, formRepository, eventUid, d2);
+        return new EventCaptureRepositoryImpl(fieldFactory, formRepository, eventUid, d2, eventUtils);
     }
 
     @Provides
@@ -74,4 +81,9 @@ public class EventCaptureModule {
         return new ValueStoreImpl(d2, eventUid, DataEntryStore.EntryMode.DE);
     }
 
+    @Provides
+    @PerActivity
+    GetNextVisibleSection getNextVisibleSection() {
+        return new GetNextVisibleSection();
+    }
 }

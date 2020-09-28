@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -19,7 +20,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginEnd="-200dp"
+            android:layout_marginEnd="-195dp"
             android:layout_marginBottom="-200dp"
             android:alpha=".1"
             app:srcCompat="@drawable/ic_dhis" />
@@ -29,6 +30,7 @@
             android:layout_height="wrap_content">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/aboutParent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp">
@@ -53,9 +55,18 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
                     android:text="@string/about_more"
-
                     android:textColorLink="?colorPrimary"
                     app:layout_constraintTop_toBottomOf="@id/appSDK" />
+
+                <TextView
+                    android:id="@+id/privacyPolicy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:text="@string/open_privacy_policy"
+                    android:textColorLink="?colorPrimary"
+                    app:layout_constraintTop_toBottomOf="@+id/about_user"
+                    tools:layout_editor_absoluteX="-2dp" />
 
                 <TextView
                     android:id="@+id/about_connected"
@@ -79,7 +90,8 @@
                     android:layout_marginTop="15dp"
                     android:text="@string/about_git"
                     android:textColorLink="?colorPrimary"
-                    app:layout_constraintTop_toBottomOf="@id/about_user" />
+                    app:layout_constraintTop_toBottomOf="@id/privacyPolicy"
+                    tools:layout_editor_absoluteX="3dp" />
 
                 <TextView
                     android:id="@+id/about_dev"

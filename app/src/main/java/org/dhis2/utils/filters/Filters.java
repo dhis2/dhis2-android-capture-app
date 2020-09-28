@@ -7,7 +7,7 @@ public enum Filters {
     CAT_OPT_COMB,
     EVENT_STATUS,
     ASSIGNED_TO_ME,
-    TEXT_VALUE
-    //TODO: Include Event, Enrollment and attributes Filters
-
+    TEXT_VALUE,
+    ENROLLMENT_DATE,
+    ENROLLMENT_STATUS
 }

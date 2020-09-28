@@ -228,7 +228,11 @@ class GranularSyncPresenterImpl(
                 .subscribe(
                     { count ->
                         reportState(SmsSendingService.State.CONVERTED, 0, count!!)
-                        reportState(SmsSendingService.State.WAITING_COUNT_CONFIRMATION, 0, count)
+                        reportState(
+                            SmsSendingService.State.WAITING_COUNT_CONFIRMATION,
+                            0,
+                            count
+                        )
                     },
                     { this.reportError(it) }
                 )

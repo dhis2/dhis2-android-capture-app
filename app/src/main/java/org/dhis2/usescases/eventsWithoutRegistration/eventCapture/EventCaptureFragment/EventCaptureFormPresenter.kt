@@ -35,7 +35,7 @@ class EventCaptureFormPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
-                        if(it.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED){
+                        if (it.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
                             activityPresenter.setLastUpdatedUid(lastFocusItem)
                             activityPresenter.nextCalculation(true)
                         }
@@ -46,7 +46,7 @@ class EventCaptureFormPresenter(
 
         disposable.add(
             view.sectionSelectorFlowable()
-                .map{ setCurrentSection(it) }
+                .map { setCurrentSection(it) }
                 .distinctUntilChanged()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -68,7 +68,7 @@ class EventCaptureFormPresenter(
                         selectedSection ?: fields
                             .mapNotNull { it.programStageSection() }
                             .firstOrNull()
-                            ?.let{ selectedSection = it }
+                            ?.let { selectedSection = it }
                     },
                     { Timber.e(it) }
                 )
@@ -91,5 +91,4 @@ class EventCaptureFormPresenter(
     fun onActionButtonClick() {
         activityPresenter.attempFinish()
     }
-
 }

@@ -110,7 +110,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, null));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater));
         rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, false, true));
-        rows.add(SCAN_CODE, new ScanTextRow(layoutInflater, processor, false));
+        rows.add(SCAN_CODE, new ScanTextRow(layoutInflater, processor, false, true, null));
     }
 
     @Override

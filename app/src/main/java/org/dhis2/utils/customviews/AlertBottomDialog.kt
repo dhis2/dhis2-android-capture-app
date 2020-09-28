@@ -49,6 +49,11 @@ class AlertBottomDialog : BottomSheetDialogFragment() {
     private var title: String? = null
     private var message: String? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -66,7 +71,10 @@ class AlertBottomDialog : BottomSheetDialogFragment() {
             setOnClickListener {
                 when (positiveOnclick) {
                     null -> dismiss()
-                    else -> positiveOnclick!!.invoke()
+                    else -> {
+                        positiveOnclick!!.invoke()
+                        dismiss()
+                    }
                 }
             }
         }
@@ -79,7 +87,10 @@ class AlertBottomDialog : BottomSheetDialogFragment() {
             setOnClickListener {
                 when (negativeOnclick) {
                     null -> dismiss()
-                    else -> negativeOnclick!!.invoke()
+                    else -> {
+                        negativeOnclick!!.invoke()
+                        dismiss()
+                    }
                 }
             }
         }
@@ -101,7 +112,7 @@ class AlertBottomDialog : BottomSheetDialogFragment() {
                 )
             val behavior = BottomSheetBehavior.from(bottomSheet!!)
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
-            behavior.setPeekHeight(0)
+            behavior.peekHeight = 0
         }
     }
 

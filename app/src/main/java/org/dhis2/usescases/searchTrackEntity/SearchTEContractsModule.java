@@ -7,14 +7,19 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
+import com.evrencoskun.tableview.filter.Filter;
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage;
+import org.dhis2.uicomponents.map.model.EventUiComponentModel;
+import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.Filters;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
@@ -23,7 +28,6 @@ import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
@@ -54,6 +58,8 @@ public class SearchTEContractsModule {
 
         void clearData();
 
+        void showFilterProgress();
+
         void setTutorial();
 
         void showAssignmentFilter();
@@ -78,7 +84,7 @@ public class SearchTEContractsModule {
 
         void openOrgUnitTreeSelector();
 
-        void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
+        void showPeriodRequest(Pair<FilterManager.PeriodRequest, Filters> periodRequest);
 
         void clearFilters();
 
@@ -86,7 +92,7 @@ public class SearchTEContractsModule {
 
         Consumer<FeatureType> featureType();
 
-        void setMap(HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox);
+        void setMap(List<SearchTeiModel> teis, HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox, EventsByProgramStage events, List<EventUiComponentModel> eventUiComponentModels);
 
         Consumer<D2Progress> downloadProgress();
 
@@ -97,6 +103,8 @@ public class SearchTEContractsModule {
         void goToEnrollment(String enrollmentUid, String programUid);
 
         void onBackClicked();
+
+        void couldNotDownload(String typeName);
     }
 
     public interface Presenter {
@@ -123,7 +131,7 @@ public class SearchTEContractsModule {
 
         void addRelationship(@NonNull String teiUid, @Nullable String relationshipTypeUid, boolean online);
 
-        void downloadTei(String teiUid,String enrollmentUid);
+        void downloadTei(String teiUid, String enrollmentUid);
 
         void downloadTeiForRelationship(String TEIuid, String relationshipTypeUid);
 
@@ -153,6 +161,8 @@ public class SearchTEContractsModule {
 
         Drawable getEnrollmentSymbolIcon();
 
+        HashMap<String, StageStyle> getProgramStageStyle();
+
         String nameOUByUid(String uid);
 
         int getTEIColor();
@@ -164,5 +174,7 @@ public class SearchTEContractsModule {
         void checkFilters(boolean listResultIsOk);
 
         void restoreQueryData(HashMap<String, String> queryData);
+
+        void deleteRelationship(String relationshipUid);
     }
 }

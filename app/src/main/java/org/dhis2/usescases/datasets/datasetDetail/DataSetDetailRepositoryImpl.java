@@ -60,6 +60,11 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
         if (!catOptComboFilters.isEmpty())
             repo = repo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptComboFilters));
 
+        d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet();
+        int dataSetOrgUnitNumber = d2.organisationUnitModule().organisationUnits()
+                .byDataSetUids(Collections.singletonList(dataSetUid))
+                .blockingGet().size();
+
         DataSetInstanceCollectionRepository finalRepo = repo;
         return Flowable.fromIterable(finalRepo.blockingGet())
                 .map(dataSetReport -> {
@@ -73,7 +78,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
                     State state = dataSetReport.state();
 
-                    if(state == State.SYNCED && dscr!=null){
+                    if (state == State.SYNCED && dscr != null) {
                         state = dscr.state();
                     }
 
@@ -86,7 +91,8 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                             dataSetReport.attributeOptionComboDisplayName(),
                             periodName,
                             state,
-                            dataSetReport.periodType().name());
+                            dataSetReport.periodType().name(),
+                            dataSetOrgUnitNumber > 1);
                 })
                 .filter(dataSetDetailModel -> stateFilters.isEmpty() || stateFilters.contains(dataSetDetailModel.state()))
                 .toSortedList((dataSet1, dataSet2) -> {
@@ -135,5 +141,10 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                         return Flowable.just(false);
                 });
 
+    }
+
+    @Override
+    public CategoryOptionCombo getCatOptCombo(String selectedCatOptionCombo) {
+        return d2.categoryModule().categoryOptionCombos().uid(selectedCatOptionCombo).blockingGet();
     }
 }

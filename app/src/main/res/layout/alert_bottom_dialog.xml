@@ -21,7 +21,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/ic_front_backdrop_bg">
+        android:background="@drawable/bottomsheet_bg">
 
 
         <TextView
@@ -67,6 +67,7 @@
         <Button
             android:id="@+id/negative"
             style="@style/TextButton"
+            android:textColor="?colorPrimaryLight"
             android:layout_marginEnd="20dp"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="5dp"

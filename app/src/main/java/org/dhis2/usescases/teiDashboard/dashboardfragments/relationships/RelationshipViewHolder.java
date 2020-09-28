@@ -34,8 +34,11 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
         String relationshipNameText = from ? relationships.relationshipType().toFromName() : relationships.relationshipType().fromToName();
         binding.relationshipName.setText(relationshipNameText != null ? relationshipNameText : relationships.relationshipType().displayName());
 
-        if (relationships.teiAttributes() != null)
-            setAttributes(relationships.teiAttributes());
+        if (from && relationships.fromAttributes() != null) {
+            setAttributes(relationships.fromAttributes());
+        } else if (!from && relationships.toAttributes() != null) {
+            setAttributes(relationships.toAttributes());
+        }
     }
 
     private void setAttributes(List<TrackedEntityAttributeValue> trackedEntityAttributeValueModels) {

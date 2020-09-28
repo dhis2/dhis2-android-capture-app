@@ -35,19 +35,22 @@ public class ProgramEventDetailContract {
 
         void setWritePermission(Boolean aBoolean);
 
+        void showFilterProgress();
+
         void setLiveData(LiveData<PagedList<ProgramEventViewModel>> pagedListLiveData);
 
         void setOptionComboAccess(Boolean canCreateEvent);
 
         void updateFilters(int totalFilters);
 
-        void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos);
+        void setCatOptionComboFilter(
+                Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos);
 
         void setTextTypeDataElementsFilter(List<DataElement> textTypeDataElementsFilter);
 
         void openOrgUnitTreeSelector();
 
-        void setMap(FeatureCollection featureCollection, BoundingBox boundingBox);
+        void setMap(FeatureCollection featureCollection, BoundingBox boundingBox, List<ProgramEventViewModel> programEventViewModels);
 
         void setEventInfo(Pair<ProgramEventViewModel,LatLng> programEventViewModel);
 
@@ -55,7 +58,7 @@ public class ProgramEventDetailContract {
 
         void clearFilters();
 
-        Consumer<FeatureType> setFeatureType();
+        void setFeatureType(FeatureType featureType);
 
         void startNewEvent();
 
@@ -64,6 +67,8 @@ public class ProgramEventDetailContract {
         void navigateToEvent(String eventId, String orgUnit);
 
         void showSyncDialog(String uid);
+
+        void showCatOptComboDialog(String catComboUid);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -86,5 +91,7 @@ public class ProgramEventDetailContract {
         void clearFilterClick();
 
         boolean hasAssignment();
+
+        void filterCatOptCombo(String selectedCatOptionCombo);
     }
 }

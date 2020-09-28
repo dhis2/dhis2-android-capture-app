@@ -1,5 +1,6 @@
 package org.dhis2.utils;
 
+import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
@@ -22,16 +23,16 @@ public class DateUtilsTest {
     @Test
     public void expiryPeriodAndDaysInRange() throws ParseException {
         String testDateInRange = "2018-07-31";
-        Date dateInRange = DateUtils.uiDateFormat().parse(testDateInRange);
+        Date dateInRange = DateUtils.oldUiDateFormat().parse(testDateInRange);
 
         String testDateInRange2 = "2018-07-01";
-        Date dateInRange2 = DateUtils.uiDateFormat().parse(testDateInRange2);
+        Date dateInRange2 = DateUtils.oldUiDateFormat().parse(testDateInRange2);
 
         String testDateInRange3 = "2018-08-01";
-        Date dateInRange3 = DateUtils.uiDateFormat().parse(testDateInRange3);
+        Date dateInRange3 = DateUtils.oldUiDateFormat().parse(testDateInRange3);
 
         String testDateInRange4 = "2018-06-01";
-        Date dateInRange4 = DateUtils.uiDateFormat().parse(testDateInRange4);
+        Date dateInRange4 = DateUtils.oldUiDateFormat().parse(testDateInRange4);
 
 
         Calendar cal = Calendar.getInstance();
@@ -68,38 +69,38 @@ public class DateUtilsTest {
         Date minDateFinancialOct = DateUtils.getInstance().expDate(dateInRange, 2, PeriodType.FinancialOct);
 
         assertNull(nullDate);
-        assertEquals("2018-07-23", DateUtils.uiDateFormat().format(minDateWeekly));
-        assertEquals("2018-07-30", DateUtils.uiDateFormat().format(minDateWeekly2));
-        assertEquals("2018-07-29", DateUtils.uiDateFormat().format(minDateDaily));
-        assertEquals("2018-07-25", DateUtils.uiDateFormat().format(minDateWeeklyWednesday));
-        assertEquals("2018-07-26", DateUtils.uiDateFormat().format(minDateWeeklyThursday));
-        assertEquals("2018-07-28", DateUtils.uiDateFormat().format(minDateWeeklySaturday));
-        assertEquals("2018-07-29", DateUtils.uiDateFormat().format(minDateWeeklySunday));
-        assertEquals("2018-07-16", DateUtils.uiDateFormat().format(minDateBiWeekly));
-        assertEquals("2018-06-18", DateUtils.uiDateFormat().format(minDateBiWeekly2));
-        assertEquals("2018-07-01", DateUtils.uiDateFormat().format(minDateMonthly));
-        assertEquals("2018-06-01", DateUtils.uiDateFormat().format(minDateMonthly2));
-        assertEquals("2018-07-01", DateUtils.uiDateFormat().format(minDateBiMonthly));
-        assertEquals("2018-05-01", DateUtils.uiDateFormat().format(minDateBiMonthly2));
-        assertEquals("2018-05-01", DateUtils.uiDateFormat().format(minDateQuarterly));
-        assertEquals("2018-01-01", DateUtils.uiDateFormat().format(minDateQuarterly2));
-        assertEquals("2018-07-01", DateUtils.uiDateFormat().format(minDateSixMonthly));
-        assertEquals("2017-07-01", DateUtils.uiDateFormat().format(minDateSixMonthly2));
-        assertEquals("2018-04-01", DateUtils.uiDateFormat().format(minDateSixMonthlyApril));
-        assertEquals("2017-10-01", DateUtils.uiDateFormat().format(minDateSixMonthlyApril2));
-        assertEquals("2018-01-01", DateUtils.uiDateFormat().format(minDateYearly));
-        assertEquals("2017-01-01", DateUtils.uiDateFormat().format(minDateYearly2));
-        assertEquals("2018-05-01", DateUtils.uiDateFormat().format(minDateFinancialApril));
-        assertEquals("2017-05-01", DateUtils.uiDateFormat().format(minDateFinancialApril2));
-        assertEquals("2018-07-01", DateUtils.uiDateFormat().format(minDateFinancialJuly));
-        assertEquals("2017-07-01", DateUtils.uiDateFormat().format(minDateFinancialJuly2));
-        assertEquals("2017-10-01", DateUtils.uiDateFormat().format(minDateFinancialOct));
+        assertEquals("2018-07-23", DateUtils.oldUiDateFormat().format(minDateWeekly));
+        assertEquals("2018-07-30", DateUtils.oldUiDateFormat().format(minDateWeekly2));
+        assertEquals("2018-07-29", DateUtils.oldUiDateFormat().format(minDateDaily));
+        assertEquals("2018-07-25", DateUtils.oldUiDateFormat().format(minDateWeeklyWednesday));
+        assertEquals("2018-07-26", DateUtils.oldUiDateFormat().format(minDateWeeklyThursday));
+        assertEquals("2018-07-28", DateUtils.oldUiDateFormat().format(minDateWeeklySaturday));
+        assertEquals("2018-07-29", DateUtils.oldUiDateFormat().format(minDateWeeklySunday));
+        assertEquals("2018-07-16", DateUtils.oldUiDateFormat().format(minDateBiWeekly));
+        assertEquals("2018-06-18", DateUtils.oldUiDateFormat().format(minDateBiWeekly2));
+        assertEquals("2018-07-01", DateUtils.oldUiDateFormat().format(minDateMonthly));
+        assertEquals("2018-06-01", DateUtils.oldUiDateFormat().format(minDateMonthly2));
+        assertEquals("2018-07-01", DateUtils.oldUiDateFormat().format(minDateBiMonthly));
+        assertEquals("2018-05-01", DateUtils.oldUiDateFormat().format(minDateBiMonthly2));
+        assertEquals("2018-05-01", DateUtils.oldUiDateFormat().format(minDateQuarterly));
+        assertEquals("2018-01-01", DateUtils.oldUiDateFormat().format(minDateQuarterly2));
+        assertEquals("2018-07-01", DateUtils.oldUiDateFormat().format(minDateSixMonthly));
+        assertEquals("2017-07-01", DateUtils.oldUiDateFormat().format(minDateSixMonthly2));
+        assertEquals("2018-04-01", DateUtils.oldUiDateFormat().format(minDateSixMonthlyApril));
+        assertEquals("2017-10-01", DateUtils.oldUiDateFormat().format(minDateSixMonthlyApril2));
+        assertEquals("2018-01-01", DateUtils.oldUiDateFormat().format(minDateYearly));
+        assertEquals("2017-01-01", DateUtils.oldUiDateFormat().format(minDateYearly2));
+        assertEquals("2018-05-01", DateUtils.oldUiDateFormat().format(minDateFinancialApril));
+        assertEquals("2017-05-01", DateUtils.oldUiDateFormat().format(minDateFinancialApril2));
+        assertEquals("2018-07-01", DateUtils.oldUiDateFormat().format(minDateFinancialJuly));
+        assertEquals("2017-07-01", DateUtils.oldUiDateFormat().format(minDateFinancialJuly2));
+        assertEquals("2017-10-01", DateUtils.oldUiDateFormat().format(minDateFinancialOct));
     }
 
 
     @Test
     public void getPeriodDaily() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2018-09-13");
+        Date testDate = DateUtils.oldUiDateFormat().parse("2018-09-13");
         String expectedPrevDate = "2018-09-12";
         String expectedCurrentDate = "2018-09-13";
         String expectedNextDate = "2018-09-14";
@@ -107,14 +108,14 @@ public class DateUtilsTest {
         Date prevDate = DateUtils.getInstance().getNextPeriod(PeriodType.Daily, testDate, -1);
         Date currentDate = DateUtils.getInstance().getNextPeriod(PeriodType.Daily, testDate, 0);
         Date nextDate = DateUtils.getInstance().getNextPeriod(PeriodType.Daily, testDate, 1);
-        assertEquals(expectedPrevDate, DateUtils.uiDateFormat().format(prevDate));
-        assertEquals(expectedCurrentDate, DateUtils.uiDateFormat().format(currentDate));
-        assertEquals(expectedNextDate, DateUtils.uiDateFormat().format(nextDate));
+        assertEquals(expectedPrevDate, DateUtils.oldUiDateFormat().format(prevDate));
+        assertEquals(expectedCurrentDate, DateUtils.oldUiDateFormat().format(currentDate));
+        assertEquals(expectedNextDate, DateUtils.oldUiDateFormat().format(nextDate));
     }
 
     @Test
     public void getNextPeriodWeekly() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2018-09-13");
+        Date testDate = DateUtils.oldUiDateFormat().parse("2018-09-13");
         String expectedPrevDate = "2018-09-03";
         String expectedCurrentDate = "2018-09-10";
         String expectedNextDate = "2018-09-17";
@@ -122,14 +123,14 @@ public class DateUtilsTest {
         Date prevDate = DateUtils.getInstance().getNextPeriod(PeriodType.Weekly, testDate, -1);
         Date currentDate = DateUtils.getInstance().getNextPeriod(PeriodType.Weekly, testDate, 0);
         Date nextDate = DateUtils.getInstance().getNextPeriod(PeriodType.Weekly, testDate, 1);
-        assertEquals(expectedPrevDate, DateUtils.uiDateFormat().format(prevDate));
-        assertEquals(expectedCurrentDate, DateUtils.uiDateFormat().format(currentDate));
-        assertEquals(expectedNextDate, DateUtils.uiDateFormat().format(nextDate));
+        assertEquals(expectedPrevDate, DateUtils.oldUiDateFormat().format(prevDate));
+        assertEquals(expectedCurrentDate, DateUtils.oldUiDateFormat().format(currentDate));
+        assertEquals(expectedNextDate, DateUtils.oldUiDateFormat().format(nextDate));
     }
 
     @Test
     public void getNextPeriodWeeklyWednesday() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2018-09-13");
+        Date testDate = DateUtils.oldUiDateFormat().parse("2018-09-13");
         String expectedPrevDate = "2018-09-05";
         String expectedCurrentDate = "2018-09-12";
         String expectedNextDate = "2018-09-19";
@@ -137,14 +138,14 @@ public class DateUtilsTest {
         Date prevDate = DateUtils.getInstance().getNextPeriod(PeriodType.WeeklyWednesday, testDate, -1);
         Date currentDate = DateUtils.getInstance().getNextPeriod(PeriodType.WeeklyWednesday, testDate, 0);
         Date nextDate = DateUtils.getInstance().getNextPeriod(PeriodType.WeeklyWednesday, testDate, 1);
-        assertEquals(expectedPrevDate, DateUtils.uiDateFormat().format(prevDate));
-        assertEquals(expectedCurrentDate, DateUtils.uiDateFormat().format(currentDate));
-        assertEquals(expectedNextDate, DateUtils.uiDateFormat().format(nextDate));
+        assertEquals(expectedPrevDate, DateUtils.oldUiDateFormat().format(prevDate));
+        assertEquals(expectedCurrentDate, DateUtils.oldUiDateFormat().format(currentDate));
+        assertEquals(expectedNextDate, DateUtils.oldUiDateFormat().format(nextDate));
     }
 
     @Test
     public void getNextPeriodWeeklyThursday() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2018-09-13");
+        Date testDate = DateUtils.oldUiDateFormat().parse("2018-09-13");
         String expectedPrevDate = "2018-09-06";
         String expectedCurrentDate = "2018-09-13";
         String expectedNextDate = "2018-09-20";
@@ -152,14 +153,14 @@ public class DateUtilsTest {
         Date prevDate = DateUtils.getInstance().getNextPeriod(PeriodType.WeeklyThursday, testDate, -1);
         Date currentDate = DateUtils.getInstance().getNextPeriod(PeriodType.WeeklyThursday, testDate, 0);
         Date nextDate = DateUtils.getInstance().getNextPeriod(PeriodType.WeeklyThursday, testDate, 1);
-        assertEquals(expectedPrevDate, DateUtils.uiDateFormat().format(prevDate));
-        assertEquals(expectedCurrentDate, DateUtils.uiDateFormat().format(currentDate));
-        assertEquals(expectedNextDate, DateUtils.uiDateFormat().format(nextDate));
+        assertEquals(expectedPrevDate, DateUtils.oldUiDateFormat().format(prevDate));
+        assertEquals(expectedCurrentDate, DateUtils.oldUiDateFormat().format(currentDate));
+        assertEquals(expectedNextDate, DateUtils.oldUiDateFormat().format(nextDate));
     }
 
     @Test
     public void getNextPeriodWeeklySaturday() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2018-09-13");
+        Date testDate = DateUtils.oldUiDateFormat().parse("2018-09-13");
         String expectedPrevDate = "2018-09-01";
         String expectedCurrentDate = "2018-09-08";
         String expectedNextDate = "2018-09-15";
@@ -167,14 +168,14 @@ public class DateUtilsTest {
         Date prevDate = DateUtils.getInstance().getNextPeriod(PeriodType.WeeklySaturday, testDate, -1);
         Date currentDate = DateUtils.getInstance().getNextPeriod(PeriodType.WeeklySaturday, testDate, 0);
         Date nextDate = DateUtils.getInstance().getNextPeriod(PeriodType.WeeklySaturday, testDate, 1);
-        assertEquals(expectedPrevDate, DateUtils.uiDateFormat().format(prevDate));
-        assertEquals(expectedCurrentDate, DateUtils.uiDateFormat().format(currentDate));
-        assertEquals(expectedNextDate, DateUtils.uiDateFormat().format(nextDate));
+        assertEquals(expectedPrevDate, DateUtils.oldUiDateFormat().format(prevDate));
+        assertEquals(expectedCurrentDate, DateUtils.oldUiDateFormat().format(currentDate));
+        assertEquals(expectedNextDate, DateUtils.oldUiDateFormat().format(nextDate));
     }
 
     @Test
     public void getNextPeriodWeeklySunday() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2018-09-13");
+        Date testDate = DateUtils.oldUiDateFormat().parse("2018-09-13");
         String expectedPrevDate = "2018-09-02";
         String expectedCurrentDate = "2018-09-09";
         String expectedNextDate = "2018-09-16";
@@ -182,14 +183,14 @@ public class DateUtilsTest {
         Date prevDate = DateUtils.getInstance().getNextPeriod(PeriodType.WeeklySunday, testDate, -1);
         Date currentDate = DateUtils.getInstance().getNextPeriod(PeriodType.WeeklySunday, testDate, 0);
         Date nextDate = DateUtils.getInstance().getNextPeriod(PeriodType.WeeklySunday, testDate, 1);
-        assertEquals(expectedPrevDate, DateUtils.uiDateFormat().format(prevDate));
-        assertEquals(expectedCurrentDate, DateUtils.uiDateFormat().format(currentDate));
-        assertEquals(expectedNextDate, DateUtils.uiDateFormat().format(nextDate));
+        assertEquals(expectedPrevDate, DateUtils.oldUiDateFormat().format(prevDate));
+        assertEquals(expectedCurrentDate, DateUtils.oldUiDateFormat().format(currentDate));
+        assertEquals(expectedNextDate, DateUtils.oldUiDateFormat().format(nextDate));
     }
 
     @Test
     public void getNextPeriodBiWeekly() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2018-09-13");
+        Date testDate = DateUtils.oldUiDateFormat().parse("2018-09-13");
         String expectedPrevDate = "2018-08-27";
         String expectedCurrentDate = "2018-09-10";
         String expectedNextDate = "2018-09-24";
@@ -197,14 +198,14 @@ public class DateUtilsTest {
         Date prevDate = DateUtils.getInstance().getNextPeriod(PeriodType.BiWeekly, testDate, -1);
         Date currentDate = DateUtils.getInstance().getNextPeriod(PeriodType.BiWeekly, testDate, 0);
         Date nextDate = DateUtils.getInstance().getNextPeriod(PeriodType.BiWeekly, testDate, 1);
-        assertEquals(expectedPrevDate, DateUtils.uiDateFormat().format(prevDate));
-        assertEquals(expectedCurrentDate, DateUtils.uiDateFormat().format(currentDate));
-        assertEquals(expectedNextDate, DateUtils.uiDateFormat().format(nextDate));
+        assertEquals(expectedPrevDate, DateUtils.oldUiDateFormat().format(prevDate));
+        assertEquals(expectedCurrentDate, DateUtils.oldUiDateFormat().format(currentDate));
+        assertEquals(expectedNextDate, DateUtils.oldUiDateFormat().format(nextDate));
     }
 
     @Test
     public void getNextPeriodMonthly() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2018-09-13");
+        Date testDate = DateUtils.oldUiDateFormat().parse("2018-09-13");
         String expectedPrevDate = "2018-08-01";
         String expectedCurrentDate = "2018-09-01";
         String expectedNextDate = "2018-10-01";
@@ -212,14 +213,14 @@ public class DateUtilsTest {
         Date prevDate = DateUtils.getInstance().getNextPeriod(PeriodType.Monthly, testDate, -1);
         Date currentDate = DateUtils.getInstance().getNextPeriod(PeriodType.Monthly, testDate, 0);
         Date nextDate = DateUtils.getInstance().getNextPeriod(PeriodType.Monthly, testDate, 1);
-        assertEquals(expectedPrevDate, DateUtils.uiDateFormat().format(prevDate));
-        assertEquals(expectedCurrentDate, DateUtils.uiDateFormat().format(currentDate));
-        assertEquals(expectedNextDate, DateUtils.uiDateFormat().format(nextDate));
+        assertEquals(expectedPrevDate, DateUtils.oldUiDateFormat().format(prevDate));
+        assertEquals(expectedCurrentDate, DateUtils.oldUiDateFormat().format(currentDate));
+        assertEquals(expectedNextDate, DateUtils.oldUiDateFormat().format(nextDate));
     }
 
     @Test
     public void getNextPeriodBiMonthly() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2018-09-13");
+        Date testDate = DateUtils.oldUiDateFormat().parse("2018-09-13");
         String expectedPrevDate = "2018-07-01";
         String expectedCurrentDate = "2018-09-01";
         String expectedNextDate = "2018-11-01";
@@ -227,14 +228,14 @@ public class DateUtilsTest {
         Date prevDate = DateUtils.getInstance().getNextPeriod(PeriodType.BiMonthly, testDate, -1);
         Date currentDate = DateUtils.getInstance().getNextPeriod(PeriodType.BiMonthly, testDate, 0);
         Date nextDate = DateUtils.getInstance().getNextPeriod(PeriodType.BiMonthly, testDate, 1);
-        assertEquals(expectedPrevDate, DateUtils.uiDateFormat().format(prevDate));
-        assertEquals(expectedCurrentDate, DateUtils.uiDateFormat().format(currentDate));
-        assertEquals(expectedNextDate, DateUtils.uiDateFormat().format(nextDate));
+        assertEquals(expectedPrevDate, DateUtils.oldUiDateFormat().format(prevDate));
+        assertEquals(expectedCurrentDate, DateUtils.oldUiDateFormat().format(currentDate));
+        assertEquals(expectedNextDate, DateUtils.oldUiDateFormat().format(nextDate));
     }
 
     @Test
     public void getNextPeriodQuarterly() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2018-09-13");
+        Date testDate = DateUtils.oldUiDateFormat().parse("2018-09-13");
         String expectedPrevDate = "2018-04-01";
         String expectedCurrentDate = "2018-07-01";
         String expectedNextDate = "2018-10-01";
@@ -242,14 +243,14 @@ public class DateUtilsTest {
         Date prevDate = DateUtils.getInstance().getNextPeriod(PeriodType.Quarterly, testDate, -1);
         Date currentDate = DateUtils.getInstance().getNextPeriod(PeriodType.Quarterly, testDate, 0);
         Date nextDate = DateUtils.getInstance().getNextPeriod(PeriodType.Quarterly, testDate, 1);
-        assertEquals(expectedPrevDate, DateUtils.uiDateFormat().format(prevDate));
-        assertEquals(expectedCurrentDate, DateUtils.uiDateFormat().format(currentDate));
-        assertEquals(expectedNextDate, DateUtils.uiDateFormat().format(nextDate));
+        assertEquals(expectedPrevDate, DateUtils.oldUiDateFormat().format(prevDate));
+        assertEquals(expectedCurrentDate, DateUtils.oldUiDateFormat().format(currentDate));
+        assertEquals(expectedNextDate, DateUtils.oldUiDateFormat().format(nextDate));
     }
 
     @Test
     public void getNextPeriodSixMonthly() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2018-09-13");
+        Date testDate = DateUtils.oldUiDateFormat().parse("2018-09-13");
         String expectedPrevDate = "2018-01-01";
         String expectedCurrentDate = "2018-07-01";
         String expectedNextDate = "2019-01-01";
@@ -257,14 +258,14 @@ public class DateUtilsTest {
         Date prevDate = DateUtils.getInstance().getNextPeriod(PeriodType.SixMonthly, testDate, -1);
         Date currentDate = DateUtils.getInstance().getNextPeriod(PeriodType.SixMonthly, testDate, 0);
         Date nextDate = DateUtils.getInstance().getNextPeriod(PeriodType.SixMonthly, testDate, 1);
-        assertEquals(expectedPrevDate, DateUtils.uiDateFormat().format(prevDate));
-        assertEquals(expectedCurrentDate, DateUtils.uiDateFormat().format(currentDate));
-        assertEquals(expectedNextDate, DateUtils.uiDateFormat().format(nextDate));
+        assertEquals(expectedPrevDate, DateUtils.oldUiDateFormat().format(prevDate));
+        assertEquals(expectedCurrentDate, DateUtils.oldUiDateFormat().format(currentDate));
+        assertEquals(expectedNextDate, DateUtils.oldUiDateFormat().format(nextDate));
     }
 
     @Test
     public void getNextPeriodSixMonthlyApril() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2018-09-13");
+        Date testDate = DateUtils.oldUiDateFormat().parse("2018-09-13");
         String expectedPrevDate = "2017-10-01";
         String expectedCurrentDate = "2018-04-01";
         String expectedNextDate = "2018-10-01";
@@ -272,14 +273,14 @@ public class DateUtilsTest {
         Date prevDate = DateUtils.getInstance().getNextPeriod(PeriodType.SixMonthlyApril, testDate, -1);
         Date currentDate = DateUtils.getInstance().getNextPeriod(PeriodType.SixMonthlyApril, testDate, 0);
         Date nextDate = DateUtils.getInstance().getNextPeriod(PeriodType.SixMonthlyApril, testDate, 1);
-        assertEquals(expectedPrevDate, DateUtils.uiDateFormat().format(prevDate));
-        assertEquals(expectedCurrentDate, DateUtils.uiDateFormat().format(currentDate));
-        assertEquals(expectedNextDate, DateUtils.uiDateFormat().format(nextDate));
+        assertEquals(expectedPrevDate, DateUtils.oldUiDateFormat().format(prevDate));
+        assertEquals(expectedCurrentDate, DateUtils.oldUiDateFormat().format(currentDate));
+        assertEquals(expectedNextDate, DateUtils.oldUiDateFormat().format(nextDate));
     }
 
     @Test
     public void getNextPeriodSixMonthlyNov() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2018-09-13");
+        Date testDate = DateUtils.oldUiDateFormat().parse("2018-09-13");
         String expectedPrevDate = "2017-11-01";
         String expectedCurrentDate = "2018-05-01";
         String expectedNextDate = "2018-11-01";
@@ -287,14 +288,14 @@ public class DateUtilsTest {
         Date prevDate = DateUtils.getInstance().getNextPeriod(PeriodType.SixMonthlyNov, testDate, -1);
         Date currentDate = DateUtils.getInstance().getNextPeriod(PeriodType.SixMonthlyNov, testDate, 0);
         Date nxtDate = DateUtils.getInstance().getNextPeriod(PeriodType.SixMonthlyNov, testDate, 1);
-        assertEquals(expectedPrevDate, DateUtils.uiDateFormat().format(prevDate));
-        assertEquals(expectedCurrentDate, DateUtils.uiDateFormat().format(currentDate));
-        assertEquals(expectedNextDate, DateUtils.uiDateFormat().format(nxtDate));
+        assertEquals(expectedPrevDate, DateUtils.oldUiDateFormat().format(prevDate));
+        assertEquals(expectedCurrentDate, DateUtils.oldUiDateFormat().format(currentDate));
+        assertEquals(expectedNextDate, DateUtils.oldUiDateFormat().format(nxtDate));
     }
 
     @Test
     public void getNextPeriodYearly() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2018-09-13");
+        Date testDate = DateUtils.oldUiDateFormat().parse("2018-09-13");
         String expectedPrevDate = "2017-01-01";
         String expectedCurrentDate = "2018-01-01";
         String expectedNextDate = "2019-01-01";
@@ -302,14 +303,14 @@ public class DateUtilsTest {
         Date prevDate = DateUtils.getInstance().getNextPeriod(PeriodType.Yearly, testDate, -1);
         Date currentDate = DateUtils.getInstance().getNextPeriod(PeriodType.Yearly, testDate, 0);
         Date nextDate = DateUtils.getInstance().getNextPeriod(PeriodType.Yearly, testDate, 1);
-        assertEquals(expectedPrevDate, DateUtils.uiDateFormat().format(prevDate));
-        assertEquals(expectedCurrentDate, DateUtils.uiDateFormat().format(currentDate));
-        assertEquals(expectedNextDate, DateUtils.uiDateFormat().format(nextDate));
+        assertEquals(expectedPrevDate, DateUtils.oldUiDateFormat().format(prevDate));
+        assertEquals(expectedCurrentDate, DateUtils.oldUiDateFormat().format(currentDate));
+        assertEquals(expectedNextDate, DateUtils.oldUiDateFormat().format(nextDate));
     }
 
     @Test
     public void getNextPeriodFinancialApril() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2018-09-13");
+        Date testDate = StringExtensionsKt.toDate( "2018-09-13");
         String expectedPrevDate = "2017-04-01";
         String expectedCurrentDate = "2018-04-01";
         String expectedNextDate = "2019-04-01";
@@ -317,14 +318,14 @@ public class DateUtilsTest {
         Date prevDate = DateUtils.getInstance().getNextPeriod(PeriodType.FinancialApril, testDate, -1);
         Date currentDate = DateUtils.getInstance().getNextPeriod(PeriodType.FinancialApril, testDate, 0);
         Date nextDate = DateUtils.getInstance().getNextPeriod(PeriodType.FinancialApril, testDate, 1);
-        assertEquals(expectedPrevDate, DateUtils.uiDateFormat().format(prevDate));
-        assertEquals(expectedCurrentDate, DateUtils.uiDateFormat().format(currentDate));
-        assertEquals(expectedNextDate, DateUtils.uiDateFormat().format(nextDate));
+        assertEquals(expectedPrevDate, DateUtils.oldUiDateFormat().format(prevDate));
+        assertEquals(expectedCurrentDate, DateUtils.oldUiDateFormat().format(currentDate));
+        assertEquals(expectedNextDate, DateUtils.oldUiDateFormat().format(nextDate));
     }
 
     @Test
     public void getNextPeriodFinancialJuly() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2018-09-13");
+        Date testDate = DateUtils.oldUiDateFormat().parse("2018-09-13");
         String expectedPrevDate = "2017-07-01";
         String expectedCurrentDate = "2018-07-01";
         String expectedNextDate = "2019-07-01";
@@ -332,14 +333,14 @@ public class DateUtilsTest {
         Date prevDate = DateUtils.getInstance().getNextPeriod(PeriodType.FinancialJuly, testDate, -1);
         Date currentDate = DateUtils.getInstance().getNextPeriod(PeriodType.FinancialJuly, testDate, 0);
         Date nextDate = DateUtils.getInstance().getNextPeriod(PeriodType.FinancialJuly, testDate, 1);
-        assertEquals(expectedPrevDate, DateUtils.uiDateFormat().format(prevDate));
-        assertEquals(expectedCurrentDate, DateUtils.uiDateFormat().format(currentDate));
-        assertEquals(expectedNextDate, DateUtils.uiDateFormat().format(nextDate));
+        assertEquals(expectedPrevDate, DateUtils.oldUiDateFormat().format(prevDate));
+        assertEquals(expectedCurrentDate, DateUtils.oldUiDateFormat().format(currentDate));
+        assertEquals(expectedNextDate, DateUtils.oldUiDateFormat().format(nextDate));
     }
 
     @Test
     public void getNextPeriodFinancialOct() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2018-09-13");
+        Date testDate = DateUtils.oldUiDateFormat().parse("2018-09-13");
         String expectedPrevDate = "2016-10-01";
         String expectedCurrentDate = "2017-10-01";
         String expectedNextDate = "2018-10-01";
@@ -347,14 +348,14 @@ public class DateUtilsTest {
         Date prevDate = DateUtils.getInstance().getNextPeriod(PeriodType.FinancialOct, testDate, -1);
         Date currentDate = DateUtils.getInstance().getNextPeriod(PeriodType.FinancialOct, testDate, 0);
         Date nextDate = DateUtils.getInstance().getNextPeriod(PeriodType.FinancialOct, testDate, 1);
-        assertEquals(expectedPrevDate, DateUtils.uiDateFormat().format(prevDate));
-        assertEquals(expectedCurrentDate, DateUtils.uiDateFormat().format(currentDate));
-        assertEquals(expectedNextDate, DateUtils.uiDateFormat().format(nextDate));
+        assertEquals(expectedPrevDate, DateUtils.oldUiDateFormat().format(prevDate));
+        assertEquals(expectedCurrentDate, DateUtils.oldUiDateFormat().format(currentDate));
+        assertEquals(expectedNextDate, DateUtils.oldUiDateFormat().format(nextDate));
     }
 
     @Test
     public void getNextPeriodFinancialNov() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2018-09-13");
+        Date testDate = DateUtils.oldUiDateFormat().parse("2018-09-13");
         String expectedPrevDate = "2016-11-01";
         String expectedCurrentDate = "2017-11-01";
         String expectedNextDate = "2018-11-01";
@@ -362,9 +363,9 @@ public class DateUtilsTest {
         Date prevDate = DateUtils.getInstance().getNextPeriod(PeriodType.FinancialNov, testDate, -1);
         Date currentDate = DateUtils.getInstance().getNextPeriod(PeriodType.FinancialNov, testDate, 0);
         Date nextDate = DateUtils.getInstance().getNextPeriod(PeriodType.FinancialNov, testDate, 1);
-        assertEquals(expectedPrevDate, DateUtils.uiDateFormat().format(prevDate));
-        assertEquals(expectedCurrentDate, DateUtils.uiDateFormat().format(currentDate));
-        assertEquals(expectedNextDate, DateUtils.uiDateFormat().format(nextDate));
+        assertEquals(expectedPrevDate, DateUtils.oldUiDateFormat().format(prevDate));
+        assertEquals(expectedCurrentDate, DateUtils.oldUiDateFormat().format(currentDate));
+        assertEquals(expectedNextDate, DateUtils.oldUiDateFormat().format(nextDate));
     }
 
     @Test
@@ -384,13 +385,13 @@ public class DateUtilsTest {
                 false
         };
 
-        Date testDate = DateUtils.uiDateFormat().parse(completedDate);
+        Date testDate = DateUtils.oldUiDateFormat().parse(completedDate);
 
 
         int i = 0;
         for (String date : currentDates) {
             Boolean isExpired = DateUtils.getInstance().isEventExpired(
-                    DateUtils.uiDateFormat().parse(date), testDate, compExpDays);
+                    DateUtils.oldUiDateFormat().parse(date), testDate, compExpDays);
             assertEquals(expectedResults[i], isExpired);
             i++;
         }
@@ -404,9 +405,9 @@ public class DateUtilsTest {
         String dateToTestString = "2018-12-05";
         String firstDayOfYearString = "2018-01-01";
         String lastDayOfYearString = "2018-12-31";
-        Date dateToTest = DateUtils.uiDateFormat().parse(dateToTestString);
-        Date firstDayOfYear = DateUtils.uiDateFormat().parse(firstDayOfYearString);
-        Date lastDayOfYear = DateUtils.uiDateFormat().parse(lastDayOfYearString);
+        Date dateToTest = DateUtils.oldUiDateFormat().parse(dateToTestString);
+        Date firstDayOfYear = DateUtils.oldUiDateFormat().parse(firstDayOfYearString);
+        Date lastDayOfYear = DateUtils.oldUiDateFormat().parse(lastDayOfYearString);
         dateUtils.setCurrentDate(dateToTest);
         dateUtils.getCalendar().setFirstDayOfWeek(Calendar.MONDAY);
 
@@ -416,8 +417,8 @@ public class DateUtilsTest {
 
         String firstDayOfMonthString = "2018-12-01";
         String lastDayOfMonthString = "2018-12-31";
-        Date firstDayOfMonth = DateUtils.uiDateFormat().parse(firstDayOfMonthString);
-        Date lastDayOfMonth = DateUtils.uiDateFormat().parse(lastDayOfMonthString);
+        Date firstDayOfMonth = DateUtils.oldUiDateFormat().parse(firstDayOfMonthString);
+        Date lastDayOfMonth = DateUtils.oldUiDateFormat().parse(lastDayOfMonthString);
 
         Date[] dates2 = dateUtils.getDateFromDateAndPeriod(dateToTest, Period.MONTHLY);
         assertEquals(dates2[0], firstDayOfMonth);
@@ -425,8 +426,8 @@ public class DateUtilsTest {
 
         String firstDayOfWeekString = "2018-12-03";
         String lastDayOfWeekString = "2018-12-09";
-        Date firstDayOfWeek = DateUtils.uiDateFormat().parse(firstDayOfWeekString);
-        Date lastDayOfWeek = DateUtils.uiDateFormat().parse(lastDayOfWeekString);
+        Date firstDayOfWeek = DateUtils.oldUiDateFormat().parse(firstDayOfWeekString);
+        Date lastDayOfWeek = DateUtils.oldUiDateFormat().parse(lastDayOfWeekString);
 
         Date[] dates3 = dateUtils.getDateFromDateAndPeriod(dateToTest, Period.WEEKLY);
         assertEquals(dates3[0], firstDayOfWeek);
@@ -434,8 +435,8 @@ public class DateUtilsTest {
 
         String currentDayString = "2018-12-05";
         String nextDayString = "2018-12-06";
-        Date currentDay = DateUtils.uiDateFormat().parse(currentDayString);
-        Date nextDay = DateUtils.uiDateFormat().parse(nextDayString);
+        Date currentDay = DateUtils.oldUiDateFormat().parse(currentDayString);
+        Date nextDay = DateUtils.oldUiDateFormat().parse(nextDayString);
 
         Date[] dates4 = dateUtils.getDateFromDateAndPeriod(dateToTest, Period.DAILY);
         assertEquals(dates4[0], currentDay);
@@ -453,8 +454,11 @@ public class DateUtilsTest {
 
     @Test
     public void testTimeFormats() {
-        SimpleDateFormat uiFormat = new SimpleDateFormat(DateUtils.DATE_FORMAT_EXPRESSION, Locale.US);
+        SimpleDateFormat uiFormat = new SimpleDateFormat(DateUtils.SIMPLE_DATE_FORMAT, Locale.US);
         assertEquals(uiFormat, DateUtils.uiDateFormat());
+
+        SimpleDateFormat oldUiFormat = new SimpleDateFormat(DateUtils.DATE_FORMAT_EXPRESSION, Locale.US);
+        assertEquals(oldUiFormat, DateUtils.oldUiDateFormat());
 
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.US);
         assertEquals(timeFormat, DateUtils.timeFormat());
@@ -487,8 +491,8 @@ public class DateUtilsTest {
     public void testGetDifference() throws ParseException {
         String startDateString = "2006-01-24";
         String endDateString = "2019-01-23";
-        Date startDate = DateUtils.uiDateFormat().parse(startDateString);
-        Date endDate = DateUtils.uiDateFormat().parse(endDateString);
+        Date startDate = DateUtils.oldUiDateFormat().parse(startDateString);
+        Date endDate = DateUtils.oldUiDateFormat().parse(endDateString);
 
         int[] diff = DateUtils.getDifference(startDate, endDate);
         assertEquals(12, diff[0]);
@@ -508,10 +512,10 @@ public class DateUtilsTest {
 
     @Test
     public void testGetPeriodUIString() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2019-01-11");
+        Date testDate = DateUtils.oldUiDateFormat().parse("2019-01-11");
 
-        assertEquals("2019-01-11", DateUtils.getInstance().getPeriodUIString(null, testDate, Locale.ENGLISH));
-        assertEquals("2019-01-11", DateUtils.getInstance().getPeriodUIString(PeriodType.Daily, testDate, Locale.ENGLISH));
+        assertEquals("11/1/2019", DateUtils.getInstance().getPeriodUIString(null, testDate, Locale.ENGLISH));
+        assertEquals("11/1/2019", DateUtils.getInstance().getPeriodUIString(PeriodType.Daily, testDate, Locale.ENGLISH));
         assertEquals("Week 2 2019-01-07 to  2019-01-13", DateUtils.getInstance().getPeriodUIString(PeriodType.Weekly, testDate, Locale.ENGLISH));
         assertEquals("Week 2 2019-01-09 to  2019-01-15", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklyWednesday, testDate, Locale.ENGLISH));
         assertEquals("Week 2 2019-01-10 to  2019-01-16", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklyThursday, testDate, Locale.ENGLISH));
@@ -530,13 +534,13 @@ public class DateUtilsTest {
     }
 
     private Date toDate(String date) throws ParseException {
-        return DateUtils.uiDateFormat().parse(date);
+        return DateUtils.oldUiDateFormat().parse(date);
     }
 
     @Test
     public void active_event_NcD_NPT_NeD_is_not_expired() throws ParseException {
 
-        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        Date currentDate = DateUtils.oldUiDateFormat().parse("2019-03-01");
         DateUtils.getInstance().setCurrentDate(currentDate);
 
         assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.ACTIVE, 0, null, 0));
@@ -549,7 +553,7 @@ public class DateUtilsTest {
     @Test
     public void active_event_NcD_Monthly_0_is_expired() throws ParseException {
 
-        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        Date currentDate = DateUtils.oldUiDateFormat().parse("2019-03-01");
         DateUtils.getInstance().setCurrentDate(currentDate);
 
         assertTrue(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.ACTIVE, 0, PeriodType.Monthly, 0));
@@ -560,7 +564,7 @@ public class DateUtilsTest {
     @Test
     public void active_event_NcD_Monthly_1_is_expired() throws ParseException {
 
-        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        Date currentDate = DateUtils.oldUiDateFormat().parse("2019-03-01");
         DateUtils.getInstance().setCurrentDate(currentDate);
 
         assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.ACTIVE, 0, PeriodType.Monthly, 1));
@@ -569,7 +573,7 @@ public class DateUtilsTest {
         DateUtils.getInstance().setCurrentDate(currentDate);
         assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.ACTIVE, 0, PeriodType.Monthly, 1));
 
-        currentDate = DateUtils.uiDateFormat().parse("2019-03-02");
+        currentDate = DateUtils.oldUiDateFormat().parse("2019-03-02");
         DateUtils.getInstance().setCurrentDate(currentDate);
 
         assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.ACTIVE, 0, null, 0));
@@ -578,7 +582,7 @@ public class DateUtilsTest {
     @Test
     public void complete_event_NcD_NPT_NeD_is_not_expired() throws ParseException {
 
-        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        Date currentDate = DateUtils.oldUiDateFormat().parse("2019-03-01");
         DateUtils.getInstance().setCurrentDate(currentDate);
 
         assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.COMPLETED, 0, null, 0));
@@ -588,7 +592,7 @@ public class DateUtilsTest {
     @Test
     public void complete_event_1_NPT_NeD_is_not_expired() throws ParseException {
 
-        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        Date currentDate = DateUtils.oldUiDateFormat().parse("2019-03-01");
         DateUtils.getInstance().setCurrentDate(currentDate);
 
         assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.COMPLETED, 0, null, 1));
@@ -599,7 +603,7 @@ public class DateUtilsTest {
     @Test
     public void complete_event_1_Monthly_0_is_expired() throws ParseException {
 
-        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        Date currentDate = DateUtils.oldUiDateFormat().parse("2019-03-01");
         DateUtils.getInstance().setCurrentDate(currentDate);
 
         assertTrue(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), toDate("2019-03-01"), EventStatus.COMPLETED, 1, PeriodType.Monthly, 0));
@@ -610,7 +614,7 @@ public class DateUtilsTest {
     @Test
     public void complete_event_1_Monthly_1_is_not_expired() throws ParseException {
 
-        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        Date currentDate = DateUtils.oldUiDateFormat().parse("2019-03-01");
         DateUtils.getInstance().setCurrentDate(currentDate);
 
         assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), toDate("2019-02-28"), EventStatus.COMPLETED, 1, PeriodType.Monthly, 1));
@@ -621,7 +625,7 @@ public class DateUtilsTest {
     @Test
     public void complete_event_1_NPT_NeD_is_expired() throws ParseException {
 
-        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-02");
+        Date currentDate = DateUtils.oldUiDateFormat().parse("2019-03-02");
         DateUtils.getInstance().setCurrentDate(currentDate);
 
         assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), toDate("2019-03-01"), EventStatus.COMPLETED, 1, null, 0));
@@ -631,7 +635,7 @@ public class DateUtilsTest {
     @Test
     public void complete_event_1_Monthly_1_is_expired() throws ParseException {
 
-        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-02");
+        Date currentDate = DateUtils.oldUiDateFormat().parse("2019-03-02");
         DateUtils.getInstance().setCurrentDate(currentDate);
 
         assertTrue(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), toDate("2019-03-01"), EventStatus.COMPLETED, 1, null, 0));
@@ -644,5 +648,56 @@ public class DateUtilsTest {
 
         assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.COMPLETED, 1, null, 0));
 
+    }
+
+    @Test
+    public void shouldSubtractYearsToDateWithPositiveInteger() throws ParseException{
+        int years = 5;
+
+        Date currentDate = DateUtils.oldUiDateFormat().parse("2020-07-15");
+        Date beforeDate = DateUtils.yearsBeforeNow(years);
+
+        Calendar now = Calendar.getInstance();
+        now.setTime(currentDate);
+        Calendar before = Calendar.getInstance();
+        before.setTime(beforeDate);
+
+        int result = now.get(Calendar.YEAR) - before.get(Calendar.YEAR);
+
+        assertEquals(result, years);
+    }
+
+    @Test
+    public void shouldSubtractYearsToDateWithNegativeInteger() throws ParseException{
+        int years = -5;
+
+        Date currentDate = DateUtils.oldUiDateFormat().parse("2020-07-15");
+        Date beforeDate = DateUtils.yearsBeforeNow(years);
+
+        Calendar now = Calendar.getInstance();
+        now.setTime(currentDate);
+        Calendar before = Calendar.getInstance();
+        before.setTime(beforeDate);
+
+        int result = now.get(Calendar.YEAR) - before.get(Calendar.YEAR);
+
+        assertEquals(result, -(years));
+    }
+
+    @Test
+    public void shouldAddYearsToDate() throws ParseException{
+        int years = 1;
+
+        Date currentDate = DateUtils.oldUiDateFormat().parse("2020-07-15");
+        Date beforeDate = DateUtils.yearsAfterNow(years);
+
+        Calendar now = Calendar.getInstance();
+        now.setTime(currentDate);
+        Calendar after = Calendar.getInstance();
+        after.setTime(beforeDate);
+
+        int result = after.get(Calendar.YEAR) - now.get(Calendar.YEAR);
+
+        assertEquals(result, years);
     }
 }

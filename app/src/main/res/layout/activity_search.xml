@@ -290,7 +290,7 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/filterOpen" />
+                    app:layout_constraintTop_toBottomOf="@id/progressLayout" />
 
                 <com.mapbox.mapboxsdk.maps.MapView
                     android:id="@+id/mapView"
@@ -300,7 +300,20 @@
                     android:visibility="gone"
                     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/filterOpen" />
+                    app:layout_constraintTop_toBottomOf="@id/filterOpen"
+                    tools:visibility="visible" />
+
+                <org.dhis2.uicomponents.map.views.CarouselView
+                    android:id="@+id/map_carousel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="16dp"
+                    android:clipToPadding="false"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    app:layout_constraintBottom_toBottomOf="@id/mapView"
+                    app:layout_constraintStart_toStartOf="@id/mapView"
+                    tools:listitem="@layout/item_carousel_tei" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/mapLayerButton"
@@ -308,6 +321,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:padding="5dp"
+                    android:layout_marginTop="10dp"
                     android:text="@string/map_layers"
                     android:textAllCaps="true"
                     android:textColor="?colorAccent"
@@ -334,23 +348,24 @@
                         tools:text="You need to enter at least N attributes to do a search" />
 
                 </RelativeLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <RelativeLayout
                 android:id="@+id/progressLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:background="@drawable/ic_front_backdrop_bg"
-                android:visibility="visible"
+                app:layout_constraintTop_toBottomOf="@id/filterOpen"
                 app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
                 <ProgressBar
+                    android:id="@+id/progress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:layout_margin="5dp"
                     app:progressColor="@{@color/colorPrimary}" />
             </RelativeLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/enrollmentButton"

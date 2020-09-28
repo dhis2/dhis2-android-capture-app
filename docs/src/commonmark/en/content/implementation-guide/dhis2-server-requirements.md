@@ -1,5 +1,7 @@
 # DHIS 2 Server Requirements
 
+<!--DHIS2-SECTION-ID:server_requirements-->
+
 The new DHIS 2 Capture Android App requires a DHIS 2 2.29 or greater instance running in a web server. The DHIS 2 instance can reside on-premise server, a virtual machine or it can be purchased as software-as-a-service (managed hosting). For more information about thifferent DHIS 2 hosting options please visit [https://www.DHIS2.org/hosting](https://www.dhis2.org/hosting).
 
 This section provides basic guidelines on how to configure the DHIS 2 server, which you will need to do in the first two scenarios (on-premis and virtual machine). In the third scenario of managed hosting, you should let your provider know that you will be deploying the Android App and have an open discussion on best ways to configure the server. You should start by sharing these guidelines with your managed hosting provider.

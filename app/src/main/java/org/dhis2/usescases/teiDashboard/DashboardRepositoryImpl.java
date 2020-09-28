@@ -3,7 +3,7 @@ package org.dhis2.usescases.teiDashboard;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.dhis2.Bindings.EventExtensionsKt;
+import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
@@ -64,16 +64,18 @@ public class DashboardRepositoryImpl
 
     private final D2 d2;
     private final ResourceManager resources;
+    private final String enrollmentUid;
 
     private String teiUid;
 
     private String programUid;
 
 
-    public DashboardRepositoryImpl(D2 d2, String teiUid, String programUid, ResourceManager resources) {
+    public DashboardRepositoryImpl(D2 d2, String teiUid, String programUid, String enrollmentUid, ResourceManager resources) {
         this.d2 = d2;
         this.teiUid = teiUid;
         this.programUid = programUid;
+        this.enrollmentUid = enrollmentUid;
         this.resources = resources;
     }
 
@@ -101,38 +103,32 @@ public class DashboardRepositoryImpl
     }
 
     @Override
-    public Observable<Enrollment> getEnrollment(String programUid, String teiUid) {
-        String progId = programUid == null ? "" : programUid;
-        String teiId = teiUid == null ? "" : teiUid;
-        return Observable.fromCallable(() -> d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiId)
-                .byProgram().eq(progId).one().blockingGet());
+    public Observable<Enrollment> getEnrollment() {
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid).get().toObservable();
     }
 
     @Override
     public Observable<List<Event>> getTEIEnrollmentEvents(String programUid, String teiUid) {
 
-        return d2.enrollmentModule().enrollments().byProgram().eq(programUid).byTrackedEntityInstance().eq(teiUid)
-                .one().get().flatMap(enrollment -> d2.eventModule().events().byEnrollmentUid().eq(enrollment.uid())
-                        .byDeleted().isFalse().get().toFlowable().flatMapIterable(events -> events).map(event -> {
-                            if (Boolean.FALSE
-                                    .equals(d2.programModule().programs().uid(programUid).blockingGet().ignoreOverdueEvents()))
-                                if (event.status() == EventStatus.SCHEDULE
-                                        && event.dueDate().before(DateUtils.getInstance().getToday()))
-                                    event = updateState(event, EventStatus.OVERDUE);
+        return d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
+                .byDeleted().isFalse()
+                .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
+                .get().toFlowable().flatMapIterable(events -> events).map(event -> {
+                    if (Boolean.FALSE
+                            .equals(d2.programModule().programs().uid(programUid).blockingGet().ignoreOverdueEvents()))
+                        if (event.status() == EventStatus.SCHEDULE
+                                && event.dueDate().before(DateUtils.getInstance().getToday()))
+                            event = updateState(event, EventStatus.OVERDUE);
 
-                            return event;
-                        }).toSortedList((event1, event2) ->
-                                EventExtensionsKt.primaryDate(event2).compareTo(
-                                        EventExtensionsKt.primaryDate(event1)
-                                ))
-
-                ).toObservable();
+                    return event;
+                }).toList()
+                .toObservable();
     }
 
     @Override
     public Observable<List<Event>> getEnrollmentEventsWithDisplay(String programUid, String teiUid) {
-        return getEnrollment(programUid, teiUid)
-                .flatMapSingle(enrollment -> d2.eventModule().events().byEnrollmentUid().eq(enrollment.uid()).get())
+        return d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid).get()
+                .toObservable()
                 .map(events -> {
                     List<Event> finalEvents = new ArrayList<>();
                     for (Event event : events) {
@@ -311,9 +307,7 @@ public class DashboardRepositoryImpl
 
                 d2.noteModule().notes().blockingAdd(
                         NoteCreateProjection.builder()
-                                .enrollment(d2.enrollmentModule().enrollments().byProgram().eq(programUid)
-                                        .byTrackedEntityInstance().eq(teiUid)
-                                        .byStatus().eq(EnrollmentStatus.ACTIVE).one().blockingGet().uid())
+                                .enrollment(enrollmentUid)
                                 .value(stringBooleanPair.val0())
                                 .build()
                 );
@@ -471,10 +465,8 @@ public class DashboardRepositoryImpl
                                 RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teiUid).build()).build()
                 ))
                 .map(relationship -> {
-                    RelationshipType relationshipType = null;
-                    for (RelationshipType type : d2.relationshipModule().relationshipTypes().blockingGet())
-                        if (type.uid().equals(relationship.relationshipType()))
-                            relationshipType = type;
+                    RelationshipType relationshipType =
+                            d2.relationshipModule().relationshipTypes().uid(relationship.relationshipType()).blockingGet();
 
                     String relationshipTEIUid;
                     RelationshipViewModel.RelationshipDirection direction;
@@ -486,29 +478,75 @@ public class DashboardRepositoryImpl
                         direction = RelationshipViewModel.RelationshipDirection.TO;
                     }
 
-                    TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(relationshipTEIUid).blockingGet();
-                    List<TrackedEntityTypeAttribute> typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
-                            .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
-                            .byDisplayInList().isTrue()
-                            .blockingGet();
-                    List<String> attributeUids = new ArrayList<>();
-                    for (TrackedEntityTypeAttribute typeAttribute : typeAttributes)
-                        attributeUids.add(typeAttribute.trackedEntityAttribute().uid());
-                    List<TrackedEntityAttributeValue> attributeValues = d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance().eq(tei.uid())
-                            .byTrackedEntityAttribute().in(attributeUids).blockingGet();
+                    String fromTeiUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
+                    String toTeiUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
 
-                    return RelationshipViewModel.create(relationship, relationshipType, direction, relationshipTEIUid, attributeValues);
+                    TrackedEntityInstance fromTei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(fromTeiUid).blockingGet();
+                    TrackedEntityInstance toTei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(toTeiUid).blockingGet();
+
+
+                    return RelationshipViewModel.create(
+                            relationship,
+                            relationshipType,
+                            direction,
+                            relationshipTEIUid,
+                            getTrackedEntityAttributesForRelationship(fromTei),
+                            getTrackedEntityAttributesForRelationship(toTei),
+                            fromTei.geometry(),
+                            toTei.geometry(),
+                            ExtensionsKt.profilePicturePath(fromTei, d2, programUid),
+                            ExtensionsKt.profilePicturePath(toTei, d2, programUid),
+                            getTeiDefaultRes(fromTei),
+                            getTeiDefaultRes(toTei)
+                    );
                 })
                 .toList().toFlowable();
+    }
+
+    private List<TrackedEntityAttributeValue> getTrackedEntityAttributesForRelationship(TrackedEntityInstance tei) {
+
+        List<TrackedEntityAttributeValue> values;
+        List<String> attributeUids = new ArrayList<>();
+        List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes = d2.programModule().programTrackedEntityAttributes()
+                .byProgram().eq(programUid)
+                .byDisplayInList().isTrue()
+                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                .blockingGet();
+        for (ProgramTrackedEntityAttribute programAttribute : programTrackedEntityAttributes) {
+            attributeUids.add(programAttribute.trackedEntityAttribute().uid());
+        }
+        values = d2.trackedEntityModule().trackedEntityAttributeValues()
+                .byTrackedEntityInstance().eq(tei.uid())
+                .byTrackedEntityAttribute().in(attributeUids).blockingGet();
+
+        if (values.isEmpty()) {
+            attributeUids.clear();
+            List<TrackedEntityTypeAttribute> typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
+                    .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
+                    .byDisplayInList().isTrue()
+                    .blockingGet();
+
+            for (TrackedEntityTypeAttribute typeAttribute : typeAttributes) {
+                attributeUids.add(typeAttribute.trackedEntityAttribute().uid());
+            }
+            values = d2.trackedEntityModule().trackedEntityAttributeValues()
+                    .byTrackedEntityInstance().eq(tei.uid())
+                    .byTrackedEntityAttribute().in(attributeUids).blockingGet();
+        }
+
+        return values;
+    }
+
+    private int getTeiDefaultRes(TrackedEntityInstance tei) {
+        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).blockingGet();
+        return resources.getObjectStyleDrawableResource(teiType.style().icon(), R.drawable.photo_temp_gray);
     }
 
     @Override
     public Single<Integer> getNoteCount() {
         return d2.enrollmentModule().enrollments()
-                .byProgram().eq(programUid)
-                .byTrackedEntityInstance().eq(teiUid)
                 .withNotes()
-                .one()
+                .uid(enrollmentUid)
                 .get()
                 .map(enrollment -> enrollment.notes() != null ? enrollment.notes().size() : 0);
     }
@@ -519,15 +557,28 @@ public class DashboardRepositoryImpl
     }
 
     @Override
-    public Observable<Boolean> updateEnrollmentStatus(String enrollmentUid, EnrollmentStatus status) {
+    public Observable<StatusChangeResultCode> updateEnrollmentStatus(String enrollmentUid, EnrollmentStatus status) {
         try {
-            if(d2.programModule().programs().uid(programUid).blockingGet().access().data().write()) {
-                d2.enrollmentModule().enrollments().uid(enrollmentUid).setStatus(status);
-                return Observable.just(true);
+            if (d2.programModule().programs().uid(programUid).blockingGet().access().data().write()) {
+                if (reopenCheck(status)) {
+                    d2.enrollmentModule().enrollments().uid(enrollmentUid).setStatus(status);
+                    return Observable.just(StatusChangeResultCode.CHANGED);
+                } else {
+                    return Observable.just(StatusChangeResultCode.ACTIVE_EXIST);
+                }
+            } else {
+                return Observable.just(StatusChangeResultCode.WRITE_PERMISSION_FAIL);
             }
-            return Observable.just(false);
-        } catch (D2Error error){
-            return Observable.just(false);
+        } catch (D2Error error) {
+            return Observable.just(StatusChangeResultCode.FAILED);
         }
+    }
+
+    private boolean reopenCheck(EnrollmentStatus status) {
+        return status != EnrollmentStatus.ACTIVE || d2.enrollmentModule().enrollments()
+                .byProgram().eq(programUid)
+                .byTrackedEntityInstance().eq(teiUid)
+                .byStatus().eq(EnrollmentStatus.ACTIVE)
+                .blockingIsEmpty();
     }
 }

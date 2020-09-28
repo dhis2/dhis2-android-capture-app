@@ -52,7 +52,7 @@ class TextValueFilterHolder extends FilterHolder {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
                 DataElement dataelement = textDataElements.get(position);
-                textValueFilter = Pair.create(dataelement.uid(),textValueFilter.val1());
+                textValueFilter = Pair.create(dataelement.uid(),textValueFilter.val0());
                 FilterManager.getInstance().setTexValueFilter(textValueFilter);
             }
 

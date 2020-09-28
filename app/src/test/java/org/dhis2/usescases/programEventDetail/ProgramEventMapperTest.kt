@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import java.util.Date
+import org.dhis2.data.dhislogic.DhisEventUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
@@ -15,16 +16,19 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
+import org.mockito.Mockito.anyString
 
 class ProgramEventMapperTest {
 
     private lateinit var mapper: ProgramEventMapper
 
     private val d2: D2 = Mockito.mock(D2::class.java, RETURNS_DEEP_STUBS)
+    private val dhisEventUtils: DhisEventUtils = mock()
 
     @Before
     fun setUp() {
-        mapper = ProgramEventMapper(d2)
+        mapper = ProgramEventMapper(d2, dhisEventUtils)
+        whenever(dhisEventUtils.isEventEditable(anyString())) doReturn true
     }
 
     @Test

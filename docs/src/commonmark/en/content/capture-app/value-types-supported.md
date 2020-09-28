@@ -1,9 +1,10 @@
 # Value types supported
 
+<!-- DHIS2-SECTION-ID:valuetypes -->
+
 The following is a comprehensive list of all value types available in DHIS 2, and notes on whether or not these have been implemented in the Android Capture app.
 
 Any issues around using a particular feature with Android are highlighted with an exclamation mark \!.
-
 
 |||
 | :-: | :------ |
@@ -40,3 +41,4 @@ Any issues around using a particular feature with Android are highlighted with a
 | Coordinate | Enables manual entry of geographical coordinates (doesn't enable automatic capture of coordinates) | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png)| |
 | URL | Enables manual entry of a URL. | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) |![](resources/images/../../admin/icon-complete.png) | |
 | Image | Enables upload of images. | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-incomplete.png) | |
+

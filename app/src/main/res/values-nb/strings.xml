@@ -509,7 +509,6 @@
     <string name="no_conflicts_synced_message">Du er oppdatert! Alle dataene dine er sendt til serveren.</string>
     <string name="relationship_error_recursive">Du kan ikke relatere en oppføring med seg selv</string>
     <string name="unblock_session">Fjern blokkering på sesjonen</string>
-    <string name="data_set_closed">Lukk</string>
     <string name="data_set_open">Åpne</string>
     <string name="unsupported_value_type">Verditypen er ikke støttet</string>
     <string name="change_calendar_view">Endre kalendervisning</string>

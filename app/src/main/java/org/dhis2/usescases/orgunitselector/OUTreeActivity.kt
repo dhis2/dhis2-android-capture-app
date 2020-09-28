@@ -72,7 +72,9 @@ class OUTreeActivity : ActivityGlobalAbstract(), OUTreeView, OrgUnitSelectorAdap
     }
 
     override fun setOrgUnits(organisationUnits: List<TreeNode>) {
-        binding.orgUnitRecycler.adapter = OrgUnitSelectorAdapter(organisationUnits, this)
+        binding.orgUnitRecycler.adapter = OrgUnitSelectorAdapter(this).apply {
+            submitList(organisationUnits)
+        }
     }
 
     override fun addOrgUnits(location: Int, organisationUnits: List<TreeNode>) {

@@ -54,6 +54,10 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM;
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM_ENROLLMENT;
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT;
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT_PROGRAM;
 import static org.dhis2.usescases.teiDashboard.TeiDashboardFunctionsKt.getLandscapeTabTitle;
 import static org.dhis2.usescases.teiDashboard.TeiDashboardFunctionsKt.getPortraitTabTitle;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
@@ -65,8 +69,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements
         TeiDashboardContracts.View {
 
-    public static final String UNSELECTED_TAB_COLOR = "#B3FFFFFF";
-    private static final int OVERVIEW_POS = 0;
+    public static final int OVERVIEW_POS = 0;
 
     @Inject
     public TeiDashboardContracts.Presenter presenter;
@@ -91,6 +94,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     private MutableLiveData<Boolean> groupByStage;
     private MutableLiveData<Boolean> filtersShowing;
     private MutableLiveData<String> currentEnrollment;
+    private MutableLiveData<Boolean> relationshipMap;
     private float elevation = 0f;
 
     public static Intent intent(Context context,
@@ -120,13 +124,13 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             enrollmentUid = getIntent().getStringExtra(ENROLLMENT_UID);
         }
 
-        ((App) getApplicationContext()).createDashboardComponent(
-                new TeiDashboardModule(this, teiUid, programUid)).inject(this);
+        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid, enrollmentUid)).inject(this);
         setTheme(presenter.getProgramTheme(R.style.AppTheme));
         super.onCreate(savedInstanceState);
         groupByStage = new MutableLiveData<>(presenter.getProgramGrouping());
         filtersShowing = new MutableLiveData<>(false);
         currentEnrollment = new MutableLiveData<>();
+        relationshipMap = new MutableLiveData<>(false);
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
@@ -150,7 +154,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 if (tab.getPosition() == getLastTabPosition()) {
                     BadgeDrawable badge = tab.getOrCreateBadge();
                     if (badge.hasNumber() && badge.getNumber() > 0) {
-                        badge.setBackgroundColor(Color.parseColor(UNSELECTED_TAB_COLOR));
+                        badge.setBackgroundColor(ContextCompat.getColor(TeiDashboardMobileActivity.this, R.color.unselected_tab_badge_color));
                     }
                 }
             }
@@ -172,6 +176,25 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         });
 
         elevation = ViewCompat.getElevation(binding.toolbar);
+
+        binding.relationshipMapIcon.setOnClickListener(v -> {
+                    if (!relationshipMap.getValue()) {
+                        binding.relationshipMapIcon.setImageResource(R.drawable.ic_list);
+                    } else {
+                        binding.relationshipMapIcon.setImageResource(R.drawable.ic_map);
+                    }
+                    boolean showMap = !relationshipMap.getValue();
+                    if (showMap) {
+                        binding.toolbarProgress.setVisibility(View.VISIBLE);
+                        binding.toolbarProgress.hide();
+                    }
+                    relationshipMap.setValue(showMap);
+                }
+        );
+
+        relationshipMap().observe(this, value -> {
+            enablePagerScrolling(!value);
+        });
     }
 
     @Override
@@ -229,8 +252,18 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                                 binding.filterCounter.setVisibility(View.GONE);
                                 binding.searchFilterGeneral.setVisibility(View.GONE);
                             } else {
+
                                 binding.filterCounter.setVisibility(View.VISIBLE);
                                 binding.searchFilterGeneral.setVisibility(View.VISIBLE);
+                            }
+                            String pageTitle = getPortraitTabTitle(getContext(), position);
+
+                            if (pageTitle == getString(R.string.dashboard_relationships)){
+                                binding.relationshipMapIcon.setVisibility(View.VISIBLE);
+                                enablePagerScrolling(!relationshipMap().getValue());
+                            } else {
+                                binding.relationshipMapIcon.setVisibility(View.GONE);
+                                enablePagerScrolling(true);
                             }
                         }
                     }
@@ -249,8 +282,16 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     new ViewPager2.OnPageChangeCallback() {
                         @Override
                         public void onPageSelected(int position) {
-                            binding.sectionTitle.setText(
-                                    getLandscapeTabTitle(getContext(), position));
+
+                            String pageTitle = getLandscapeTabTitle(getContext(), position);
+
+                            if (pageTitle == getString(R.string.dashboard_relationships)){
+                                binding.relationshipMapIcon.setVisibility(View.VISIBLE);
+                            } else {
+                                binding.relationshipMapIcon.setVisibility(View.GONE);
+                            }
+
+                            binding.sectionTitle.post(()-> binding.sectionTitle.setText(pageTitle));
                         }
                     }
             );
@@ -264,6 +305,14 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             }
 
             tabLayoutMediator(binding.teiTablePager);
+        }
+    }
+
+    private void enablePagerScrolling(boolean enable) {
+        if (OrientationUtilsKt.isPortrait()) {
+            binding.teiPager.setUserInputEnabled(enable);
+        } else {
+            binding.teiTablePager.setUserInputEnabled(enable);
         }
     }
 
@@ -410,18 +459,19 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.RQ_ENROLLMENTS && resultCode == RESULT_OK) {
-            if (data.hasExtra("GO_TO_ENROLLMENT")) {
+            if (data.hasExtra(GO_TO_ENROLLMENT)) {
                 Intent intent = EnrollmentActivity.Companion.getIntent(this,
-                        data.getStringExtra("GO_TO_ENROLLMENT"),
-                        data.getStringExtra("GO_TO_ENROLLMENT_PROGRAM"),
+                        data.getStringExtra(GO_TO_ENROLLMENT),
+                        data.getStringExtra(GO_TO_ENROLLMENT_PROGRAM),
                         EnrollmentActivity.EnrollmentMode.NEW,
                         false);
                 startActivity(intent);
                 finish();
             }
 
-            if (data.hasExtra("CHANGE_PROGRAM")) {
-                startActivity(intent(this, teiUid, data.getStringExtra("CHANGE_PROGRAM"), null));
+            if (data.hasExtra(CHANGE_PROGRAM)) {
+                startActivity(intent(this, teiUid, data.getStringExtra(CHANGE_PROGRAM),
+                        data.getStringExtra(CHANGE_PROGRAM_ENROLLMENT)));
                 finish();
             }
 
@@ -608,9 +658,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             BadgeDrawable badge = binding.tabLayout.getTabAt(
                     getLastTabPosition()).getOrCreateBadge();
             badge.setVisible(numberOfNotes > 0);
-            badge.setBackgroundColor(Color.WHITE);
-            badge.setBadgeTextColor(
-                    ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+            if (OrientationUtilsKt.isPortrait() && binding.teiPager.getCurrentItem() == 3) {
+                badge.setBackgroundColor(Color.WHITE);
+            } else {
+                badge.setBackgroundColor(ContextCompat.getColor(this, R.color.unselected_tab_badge_color));
+            }
+            badge.setBadgeTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
             badge.setNumber(numberOfNotes);
             badge.setMaxCharacterCount(3);
         }
@@ -622,6 +675,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     public LiveData<Boolean> observeGrouping() {
         return groupByStage;
+    }
+
+    public LiveData<Boolean> relationshipMap() {
+        return relationshipMap;
     }
 
     @Override
@@ -641,14 +698,14 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     public void hideTabsAndDisableSwipe() {
         binding.tabLayout.setVisibility(View.GONE);
-        binding.teiPager.setUserInputEnabled(false);
+        enablePagerScrolling(false);
         ViewCompat.setElevation(binding.toolbar, 0);
     }
 
     @Override
     public void showTabsAndEnableSwipe() {
         binding.tabLayout.setVisibility(View.VISIBLE);
-        binding.teiPager.setUserInputEnabled(true);
+        enablePagerScrolling(true);
         ViewCompat.setElevation(binding.toolbar, elevation);
     }
 
@@ -659,5 +716,25 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     public LiveData<String> updatedEnrollment() {
         return currentEnrollment;
+    }
+
+    @Override
+    public void displayStatusError(StatusChangeResultCode statusCode) {
+        switch (statusCode) {
+            case FAILED:
+                displayMessage(getString(R.string.something_wrong));
+                break;
+            case ACTIVE_EXIST:
+                displayMessage(getString(R.string.status_change_error_active_exist));
+                break;
+            case WRITE_PERMISSION_FAIL:
+                displayMessage(getString(R.string.permission_denied));
+                break;
+        }
+
+    }
+
+    public void onRelationshipMapLoaded() {
+        binding.toolbarProgress.hide();
     }
 }

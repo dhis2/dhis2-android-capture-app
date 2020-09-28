@@ -103,7 +103,6 @@
     <string name="local_data_accept">Принять</string>
     <string name="state_warning">Предупреждение</string>
     <string name="action_close">Закрыть</string>
-    <string name="data_set_closed">Закрыть</string>
     <string name="data_set_open">Открыть</string>
     <string name="unsupported_value_type">Неподдерживаемый тип значения</string>
     <string name="data_every_day">Ежедневно</string>

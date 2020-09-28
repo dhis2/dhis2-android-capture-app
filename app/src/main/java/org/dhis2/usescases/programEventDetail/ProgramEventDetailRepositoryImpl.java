@@ -11,7 +11,9 @@ import com.mapbox.geojson.FeatureCollection;
 import android.database.Cursor;
 
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.utils.maps.GeometryUtils;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
+import org.dhis2.utils.filters.sorting.SortingItem;
+import org.dhis2.utils.filters.sorting.SortingStatus;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
@@ -40,6 +42,7 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import timber.log.Timber;
+import kotlin.Triple;
 
 
 public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepository {
@@ -47,19 +50,28 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     private final String programUid;
     private D2 d2;
     private ProgramEventMapper mapper;
+    private MapEventToFeatureCollection mapEventToFeatureCollection;
 
-    ProgramEventDetailRepositoryImpl(String programUid, D2 d2, ProgramEventMapper mapper) {
+    ProgramEventDetailRepositoryImpl(String programUid, D2 d2, ProgramEventMapper mapper, MapEventToFeatureCollection mapEventToFeatureCollection) {
         this.programUid = programUid;
         this.d2 = d2;
         this.mapper = mapper;
+        this.mapEventToFeatureCollection = mapEventToFeatureCollection;
     }
 
     @NonNull
     @Override
-    public LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList,
-                                                                            List<EventStatus> eventStatus, List<State> states, boolean assignedToUser,Pair<String, String> valueFilter) {
-        EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid);
+    public LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(
+            List<DatePeriod> dateFilter,
+            List<String> orgUnitFilter,
+            List<CategoryOptionCombo> catOptCombList,
+            List<EventStatus> eventStatus,
+            List<State> states,
+            SortingItem sortingItem,
+            boolean assignedToUser,
+            Pair<String, String> valueFilter) {
 
+        EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid).byDeleted().isFalse();
         if (!dateFilter.isEmpty())
             eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
         if (!orgUnitFilter.isEmpty())
@@ -77,7 +89,9 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byUid().in(uIds);
         }
 
-        DataSource dataSource = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC).withTrackedEntityDataValues().getDataSource().map(event -> mapper.eventToProgramEvent(event));
+        eventRepo = eventRepoSorting(sortingItem, eventRepo);
+
+        DataSource dataSource = eventRepo.withTrackedEntityDataValues().getDataSource().map(event -> mapper.eventToProgramEvent(event));
 
         return new LivePagedListBuilder(new DataSource.Factory() {
             @Override
@@ -116,10 +130,13 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @NonNull
     @Override
-    public Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(
-            List<DatePeriod> dateFilter, List<String> orgUnitFilter,
-            List<CategoryOptionCombo> catOptCombList, List<EventStatus> eventStatus,
-            List<State> states, boolean assignedToUser
+    public Flowable<Triple<FeatureCollection, BoundingBox, List<ProgramEventViewModel>>> filteredEventsForMap(
+            List<DatePeriod> dateFilter,
+            List<String> orgUnitFilter,
+            List<CategoryOptionCombo> catOptCombList,
+            List<EventStatus> eventStatus,
+            List<State> states,
+            boolean assignedToUser
     ) {
         EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid).byDeleted().isFalse();
         if (!dateFilter.isEmpty())
@@ -135,9 +152,38 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         if (assignedToUser)
             eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
 
-        return eventRepo.byDeleted().isFalse().orderByEventDate(RepositoryScope.OrderByDirection.DESC).withTrackedEntityDataValues().get()
-                .map(GeometryUtils.INSTANCE::getSourceFromEvent)
+        return eventRepo.byDeleted().isFalse().withTrackedEntityDataValues().get()
+                .map(listEvents -> new Triple<>(
+                        mapEventToFeatureCollection.map(listEvents).getFirst(),
+                        mapEventToFeatureCollection.map(listEvents).getSecond(),
+                        mapper.eventsToProgramEvents(listEvents)
+                ))
                 .toFlowable();
+    }
+
+    private EventCollectionRepository eventRepoSorting(SortingItem sortingItem, EventCollectionRepository eventRepo) {
+        if (sortingItem != null) {
+            switch (sortingItem.getFilterSelectedForSorting()) {
+                case ORG_UNIT:
+                    eventRepo = eventRepo.orderByOrganisationUnitName(
+                            sortingItem.getSortingStatus() == SortingStatus.ASC ?
+                                    RepositoryScope.OrderByDirection.ASC :
+                                    RepositoryScope.OrderByDirection.DESC);
+                    break;
+                case PERIOD:
+                    if (sortingItem.getSortingStatus() == SortingStatus.ASC) {
+                        eventRepo = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.ASC);
+                    } else {
+                        eventRepo = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            eventRepo = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC);
+        }
+        return eventRepo;
     }
 
     @Override
@@ -165,6 +211,11 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 .byEnableUserAssignment().isTrue().blockingIsEmpty();
     }
 
+    @Override
+    public CategoryOptionCombo getCatOptCombo(String selectedCatOptionCombo) {
+        return d2.categoryModule().categoryOptionCombos().uid(selectedCatOptionCombo).blockingGet();
+    }
+
     private String getCurrentUser() {
         return d2.userModule().user().blockingGet().uid();
     }
@@ -190,16 +241,12 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @Override
     public Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos() {
         return d2.programModule().programs().uid(programUid).get()
-                .filter(program -> program.categoryCombo() != null)
-                .flatMapSingle(program -> d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).get())
-                .filter(categoryCombo -> !categoryCombo.isDefault())
-                .flatMapSingle(categoryCombo -> Single.zip(
-                        d2.categoryModule().categoryCombos()
-                                .uid(categoryCombo.uid()).get(),
-                        d2.categoryModule().categoryOptionCombos()
-                                .byCategoryComboUid().eq(categoryCombo.uid()).get(),
-                        Pair::create
-                ));
+                .map(program -> {
+                    CategoryCombo catCombo = d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).blockingGet();
+                    List<CategoryOptionCombo> catOptCombos = d2.categoryModule().categoryOptionCombos()
+                            .byCategoryComboUid().eq(catCombo.uid()).blockingGet();
+                    return Pair.create(catCombo, catOptCombos);
+                });
     }
 
     @NonNull
@@ -233,25 +280,25 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @Override
     public Single<Boolean> hasAccessToAllCatOptions() {
         return d2.programModule().programs().uid(programUid).get()
-                .filter(program -> program.categoryComboUid() != null)
-                .map(program -> d2.categoryModule().categoryCombos().withCategories().withCategoryOptionCombos().uid(program.categoryComboUid()).blockingGet())
-                .filter(catCombo -> !catCombo.isDefault())
-                .map(catCombo -> {
+                .map(program -> {
+                    CategoryCombo catCombo = d2.categoryModule().categoryCombos().withCategories().uid(program.categoryComboUid()).blockingGet();
                     boolean hasAccess = true;
-                    for (Category category : catCombo.categories()) {
-                        List<CategoryOption> options = d2.categoryModule().categories().withCategoryOptions().uid(category.uid()).blockingGet().categoryOptions();
-                        int accesibleOptions = options.size();
-                        for (CategoryOption categoryOption : options) {
-                            if (!d2.categoryModule().categoryOptions().uid(categoryOption.uid()).blockingGet().access().data().write())
-                                accesibleOptions--;
-                        }
-                        if (accesibleOptions == 0) {
-                            hasAccess = false;
-                            break;
+                    if (!catCombo.isDefault()) {
+                        for (Category category : catCombo.categories()) {
+                            List<CategoryOption> options = d2.categoryModule().categories().withCategoryOptions().uid(category.uid()).blockingGet().categoryOptions();
+                            int accesibleOptions = options.size();
+                            for (CategoryOption categoryOption : options) {
+                                if (!d2.categoryModule().categoryOptions().uid(categoryOption.uid()).blockingGet().access().data().write())
+                                    accesibleOptions--;
+                            }
+                            if (accesibleOptions == 0) {
+                                hasAccess = false;
+                                break;
+                            }
                         }
                     }
                     return hasAccess;
-                }).toSingle();
+                });
     }
 
 }

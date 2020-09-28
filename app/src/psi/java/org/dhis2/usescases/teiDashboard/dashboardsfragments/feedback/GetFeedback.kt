@@ -215,7 +215,8 @@ class GetFeedback(
             mutableListOf(),
             false,
             mutableListOf(),
-            mutableListOf()
+            mutableListOf(),
+            null
         ).blockingGet()
 
         return enrolmentEvents.map {

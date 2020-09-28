@@ -1,6 +1,8 @@
 package org.dhis2.utils.filters
 
 import java.util.Date
+import org.dhis2.utils.filters.sorting.SortingItem
+import org.dhis2.utils.filters.sorting.SortingStatus
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.EventStatus
@@ -110,5 +112,15 @@ class FilterManagerTest {
         filterManager.setAssignedToMe(true)
         assertTrue(filterManager.totalFilters == 1)
         assertTrue(filterManager.observeField(Filters.ASSIGNED_TO_ME).get() == 1)
+    }
+
+    @Test
+    fun `Should add a sortingItem to filterManager`() {
+        val sortingItem = SortingItem(Filters.ORG_UNIT, SortingStatus.ASC)
+
+        filterManager.sortingItem = sortingItem
+
+        assertTrue(filterManager.sortingItem.filterSelectedForSorting == Filters.ORG_UNIT)
+        assertTrue(filterManager.sortingItem.sortingStatus == SortingStatus.ASC)
     }
 }

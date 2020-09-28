@@ -7,6 +7,7 @@ import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -19,6 +20,9 @@ import junit.framework.Assert.assertTrue
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.dhis2.utils.filters.FilterManager
+import org.dhis2.utils.filters.Filters
+import org.dhis2.utils.filters.sorting.SortingItem
+import org.dhis2.utils.filters.sorting.SortingStatus
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.FeatureType
@@ -56,24 +60,28 @@ class ProgramEventDetailPresenterTest {
             mutableListOf(),
             EventStatus.ACTIVE,
             true,
-            "attr"
+            "attr",
+            null,
+            true
         )
         val events =
             MutableLiveData<PagedList<ProgramEventViewModel>>().also {
                 it.value?.add(programEventViewModel)
             }
 
-        val mapEvents = Pair<FeatureCollection, BoundingBox>(
+        val mapEvents = Triple<FeatureCollection, BoundingBox, List<ProgramEventViewModel>>(
             FeatureCollection.fromFeature(Feature.fromGeometry(null)),
-            BoundingBox.fromLngLats(0.0, 0.0, 0.0, 0.0)
+            BoundingBox.fromLngLats(0.0, 0.0, 0.0, 0.0),
+            listOf()
         )
+        filterManager.sortingItem = SortingItem(Filters.ORG_UNIT, SortingStatus.NONE)
         whenever(repository.featureType()) doReturn Single.just(FeatureType.POINT)
         whenever(repository.accessDataWrite) doReturn true
         whenever(repository.hasAccessToAllCatOptions()) doReturn Single.just(true)
         whenever(repository.program()) doReturn Observable.just(program)
         whenever(repository.catOptionCombos()) doReturn Single.just(catOptionComboPair)
         whenever(
-            repository.filteredProgramEvents(any(), any(), any(), any(), any(), any(), any())
+            repository.filteredProgramEvents(any(), any(), any(), any(), any(), anyOrNull(), any(),any())
         ) doReturn events
         whenever(
             repository.filteredEventsForMap(any(), any(), any(), any(), any(), any())
@@ -82,14 +90,13 @@ class ProgramEventDetailPresenterTest {
         whenever(repository.textTypeDataElements()) doReturn Observable.just(emptyList<DataElement>())
 
         presenter.init()
-        verify(view).setFeatureType()
+        verify(view).setFeatureType(FeatureType.POINT)
         verify(view).setWritePermission(true)
         verify(view).setOptionComboAccess(true)
         verify(view).setProgram(program)
         verify(view).setCatOptionComboFilter(catOptionComboPair)
         verify(view).setLiveData(events)
         verify(view).setTextTypeDataElementsFilter(emptyList<DataElement>())
-        // verify(view).setMap()
     }
 
     @Test

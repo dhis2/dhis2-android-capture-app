@@ -32,17 +32,17 @@ import com.google.gson.reflect.TypeToken;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
+import org.dhis2.uicomponents.map.views.MapSelectorActivity;
+import org.dhis2.usescases.coodinates.CoordinatesView;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
-import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.utils.customviews.CoordinatesView;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.PictureView;
 import org.dhis2.utils.customviews.ScanTextView;
@@ -70,13 +70,12 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 import static org.dhis2.utils.session.PinDialogKt.PIN_DIALOG_TAG;
 
-/**
- * QUADRAM. Created by Javi on 28/07/2017.
- */
 
 public abstract class ActivityGlobalAbstract extends AppCompatActivity
         implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick,
         PictureView.OnIntentSelected, ScanTextView.OnScanClick {
+
+    private static final String FRAGMENT_TAG = "SYNC";
 
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
@@ -84,6 +83,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     @Inject
     public AnalyticsHelper analyticsHelper;
     public ScanTextView scanTextView;
+    private PinDialog pinDialog;
 
     public void requestLocationPermission(CoordinatesView coordinatesView) {
         this.coordinatesView = coordinatesView;
@@ -97,8 +97,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         ON_RESUME
     }
 
-    //****************
-    //LIFECYCLE REGION
 
     public void setScreenName(String name) {
         Crashlytics.setString(Constants.SCREEN_NAME, name);
@@ -130,12 +128,32 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         super.onCreate(savedInstanceState);
     }
 
+    private void initPinDialog() {
+        pinDialog = new PinDialog(PinDialog.Mode.ASK,
+                (this instanceof LoginActivity),
+                aBoolean -> {
+                    startActivity(MainActivity.class, null, true, true, null);
+                    return null;
+                },
+                () -> {
+                    analyticsHelper.setEvent(AnalyticsConstants.FORGOT_CODE, AnalyticsConstants.CLICK, AnalyticsConstants.FORGOT_CODE);
+                    if (!(this instanceof LoginActivity)) {
+                        startActivity(LoginActivity.class, null, true, true, null);
+                    }
+                    return null;
+                }
+        );
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         lifeCycleObservable.onNext(Status.ON_RESUME);
         if (ExtensionsKt.app(this).isSessionBlocked() && !(this instanceof SplashActivity)) {
-            showPinDialog();
+            if (getPinDialog() == null) {
+                initPinDialog();
+                showPinDialog();
+            }
         }
     }
 
@@ -144,6 +162,16 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         super.onPause();
         lifeCycleObservable.onNext(Status.ON_PAUSE);
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        PinDialog dialog = getPinDialog();
+        if (dialog != null) {
+            dialog.dismissAllowingStateLoss();
+        }
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -162,35 +190,26 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         }
     }
 
-    //****************
-    //PUBLIC METHOD REGION
-
-
     @Override
     public void setTutorial() {
 
     }
 
     public void showPinDialog() {
-        new PinDialog(PinDialog.Mode.ASK,
-                (this instanceof LoginActivity),
-                aBoolean -> {
-                    startActivity(MainActivity.class, null, true, true, null);
-                    return null;
-                },
-                () -> {
-                    analyticsHelper.setEvent(AnalyticsConstants.FORGOT_CODE, AnalyticsConstants.CLICK, AnalyticsConstants.FORGOT_CODE);
-                    if (!(this instanceof LoginActivity)) {
-                        startActivity(LoginActivity.class, null, true, true, null);
-                    }
-                    return null;
-                }
-        ).show(getSupportFragmentManager(), PIN_DIALOG_TAG);
+        pinDialog.show(getSupportFragmentManager(), PIN_DIALOG_TAG);
+    }
+
+    public PinDialog getPinDialog(){
+        return (PinDialog) getSupportFragmentManager().findFragmentByTag(PIN_DIALOG_TAG);
     }
 
     @Override
     public void showTutorial(boolean shaked) {
-        HelpManager.getInstance().showHelp();
+        if (HelpManager.getInstance().isReady()) {
+            HelpManager.getInstance().showHelp();
+        } else {
+            showToast(getString(R.string.no_intructions));
+        }
     }
 
     public void showMoreOptions(View view) {
@@ -421,7 +440,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     @Override
     public void showSyncDialog(SyncStatusDialog dialog) {
-        dialog.show(getSupportFragmentManager(), dialog.getDialogTag());
+        dialog.show(getSupportFragmentManager(), FRAGMENT_TAG);
     }
 
     @Override

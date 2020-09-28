@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.Bindings.RuleExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
+import org.dhis2.data.dhislogic.DhisEventUtils;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -21,7 +22,6 @@ import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
-import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -64,9 +64,6 @@ import static android.text.TextUtils.isEmpty;
 
 import static org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureRepositoryFunctionsKt.getProgramStageName;
 
-/**
- * QUADRAM. Created by ppajuelo on 19/11/2018.
- */
 public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCaptureRepository {
 
     private final FieldViewModelFactory fieldFactory;
@@ -80,9 +77,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private boolean isEventEditable;
     private final HashMap<String, ProgramStageSection> sectionMap;
     private final HashMap<String, ProgramStageDataElement> stageDataElementsMap;
-    private String lastUpdatedUid;
     private RuleEvent.Builder eventBuilder;
     private List<FieldViewModel> sectionFields;
+    private final DhisEventUtils dhisEventUtils;
 
     private static final String SELECT_LEGEND =
             "SELECT Legend.color FROM Legend \n"
@@ -90,10 +87,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             + "JOIN ProgramIndicator ON ProgramIndicator.uid = ProgramIndicatorLegendSetLink.programIndicator \n"
             + "WHERE ProgramIndicator.uid = ? AND Legend.startValue <= ? AND Legend.endValue > ?";
 
-    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2) {
+    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2, DhisEventUtils dhisEventUtils) {
         this.eventUid = eventUid;
         this.formRepository = formRepository;
         this.d2 = d2;
+        this.dhisEventUtils = dhisEventUtils;
 
         currentEvent = d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).blockingGet();
         currentStage = d2.programModule().programStages().uid(currentEvent.programStage()).blockingGet();
@@ -137,20 +135,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return enrollment == null || enrollment.status() == EnrollmentStatus.ACTIVE;
     }
 
-    private boolean inOrgUnitRange(String eventUid) {
-        Event event = d2.eventModule().events().uid(eventUid).blockingGet();
-        String orgUnitUid = event.organisationUnit();
-        Date eventDate = event.eventDate();
-        boolean inRange = true;
-        OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet();
-        if (eventDate != null && orgUnit.openingDate() != null && eventDate.before(orgUnit.openingDate()))
-            inRange = false;
-        if (eventDate != null && orgUnit.closedDate() != null && eventDate.after(orgUnit.closedDate()))
-            inRange = false;
-
-        return inRange;
-    }
-
     @Override
     public boolean isEnrollmentCancelled() {
         Enrollment enrollment = d2.enrollmentModule().enrollments().uid(d2.eventModule().events().uid(eventUid).blockingGet().enrollment()).blockingGet();
@@ -162,39 +146,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public boolean isEventEditable(String eventUid) {
-        Event event = d2.eventModule().events().uid(eventUid).blockingGet();
-        Program program = d2.programModule().programs().uid(event.program()).blockingGet();
-        ProgramStage stage = d2.programModule().programStages().uid(event.programStage()).blockingGet();
-        boolean isExpired = DateUtils.getInstance().isEventExpired(event.eventDate(), event.completedDate(), event.status(), program.completeEventsExpiryDays(), stage.periodType() != null ? stage.periodType() : program.expiryPeriodType(), program.expiryDays());
-        boolean blockAfterComplete = event.status() == EventStatus.COMPLETED && stage.blockEntryForm();
-        boolean isInCaptureOrgUnit = d2.organisationUnitModule().organisationUnits()
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .byUid().eq(event.organisationUnit()).one().blockingExists();
-        boolean hasCatComboAccess = event.attributeOptionCombo() == null || getCatComboAccess(event);
-
-        return isEnrollmentOpen() && !blockAfterComplete && !isExpired &&
-                getAccessDataWrite() && inOrgUnitRange(eventUid) && isInCaptureOrgUnit && hasCatComboAccess;
-    }
-
-    private boolean getCatComboAccess(Event event) {
-        if (event.attributeOptionCombo() != null) {
-            List<String> optionUid = UidsHelper.getUidsList(d2.categoryModule()
-                    .categoryOptionCombos().withCategoryOptions().uid(event.attributeOptionCombo())
-                    .blockingGet().categoryOptions());
-            List<CategoryOption> options = d2.categoryModule().categoryOptions().byUid().in(optionUid).blockingGet();
-            boolean access = true;
-            Date eventDate = event.eventDate();
-            for (CategoryOption option : options) {
-                if (!option.access().data().write())
-                    access = false;
-                if (eventDate != null && option.startDate() != null && eventDate.before(option.startDate()))
-                    access = false;
-                if (eventDate != null && option.endDate() != null && eventDate.after(option.endDate()))
-                    access = false;
-            }
-            return access;
-        } else
-            return true;
+        return dhisEventUtils.isEventEditable(eventUid);
     }
 
     @Override
@@ -209,9 +161,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     @Override
-    public Flowable<String> orgUnit() {
+    public Flowable<OrganisationUnit> orgUnit() {
         return Flowable.just(d2.eventModule().events().uid(eventUid).blockingGet())
-                .map(event -> d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet().displayName());
+                .map(event -> d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet());
     }
 
 
@@ -559,7 +511,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public void setLastUpdated(String lastUpdatedUid) {
-        this.lastUpdatedUid = lastUpdatedUid;
     }
 
     @Override
@@ -573,18 +524,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return d2.eventModule().events().uid(eventUid).get()
                 .flatMap(event -> d2.trackedEntityModule().trackedEntityDataValues().byEvent().eq(eventUid).byValue().isNotNull().get()
                         .map(values -> RuleExtensionsKt.toRuleDataValue(values, event, d2.dataElementModule().dataElements(), d2.programModule().programRuleVariables(), d2.optionModule().options()))).toFlowable();
-    }
-
-    @Override
-    public boolean optionIsInOptionGroup(String optionUid, String optionGroupToHide) {
-        List<ObjectWithUid> optionGroupOptions = d2.optionModule().optionGroups().withOptions().uid(optionGroupToHide).blockingGet().options();
-        boolean isInGroup = false;
-        if (optionGroupOptions != null)
-            for (ObjectWithUid uidObject : optionGroupOptions)
-                if (uidObject.uid().equals(optionUid))
-                    isInGroup = true;
-
-        return isInGroup;
     }
 
     @Override
