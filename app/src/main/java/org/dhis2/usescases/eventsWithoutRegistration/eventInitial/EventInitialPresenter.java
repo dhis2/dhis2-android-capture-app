@@ -238,7 +238,7 @@ public class EventInitialPresenter
 
     @Override
     public void onBackClick() {
-        preferences.setValue(Preference.EVENT_COORDINATE_CHANGED, false);
+        setChangingCoordinates(false);
         if (eventId != null)
             analyticsHelper.setEvent(BACK_EVENT, CLICK, CREATE_EVENT);
         view.back();
@@ -448,5 +448,14 @@ public class EventInitialPresenter
     @Override
     public int catOptionSize(String uid) {
         return eventInitialRepository.getCatOptionSize(uid);
+    }
+
+    @Override
+    public void setChangingCoordinates(boolean changingCoordinates) {
+        if(changingCoordinates){
+            preferences.setValue(Preference.EVENT_COORDINATE_CHANGED, true);
+        }else{
+            preferences.removeValue(Preference.EVENT_COORDINATE_CHANGED);
+        }
     }
 }
