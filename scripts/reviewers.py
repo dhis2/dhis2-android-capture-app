@@ -10,6 +10,7 @@ BITRISE_PULL_REQUEST = os.environ.get('BITRISE_PULL_REQUEST')
 GITHUB_RELEASE_API_TOKEN = os.environ.get('GITHUB_RELEASE_API_TOKEN')
 
 if not BITRISE_PULL_REQUEST:
+    print("No need to add reviewers")
     sys.exit()
 
 # Checks is PR already has reviewers assigned
