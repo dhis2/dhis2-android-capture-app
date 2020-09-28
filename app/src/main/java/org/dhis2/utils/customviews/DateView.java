@@ -158,14 +158,6 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                         Timber.e(e);
                     }
                 }
-                if(date == null){
-                    try {
-                        date = DateUtils.uiDateFormat().parse(data);
-                        data = DateUtils.uiDateFormat().format(date);
-                    }catch (ParseException e){
-                        Timber.e(e);
-                    }
-                }
         } else {
             editText.setText("");
         }
