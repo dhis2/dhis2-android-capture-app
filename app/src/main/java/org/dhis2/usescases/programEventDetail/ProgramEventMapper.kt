@@ -201,7 +201,7 @@ class ProgramEventMapper @Inject constructor(val d2: D2, val dhisEventUtils: Dhi
                 Pair(
                     de.displayFormName() ?: de.displayName() ?: "",
                     if (valueRepo.blockingExists()) {
-                        valueRepo.blockingGet().value()
+                        valueRepo.blockingGet().userFriendlyValue(d2)
                     } else {
                         "-"
                     }

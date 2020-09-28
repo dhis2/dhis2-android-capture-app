@@ -28,7 +28,6 @@ import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.hamcrest.Matchers
 import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.anyOf
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.isOneOf
 import org.hamcrest.Matchers.not
@@ -85,10 +84,10 @@ class TeiDashboardRobot : BaseRobot() {
             .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, click()))
     }
 
-    fun clickOnEventWith(eventName: String, eventStatus:Int){
+    fun clickOnEventWith(eventDate: String, orgUnit:String){
         onView(withId(R.id.tei_recycler))
-            .perform(actionOnItem<DashboardProgramViewHolder>(allOf(hasDescendant(withText(eventName)), hasDescendant(
-                withText(eventStatus))), click()))
+            .perform(actionOnItem<DashboardProgramViewHolder>(allOf(hasDescendant(withText(eventDate)), hasDescendant(
+                withText(orgUnit))), click()))
     }
 
     fun clickOnEventWith(eventName: String, eventStatus: Int, date: String){
