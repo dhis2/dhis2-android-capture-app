@@ -9,12 +9,11 @@ print("Checking if PR already has reviewers assigned")
 BITRISE_PULL_REQUEST = os.environ.get('BITRISE_PULL_REQUEST')
 GITHUB_RELEASE_API_TOKEN = os.environ.get('GITHUB_RELEASE_API_TOKEN')
 
-print("BITRISE_PULL_REQUEST: %s" %(BITRISE_PULL_REQUEST))
-print("GITHUB_RELEASE_API_TOKEN: %s" %(GITHUB_RELEASE_API_TOKEN))
+if not BITRISE_PULL_REQUEST:
+    sys.exit()
 
 # Checks is PR already has reviewers assigned
 response = requests.get("https://api.github.com/repos/dhis2/dhis2-android-capture-app/pulls/%s/requested_reviewers?access_token=%s" %(BITRISE_PULL_REQUEST, GITHUB_RELEASE_API_TOKEN)).json()
-print(response)
 
 if response['users']:
     print("Reviewers already assigned. exiting.")
@@ -36,4 +35,4 @@ else:
 
     print("Assigning reviewers selected to the PR")
     payload = '{"reviewers":%s}' %(reviewers)
-    x = requests.post("https://api.github.com/repos/dhis2/dhis2-android-capture-app/pulls/%s/requested_reviewers?access_token=%s" %(BITRISE_PULL_REQUEST, GITHUB_RELEASE_API_TOKEN), data=payload)
+    requests.post("https://api.github.com/repos/dhis2/dhis2-android-capture-app/pulls/%s/requested_reviewers?access_token=%s" %(BITRISE_PULL_REQUEST, GITHUB_RELEASE_API_TOKEN), data=payload)
