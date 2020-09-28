@@ -138,6 +138,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
             data = data.replace("'", ""); //TODO: Check why it is happening
                 try {
                     date = DateUtils.oldUiDateFormat().parse(data);
+                    data = DateUtils.uiDateFormat().format(date);
                 } catch (ParseException e) {
                     Timber.e(e);
                 }
@@ -159,8 +160,8 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                 }
                 if(date == null){
                     try {
-                        date = DateUtils.dateTimeFormat().parse(data);
-                        data = DateUtils.dateTimeFormat().format(date);
+                        date = DateUtils.uiDateFormat().parse(data);
+                        data = DateUtils.uiDateFormat().format(date);
                     }catch (ParseException e){
                         Timber.e(e);
                     }
