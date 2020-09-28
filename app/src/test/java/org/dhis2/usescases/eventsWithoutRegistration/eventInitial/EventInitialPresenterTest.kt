@@ -62,13 +62,13 @@ class EventInitialPresenterTest {
     }
 
     @Test
-    fun `Should set changing coordinates`(){
+    fun `Should set changing coordinates`() {
         presenter.setChangingCoordinates(true)
-        verify(preferences).setValue(Preference.EVENT_COORDINATE_CHANGED,true)
+        verify(preferences).setValue(Preference.EVENT_COORDINATE_CHANGED, true)
     }
 
     @Test
-    fun `Should clear changing coordinates`(){
+    fun `Should clear changing coordinates`() {
         presenter.setChangingCoordinates(false)
         verify(preferences).removeValue(Preference.EVENT_COORDINATE_CHANGED)
     }
