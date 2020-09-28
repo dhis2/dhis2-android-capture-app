@@ -8,7 +8,6 @@ import org.dhis2.data.service.workManager.WorkManagerModule
 import org.dhis2.data.user.UserModule
 import org.dhis2.utils.analytics.AnalyticsModule
 import org.hisp.dhis.android.core.D2Manager
-import org.hisp.dhis.android.core.arch.api.internal.ServerURLWrapper
 
 class AppTest : App() {
 

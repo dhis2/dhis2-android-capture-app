@@ -90,7 +90,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
                     Timber.e(e);
                 }
 
-            data = DateUtils.dateTimeFormat().format(date);
+            data = date != null ? DateUtils.dateTimeFormat().format(date) : data;
         } else {
             editText.setText("");
         }
@@ -150,6 +150,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     @Override
     public void onClick(View view) {
+        requestFocus();
         activate();
         showCustomCalendar(view);
     }
@@ -185,6 +186,9 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     private void showTimePicker(View view) {
         final Calendar c = Calendar.getInstance();
+        if(date !=null){
+            c.setTime(date);
+        }
         int hour = c.get(Calendar.HOUR_OF_DAY);
         int minute = c.get(Calendar.MINUTE);
         boolean is24HourFormat = android.text.format.DateFormat.is24HourFormat(getContext());

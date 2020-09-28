@@ -91,6 +91,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
 
     public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale) {
         binding = DataBindingUtil.inflate(inflater, R.layout.custom_cell_view, this, true);
+        isBgTransparent = true;
         ((CustomCellViewBinding) binding).setTableScale(tableScale);
         editText = findViewById(R.id.inputEditText);
         editText.setFocusable(false); //Makes editText not editable

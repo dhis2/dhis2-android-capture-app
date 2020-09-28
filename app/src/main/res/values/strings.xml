@@ -579,6 +579,7 @@
     <string name="syncing">Synchronizing...</string>
     <string name="end_sync_granular">Synchronization completed.</string>
     <string name="error_sync">Error has happened during synchronization.</string>
+    <string name="error_sync_check_logs">An error has happened during synchronization. Click here to check error logs</string>
     <string name="cancel_sync">Cancelled synchronization.</string>
 
     <string name="copied_text">Copied</string>

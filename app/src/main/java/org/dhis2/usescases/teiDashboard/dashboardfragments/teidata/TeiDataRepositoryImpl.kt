@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
 import io.reactivex.Single
 import org.dhis2.Bindings.applyFilters
+import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.dhislogic.DhisEventUtils
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
@@ -263,7 +264,7 @@ class TeiDataRepositoryImpl(
                 Pair(
                     de.displayFormName() ?: de.displayName() ?: "",
                     if (valueRepo.blockingExists()) {
-                        valueRepo.blockingGet().value()
+                        valueRepo.blockingGet().userFriendlyValue(d2)
                     } else {
                         "-"
                     }
