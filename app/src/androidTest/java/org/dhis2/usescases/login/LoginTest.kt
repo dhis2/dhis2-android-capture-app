@@ -24,10 +24,6 @@ class LoginTest : BaseTest() {
     @get:Rule
     val mainRule = ActivityTestRule(MainActivity::class.java, false, false)
 
-    @Rule
-    @JvmField
-    val mRetryTestRule = RetryRule(3)
-
     override fun getPermissionsToBeAccepted(): Array<String> {
         return arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
     }

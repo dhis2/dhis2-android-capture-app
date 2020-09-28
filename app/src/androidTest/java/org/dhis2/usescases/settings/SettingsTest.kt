@@ -23,11 +23,7 @@ class SettingsTest : BaseTest() {
     @Rule
     @JvmField
     val dataBindingIdlingResourceRule = DataBindingIdlingResourceRule(rule)
-
-    @Rule
-    @JvmField
-    val mRetryTestRule = RetryRule(3)
-
+    
     override fun getPermissionsToBeAccepted(): Array<String> {
         return arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
     }
