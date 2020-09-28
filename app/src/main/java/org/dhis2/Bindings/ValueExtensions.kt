@@ -67,7 +67,7 @@ fun checkValueTypeValue(d2: D2, valueType: ValueType?, value: String): String {
                 .displayName()!!
         ValueType.IMAGE, ValueType.FILE_RESOURCE ->
             if (d2.fileResourceModule().fileResources().uid(value).blockingExists()) {
-                d2.fileResourceModule().fileResources().uid(value).blockingGet().name()!!
+                d2.fileResourceModule().fileResources().uid(value).blockingGet().path()!!
             } else {
                 ""
             }
