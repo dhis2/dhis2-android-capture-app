@@ -136,21 +136,35 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         if (data != null) {
             date = null;
             data = data.replace("'", ""); //TODO: Check why it is happening
-            if (data.length() == 10) //has format yyyy-MM-dd
                 try {
                     date = DateUtils.oldUiDateFormat().parse(data);
                 } catch (ParseException e) {
                     Timber.e(e);
                 }
-            else
-                try {
-                    date = DateUtils.databaseDateFormat().parse(data);
-                    data = DateUtils.uiDateFormat().format(date);
-                } catch (ParseException e) {
-                    Timber.e(e);
+                if(date == null) {
+                    try {
+                        date = DateUtils.databaseDateFormat().parse(data);
+                        data = DateUtils.uiDateFormat().format(date);
+                    } catch (ParseException e) {
+                        Timber.e(e);
+                    }
                 }
-
-
+                if(date == null) {
+                    try {
+                        date = DateUtils.uiDateFormat().parse(data);
+                        data = DateUtils.uiDateFormat().format(date);
+                    } catch (ParseException e) {
+                        Timber.e(e);
+                    }
+                }
+                if(date == null){
+                    try {
+                        date = DateUtils.dateTimeFormat().parse(data);
+                        data = DateUtils.dateTimeFormat().format(date);
+                    }catch (ParseException e){
+                        Timber.e(e);
+                    }
+                }
         } else {
             editText.setText("");
         }
