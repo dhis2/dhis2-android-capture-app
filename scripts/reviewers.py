@@ -10,12 +10,17 @@ BITRISE_PULL_REQUEST = os.environ.get('BITRISE_PULL_REQUEST')
 GITHUB_RELEASE_API_TOKEN = os.environ.get('GITHUB_RELEASE_API_TOKEN')
 
 # Checks is PR already has reviewers assigned
-response = requests.get("https://api.github.com/repos/dhis2/dhis2-android-capture-app/pulls/%s/requested_reviewers?access_token=%s" %(BITRISE_PULL_REQUEST, GITHUB_RELEASE_API_TOKEN)).json()
+requested_reviewers = requests.get("https://api.github.com/repos/dhis2/dhis2-android-capture-app/pulls/%s/requested_reviewers?access_token=%s" %(BITRISE_PULL_REQUEST, GITHUB_RELEASE_API_TOKEN)).json()
 
-if response['users']:
+if requested_reviewers['users']:
     print("Reviewers already assigned. exiting.")
     sys.exit()
 else:
+    has_reviews = requests.get("https://api.github.com/repos/dhis2/dhis2-android-capture-app/pulls/%s/reviews?access_token=%s" %(BITRISE_PULL_REQUEST, GITHUB_RELEASE_API_TOKEN)).json()
+    if has_reviews:
+        print("Reviewers already assigned. exiting.")
+        sys.exit()
+
     print("Ready to assigned reviewers")
     pr_owner = requests.get("https://api.github.com/repos/dhis2/dhis2-android-capture-app/pulls/%s?access_token=%s" %(BITRISE_PULL_REQUEST, GITHUB_RELEASE_API_TOKEN)).json()['user']['login']
     quadram_devs = ["ferdyrod", "Balcan", "mmmateos"]
