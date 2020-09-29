@@ -74,11 +74,14 @@
                 style="@style/ActionIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/sectionName"
                 app:layout_constraintEnd_toStartOf="@id/sectionInfoLayout"
                 app:layout_constraintTop_toTopOf="@id/sectionName"
                 app:srcCompat="@drawable/ic_info_outline"
-                app:tint="?colorPrimary" />
+                app:tint="?colorPrimary"
+                tools:ignore="ContentDescription"
+                tools:visibility="visible" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/sectionInfoLayout"
