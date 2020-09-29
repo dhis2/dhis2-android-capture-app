@@ -8,7 +8,6 @@ import android.view.View;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.dhis2.Bindings.DataElementValuesExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.ItemEventBinding;
 import org.dhis2.databinding.ItemFieldValueBinding;
@@ -25,7 +24,6 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Locale;
 
 import kotlin.Pair;

@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
-import org.dhis2.Bindings.toSpannableString
 import org.dhis2.R
 import org.dhis2.databinding.ItemCarouselProgramEventBinding
 import org.dhis2.databinding.ItemFieldValueBinding
@@ -73,8 +72,14 @@ class CarouselProgramEventHolder(
             .animate()
             .scaleY(if (programEventModel.openedAttributeList) -1f else 1f)
             .setDuration(500)
-            .withStartAction { binding.showValuesButton.scaleY = if (programEventModel.openedAttributeList) 1f else -1f }
-            .withEndAction { binding.showValuesButton.scaleY = if (programEventModel.openedAttributeList) -1f else 1f }
+            .withStartAction {
+                binding.showValuesButton.scaleY =
+                    if (programEventModel.openedAttributeList) 1f else -1f
+            }
+            .withEndAction {
+                binding.showValuesButton.scaleY =
+                    if (programEventModel.openedAttributeList) -1f else 1f
+            }
             .start()
         if (programEventModel.openedAttributeList) {
             binding.dataElementListGuideline.visibility = View.VISIBLE
