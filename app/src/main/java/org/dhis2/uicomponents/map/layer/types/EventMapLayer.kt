@@ -165,8 +165,8 @@ class EventMapLayer(
             ?.querySourceFeatures(
                 Expression.eq(Expression.get(MapEventToFeatureCollection.EVENT), featureUidProperty)
             )?.firstOrNull()?.let {
-                setSelectedItem(it)
-                it
-            }
+            setSelectedItem(it)
+            it
+        }
     }
 }
