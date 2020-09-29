@@ -86,8 +86,8 @@ public class EventInitialPresenter
                                  @NonNull EventSummaryRepository eventSummaryRepository,
                                  @NonNull EventInitialRepository eventInitialRepository,
                                  @NonNull SchedulerProvider schedulerProvider,
-                                @NonNull PreferenceProvider preferenceProvider,
-                                @NonNull AnalyticsHelper analyticsHelper) {
+                                 @NonNull PreferenceProvider preferenceProvider,
+                                 @NonNull AnalyticsHelper analyticsHelper) {
 
         this.view = view;
         this.eventInitialRepository = eventInitialRepository;
@@ -238,6 +238,7 @@ public class EventInitialPresenter
 
     @Override
     public void onBackClick() {
+        setChangingCoordinates(false);
         if (eventId != null)
             analyticsHelper.setEvent(BACK_EVENT, CLICK, CREATE_EVENT);
         view.back();
@@ -447,5 +448,14 @@ public class EventInitialPresenter
     @Override
     public int catOptionSize(String uid) {
         return eventInitialRepository.getCatOptionSize(uid);
+    }
+
+    @Override
+    public void setChangingCoordinates(boolean changingCoordinates) {
+        if(changingCoordinates){
+            preferences.setValue(Preference.EVENT_COORDINATE_CHANGED, true);
+        }else{
+            preferences.removeValue(Preference.EVENT_COORDINATE_CHANGED);
+        }
     }
 }

@@ -499,8 +499,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.geometry.setEditable(true);
         binding.geometry.setFeatureType(programStage.featureType());
         binding.geometry.setCurrentLocationListener(geometry -> {
-            Timber.tag("EVENTINITIAL").d("NEW GEOMETRY");
             this.newGeometry = geometry;
+            presenter.setChangingCoordinates(true);
         });
         binding.geometry.setMapListener(
                 (CoordinatesView.OnMapPositionClick) binding.geometry.getContext()
