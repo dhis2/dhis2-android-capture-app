@@ -436,7 +436,6 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (selectedProgram == null) {
             List<TrackedEntityTypeAttribute> typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
                     .byTrackedEntityTypeUid().eq(searchTei.getTei().trackedEntityType())
-                    .byDisplayInList().isTrue()
                     .blockingGet();
             for (TrackedEntityTypeAttribute typeAttribute : typeAttributes) {
                 setAttributeValue(searchTei, typeAttribute.trackedEntityAttribute().uid());
@@ -444,7 +443,6 @@ public class SearchRepositoryImpl implements SearchRepository {
         } else {
             List<ProgramTrackedEntityAttribute> programAttributes = d2.programModule().programTrackedEntityAttributes()
                     .byProgram().eq(selectedProgram.uid())
-                    .byDisplayInList().isTrue()
                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                     .blockingGet();
             for (ProgramTrackedEntityAttribute programAttribute : programAttributes) {
