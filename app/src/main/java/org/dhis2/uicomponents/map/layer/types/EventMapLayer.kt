@@ -144,11 +144,13 @@ class EventMapLayer(
     private fun deselectCurrentPoint() {
         if (featureType == FeatureType.POINT) {
             selectedPointLayer.setProperties(
-                PropertyFactory.iconSize(1f)
+                PropertyFactory.iconSize(1f),
+                PropertyFactory.visibility(Property.NONE)
             )
         } else {
             selectedPolygonLayer.setProperties(
-                PropertyFactory.fillColor(ColorUtils.withAlpha(eventColor ?: -1))
+                PropertyFactory.fillColor(ColorUtils.withAlpha(eventColor ?: -1)),
+                PropertyFactory.visibility(Property.NONE)
             )
         }
     }
