@@ -122,7 +122,10 @@ class EventMapLayer(
             )
         }
 
-        selectedPointLayer.setProperties(PropertyFactory.iconSize(1.5f))
+        selectedPointLayer.setProperties(
+            PropertyFactory.iconSize(1.5f),
+            PropertyFactory.visibility(Property.VISIBLE)
+        )
     }
 
     private fun selectPolygon(feature: Feature) {
@@ -137,7 +140,9 @@ class EventMapLayer(
         }
 
         selectedPolygonLayer.setProperties(
-            PropertyFactory.fillColor(ColorUtils.withAlpha(Color.WHITE))
+            PropertyFactory.fillColor(ColorUtils.withAlpha(Color.WHITE)),
+            PropertyFactory.visibility(Property.VISIBLE)
+
         )
     }
 
@@ -160,8 +165,8 @@ class EventMapLayer(
             ?.querySourceFeatures(
                 Expression.eq(Expression.get(MapEventToFeatureCollection.EVENT), featureUidProperty)
             )?.firstOrNull()?.let {
-            setSelectedItem(it)
-            it
-        }
+                setSelectedItem(it)
+                it
+            }
     }
 }
