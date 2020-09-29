@@ -247,7 +247,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     public void setEditable(Boolean editable) {
         isEditable = editable;
-
+        addImageBtn.setEnabled(editable);
         setEditable(editable,
                 findViewById(R.id.label),
                 findViewById(R.id.descriptionLabel),
