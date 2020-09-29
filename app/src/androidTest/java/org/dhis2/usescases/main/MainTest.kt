@@ -35,12 +35,11 @@ class MainTest : BaseTest() {
     fun shouldRedirectToLoginIfClickOnLogOut() {
         setupCredentials()
         startActivity()
+        enableIntents()
 
         homeRobot {
             clickOnNavigationDrawerMenu()
             clickOnLogout()
-            enableIntents()
-            waitToDebounce(LOGOUT_WAITING)
             checkLogInIsLaunched()
         }
     }
@@ -60,9 +59,5 @@ class MainTest : BaseTest() {
 
     private fun startActivity() {
         rule.launchActivity(null)
-    }
-
-    companion object {
-        const val LOGOUT_WAITING = 2000L
     }
 }

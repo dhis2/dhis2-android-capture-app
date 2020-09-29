@@ -23,7 +23,7 @@ class SettingsTest : BaseTest() {
     @Rule
     @JvmField
     val dataBindingIdlingResourceRule = DataBindingIdlingResourceRule(rule)
-    
+
     override fun getPermissionsToBeAccepted(): Array<String> {
         return arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
     }
@@ -44,7 +44,6 @@ class SettingsTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldFindEditDisabledWhenClickOnSyncConfiguration() {
         startActivity()
 
@@ -75,7 +74,6 @@ class SettingsTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldRefillValuesWhenClickOnReservedValues() {
         startActivity()
 
@@ -90,7 +88,6 @@ class SettingsTest : BaseTest() {
         }
     }
 
-    @Ignore
     @Test
     fun shouldSuccessfullyOpenLogs() {
         startActivity()
@@ -101,9 +98,7 @@ class SettingsTest : BaseTest() {
         }
 
         settingsRobot {
-            waitToDebounce(1000)
             clickOnOpenSyncErrorLog()
-            waitToDebounce(1000)
             checkLogViewIsDisplayed()
         }
     }

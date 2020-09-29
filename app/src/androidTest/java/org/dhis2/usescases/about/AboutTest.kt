@@ -38,7 +38,6 @@ class AboutTest : BaseTest() {
         }
 
         aboutRobot {
-            waitToDebounce(FRAGMENT_TRANSITION)
             checkVersionNames(appVersion, sdkVersion)
         }
     }
@@ -60,7 +59,4 @@ class AboutTest : BaseTest() {
     private fun getSDKVersionName() =
         String.format(context.getString(R.string.about_sdk), BuildConfig.SDK_VERSION)
 
-    companion object {
-        const val FRAGMENT_TRANSITION = 1500L
-    }
 }
