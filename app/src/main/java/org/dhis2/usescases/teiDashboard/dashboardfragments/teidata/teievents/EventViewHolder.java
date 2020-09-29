@@ -123,7 +123,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
     private void setEventValueLayout(EventViewModel eventModel, @NotNull Function0<Unit> toggleList) {
         binding.showValuesButton.setVisibility(View.VISIBLE);
         binding.showValuesButton.setOnClickListener(view -> toggleList.invoke());
-        initValues(eventModel.getValueListIsOpen(), eventModel.getDataElementValues());
+        initValues(eventModel);
     }
 
     private void hideEventValueLayout() {
@@ -153,22 +153,22 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         binding.stageIconImage.setColorFilter(ColorUtils.getContrastColor(color));
     }
 
-    private void initValues(boolean valueListIsOpen, List<Pair<String, String>> dataElementValues) {
+    private void initValues(EventViewModel eventModel) {
         binding.dataElementList.removeAllViews();
         binding.eventInfo.setText(null);
-        binding.showValuesButton.setScaleY(valueListIsOpen ? 1F : -1F);
+        binding.showValuesButton.setScaleY(eventModel.getValueListIsOpen() ? 1F : -1F);
         binding.showValuesButton
                 .animate()
-                .scaleY(valueListIsOpen ? -1F : 1F)
+                .scaleY(eventModel.getValueListIsOpen() ? -1F : 1F)
                 .setDuration(500)
-                .withStartAction(() -> binding.showValuesButton.setScaleY(valueListIsOpen ? 1F : -1F))
-                .withEndAction(() -> binding.showValuesButton.setScaleY(valueListIsOpen ? -1F : 1F))
+                .withStartAction(() -> binding.showValuesButton.setScaleY(eventModel.getValueListIsOpen() ? 1F : -1F))
+                .withEndAction(() -> binding.showValuesButton.setScaleY(eventModel.getValueListIsOpen() ? -1F : 1F))
                 .start();
 
-        if (valueListIsOpen) {
+        if (eventModel.getValueListIsOpen()) {
             binding.dataElementListGuideline.setVisibility(View.VISIBLE);
             binding.dataElementList.setVisibility(View.VISIBLE);
-            for (Pair<String, String> nameValuePair : dataElementValues) {
+            for (Pair<String, String> nameValuePair : eventModel.getDataElementValues()) {
                 ItemFieldValueBinding fieldValueBinding = ItemFieldValueBinding.inflate(LayoutInflater.from(binding.dataElementList.getContext()));
                 fieldValueBinding.setName(nameValuePair.component1());
                 fieldValueBinding.setValue(nameValuePair.component2());
@@ -177,7 +177,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         } else {
             binding.dataElementListGuideline.setVisibility(View.INVISIBLE);
             binding.dataElementList.setVisibility(View.GONE);
-            SpannableStringBuilder stringBuilder = DataElementValuesExtensionsKt.toSpannableString(dataElementValues);
+            SpannableStringBuilder stringBuilder = eventModel.valuesSpannableString();
 
             if (stringBuilder.toString().isEmpty()) {
                 hideEventValueLayout();

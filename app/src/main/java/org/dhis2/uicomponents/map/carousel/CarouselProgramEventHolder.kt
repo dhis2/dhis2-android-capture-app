@@ -54,7 +54,7 @@ class CarouselProgramEventHolder(
         binding.showValuesButton.setOnClickListener {
             toggleList.invoke()
         }
-        initValues(programEventModel.openedAttributeList, programEventModel.eventDisplayData())
+        initValues(programEventModel)
     }
 
     private fun hideEventValueLayout() {
@@ -65,24 +65,21 @@ class CarouselProgramEventHolder(
         binding.showValuesButton.setOnClickListener(null)
     }
 
-    private fun initValues(
-        valueListIsOpen: Boolean,
-        dataElementValues: MutableList<Pair<String, String>>
-    ) {
+    private fun initValues(programEventModel: ProgramEventViewModel) {
         binding.dataElementList.removeAllViews()
         binding.dataValue.text = null
-        binding.showValuesButton.scaleY = if (valueListIsOpen) 1f else -1f
+        binding.showValuesButton.scaleY = if (programEventModel.openedAttributeList) 1f else -1f
         binding.showValuesButton
             .animate()
-            .scaleY(if (valueListIsOpen) -1f else 1f)
+            .scaleY(if (programEventModel.openedAttributeList) -1f else 1f)
             .setDuration(500)
-            .withStartAction { binding.showValuesButton.scaleY = if (valueListIsOpen) 1f else -1f }
-            .withEndAction { binding.showValuesButton.scaleY = if (valueListIsOpen) -1f else 1f }
+            .withStartAction { binding.showValuesButton.scaleY = if (programEventModel.openedAttributeList) 1f else -1f }
+            .withEndAction { binding.showValuesButton.scaleY = if (programEventModel.openedAttributeList) -1f else 1f }
             .start()
-        if (valueListIsOpen) {
+        if (programEventModel.openedAttributeList) {
             binding.dataElementListGuideline.visibility = View.VISIBLE
             binding.dataElementList.visibility = View.VISIBLE
-            for (nameValuePair in dataElementValues) {
+            programEventModel.eventDisplayData().forEach { nameValuePair ->
                 val fieldValueBinding: ItemFieldValueBinding =
                     ItemFieldValueBinding.inflate(
                         LayoutInflater.from(binding.dataElementList.context)
@@ -94,7 +91,7 @@ class CarouselProgramEventHolder(
         } else {
             binding.dataElementListGuideline.visibility = View.INVISIBLE
             binding.dataElementList.visibility = View.GONE
-            val stringBuilder = dataElementValues.toSpannableString()
+            val stringBuilder = programEventModel.spannableStringValues
             when {
                 stringBuilder.toString().isEmpty() -> hideEventValueLayout()
                 else -> binding.dataValue.text = stringBuilder
