@@ -1,16 +1,14 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents;
 
 import android.graphics.Color;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.dhis2.Bindings.DataElementValuesExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.ItemEventBinding;
 import org.dhis2.databinding.ItemFieldValueBinding;
@@ -29,7 +27,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 import kotlin.Pair;
 import kotlin.Unit;
@@ -180,18 +177,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         } else {
             binding.dataElementListGuideline.setVisibility(View.INVISIBLE);
             binding.dataElementList.setVisibility(View.GONE);
-            SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
-            for (Pair<String, String> nameValuePair : dataElementValues) {
-                if (!Objects.equals(nameValuePair.component2(), "-")) {
-                    SpannableString value = new SpannableString(nameValuePair.component2());
-                    int colorToUse = dataElementValues.indexOf(nameValuePair) % 2 == 0 ? Color.parseColor("#8A333333") : Color.parseColor("#61333333");
-                    value.setSpan(new ForegroundColorSpan(colorToUse), 0, value.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-                    stringBuilder.append(value);
-                    if (dataElementValues.indexOf(nameValuePair) != dataElementValues.size() - 1) {
-                        stringBuilder.append(" ");
-                    }
-                }
-            }
+            SpannableStringBuilder stringBuilder = DataElementValuesExtensionsKt.toSpannableString(dataElementValues);
 
             if (stringBuilder.toString().isEmpty()) {
                 hideEventValueLayout();

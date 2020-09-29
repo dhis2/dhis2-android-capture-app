@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.uicomponents.map.model.CarouselItemModel;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.State;
@@ -13,6 +12,8 @@ import org.hisp.dhis.android.core.event.EventStatus;
 
 import java.util.Date;
 import java.util.List;
+
+import kotlin.Pair;
 
 /**
  * QUADRAM. Created by ppajuelo on 31/01/2019.

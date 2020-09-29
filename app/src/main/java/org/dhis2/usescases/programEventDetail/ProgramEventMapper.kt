@@ -4,7 +4,6 @@ import java.util.Date
 import javax.inject.Inject
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.dhislogic.DhisEventUtils
-import org.dhis2.data.tuples.Pair
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
 import org.dhis2.utils.DateUtils
@@ -136,7 +135,7 @@ class ProgramEventMapper @Inject constructor(val d2: D2, val dhisEventUtils: Dhi
                     }
                     val value = it.userFriendlyValue(d2) ?: ""
                     if (displayName != null) {
-                        data.add(Pair.create(displayName, value))
+                        data.add(Pair(displayName, value))
                     }
                 }
             }

@@ -1,16 +1,11 @@
 package org.dhis2.uicomponents.map.carousel
 
-import android.graphics.Color
-import android.text.SpannableString
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
+import org.dhis2.Bindings.toSpannableString
 import org.dhis2.R
-import org.dhis2.data.tuples.Pair
 import org.dhis2.databinding.ItemCarouselProgramEventBinding
 import org.dhis2.databinding.ItemFieldValueBinding
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel
@@ -92,37 +87,14 @@ class CarouselProgramEventHolder(
                     ItemFieldValueBinding.inflate(
                         LayoutInflater.from(binding.dataElementList.context)
                     )
-                fieldValueBinding.name = nameValuePair.val0()
-                fieldValueBinding.value = nameValuePair.val1()
+                fieldValueBinding.name = nameValuePair.first
+                fieldValueBinding.value = nameValuePair.second
                 binding.dataElementList.addView(fieldValueBinding.root)
             }
         } else {
             binding.dataElementListGuideline.visibility = View.INVISIBLE
             binding.dataElementList.visibility = View.GONE
-            val stringBuilder =
-                SpannableStringBuilder()
-            for (nameValuePair in dataElementValues) {
-                if (nameValuePair.val1() != "-") {
-                    val value =
-                        SpannableString(nameValuePair.val1())
-                    val colorToUse =
-                        if (dataElementValues.indexOf(nameValuePair) % 2 == 0) {
-                            Color.parseColor("#8A333333")
-                        } else {
-                            Color.parseColor("#61333333")
-                        }
-                    value.setSpan(
-                        ForegroundColorSpan(colorToUse),
-                        0,
-                        value.length,
-                        Spanned.SPAN_INCLUSIVE_INCLUSIVE
-                    )
-                    stringBuilder.append(value)
-                    if (dataElementValues.indexOf(nameValuePair) != dataElementValues.size - 1) {
-                        stringBuilder.append(" ")
-                    }
-                }
-            }
+            val stringBuilder = dataElementValues.toSpannableString()
             when {
                 stringBuilder.toString().isEmpty() -> hideEventValueLayout()
                 else -> binding.dataValue.text = stringBuilder
