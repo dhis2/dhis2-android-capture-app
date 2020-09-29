@@ -30,8 +30,6 @@ json=$(jq -n \
                 --arg locale "$browserstack_locale" \
                 --arg deviceLogs "$browserstack_deviceLogs" \
                 '{devices: $devices, app: $app_url, testSuite: $test_url, package: $package, class: $class, annotation: $annotation, size: $size, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs}')
-printf "json file output\n"
-echo $json
 
 test_execution_response="$(curl -X POST https://api-cloud.browserstack.com/app-automate/espresso/build -d \ "$json" -H "Content-Type: application/json" -u "$browserstack_username:$browserstack_access_key")"
 
@@ -41,7 +39,6 @@ echo "build id running: $build_id"
 
 # Monitor build status
 build_status="running"
-
 sleep $build_time_average
 echo "Monitoring build status started...."
 
