@@ -38,7 +38,6 @@ import org.dhis2.utils.Constants.ORG_UNIT
 import org.dhis2.utils.Constants.PERIOD_ID
 import org.dhis2.utils.Constants.UID
 import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType
-import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton
 import timber.log.Timber
 
 class SyncGranularWorker(
@@ -50,7 +49,6 @@ class SyncGranularWorker(
     internal lateinit var presenter: SyncPresenter
 
     override fun doWork(): Result {
-        CountingIdlingResourceSingleton.countingIdlingResource.increment()
         Objects.requireNonNull((applicationContext as App).userComponent())!!
             .plus(SyncGranularRxModule()).inject(this)
 
@@ -88,7 +86,6 @@ class SyncGranularWorker(
                 )
             else -> Result.failure()
         }
-        CountingIdlingResourceSingleton.countingIdlingResource.decrement()
         return result
     }
 }

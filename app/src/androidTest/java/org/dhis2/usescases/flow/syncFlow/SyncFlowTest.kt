@@ -36,8 +36,8 @@ class SyncFlowTest : BaseTest() {
         setupMockServer()
     }
 
-    @Ignore
     @Test
+    @Ignore
     fun shouldSuccessfullySyncAChangedTEI() {
         val teiName = "Scott"
         val teiLastName = "Kelley"
@@ -70,8 +70,8 @@ class SyncFlowTest : BaseTest() {
         }
     }
 
-    @Ignore
     @Test
+    @Ignore
     fun shouldShowErrorWhenTEISyncFails() {
         val teiName = "Lars"
         val teiLastName = "Overland"

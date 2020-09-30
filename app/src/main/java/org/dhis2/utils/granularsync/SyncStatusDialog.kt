@@ -538,7 +538,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 binding!!.noConflictMessage.text = getString(R.string.no_conflicts_synced_message)
                 Bindings.setStateIcon(binding!!.syncIcon, State.SYNCED, true)
                 dismissListenerDialog!!.onDismiss(true)
-                CountingIdlingResourceSingleton.countingIdlingResource.increment()
+                CountingIdlingResourceSingleton.countingIdlingResource.decrement()
             }
             WorkInfo.State.FAILED -> {
                 val listStatusLog = ArrayList<StatusLogItem>()
@@ -576,7 +576,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 }
                 Bindings.setStateIcon(binding!!.syncIcon, State.ERROR, true)
                 dismissListenerDialog!!.onDismiss(false)
-                CountingIdlingResourceSingleton.countingIdlingResource.increment()
+                CountingIdlingResourceSingleton.countingIdlingResource.decrement()
             }
             WorkInfo.State.CANCELLED ->
                 adapter!!.addItem(
