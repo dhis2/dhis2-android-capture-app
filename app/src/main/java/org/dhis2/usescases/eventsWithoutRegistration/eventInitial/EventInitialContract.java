@@ -134,6 +134,8 @@ public class EventInitialContract {
         int catOptionSize(String uid);
 
         List<CategoryOption> getCatOptions(String categoryUid);
+
+        void setChangingCoordinates(boolean changingCoordinates);
     }
 
 }

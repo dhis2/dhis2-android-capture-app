@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
+import org.dhis2.data.prefs.Preference;
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.filters.FilterManager;
@@ -26,6 +28,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     private final ProgramEventDetailRepository eventRepository;
     private final SchedulerProvider schedulerProvider;
     private final FilterManager filterManager;
+    private final PreferenceProvider preferences;
     private ProgramEventDetailContract.View view;
     CompositeDisposable compositeDisposable;
     private FlowableProcessor<Unit> listDataProcessor;
@@ -38,11 +41,13 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
             ProgramEventDetailContract.View view,
             @NonNull ProgramEventDetailRepository programEventDetailRepository,
             SchedulerProvider schedulerProvider,
-            FilterManager filterManager) {
+            FilterManager filterManager,
+            PreferenceProvider preferenceProvider) {
         this.view = view;
         this.eventRepository = programEventDetailRepository;
         this.schedulerProvider = schedulerProvider;
         this.filterManager = filterManager;
+        this.preferences = preferenceProvider;
         eventInfoProcessor = PublishProcessor.create();
         mapProcessor = PublishProcessor.create();
         compositeDisposable = new CompositeDisposable();
@@ -228,6 +233,9 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void getEventInfo(String eventUid) {
+        if(preferences.getBoolean(Preference.EVENT_COORDINATE_CHANGED,false)){
+            getMapData();
+        }
         eventInfoProcessor.onNext(eventUid);
     }
 
