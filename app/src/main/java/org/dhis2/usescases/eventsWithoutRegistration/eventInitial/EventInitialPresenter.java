@@ -52,9 +52,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.BACK_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT;
 
-public class EventInitialPresenter
-        implements
-        EventInitialContract.Presenter {
+public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     public static final int ACCESS_LOCATION_PERMISSION_REQUEST = 101;
     private final PreferenceProvider preferences;
@@ -74,8 +72,6 @@ public class EventInitialPresenter
 
     private Program program;
 
-    private CategoryCombo catCombo;
-
     private String programStageId;
 
     private List<OrganisationUnit> orgUnits;
@@ -86,8 +82,8 @@ public class EventInitialPresenter
                                  @NonNull EventSummaryRepository eventSummaryRepository,
                                  @NonNull EventInitialRepository eventInitialRepository,
                                  @NonNull SchedulerProvider schedulerProvider,
-                                @NonNull PreferenceProvider preferenceProvider,
-                                @NonNull AnalyticsHelper analyticsHelper) {
+                                 @NonNull PreferenceProvider preferenceProvider,
+                                 @NonNull AnalyticsHelper analyticsHelper) {
 
         this.view = view;
         this.eventInitialRepository = eventInitialRepository;
@@ -121,12 +117,11 @@ public class EventInitialPresenter
                                     .subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui())
                                     .subscribe(sextet -> {
                                         this.program = sextet.val1();
-                                        this.catCombo = sextet.val2();
                                         this.orgUnits = sextet.val5();
                                         view.setProgram(sextet.val1());
                                         view.setProgramStage(sextet.val3());
                                         view.setEvent(sextet.val0());
-                                        getCatOptionCombos(catCombo, !sextet.val4().isEmpty() ? sextet.val4() : null);
+                                        getCatOptionCombos(sextet.val2(), !sextet.val4().isEmpty() ? sextet.val4() : null);
                                     }, Timber::d));
 
         } else {
@@ -141,10 +136,9 @@ public class EventInitialPresenter
                                     .subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui())
                                     .subscribe(trioFlowable -> {
                                         this.program = trioFlowable.val0();
-                                        this.catCombo = trioFlowable.val1();
                                         this.orgUnits = trioFlowable.val2();
                                         view.setProgram(trioFlowable.val0());
-                                        getCatOptionCombos(catCombo, null);
+                                        getCatOptionCombos(trioFlowable.val1(), null);
                                     }, Timber::d));
             getProgramStages(programId, programStageId);
         }
@@ -393,8 +387,8 @@ public class EventInitialPresenter
     }
 
     @Override
-    public String getCatOptionCombo(List<CategoryOptionCombo> categoryOptionCombos, List<CategoryOption> values) {
-        return eventInitialRepository.getCategoryOptionCombo(catCombo.uid(), UidsHelper.getUidsList(values));
+    public String getCatOptionCombo(String catComboUid, List<CategoryOptionCombo> categoryOptionCombos, List<CategoryOption> values) {
+        return eventInitialRepository.getCategoryOptionCombo(catComboUid, UidsHelper.getUidsList(values));
     }
 
     @Override
@@ -447,5 +441,10 @@ public class EventInitialPresenter
     @Override
     public int catOptionSize(String uid) {
         return eventInitialRepository.getCatOptionSize(uid);
+    }
+
+    @Override
+    public List<CategoryOption> getCatOptions(String categoryUid) {
+        return eventInitialRepository.getCategoryOptions(categoryUid);
     }
 }
