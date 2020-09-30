@@ -1,10 +1,16 @@
 package org.dhis2.uicomponents.map.carousel
 
+import android.graphics.Color
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
 import org.dhis2.R
+import org.dhis2.data.tuples.Pair
 import org.dhis2.databinding.ItemCarouselProgramEventBinding
 import org.dhis2.databinding.ItemFieldValueBinding
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel
@@ -53,7 +59,7 @@ class CarouselProgramEventHolder(
         binding.showValuesButton.setOnClickListener {
             toggleList.invoke()
         }
-        initValues(programEventModel)
+        initValues(programEventModel.openedAttributeList, programEventModel.eventDisplayData())
     }
 
     private fun hideEventValueLayout() {
@@ -64,39 +70,59 @@ class CarouselProgramEventHolder(
         binding.showValuesButton.setOnClickListener(null)
     }
 
-    private fun initValues(programEventModel: ProgramEventViewModel) {
+    private fun initValues(
+        valueListIsOpen: Boolean,
+        dataElementValues: MutableList<Pair<String, String>>
+    ) {
         binding.dataElementList.removeAllViews()
         binding.dataValue.text = null
-        binding.showValuesButton.scaleY = if (programEventModel.openedAttributeList) 1f else -1f
+        binding.showValuesButton.scaleY = if (valueListIsOpen) 1f else -1f
         binding.showValuesButton
             .animate()
-            .scaleY(if (programEventModel.openedAttributeList) -1f else 1f)
+            .scaleY(if (valueListIsOpen) -1f else 1f)
             .setDuration(500)
-            .withStartAction {
-                binding.showValuesButton.scaleY =
-                    if (programEventModel.openedAttributeList) 1f else -1f
-            }
-            .withEndAction {
-                binding.showValuesButton.scaleY =
-                    if (programEventModel.openedAttributeList) -1f else 1f
-            }
+            .withStartAction { binding.showValuesButton.scaleY = if (valueListIsOpen) 1f else -1f }
+            .withEndAction { binding.showValuesButton.scaleY = if (valueListIsOpen) -1f else 1f }
             .start()
-        if (programEventModel.openedAttributeList) {
+        if (valueListIsOpen) {
             binding.dataElementListGuideline.visibility = View.VISIBLE
             binding.dataElementList.visibility = View.VISIBLE
-            programEventModel.eventDisplayData().forEach { nameValuePair ->
+            for (nameValuePair in dataElementValues) {
                 val fieldValueBinding: ItemFieldValueBinding =
                     ItemFieldValueBinding.inflate(
                         LayoutInflater.from(binding.dataElementList.context)
                     )
-                fieldValueBinding.name = nameValuePair.first
-                fieldValueBinding.value = nameValuePair.second
+                fieldValueBinding.name = nameValuePair.val0()
+                fieldValueBinding.value = nameValuePair.val1()
                 binding.dataElementList.addView(fieldValueBinding.root)
             }
         } else {
             binding.dataElementListGuideline.visibility = View.INVISIBLE
             binding.dataElementList.visibility = View.GONE
-            val stringBuilder = programEventModel.spannableStringValues
+            val stringBuilder =
+                SpannableStringBuilder()
+            for (nameValuePair in dataElementValues) {
+                if (nameValuePair.val1() != "-") {
+                    val value =
+                        SpannableString(nameValuePair.val1())
+                    val colorToUse =
+                        if (dataElementValues.indexOf(nameValuePair) % 2 == 0) {
+                            Color.parseColor("#8A333333")
+                        } else {
+                            Color.parseColor("#61333333")
+                        }
+                    value.setSpan(
+                        ForegroundColorSpan(colorToUse),
+                        0,
+                        value.length,
+                        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                    )
+                    stringBuilder.append(value)
+                    if (dataElementValues.indexOf(nameValuePair) != dataElementValues.size - 1) {
+                        stringBuilder.append(" ")
+                    }
+                }
+            }
             when {
                 stringBuilder.toString().isEmpty() -> hideEventValueLayout()
                 else -> binding.dataValue.text = stringBuilder

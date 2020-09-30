@@ -1,7 +1,10 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents;
 
 import android.graphics.Color;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -24,7 +27,9 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import kotlin.Pair;
 import kotlin.Unit;
@@ -121,7 +126,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
     private void setEventValueLayout(EventViewModel eventModel, @NotNull Function0<Unit> toggleList) {
         binding.showValuesButton.setVisibility(View.VISIBLE);
         binding.showValuesButton.setOnClickListener(view -> toggleList.invoke());
-        initValues(eventModel);
+        initValues(eventModel.getValueListIsOpen(), eventModel.getDataElementValues());
     }
 
     private void hideEventValueLayout() {
@@ -151,22 +156,22 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         binding.stageIconImage.setColorFilter(ColorUtils.getContrastColor(color));
     }
 
-    private void initValues(EventViewModel eventModel) {
+    private void initValues(boolean valueListIsOpen, List<Pair<String, String>> dataElementValues) {
         binding.dataElementList.removeAllViews();
         binding.eventInfo.setText(null);
-        binding.showValuesButton.setScaleY(eventModel.getValueListIsOpen() ? 1F : -1F);
+        binding.showValuesButton.setScaleY(valueListIsOpen ? 1F : -1F);
         binding.showValuesButton
                 .animate()
-                .scaleY(eventModel.getValueListIsOpen() ? -1F : 1F)
+                .scaleY(valueListIsOpen ? -1F : 1F)
                 .setDuration(500)
-                .withStartAction(() -> binding.showValuesButton.setScaleY(eventModel.getValueListIsOpen() ? 1F : -1F))
-                .withEndAction(() -> binding.showValuesButton.setScaleY(eventModel.getValueListIsOpen() ? -1F : 1F))
+                .withStartAction(() -> binding.showValuesButton.setScaleY(valueListIsOpen ? 1F : -1F))
+                .withEndAction(() -> binding.showValuesButton.setScaleY(valueListIsOpen ? -1F : 1F))
                 .start();
 
-        if (eventModel.getValueListIsOpen()) {
+        if (valueListIsOpen) {
             binding.dataElementListGuideline.setVisibility(View.VISIBLE);
             binding.dataElementList.setVisibility(View.VISIBLE);
-            for (Pair<String, String> nameValuePair : eventModel.getDataElementValues()) {
+            for (Pair<String, String> nameValuePair : dataElementValues) {
                 ItemFieldValueBinding fieldValueBinding = ItemFieldValueBinding.inflate(LayoutInflater.from(binding.dataElementList.getContext()));
                 fieldValueBinding.setName(nameValuePair.component1());
                 fieldValueBinding.setValue(nameValuePair.component2());
@@ -175,7 +180,18 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         } else {
             binding.dataElementListGuideline.setVisibility(View.INVISIBLE);
             binding.dataElementList.setVisibility(View.GONE);
-            SpannableStringBuilder stringBuilder = eventModel.valuesSpannableString();
+            SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
+            for (Pair<String, String> nameValuePair : dataElementValues) {
+                if (!Objects.equals(nameValuePair.component2(), "-")) {
+                    SpannableString value = new SpannableString(nameValuePair.component2());
+                    int colorToUse = dataElementValues.indexOf(nameValuePair) % 2 == 0 ? Color.parseColor("#8A333333") : Color.parseColor("#61333333");
+                    value.setSpan(new ForegroundColorSpan(colorToUse), 0, value.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                    stringBuilder.append(value);
+                    if (dataElementValues.indexOf(nameValuePair) != dataElementValues.size() - 1) {
+                        stringBuilder.append(" ");
+                    }
+                }
+            }
 
             if (stringBuilder.toString().isEmpty()) {
                 hideEventValueLayout();
