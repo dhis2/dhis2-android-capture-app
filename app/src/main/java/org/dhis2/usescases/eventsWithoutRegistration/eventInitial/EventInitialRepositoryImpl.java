@@ -116,9 +116,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                             if (!categoryCombo.isDefault() && event.attributeOptionCombo() != null) {
                                 List<CategoryOption> selectedCatOptions = d2.categoryModule().categoryOptionCombos().withCategoryOptions().uid(event.attributeOptionCombo()).blockingGet().categoryOptions();
                                 for (Category category : categoryCombo.categories()) {
-                                    for (CategoryOption categoryOption : selectedCatOptions)
-                                        if (category.categoryOptions().contains(categoryOption))
+                                    for (CategoryOption categoryOption : selectedCatOptions) {
+                                        List<CategoryOption> categoryOptions = d2.categoryModule().categoryOptions().byCategoryUid(category.uid()).blockingGet();
+                                        if (categoryOptions.contains(categoryOption))
                                             map.put(category.uid(), categoryOption);
+                                    }
                                 }
                             }
 
