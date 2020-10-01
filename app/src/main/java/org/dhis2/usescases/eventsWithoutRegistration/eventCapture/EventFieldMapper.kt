@@ -101,7 +101,13 @@ class EventFieldMapper(
             if (fieldSection.isNotEmpty() || sectionList.size == 1) {
                 updateFieldMap(
                     fieldSection,
-                    if (showMandatoryErrors && emptyMandatoryFields.containsKey(field.uid())) {
+                    if (field !is ImageViewModel && showMandatoryErrors &&
+                        emptyMandatoryFields.containsKey(field.uid())
+                    ) {
+                        field.withWarning(mandatoryFieldWarning)
+                    } else if (field is ImageViewModel && showMandatoryErrors &&
+                        emptyMandatoryFields.containsKey(field.fieldUid())
+                    ) {
                         field.withWarning(mandatoryFieldWarning)
                     } else {
                         field

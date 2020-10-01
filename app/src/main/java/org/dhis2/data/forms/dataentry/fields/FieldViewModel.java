@@ -48,7 +48,7 @@ public abstract class FieldViewModel {
     @Nullable
     public abstract String description();
 
-   @NonNull
+    @NonNull
     public abstract FieldViewModel withValue(String data);
 
     @NonNull
@@ -59,4 +59,26 @@ public abstract class FieldViewModel {
 
     @Nullable
     public abstract String fieldMask();
+
+    public String getFormattedLabel() {
+        if (mandatory()) {
+            return label() + " *";
+        } else {
+            return label();
+        }
+    }
+
+    public boolean shouldShowError() {
+        return warning() != null || error() != null;
+    }
+
+    public String getErrorMessage() {
+        if (error() != null) {
+            return error();
+        } else if (warning() != null) {
+            return warning();
+        } else {
+            return null;
+        }
+    }
 }
