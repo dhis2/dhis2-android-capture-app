@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryAdapter;
 import org.dhis2.data.forms.dataentry.DataEntryArguments;
@@ -86,6 +87,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
         binding.actionButton.setOnClickListener(view -> {
             view.requestFocus();
+            ViewExtensionsKt.closeKeyboard(view);
             presenter.onActionButtonClick();
         });
 
