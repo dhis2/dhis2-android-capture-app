@@ -455,17 +455,15 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private void setAttributeValue(SearchTeiModel searchTei, String attributeUid) {
         TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeUid).blockingGet();
-        if (attribute.valueType() != ValueType.IMAGE) {
-            TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues().value(attribute.uid(), searchTei.getTei().uid()).blockingGet();
-            if (attributeValue != null) {
-                attributeValue = ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null);
-            } else {
-                attributeValue = emptyValue(attribute.uid(), searchTei.getTei().uid());
-            }
-            searchTei.addAttributeValue(attribute.displayFormName(), attributeValue);
-            if (attribute.valueType() == ValueType.TEXT || attribute.valueType() == ValueType.LONG_TEXT) {
-                searchTei.addTextAttribute(attribute.displayName(), attributeValue);
-            }
+        TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues().value(attribute.uid(), searchTei.getTei().uid()).blockingGet();
+        if (attributeValue != null) {
+            attributeValue = ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null);
+        } else {
+            attributeValue = emptyValue(attribute.uid(), searchTei.getTei().uid());
+        }
+        searchTei.addAttributeValue(attribute.displayFormName(), attributeValue);
+        if (attribute.valueType() == ValueType.TEXT || attribute.valueType() == ValueType.LONG_TEXT) {
+            searchTei.addTextAttribute(attribute.displayName(), attributeValue);
         }
     }
 
@@ -790,24 +788,70 @@ public class SearchRepositoryImpl implements SearchRepository {
         } else {
             searchTei.setTei(tei);
             if (tei.trackedEntityAttributeValues() != null) {
-                TrackedEntityAttributeValue.Builder attrValueBuilder = TrackedEntityAttributeValue.builder();
-                for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
+                if(selectedProgram!=null){
+                    List<ProgramTrackedEntityAttribute> programAttributes = d2.programModule().programTrackedEntityAttributes()
+                            .byProgram().eq(selectedProgram.uid())
+                            .byDisplayInList().isTrue()
+                            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                            .blockingGet();
+                    for(ProgramTrackedEntityAttribute programAttribute: programAttributes){
+                        TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
+                                .uid(programAttribute.trackedEntityAttribute().uid())
+                                .blockingGet();
+                        for(TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()){
+                            if(attrValue.trackedEntityAttribute().equals(attribute.uid())){
+                                addAttribute(searchTei, attrValue, attribute);
+                                break;
+                            }
+                        }
+                    }
+                }else{
+                    List<TrackedEntityTypeAttribute> typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
+                            .byTrackedEntityTypeUid().eq(searchTei.getTei().trackedEntityType())
+                            .byDisplayInList().isTrue()
+                            .blockingGet();
+                    for(TrackedEntityTypeAttribute typeAttribute : typeAttributes){
+                        TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
+                                .uid(typeAttribute.trackedEntityAttribute().uid())
+                                .blockingGet();
+                        for(TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()){
+                            if(attrValue.trackedEntityAttribute().equals(attribute.uid())){
+                                addAttribute(searchTei, attrValue, attribute);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                /*for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
                     TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
                             .uid(attrValue.trackedEntityAttribute())
                             .blockingGet();
                     if (attribute != null) {
-                        String friendlyValue = ValueExtensionsKt.userFriendlyValue(attrValue, d2);
-
-                        attrValueBuilder.value(friendlyValue)
-                                .created(attrValue.created())
-                                .lastUpdated(attrValue.lastUpdated())
-                                .trackedEntityAttribute(attrValue.trackedEntityAttribute())
-                                .trackedEntityInstance(tei.uid());
-                        searchTei.addAttributeValue(attribute.displayFormName(), attrValueBuilder.build());
-                        if (attrIsProfileImage(attrValue.trackedEntityAttribute()))
-                            searchTei.setProfilePicture(attrValue.trackedEntityAttribute());
+                        if (selectedProgram == null) {
+                            List<TrackedEntityTypeAttribute> typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
+                                    .byTrackedEntityTypeUid().eq(searchTei.getTei().trackedEntityType())
+                                    .byDisplayInList().isTrue()
+                                    .blockingGet();
+                            for (TrackedEntityTypeAttribute typeAttribute : typeAttributes) {
+                                if (typeAttribute.trackedEntityAttribute().uid().equals(attribute.uid())) {
+                                    addAttribute(searchTei, attrValue, attribute);
+                                }
+                            }
+                        } else {
+                            List<ProgramTrackedEntityAttribute> programAttributes = d2.programModule().programTrackedEntityAttributes()
+                                    .byProgram().eq(selectedProgram.uid())
+                                    .byDisplayInList().isTrue()
+                                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                                    .blockingGet();
+                            for (ProgramTrackedEntityAttribute programAttribute : programAttributes) {
+                                if (programAttribute.trackedEntityAttribute().uid().equals(attribute.uid())) {
+                                    addAttribute(searchTei, attrValue, attribute);
+                                }
+                            }
+                        }
                     }
-                }
+                }*/
             }
         }
 
@@ -819,6 +863,21 @@ public class SearchRepositoryImpl implements SearchRepository {
         searchTei.setSortingValue(sortingValueSetter.setSortingItem(searchTei, sortingItem));
         searchTei.setTEType(d2.trackedEntityModule().trackedEntityTypes().uid(teiType).blockingGet().displayName());
         return searchTei;
+    }
+
+    private void addAttribute(SearchTeiModel searchTei, TrackedEntityAttributeValue attrValue, TrackedEntityAttribute attribute) {
+        String friendlyValue = ValueExtensionsKt.userFriendlyValue(attrValue, d2);
+        if (attrIsProfileImage(attrValue.trackedEntityAttribute()))
+            searchTei.setProfilePicture(attrValue.trackedEntityAttribute());
+
+        TrackedEntityAttributeValue.Builder attrValueBuilder = TrackedEntityAttributeValue.builder();
+        attrValueBuilder.value(friendlyValue)
+                .created(attrValue.created())
+                .lastUpdated(attrValue.lastUpdated())
+                .trackedEntityAttribute(attrValue.trackedEntityAttribute())
+                .trackedEntityInstance(searchTei.getTei().uid());
+        searchTei.addAttributeValue(attribute.displayFormName(), attrValueBuilder.build());
+
     }
 
     private String profilePicturePath(TrackedEntityInstance tei, @Nullable Program selectedProgram) {
