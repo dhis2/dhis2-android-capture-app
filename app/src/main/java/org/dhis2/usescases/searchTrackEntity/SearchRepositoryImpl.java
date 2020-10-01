@@ -788,7 +788,42 @@ public class SearchRepositoryImpl implements SearchRepository {
         } else {
             searchTei.setTei(tei);
             if (tei.trackedEntityAttributeValues() != null) {
-                for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
+                if(selectedProgram!=null){
+                    List<ProgramTrackedEntityAttribute> programAttributes = d2.programModule().programTrackedEntityAttributes()
+                            .byProgram().eq(selectedProgram.uid())
+                            .byDisplayInList().isTrue()
+                            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                            .blockingGet();
+                    for(ProgramTrackedEntityAttribute programAttribute: programAttributes){
+                        TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
+                                .uid(programAttribute.trackedEntityAttribute().uid())
+                                .blockingGet();
+                        for(TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()){
+                            if(attrValue.trackedEntityAttribute().equals(attribute.uid())){
+                                addAttribute(searchTei, attrValue, attribute);
+                                break;
+                            }
+                        }
+                    }
+                }else{
+                    List<TrackedEntityTypeAttribute> typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
+                            .byTrackedEntityTypeUid().eq(searchTei.getTei().trackedEntityType())
+                            .byDisplayInList().isTrue()
+                            .blockingGet();
+                    for(TrackedEntityTypeAttribute typeAttribute : typeAttributes){
+                        TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
+                                .uid(typeAttribute.trackedEntityAttribute().uid())
+                                .blockingGet();
+                        for(TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()){
+                            if(attrValue.trackedEntityAttribute().equals(attribute.uid())){
+                                addAttribute(searchTei, attrValue, attribute);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                /*for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
                     TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
                             .uid(attrValue.trackedEntityAttribute())
                             .blockingGet();
@@ -816,7 +851,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                             }
                         }
                     }
-                }
+                }*/
             }
         }
 
