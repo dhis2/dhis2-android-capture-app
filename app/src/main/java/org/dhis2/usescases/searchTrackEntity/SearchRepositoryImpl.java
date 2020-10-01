@@ -241,8 +241,8 @@ public class SearchRepositoryImpl implements SearchRepository {
         List<String> orgUnits = new ArrayList<>();
         if (FilterManager.getInstance().getOrgUnitUidsFilters().isEmpty()) {
             orgUnits.addAll(UidsHelper.getUidsList(d2.organisationUnitModule().organisationUnits()
-                            .byRootOrganisationUnit(true)
-                            .blockingGet()));
+                    .byRootOrganisationUnit(true)
+                    .blockingGet()));
             ouMode = OrganisationUnitMode.DESCENDANTS;
         } else {
             orgUnits.addAll(FilterManager.getInstance().getOrgUnitUidsFilters());
@@ -615,18 +615,20 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public Observable<List<TrackedEntityAttribute>> trackedEntityTypeAttributes() {
-        return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes().byUid().eq(teiType).one().blockingGet().trackedEntityTypeAttributes())
-                .flatMap(attributes -> {
-                    List<String> uids = new ArrayList<>();
-                    Collections.sort(attributes, (one, two) -> one.sortOrder().compareTo(two.sortOrder()));
-                    for (TrackedEntityTypeAttribute tetAttribute : attributes) {
-                        if (tetAttribute.searchable())
-                            uids.add(tetAttribute.trackedEntityAttribute().uid());
-                        else if (d2.trackedEntityModule().trackedEntityAttributes().byUid().eq(tetAttribute.trackedEntityAttribute().uid()).one().blockingGet().unique())
-                            uids.add(tetAttribute.trackedEntityAttribute().uid());
+        return d2.trackedEntityModule().trackedEntityTypeAttributes()
+                .byTrackedEntityTypeUid().eq(teiType)
+                .get()
+                .map(typeAttributes -> {
+                    List<TrackedEntityAttribute> attributes = new ArrayList<>();
+                    for (TrackedEntityTypeAttribute typeAttribute : typeAttributes) {
+                        attributes.add(
+                                d2.trackedEntityModule().trackedEntityAttributes()
+                                        .uid(typeAttribute.trackedEntityAttribute().uid())
+                                        .blockingGet()
+                        );
                     }
-                    return Observable.just(d2.trackedEntityModule().trackedEntityAttributes().byUid().in(uids).blockingGet());
-                });
+                    return attributes;
+                }).toObservable();
     }
 
     @Override

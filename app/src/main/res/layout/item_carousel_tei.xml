@@ -219,7 +219,7 @@
                 android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
                 android:textColor="#61333333"
                 android:textSize="14sp"
-                android:visibility='@{attribute.size()>0 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
+                android:visibility='@{attribute.size()>0 ? View.VISIBLE : View.GONE}'
                 app:layout_constraintEnd_toStartOf="@id/infoLayout"
                 app:layout_constraintStart_toEndOf="@id/attribute_a_name"
                 app:layout_constraintTop_toTopOf="@id/attribute_a_name"
