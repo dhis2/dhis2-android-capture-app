@@ -75,7 +75,7 @@
                 style="@style/ActionIcon"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:tint="?colorPrimaryLight"
+                android:tint="?colorPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
