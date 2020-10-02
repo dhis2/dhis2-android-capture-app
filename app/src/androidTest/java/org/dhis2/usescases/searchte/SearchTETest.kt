@@ -21,14 +21,60 @@ class SearchTETest : BaseTest() {
     fun shouldSuccessfullySearchByName() {
         val firstName = "Anna"
         val firstNamePosition = 0
+        val filterCount = "1"
 
         prepareChildProgrammeIntentAndLaunchActivity()
 
         searchTeiRobot {
             searchByPosition(firstName, firstNamePosition)
             clickOnFab()
+            checkFilterCount(filterCount)
             closeSearchForm()
             checkListOfSearchTEI(firstName)
+        }
+    }
+
+    @Test
+    fun shouldShowErrorWhenCanNotFindSearchResult() {
+        /**
+         * launch program
+         * search using a weird search word
+         * click on fab
+         * check filter count 1
+         * check empty recycler
+         * check result message
+         * */
+
+
+    }
+
+    @Test
+    fun shouldSuccessfullySearchUsingMoreThanOneField() {
+        /**
+         * launch program
+         * choose one search
+         * add another search
+         * click on search
+         * check search count 2
+         * check result
+         * */
+    }
+
+    @Test
+    fun shouldSuccessfullyChangeBetweenPrograms() {
+        /**
+         * launch child program
+         * click on spinner and select another program (TB program)
+         * check it does not crash
+         * */
+
+        prepareChildProgrammeIntentAndLaunchActivity()
+
+        searchTeiRobot {
+            Thread.sleep(10000)
+            clickOnProgramSpinner() //it sends me error action will not be performed (90 percent of the view)
+            Thread.sleep(1000)
+            //selectAProgram("TB program")
         }
     }
 
