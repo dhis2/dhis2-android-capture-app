@@ -21,6 +21,7 @@ import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryAdapter;
 import org.dhis2.data.forms.dataentry.DataEntryArguments;
+import org.dhis2.data.forms.dataentry.DataEntryHeaderHelper;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.section.SectionHolder;
@@ -50,10 +51,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     private EventCaptureActivity activity;
     private SectionSelectorFragmentBinding binding;
     private DataEntryAdapter dataEntryAdapter;
+    private DataEntryHeaderHelper dataEntryHeaderHelper;
     private FlowableProcessor<RowAction> flowableProcessor;
     private FlowableProcessor<String> sectionProcessor;
     private FlowableProcessor<Trio<String, String, Integer>> flowableOptions;
-    private MutableLiveData<SectionViewModel> currentSection = new MutableLiveData<>();
 
     public static EventCaptureFormFragment newInstance(String eventUid) {
         EventCaptureFormFragment fragment = new EventCaptureFormFragment();
@@ -91,25 +92,15 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             presenter.onActionButtonClick();
         });
 
-        currentSection.observe(this, this::loadHeader);
+        dataEntryHeaderHelper = new DataEntryHeaderHelper(binding.headerContainer, binding.formRecycler);
+        dataEntryHeaderHelper.observeHeaderChanges(this);
 
         presenter.init();
 
         return binding.getRoot();
     }
 
-    private void loadHeader(SectionViewModel section) {
-        if (section != null && section.isOpen()) {
-            SectionHolder sectionHolder = dataEntryAdapter.getRowSection().onCreate(binding.headerContainer);
-            int sectionPosition = dataEntryAdapter.getSectionPosition(section.uid());
-            dataEntryAdapter.updateSectionData(sectionHolder, sectionPosition, true);
-            binding.headerContainer.removeAllViews();
-            binding.headerContainer.addView(sectionHolder.itemView);
-            sectionHolder.update(section);
-        } else {
-            binding.headerContainer.removeAllViews();
-        }
-    }
+
 
     @Override
     public void onResume() {
@@ -148,14 +139,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             createDataEntry();
         }
 
-        dataEntryAdapter.swap(updates, () -> {
-            if (currentSection.getValue() != null) {
-                loadHeader(
-                        dataEntryAdapter.getSectionForPosition(
-                                dataEntryAdapter.getSectionPosition(currentSection.getValue().uid())
-                        ));
-            }
-        });
+        dataEntryAdapter.swap(updates, () -> dataEntryHeaderHelper.onItemsUpdatedCallback());
     }
 
     @Override
@@ -200,7 +184,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                checkSectionHeader(recyclerView);
+                dataEntryHeaderHelper.checkSectionHeader(recyclerView);
             }
         });
 
@@ -215,21 +199,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                     checkLastItem();
                 }
             });
-        }
-    }
-
-    private void checkSectionHeader(RecyclerView recyclerView){
-        int visiblePos = ((GridLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
-
-        if (visiblePos != -1 && dataEntryAdapter.getSectionSize() > 1) {
-            SectionViewModel headerSection = dataEntryAdapter.getSectionForPosition(visiblePos);
-            if (headerSection.isOpen() && !dataEntryAdapter.isSection(visiblePos + 1)) {
-                if (currentSection.getValue() == null || !currentSection.getValue().uid().equals(headerSection.uid())) {
-                    currentSection.setValue(headerSection);
-                }
-            } else {
-                currentSection.setValue(null);
-            }
         }
     }
 
