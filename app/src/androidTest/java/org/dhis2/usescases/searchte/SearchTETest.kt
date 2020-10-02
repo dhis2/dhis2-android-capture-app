@@ -18,7 +18,30 @@ class SearchTETest : BaseTest() {
     val rule = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
     @Test
-    fun openSearchTE() {
+    fun shouldSuccessfullySearchByName() {
+        val firstName = "Anna"
+        val firstNamePosition = 0
+
+        prepareChildProgrammeIntentAndLaunchActivity()
+
+        searchTeiRobot {
+            searchByPosition(firstName, firstNamePosition)
+            clickOnFab()
+            closeSearchForm()
+            checkListOfSearchTEI(firstName)
+        }
+    }
+
+    @Test
+    fun shouldSuccessfullyFilterBySync() {
+        prepareChildProgrammeIntentAndLaunchActivity()
+
+        searchTeiRobot {
+            /*clickOnSearchFilter()
+            clickOnFilterByName("SYNC")*/
+            //clickOnFilterByName("Synced")
+            closeSearchForm()
+        }
     }
 
     private fun prepareChildProgrammeIntentAndLaunchActivity() {

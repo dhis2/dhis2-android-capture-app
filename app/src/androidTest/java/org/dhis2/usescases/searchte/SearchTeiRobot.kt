@@ -53,6 +53,13 @@ class SearchTeiRobot : BaseRobot() {
             )
     }
 
+    fun searchByField(searchWord: String, field: String) {
+        waitToDebounce(1000)
+        onView(withId(R.id.form_recycler))
+            .perform(
+                actionOnItem<SearchTEViewHolder>(hasDescendant(withText(field)), typeChildViewWithId(searchWord, R.id.input_editText))
+            )
+    }
 
     fun clickOnDateField() {
         onView(withId(R.id.form_recycler))
@@ -71,5 +78,10 @@ class SearchTeiRobot : BaseRobot() {
 
     fun clickOnFab() {
         onView(withId(R.id.enrollmentButton)).perform(click())
+    }
+
+    fun checkListOfSearchTEI(searchWord: String) {
+        onView(withId(R.id.scrollView))
+            .check(matches(hasItem(hasDescendant(withText(searchWord)))))
     }
 }
