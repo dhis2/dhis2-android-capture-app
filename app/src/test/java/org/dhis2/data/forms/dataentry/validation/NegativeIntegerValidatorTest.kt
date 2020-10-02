@@ -1,7 +1,8 @@
 package org.dhis2.data.forms.dataentry.validation
 
 import org.dhis2.utils.Validator
-import org.junit.Assert.*
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 

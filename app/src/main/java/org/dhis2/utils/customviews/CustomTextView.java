@@ -26,6 +26,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.BR;
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.validation.ValueTypeValidatorFactory;
 import org.dhis2.data.forms.dataentry.validation.ValueTypeValidatorFactoryKt;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.ObjectStyleUtils;
@@ -291,15 +292,14 @@ public class CustomTextView extends FieldLayout {
                         return false;
                     }
                 case INTEGER_NEGATIVE:
-                    if (Float.valueOf(editText.getText().toString()) < 0)
+                    if (validator.validate(editText.getText().toString()))
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_negative_number));
                         return false;
                     }
                 case INTEGER_ZERO_OR_POSITIVE:
-                    if (editText.getText() != null &&
-                            Float.valueOf(editText.getText().toString()) >= 0)
+                    if (validator.validate(editText.getText().toString()))
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive_zero));

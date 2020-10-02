@@ -6,17 +6,18 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-class PositiveIntegerValidatorTest {
+class ZeroOrPositiveIntegerValidatorTest {
 
     private lateinit var validator: Validator
 
     @Before
     fun setUp() {
-        validator = PositiveIntegerValidator()
+        validator = ZeroOrPositiveIntegerValidator()
     }
 
     @Test
     fun `Should be considered valid PositiveInteger values`() {
+        assertTrue(validator.validate("0"))
         assertTrue(validator.validate("1"))
         assertTrue(validator.validate("10"))
         assertTrue(validator.validate("01"))
@@ -33,7 +34,6 @@ class PositiveIntegerValidatorTest {
 
     @Test
     fun `Should be considered invalid PositiveInteger values`() {
-        assertFalse(validator.validate("0"))
         assertFalse(validator.validate(""))
         assertFalse(validator.validate("A012"))
         assertFalse(validator.validate("-1"))
