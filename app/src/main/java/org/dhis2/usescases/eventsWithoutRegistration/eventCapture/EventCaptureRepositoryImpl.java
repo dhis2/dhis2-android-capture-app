@@ -277,7 +277,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         String error = checkConflicts(uid, valueRepository.blockingExists() ? valueRepository.blockingGet().value() : null);
 
                         boolean editable = fieldViewModel.editable() != null ? fieldViewModel.editable() : true;
-                        fieldViewModel = fieldViewModel.withValue(value).withEditMode(editable || isEventEditable).withError(error);
+                        fieldViewModel = fieldViewModel.withValue(value).withEditMode(editable || isEventEditable).withError(error.isEmpty() ? null : error);
 
                         return fieldViewModel;
                     }).toList().toFlowable()

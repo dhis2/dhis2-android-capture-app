@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.databinding.ObservableField;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
-import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
@@ -49,13 +48,13 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.tuples.Trio;
-import org.dhis2.databinding.FormSectionBinding;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -106,7 +105,7 @@ public final class DataEntryAdapter extends RecyclerView.Adapter<ViewHolder> {
     private String lastFocusItem;
     private int nextFocusPosition = -1;
 
-    Map<String,Integer> sectionPositions;
+    Map<String, Integer> sectionPositions;
     private String rendering = ProgramStageSectionRenderingType.LISTING.name();
     private Integer totalFields = 0;
     private int openSectionPos = 0;
@@ -205,14 +204,17 @@ public final class DataEntryAdapter extends RecyclerView.Adapter<ViewHolder> {
                 holder.itemView.setActivated(false);
             }
         } else {
-            ((SectionHolder) holder).setBottomShadow(
-                    position > 0 && getItemViewType(position - 1) != SECTION);
-            if (position > 0) {
-                ((SectionHolder) holder).setLastSectionHeight(
-                        position == getItemCount() - 1 && getItemViewType(position - 1) != SECTION);
-            }
-            ((SectionHolder) holder).setSectionNumber(getSectionNumber(position));
+            updateSectionData((SectionHolder) holder, position, false);
         }
+    }
+
+    public void updateSectionData(SectionHolder holder, int position, boolean isHeader) {
+        holder.setBottomShadow(!isHeader && position > 0 && getItemViewType(position - 1) != SECTION);
+        if (position > 0) {
+            holder.setLastSectionHeight(
+                    position == getItemCount() - 1 && getItemViewType(position - 1) != SECTION);
+        }
+        holder.setSectionNumber(getSectionNumber(position));
     }
 
     private int getSectionNumber(int sectionPosition) {
@@ -284,7 +286,7 @@ public final class DataEntryAdapter extends RecyclerView.Adapter<ViewHolder> {
         return items.size();
     }
 
-    private FieldViewModel getItem(int position){
+    private FieldViewModel getItem(int position) {
         return items.get(position);
     }
 
@@ -299,12 +301,12 @@ public final class DataEntryAdapter extends RecyclerView.Adapter<ViewHolder> {
     }
 
     public void swap(@NonNull List<FieldViewModel> updates, Runnable commitCallback) {
-        sectionPositions = new HashMap<>();
+        sectionPositions = new LinkedHashMap<>();
         rendering = null;
         int imageFields = 0;
         for (FieldViewModel fieldViewModel : updates) {
             if (fieldViewModel instanceof SectionViewModel) {
-                sectionPositions.put(fieldViewModel.uid(),updates.indexOf(fieldViewModel));
+                sectionPositions.put(fieldViewModel.uid(), updates.indexOf(fieldViewModel));
                 if (((SectionViewModel) fieldViewModel).isOpen()) {
                     rendering = ((SectionViewModel) fieldViewModel).rendering();
                     totalFields = ((SectionViewModel) fieldViewModel).totalFields();
@@ -375,7 +377,7 @@ public final class DataEntryAdapter extends RecyclerView.Adapter<ViewHolder> {
         return selectedSection.get();
     }
 
-    public void saveOpenedSection(String openSectionUid){
+    public void saveOpenedSection(String openSectionUid) {
         this.openSection = openSectionUid;
     }
 
@@ -389,7 +391,7 @@ public final class DataEntryAdapter extends RecyclerView.Adapter<ViewHolder> {
     }
 
     public int getSavedPosition() {
-        if(TextUtils.isEmpty(openSection))
+        if (TextUtils.isEmpty(openSection))
             return -1;
         else {
             return sectionPositions.get(openSection);
@@ -398,5 +400,33 @@ public final class DataEntryAdapter extends RecyclerView.Adapter<ViewHolder> {
 
     public int getSectionSize() {
         return sectionPositions.size();
+    }
+
+    public SectionViewModel getSectionForPosition(int visiblePos) {
+        if (getItemViewType(visiblePos) == SECTION) {
+            return (SectionViewModel) getItem(visiblePos);
+        } else {
+            int sectionPosition = 0;
+            for (Map.Entry<String, Integer> entry : sectionPositions.entrySet()) {
+                if (entry.getValue() < visiblePos) {
+                    sectionPosition = entry.getValue();
+                } else {
+                    break;
+                }
+            }
+            return (SectionViewModel) getItem(sectionPosition);
+        }
+    }
+
+    public Row<SectionHolder, SectionViewModel> getRowSection() {
+        return rows.get(SECTION);
+    }
+
+    public int getSectionPosition(String sectionUid) {
+        return sectionPositions.get(sectionUid);
+    }
+
+    public boolean isSection(int position) {
+        return getItemViewType(position) == SECTION;
     }
 }

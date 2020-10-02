@@ -3,10 +3,8 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureF
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.database.DataSetObserver;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +13,8 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.Bindings.ViewExtensionsKt;
@@ -25,12 +23,13 @@ import org.dhis2.data.forms.dataentry.DataEntryAdapter;
 import org.dhis2.data.forms.dataentry.DataEntryArguments;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.forms.dataentry.fields.section.SectionHolder;
+import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.recyclers.StickyHeaderItemDecoration;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,6 +53,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     private FlowableProcessor<RowAction> flowableProcessor;
     private FlowableProcessor<String> sectionProcessor;
     private FlowableProcessor<Trio<String, String, Integer>> flowableOptions;
+    private MutableLiveData<SectionViewModel> currentSection = new MutableLiveData<>();
 
     public static EventCaptureFormFragment newInstance(String eventUid) {
         EventCaptureFormFragment fragment = new EventCaptureFormFragment();
@@ -91,9 +91,24 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             presenter.onActionButtonClick();
         });
 
+        currentSection.observe(this, this::loadHeader);
+
         presenter.init();
 
         return binding.getRoot();
+    }
+
+    private void loadHeader(SectionViewModel section) {
+        if (section != null && section.isOpen()) {
+            SectionHolder sectionHolder = dataEntryAdapter.getRowSection().onCreate(binding.headerContainer);
+            int sectionPosition = dataEntryAdapter.getSectionPosition(section.uid());
+            dataEntryAdapter.updateSectionData(sectionHolder, sectionPosition, true);
+            binding.headerContainer.removeAllViews();
+            binding.headerContainer.addView(sectionHolder.itemView);
+            sectionHolder.update(section);
+        } else {
+            binding.headerContainer.removeAllViews();
+        }
     }
 
     @Override
@@ -133,7 +148,14 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             createDataEntry();
         }
 
-        dataEntryAdapter.swap(updates, () -> { });
+        dataEntryAdapter.swap(updates, () -> {
+            if (currentSection.getValue() != null) {
+                loadHeader(
+                        dataEntryAdapter.getSectionForPosition(
+                                dataEntryAdapter.getSectionPosition(currentSection.getValue().uid())
+                        ));
+            }
+        });
     }
 
     @Override
@@ -164,14 +186,14 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         });
 
         binding.formRecycler.setLayoutManager(layoutManager);
-        binding.formRecycler.addItemDecoration(
+        /*binding.formRecycler.addItemDecoration(
                 new StickyHeaderItemDecoration(binding.formRecycler,
                         false, itemPosition -> itemPosition >= 0 &&
                         itemPosition < dataEntryAdapter.getItemCount() &&
                         dataEntryAdapter.getItemViewType(itemPosition) == dataEntryAdapter.sectionViewType() &&
                         dataEntryAdapter.getSectionSize() > 1
                 )
-        );
+        );*/
         binding.formRecycler.setAdapter(dataEntryAdapter);
 
         binding.formRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -183,7 +205,22 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                     imm.hideSoftInputFromWindow(recyclerView.getWindowToken(), 0);
                     binding.dummyFocusView.requestFocus();
                 }
+            }
 
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                int visiblePos = ((GridLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+
+                if (visiblePos != -1) {
+                    SectionViewModel headerSection = dataEntryAdapter.getSectionForPosition(visiblePos);
+                    if (headerSection.isOpen() && !dataEntryAdapter.isSection(visiblePos+1) ) {
+                        if (currentSection.getValue() == null || !currentSection.getValue().uid().equals(headerSection.uid())) {
+                            currentSection.setValue(headerSection);
+                        }
+                    } else {
+                        currentSection.setValue(null);
+                    }
+                }
             }
         });
 
