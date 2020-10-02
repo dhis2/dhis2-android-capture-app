@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.databinding.ObservableField;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.dhis2.R;
@@ -61,7 +61,7 @@ import java.util.Map;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
-public final class DataEntryAdapter extends RecyclerView.Adapter<ViewHolder> {
+public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHolder> {
 
     private static final int SECTION = 17;
     private static final int EDITTEXT = 0;
@@ -105,18 +105,18 @@ public final class DataEntryAdapter extends RecyclerView.Adapter<ViewHolder> {
     private String lastFocusItem;
     private int nextFocusPosition = -1;
 
-    Map<String, Integer> sectionPositions;
+    Map<String, Integer> sectionPositions = new LinkedHashMap<>();
     private String rendering = ProgramStageSectionRenderingType.LISTING.name();
     private Integer totalFields = 0;
     private int openSectionPos = 0;
     private String lastOpenedSectionUid = "";
 
-    private List<FieldViewModel> items = new ArrayList<>();
     private String openSection;
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
                             @NonNull DataEntryArguments dataEntryArguments) {
+        super(new DataEntryDiff());
         setHasStableIds(true);
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
@@ -154,6 +154,7 @@ public final class DataEntryAdapter extends RecyclerView.Adapter<ViewHolder> {
                             @NonNull FlowableProcessor<RowAction> processor,
                             @NonNull FlowableProcessor<String> sectionProcessor,
                             @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet) {
+        super(new DataEntryDiff());
         setHasStableIds(true);
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
@@ -281,15 +282,6 @@ public final class DataEntryAdapter extends RecyclerView.Adapter<ViewHolder> {
         return getItem(position).uid().hashCode();
     }
 
-    @Override
-    public int getItemCount() {
-        return items.size();
-    }
-
-    private FieldViewModel getItem(int position) {
-        return items.get(position);
-    }
-
     @NonNull
     public FlowableProcessor<RowAction> asFlowable() {
         return processor;
@@ -321,33 +313,32 @@ public final class DataEntryAdapter extends RecyclerView.Adapter<ViewHolder> {
 
         totalFields = imageFields;
 
-        this.items = updates;
-        notifyDataSetChanged();
+        submitList(updates, () -> {
+            int currentFocusPosition = -1;
+            int lastFocusPosition = -1;
 
-        int currentFocusPosition = -1;
-        int lastFocusPosition = -1;
-
-        if (lastFocusItem != null) {
-            nextFocusPosition = -1;
-            for (int i = 0; i < updates.size(); i++) {
-                if (updates.get(i).uid().equals(lastFocusItem)) {
-                    lastFocusPosition = i;
-                    nextFocusPosition = i + 1;
+            if (lastFocusItem != null) {
+                nextFocusPosition = -1;
+                for (int i = 0; i < updates.size(); i++) {
+                    if (updates.get(i).uid().equals(lastFocusItem)) {
+                        lastFocusPosition = i;
+                        nextFocusPosition = i + 1;
+                    }
+                    if (i == nextFocusPosition && !updates.get(i).editable() && !(updates.get(i) instanceof SectionViewModel)) {
+                        nextFocusPosition++;
+                    }
+                    if (updates.get(i).uid().equals(currentFocusUid.getValue()))
+                        currentFocusPosition = i;
                 }
-                if (i == nextFocusPosition && !updates.get(i).editable() && !(updates.get(i) instanceof SectionViewModel)) {
-                    nextFocusPosition++;
-                }
-                if (updates.get(i).uid().equals(currentFocusUid.getValue()))
-                    currentFocusPosition = i;
             }
-        }
 
-        if (nextFocusPosition != -1 && currentFocusPosition == lastFocusPosition && nextFocusPosition < updates.size())
-            currentFocusUid.setValue(getItem(nextFocusPosition).uid());
-        else if (currentFocusPosition != -1 && currentFocusPosition < updates.size())
-            currentFocusUid.setValue(getItem(currentFocusPosition).uid());
+            if (nextFocusPosition != -1 && currentFocusPosition == lastFocusPosition && nextFocusPosition < updates.size())
+                currentFocusUid.setValue(getItem(nextFocusPosition).uid());
+            else if (currentFocusPosition != -1 && currentFocusPosition < updates.size())
+                currentFocusUid.setValue(getItem(currentFocusPosition).uid());
 
-        commitCallback.run();
+            commitCallback.run();
+        });
     }
 
     public void setLastFocusItem(String lastFocusItem) {
@@ -358,7 +349,7 @@ public final class DataEntryAdapter extends RecyclerView.Adapter<ViewHolder> {
 
     public int getItemSpan(int position) {
 
-        if (getItemViewType(position) == SECTION || getItemViewType(position) == DISPLAY || rendering == null) {
+        if (position >= getItemCount() || getItemViewType(position) == SECTION || getItemViewType(position) == DISPLAY || rendering == null) {
             return 2;
         } else {
             switch (ProgramStageSectionRenderingType.valueOf(rendering)) {

@@ -186,16 +186,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         });
 
         binding.formRecycler.setLayoutManager(layoutManager);
-        /*binding.formRecycler.addItemDecoration(
-                new StickyHeaderItemDecoration(binding.formRecycler,
-                        false, itemPosition -> itemPosition >= 0 &&
-                        itemPosition < dataEntryAdapter.getItemCount() &&
-                        dataEntryAdapter.getItemViewType(itemPosition) == dataEntryAdapter.sectionViewType() &&
-                        dataEntryAdapter.getSectionSize() > 1
-                )
-        );*/
         binding.formRecycler.setAdapter(dataEntryAdapter);
-
         binding.formRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -209,18 +200,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                int visiblePos = ((GridLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
-
-                if (visiblePos != -1) {
-                    SectionViewModel headerSection = dataEntryAdapter.getSectionForPosition(visiblePos);
-                    if (headerSection.isOpen() && !dataEntryAdapter.isSection(visiblePos+1) ) {
-                        if (currentSection.getValue() == null || !currentSection.getValue().uid().equals(headerSection.uid())) {
-                            currentSection.setValue(headerSection);
-                        }
-                    } else {
-                        currentSection.setValue(null);
-                    }
-                }
+                checkSectionHeader(recyclerView);
             }
         });
 
@@ -235,6 +215,21 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                     checkLastItem();
                 }
             });
+        }
+    }
+
+    private void checkSectionHeader(RecyclerView recyclerView){
+        int visiblePos = ((GridLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+
+        if (visiblePos != -1 && dataEntryAdapter.getSectionSize() > 1) {
+            SectionViewModel headerSection = dataEntryAdapter.getSectionForPosition(visiblePos);
+            if (headerSection.isOpen() && !dataEntryAdapter.isSection(visiblePos + 1)) {
+                if (currentSection.getValue() == null || !currentSection.getValue().uid().equals(headerSection.uid())) {
+                    currentSection.setValue(headerSection);
+                }
+            } else {
+                currentSection.setValue(null);
+            }
         }
     }
 
