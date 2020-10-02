@@ -256,12 +256,12 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                         formFieldsProcessor.onNext(sectionsAndFields.component2());
                                         formAdjustProcessor.onNext(new Unit());
                                         int completedFields = 0;
-                                        /*for (EventSectionModel sectionModel : sectionsAndFields.component1()) {
+                                        for (EventSectionModel sectionModel : sectionsAndFields.component1()) {
                                             completedFields += sectionModel.numberOfCompletedFields();
                                         }
                                         view.updatePercentage(
                                                 calculateCompletionPercentage(completedFields, fieldMapper.getTotalFields()),
-                                                calculateCompletionPercentage(fieldMapper.getUnsupportedFields(), fieldMapper.getTotalFields()));*/
+                                                calculateCompletionPercentage(fieldMapper.getUnsupportedFields(), fieldMapper.getTotalFields()));
                                     }
                                 },
                                 Timber::e
@@ -661,10 +661,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void save(@NotNull @NonNull String uid, @Nullable String value) {
         if (value == null || !sectionsToHide.contains(eventCaptureRepository.getSectionFor(uid))) {
-           /* StoreResult result = valueStore.saveWithTypeCheck(uid, value).blockingFirst();
+            StoreResult result = valueStore.saveWithTypeCheck(uid, value).blockingFirst();
             if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
                 assignedValueChanged = true;
-            }*/
+            }
         }
     }
 
