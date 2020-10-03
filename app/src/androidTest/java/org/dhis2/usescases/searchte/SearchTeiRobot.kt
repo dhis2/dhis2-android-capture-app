@@ -11,6 +11,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withChild
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withSpinnerText
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
@@ -87,9 +88,11 @@ class SearchTeiRobot : BaseRobot() {
         onView(withId(R.id.enrollmentButton)).perform(click())
     }
 
-    fun checkListOfSearchTEI(searchWord: String) {
+    fun checkListOfSearchTEI(firstSearchWord: String, secondSearchWord: String) {
         onView(withId(R.id.scrollView))
-            .check(matches(hasItem(hasDescendant(withText(searchWord)))))
+            .check(matches(hasItem(allOf(
+                hasDescendant(withText(firstSearchWord)),
+                hasDescendant(withText(secondSearchWord))))))
     }
 
     fun checkFilterCount(filterCount: String) {
@@ -99,16 +102,15 @@ class SearchTeiRobot : BaseRobot() {
 
     fun checkNoSearchResult(searchWord: String) {
         val noResultMessage = R.string.search_criteria_not_met.toString().replace("%s","Person")
-
         onView(withId(R.id.scrollView))
             .check(matches(not(hasItem(hasDescendant(withText(searchWord))))))
 
-        onView(withId(R.id.message))
-            .check(matches(withText(noResultMessage)))
+        /*onView(withId(R.id.message))
+            .check(matches(withText(noResultMessage)))*/
 
-       /* onView(withId(R.id.message))
+        onView(withId(R.id.message))
             .check(matches(withText("Your search criteria didn't return any result.\n" +
-                "Revise your criteria or enroll a new Person")))*/
+                "Revise your criteria or enroll a new Person")))
     }
 
     fun clickOnProgramSpinner() {
@@ -116,15 +118,6 @@ class SearchTeiRobot : BaseRobot() {
     }
 
     fun selectAProgram(program: String) {
-        /*onView(withId(R.id.spinner_text))
-        onData(
-            allOf(
-                (instanceOf(String::class.java)),
-                `is`(selectionText)
-            )
-        )
-            .perform(click())*/
-
         /*onData(anything())
             .inAdapterView(withId(R.id.spinner_text))
             .onChildView(allOf(withId(R.id.spinner_text), withText(program)))
@@ -134,7 +127,10 @@ class SearchTeiRobot : BaseRobot() {
             allOf(
                 `is`(instanceOf(String::class.java)),
                 `is`(program)
-            )
-        ) .perform(click())
+            )).perform(click())
+
+        onView(withId(R.id.spinner_text))
+            .check(matches(withSpinnerText(containsString(program))))
     }
+
 }

@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,7 +20,7 @@ class SearchTETest : BaseTest() {
 
     @Test
     fun shouldSuccessfullySearchByName() {
-        val firstName = "Anna"
+        val firstName = "Tim"
         val firstNamePosition = 0
         val filterCount = "1"
 
@@ -30,69 +31,48 @@ class SearchTETest : BaseTest() {
             clickOnFab()
             checkFilterCount(filterCount)
             closeSearchForm()
-            checkListOfSearchTEI(firstName)
+            checkListOfSearchTEI(firstName, "")
         }
     }
 
     @Test
     fun shouldShowErrorWhenCanNotFindSearchResult() {
-        /**
-         * launch program
-         * search using a weird search word
-         * click on fab
-         * check filter count 1
-         * check empty recycler
-         * check result message
-         * S2 renders
-         * Unique ID: testing
-         * First name: Marta
-         * Last name: Vila
-         * */
-
-        val lastName = "Vila"
-        val lastNamePosition = 1
+        val firstName = "asdssds"
+        val firstNamePosition = 1
         val filterCount = "1"
 
         prepareTestProgramRulesProgrammeIntentAndLaunchActivity()
 
         searchTeiRobot {
-            searchByPosition(lastName, lastNamePosition)
+            searchByPosition(firstName, firstNamePosition)
             clickOnFab()
             checkFilterCount(filterCount)
             closeSearchForm()
-            checkNoSearchResult(lastName) //error with string
+            checkNoSearchResult(firstName) //error with string
         }
-
     }
 
     @Test
     fun shouldSuccessfullySearchUsingMoreThanOneField() {
-        /**
-         * launch program
-         * choose one search
-         * add another search
-         * click on search
-         * check search count 2
-         * check result
-         * */
-
-       /* val uniqueID = "testing"
-        val uniquePosition = 0*/
-        val lastName = "Marta"
+        val firstName = "Anna"
+        val firstNamePosition = 0
+        val lastName = "Jones"
         val lastNamePosition = 1
         val filterCount = "2"
 
-        prepareTestProgramRulesProgrammeIntentAndLaunchActivity()
+        prepareChildProgrammeIntentAndLaunchActivity()
 
         searchTeiRobot {
+            searchByPosition(firstName, firstNamePosition)
             searchByPosition(lastName, lastNamePosition)
             clickOnFab()
             checkFilterCount(filterCount)
             closeSearchForm()
-            checkListOfSearchTEI(lastName)
+            checkListOfSearchTEI(firstName, lastName)
         }
     }
 
+    @Ignore("It sends error single click")
     @Test
     fun shouldSuccessfullyChangeBetweenPrograms() {
         /**
@@ -111,6 +91,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("WIP")
     @Test
     fun shouldSuccessfullyFilterBySync() {
         prepareChildProgrammeIntentAndLaunchActivity()
