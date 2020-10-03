@@ -20,8 +20,10 @@ import org.dhis2.common.viewactions.typeChildViewWithId
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.instanceOf
 import org.hamcrest.Matchers.not
+import org.hamcrest.Matchers.startsWith
 
 
 fun searchTeiRobot(searchTeiRobot: SearchTeiRobot.() -> Unit) {
@@ -93,6 +95,20 @@ class SearchTeiRobot : BaseRobot() {
     fun checkFilterCount(filterCount: String) {
         onView(withId(R.id.filterCounterSearch))
             .check(matches(withChild(withText(filterCount))))
+    }
+
+    fun checkNoSearchResult(searchWord: String) {
+        val noResultMessage = R.string.search_criteria_not_met.toString().replace("%s","Person")
+
+        onView(withId(R.id.scrollView))
+            .check(matches(not(hasItem(hasDescendant(withText(searchWord))))))
+
+        onView(withId(R.id.message))
+            .check(matches(withText(noResultMessage)))
+
+       /* onView(withId(R.id.message))
+            .check(matches(withText("Your search criteria didn't return any result.\n" +
+                "Revise your criteria or enroll a new Person")))*/
     }
 
     fun clickOnProgramSpinner() {
