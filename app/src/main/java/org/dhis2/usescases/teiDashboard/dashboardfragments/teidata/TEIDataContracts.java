@@ -121,6 +121,8 @@ public class TEIDataContracts {
         boolean hasAssignment();
 
         void onSyncDialogClick(String eventUid);
+
+        boolean enrollmentOrgUnitInCaptureScope(String enrollmentOrgUnit);
     }
 
 }
