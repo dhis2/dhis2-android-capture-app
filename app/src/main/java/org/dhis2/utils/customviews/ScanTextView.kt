@@ -183,7 +183,7 @@ class ScanTextView @JvmOverloads constructor(
                 )
                 else -> ResourcesCompat.getColor(
                     resources,
-                    R.color.text_black_DE3,
+                    R.color.textPrimary,
                     null
                 )
             }

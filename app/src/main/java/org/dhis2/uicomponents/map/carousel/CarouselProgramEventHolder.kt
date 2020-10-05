@@ -1,19 +1,19 @@
 package org.dhis2.uicomponents.map.carousel
 
-import android.graphics.Color
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import java.util.Locale
 import org.dhis2.R
 import org.dhis2.data.tuples.Pair
 import org.dhis2.databinding.ItemCarouselProgramEventBinding
 import org.dhis2.databinding.ItemFieldValueBinding
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel
+import java.util.Locale
 
 class CarouselProgramEventHolder(
     val binding: ItemCarouselProgramEventBinding,
@@ -107,9 +107,9 @@ class CarouselProgramEventHolder(
                         SpannableString(nameValuePair.val1())
                     val colorToUse =
                         if (dataElementValues.indexOf(nameValuePair) % 2 == 0) {
-                            Color.parseColor("#8A333333")
+                            ContextCompat.getColor(itemView.context, R.color.textPrimary)
                         } else {
-                            Color.parseColor("#61333333")
+                            ContextCompat.getColor(itemView.context, R.color.secondaryColor)
                         }
                     value.setSpan(
                         ForegroundColorSpan(colorToUse),

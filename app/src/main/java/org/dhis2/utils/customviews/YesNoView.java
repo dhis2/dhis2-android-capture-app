@@ -280,7 +280,7 @@ public class YesNoView extends FieldLayout {
         if (activated) {
             labelView.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
         } else {
-            labelView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
+            labelView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
         }
     }
 
