@@ -9,7 +9,6 @@ import org.dhis2.uicomponents.map.layer.types.HeatmapMapLayer
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
 import org.dhis2.uicomponents.map.model.MapStyle
-import org.hisp.dhis.android.core.common.FeatureType
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test

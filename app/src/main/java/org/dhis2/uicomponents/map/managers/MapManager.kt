@@ -15,7 +15,6 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions
 import org.dhis2.uicomponents.map.camera.initCameraToViewAllElements
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.layer.MapLayerManager
-import org.hisp.dhis.android.core.common.FeatureType
 
 abstract class MapManager(val mapView: MapView) {
 

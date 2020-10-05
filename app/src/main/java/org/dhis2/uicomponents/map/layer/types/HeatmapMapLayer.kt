@@ -9,7 +9,6 @@ import com.mapbox.mapboxsdk.style.layers.Property
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.managers.TeiMapManager
-import org.hisp.dhis.android.core.common.FeatureType
 
 class HeatmapMapLayer(val style: Style) :
     MapLayer {

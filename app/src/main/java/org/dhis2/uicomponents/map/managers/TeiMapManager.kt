@@ -198,8 +198,8 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
             .updateLayers(
                 LayerType.RELATIONSHIP_LAYER,
                 teiFeatureCollections?.keys?.filter {
-                    it != TEIS_SOURCE_ID && it != ENROLLMENT_SOURCE_ID
-                            && !eventsFeatureCollection?.containsKey(it)!!
+                    it != TEIS_SOURCE_ID && it != ENROLLMENT_SOURCE_ID &&
+                        !eventsFeatureCollection?.containsKey(it)!!
                 }?.toList() ?: emptyList()
             ).updateLayers(
                 LayerType.TEI_EVENT_LAYER,

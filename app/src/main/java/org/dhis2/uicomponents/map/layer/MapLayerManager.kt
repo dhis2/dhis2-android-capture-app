@@ -150,7 +150,7 @@ class MapLayerManager {
     }
 
     fun updateLayers(layerType: LayerType, sourceIds: List<String>) = apply {
-        val filterLayers = when(layerType) {
+        val filterLayers = when (layerType) {
             LayerType.TEI_LAYER -> mapLayers.filterValues { it is TeiMapLayer }
             LayerType.ENROLLMENT_LAYER -> mapLayers.filterValues { it is EnrollmentMapLayer }
             LayerType.HEATMAP_LAYER -> mapLayers.filterValues { it is HeatmapMapLayer }

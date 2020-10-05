@@ -12,7 +12,6 @@ import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFe
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.layer.LayerType
-import org.hisp.dhis.android.core.common.FeatureType
 
 class RelationshipMapManager(mapView: MapView) : MapManager(mapView) {
 
