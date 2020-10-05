@@ -26,8 +26,11 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.BR;
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.validation.ValueTypeValidatorFactory;
+import org.dhis2.data.forms.dataentry.validation.ValueTypeValidatorFactoryKt;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.ObjectStyleUtils;
+import org.dhis2.utils.Validator;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
@@ -52,6 +55,7 @@ public class CustomTextView extends FieldLayout {
     private String label;
     private ValueType valueType;
     private ViewDataBinding binding;
+    private Validator validator;
 
     private OnFocusChangeListener focusListener;
 
@@ -201,6 +205,8 @@ public class CustomTextView extends FieldLayout {
 
     public void setValueType(ValueType valueType) {
         this.valueType = valueType;
+        this.validator = ValueTypeValidatorFactoryKt.getValidator(valueType);
+
         configureViews();
     }
 
@@ -286,22 +292,21 @@ public class CustomTextView extends FieldLayout {
                         return false;
                     }
                 case INTEGER_NEGATIVE:
-                    if (Float.valueOf(editText.getText().toString()) < 0)
+                    if (validator.validate(editText.getText().toString()))
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_negative_number));
                         return false;
                     }
                 case INTEGER_ZERO_OR_POSITIVE:
-                    if (editText.getText() != null &&
-                            Float.valueOf(editText.getText().toString()) >= 0)
+                    if (validator.validate(editText.getText().toString()))
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
                         return false;
                     }
                 case INTEGER_POSITIVE:
-                    if (Float.valueOf(editText.getText().toString()) > 0)
+                    if (validator.validate(editText.getText().toString()))
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive));
