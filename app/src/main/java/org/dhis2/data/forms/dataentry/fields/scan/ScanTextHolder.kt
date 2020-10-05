@@ -29,6 +29,7 @@ class ScanTextHolder(
             setText(model.value())
             setRenderingType(model.fieldRendering?.type())
             setLabel(model.label(), model.mandatory())
+            setHint(model.hint)
             setDescription(model.description())
             setAlert(model.warning(), model.error())
             setObjectStyle(model.objectStyle())

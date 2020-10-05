@@ -131,6 +131,10 @@ class ScanTextView @JvmOverloads constructor(
         }
     }
 
+    fun setHint(hint: String?) {
+        inputLayout.hint = hint
+    }
+
     fun setAlert(warning: String?, error: String?) {
         inputLayout.error = error.also {
             inputLayout.setErrorTextAppearance(R.style.error_appearance)
