@@ -13,32 +13,25 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions
 import org.dhis2.uicomponents.map.camera.initCameraToViewAllElements
+import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.layer.MapLayerManager
 import org.hisp.dhis.android.core.common.FeatureType
 
-abstract class MapManager {
+abstract class MapManager(val mapView: MapView) {
 
-    lateinit var mapView: MapView
     lateinit var map: MapboxMap
-    open lateinit var featureType: FeatureType
     lateinit var mapLayerManager: MapLayerManager
     var markerViewManager: MarkerViewManager? = null
     var symbolManager: SymbolManager? = null
     var onMapClickListener: MapboxMap.OnMapClickListener? = null
+    var carouselAdapter: CarouselAdapter? = null
     val style: Style?
         get() = map.style
 
-    fun init(mapView: MapView) {
-        this.mapView = mapView
+    fun init() {
         mapView.getMapAsync {
             this.map = it
-            map.setStyle(
-                Style.MAPBOX_STREETS
-            ) {
-                if (this::featureType.isInitialized) {
-                    loadDataForStyle()
-                }
-            }
+            map.setStyle(Style.MAPBOX_STREETS) { loadDataForStyle() }
             onMapClickListener?.let { mapClickListener ->
                 map.addOnMapClickListener(mapClickListener)
             }

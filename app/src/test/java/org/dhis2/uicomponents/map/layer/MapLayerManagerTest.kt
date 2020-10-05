@@ -33,7 +33,7 @@ class MapLayerManagerTest {
         whenever(mapboxMap.style) doReturn style
         mapLayerManager
             .initMap(mapboxMap)
-            .addLayer(LayerType.TEI_LAYER, sourceId)
+            .addLayer(LayerType.TEI_LAYER, sourceId = sourceId)
 
         assert(mapLayerManager.mapLayers.isNotEmpty())
         assert(mapLayerManager.mapLayers[sourceId] is TeiMapLayer)
@@ -45,7 +45,6 @@ class MapLayerManagerTest {
         whenever(mapboxMap.style) doReturn style
         mapLayerManager
             .initMap(mapboxMap)
-            .withFeatureType(FeatureType.POINT)
             .withMapStyle(mapStyle)
             .addLayer(LayerType.HEATMAP_LAYER)
 
@@ -60,7 +59,6 @@ class MapLayerManagerTest {
         whenever(mapboxMap.style) doReturn style
         mapLayerManager
             .initMap(mapboxMap)
-            .withFeatureType(FeatureType.POINT)
             .addLayers(LayerType.RELATIONSHIP_LAYER, listOf(sourceId, otherSourceId), false)
 
         assert(mapLayerManager.mapLayers.isNotEmpty())

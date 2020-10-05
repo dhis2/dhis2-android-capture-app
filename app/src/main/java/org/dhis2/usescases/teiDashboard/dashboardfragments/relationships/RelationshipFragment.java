@@ -95,9 +95,9 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         relationshipAdapter = new RelationshipAdapter(presenter);
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
 
-        relationshipMapManager = new RelationshipMapManager();
-        relationshipMapManager.init(binding.mapView);
+        relationshipMapManager = new RelationshipMapManager(binding.mapView);
         relationshipMapManager.setOnMapClickListener(this);
+        relationshipMapManager.init();
 
         TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) getContext();
         activity.relationshipMap().observe(this, showMap -> {
@@ -291,8 +291,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
             @NotNull kotlin.Pair<? extends Map<String, FeatureCollection>, ? extends BoundingBox> map) {
         relationshipMapManager.update(
                 map.getFirst(),
-                map.getSecond(),
-                FeatureType.POINT
+                map.getSecond()
         );
         this.sources = map.getFirst().keySet();
 

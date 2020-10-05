@@ -126,6 +126,8 @@ public class SearchTEContractsModule {
 
         TrackedEntityType getTrackedEntityName();
 
+        TrackedEntityType getTrackedEntityType(String trackedEntityTypeUid);
+
         Program getProgram();
 
         void addRelationship(@NonNull String teiUid, @Nullable String relationshipTypeUid, boolean online);

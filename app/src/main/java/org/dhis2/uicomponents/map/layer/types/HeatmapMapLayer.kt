@@ -11,7 +11,7 @@ import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.managers.TeiMapManager
 import org.hisp.dhis.android.core.common.FeatureType
 
-class HeatmapMapLayer(val style: Style, val featureType: FeatureType) :
+class HeatmapMapLayer(val style: Style) :
     MapLayer {
 
     private val layerId = "HEATMAP_LAYER"

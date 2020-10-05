@@ -143,9 +143,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                         .show(getSupportFragmentManager(), MapLayerDialog.class.getName())
         );
 
-        eventMapManager = new EventMapManager();
+        eventMapManager = new EventMapManager(binding.mapView);
+        eventMapManager.setFeatureType(presenter.getProgram().featureType());
         eventMapManager.setOnMapClickListener(this);
-        eventMapManager.init(binding.mapView);
+        eventMapManager.init();
         presenter.init();
     }
 
@@ -387,8 +388,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public void setMap(FeatureCollection featureCollection, BoundingBox boundingBox, List<ProgramEventViewModel> programEventViewModels) {
         eventMapManager.update(
                 featureCollection,
-                boundingBox,
-                featureType
+                boundingBox
         );
 
         if (binding.mapCarousel.getAdapter() == null) {
