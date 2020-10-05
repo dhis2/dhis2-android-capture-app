@@ -74,6 +74,7 @@ class RelationshipMapLayer(
     private val baseRelationshipLayer: Layer
         get() = style.getLayer(BASE_RELATIONSHIP_LAYER_ID)
             ?: LineLayer(BASE_RELATIONSHIP_LAYER_ID, sourceId)
+                .withProperties(visibility(Property.NONE))
 
     private val linesLayer: Layer
         get() = style.getLayer(LINE_LAYER_ID)
@@ -314,7 +315,6 @@ class RelationshipMapLayer(
         pointLayer.setProperties(visibility(visibility))
         selectedLineLayer.setProperties(visibility(visibility))
         selectedPointLayer.setProperties(visibility(visibility))
-        baseRelationshipLayer.setProperties(visibility(visibility))
         linesLayer.setProperties(visibility(visibility))
         polygonLayer.setProperties(visibility(visibility))
         polygonBorderLayer.setProperties(visibility(visibility))
