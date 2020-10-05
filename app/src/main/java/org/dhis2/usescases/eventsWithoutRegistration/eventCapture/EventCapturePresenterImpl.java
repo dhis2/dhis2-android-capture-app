@@ -320,8 +320,13 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         {
                             emptyMandatoryFields = new HashMap<>();
                             for (FieldViewModel fieldViewModel : fields) {
-                                if (fieldViewModel.mandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection()))
-                                    emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
+                                if (fieldViewModel.mandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection())) {
+                                    if(fieldViewModel instanceof ImageViewModel && !emptyMandatoryFields.containsKey(((ImageViewModel) fieldViewModel).fieldUid())){
+                                        emptyMandatoryFields.put(((ImageViewModel) fieldViewModel).fieldUid(), fieldViewModel);
+                                    }else if(!(fieldViewModel instanceof  ImageViewModel)){
+                                        emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
+                                    }
+                                }
                             }
                             return fields;
                         }
