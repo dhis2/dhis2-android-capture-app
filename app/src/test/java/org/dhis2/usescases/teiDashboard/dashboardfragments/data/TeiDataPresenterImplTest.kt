@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.schedulers.TestScheduler
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.prefs.PreferenceProvider
@@ -17,7 +18,9 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataReposi
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -68,5 +71,35 @@ class TeiDataPresenterImplTest {
 
         verify(view).showNewEventOptions(anyView, programStage)
         verify(view).hideDueDate()
+    }
+
+    @Test
+    fun `Should return false if orgUnit does not belong to the capture scope`() {
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+        ) doReturn mock()
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+        ) doReturn mock()
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .byUid()
+        ) doReturn mock()
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .byUid().eq("orgUnitUid")
+        ) doReturn mock()
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .byUid().eq("orgUnitUid")
+                .blockingIsEmpty()
+        ) doReturn false
+        assertTrue(
+            teiDataPresenterImpl.enrollmentOrgUnitInCaptureScope("orgUnitUid")
+        )
     }
 }

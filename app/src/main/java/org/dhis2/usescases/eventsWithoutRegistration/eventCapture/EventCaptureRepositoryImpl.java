@@ -235,9 +235,19 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                     renderList.add(fieldFactory.create(
                             fieldViewModel.uid() + "." + option.uid(),
-                            option.displayName() + ImageViewModel.NAME_CODE_DELIMITATOR + option.code(), ValueType.TEXT, false,
-                            fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                            fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, options.size(), objectStyle, fieldViewModel.fieldMask()));
+                            fieldViewModel.label() + ImageViewModel.NAME_CODE_DELIMITATOR + option.displayName() + ImageViewModel.NAME_CODE_DELIMITATOR + option.code(),
+                            ValueType.TEXT,
+                            fieldViewModel.mandatory(),
+                            fieldViewModel.optionSet(),
+                            fieldViewModel.value(),
+                            fieldViewModel.programStageSection(),
+                            fieldViewModel.allowFutureDate(),
+                            fieldViewModel.editable() == null ? false : fieldViewModel.editable(),
+                            renderingType, fieldViewModel.description(),
+                            fieldRendering,
+                            options.size(),
+                            objectStyle,
+                            fieldViewModel.fieldMask()));
 
                 }
             } else if (fieldViewModel instanceof OptionSetViewModel) {
@@ -277,7 +287,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         String error = checkConflicts(uid, valueRepository.blockingExists() ? valueRepository.blockingGet().value() : null);
 
                         boolean editable = fieldViewModel.editable() != null ? fieldViewModel.editable() : true;
-                        fieldViewModel = fieldViewModel.withValue(value).withEditMode(editable || isEventEditable).withError(error);
+                        fieldViewModel = fieldViewModel.withValue(value).withEditMode(editable || isEventEditable).withError(error.isEmpty() ? null : error);
 
                         return fieldViewModel;
                     }).toList().toFlowable()

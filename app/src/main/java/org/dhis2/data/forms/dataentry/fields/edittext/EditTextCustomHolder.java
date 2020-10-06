@@ -69,7 +69,6 @@ public class EditTextCustomHolder extends FormViewHolder {
             if(editTextModel.valueType() != ValueType.LONG_TEXT) {
                 selectedFieldUid = null;
                 binding.customEdittext.getEditText().clearFocus();
-                sendAction();
                 closeKeyboard(binding.customEdittext.getEditText());
                 return true;
             }else{

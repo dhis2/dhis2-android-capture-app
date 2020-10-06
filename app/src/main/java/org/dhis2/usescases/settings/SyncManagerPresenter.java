@@ -146,6 +146,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
             view.showInvalidGatewayError();
             return false;
         }
+        view.hideGatewayError();
         return true;
     }
 

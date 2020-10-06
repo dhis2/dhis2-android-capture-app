@@ -283,7 +283,7 @@ class CarouselAdapter private constructor(
             this.onProfileImageClick = onProfileImageClick
         }
 
-        fun addProgram(program: Program) = apply {
+        fun addProgram(program: Program?) = apply {
             this.program = program
         }
 

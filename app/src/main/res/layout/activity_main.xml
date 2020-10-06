@@ -62,6 +62,7 @@
                     <ImageView
                         android:id="@+id/menu"
                         style="@style/ActionIcon"
+                        android:focusable="true"
                         android:onClick="@{()->presenter.onMenuClick()}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

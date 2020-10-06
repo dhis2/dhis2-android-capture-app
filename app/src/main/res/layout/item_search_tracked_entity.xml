@@ -127,7 +127,7 @@
             android:layout_marginEnd="5dp"
             android:fontFamily="@font/rubik_regular"
             android:text="@{attributeNames.size()>0?attributeNames.toArray()[0]:null}"
-            android:textColor="@color/text_black_DE3"
+            android:textColor="@color/textPrimary"
             android:textSize="14sp"
             android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}'
             app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
@@ -143,7 +143,7 @@
             android:layout_marginEnd="5dp"
             android:fontFamily="@font/rubik_regular"
             android:text="@{attributeNames.size()>1?attributeNames.toArray()[1]:null}"
-            android:textColor="@color/text_black_DE3"
+            android:textColor="@color/textPrimary"
             android:textSize="12sp"
             android:visibility='@{attribute.size() > 1 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
             app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
@@ -158,7 +158,7 @@
             android:layout_marginTop="6dp"
             android:layout_marginEnd="5dp"
             android:text="@{attributeNames.size()>2?attributeNames.toArray()[2]:null}"
-            android:textColor="@color/text_black_DE3"
+            android:textColor="@color/textPrimary"
             android:textSize="12sp"
             android:visibility='@{attribute.size() > 2 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
             app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
@@ -190,7 +190,7 @@
             android:fontFamily="@font/rubik_regular"
             android:singleLine="true"
             android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
-            android:textColor="#61333333"
+            android:textColor="@color/textSecondary"
             android:textSize="14sp"
             android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}'
             app:layout_constraintEnd_toStartOf="@id/infoLayout"
@@ -209,7 +209,7 @@
             android:fontFamily="@font/rubik_regular"
             android:singleLine="true"
             android:text='@{attribute.size() > 1 ? attribute.get(1).value() : "" , default="attribute 2"}'
-            android:textColor="#61333333"
+            android:textColor="@color/textSecondary"
             android:textSize="12sp"
             android:visibility='@{attribute.size() > 1 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
             app:layout_constraintEnd_toStartOf="@id/infoLayout"
@@ -226,7 +226,7 @@
             android:ellipsize="end"
             android:singleLine="true"
             android:text='@{attribute.size() > 2 ? attribute.get(2).value() : "", default="attribute 3"}'
-            android:textColor="#61333333"
+            android:textColor="@color/textSecondary"
             android:textSize="12sp"
             android:visibility='@{attribute.size() > 2 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
             app:layout_constraintEnd_toStartOf="@id/infoLayout"
@@ -265,7 +265,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
                 android:layout_marginEnd="4dp"
-                android:textColor="@color/text_black_8A3"
+                android:textColor="@color/textSecondary"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toStartOf="@+id/syncState"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -366,6 +366,6 @@
             android:background="@color/divider_bg"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/imageText" />
+            app:layout_constraintStart_toEndOf="@id/tracked_entity_image" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
