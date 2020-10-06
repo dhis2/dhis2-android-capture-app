@@ -100,7 +100,6 @@
     <string name="cancelled">Cancelado</string>
     <string name="re_open">reabrir</string>
     <string name="activate">Activar</string>
-
     <!-- State -->
     <string name="state_synced">Sincronizar</string>
     <string name="state_to_post">Para enviar</string>
@@ -147,7 +146,6 @@
     <string name="confirm_delete_event">Tem certeza de que deseja excluir este evento?</string>
     <string name="event_was_deleted">Evento excluído com sucesso</string>
     <string name="total">Total</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Lista de Inscrições</string>
     <string name="active_programs">Programas activos</string>
@@ -509,7 +507,6 @@
     <string name="no_conflicts_synced_message">Você esta atualizado! Todos os seus dados são enviados para o servidor.</string>
     <string name="relationship_error_recursive">Você não pode relacionar um registro consigo mesmo</string>
     <string name="unblock_session">Desbloquear sessão</string>
-    <string name="data_set_open">Abrir</string>
     <string name="unsupported_value_type">Tipo de valor não suportado</string>
     <string name="change_calendar_view">Alterar visualização da agenda</string>
     <string name="data_every_fifteen_minutes">15 minutos</string>
@@ -679,4 +676,4 @@
     <string name="filter_sync_not_synced">Não sincronizado</string>
     <string name="filter_sync_error">Erro de Sincronização</string>
     <string name="filter_sync_sms">SMS sincronizado</string>
-</resources>
+    </resources>
