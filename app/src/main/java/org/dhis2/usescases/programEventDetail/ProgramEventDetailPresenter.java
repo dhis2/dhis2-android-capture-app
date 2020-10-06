@@ -9,6 +9,7 @@ import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.filters.FilterManager;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.program.Program;
 
@@ -294,5 +295,10 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public Program getProgram() {
         return eventRepository.program().blockingFirst();
+    }
+
+    @Override
+    public FeatureType getFeatureType(){
+        return eventRepository.featureType().blockingGet();
     }
 }
