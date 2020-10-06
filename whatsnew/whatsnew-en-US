@@ -1,1 +1,10 @@
-This version includes several quality and performance improvements
+This version includes:
+- Improved error information to the user
+- Improve feedback when rendering is slow
+- Clear server URL
+- Open image detail
+- New event cards
+- Improved field design
+- Manual data entry for QR/Barcode
+- Different display for non-editable fields
+- Improvements in stability and security
