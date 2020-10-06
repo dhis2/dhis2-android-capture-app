@@ -5,6 +5,9 @@
     <string name="logo_number">2</string>
     <!-- Warnings and error messages -->
     <string name="error">错误</string>
+    <plurals name="error_message">
+        <item quantity="other">错误</item>
+    </plurals>
     <string name="error_wrong_server_url">服务器URL错误</string>
     <string name="error_wrong_credentials">证书不正确</string>
     <string name="error_unexpected_error">未知错误</string>
@@ -37,7 +40,7 @@
     <string name="data_sync_error_program">错误：同步数据失败。检查同步状态：所有冲突的实体和事件标记为$\" 。</string>
 
     <string name="search_result_text">发现结果：1%s</string>
-    <string name="add_new">新加</string>
+    <string name="add_new">新增</string>
     <string name="add">添加</string>
     <string name="schedule_new">新调度</string>
     <string name="referral">流转</string>
@@ -58,13 +61,13 @@
     <string name="account_recovery">账号恢复</string>
 
     <!--PERIOD-->
-    <string name="DAILY">每天</string>
+    <string name="DAILY">每日</string>
     <string name="WEEKLY">每周</string>
     <string name="MONTHLY">每月</string>
     <string name="YEARLY">每年</string>
     <string name="clear_filters">清除过滤器</string>
     <string name="action_accept">接受</string>
-    <string name="action_share_zero_items">共享</string>
+    <string name="action_share_zero_items">分享</string>
     <string name="action_share_single_item">共享 1%d 的条目</string>
     <string name="action_share_multiple_item">共享 1%d 的条目</string>
 
@@ -123,7 +126,7 @@
     <string name="org_unit">机构</string>
     <string name="no_org_units">选择的日期没有开放的机构，请选择另外的日期或机构</string>
     <string name="category_option">分类选项</string>
-    <string name="latitude">维度</string>
+    <string name="latitude">纬度</string>
     <string name="longitude">经度</string>
     <string name="new_event">新事件</string>
     <string name="failed_insert_event">插入新事件失败</string>
@@ -133,7 +136,7 @@
     <string name="permanent">永远</string>
 
     <!--DataSet initial-->
-    <string name="report_period">报告期间</string>
+    <string name="report_period">报表周期</string>
     <string name="cat_option">采集选项</string>
     <string name="field_required">如果你设置值，整行的值需要设置才能完成数据集。</string>
     <string name="field_mandatory">一些必需的值缺失，你需要设置强制的值才能完成数据集。</string>
@@ -141,7 +144,7 @@
     <string name="datavalue_saved">值已被保存</string>
     <string name="there_is_no_available_period">没有可用期间可选</string>
     <!--Event Detail-->
-    <string name="event_date">事件日期</string>
+    <string name="event_date">事故日期</string>
     <string name="due_date">到期日期</string>
     <string name="cat_combo">分类选择框</string>
     <string name="date_default">DD/MM/YYYY</string>
@@ -174,7 +177,7 @@
 
     <!--DONE TASKS-->
     <string name="events">事件</string>
-    <string name="done_task">首页</string>
+    <string name="done_task">主页</string>
     <string name="app_info">应用信息</string>
     <string name="log_out">退出</string>
     <string name="block_session">阻止会话</string>
@@ -247,7 +250,7 @@
     <!-- SEARCH OPTION SET -->
     <string name="search_optionset">搜索</string>
     <!--FORM FRAGMENT-->
-    <string name="report_date">报告日期</string>
+    <string name="report_date">报表日期</string>
     <string name="add_file">添加文件</string>
     <string name="write_new_note">书写新笔记</string>
     <string name="clear">清除</string>
@@ -275,10 +278,10 @@
     <string name="complete_and_close">完成并关闭</string>
 
     <!--AGE CUSTOM VIEW-->
-    <string name="hint_day">天数</string>
+    <string name="hint_day">天</string>
     <string name="hint_month">月</string>
     <string name="hint_year">年</string>
-    <string name="week">周</string>
+    <string name="week">星期</string>
     <string name="incident_date">事故日期</string>
     <string name="local_results">本地结果</string>
     <string name="online_results">在线结果</string>
@@ -289,7 +292,7 @@
     <string name="add_relation_button">添加为</string>
 
     <string name="date_dialog_clear">清除</string>
-    <string name="period">期间</string>
+    <string name="period">周期</string>
     <string name="org_unit_filter">（%d）机构</string>
     <string name="org_unit_select_level">等级%d</string>
     <string name="tuto_main_1">欢迎来到DHIS2</string>
@@ -301,7 +304,7 @@
 
     <!-- RELATIONSHIPS -->
     <string name="default_relationship_label">创建关系</string>
-    <string name="next">下一个</string>
+    <string name="next">下一年</string>
     <string name="search_min_num_attr">你至少需要输入 %d个属性便于搜索</string>
     <string name="search_attr">你至少需要输入 一个属性便于搜索</string>
     <string name="search_max_tei_reached">有多余%d个结果，请再细化搜索条件</string>
@@ -331,7 +334,7 @@
     <string name="select_all">全选</string>
     <string name="clear_all">清除选择</string>
     <string name="empty_program_list">选择的过滤器没有相关信息，请尝试改变</string>
-    <string name="share">共享</string>
+    <string name="share">分享</string>
     <string name="share_qr">共享二维码</string>
     <string name="teiType_search_online">按类型搜索对在线搜索不可能。\n 请从清单中选择一个项目。</string>
     <string name="max">最大</string>
@@ -399,7 +402,7 @@
     <string name="complete_enrollment_message">你同时要完成登记注册吗？</string>
     <string name="check_event">检查</string>
 
-    <string name="menu_home">首页</string>
+    <string name="menu_home">主页</string>
     <string name="appwidget_text">例子</string>
     <string name="add_widget">添加组件</string>
     <string name="showHelp">显示帮助</string>
@@ -470,7 +473,7 @@
     <string name="event_reopened">该事件可以编辑了。</string>
     <string name="unique_warning">值应该唯一，发现相同的。还没有保存，请检查。</string>
     <string name="unique_coincidence_found">唯一字段发现相同的，请检查表单 以便保存注册</string>
-    <string name="please_wait">请等待</string>
+    <string name="please_wait">请等待.....</string>
     <string name="skip">跳过</string>
     <string name="reschedule">重新调度</string>
     <string name="event_was_skipped">事件被标记为跳过</string>
@@ -515,12 +518,12 @@
     <string name="relationship_error_recursive">你不能关联记录到自身。</string>
     <string name="unblock_session">解锁会话</string>
     <string name="data_set_complete">完成</string>
-    <string name="data_set_open">Open</string>
+    <string name="data_set_open">开放</string>
     <string name="unsupported_value_type">不支持的值类型</string>
     <string name="change_calendar_view">改变日历视图。</string>
     <string name="data_every_fifteen_minutes">15分钟</string>
     <string name="data_every_hour">每小时</string>
-    <string name="data_every_day">每天</string>
+    <string name="data_every_day">每日</string>
     <string name="data_every_week">每周</string>
     <string name="period_week">周</string>
     <string name="sync_setting">同步设置：%s</string>
@@ -594,7 +597,7 @@
 
     <string name="filters_active">应用过滤器</string>
     <string name="filters_disabled">无过滤器</string>
-    <string name="filters_title_period">期间</string>
+    <string name="filters_title_period">周期</string>
     <string name="filters_title_org_unit">机构</string>
     <string name="filters_title_sorting">排序</string>
     <string name="filters_title_status">状态</string>
@@ -690,7 +693,7 @@
     <string name="dataset_overview">详情</string>
     <string name="dataset_comments">评论</string>
     <string name="saved">已经保存！</string>
-    <string name="run_validation_rules">你要检查数据质量？</string>
+    <string name="run_validation_rules">你要检查数据质量</string>
     <string name="validation_success_title">一切都很好</string>
     <string name="mark_dataset_complete">你要完成数据集？</string>
     <string name="dataset_completed">标记已经完成</string>
@@ -699,8 +702,8 @@
     <string name="complete_anyway">任何都要完成</string>
     <string name="fk_message">遗失 %s %s 从%s %s</string>
     <string name="filters_title_event_status">事件状态</string>
-    <string name="filters_title_enrollment_status">注册状态</string>
-    <string name="enrollment_date">注册日期</string>
+    <string name="filters_title_enrollment_status">登记状态</string>
+    <string name="enrollment_date">登记日期</string>
     <string name="action_apply">应用</string>
     <string name="dataset_empty_list_can_create">没有数据，点击“+”添加新的记录</string>
     <string name="dataset_emtpy_list_can_not_create">没有数据，您没有权限添加新记录</string>
@@ -708,9 +711,9 @@
     <string name="validation_rules_data_to_review">复查的数据</string>
     <string name="dataset_saved_completed">保存并完成！</string>
     <string name="status_change_error_active_exist">已经存在活动的注册</string>
-    <string name="enrollment_status_active">Open</string>
+    <string name="enrollment_status_active">开放</string>
     <string name="enrollment_status_completed">完成</string>
-    <string name="enrollment_status_cancelled">取消</string>
+    <string name="enrollment_status_cancelled">已取消</string>
     <string name="no_data">无数据</string>
     <string name="no_coordinates_item">该%s没有坐标</string>
     <string name="event_data">数据</string>
@@ -724,13 +727,25 @@
     <string name="group_events_by_stage">按阶段分组事件</string>
     <string name="show_events_timeline">显示事件时间线</string>
     <string name="filters_title_date">日期</string>
-    <string name="filters_title_event_date">事故日期</string>
+    <string name="filters_title_event_date">事件日期</string>
     <string name="dataset_data">数据</string>
     <string name="tei_type_has_no_attributes">%s没有公有属性，请选择一个项目</string>
     <string name="privacy_policy_title">私有策略</string>
     <string name="open_privacy_policy">点击这里检查<a href="">隐私策略</a></string>
     <string name="coordinates_error">坐标值无效</string>
     <string name="break_glass_error">你不能从该项目的其它机构注册TEI（跟踪实体），因为被保护。联系你的管理员。</string>
-    <string name="customactivityoncrash_error_activity_restart_app">回退</string>
+    <string name="add_image">添加图片</string>
+    <string name="field_is_mandatory">此字段是必填字段</string>
+    <string name="security_debugger_message">出于安全原因，此版本的应用程序不允许与adb一起使用。请使用培训版本。</string>
+
+    <string name="customactivityoncrash_error_activity_error_occurred_explanation">糟糕！某些事情并没有按计划进行。\ n 让我们返回想办法。</string>
+    <string name="customactivityoncrash_error_activity_restart_app">后退</string>
+    <string name="customactivityoncrash_error_activity_close_app">关闭应用</string>
+    <string name="customactivityoncrash_error_activity_error_details">更多细节</string>
+    <string name="customactivityoncrash_error_activity_error_details_title">更多细节</string>
     <string name="customactivityoncrash_error_activity_error_details_close">关闭</string>
+    <string name="customactivityoncrash_error_activity_error_details_copy">复制到剪贴板</string>
+    <string name="customactivityoncrash_error_activity_error_details_copied">复制到剪贴板</string>
+    <string name="customactivityoncrash_error_activity_error_details_clipboard_label">错误信息</string>
+    
 </resources>

@@ -3,7 +3,7 @@ ext {
             sdk   : 28,
             tools : "29.0.2",
             minSdk: 19,
-            vCode: 90,
+            vCode: 91,
             vName: "2.3"
     ]
 
@@ -11,7 +11,7 @@ ext {
             support          : "28.0.0",
             multidex         : "2.0.1",
             constraintlayout : "1.1.3",
-            dhis2sdk         : "1.2.1",
+            dhis2sdk         : "1.3.0",
             ruleEngine       : "1.0.5.1-SNAPSHOT",
             atv              : "1.2.9",
             dagger           : "2.14.1",
