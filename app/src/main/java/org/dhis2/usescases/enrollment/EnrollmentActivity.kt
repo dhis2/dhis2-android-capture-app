@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -25,6 +26,7 @@ import org.dhis2.Bindings.isKeyboardOpened
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryAdapter
 import org.dhis2.data.forms.dataentry.DataEntryArguments
+import org.dhis2.data.forms.dataentry.DataEntryHeaderHelper
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
@@ -46,7 +48,6 @@ import org.dhis2.utils.FileResourcesUtil
 import org.dhis2.utils.ImageUtils
 import org.dhis2.utils.customviews.AlertBottomDialog
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
-import org.dhis2.utils.recyclers.StickyHeaderItemDecoration
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -95,6 +96,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     private lateinit var adapter: DataEntryAdapter
+    private lateinit var dataEntryHeaderHelper: DataEntryHeaderHelper
 
     /*region LIFECYCLE*/
 
@@ -126,16 +128,20 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             supportFragmentManager,
             DataEntryArguments.forEnrollment(intent.getStringExtra(ENROLLMENT_UID_EXTRA))
         )
-        binding.fieldRecycler.addItemDecoration(
-            StickyHeaderItemDecoration(
-                binding.fieldRecycler,
-                false
-            ) { itemPosition ->
-                itemPosition >= 0 &&
-                    itemPosition < adapter.itemCount &&
-                    adapter.getItemViewType(itemPosition) == adapter.sectionViewType()
-            }
+        dataEntryHeaderHelper = DataEntryHeaderHelper(
+            binding.headerContainer, binding.fieldRecycler
         )
+        dataEntryHeaderHelper.observeHeaderChanges(this)
+        binding.fieldRecycler.addOnScrollListener(object :
+                RecyclerView.OnScrollListener() {
+                override fun onScrolled(
+                    recyclerView: RecyclerView,
+                    dx: Int,
+                    dy: Int
+                ) {
+                    dataEntryHeaderHelper.checkSectionHeader(recyclerView)
+                }
+            })
         binding.fieldRecycler.adapter = adapter
 
         binding.save.setOnClickListener {
@@ -448,7 +454,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             offset = it.top
         }
 
-        adapter.swap(fields) { }
+        adapter.swap(fields) {
+            dataEntryHeaderHelper.onItemsUpdatedCallback()
+        }
         myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
 

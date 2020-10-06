@@ -227,6 +227,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 eventCaptureRepository.eventSections()
                         .flatMap(sectionList ->
                                 sectionProcessor.startWith(sectionList.get(0).sectionUid())
+                                        .observeOn(schedulerProvider.io())
                                         .switchMap(section ->
                                                 fieldFlowable.map(fields ->
                                                         fieldMapper.map(
@@ -312,7 +313,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         return showCalculationProcessor
                 .startWith(true)
                 .filter(newCalculation -> newCalculation)
-                .flatMap(newCalculation -> Flowable.zip(
+                .observeOn(schedulerProvider.io())
+                .switchMap(newCalculation -> Flowable.zip(
                         eventCaptureRepository.list(),
                         eventCaptureRepository.calculate(),
                         this::applyEffects)
