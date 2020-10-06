@@ -31,14 +31,14 @@ class EventTest: BaseTest() {
     @Test
     fun shouldDeleteEventWhenClickOnDeleteInsideSpecificEvent() {
         val tbVisit = "TB visit"
+        val tbVisitDate = "31/12/2019"
         val tbProgramStages = createProgramStageModel()
 
         prepareEventToDeleteIntentAndLaunchActivity(ruleTeiDashboard)
 
         teiDashboardRobot {
-            clickOnMenuMoreOptions()
-            clickOnTimelineEvents()
-            clickOnEventGroupByStage(tbVisit)
+            clickOnStageGroup(tbVisit)
+            clickOnEventGroupByStage(tbVisitDate)
         }
 
         eventRegistrationRobot {
@@ -48,9 +48,7 @@ class EventTest: BaseTest() {
         }
 
         teiDashboardRobot {
-            clickOnMenuMoreOptions()
-            clickOnGroupByStage()
-           checkEventWasDeletedStageGroup(tbProgramStages)
+            checkEventWasDeletedStageGroup(tbProgramStages)
         }
     }
 
