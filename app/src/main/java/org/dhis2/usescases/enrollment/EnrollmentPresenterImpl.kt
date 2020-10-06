@@ -138,7 +138,6 @@ class EnrollmentPresenterImpl(
         disposable.add(
             view.rowActions()
                 .onBackpressureBuffer()
-                .distinctUntilChanged()
                 .doOnNext { view.showProgress() }
                 .observeOn(schedulerProvider.io())
                 .flatMap { rowAction ->
@@ -628,6 +627,13 @@ class EnrollmentPresenterImpl(
                 analyticsHelper.setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
                 true
             }
+        }
+    }
+
+    fun onTeiImageHeaderClick() {
+        val picturePath = formRepository.getProfilePicture()
+        if (picturePath.isNotEmpty()) {
+            view.displayTeiPicture(picturePath)
         }
     }
 }
