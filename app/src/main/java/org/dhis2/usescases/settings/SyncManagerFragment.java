@@ -744,22 +744,30 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             return Unit.INSTANCE;
         });
 
-        ViewExtensionsKt.onFocusRemoved(binding.settingsSms.settingsSmsReceiver, () -> {
+        ViewExtensionsKt.onFocusRemoved(binding.settingsSms.settingsSmsResultTimeout, () -> {
             presenter.saveSmsResponseTimeout(Integer.valueOf(binding.settingsSms.settingsSmsResultTimeout.getText().toString()));
             return Unit.INSTANCE;
         });
 
         binding.settingsSms.settingsSmsResponseWaitSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            clearSmsFocus();
             if (!isChecked || !binding.settingsSms.settingsSmsResultSender.getText().toString().isEmpty()) {
                 presenter.saveWaitForSmsResponse(isChecked);
             }
         });
 
         binding.settingsSms.settingsSmsSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            clearSmsFocus();
             if (!isChecked || presenter.isGatewaySetAndValid(binding.settingsSms.settingsSmsReceiver.getText().toString())) {
                 presenter.enableSmsModule(isChecked);
             }
         });
+    }
+
+    private void clearSmsFocus(){
+        binding.settingsSms.settingsSmsReceiver.clearFocus();
+        binding.settingsSms.settingsSmsResultSender.clearFocus();
+        binding.settingsSms.settingsSmsResultTimeout.clearFocus();
     }
 
     @Override
