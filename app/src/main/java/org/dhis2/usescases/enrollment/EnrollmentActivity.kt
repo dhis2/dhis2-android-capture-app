@@ -390,13 +390,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                     .transform(CircleCrop())
                     .into(binding.teiDataHeader.teiImage)
                 binding.teiDataHeader.teiImage.setOnClickListener {
-                    ImageDetailBottomDialog(
-                        null,
-                        File(profileImage)
-                    ).show(
-                        supportFragmentManager,
-                        ImageDetailBottomDialog.TAG
-                    )
+                    presenter.onTeiImageHeaderClick()
                 }
             }
         } else {
@@ -405,6 +399,16 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             binding.title.text =
                 String.format(getString(R.string.enroll_in), presenter.getProgram().displayName())
         }
+    }
+
+    override fun displayTeiPicture(picturePath: String) {
+        ImageDetailBottomDialog(
+            null,
+            File(picturePath)
+        ).show(
+            supportFragmentManager,
+            ImageDetailBottomDialog.TAG
+        )
     }
     /*endregion*/
     /*region ACCESS*/

@@ -2,6 +2,7 @@ package org.dhis2.usescases.enrollment
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
@@ -304,6 +305,22 @@ class EnrollmentPresenterImplTest {
         processor.onNext(true)
 
         testSubscriber.assertValueAt(0, true)
+    }
+
+    @Test
+    fun `Should show a profile picture image`() {
+        val path = "route/image"
+        whenever(formRepository.getProfilePicture()) doReturn path
+        presenter.onTeiImageHeaderClick()
+        verify(enrollmentView).displayTeiPicture(path)
+    }
+
+    @Test
+    fun `Should not show a profile picture image`() {
+        val path = ""
+        whenever(formRepository.getProfilePicture()) doReturn path
+        presenter.onTeiImageHeaderClick()
+        verify(enrollmentView, never()).displayTeiPicture(path)
     }
 
     private fun checkCatCombo(catCombo: Boolean, featureType: FeatureType) {
