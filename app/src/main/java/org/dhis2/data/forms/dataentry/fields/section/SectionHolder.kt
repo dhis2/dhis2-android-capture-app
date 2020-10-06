@@ -94,7 +94,7 @@ class SectionHolder(
 
         formBinding.descriptionIcon.visibility = GONE
         formBinding.sectionName.viewTreeObserver.addOnGlobalLayoutListener {
-            formBinding.sectionName.layout?.let {
+            formBinding.sectionName.takeIf { it.text == viewModel.label() }?.layout?.let {
                 val isEllipsized = it.getEllipsisCount(0) > 0
                 if (viewModel.hasToShowDescriptionIcon(isEllipsized)) {
                     formBinding.descriptionIcon.visibility = VISIBLE
