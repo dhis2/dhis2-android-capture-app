@@ -280,6 +280,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 activity.getPresenter().init();
             }
             if (requestCode == FilterManager.OU_TREE) {
+                filtersAdapter.notifyDataSetChanged();
+                activity.presenter.setTotalFilters();
                 adapter.notifyDataSetChanged();
             }
         }
