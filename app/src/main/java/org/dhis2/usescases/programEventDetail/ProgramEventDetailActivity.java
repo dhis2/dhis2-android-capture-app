@@ -144,7 +144,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         );
 
         eventMapManager = new EventMapManager(binding.mapView);
-        eventMapManager.setFeatureType(presenter.getProgram().featureType());
+        eventMapManager.setFeatureType(presenter.getFeatureType());
         eventMapManager.setOnMapClickListener(this);
         eventMapManager.init();
         presenter.init();
