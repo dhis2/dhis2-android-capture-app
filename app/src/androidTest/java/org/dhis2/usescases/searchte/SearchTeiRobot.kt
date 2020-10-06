@@ -100,17 +100,12 @@ class SearchTeiRobot : BaseRobot() {
             .check(matches(withChild(withText(filterCount))))
     }
 
-    fun checkNoSearchResult(searchWord: String) {
-        val noResultMessage = R.string.search_criteria_not_met.toString().replace("%s","Person")
+    fun checkNoSearchResult(searchWord: String, message: String) {
         onView(withId(R.id.scrollView))
             .check(matches(not(hasItem(hasDescendant(withText(searchWord))))))
 
-        /*onView(withId(R.id.message))
-            .check(matches(withText(noResultMessage)))*/
-
         onView(withId(R.id.message))
-            .check(matches(withText("Your search criteria didn't return any result.\n" +
-                "Revise your criteria or enroll a new Person")))
+            .check(matches(withText(message)))
     }
 
     fun clickOnProgramSpinner() {

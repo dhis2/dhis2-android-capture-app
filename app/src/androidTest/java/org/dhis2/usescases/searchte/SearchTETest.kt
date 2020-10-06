@@ -3,6 +3,7 @@ package org.dhis2.usescases.searchte
 import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.R
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.junit.Ignore
@@ -40,6 +41,7 @@ class SearchTETest : BaseTest() {
         val firstName = "asdssds"
         val firstNamePosition = 1
         val filterCount = "1"
+        val noResultMessage = context.getString(R.string.search_criteria_not_met).replace("%s","Person")
 
         prepareTestProgramRulesProgrammeIntentAndLaunchActivity()
 
@@ -48,7 +50,7 @@ class SearchTETest : BaseTest() {
             clickOnFab()
             checkFilterCount(filterCount)
             closeSearchForm()
-            checkNoSearchResult(firstName) //error with string
+            checkNoSearchResult(firstName, noResultMessage)
         }
     }
 
