@@ -138,6 +138,7 @@ class FilterManagerTest {
 
     @Test
     fun `Should count enrollment filters in total if they are not in unsupported list`() {
+        filterManager.clearUnsupportedFilters()
         filterManager.addEnrollmentPeriod(listOf(DatePeriod.create(Date(), Date())))
         filterManager.addEnrollmentStatus(false, EnrollmentStatus.ACTIVE)
         filterManager.addEventStatus(false, EventStatus.ACTIVE)
