@@ -53,15 +53,19 @@ do
   sleep $polling_interval
 done
 
-# retrieve device status
+# Retrieve device status and tests reports
 build_status=$(echo "$build_status_response" | jq -r '.devices | to_entries[].value.status')
+test_reports_url="https://app-automate.browserstack.com/dashboard/v2/builds/$build_id"
+
+# Export test reports to bitrise
+envman add --key BROWSERSTACK_TEST_REPORTS --value "$test_reports_url"
 
 # Delegate final status to CI enviroment
-if [[ $build_status = "passed" ]]; 
+if [[ $build_status = "passed" ]];
 then
-	echo "Browserstack build passed, please check the execution of your tests https://app-automate.browserstack.com/dashboard/v2/builds/$build_id"
+	echo "Browserstack build passed, please check the execution of your tests $test_reports_url"
 	exit 0
 else
-	echo "Browserstack build failed, please check the execution of your tests https://app-automate.browserstack.com/dashboard/v2/builds/$build_id"
-	exit -1
+	echo "Browserstack build failed, please check the execution of your tests $test_reports_url"
+	exit 1
 fi
