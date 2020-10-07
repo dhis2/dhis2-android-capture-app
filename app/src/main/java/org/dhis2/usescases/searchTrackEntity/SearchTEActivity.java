@@ -461,6 +461,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     showMap(false);
                     break;
                 case R.id.menu_map:
+                    if(backDropActive){
+                        closeFilters();
+                    }
                     showMap(true);
                     break;
                 default:
