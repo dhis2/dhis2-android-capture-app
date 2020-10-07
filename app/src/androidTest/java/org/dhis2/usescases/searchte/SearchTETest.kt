@@ -14,8 +14,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class SearchTETest : BaseTest() {
 
-    private lateinit var searchTETest: SearchTETest
-
     @get:Rule
     val rule = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
@@ -74,7 +72,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
-    @Ignore("It sends error single click")
+    @Ignore("It sends error IndexOutOfBoundsException: Index: 7, Size: 7")
     @Test
     fun shouldSuccessfullyChangeBetweenPrograms() {
         /**
@@ -86,10 +84,9 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity()
 
         searchTeiRobot {
-            Thread.sleep(10000)
-            clickOnProgramSpinner() //it sends me error action will not be performed (90 percent of the view)
-            Thread.sleep(1000)
-            //selectAProgram("TB program")
+            clickOnProgramSpinner()
+            Thread.sleep(5000)
+            selectAProgram("TB program")
         }
     }
 

@@ -17,6 +17,7 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.viewactions.clickChildViewWithId
+import org.dhis2.common.viewactions.openSpinnerPopup
 import org.dhis2.common.viewactions.typeChildViewWithId
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.hamcrest.Matchers.`is`
@@ -109,23 +110,18 @@ class SearchTeiRobot : BaseRobot() {
     }
 
     fun clickOnProgramSpinner() {
-        onView(withId(R.id.spinner_text)).perform(click())
+        onView(withId(R.id.program_spinner)).perform(openSpinnerPopup())
     }
 
     fun selectAProgram(program: String) {
-        /*onData(anything())
-            .inAdapterView(withId(R.id.spinner_text))
-            .onChildView(allOf(withId(R.id.spinner_text), withText(program)))
-            .perform(click())*/
+        /*onView(withId(R.id.spinner_text))
+            .check(matches(withSpinnerText(containsString(program))))*/
 
-        onData(
-            allOf(
-                `is`(instanceOf(String::class.java)),
-                `is`(program)
-            )).perform(click())
+        onData(allOf(`is`(instanceOf(String::class.java)), `is`("Antenatal care visit")))
+            .perform(click())
 
         onView(withId(R.id.spinner_text))
-            .check(matches(withSpinnerText(containsString(program))))
+            .check(matches(withText(containsString(program))))
     }
 
 }
