@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.period.DatePeriod;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -54,6 +55,8 @@ public class FilterManager implements Serializable {
     private List<EnrollmentStatus> enrollmentStatusFilters;
     private boolean assignedFilter;
     private SortingItem sortingItem;
+
+    private ArrayList<Filters> unsupportedFilters = new ArrayList<>();
 
     private ObservableField<Integer> ouFiltersApplied;
     private ObservableField<Integer> stateFiltersApplied;
@@ -297,13 +300,21 @@ public class FilterManager implements Serializable {
         return ouTreeProcessor;
     }
 
+    public void setUnsupportedFilters(Filters... unsupported) {
+        this.unsupportedFilters.addAll(Arrays.asList(unsupported));
+    }
+
+    public void clearUnsupportedFilters(){
+        this.unsupportedFilters.clear();
+    }
+
     public int getTotalFilters() {
         int ouIsApplying = ouFilters.isEmpty() ? 0 : 1;
         int stateIsApplying = stateFilters.isEmpty() ? 0 : 1;
         int periodIsApplying = periodFilters == null || periodFilters.isEmpty() ? 0 : 1;
-        int enrollmentPeriodIsApplying = enrollmentPeriodFilters == null || enrollmentPeriodFilters.isEmpty() ? 0 : 1;
+        int enrollmentPeriodIsApplying = unsupportedFilters.contains(Filters.ENROLLMENT_DATE) || enrollmentPeriodFilters == null || enrollmentPeriodFilters.isEmpty() ? 0 : 1;
         int eventStatusApplying = eventStatusFilters.isEmpty() ? 0 : 1;
-        int enrollmentStatusApplying = enrollmentStatusFilters.isEmpty() ? 0 : 1;
+        int enrollmentStatusApplying = unsupportedFilters.contains(Filters.ENROLLMENT_STATUS) || enrollmentStatusFilters.isEmpty() ? 0 : 1;
         int catComboApplying = catOptComboFilters.isEmpty() ? 0 : 1;
         int assignedApplying = assignedFilter ? 1 : 0;
         int sortingIsActive = sortingItem != null ? 1 : 0;

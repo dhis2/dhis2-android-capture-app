@@ -325,6 +325,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (teiMapManager != null) {
             teiMapManager.onResume();
         }
+        FilterManager.getInstance().clearUnsupportedFilters();
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         filtersAdapter.notifyDataSetChanged();
     }
