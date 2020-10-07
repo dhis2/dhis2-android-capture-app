@@ -26,7 +26,6 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.BR;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.validation.ValueTypeValidatorFactory;
 import org.dhis2.data.forms.dataentry.validation.ValueTypeValidatorFactoryKt;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.ObjectStyleUtils;
@@ -332,6 +331,14 @@ public class CustomTextView extends FieldLayout {
                         return true;
                     } else {
                         inputLayout.setError(getContext().getString(R.string.validation_url));
+                        return false;
+                    }
+                case INTEGER:
+                case NUMBER:
+                    if (validator.validate(editText.getText().toString()))
+                        return true;
+                    else {
+                        inputLayout.setError(editText.getContext().getString(R.string.formatting_error));
                         return false;
                     }
                 default:
