@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.dhis2.Bindings.ValueExtensionsKt;
+import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -124,10 +126,11 @@ public class FormAdapter extends RecyclerView.Adapter {
         FieldViewModel viewModel;
         TrackedEntityAttribute attr = attributeList.get(holder.getAdapterPosition());
         String label = attr.displayName();
+        String hint = ValueTypeExtensionsKt.toHint(attr.valueType(), context);
         switch (holder.getItemViewType()) {
             case EDITTEXT:
                 viewModel = EditTextViewModel.create(attr.uid(), label, false,
-                        queryData.get(attr.uid()), label, 1, attr.valueType(), null, true,
+                        queryData.get(attr.uid()), hint, 1, attr.valueType(), null, true,
                         attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask());
                 break;
             case BUTTON:
@@ -161,7 +164,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                 viewModel = OrgUnitViewModel.create(attr.uid(), label, false, value, null, true, attr.displayDescription(), ObjectStyle.builder().build());
                 break;
             case SCAN_CODE:
-                viewModel = ScanTextViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.optionSet() != null ? attr.optionSet().uid() : null, attr.description(), ObjectStyle.builder().build(), renderingTypes.get(position));
+                viewModel = ScanTextViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.optionSet() != null ? attr.optionSet().uid() : null, attr.description(), ObjectStyle.builder().build(), renderingTypes.get(position), hint);
                 break;
             default:
                 Crashlytics.log("Unsupported viewType " +

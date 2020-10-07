@@ -118,7 +118,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
         editText.setClickable(isEditable);
         editText.setTextColor(
                 !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
-                        ContextCompat.getColor(getContext(), R.color.text_black_DE3)
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
         );
         setEditable(isEditable,
                 findViewById(R.id.label),
@@ -176,7 +176,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
         if (activated) {
             labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
         } else {
-            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
         }
     }
 

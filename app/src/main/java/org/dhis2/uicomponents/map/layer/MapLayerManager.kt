@@ -20,7 +20,6 @@ class MapLayerManager {
     var mapLayers: HashMap<String, MapLayer> = hashMapOf()
     lateinit var mapboxMap: MapboxMap
     private var mapStyle: MapStyle? = null
-    private var featureType: FeatureType = FeatureType.POINT
     var styleChangeCallback: (() -> Unit)? = null
     private val relationShipColors =
         mutableListOf(
@@ -48,80 +47,77 @@ class MapLayerManager {
         this.mapboxMap = mapboxMap
     }
 
-    fun withFeatureType(featureType: FeatureType) = apply {
-        this.featureType = featureType
-    }
-
     fun withMapStyle(mapStyle: MapStyle?) = apply {
         this.mapStyle = mapStyle
     }
 
-    fun withCarousel(carouselAdapter: CarouselAdapter) = apply {
+    fun withCarousel(carouselAdapter: CarouselAdapter?) = apply {
         this.carouselAdapter = carouselAdapter
     }
 
-    fun addLayer(layerType: LayerType, sourceId: String? = null) = apply {
-        val style = mapboxMap.style!!
-        mapLayers[sourceId ?: layerType.name] = when (layerType) {
-            LayerType.TEI_LAYER -> TeiMapLayer(
-                style,
-                featureType,
-                mapStyle?.teiColor!!,
-                mapStyle?.programDarkColor!!
-            )
-            LayerType.ENROLLMENT_LAYER -> EnrollmentMapLayer(
-                style,
-                featureType,
-                mapStyle?.enrollmentColor!!,
-                mapStyle?.programDarkColor!!
-            )
-            LayerType.HEATMAP_LAYER -> HeatmapMapLayer(
-                style,
-                featureType
-            )
-            LayerType.SATELLITE_LAYER -> SatelliteMapLayer(
-                mapboxMap,
-                styleChangeCallback,
-                style.uri.contains("satellite")
-            )
-            LayerType.RELATIONSHIP_LAYER -> RelationshipMapLayer(
-                style,
-                featureType,
-                sourceId!!,
-                if (relationshipUsedColors.containsKey(sourceId)) {
-                    relationshipUsedColors[sourceId]
-                } else {
-                    relationShipColors.firstOrNull()?.also {
-                        relationshipUsedColors[sourceId] = relationShipColors[0]
-                        relationShipColors.removeAt(0)
+    fun addLayer(layerType: LayerType, featureType: FeatureType? = null, sourceId: String? = null) =
+        apply {
+            val style = mapboxMap.style!!
+            mapLayers[sourceId ?: layerType.name] = when (layerType) {
+                LayerType.TEI_LAYER -> TeiMapLayer(
+                    style,
+                    featureType ?: FeatureType.POINT,
+                    mapStyle?.teiColor!!,
+                    mapStyle?.programDarkColor!!
+                )
+                LayerType.ENROLLMENT_LAYER -> EnrollmentMapLayer(
+                    style,
+                    featureType ?: FeatureType.POINT,
+                    mapStyle?.enrollmentColor!!,
+                    mapStyle?.programDarkColor!!
+                )
+                LayerType.HEATMAP_LAYER -> HeatmapMapLayer(
+                    style
+                )
+                LayerType.SATELLITE_LAYER -> SatelliteMapLayer(
+                    mapboxMap,
+                    styleChangeCallback,
+                    style.uri.contains("satellite")
+                )
+                LayerType.RELATIONSHIP_LAYER -> RelationshipMapLayer(
+                    style,
+                    featureType ?: FeatureType.POINT,
+                    sourceId!!,
+                    if (relationshipUsedColors.containsKey(sourceId)) {
+                        relationshipUsedColors[sourceId]
+                    } else {
+                        relationShipColors.firstOrNull()?.also {
+                            relationshipUsedColors[sourceId] = relationShipColors[0]
+                            relationShipColors.removeAt(0)
+                        }
                     }
-                }
-            )
-            LayerType.EVENT_LAYER -> EventMapLayer(
-                style,
-                featureType,
-                relationShipColors.firstOrNull()
-            )
-            LayerType.TEI_EVENT_LAYER -> TeiEventMapLayer(
-                style,
-                featureType,
-                sourceId!!,
-                mapStyle?.programDarkColor!!
-            )
+                )
+                LayerType.EVENT_LAYER -> EventMapLayer(
+                    style,
+                    featureType ?: FeatureType.POINT,
+                    relationShipColors.firstOrNull()
+                )
+                LayerType.TEI_EVENT_LAYER -> TeiEventMapLayer(
+                    style,
+                    featureType ?: FeatureType.POINT,
+                    sourceId!!,
+                    mapStyle?.programDarkColor!!
+                )
+            }
         }
-    }
 
     fun addStartLayer(
         layerType: LayerType,
+        featureType: FeatureType? = null,
         sourceId: String? = null
     ) = apply {
-        addLayer(layerType, sourceId)
+        addLayer(layerType, featureType, sourceId)
         handleLayer(sourceId ?: layerType.toString(), true)
     }
 
     fun addLayers(layerType: LayerType, sourceIds: List<String>, visible: Boolean) = apply {
         sourceIds.forEach {
-            addLayer(layerType, it)
+            addLayer(layerType, sourceId = it)
             handleLayer(it, visible)
         }
     }
@@ -153,16 +149,25 @@ class MapLayerManager {
         return mapLayers.values
     }
 
-    fun updateLayers(layerType: LayerType, sourceIds: List<String>) {
-        mapLayers.keys.forEach {
+    fun updateLayers(layerType: LayerType, sourceIds: List<String>) = apply {
+        val filterLayers = when (layerType) {
+            LayerType.TEI_LAYER -> mapLayers.filterValues { it is TeiMapLayer }
+            LayerType.ENROLLMENT_LAYER -> mapLayers.filterValues { it is EnrollmentMapLayer }
+            LayerType.HEATMAP_LAYER -> mapLayers.filterValues { it is HeatmapMapLayer }
+            LayerType.SATELLITE_LAYER -> mapLayers.filterValues { it is SatelliteMapLayer }
+            LayerType.RELATIONSHIP_LAYER -> mapLayers.filterValues { it is RelationshipMapLayer }
+            LayerType.EVENT_LAYER -> mapLayers.filterValues { it is EventMapLayer }
+            LayerType.TEI_EVENT_LAYER -> mapLayers.filterValues { it is TeiEventMapLayer }
+        }
+        filterLayers.keys.forEach {
             if (!sourceIds.contains(it)) {
                 mapLayers[it]?.hideLayer()
             }
         }
-        sourceIds.forEach {
-            if (mapLayers[it] == null) {
-                addStartLayer(layerType, it)
-            }
-        }
+        addLayers(
+            layerType,
+            sourceIds.filter { mapLayers[it] == null },
+            false
+        )
     }
 }

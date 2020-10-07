@@ -9,6 +9,8 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
+import java.util.Objects;
+
 @AutoValue
 public abstract class SectionViewModel extends FieldViewModel {
 
@@ -257,6 +259,11 @@ public abstract class SectionViewModel extends FieldViewModel {
                 warnings(),
                 rendering()
         );
+    }
+
+    public boolean hasToShowDescriptionIcon(boolean isTitleEllipsized) {
+        return (description() != null && !Objects.requireNonNull(description()).isEmpty()) ||
+                isTitleEllipsized;
     }
 
 }

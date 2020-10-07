@@ -50,7 +50,7 @@
                         android:background="@drawable/rounded_square_4dp"
                         android:padding="0dp"
                         android:textAlignment="center"
-                        android:textColor="@color/text_black_DE3"
+                        android:textColor="@color/textPrimary"
                         android:textSize="9sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/dataSetIcon"
@@ -73,7 +73,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:textColor="@color/text_black_DE3"
+                        android:textColor="@color/textPrimary"
                         android:textSize="14sp"
                         app:layout_constraintStart_toEndOf="@id/dataSetIcon"
                         app:layout_constraintTop_toTopOf="@id/dataSetIcon"
@@ -84,7 +84,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
-                        android:textColor="@color/text_black_8A3"
+                        android:textColor="@color/textSecondary"
                         android:textSize="12sp"
                         app:layout_constraintStart_toStartOf="@id/dataSetName"
                         app:layout_constraintTop_toBottomOf="@id/dataSetName"
@@ -94,7 +94,7 @@
                         android:id="@+id/completedDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/text_black_8A3"
+                        android:textColor="@color/textSecondary"
                         android:textSize="12sp"
                         app:layout_constraintStart_toStartOf="@id/dataSetName"
                         app:layout_constraintTop_toBottomOf="@id/lastUpdatedDate"
@@ -117,7 +117,7 @@
                     android:layout_marginTop="8dp"
                     android:gravity="bottom|start"
                     android:text="@string/period"
-                    android:textColor="@color/text_black_DE3"
+                    android:textColor="@color/textPrimary"
                     android:textSize="10sp"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -127,7 +127,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:gravity="bottom|start"
-                    android:textColor="@color/text_black_8A3"
+                    android:textColor="@color/textSecondary"
                     android:textSize="12sp"
                     app:layout_constraintTop_toBottomOf="@id/period"
                     tools:text="@string/period" />
@@ -139,7 +139,7 @@
                     android:layout_marginTop="8dp"
                     android:gravity="bottom|start"
                     android:text="@string/org_unit"
-                    android:textColor="@color/text_black_DE3"
+                    android:textColor="@color/textPrimary"
                     android:textSize="10sp"
                     app:layout_constraintTop_toBottomOf="@id/dataSetPeriod" />
 
@@ -149,7 +149,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:gravity="bottom|start"
-                    android:textColor="@color/text_black_8A3"
+                    android:textColor="@color/textSecondary"
                     android:textSize="12sp"
                     app:layout_constraintTop_toBottomOf="@id/org_unit"
                     tools:text="@string/org_unit" />
@@ -160,7 +160,7 @@
                     android:layout_height="24dp"
                     android:layout_marginTop="8dp"
                     android:gravity="bottom|start"
-                    android:textColor="@color/text_black_DE3"
+                    android:textColor="@color/textPrimary"
                     android:textSize="10sp"
                     app:layout_constraintTop_toBottomOf="@id/dataSetOrgUnit"
                     tools:text="@string/cat_combo" />
@@ -171,7 +171,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:gravity="bottom|start"
-                    android:textColor="@color/text_black_8A3"
+                    android:textColor="@color/textSecondary"
                     android:textSize="12sp"
                     app:layout_constraintTop_toBottomOf="@id/cat_combo"
                     tools:text="@string/cat_combo" />

@@ -136,21 +136,28 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         if (data != null) {
             date = null;
             data = data.replace("'", ""); //TODO: Check why it is happening
-            if (data.length() == 10) //has format yyyy-MM-dd
                 try {
                     date = DateUtils.oldUiDateFormat().parse(data);
-                } catch (ParseException e) {
-                    Timber.e(e);
-                }
-            else
-                try {
-                    date = DateUtils.databaseDateFormat().parse(data);
                     data = DateUtils.uiDateFormat().format(date);
                 } catch (ParseException e) {
                     Timber.e(e);
                 }
-
-
+                if(date == null) {
+                    try {
+                        date = DateUtils.databaseDateFormat().parse(data);
+                        data = DateUtils.uiDateFormat().format(date);
+                    } catch (ParseException e) {
+                        Timber.e(e);
+                    }
+                }
+                if(date == null) {
+                    try {
+                        date = DateUtils.uiDateFormat().parse(data);
+                        data = DateUtils.uiDateFormat().format(date);
+                    } catch (ParseException e) {
+                        Timber.e(e);
+                    }
+                }
         } else {
             editText.setText("");
         }
@@ -191,7 +198,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         if (activated) {
             labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
         } else {
-            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
         }
     }
 
@@ -236,7 +243,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         clearButton.setEnabled(editable);
         editText.setTextColor(
                 !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
-                        ContextCompat.getColor(getContext(), R.color.text_black_DE3)
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
         );
 
         setEditable(editable,

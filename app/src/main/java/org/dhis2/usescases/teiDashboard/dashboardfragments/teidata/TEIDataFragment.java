@@ -280,6 +280,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 activity.getPresenter().init();
             }
             if (requestCode == FilterManager.OU_TREE) {
+                filtersAdapter.notifyDataSetChanged();
+                activity.presenter.setTotalFilters();
                 adapter.notifyDataSetChanged();
             }
         }
@@ -420,7 +422,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             Bundle bundle = new Bundle();
             bundle.putString(PROGRAM_UID, dashboardModel.getCurrentEnrollment().program());
             bundle.putString(TRACKED_ENTITY_INSTANCE, dashboardModel.getTei().uid());
-            bundle.putString(ORG_UNIT, dashboardModel.getTei().organisationUnit()); //We take the OU of the TEI for the events
+            if(presenter.enrollmentOrgUnitInCaptureScope(dashboardModel.getCurrentOrgUnit().uid())) {
+                bundle.putString(ORG_UNIT, dashboardModel.getCurrentOrgUnit().uid());
+            }
             bundle.putString(ENROLLMENT_UID, dashboardModel.getCurrentEnrollment().uid());
             bundle.putString(EVENT_CREATION_TYPE, eventCreationType.name());
             bundle.putInt(EVENT_SCHEDULE_INTERVAL, scheduleIntervalDays);
@@ -550,7 +554,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, dashboardModel.getCurrentProgram().uid());
         bundle.putString(TRACKED_ENTITY_INSTANCE, dashboardModel.getTei().uid());
-        bundle.putString(ORG_UNIT, dashboardModel.getCurrentOrgUnit().uid());
+        if (presenter.enrollmentOrgUnitInCaptureScope(dashboardModel.getCurrentOrgUnit().uid())) {
+            bundle.putString(ORG_UNIT, dashboardModel.getCurrentOrgUnit().uid());
+        }
         bundle.putString(ENROLLMENT_UID, dashboardModel.getCurrentEnrollment().uid());
         bundle.putString(EVENT_CREATION_TYPE, eventCreationType.name());
         bundle.putBoolean(EVENT_REPEATABLE, programStage.repeatable());
@@ -598,7 +604,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void showSyncDialog(String uid) {
         SyncStatusDialog dialog = new SyncStatusDialog.Builder()
-                .setConflictType(SyncStatusDialog.ConflictType.EVENT)
+                .setConflictType(SyncStatusDialog.ConflictType.TEI)
                 .setUid(uid)
                 .onDismissListener(hasChanged -> {
                     if (hasChanged)

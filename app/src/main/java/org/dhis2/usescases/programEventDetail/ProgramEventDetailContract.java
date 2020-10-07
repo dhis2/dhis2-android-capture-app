@@ -95,5 +95,7 @@ public class ProgramEventDetailContract {
         void filterCatOptCombo(String selectedCatOptionCombo);
 
         Program getProgram();
+
+        FeatureType getFeatureType();
     }
 }

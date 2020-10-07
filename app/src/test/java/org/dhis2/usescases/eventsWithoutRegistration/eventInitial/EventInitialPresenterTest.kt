@@ -2,6 +2,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.data.prefs.Preference
 import org.dhis2.data.prefs.PreferenceProvider
@@ -58,5 +59,17 @@ class EventInitialPresenterTest {
     fun `Should init null org unit if previous does not exist`() {
         whenever(preferences.contains(Preference.CURRENT_ORG_UNIT)) doReturn false
         assertTrue(presenter.getCurrentOrgUnit(null).isNullOrEmpty())
+    }
+
+    @Test
+    fun `Should set changing coordinates`() {
+        presenter.setChangingCoordinates(true)
+        verify(preferences).setValue(Preference.EVENT_COORDINATE_CHANGED, true)
+    }
+
+    @Test
+    fun `Should clear changing coordinates`() {
+        presenter.setChangingCoordinates(false)
+        verify(preferences).removeValue(Preference.EVENT_COORDINATE_CHANGED)
     }
 }

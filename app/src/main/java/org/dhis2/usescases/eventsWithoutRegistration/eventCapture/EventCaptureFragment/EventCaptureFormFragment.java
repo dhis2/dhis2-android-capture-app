@@ -3,10 +3,8 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureF
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.database.DataSetObserver;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,21 +13,24 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryAdapter;
 import org.dhis2.data.forms.dataentry.DataEntryArguments;
+import org.dhis2.data.forms.dataentry.DataEntryHeaderHelper;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.forms.dataentry.fields.section.SectionHolder;
+import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.recyclers.StickyHeaderItemDecoration;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,6 +51,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     private EventCaptureActivity activity;
     private SectionSelectorFragmentBinding binding;
     private DataEntryAdapter dataEntryAdapter;
+    private DataEntryHeaderHelper dataEntryHeaderHelper;
     private FlowableProcessor<RowAction> flowableProcessor;
     private FlowableProcessor<String> sectionProcessor;
     private FlowableProcessor<Trio<String, String, Integer>> flowableOptions;
@@ -86,13 +88,19 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
         binding.actionButton.setOnClickListener(view -> {
             view.requestFocus();
+            ViewExtensionsKt.closeKeyboard(view);
             presenter.onActionButtonClick();
         });
+
+        dataEntryHeaderHelper = new DataEntryHeaderHelper(binding.headerContainer, binding.formRecycler);
+        dataEntryHeaderHelper.observeHeaderChanges(this);
 
         presenter.init();
 
         return binding.getRoot();
     }
+
+
 
     @Override
     public void onResume() {
@@ -131,7 +139,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             createDataEntry();
         }
 
-        dataEntryAdapter.swap(updates, () -> { });
+        dataEntryAdapter.swap(updates, () -> dataEntryHeaderHelper.onItemsUpdatedCallback());
     }
 
     @Override
@@ -162,16 +170,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         });
 
         binding.formRecycler.setLayoutManager(layoutManager);
-        binding.formRecycler.addItemDecoration(
-                new StickyHeaderItemDecoration(binding.formRecycler,
-                        false, itemPosition -> itemPosition >= 0 &&
-                        itemPosition < dataEntryAdapter.getItemCount() &&
-                        dataEntryAdapter.getItemViewType(itemPosition) == dataEntryAdapter.sectionViewType() &&
-                        dataEntryAdapter.getSectionSize() > 1
-                )
-        );
         binding.formRecycler.setAdapter(dataEntryAdapter);
-
         binding.formRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -181,7 +180,11 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                     imm.hideSoftInputFromWindow(recyclerView.getWindowToken(), 0);
                     binding.dummyFocusView.requestFocus();
                 }
+            }
 
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                dataEntryHeaderHelper.checkSectionHeader(recyclerView);
             }
         });
 
