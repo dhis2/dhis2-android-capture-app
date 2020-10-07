@@ -218,14 +218,14 @@ public class FilterManager implements Serializable {
     public void addPeriod(List<DatePeriod> datePeriod) {
         this.periodFilters = datePeriod;
 
-        periodFiltersApplied.set(datePeriod != null ? 1 : 0);
+        periodFiltersApplied.set(datePeriod != null ? datePeriod.size() : 0);
         filterProcessor.onNext(this);
     }
 
     public void addEnrollmentPeriod(List<DatePeriod> datePeriod) {
         this.enrollmentPeriodFilters = datePeriod;
 
-        enrollmentPeriodFiltersApplied.set(datePeriod != null ? 1 : 0);
+        enrollmentPeriodFiltersApplied.set(datePeriod != null ? datePeriod.size() : 0);
         filterProcessor.onNext(this);
     }
 
