@@ -36,6 +36,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
     private var teiImages: HashMap<String, Bitmap> = hashMapOf()
     var teiFeatureType: FeatureType? = FeatureType.POINT
     var enrollmentFeatureType: FeatureType? = FeatureType.POINT
+    private var boundingBox: BoundingBox? = null
 
     companion object {
         const val TEIS_SOURCE_ID = "TEIS_SOURCE_ID"
@@ -50,10 +51,10 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         this.teiFeatureCollections = teiFeatureCollections
         this.eventsFeatureCollection = eventsFeatureCollection.featureCollectionMap
         this.teiFeatureCollections?.putAll(eventsFeatureCollection.featureCollectionMap)
+        this.boundingBox = boundingBox
         teiFeatureCollections[TEIS_SOURCE_ID]?.let {
             setTeiImages(it)
         }
-        initCameraPosition(boundingBox)
     }
 
     override fun loadDataForStyle() {
@@ -205,6 +206,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                 LayerType.TEI_EVENT_LAYER,
                 eventsFeatureCollection?.keys?.toList() ?: emptyList()
             )
+        boundingBox?.let { initCameraPosition(it) }
     }
 
     override fun findFeature(
