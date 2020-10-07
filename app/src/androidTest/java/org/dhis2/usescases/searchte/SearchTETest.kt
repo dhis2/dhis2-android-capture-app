@@ -72,23 +72,41 @@ class SearchTETest : BaseTest() {
         }
     }
 
-    @Ignore("It sends error IndexOutOfBoundsException: Index: 7, Size: 7")
     @Test
     fun shouldSuccessfullyChangeBetweenPrograms() {
-        /**
-         * launch child program
-         * click on spinner and select another program (TB program)
-         * check it does not crash
-         * */
+        val tbProgram = "TB program"
 
         prepareChildProgrammeIntentAndLaunchActivity()
 
         searchTeiRobot {
             clickOnProgramSpinner()
-            Thread.sleep(5000)
-            selectAProgram("TB program")
+            selectAProgram(tbProgram)
+            checkProgramHasChanged(tbProgram)
         }
     }
+
+    @Test
+    fun shouldCheckDisplayInList() {
+
+        /**
+         * launch program
+         * MNCH / PNC (Adult Woman) program: uy2gU8kT1jF
+         * display in list: first name, lastname, email, date of birth, address
+         *
+         * click on arrow
+         * enrollment: ryflWrGMLqP programStage: oRySG82BKE6
+         * enrollment: YeUs8atKn6n
+         * enrollment: LiwYDESbSuY
+         *
+         * First name: Marta
+         * Last name: Vila
+         * Email
+         * Date of birth
+         * address
+         * */
+
+    }
+
 
     @Ignore("WIP")
     @Test

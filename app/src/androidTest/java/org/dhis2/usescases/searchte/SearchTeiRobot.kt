@@ -114,14 +114,11 @@ class SearchTeiRobot : BaseRobot() {
     }
 
     fun selectAProgram(program: String) {
-        /*onView(withId(R.id.spinner_text))
-            .check(matches(withSpinnerText(containsString(program))))*/
-
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`("Antenatal care visit")))
+        onView(allOf(withId(R.id.spinner_text), withText(program)))
             .perform(click())
-
-        onView(withId(R.id.spinner_text))
-            .check(matches(withText(containsString(program))))
     }
 
+    fun checkProgramHasChanged(program: String) {
+        onView(withId(R.id.spinner_text)).check(matches(withText(program)))
+    }
 }
