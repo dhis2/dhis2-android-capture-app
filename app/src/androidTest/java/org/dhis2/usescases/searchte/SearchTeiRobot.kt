@@ -48,14 +48,14 @@ class SearchTeiRobot : BaseRobot() {
                 withText(teiLastName)))))))
     }
 
-    fun searchByPosition(searchWord: String, position:Int) {
+    fun typeAttributeAtPosition(searchWord: String, position:Int) {
         onView(withId(R.id.form_recycler))
             .perform(
                 actionOnItemAtPosition<SearchTEViewHolder>(position, typeChildViewWithId(searchWord, R.id.input_editText))
             )
     }
 
-    fun searchByField(searchWord: String, field: String) {
+    fun typeAttribute(searchWord: String, field: String) {
         onView(withId(R.id.form_recycler))
             .perform(
                 actionOnItem<SearchTEViewHolder>(hasDescendant(withText(field)), typeChildViewWithId(searchWord, R.id.input_editText))

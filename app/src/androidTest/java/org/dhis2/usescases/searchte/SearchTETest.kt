@@ -26,9 +26,9 @@ class SearchTETest : BaseTest() {
         val filterCount = "1"
 
         prepareChildProgrammeIntentAndLaunchActivity()
-
+        
         searchTeiRobot {
-            searchByPosition(firstName, firstNamePosition)
+            typeAttributeAtPosition(firstName, firstNamePosition)
             clickOnFab()
             checkFilterCount(filterCount)
             closeSearchForm()
@@ -46,7 +46,7 @@ class SearchTETest : BaseTest() {
         prepareTestProgramRulesProgrammeIntentAndLaunchActivity()
 
         searchTeiRobot {
-            searchByPosition(firstName, firstNamePosition)
+            typeAttributeAtPosition(firstName, firstNamePosition)
             clickOnFab()
             checkFilterCount(filterCount)
             closeSearchForm()
@@ -65,8 +65,8 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity()
 
         searchTeiRobot {
-            searchByPosition(firstName, firstNamePosition)
-            searchByPosition(lastName, lastNamePosition)
+            typeAttributeAtPosition(firstName, firstNamePosition)
+            typeAttributeAtPosition(lastName, lastNamePosition)
             clickOnFab()
             checkFilterCount(filterCount)
             closeSearchForm()
@@ -98,8 +98,8 @@ class SearchTETest : BaseTest() {
         prepareTestAdultWomanProgrammeIntentAndLaunchActivity()
 
         searchTeiRobot {
-            searchByPosition(displayInListData.name, namePosition)
-            searchByPosition(displayInListData.lastName, lastNamePosition)
+            typeAttributeAtPosition(displayInListData.name, namePosition)
+            typeAttributeAtPosition(displayInListData.lastName, lastNamePosition)
             clickOnDateField()
             selectSpecificDate(birthdaySearch.year, birthdaySearch.month, birthdaySearch.day)
             acceptDate()

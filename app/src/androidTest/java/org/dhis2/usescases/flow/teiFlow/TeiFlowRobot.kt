@@ -21,8 +21,8 @@ class TeiFlowRobot : BaseRobot() {
         val enrollmentDate = registrationModel.enrollmentDate
 
         searchTeiRobot {
-            searchByPosition(registrationModel.name, 0)
-            searchByPosition(registrationModel.lastName, 1)
+            typeAttributeAtPosition(registrationModel.name, 0)
+            typeAttributeAtPosition(registrationModel.lastName, 1)
             clickOnDateField()
             selectSpecificDate(registrationDate.year,registrationDate.month,registrationDate.day)
             acceptDate()
