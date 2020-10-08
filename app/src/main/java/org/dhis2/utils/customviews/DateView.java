@@ -94,7 +94,6 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         editText.setOnFocusChangeListener(this::onFocusChanged);
         editText.setOnClickListener(this);
         clearButton.setOnClickListener( v -> { clearDate(); });
-        descriptionIcon = findViewById(R.id.descIcon);
         descriptionIcon.setOnClickListener(this);
     }
 
