@@ -363,8 +363,8 @@
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:background="@color/divider_bg"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/attribute_a_name" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
