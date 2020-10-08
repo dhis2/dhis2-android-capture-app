@@ -51,6 +51,7 @@ import com.mapbox.mapboxsdk.maps.Style;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
@@ -191,6 +192,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             Timber.d(e.getMessage());
         }
 
+        ViewExtensionsKt.clipWithRoundedCorners(binding.scrollView, ExtensionsKt.getDp(16));
         if (fromRelationship) {
             relationshipLiveAdapter = new RelationshipLiveAdapter(presenter, getSupportFragmentManager());
             binding.scrollView.setAdapter(relationshipLiveAdapter);
