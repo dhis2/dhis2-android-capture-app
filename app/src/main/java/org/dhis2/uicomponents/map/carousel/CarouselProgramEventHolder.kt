@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import java.util.Locale
 import org.dhis2.R
 import org.dhis2.animations.collapse
 import org.dhis2.animations.expand
@@ -15,7 +16,6 @@ import org.dhis2.data.tuples.Pair
 import org.dhis2.databinding.ItemCarouselProgramEventBinding
 import org.dhis2.databinding.ItemFieldValueBinding
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel
-import java.util.Locale
 
 class CarouselProgramEventHolder(
     val binding: ItemCarouselProgramEventBinding,
