@@ -137,6 +137,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         labelText = findViewById(R.id.label);
         inputLayout.setHint(getContext().getString(R.string.choose_date));
         icon.setImageResource(R.drawable.ic_form_date_time);
+        icon.setOnClickListener(this);
         selectedCalendar = Calendar.getInstance();
         dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         editText.setFocusable(false); //Makes editText not editable
@@ -228,6 +229,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     public void setEditable(Boolean editable) {
         editText.setEnabled(editable);
         clearButton.setEnabled(editable);
+        icon.setEnabled(editable);
         editText.setTextColor(
                 !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
                         ContextCompat.getColor(getContext(), R.color.textPrimary)

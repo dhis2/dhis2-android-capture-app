@@ -44,6 +44,12 @@ class ValidationUtilsTest {
     }
 
     @Test
+    fun `number should be ok`() {
+        val result = ValidationUtils.validate(ValueType.NUMBER, "8462384658120")
+        assertTrue(result == "8462384658120")
+    }
+
+    @Test
     fun `percentage should remove left zeroes`() {
         val result = ValidationUtils.validate(ValueType.PERCENTAGE, "035")
         assertTrue(result == "35")

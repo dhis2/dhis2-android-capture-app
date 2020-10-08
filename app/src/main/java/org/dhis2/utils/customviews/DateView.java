@@ -53,6 +53,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     private ImageView clearButton;
     private TextView labelText;
     private View descriptionLabel;
+    private ImageView descriptionIcon;
 
     public DateView(Context context) {
         super(context);
@@ -83,15 +84,17 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         editText = findViewById(R.id.inputEditText);
         clearButton = findViewById(R.id.clear_button);
         labelText = findViewById(R.id.label);
+        descriptionIcon = findViewById(R.id.descIcon);
         descriptionLabel = findViewById(R.id.descriptionLabel);
         inputLayout.setHint(getContext().getString(R.string.choose_date));
-        ((ImageView) findViewById(R.id.descIcon)).setImageResource(R.drawable.ic_form_date);
+        descriptionIcon.setImageResource(R.drawable.ic_form_date);
         selectedCalendar = Calendar.getInstance();
         editText.setFocusable(false); //Makes editText not editable
         editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this::onFocusChanged);
         editText.setOnClickListener(this);
         clearButton.setOnClickListener( v -> { clearDate(); });
+        descriptionIcon.setOnClickListener(this);
     }
 
     public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale){
@@ -241,6 +244,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     public void setEditable(Boolean editable) {
         editText.setEnabled(editable);
         clearButton.setEnabled(editable);
+        descriptionIcon.setEnabled(editable);
         editText.setTextColor(
                 !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
                         ContextCompat.getColor(getContext(), R.color.textPrimary)

@@ -289,8 +289,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             presenter.restoreQueryData((HashMap<String, String>) savedInstanceState.getSerializable(Constants.QUERY_DATA));
         }
         updateFiltersSearch(presenter.getQueryData().size());
-        binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
-        filtersAdapter.notifyDataSetChanged();
 
         teiMapManager = new TeiMapManager(binding.mapView);
         teiMapManager.setTeiFeatureType(presenter.getTrackedEntityType(tEType).featureType());
@@ -329,6 +327,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (teiMapManager != null) {
             teiMapManager.onResume();
         }
+        FilterManager.getInstance().clearUnsupportedFilters();
+        binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+        filtersAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -463,6 +464,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     showMap(false);
                     break;
                 case R.id.menu_map:
+                    if(backDropActive){
+                        closeFilters();
+                    }
                     showMap(true);
                     break;
                 default:
