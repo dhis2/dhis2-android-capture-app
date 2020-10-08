@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -54,6 +55,14 @@ class FeedbackItemBinder : TreeAdapterBinder(FeedbackItem::class.java) {
         feedbackItem: FeedbackItem,
         node: Tree<*>
     ) {
+
+        val percentage =
+            if (feedbackItem.value == null || feedbackItem.value.data.isNullOrBlank()) 0.9f else 0.6f
+
+        (nameView.layoutParams as ConstraintLayout.LayoutParams)
+            .matchConstraintPercentWidth = percentage
+        nameView.requestLayout()
+
         if (node is Tree.Node && node.children.isNotEmpty() && node.children[0] is Tree.Node) {
             TextViewCompat.setTextAppearance(
                 nameView,
