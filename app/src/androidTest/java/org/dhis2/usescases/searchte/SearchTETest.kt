@@ -5,7 +5,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.R
 import org.dhis2.usescases.BaseTest
+import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
+import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
@@ -89,22 +91,33 @@ class SearchTETest : BaseTest() {
     fun shouldCheckDisplayInList() {
 
         /**
-         * launch program
-         * MNCH / PNC (Adult Woman) program: uy2gU8kT1jF
-         * display in list: first name, lastname, email, date of birth, address
-         *
-         * click on arrow
-         * enrollment: ryflWrGMLqP programStage: oRySG82BKE6
-         * enrollment: YeUs8atKn6n
-         * enrollment: LiwYDESbSuY
-         *
-         * First name: Marta
-         * Last name: Vila
-         * Email
-         * Date of birth
-         * address
+         * display in list:
+         * first name: Sarah,
+         * lastName: Thompson,
+         * email: sarah@gmail.com,
+         * date of birth: 2001-01-01,
+         * address: Main street 1
          * */
 
+        val birthdaySearch = createDateOfBirthSearch()
+        val displayInListData = createDisplayListFields()
+        val namePosition = 0
+        val lastNamePosition = 1
+        val filterCount = "3"
+
+        prepareTestAdultWomanProgrammeIntentAndLaunchActivity()
+
+        searchTeiRobot {
+            searchByPosition(displayInListData.name, namePosition)
+            searchByPosition(displayInListData.lastName, lastNamePosition)
+            clickOnDateField()
+            selectSpecificDate(birthdaySearch.year, birthdaySearch.month, birthdaySearch.day)
+            acceptDate()
+            clickOnFab()
+            checkFilterCount(filterCount)
+            closeSearchForm()
+            checkFieldsFromDisplayList(displayInListData)
+        }
     }
 
 
@@ -121,6 +134,22 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    private fun createDateOfBirthSearch() = DateRegistrationUIModel(
+        2001,
+        1,
+        1
+    )
+
+    private fun createDisplayListFields() = DisplayListFieldsUIModel(
+        "Sarah",
+        "Thompson",
+        "2001-01-01",
+        "sarah@gmail.com",
+        "Main street 1",
+        "56",
+        "167"
+    )
+
     private fun prepareChildProgrammeIntentAndLaunchActivity() {
         Intent().apply {
             putExtra(PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
@@ -135,14 +164,23 @@ class SearchTETest : BaseTest() {
         }.also { rule.launchActivity(it) }
     }
 
+    private fun prepareTestAdultWomanProgrammeIntentAndLaunchActivity() {
+        Intent().apply {
+            putExtra(PROGRAM_UID, ADULT_WOMAN_PROGRAM_UID_VALUE)
+            putExtra(CHILD_TE_TYPE, ADULT_WOMAN_TE_TYPE_VALUE)
+        }.also { rule.launchActivity(it) }
+    }
+
     companion object {
         const val PROGRAM_UID = "PROGRAM_UID"
         const val CHILD_PROGRAM_UID_VALUE = "IpHINAT79UW"
         const val XX_TEST_PROGRAM_RULES_UID_VALUE = "jIT6KcSZiAN"
+        const val ADULT_WOMAN_PROGRAM_UID_VALUE = "uy2gU8kT1jF"
 
 
         const val CHILD_TE_TYPE_VALUE = "nEenWmSyUEp"
         const val PROGRAM_RULES_TE_TYPE_VALUE = "nEenWmSyUEp"
+        const val ADULT_WOMAN_TE_TYPE_VALUE = "nEenWmSyUEp"
         const val CHILD_TE_TYPE = "TRACKED_ENTITY_UID"
     }
 }

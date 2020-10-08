@@ -1,6 +1,5 @@
 package org.dhis2.usescases.searchte
 
-import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -11,7 +10,6 @@ import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withChild
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withSpinnerText
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
@@ -20,13 +18,9 @@ import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.openSpinnerPopup
 import org.dhis2.common.viewactions.typeChildViewWithId
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
-import org.hamcrest.Matchers.`is`
+import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
 import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.containsString
-import org.hamcrest.Matchers.instanceOf
 import org.hamcrest.Matchers.not
-import org.hamcrest.Matchers.startsWith
-
 
 fun searchTeiRobot(searchTeiRobot: SearchTeiRobot.() -> Unit) {
     SearchTeiRobot().apply {
@@ -120,5 +114,19 @@ class SearchTeiRobot : BaseRobot() {
 
     fun checkProgramHasChanged(program: String) {
         onView(withId(R.id.spinner_text)).check(matches(withText(program)))
+    }
+
+    fun checkFieldsFromDisplayList(displayListFieldsUIModel: DisplayListFieldsUIModel) {
+        onView(withId(R.id.showAttributesButton)).perform(click())
+
+        onView(withId(R.id.scrollView))
+            .check(matches(hasItem(allOf(
+                hasDescendant(withText("First name")), hasDescendant(withText(displayListFieldsUIModel.name)),
+                hasDescendant(withText("Last name")), hasDescendant(withText(displayListFieldsUIModel.lastName)),
+                hasDescendant(withText("Email")), hasDescendant(withText(displayListFieldsUIModel.email))
+
+                //hasDescendant(withText("Date of birth")), hasDescendant(withText("2001-01-01")) //1/1/2001
+                //hasDescendant(withText("Address")), hasDescendant(withText("Main street 1"))
+            ))))
     }
 }
