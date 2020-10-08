@@ -41,7 +41,7 @@ class ValuesD2Repository(private val d2: D2) : ValuesRepository {
                 }
 
                 val deName: String =
-                    if (dataElement.formName() == null) dataElement.displayName()!! else dataElement.formName()!!
+                    if (dataElement.displayFormName() == null) dataElement.displayName()!! else dataElement.displayFormName()!!
 
                 Value(
                     teiValue.dataElement()!!,
