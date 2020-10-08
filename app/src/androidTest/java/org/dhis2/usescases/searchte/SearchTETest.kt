@@ -89,16 +89,6 @@ class SearchTETest : BaseTest() {
 
     @Test
     fun shouldCheckDisplayInList() {
-
-        /**
-         * display in list:
-         * first name: Sarah,
-         * lastName: Thompson,
-         * email: sarah@gmail.com,
-         * date of birth: 2001-01-01,
-         * address: Main street 1
-         * */
-
         val birthdaySearch = createDateOfBirthSearch()
         val displayInListData = createDisplayListFields()
         val namePosition = 0

@@ -120,13 +120,14 @@ class SearchTeiRobot : BaseRobot() {
         onView(withId(R.id.showAttributesButton)).perform(click())
 
         onView(withId(R.id.scrollView))
-            .check(matches(hasItem(allOf(
-                hasDescendant(withText("First name")), hasDescendant(withText(displayListFieldsUIModel.name)),
-                hasDescendant(withText("Last name")), hasDescendant(withText(displayListFieldsUIModel.lastName)),
-                hasDescendant(withText("Email")), hasDescendant(withText(displayListFieldsUIModel.email))
-
-                //hasDescendant(withText("Date of birth")), hasDescendant(withText("2001-01-01")) //1/1/2001
-                //hasDescendant(withText("Address")), hasDescendant(withText("Main street 1"))
-            ))))
+            .check(matches(
+                hasDescendant(allOf(
+                    hasDescendant(withText("First name")), hasDescendant(withText(displayListFieldsUIModel.name)),
+                    hasDescendant(withText("Last name")), hasDescendant(withText(displayListFieldsUIModel.lastName)),
+                    hasDescendant(withText("Email")), hasDescendant(withText(displayListFieldsUIModel.email)),
+                    hasDescendant(withText("Date of birth")), hasDescendant(withText(displayListFieldsUIModel.birthday)),
+                    hasDescendant(withText("Address")), hasDescendant(withText(displayListFieldsUIModel.address))
+                ))
+            ))
     }
 }
