@@ -98,7 +98,7 @@ class CarouselTeiHolder(
 
         binding.executePendingBindings()
 
-        itemView.setOnClickListener {
+        binding.teiInfoCard.setOnClickListener {
             onClick(
                 data.tei.uid(),
                 if (data.selectedEnrollment != null) data.selectedEnrollment.uid() else null,

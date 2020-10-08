@@ -32,7 +32,7 @@ class SearchTEViewHolder(
             )
         }
 
-        itemView.setOnClickListener {
+        binding.cardView.setOnClickListener {
             presenter.onTEIClick(
                 teiModel.tei.uid(),
                 teiModel.selectedEnrollment?.uid(),

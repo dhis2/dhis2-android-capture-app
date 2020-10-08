@@ -104,7 +104,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
 
         binding.syncIcon.setOnClickListener(view -> onSyncClick.invoke(event.uid()));
 
-        itemView.setOnClickListener(view -> {
+        binding.eventCard.setOnClickListener(view -> {
             switch (eventModel.getEvent().status()) {
                 case SCHEDULE:
                 case OVERDUE:

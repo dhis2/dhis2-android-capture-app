@@ -61,6 +61,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4.3dp"
             app:cardBackgroundColor="@color/white"
+            app:rippleColor="@color/rippleColor"
             app:cardCornerRadius="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

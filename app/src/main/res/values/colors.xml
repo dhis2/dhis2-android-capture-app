@@ -301,6 +301,8 @@
 
     <!-- region OTHER COLORS-->
 
+    <color name="rippleColor">#AAA9A9</color>
+
     <color name="colorBackGround">#c4c4c4</color>
     <color name="colorBackGroundLight">#e7e7e7</color>
     <color name="bg_gray_f2f">#f2f2f2</color>
