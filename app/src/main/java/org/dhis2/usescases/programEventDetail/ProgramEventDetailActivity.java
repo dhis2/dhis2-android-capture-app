@@ -2,8 +2,10 @@ package org.dhis2.usescases.programEventDetail;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Outline;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.transition.ChangeBounds;
@@ -14,6 +16,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
@@ -33,6 +36,8 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerView;
 
 import org.dhis2.App;
+import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.tuples.Pair;
@@ -121,7 +126,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.setPresenter(presenter);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
 
-        liveAdapter = new ProgramEventDetailLiveAdapter(presenter.getProgram(),presenter);
+        ViewExtensionsKt.clipWithRoundedCorners(binding.recycler,ExtensionsKt.getDp(16));
+        liveAdapter = new ProgramEventDetailLiveAdapter(presenter.getProgram(), presenter);
         binding.recycler.setAdapter(liveAdapter);
 
         filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.EVENT);
@@ -165,7 +171,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         if (isMapVisible()) {
             animations.initMapLoading(binding.mapCarousel);
             binding.toolbarProgress.show();
-            if(updateEvent != null) {
+            if (updateEvent != null) {
                 presenter.getEventInfo(updateEvent);
             }
         } else {
