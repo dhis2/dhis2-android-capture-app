@@ -2,6 +2,8 @@ package org.dhis2.utils.filters;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
+import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -14,6 +16,9 @@ import org.dhis2.utils.filters.ou.OUFilterAdapter;
 import org.dhis2.utils.filters.sorting.SortingItem;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+
+import java.util.ArrayList;
+import java.util.List;
 
 class OrgUnitFilterHolder extends FilterHolder {
 
@@ -43,21 +48,28 @@ class OrgUnitFilterHolder extends FilterHolder {
         OUFilterAdapter ouFilterAdapter = new OUFilterAdapter();
         localBinding.filterOrgUnit.ouRecycler.setAdapter(ouFilterAdapter);
 
+        localBinding.filterOrgUnit.orgUnitSearchEditText.setDropDownVerticalOffset(4);
         localBinding.filterOrgUnit.orgUnitSearchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                localBinding.filterOrgUnit.progress.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (charSequence.length() > 3) {
-                    currentOrgUnit = d2.organisationUnitModule().organisationUnits()
-                            .byDisplayName().like("%" + charSequence + "%").one().blockingGet();
-                    if (currentOrgUnit != null)
-                        localBinding.filterOrgUnit.orgUnitHint.setText(currentOrgUnit.displayName());
-                    else
-                        localBinding.filterOrgUnit.orgUnitHint.setText(null);
+                    List<OrganisationUnit> orgUnits = d2.organisationUnitModule().organisationUnits()
+                            .byDisplayName().like("%" + charSequence + "%")
+                            .blockingGet();
+                    currentOrgUnit = !orgUnits.isEmpty() ? orgUnits.get(0) : null;
+                    List<String> orgUnitsNames = new ArrayList<>();
+                    for (OrganisationUnit orgUnit: orgUnits) {
+                        orgUnitsNames.add(orgUnit.displayName());
+                    }
+                    if (!orgUnitsNames.isEmpty()) {
+                        ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(itemView.getContext(), android.R.layout.simple_dropdown_item_1line, orgUnitsNames);
+                        localBinding.filterOrgUnit.orgUnitSearchEditText.setAdapter(autoCompleteAdapter);
+                    }
                 } else
                     localBinding.filterOrgUnit.orgUnitHint.setText(null);
 
@@ -65,7 +77,8 @@ class OrgUnitFilterHolder extends FilterHolder {
 
             @Override
             public void afterTextChanged(Editable editable) {
-
+                localBinding.filterOrgUnit.progress.setVisibility(View.GONE);
+                localBinding.filterOrgUnit.orgUnitSearchEditText.showDropDown();
             }
         });
 
