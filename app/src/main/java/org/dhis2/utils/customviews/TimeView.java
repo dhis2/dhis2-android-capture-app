@@ -122,11 +122,10 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
             } catch (ParseException e) {
                 Timber.e(e);
             }
-
-
             data = date != null ? DateUtils.timeFormat().format(date) : data;
         }
         editText.setText(data);
+        updateDeleteVisibility(clearButton);
     }
 
     public void setWarning(String msg) {
@@ -185,6 +184,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
             listener.onDateSelected(selectedDate);
             nextFocus(view);
             date = null;
+            updateDeleteVisibility(clearButton);
         }, hour, minute, is24HourFormat);
         dialog.setTitle(label);
 
@@ -224,11 +224,23 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
                 descriptionLabel,
                 clearButton
         );
+        updateDeleteVisibility(clearButton);
     }
 
     private void clearTime() {
         editText.setText(null);
         listener.onDateSelected(null);
         date = null;
+        updateDeleteVisibility(clearButton);
+    }
+
+    @Override
+    protected boolean hasValue() {
+        return editText.getText() != null && !editText.getText().toString().isEmpty();
+    }
+
+    @Override
+    protected boolean isEditable() {
+        return editText.isEnabled();
     }
 }
