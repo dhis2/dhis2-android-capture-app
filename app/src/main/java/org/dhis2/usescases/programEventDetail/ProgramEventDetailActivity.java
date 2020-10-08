@@ -2,10 +2,8 @@ package org.dhis2.usescases.programEventDetail;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Outline;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.transition.ChangeBounds;
@@ -16,7 +14,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewOutlineProvider;
 import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
@@ -26,7 +23,6 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
-import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
@@ -126,7 +122,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.setPresenter(presenter);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
 
-        ViewExtensionsKt.clipWithRoundedCorners(binding.recycler,ExtensionsKt.getDp(16));
+        ViewExtensionsKt.clipWithRoundedCorners(binding.recycler, ExtensionsKt.getDp(16));
         liveAdapter = new ProgramEventDetailLiveAdapter(presenter.getProgram(), presenter);
         binding.recycler.setAdapter(liveAdapter);
 
