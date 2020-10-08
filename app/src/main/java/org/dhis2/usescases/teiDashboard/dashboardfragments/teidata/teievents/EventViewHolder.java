@@ -184,7 +184,8 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
             for (Pair<String, String> nameValuePair : dataElementValues) {
                 if (!Objects.equals(nameValuePair.component2(), "-")) {
                     SpannableString value = new SpannableString(nameValuePair.component2());
-                    int colorToUse = dataElementValues.indexOf(nameValuePair) % 2 == 0 ? Color.parseColor("#8A333333") : Color.parseColor("#61333333");
+                    int colorToUse = dataElementValues.indexOf(nameValuePair) % 2 == 0 ?
+                            ContextCompat.getColor(itemView.getContext(), R.color.textPrimary) : ContextCompat.getColor(itemView.getContext(), R.color.textSecondary);
                     value.setSpan(new ForegroundColorSpan(colorToUse), 0, value.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
                     stringBuilder.append(value);
                     if (dataElementValues.indexOf(nameValuePair) != dataElementValues.size() - 1) {

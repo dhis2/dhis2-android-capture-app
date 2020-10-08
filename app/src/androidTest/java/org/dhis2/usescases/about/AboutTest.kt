@@ -2,10 +2,13 @@ package org.dhis2.usescases.about
 
 import android.Manifest
 import android.content.pm.PackageManager
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.BuildConfig
 import org.dhis2.R
+import org.dhis2.common.idlingresources.FragmentIdlingResource
+import org.dhis2.common.viewactions.waitForTransitionUntil
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.homeRobot
@@ -26,7 +29,6 @@ class AboutTest : BaseTest() {
     @Test
     fun shouldCheckVersionsWhenOpenAboutScreen() {
         startActivity()
-
         val appVersion = getAppVersionName()
         val sdkVersion = getSDKVersionName()
 
@@ -56,4 +58,5 @@ class AboutTest : BaseTest() {
 
     private fun getSDKVersionName() =
         String.format(context.getString(R.string.about_sdk), BuildConfig.SDK_VERSION)
+
 }

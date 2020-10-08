@@ -9,7 +9,6 @@ import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel
 import org.dhis2.utils.DhisTextUtils.Companion.isEmpty
-import org.jetbrains.annotations.NotNull
 
 const val DISPLAY_FIELD_KEY = "DISPLAY_FIELD_KEY"
 
@@ -26,14 +25,14 @@ class EventFieldMapper(
     private lateinit var finalFields: MutableMap<String, Boolean>
 
     fun map(
-        fields: @NotNull MutableList<out FieldViewModel>,
-        sectionList: @NotNull MutableList<out FormSectionViewModel>,
-        sectionsToHide: @NotNull MutableList<String>,
-        currentSection: @NotNull String,
-        errors: @NotNull MutableMap<String, String>,
+        fields: MutableList<FieldViewModel>,
+        sectionList: MutableList<FormSectionViewModel>,
+        sectionsToHide: MutableList<String>,
+        currentSection: String,
+        errors: MutableMap<String, String>,
         emptyMandatoryFields: MutableMap<String, FieldViewModel>,
         showErrors: Pair<Boolean, Boolean>
-    ): @NotNull Pair<MutableList<EventSectionModel>, MutableList<FieldViewModel>> {
+    ): Pair<MutableList<EventSectionModel>, MutableList<FieldViewModel>> {
         clearAll()
         setFieldMap(fields, sectionList, sectionsToHide, showErrors.first, emptyMandatoryFields)
         sectionList.forEach {
@@ -101,7 +100,13 @@ class EventFieldMapper(
             if (fieldSection.isNotEmpty() || sectionList.size == 1) {
                 updateFieldMap(
                     fieldSection,
-                    if (showMandatoryErrors && emptyMandatoryFields.containsKey(field.uid())) {
+                    if (field !is ImageViewModel && showMandatoryErrors &&
+                        emptyMandatoryFields.containsKey(field.uid())
+                    ) {
+                        field.withWarning(mandatoryFieldWarning)
+                    } else if (field is ImageViewModel && showMandatoryErrors &&
+                        emptyMandatoryFields.containsKey(field.fieldUid())
+                    ) {
                         field.withWarning(mandatoryFieldWarning)
                     } else {
                         field

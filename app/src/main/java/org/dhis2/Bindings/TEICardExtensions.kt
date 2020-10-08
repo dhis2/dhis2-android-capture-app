@@ -187,6 +187,25 @@ fun SearchTeiModel.setTeiImage(
                 )
             )
         )
+    } else if (isOnline && attributeValues.isNotEmpty() &&
+        ArrayList(attributeValues.values)[0].value() != ""
+    ) {
+        teiImageView.setImageDrawable(null)
+        teiTextImageView.visibility = View.VISIBLE
+        val valueToShow = ArrayList(attributeValues.values)
+        if (valueToShow[0] == null) {
+            teiTextImageView.text = "?"
+        } else {
+            teiTextImageView.text = valueToShow[0].value()?.first().toString().toUpperCase()
+        }
+        teiTextImageView.setTextColor(
+            ColorUtils.getContrastColor(
+                ColorUtils.getPrimaryColor(
+                    context,
+                    ColorUtils.ColorType.PRIMARY
+                )
+            )
+        )
     } else if (placeHolderId != -1) {
         teiTextImageView.visibility = View.GONE
         val icon = AppCompatResources.getDrawable(

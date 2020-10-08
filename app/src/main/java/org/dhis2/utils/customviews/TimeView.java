@@ -52,6 +52,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     private Date date;
     private View clearButton;
     private View descriptionLabel;
+    private ImageView descriptionIcon;
 
     public TimeView(Context context) {
         super(context);
@@ -74,8 +75,9 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         inputLayout = findViewById(R.id.inputLayout);
         labelText = findViewById(R.id.label);
         descriptionLabel = findViewById(R.id.descriptionLabel);
+        descriptionIcon = findViewById(R.id.descIcon);
         inputLayout.setHint(getContext().getString(R.string.select_time));
-        ((ImageView) findViewById(R.id.descIcon)).setImageResource(R.drawable.ic_form_time);
+        descriptionIcon.setImageResource(R.drawable.ic_form_time);
         clearButton = findViewById(R.id.clear_button);
         clearButton.setOnClickListener(v -> {
             clearTime();
@@ -84,6 +86,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this::onFocusChanged);
         editText.setOnClickListener(this);
+        descriptionIcon.setOnClickListener(this);
     }
 
     public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale) {
@@ -201,7 +204,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         if (activated) {
             labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
         } else {
-            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
         }
     }
 
@@ -213,9 +216,10 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     public void setEditable(Boolean editable) {
         editText.setEnabled(editable);
         clearButton.setEnabled(editable);
+        descriptionIcon.setEnabled(editable);
         editText.setTextColor(
                 !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
-                        ContextCompat.getColor(getContext(), R.color.text_black_DE3)
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
         );
         setEditable(editable,
                 labelText,

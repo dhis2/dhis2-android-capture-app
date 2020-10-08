@@ -23,7 +23,6 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
-import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
@@ -33,6 +32,8 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerView;
 
 import org.dhis2.App;
+import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.tuples.Pair;
@@ -121,7 +122,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.setPresenter(presenter);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
 
-        liveAdapter = new ProgramEventDetailLiveAdapter(presenter.getProgram(),presenter);
+        ViewExtensionsKt.clipWithRoundedCorners(binding.recycler, ExtensionsKt.getDp(16));
+        liveAdapter = new ProgramEventDetailLiveAdapter(presenter.getProgram(), presenter);
         binding.recycler.setAdapter(liveAdapter);
 
         filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.EVENT);
@@ -143,9 +145,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                         .show(getSupportFragmentManager(), MapLayerDialog.class.getName())
         );
 
-        eventMapManager = new EventMapManager();
+        eventMapManager = new EventMapManager(binding.mapView);
+        eventMapManager.setFeatureType(presenter.getFeatureType());
         eventMapManager.setOnMapClickListener(this);
-        eventMapManager.init(binding.mapView);
+        eventMapManager.init();
         presenter.init();
     }
 
@@ -164,7 +167,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         if (isMapVisible()) {
             animations.initMapLoading(binding.mapCarousel);
             binding.toolbarProgress.show();
-            if(updateEvent != null) {
+            if (updateEvent != null) {
                 presenter.getEventInfo(updateEvent);
             }
         } else {
@@ -387,8 +390,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public void setMap(FeatureCollection featureCollection, BoundingBox boundingBox, List<ProgramEventViewModel> programEventViewModels) {
         eventMapManager.update(
                 featureCollection,
-                boundingBox,
-                featureType
+                boundingBox
         );
 
         if (binding.mapCarousel.getAdapter() == null) {
@@ -414,6 +416,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(programEventViewModels);
         }
 
+        eventMapManager.mapLayerManager.selectFeature(null);
         animations.endMapLoading(binding.mapCarousel);
         binding.toolbarProgress.hide();
     }

@@ -154,6 +154,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private Set<String> eventSources;
     private String updateTei;
     private String updateEvent;
+    private CarouselAdapter carouselAdapter;
 
     //---------------------------------------------------------------------------------------------
 
@@ -225,6 +226,60 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     .show(getSupportFragmentManager(), MapLayerDialog.class.getName());
         });
 
+        carouselAdapter = new CarouselAdapter.Builder()
+                .addOnTeiClickListener(
+                        (teiUid, enrollmentUid, isDeleted) -> {
+                            if (binding.mapCarousel.getCarouselEnabled()) {
+                                updateTei = teiUid;
+                                presenter.onTEIClick(teiUid, enrollmentUid, isDeleted);
+                            }
+                            return true;
+                        })
+                .addOnSyncClickListener(
+                        teiUid -> {
+                            if (binding.mapCarousel.getCarouselEnabled()) {
+                                presenter.onSyncIconClick(teiUid);
+                            }
+                            return true;
+                        })
+                .addOnDeleteRelationshipListener(relationshipUid -> {
+                    if (binding.mapCarousel.getCarouselEnabled()) {
+                        presenter.deleteRelationship(relationshipUid);
+                    }
+                    return true;
+                })
+                .addOnRelationshipClickListener(teiUid -> {
+                    if (binding.mapCarousel.getCarouselEnabled()) {
+                        presenter.onTEIClick(teiUid, null, false);
+                    }
+                    return true;
+                })
+                .addOnEventClickListener((teiUid, enrollmentUid, eventUid) -> {
+                    if (binding.mapCarousel.getCarouselEnabled()) {
+                        updateTei = teiUid;
+                        updateEvent = eventUid;
+                        presenter.onTEIClick(teiUid, enrollmentUid, false);
+                    }
+                    return true;
+                })
+                .addOnProfileImageClickListener(
+                        path -> {
+                            if (binding.mapCarousel.getCarouselEnabled()) {
+                                new ImageDetailBottomDialog(
+                                        null,
+                                        new File(path)
+                                ).show(
+                                        getSupportFragmentManager(),
+                                        ImageDetailBottomDialog.TAG
+                                );
+                            }
+                            return Unit.INSTANCE;
+                        }
+                )
+                .addProgram(presenter.getProgram())
+                .build();
+        binding.mapCarousel.setAdapter(carouselAdapter);
+
         binding.executePendingBindings();
         showHideFilter();
 
@@ -232,12 +287,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             presenter.restoreQueryData((HashMap<String, String>) savedInstanceState.getSerializable(Constants.QUERY_DATA));
         }
         updateFiltersSearch(presenter.getQueryData().size());
-        binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
-        filtersAdapter.notifyDataSetChanged();
 
-        teiMapManager = new TeiMapManager();
-        teiMapManager.init(binding.mapView);
+        teiMapManager = new TeiMapManager(binding.mapView);
+        teiMapManager.setTeiFeatureType(presenter.getTrackedEntityType(tEType).featureType());
+        teiMapManager.setEnrollmentFeatureType(presenter.getProgram() != null ? presenter.getProgram().featureType() : null);
+        teiMapManager.setCarouselAdapter(carouselAdapter);
         teiMapManager.setOnMapClickListener(this);
+        teiMapManager.init();
+
+        binding.mapCarousel.attachToMapManager(teiMapManager, () -> true);
     }
 
     @Override
@@ -267,6 +325,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (teiMapManager != null) {
             teiMapManager.onResume();
         }
+        FilterManager.getInstance().clearUnsupportedFilters();
+        binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+        filtersAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -401,6 +462,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     showMap(false);
                     break;
                 case R.id.menu_map:
+                    if(backDropActive){
+                        closeFilters();
+                    }
                     showMap(true);
                     break;
                 default:
@@ -875,74 +939,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             allItems.addAll(new MapRelationshipToRelationshipMapModel().mapList(searchTeiModel.getRelationships()));
         }
 
-        if (binding.mapCarousel.getAdapter() == null) {
-            CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
-                    .addOnTeiClickListener(
-                            (teiUid, enrollmentUid, isDeleted) -> {
-                                if (binding.mapCarousel.getCarouselEnabled()) {
-                                    updateTei = teiUid;
-                                    presenter.onTEIClick(teiUid, enrollmentUid, isDeleted);
-                                }
-                                return true;
-                            })
-                    .addOnSyncClickListener(
-                            teiUid -> {
-                                if (binding.mapCarousel.getCarouselEnabled()) {
-                                    presenter.onSyncIconClick(teiUid);
-                                }
-                                return true;
-                            })
-                    .addOnDeleteRelationshipListener(relationshipUid -> {
-                        if (binding.mapCarousel.getCarouselEnabled()) {
-                            presenter.deleteRelationship(relationshipUid);
-                        }
-                        return true;
-                    })
-                    .addOnRelationshipClickListener(teiUid -> {
-                        if (binding.mapCarousel.getCarouselEnabled()) {
-                            presenter.onTEIClick(teiUid, null, false);
-                        }
-                        return true;
-                    })
-                    .addOnEventClickListener((teiUid, enrollmentUid, eventUid) -> {
-                        if (binding.mapCarousel.getCarouselEnabled()) {
-                            updateTei = teiUid;
-                            updateEvent = eventUid;
-                            presenter.onTEIClick(teiUid, enrollmentUid, false);
-                        }
-                        return true;
-                    })
-                    .addOnProfileImageClickListener(
-                            path -> {
-                                if (binding.mapCarousel.getCarouselEnabled()) {
-                                    new ImageDetailBottomDialog(
-                                            null,
-                                            new File(path)
-                                    ).show(
-                                            getSupportFragmentManager(),
-                                            ImageDetailBottomDialog.TAG
-                                    );
-                                }
-                                return Unit.INSTANCE;
-                            }
-                    )
-                    .addProgram(presenter.getProgram())
-                    .addItems(allItems)
-                    .build();
-            binding.mapCarousel.setAdapter(carouselAdapter);
-        } else {
+        if (binding.mapCarousel.getAdapter() != null) {
             ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(allItems);
         }
 
         teiMapManager.update(
                 teiFeatureCollections,
                 events,
-                boundingBox,
-                featureType,
-                (CarouselAdapter) binding.mapCarousel.getAdapter()
+                boundingBox
         );
-
-        binding.mapCarousel.attachToMapManager(teiMapManager, () -> true);
 
         animations.endMapLoading(binding.mapCarousel);
         binding.toolbarProgress.hide();

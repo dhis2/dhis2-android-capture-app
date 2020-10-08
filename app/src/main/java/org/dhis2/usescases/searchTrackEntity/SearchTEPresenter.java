@@ -446,6 +446,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
+    public TrackedEntityType getTrackedEntityType(String trackedEntityTypeUid) {
+        return searchRepository.getTrackedEntityType(trackedEntityTypeUid).blockingFirst();
+    }
+
+    @Override
     public Program getProgram() {
         return selectedProgram;
     }

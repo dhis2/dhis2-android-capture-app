@@ -15,6 +15,8 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.option.OptionGroup
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
 import org.hisp.dhis.rules.RuleExpressionEvaluator
 import org.junit.Before
 import org.junit.Test
@@ -28,6 +30,7 @@ class EnrollmentFormRepositoryTest {
     private val expressionEvaluator: RuleExpressionEvaluator = mock()
     private val enrollmentRepository: EnrollmentObjectRepository = mock()
     private val programRepository = Mockito.mock(ReadOnlyOneObjectRepositoryFinalImpl::class.java)
+    private val teiRepository: TrackedEntityInstanceObjectRepository = mock()
 
     @Before
     fun setUp() {
@@ -63,12 +66,18 @@ class EnrollmentFormRepositoryTest {
             .uid("enrollmentOrgUnitUid")
             .code("orgUnitCode")
             .build()
+
+        whenever(teiRepository.blockingGet()) doReturn TrackedEntityInstance.builder()
+            .uid("teiInstance")
+            .build()
+
         repository = EnrollmentFormRepositoryImpl(
             d2,
             rulesRepository,
             expressionEvaluator,
             enrollmentRepository,
-            programRepository
+            programRepository,
+            teiRepository
         )
     }
 

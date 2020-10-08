@@ -23,7 +23,7 @@ class MainTest : BaseTest() {
         super.setUp()
     }
 
-    @Test
+  @Test
     fun checkHomeScreenRecyclerviewHasElements() {
         startActivity()
         homeRobot {
@@ -34,8 +34,8 @@ class MainTest : BaseTest() {
     @Test
     fun shouldRedirectToLoginIfClickOnLogOut() {
         setupCredentials()
-        enableIntents()
         startActivity()
+        enableIntents()
 
         homeRobot {
             clickOnNavigationDrawerMenu()

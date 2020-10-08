@@ -227,6 +227,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 eventCaptureRepository.eventSections()
                         .flatMap(sectionList ->
                                 sectionProcessor.startWith(sectionList.get(0).sectionUid())
+                                        .observeOn(schedulerProvider.io())
                                         .switchMap(section ->
                                                 fieldFlowable.map(fields ->
                                                         fieldMapper.map(
@@ -312,7 +313,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         return showCalculationProcessor
                 .startWith(true)
                 .filter(newCalculation -> newCalculation)
-                .flatMap(newCalculation -> Flowable.zip(
+                .observeOn(schedulerProvider.io())
+                .switchMap(newCalculation -> Flowable.zip(
                         eventCaptureRepository.list(),
                         eventCaptureRepository.calculate(),
                         this::applyEffects)
@@ -320,8 +322,13 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         {
                             emptyMandatoryFields = new HashMap<>();
                             for (FieldViewModel fieldViewModel : fields) {
-                                if (fieldViewModel.mandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection()))
-                                    emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
+                                if (fieldViewModel.mandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection())) {
+                                    if(fieldViewModel instanceof ImageViewModel && !emptyMandatoryFields.containsKey(((ImageViewModel) fieldViewModel).fieldUid())){
+                                        emptyMandatoryFields.put(((ImageViewModel) fieldViewModel).fieldUid(), fieldViewModel);
+                                    }else if(!(fieldViewModel instanceof  ImageViewModel)){
+                                        emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
+                                    }
+                                }
                             }
                             return fields;
                         }

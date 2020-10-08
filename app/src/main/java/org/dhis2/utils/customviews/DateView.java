@@ -53,6 +53,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     private ImageView clearButton;
     private TextView labelText;
     private View descriptionLabel;
+    private ImageView descriptionIcon;
 
     public DateView(Context context) {
         super(context);
@@ -83,15 +84,17 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         editText = findViewById(R.id.inputEditText);
         clearButton = findViewById(R.id.clear_button);
         labelText = findViewById(R.id.label);
+        descriptionIcon = findViewById(R.id.descIcon);
         descriptionLabel = findViewById(R.id.descriptionLabel);
         inputLayout.setHint(getContext().getString(R.string.choose_date));
-        ((ImageView) findViewById(R.id.descIcon)).setImageResource(R.drawable.ic_form_date);
+        descriptionIcon.setImageResource(R.drawable.ic_form_date);
         selectedCalendar = Calendar.getInstance();
         editText.setFocusable(false); //Makes editText not editable
         editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this::onFocusChanged);
         editText.setOnClickListener(this);
         clearButton.setOnClickListener( v -> { clearDate(); });
+        descriptionIcon.setOnClickListener(this);
     }
 
     public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale){
@@ -136,21 +139,28 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         if (data != null) {
             date = null;
             data = data.replace("'", ""); //TODO: Check why it is happening
-            if (data.length() == 10) //has format yyyy-MM-dd
                 try {
                     date = DateUtils.oldUiDateFormat().parse(data);
-                } catch (ParseException e) {
-                    Timber.e(e);
-                }
-            else
-                try {
-                    date = DateUtils.databaseDateFormat().parse(data);
                     data = DateUtils.uiDateFormat().format(date);
                 } catch (ParseException e) {
                     Timber.e(e);
                 }
-
-
+                if(date == null) {
+                    try {
+                        date = DateUtils.databaseDateFormat().parse(data);
+                        data = DateUtils.uiDateFormat().format(date);
+                    } catch (ParseException e) {
+                        Timber.e(e);
+                    }
+                }
+                if(date == null) {
+                    try {
+                        date = DateUtils.uiDateFormat().parse(data);
+                        data = DateUtils.uiDateFormat().format(date);
+                    } catch (ParseException e) {
+                        Timber.e(e);
+                    }
+                }
         } else {
             editText.setText("");
         }
@@ -191,7 +201,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         if (activated) {
             labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
         } else {
-            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
         }
     }
 
@@ -234,9 +244,10 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     public void setEditable(Boolean editable) {
         editText.setEnabled(editable);
         clearButton.setEnabled(editable);
+        descriptionIcon.setEnabled(editable);
         editText.setTextColor(
                 !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
-                        ContextCompat.getColor(getContext(), R.color.text_black_DE3)
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
         );
 
         setEditable(editable,

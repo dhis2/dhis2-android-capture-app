@@ -132,14 +132,16 @@ class EnrollmentModule(
         rulesRepository: RulesRepository,
         evaluator: RuleExpressionEvaluator,
         enrollmentRepository: EnrollmentObjectRepository,
-        programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>
+        programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
+        teiRepository: TrackedEntityInstanceObjectRepository
     ): EnrollmentFormRepository {
         return EnrollmentFormRepositoryImpl(
             d2,
             rulesRepository,
             evaluator,
             enrollmentRepository,
-            programRepository
+            programRepository,
+            teiRepository
         )
     }
 }

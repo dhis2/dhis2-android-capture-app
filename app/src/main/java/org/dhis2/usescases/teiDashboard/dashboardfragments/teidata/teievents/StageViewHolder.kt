@@ -26,7 +26,7 @@ internal class StageViewHolder(
             stage.style().color(),
             ColorUtils.getPrimaryColor(
                 itemView.context,
-                ColorUtils.ColorType.PRIMARY_LIGHT
+                ColorUtils.ColorType.PRIMARY
             )
         )
 
