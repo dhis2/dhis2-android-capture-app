@@ -49,7 +49,6 @@ class SearchTeiRobot : BaseRobot() {
     }
 
     fun searchByPosition(searchWord: String, position:Int) {
-        waitToDebounce(1000)
         onView(withId(R.id.form_recycler))
             .perform(
                 actionOnItemAtPosition<SearchTEViewHolder>(position, typeChildViewWithId(searchWord, R.id.input_editText))
@@ -57,7 +56,6 @@ class SearchTeiRobot : BaseRobot() {
     }
 
     fun searchByField(searchWord: String, field: String) {
-        waitToDebounce(1000)
         onView(withId(R.id.form_recycler))
             .perform(
                 actionOnItem<SearchTEViewHolder>(hasDescendant(withText(field)), typeChildViewWithId(searchWord, R.id.input_editText))
