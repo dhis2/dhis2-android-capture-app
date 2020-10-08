@@ -69,6 +69,7 @@ class OrgUnitFilterHolder extends FilterHolder {
                     if (!orgUnitsNames.isEmpty()) {
                         ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(itemView.getContext(), android.R.layout.simple_dropdown_item_1line, orgUnitsNames);
                         localBinding.filterOrgUnit.orgUnitSearchEditText.setAdapter(autoCompleteAdapter);
+                        localBinding.filterOrgUnit.orgUnitSearchEditText.showDropDown();
                     }
                 } else
                     localBinding.filterOrgUnit.orgUnitHint.setText(null);
@@ -78,7 +79,6 @@ class OrgUnitFilterHolder extends FilterHolder {
             @Override
             public void afterTextChanged(Editable editable) {
                 localBinding.filterOrgUnit.progress.setVisibility(View.GONE);
-                localBinding.filterOrgUnit.orgUnitSearchEditText.showDropDown();
             }
         });
 
