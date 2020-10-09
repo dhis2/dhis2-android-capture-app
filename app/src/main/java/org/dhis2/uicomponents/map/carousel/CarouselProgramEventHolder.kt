@@ -60,7 +60,9 @@ class CarouselProgramEventHolder(
         binding.showValuesButton.visibility = View.VISIBLE
         binding.showValuesButton.setOnClickListener {
             if (programEventModel.openedAttributeList) {
-                binding.dataElementList.collapse()
+                binding.dataElementList.collapse {
+                    initValues(false, programEventModel.eventDisplayData())
+                }
             } else {
                 initValues(true, programEventModel.eventDisplayData())
                 binding.dataElementList.expand()

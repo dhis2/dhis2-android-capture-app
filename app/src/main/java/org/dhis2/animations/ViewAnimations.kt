@@ -7,12 +7,13 @@ import android.view.animation.Transformation
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton.decrement
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton.increment
 
-fun View.collapse() {
+fun View.collapse(callback: () -> Unit) {
     val initialHeight = measuredHeight
     val a: Animation = object : Animation() {
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
             if (interpolatedTime == 1f) {
                 visibility = View.GONE
+                callback.invoke()
             } else {
                 layoutParams.height =
                     initialHeight - (initialHeight * interpolatedTime).toInt()
