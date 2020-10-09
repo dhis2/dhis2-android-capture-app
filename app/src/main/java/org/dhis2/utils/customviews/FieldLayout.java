@@ -74,5 +74,23 @@ public abstract class FieldLayout extends RelativeLayout {
             }
         }
     }
+
+    protected void updateDeleteVisibility(View clearButton) {
+        if (clearButton != null) {
+            if(hasValue() && isEditable()){
+                clearButton.setVisibility(View.VISIBLE);
+            }else{
+                clearButton.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    protected boolean hasValue(){
+        return false;
+    }
+
+    protected boolean isEditable(){
+        return false;
+    }
 }
 

@@ -324,7 +324,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore
     @Test
     fun shouldSuccessfullyCreateRelationshipWhenClickAdd() {
         val teiName = "Tim"
@@ -360,7 +359,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore
     @Test
     fun shouldDeleteTeiSuccessfully() {
         val teiName = "Anthony"
@@ -384,7 +382,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore
     @Test
     fun shouldDeleteEnrollmentSuccessfully() {
         val teiName = "Anna"

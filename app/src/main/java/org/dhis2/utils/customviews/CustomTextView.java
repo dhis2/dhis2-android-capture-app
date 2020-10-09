@@ -150,6 +150,7 @@ public class CustomTextView extends FieldLayout {
                     editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
                     findViewById(R.id.clear_button).setOnClickListener(v -> {
                         editText.getText().clear();
+                        updateDeleteVisibility(findViewById(R.id.clear_button));
                     });
                     break;
                 case LETTER:
@@ -225,6 +226,8 @@ public class CustomTextView extends FieldLayout {
 
         setEditable(editable, labelText,
                 inputLayout, descIcon, descriptionLabel, findViewById(R.id.clear_button));
+
+        updateDeleteVisibility(findViewById(R.id.clear_button));
     }
 
     public void setWarning(String warning, String error) {
@@ -244,6 +247,7 @@ public class CustomTextView extends FieldLayout {
         editText.setText(text);
         editText.setSelection(editText.getText() == null ?
                 0 : editText.getText().length());
+        updateDeleteVisibility(findViewById(R.id.clear_button));
     }
 
     public void setLabel(String label, boolean mandatory) {
@@ -386,5 +390,15 @@ public class CustomTextView extends FieldLayout {
         } else {
             labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
         }
+    }
+
+    @Override
+    protected boolean hasValue(){
+        return editText.getText()!=null && !editText.getText().toString().isEmpty();
+    }
+
+    @Override
+    protected boolean isEditable(){
+        return editText.isEnabled();
     }
 }

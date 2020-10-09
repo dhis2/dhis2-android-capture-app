@@ -105,6 +105,8 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
             editText.setText("");
         }
         editText.setText(data);
+
+        updateDeleteVisibility(clearButton);
     }
 
     public void setWarning(String msg) {
@@ -214,6 +216,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
             listener.onDateSelected(selectedDate);
             nextFocus(view);
             date = null;
+            updateDeleteVisibility(clearButton);
         },
                 hour,
                 minute,
@@ -242,11 +245,23 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
                 findViewById(R.id.descriptionLabel),
                 clearButton
         );
+        updateDeleteVisibility(clearButton);
     }
 
     private void clearDate() {
         editText.setText(null);
         listener.onDateSelected(null);
         date = null;
+        updateDeleteVisibility(clearButton);
+    }
+
+    @Override
+    protected boolean hasValue() {
+        return editText.getText() != null && !editText.getText().toString().isEmpty();
+    }
+
+    @Override
+    protected boolean isEditable() {
+        return editText.isEnabled();
     }
 }
