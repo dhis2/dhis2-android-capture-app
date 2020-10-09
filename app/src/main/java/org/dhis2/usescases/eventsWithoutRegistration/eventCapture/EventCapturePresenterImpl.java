@@ -1,5 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import static org.dhis2.utils.CustomizableConstantsKt.SHOW_INDICATORS_IN_EVENT;
+
 import android.annotation.SuppressLint;
 import android.os.Handler;
 
@@ -183,7 +185,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> {
-                                    if (data.size()> 0){
+                                    if (SHOW_INDICATORS_IN_EVENT && data.size()> 0){
                                         view.showIndicatorsIcon();
                                     } else {
                                         view.hideIndicatorsIcon();
@@ -360,6 +362,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                         view.updatePercentage(
                                                 calculateCompletionPercentage(completedFields, totalFields),
                                                 calculateCompletionPercentage(unsupportedFields, totalFields));
+
+                                        String stageName = eventCaptureRepository.programStageName().blockingFirst();
+                                        view.updateProgramStageName(stageName);
                                     }
                                 },
                                 Timber::e

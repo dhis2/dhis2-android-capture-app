@@ -77,10 +77,17 @@ class TreeAdapter(
         val node = displayNodes[position]
         val level = levelByNodes[node] ?: 0
 
-        viewHolder.itemView.setPadding(level * 25, 0, 0, 0)
+        val padding = getFixedPadding(viewHolder)
+
+        viewHolder.itemView.setPadding(level * padding, 0, 0, 0)
 
         binders.first() {
             it.contentJavaClass == node.content!!::class.java
         }.bindView(viewHolder, node)
+    }
+
+    private fun getFixedPadding(viewHolder: RecyclerView.ViewHolder): Int {
+        val scale: Float = viewHolder.itemView.resources.displayMetrics.density
+        return (12 * scale + 0.5f).toInt()
     }
 }
