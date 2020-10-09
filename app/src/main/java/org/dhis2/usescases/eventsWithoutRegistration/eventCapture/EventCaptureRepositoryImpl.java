@@ -1,6 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
@@ -15,7 +14,6 @@ import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
-import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.DateUtils;
@@ -41,10 +39,6 @@ import org.hisp.dhis.android.core.option.OptionGroup;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramIndicator;
-import org.hisp.dhis.android.core.program.ProgramRule;
-import org.hisp.dhis.android.core.program.ProgramRuleAction;
-import org.hisp.dhis.android.core.program.ProgramRuleActionType;
-import org.hisp.dhis.android.core.program.ProgramRuleVariable;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.program.ProgramStageSection;
@@ -61,9 +55,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -71,7 +62,7 @@ import io.reactivex.Single;
 
 import static android.text.TextUtils.isEmpty;
 
-import static org.dhis2.usecases.eventsWithoutRegistration.eventCapture.EventCaptureRepositoryFunctionsKt.getProgramStageName;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureRepositoryFunctionsKt.getProgramStageName;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
@@ -440,7 +431,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         ProgramStageSectionRenderingType renderingType = programStageSection != null && programStageSection.renderType() != null &&
                                 programStageSection.renderType().mobile() != null ?
                                 programStageSection.renderType().mobile().type() : null;
-                        return fieldFactory.create(uid, formName == null ? displayName : formName,
+                        return fieldFactory.create(uid,formName  == null ? displayName : formName,
                                 valueType, mandatory, optionSet, dataValue,
                                 programStageSection != null ? programStageSection.uid() : null, allowFurureDates,
                                 isEventEditable,

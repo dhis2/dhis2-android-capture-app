@@ -67,7 +67,7 @@ import org.dhis2.usescases.sms.SmsComponent;
 import org.dhis2.usescases.sms.SmsModule;
 import org.dhis2.usescases.sync.SyncComponent;
 import org.dhis2.usescases.sync.SyncModule;
-import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
+import org.dhis2.usescases.teiDashboard.TeiDashboardComponentFlavor;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteComponent;
 import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteModule;
@@ -94,7 +94,7 @@ public interface UserComponent {
     SearchTEComponent plus(@NonNull SearchTEModule searchTEModule);
 
     @NonNull
-    TeiDashboardComponent plus(@NonNull TeiDashboardModule dashboardModule);
+    TeiDashboardComponentFlavor plus(@NonNull TeiDashboardModule dashboardModule);
 
     @NonNull
     QrComponent plus(@NonNull QrModule qrModule);

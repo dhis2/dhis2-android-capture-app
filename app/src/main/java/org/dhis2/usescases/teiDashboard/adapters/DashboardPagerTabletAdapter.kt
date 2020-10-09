@@ -3,10 +3,8 @@ package org.dhis2.usescases.teiDashboard.adapters
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import java.lang.IllegalStateException
-import org.dhis2.usescases.notes.NotesFragment
-import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment
-import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment
+import org.dhis2.usescases.teiDashboard.MOBILE_DASHBOARD_LANDSCAPE_SIZE
+import org.dhis2.usescases.teiDashboard.createLandscapeTabFragment
 
 class DashboardPagerTabletAdapter(
     fa: FragmentActivity,
@@ -16,22 +14,16 @@ class DashboardPagerTabletAdapter(
 ) : FragmentStateAdapter(fa) {
 
     override fun createFragment(position: Int): Fragment {
-        return when (position) {
-            0 -> IndicatorsFragment()
-            1 -> RelationshipFragment()
-            2 -> NotesFragment.newTrackerInstance(currentProgram!!, teiUid)
-            else -> throw IllegalStateException("Fragment not supported")
-        }
+        return createLandscapeTabFragment(currentProgram,teiUid,position)
     }
 
     override fun getItemCount() = if (currentProgram != null) {
-        MOBILE_DASHBOARD_SIZE
+        MOBILE_DASHBOARD_LANDSCAPE_SIZE
     } else {
         NO_FRAGMENT_DUE_TO_NO_PROGRAM_SELECTED
     }
 
     companion object {
-        const val MOBILE_DASHBOARD_SIZE = 3
         const val NO_FRAGMENT_DUE_TO_NO_PROGRAM_SELECTED = 0
     }
 }

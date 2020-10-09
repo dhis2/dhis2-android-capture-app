@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PSI dhis2</string>
+    <string name="logo_text">PSI dhis2</string>
+    <string name="logo_number"></string>
+    <string name="dashboard_feedback">tilbakemelding</string>
+    <string name="program_type_configuration_error_message">Det er en konfigurasjonsfeil i programtypen i det gjeldende programmet. Vennligst se gjennom programmet på serveren og utføre synkroniseringskonfigurasjon</string>
+    <string name="unexpected_error_message">En uventet feil har oppstått. Gå gjennom konfigurasjonen eller kontakt med administratoren din</string>
+    <string name="feedback_show_only_failed">Visningen mislyktes</string>
+</resources>

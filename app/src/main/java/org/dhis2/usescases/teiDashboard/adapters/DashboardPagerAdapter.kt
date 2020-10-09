@@ -3,11 +3,8 @@ package org.dhis2.usescases.teiDashboard.adapters
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import java.lang.IllegalStateException
-import org.dhis2.usescases.notes.NotesFragment
-import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment
-import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment
+import org.dhis2.usescases.teiDashboard.MOBILE_DASHBOARD_PORTRAIT_SIZE
+import org.dhis2.usescases.teiDashboard.createPortraitTabFragment
 
 class DashboardPagerAdapter(
     fa: FragmentActivity,
@@ -16,32 +13,9 @@ class DashboardPagerAdapter(
     private val enrollmentUid: String?
 ) : FragmentStateAdapter(fa) {
 
-    private var indicatorsFragment: IndicatorsFragment? = null
-    private var relationshipFragment: RelationshipFragment? = null
-
     override fun createFragment(position: Int): Fragment {
-        return when (position) {
-            0 -> TEIDataFragment.newInstance(currentProgram, teiUid, enrollmentUid)
-            1 -> {
-                if (indicatorsFragment == null) {
-                    indicatorsFragment = IndicatorsFragment()
-                }
-                indicatorsFragment!!
-            }
-            2 -> {
-                if (relationshipFragment == null) {
-                    relationshipFragment = RelationshipFragment()
-                }
-                relationshipFragment!!
-            }
-            3 -> NotesFragment.newTrackerInstance(currentProgram!!, teiUid)
-            else -> throw IllegalStateException("Fragment not supported")
-        }
+        return createPortraitTabFragment(currentProgram,teiUid, enrollmentUid,position)
     }
 
-    override fun getItemCount() = if (currentProgram != null) MOBILE_DASHBOARD_SIZE else 1
-
-    companion object {
-        const val MOBILE_DASHBOARD_SIZE = 4
-    }
+    override fun getItemCount() = if (currentProgram != null) MOBILE_DASHBOARD_PORTRAIT_SIZE else 1
 }

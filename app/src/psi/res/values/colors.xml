@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_gray_faf">#FAFAFA</color>
+    <color name="feedback_arrow_color">#919191</color>
+</resources>

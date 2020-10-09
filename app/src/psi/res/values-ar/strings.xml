@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PSI dhis2</string>
+    <string name="logo_text">PSI dhis2</string>
+    <string name="logo_number"></string>
+    <string name="dashboard_feedback">ردود الفعل</string>
+    <string name="program_type_configuration_error_message">يوجد خطأ في تكوين نوع البرنامج في البرنامج الحالي. يرجى مراجعة البرنامج في الخادم وتنفيذ تكوين المزامنة</string>
+    <string name="unexpected_error_message">لقد حدث خطأ غير متوقع. راجع التكوين الخاص بك أو اتصل بالمسؤول</string>
+    <string name="feedback_show_only_failed">إظهار فشل فقط</string>
+</resources>
