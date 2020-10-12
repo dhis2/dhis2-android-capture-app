@@ -154,14 +154,14 @@ android {
             applicationId "com.eyeseetea.widp"
             dimension "default"
             versionCode versions.vCode
-            versionName "2.1.2-widp-fork-1"
+            versionName "2.2.2-widp-fork-1"
         }
 
         psi {
             applicationId "org.dhis2.psi"
             dimension "default"
             versionCode 8
-            versionName "2.1.2-psi-fork-3"
+            versionName "2.2.2-psi-fork-1"
         }
     }
 
