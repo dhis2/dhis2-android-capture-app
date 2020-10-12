@@ -61,4 +61,6 @@ interface DataSetDetailView extends AbstractActivityContracts.View {
     void openDataSet(DataSetDetailModel dataSet);
 
     void showSyncDialog(DataSetDetailModel dataSet);
+
+    void showCatOptComboDialog(String catComboUid);
 }

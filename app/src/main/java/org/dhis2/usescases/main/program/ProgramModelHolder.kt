@@ -6,10 +6,6 @@ import org.dhis2.databinding.ItemProgramModelBinding
 import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.resources.ResourceManager
 
-/**
- * QUADRAM. Created by ppajuelo on 13/06/2018.
- */
-
 class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
     RecyclerView.ViewHolder(binding.root) {
 

@@ -113,6 +113,9 @@
             app:layout_constraintTop_toBottomOf="@id/activityToolbar"
             app:tabPaddingEnd="16dp"
             app:tabPaddingStart="16dp"
+            app:tabMaxWidth="0dp"
+            app:tabMode="fixed"
+            app:tabGravity="fill"
             app:tabTextAppearance="@style/DhisTabText"
             tools:visibility="visible"/>
 

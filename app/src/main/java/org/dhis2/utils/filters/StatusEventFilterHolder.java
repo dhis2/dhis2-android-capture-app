@@ -12,8 +12,6 @@ import org.hisp.dhis.android.core.event.EventStatus;
 
 public class StatusEventFilterHolder extends FilterHolder {
 
-    private final FiltersAdapter.ProgramType programType;
-
     StatusEventFilterHolder(@NonNull ItemFilterStatusBinding binding, ObservableField<Filters> openedFilter, FiltersAdapter.ProgramType programType) {
         super(binding, openedFilter);
         filterType = Filters.EVENT_STATUS;
@@ -23,7 +21,7 @@ public class StatusEventFilterHolder extends FilterHolder {
     @Override
     protected void bind() {
         super.bind();
-        filterTitle.setText(R.string.filters_title_status);
+        filterTitle.setText(R.string.filters_title_event_status);
         filterIcon.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_status));
 
         ItemFilterStatusBinding localBinding = (ItemFilterStatusBinding) binding;

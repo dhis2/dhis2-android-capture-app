@@ -9,10 +9,12 @@ import android.widget.DatePicker;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.ViewDataBinding;
+import androidx.room.util.StringUtil;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.AgeCustomViewAccentBinding;
 import org.dhis2.databinding.AgeCustomViewBinding;
@@ -198,21 +200,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setInitialValue(String initialValue) {
-        Date initialDate = null;
-        try {
-            initialDate = DateUtils.databaseDateFormat().parse(initialValue);
-
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-
-        if (initialDate == null)
-            try {
-                initialDate = DateUtils.uiDateFormat().parse(initialValue);
-
-            } catch (Exception e) {
-                Timber.e(e);
-            }
+        Date initialDate = StringExtensionsKt.toDate(initialValue);
 
         if (initialDate != null) {
             String result = dateFormat.format(initialDate);

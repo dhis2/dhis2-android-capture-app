@@ -1,10 +1,10 @@
 # Settings
 
+ <!-- DHIS2-SECTION-ID:settings -->
+
 ![New Settings](resources/images/image17.jpg){  width=25%}
 ![New Settings](resources/images/image85.jpg){  width=25%}
-<!-- PALD: I don't think the next image adds to the manual
-![](resources/images/image29.png){ width=35%}
--->
+<!-- PALD: I don't think the next image adds to the manual ![](resources/images/image29.png){ width=35%} -->
 
 **Data sync process**:  User is able to choose from a drop-down list if the data entered in the app is uploaded to the server manually or scheduled every 15 min, 1 hour or 1 Day. By default the app will sync every 24h. This kind of Syncing includes new and updated events and TEI’s.
 

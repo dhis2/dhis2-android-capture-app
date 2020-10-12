@@ -87,7 +87,7 @@ class PinDialog(
                     if (presenter.unlockSession(it)) {
                         unlockCallback.invoke(true)
                     } else {
-                        Toast.makeText(context, "Wrong pin", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Wrong pin", Toast.LENGTH_LONG).show()
                     }
             }
         }
@@ -102,23 +102,23 @@ class PinDialog(
     }
 
     override fun closeDialog() {
-        dismiss()
+        dismissAllowingStateLoss()
     }
 
     override fun dismiss() {
         app().releaseSessionComponent()
-        super.dismiss()
+        dismissAllowingStateLoss()
     }
 
     override fun recoverPin() {
         presenter.logOut()
         forgotPinCallback.invoke()
-        dismiss()
+        dismissAllowingStateLoss()
     }
 
     override fun show(manager: FragmentManager, tag: String?) {
         if (manager.findFragmentByTag(tag) == null) {
-            super.show(manager, tag)
+            manager.beginTransaction().add(this, tag).commitAllowingStateLoss()
         }
     }
 }

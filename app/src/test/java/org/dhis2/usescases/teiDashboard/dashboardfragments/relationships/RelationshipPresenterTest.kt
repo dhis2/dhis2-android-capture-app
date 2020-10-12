@@ -10,6 +10,8 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
+import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
@@ -38,6 +40,8 @@ class RelationshipPresenterTest {
     private val dashboardRepository: DashboardRepository = mock()
     private val schedulerProvider: SchedulerProvider = TrampolineSchedulerProvider()
     private val analyticsHelper: AnalyticsHelper = mock()
+    private val mapRelationshipToRelationshipMapModel = MapRelationshipToRelationshipMapModel()
+    private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection = mock()
 
     @Before
     fun setup() {
@@ -54,7 +58,10 @@ class RelationshipPresenterTest {
             "teiUid",
             dashboardRepository,
             schedulerProvider,
-            analyticsHelper
+            analyticsHelper,
+            mapRelationshipToRelationshipMapModel,
+            mapRelationshipsToFeatureCollection
+
         )
     }
 
@@ -101,7 +108,7 @@ class RelationshipPresenterTest {
 
     @Test
     fun `Should delete relationship`() {
-        presenter.deleteRelationship(getMockedRelationship())
+        presenter.deleteRelationship(getMockedRelationship().uid()!!)
         verify(analyticsHelper).setEvent(DELETE_RELATIONSHIP, CLICK, DELETE_RELATIONSHIP)
     }
 

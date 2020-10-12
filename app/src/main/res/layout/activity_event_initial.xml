@@ -103,6 +103,7 @@
             tools:openDrawer="end">
 
                 <androidx.core.widget.NestedScrollView
+                    android:id="@+id/ns_event_initial"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
@@ -135,6 +136,7 @@
                                 android:padding="5dp">
 
                                 <TextView
+                                    android:id="@+id/programStageName"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text='@{programStage.displayName()}'
@@ -182,6 +184,7 @@
                         </LinearLayout>
 
                         <LinearLayout
+                            android:layout_marginTop="8dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="horizontal">
@@ -228,7 +231,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical" />
 
-                        <org.dhis2.utils.customviews.CoordinatesView
+                        <org.dhis2.usescases.coodinates.CoordinatesView
                             android:id="@+id/geometry"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

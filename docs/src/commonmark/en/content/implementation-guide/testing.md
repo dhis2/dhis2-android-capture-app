@@ -1,6 +1,8 @@
 # Testing
 
-Now that the DHIS 2 server has been initially configured and you have installed the App in one or more devices, you are ready to start testing. While you are planning your testing you need to be aware of upcoming releases. It is important to be a part of the community at [<span class="underline">https://community.dhis2.org/</span>](https://community.dhis2.org/) and use jira, the software management tool that UiO utilizes. This will allow you to learn about the open issues in terms of features and bug fixing that it is scheduled for future releases.
+<!--DHIS2-SECTION-ID:testing-->
+
+Now that the DHIS 2 server has been initially configured and you have installed the App in one or more devices, you are ready to start testing. While you are planning your testing you need to be aware of upcoming releases. It is important to be a part of the community at [https://community.dhis2.org/](https://community.dhis2.org/) and use [JIRA](http://jira.dhis2.org/), the software management tool that UiO utilizes. This will allow you to learn about the open issues in terms of features and bug fixing that it is scheduled for future releases.
 
 We recommend to test the Android App in parallel with your configuration, to make sure that your changes in the server are properly reflected and working in the app. This is especially important during the configuration of the program rules. In addition to this step by step testing, there are different types of testing that you should conduct before rolling out the application.
 
@@ -15,6 +17,8 @@ The following graphs show that the next steps are iterative in nature, including
 
 ## General Recommendations for Testing an Android App
 
+<!--DHIS2-SECTION-ID:testing_recommendations-->
+
 Before we go into the different testing phases, we are going to present some general recommendations that can be applied to testing an Android App. In general any process of testing can be summarized in the following steps:
 
 ![](resources/images/image21.png){ .center width=80% }
@@ -24,7 +28,7 @@ Before we go into the different testing phases, we are going to present some gen
 2. **Plan**. In this step you need to identify the time of testing by understanding the timeline for your own implementation. As part of this planning phase you must create a detailed list of requirements and classify them as compulsory (MUST have) or nice to have.
 
 3. **Design**. In this step you must develop the test cases, decide the number of test interactions and the tools you will be using for your testing.
-	![](resources/images/image28.png){ .center width=80%}
+	![](resources/images/image28.png){ .center width=80% }
 	- **Example of testing tools - Jira**
 	![](resources/images/image2.png)
 	- **Example of testing tool - Excel**
@@ -42,11 +46,13 @@ Before we go into the different testing phases, we are going to present some gen
 	- The reported error must be reproducible
 	- The information must be specific and informative
 	- The report must separate facts from speculations
-	![](resources/images/image1.png) { width=80% }
+	![](resources/images/image1.png) { .center width=80% }
 	- The table below summarises a good Bug Reporting with some examples:
-	![](resources/images/image34.png) { width=80% }
+	![](resources/images/image34.png) { .center width=80% }
 
 ## Internal testing and UAT testing
+
+<!--DHIS2-SECTION-ID:testing_internal-->
 
 **What are you testing**
 
@@ -60,11 +66,13 @@ Program Rules, forms, visual UI, indicators… Bugs, improvements, new requireme
 
 **How?**
 
-Methods and periods for testing vary from group to group, but it has to be iterative, flexible and it must be done in the early stages of the deployment process. You need to spend time deciding who will participate in the test, develop a test plan and have a strategy to gather the feedback. There are different tools available to report and track bugs and issues. Depending on the complexity of your test you can use [trello](https://trello.com/), jira,etc.
+Methods and periods for testing vary from group to group, but it has to be iterative, flexible and it must be done in the early stages of the deployment process. You need to spend time deciding who will participate in the test, develop a test plan and have a strategy to gather the feedback. There are different tools available to report and track bugs and issues. Depending on the complexity of your test you can use [trello](https://trello.com/), [JIRA](https://www.atlassian.com/software/jira), etc.
 
 Setting the right foundation for your internal testing will increase the quality and the efficiency of the testing sessions. These recommendations apply to any of the different tests that you will need to perform.
 
 ### UAT Testing
+
+<!--DHIS2-SECTION-ID:testing_internal_uat-->
 
 **What are you testing**  
 You are testing your system configuration (input), your visual UI and icons, usability and your outputs. You can also test at this stage the user experience with different devices (smartphone, tablet, external keyboard, chromebook).  
@@ -84,6 +92,8 @@ The size of the group will vary depending on the type of project you are impleme
 When deciding who will participate in your test, think about all the different types of users and their roles. With that in mind, select your testers. You should provide your testers with the right onboarding and guidance. They need to be well informed of the methods you will be using for testing, the expectations and the overall objectives and goals of the testing. It is advisable, if at all feasible, to organize testing sessions with one or two leaders, where testers can help each other and have the possibility to ask questions and get help in the spot from the leaders. Another important aspect to consider is test data. You must have enough data in your test server to allow for the testing of different test cases.
 
 ## Field Testing/Pilot
+
+<!--DHIS2-SECTION-ID:testing_field-->
 
 **What are you testing**
 

@@ -16,27 +16,30 @@ class NoteDetailRepositoryImpl(
     }
 
     override fun saveNote(type: NoteType, uid: String, message: String): Single<String> {
-        return if (type == NoteType.ENROLLMENT) {
-            d2.noteModule().notes().add(
-                NoteCreateProjection.builder()
-                    .noteType(Note.NoteType.ENROLLMENT_NOTE)
-                    .enrollment(
-                        d2.enrollmentModule().enrollments()
-                            .byProgram().eq(programUid)
-                            .byTrackedEntityInstance().eq(uid)
-                            .one().blockingGet().uid()
-                    )
-                    .value(message)
-                    .build()
-            )
-        } else {
-            d2.noteModule().notes().add(
-                NoteCreateProjection.builder()
-                    .noteType(Note.NoteType.EVENT_NOTE)
-                    .event(uid)
-                    .value(message)
-                    .build()
-            )
+        return when (type) {
+            NoteType.ENROLLMENT -> {
+                d2.noteModule().notes().add(
+                    NoteCreateProjection.builder()
+                        .noteType(Note.NoteType.ENROLLMENT_NOTE)
+                        .enrollment(
+                            d2.enrollmentModule().enrollments()
+                                .byProgram().eq(programUid)
+                                .byTrackedEntityInstance().eq(uid)
+                                .one().blockingGet().uid()
+                        )
+                        .value(message)
+                        .build()
+                )
+            }
+            NoteType.EVENT -> {
+                d2.noteModule().notes().add(
+                    NoteCreateProjection.builder()
+                        .noteType(Note.NoteType.EVENT_NOTE)
+                        .event(uid)
+                        .value(message)
+                        .build()
+                )
+            }
         }
     }
 }

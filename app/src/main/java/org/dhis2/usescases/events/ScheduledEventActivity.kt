@@ -9,9 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
-import java.text.ParseException
 import java.util.Calendar
-import java.util.Locale
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
@@ -27,7 +25,6 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
-import timber.log.Timber
 
 const val EXTRA_EVENT_UID = "EVENT_UID"
 
@@ -45,6 +42,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
     private lateinit var program: Program
     private lateinit var event: Event
     private lateinit var binding: ActivityEventScheduledBinding
+
     @Inject
     lateinit var presenter: ScheduledEventContract.Presenter
 
@@ -115,13 +113,16 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
             if (periodType == null) {
                 showCustomCalendar(
                     DatePickerDialog.OnDateSetListener { datePicker, year, month, day ->
-                        val date =
-                            String.format(Locale.getDefault(), "%s-%02d-%02d", year, month + 1, day)
-                        try {
-                            presenter.setEventDate(DateUtils.uiDateFormat().parse(date))
-                        } catch (e: ParseException) {
-                            Timber.e(e)
-                        }
+                        val date = Calendar.getInstance().apply {
+                            set(Calendar.YEAR, year)
+                            set(Calendar.MONTH, month)
+                            set(Calendar.DAY_OF_MONTH, day)
+                            set(Calendar.HOUR, 0)
+                            set(Calendar.MINUTE, 0)
+                            set(Calendar.SECOND, 0)
+                            set(Calendar.MILLISECOND, 0)
+                        }.time
+                        presenter.setEventDate(date)
                     },
                     false
                 )
@@ -155,13 +156,16 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
             if (periodType == null) {
                 showCustomCalendar(
                     DatePickerDialog.OnDateSetListener { _, year, month, day ->
-                        val date =
-                            String.format(Locale.getDefault(), "%s-%02d-%02d", year, month + 1, day)
-                        try {
-                            presenter.setDueDate(DateUtils.uiDateFormat().parse(date))
-                        } catch (e: ParseException) {
-                            Timber.e(e)
-                        }
+                        val date = Calendar.getInstance().apply {
+                            set(Calendar.YEAR, year)
+                            set(Calendar.MONTH, month)
+                            set(Calendar.DAY_OF_MONTH, day)
+                            set(Calendar.HOUR, 0)
+                            set(Calendar.MINUTE, 0)
+                            set(Calendar.SECOND, 0)
+                            set(Calendar.MILLISECOND, 0)
+                        }.time
+                        presenter.setDueDate(date)
                     },
                     true
                 )

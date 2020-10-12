@@ -62,7 +62,7 @@ class GranularSyncPresenterTest {
         // WHEN
         presenter.configure(view)
         // THEN
-        then(view).should().showTitle("DISPLAY_NAME")
+        then(view).should().showTitle("DISPLAY_NAME_FIRST")
     }
 
     @Test
@@ -284,7 +284,7 @@ class GranularSyncPresenterTest {
             .uid("test_uid")
             .code("CODE")
             .name("NAME")
-            .displayName("DISPLAY_NAME")
+            .displayName("DISPLAY_NAME_FIRST")
             .created(Date())
             .lastUpdated(Date())
             .build()

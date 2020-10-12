@@ -423,7 +423,7 @@ class EnrollmentPresenterImpl(
 
         val fieldMap = fields.map { it.uid() to it }.toMap().toMutableMap()
 
-        RulesUtilsProviderImpl()
+        RulesUtilsProviderImpl(d2)
             .applyRuleEffects(fieldMap, result, this)
 
         fieldMap.values.forEach {
@@ -449,7 +449,7 @@ class EnrollmentPresenterImpl(
         return ArrayList(fieldMap.values)
     }
 
-    fun getEnrollment(): Enrollment {
+    fun getEnrollment(): Enrollment? {
         return enrollmentObjectRepository.blockingGet()
     }
 

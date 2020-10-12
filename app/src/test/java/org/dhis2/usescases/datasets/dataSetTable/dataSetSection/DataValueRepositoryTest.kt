@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
+import java.util.UUID
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -26,7 +27,6 @@ import org.hisp.dhis.android.core.period.Period
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-import java.util.UUID
 
 class DataValueRepositoryTest {
 
@@ -51,7 +51,6 @@ class DataValueRepositoryTest {
         whenever(
             d2.periodModule().periods().byPeriodId().eq(period.periodId()).one().get()
         ) doReturn Single.just(period)
-
 
         val testObserver = repository.getPeriod(period.periodId()!!).test()
 
@@ -134,7 +133,6 @@ class DataValueRepositoryTest {
                 .get()
         ) doReturn Single.just(categoryCombos)
 
-
         val testObserver = repository.getCatCombo("NO_SECTION").test()
 
         testObserver.assertNoErrors()
@@ -149,7 +147,6 @@ class DataValueRepositoryTest {
         val dataSetElements = listOf(dummyDataSetElementWithNoCatCombo())
         val categoryCombos = listOf(dummyCategoryCombo())
         val categoryCombosUids = categoryCombos.map { it.uid() }
-
 
         whenever(
             d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid)
@@ -201,7 +198,6 @@ class DataValueRepositoryTest {
                 .get()
         ) doReturn Single.just(categoryCombos)
 
-
         val testObserver = repository.getCatCombo("NO_SECTION").test()
 
         testObserver.assertNoErrors()
@@ -210,7 +206,7 @@ class DataValueRepositoryTest {
 
         testObserver.dispose()
     }
-    
+
     @Test
     fun `Should return catOptions for a section and dataSetElement have catOptions`() {
         val dataSetElements = listOf(dummyDataSetElement(), dummyDataSetElement())
@@ -307,7 +303,6 @@ class DataValueRepositoryTest {
                 .get()
         ) doReturn Single.just(categoryCombos)
 
-
         val testObserver = repository.getCatCombo(sectionName).test()
 
         testObserver.assertNoErrors()
@@ -317,14 +312,12 @@ class DataValueRepositoryTest {
         testObserver.dispose()
     }
 
-
     @Test
     fun `Should return dataSet`() {
         val dataSet = dummyDataSet()
         whenever(
             d2.dataSetModule().dataSets().uid(dataSetUid).get()
         ) doReturn Single.just(dataSet)
-
 
         val testObserver = repository.dataSet.test()
 
@@ -513,7 +506,6 @@ class DataValueRepositoryTest {
                 .one().blockingGet()
         ) doReturn dataSetCompleteRegistration
 
-
         val testObserver = repository.isCompleted(orgUnit, period, attributeOptionCombo).test()
 
         testObserver.assertNoErrors()
@@ -579,7 +571,6 @@ class DataValueRepositoryTest {
                 .one().blockingGet()
         ) doReturn dataApproval
 
-
         val testObserver = repository.isApproval(orgUnit, period, attributeOptionCombo).test()
 
         testObserver.assertNoErrors()
@@ -644,7 +635,6 @@ class DataValueRepositoryTest {
                 .byAttributeOptionComboUid().eq(attributeOptionCombo)
                 .one().blockingGet()
         ) doReturn dataApproval
-
 
         val testObserver = repository.isApproval(orgUnit, period, attributeOptionCombo).test()
 
@@ -803,9 +793,9 @@ class DataValueRepositoryTest {
             d2.dataSetModule().dataSets().uid(dataSetUid).get()
         ) doReturn Single.just(
             DataSet.builder()
-            .uid(UUID.randomUUID().toString())
-            .access(Access.create(false, false, DataAccess.create(false, false)))
-            .build()
+                .uid(UUID.randomUUID().toString())
+                .access(Access.create(false, false, DataAccess.create(false, false)))
+                .build()
         )
 
         val testObserver = repository.canWriteAny().test()
@@ -858,5 +848,4 @@ class DataValueRepositoryTest {
                 listOf(DataElementOperand.builder().uid(UUID.randomUUID().toString()).build())
             )
             .build()
-
 }

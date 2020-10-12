@@ -6,6 +6,7 @@ import dagger.Provides
 import org.dhis2.Bindings.valueTypeHintMap
 import org.dhis2.data.dagger.PerActivity
 import org.dhis2.data.dagger.PerFragment
+import org.dhis2.data.dhislogic.DhisEventUtils
 import org.dhis2.data.forms.EventRepository
 import org.dhis2.data.forms.FormRepository
 import org.dhis2.data.forms.RulesRepository
@@ -57,8 +58,8 @@ class FeedbackModule(
 
     @Provides
     @PerFragment
-    fun provideTeiDataRepository(d2: D2): TeiDataRepository {
-        return TeiDataRepositoryImpl(d2, programUid, teiUid, enrollmentUid)
+    fun provideTeiDataRepository(d2: D2,dhisEventUtils: DhisEventUtils): TeiDataRepository {
+        return TeiDataRepositoryImpl(d2, programUid, teiUid, enrollmentUid,dhisEventUtils)
     }
 
     @Provides

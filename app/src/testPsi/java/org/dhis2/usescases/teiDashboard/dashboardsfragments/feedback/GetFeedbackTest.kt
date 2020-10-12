@@ -737,7 +737,7 @@ class GetFeedbackTest {
         whenever(
             teiDataRepository.getTEIEnrollmentEvents(
                 null, false, mutableListOf(), mutableListOf(),
-                mutableListOf(), false, mutableListOf(), mutableListOf()
+                mutableListOf(), false, mutableListOf(), mutableListOf(),null
             )
         ).thenReturn(Single.just(listOf()))
     }
@@ -747,19 +747,19 @@ class GetFeedbackTest {
             EventViewModel(
                 EventViewModelType.EVENT,
                 ProgramStage.builder().displayName("EVENT1").uid("STAGE_UID").build(),
-                Event.builder().uid("EVENT1_UID").build(), 0, null, true, true
+                Event.builder().uid("EVENT1_UID").build(), 0, null, true, true, ""
             ),
             EventViewModel(
                 EventViewModelType.EVENT,
                 ProgramStage.builder().displayName("EVENT2").uid("STAGE_UID").build(),
-                Event.builder().uid("EVENT2_UID").build(), 0, null, true, true
+                Event.builder().uid("EVENT2_UID").build(), 0, null, true, true, ""
             )
         )
 
         whenever(
             teiDataRepository.getTEIEnrollmentEvents(
                 null, false, mutableListOf(), mutableListOf(),
-                mutableListOf(), false, mutableListOf(), mutableListOf()
+                mutableListOf(), false, mutableListOf(), mutableListOf(), null
             )
         ).thenReturn(Single.just(events))
 
@@ -772,7 +772,7 @@ class GetFeedbackTest {
         whenever(
             teiDataRepository.getTEIEnrollmentEvents(
                 null, false, mutableListOf(), mutableListOf(),
-                mutableListOf(), false, mutableListOf(), mutableListOf()
+                mutableListOf(), false, mutableListOf(), mutableListOf(), null
             )
         ).thenReturn(
             Single.just(
@@ -780,7 +780,7 @@ class GetFeedbackTest {
                     EventViewModel(
                         EventViewModelType.EVENT,
                         ProgramStage.builder().displayName(stageName).uid("STAGE_UID").build(),
-                        Event.builder().uid("$stageName UID").build(), 0, null, true, true
+                        Event.builder().uid("$stageName UID").build(), 0, null, true, true, ""
                     )
                 )
             )

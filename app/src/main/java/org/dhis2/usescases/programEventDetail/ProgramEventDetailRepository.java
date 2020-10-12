@@ -8,6 +8,7 @@ import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.utils.filters.sorting.SortingItem;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -22,14 +23,29 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import kotlin.Triple;
 
 public interface ProgramEventDetailRepository {
 
     @NonNull
-    LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states, boolean assignedToUser,Pair<String, String> valueFilter);
+    LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(
+            List<DatePeriod> dateFilter,
+            List<String> orgUnitFilter,
+            List<CategoryOptionCombo> catOptionComboUid,
+            List<EventStatus> eventStatus,
+            List<State> states,
+            SortingItem sortingItem,
+            boolean assignedToUser,
+            Pair<String, String> valueFilter);
 
     @NonNull
-    Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states, boolean assignedToUser);
+    Flowable<Triple<FeatureCollection, BoundingBox, List<ProgramEventViewModel>>> filteredEventsForMap(
+            List<DatePeriod> dateFilter,
+            List<String> orgUnitFilter,
+            List<CategoryOptionCombo> catOptionComboUid,
+            List<EventStatus> eventStatus,
+            List<State> states,
+            boolean assignedToUser);
 
     @NonNull
     Observable<Program> program();
@@ -48,4 +64,6 @@ public interface ProgramEventDetailRepository {
     Single<FeatureType> featureType();
 
     boolean hasAssignment();
+
+    CategoryOptionCombo getCatOptCombo(String selectedCatOptionCombo);
 }

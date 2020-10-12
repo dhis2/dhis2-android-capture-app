@@ -204,8 +204,12 @@ class SettingsRepositoryTest {
     }
 
     private fun configurePreferences() {
-        whenever(preferencesProvider.getString(Constants.LAST_META_SYNC, "-")) doReturn "2019-02-02"
-        whenever(preferencesProvider.getString(Constants.LAST_DATA_SYNC, "-")) doReturn "2019-02-02"
+        whenever(
+            preferencesProvider.getString(Constants.LAST_META_SYNC, "-")
+        ) doReturn "2019-02-02"
+        whenever(
+            preferencesProvider.getString(Constants.LAST_DATA_SYNC, "-")
+        ) doReturn "2019-02-02"
         whenever(
             preferencesProvider.getBoolean(
                 Constants.LAST_META_SYNC_STATUS,
@@ -218,7 +222,9 @@ class SettingsRepositoryTest {
                 true
             )
         ) doReturn true
-        whenever(preferencesProvider.getInt(NUMBER_RV, DEFAULT_NUMBER_RV)) doReturn SETTINGS_PREF_RV
+        whenever(
+            preferencesProvider.getInt(NUMBER_RV, DEFAULT_NUMBER_RV)
+        ) doReturn SETTINGS_PREF_RV
         whenever(
             preferencesProvider.getInt(
                 TIME_META,

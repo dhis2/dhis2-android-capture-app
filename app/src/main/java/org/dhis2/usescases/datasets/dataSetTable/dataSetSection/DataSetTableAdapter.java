@@ -141,7 +141,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
 
         Triple<String, Integer, Integer> measures =
                 MeasureExtensionsKt.calculateHeight(new Pair(maxLabel, rowWidth), context);
-        setColumnHeaderHeight(measures.getThird() + context.getResources().getDimensionPixelSize(R.dimen.padding_5));
+        setColumnHeaderHeight(measures.getThird() + context.getResources().getDimensionPixelSize(R.dimen.padding_8));
 
         getTableView().setRowHeaderWidth(rowWidth);
         notifyDataSetChanged();

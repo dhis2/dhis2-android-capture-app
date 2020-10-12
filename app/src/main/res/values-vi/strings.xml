@@ -355,7 +355,6 @@
     <string name="login_server_info_title">Đường dẫn đến máy chủ</string>
     <string name="state_warning">Cảnh báo</string>
     <string name="action_close">Đóng lại</string>
-    <string name="data_set_closed">Đóng lại</string>
     <string name="data_set_open">Mở</string>
     <string name="unsupported_value_type">Không hỗ trợ kiểu giá trị này</string>
     <string name="data_every_day">Hàng ngày</string>

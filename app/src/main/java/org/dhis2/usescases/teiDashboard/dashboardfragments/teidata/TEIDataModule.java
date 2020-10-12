@@ -3,6 +3,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata;
 import androidx.annotation.NonNull;
 
 import org.dhis2.data.dagger.PerFragment;
+import org.dhis2.data.dhislogic.DhisEventUtils;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
@@ -62,11 +63,12 @@ public class TEIDataModule {
 
     @Provides
     @PerFragment
-    TeiDataRepository providesRepository(D2 d2) {
+    TeiDataRepository providesRepository(D2 d2, DhisEventUtils dhisEventUtils) {
         return new TeiDataRepositoryImpl(d2,
                 programUid,
                 teiUid,
-                enrollmentUid);
+                enrollmentUid,
+                dhisEventUtils);
     }
 
     @Provides

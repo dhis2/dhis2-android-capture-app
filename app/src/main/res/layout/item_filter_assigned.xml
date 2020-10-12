@@ -17,6 +17,10 @@
         <variable
             name="filterType"
             type="org.dhis2.utils.filters.Filters" />
+
+        <variable
+            name="currentSortItem"
+            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.sorting.SortingItem&gt;" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,6 +32,7 @@
             android:id="@+id/filterLayout"
             layout="@layout/item_header_filter"
             app:filterCount="@{filterCount}"
+            app:currentSortItem="@{currentSortItem}"
             app:layout_constraintTop_toBottomOf="parent" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
