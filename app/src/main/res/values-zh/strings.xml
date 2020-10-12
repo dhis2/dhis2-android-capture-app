@@ -1,0 +1,76 @@
+<resources>
+    <!-- Warnings and error messages -->
+    <string name="error">错误</string>
+    <string name="add_new">新增</string>
+    <string name="add">添加</string>
+    <string name="user_hint">用户名</string>
+    <string name="password_hint">口令</string>
+    <!--PERIOD-->
+    <string name="DAILY">每日</string>
+    <string name="WEEKLY">每周</string>
+    <string name="MONTHLY">每月</string>
+    <string name="YEARLY">每年</string>
+    <string name="action_share_zero_items">分享</string>
+    <!-- Input hints -->
+    <string name="search">搜索</string>
+    <string name="complete">完成</string>
+    <string name="state_error">错误</string>
+    <!--Event initial-->
+    <string name="create">创建</string>
+    <string name="update">更新</string>
+    <string name="date">日期</string>
+    <string name="category_option">分类选项</string>
+    <string name="latitude">纬度</string>
+    <string name="longitude">经度</string>
+    <string name="new_event">新事件</string>
+    <!--DataSet initial-->
+    <string name="report_period">报表周期</string>
+    <!--Event Detail-->
+    <string name="event_date">事故日期</string>
+    <string name="due_date">到期日期</string>
+    <string name="cancel">取消</string>
+    <string name="delete">删除</string>
+    <string name="total">总共</string>
+    <string name="done_task">主页</string>
+    <string name="wipe_data_no">取消</string>
+    <string name="SYNC_MANAGER">设置</string>
+    <!-- SEARCH OPTION SET -->
+    <string name="search_optionset">搜索</string>
+    <!--FORM FRAGMENT-->
+    <string name="report_date">报表日期</string>
+    <!--AGE CUSTOM VIEW-->
+    <string name="hint_day">天</string>
+    <string name="hint_month">月</string>
+    <string name="hint_year">年</string>
+    <string name="week">星期</string>
+    <string name="date_dialog_clear">清除</string>
+    <string name="period">周期</string>
+    <string name="next">下一年</string>
+    <string name="SAVE">保存</string>
+    <string name="qr_attributes">属性</string>
+    <string name="about">关于</string>
+    <string name="share">分享</string>
+    <string name="max">最大</string>
+    <string name="current">当前</string>
+    <string name="warning_on_complete_title">警告</string>
+    <string name="error_on_complete_title">错误</string>
+    <string name="save">保存</string>
+    <string name="menu_home">主页</string>
+    <string name="qr_data_values">数据值</string>
+    <string name="dashboard_indicators">指标</string>
+    <string name="event_overview">详情</string>
+    <string name="event_indicators">指标</string>
+    <string name="please_wait">请等待.....</string>
+    <string name="state_warning">警告</string>
+    <string name="action_close">关闭</string>
+    <string name="unsupported_value_type">不支持的值类型</string>
+    <string name="data_every_day">每日</string>
+    <string name="data_every_week">每周</string>
+    <string name="polygon">多边形</string>
+    <string name="filters_title_period">周期</string>
+    <string name="filters_title_status">状态</string>
+    <string name="filter_period_today">今天</string>
+    <string name="filter_period_yesterday">昨天</string>
+    <string name="filter_period_last_week">上周</string>
+    <string name="filter_period_last_month">上月</string>
+    </resources>
