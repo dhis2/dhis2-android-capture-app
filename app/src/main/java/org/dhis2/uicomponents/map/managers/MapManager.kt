@@ -37,7 +37,11 @@ abstract class MapManager(val mapView: MapView) {
             markerViewManager = MarkerViewManager(mapView, map)
         }
         mapLayerManager = MapLayerManager().apply {
-            styleChangeCallback = { loadDataForStyle() }
+            styleChangeCallback = {
+                mapLayerManager.clearLayers()
+                loadDataForStyle()
+                setSource()
+            }
         }
     }
 
