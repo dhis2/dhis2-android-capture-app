@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:rippleColor="@color/rippleColor"
+        app:cardElevation="0dp"
         tools:background="@color/form_field_background">
-
-
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/stageCard"
@@ -83,5 +83,5 @@
 
             </ImageButton>
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 </layout>
