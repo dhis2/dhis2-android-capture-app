@@ -182,7 +182,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
             binding.dataElementList.setVisibility(View.GONE);
             SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
             for (Pair<String, String> nameValuePair : dataElementValues) {
-                if (!Objects.equals(nameValuePair.component2(), "-")) {
+                if (nameValuePair.component2()!= null && !Objects.equals(nameValuePair.component2(), "-")) {
                     SpannableString value = new SpannableString(nameValuePair.component2());
                     int colorToUse = dataElementValues.indexOf(nameValuePair) % 2 == 0 ?
                             ContextCompat.getColor(itemView.getContext(), R.color.textPrimary) : ContextCompat.getColor(itemView.getContext(), R.color.textSecondary);
