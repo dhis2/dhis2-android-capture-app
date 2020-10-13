@@ -28,8 +28,8 @@ class ProgramViewModelMapper {
             recordLabel,
             program.programType()!!.name,
             program.displayDescription(),
-            onlyEnrollOnce = true,
-            accessDataWrite = true,
+            onlyEnrollOnce = program.onlyEnrollOnce() == true,
+            accessDataWrite = program.access().data().write(),
             state = state.name,
             hasOverdueEvent = hasOverdue,
             filtersAreActive = filtersAreActive

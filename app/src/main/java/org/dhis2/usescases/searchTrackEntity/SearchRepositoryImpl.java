@@ -210,9 +210,21 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.savedSearchParameters = searchParametersModel.copy();
         this.savedFilters = FilterManager.getInstance().copy();
 
-        return filterController.filteredTrackedEntityInstances(
+        trackedEntityInstanceQuery = filterController.filteredTrackedEntityInstances(
                 searchParametersModel.getSelectedProgram(), searchParametersModel.getTrackedEntityType()
         );
+
+        for (int i = 0; i < searchParametersModel.getQueryData().keySet().size(); i++) {
+            String dataId = searchParametersModel.getQueryData().keySet().toArray()[i].toString();
+            String dataValue = searchParametersModel.getQueryData().get(dataId);
+            if (dataValue.contains("_os_")) {
+                dataValue = dataValue.split("_os_")[1];
+                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
+            } else
+                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).like(dataValue);
+        }
+
+        return trackedEntityInstanceQuery;
     }
 
     @NonNull
