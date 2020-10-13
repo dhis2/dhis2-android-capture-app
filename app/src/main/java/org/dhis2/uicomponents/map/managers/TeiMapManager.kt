@@ -155,6 +155,8 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
             style?.getSourceAs<GeoJsonSource>(it)?.setGeoJson(teiFeatureCollections!![it])
                 ?: style?.addSource(GeoJsonSource(it, teiFeatureCollections!![it]))
         }
+        addDynamicLayers()
+        boundingBox?.let { initCameraPosition(it) }
     }
 
     private fun setTeiImages(featureCollection: FeatureCollection) {
@@ -164,7 +166,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         featuresWithImages?.run {
             when {
                 isNotEmpty() -> getImagesAndSetSource(this)
-                else -> updateStyleSources()
+                else -> setSource()
             }
         }
     }
@@ -185,7 +187,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                             resource
                         )
                         if (index == featuresWithImages.size - 1) {
-                            updateStyleSources()
+                            setSource()
                         }
                     }
                     override fun onLoadCleared(placeholder: Drawable?) {}
@@ -193,8 +195,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         }
     }
 
-    private fun updateStyleSources() {
-        setSource()
+    private fun addDynamicLayers() {
         mapLayerManager
             .updateLayers(
                 LayerType.RELATIONSHIP_LAYER,
@@ -206,7 +207,6 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                 LayerType.TEI_EVENT_LAYER,
                 eventsFeatureCollection?.keys?.toList() ?: emptyList()
             )
-        boundingBox?.let { initCameraPosition(it) }
     }
 
     override fun findFeature(

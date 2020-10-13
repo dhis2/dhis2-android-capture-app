@@ -28,7 +28,7 @@ class CarouselProgramEventHolder(
     override fun bind(data: ProgramEventViewModel) {
         with(data) {
             binding.event = this
-            itemView.setOnClickListener {
+            binding.eventInfoCard.setOnClickListener {
                 onClick(uid(), orgUnitUid(), uid())
             }
 
