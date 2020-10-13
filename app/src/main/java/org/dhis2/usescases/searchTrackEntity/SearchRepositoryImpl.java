@@ -9,9 +9,6 @@ import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
-import com.evrencoskun.tableview.filter.Filter;
-
-import org.apache.commons.lang3.SerializationUtils;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.TrackedEntityInstanceExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
@@ -76,7 +73,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -747,7 +743,8 @@ public class SearchRepositoryImpl implements SearchRepository {
     private SearchTeiModel transform(TrackedEntityInstance tei, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
 
         SearchTeiModel searchTei = new SearchTeiModel();
-        if (d2.trackedEntityModule().trackedEntityInstances().byUid().eq(tei.uid()).one().blockingExists()) {
+        if (d2.trackedEntityModule().trackedEntityInstances().byUid().eq(tei.uid()).one().blockingExists() &&
+                d2.trackedEntityModule().trackedEntityInstances().uid(tei.uid()).blockingGet().state() != State.RELATIONSHIP) {
             TrackedEntityInstance localTei = d2.trackedEntityModule().trackedEntityInstances().byUid().eq(tei.uid()).one().blockingGet();
             searchTei.setTei(localTei);
             if (selectedProgram != null && d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(localTei.uid()).byProgram().eq(selectedProgram.uid()).one().blockingExists()) {
@@ -788,34 +785,34 @@ public class SearchRepositoryImpl implements SearchRepository {
         } else {
             searchTei.setTei(tei);
             if (tei.trackedEntityAttributeValues() != null) {
-                if(selectedProgram!=null){
+                if (selectedProgram != null) {
                     List<ProgramTrackedEntityAttribute> programAttributes = d2.programModule().programTrackedEntityAttributes()
                             .byProgram().eq(selectedProgram.uid())
                             .byDisplayInList().isTrue()
                             .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                             .blockingGet();
-                    for(ProgramTrackedEntityAttribute programAttribute: programAttributes){
+                    for (ProgramTrackedEntityAttribute programAttribute : programAttributes) {
                         TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
                                 .uid(programAttribute.trackedEntityAttribute().uid())
                                 .blockingGet();
-                        for(TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()){
-                            if(attrValue.trackedEntityAttribute().equals(attribute.uid())){
+                        for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
+                            if (attrValue.trackedEntityAttribute().equals(attribute.uid())) {
                                 addAttribute(searchTei, attrValue, attribute);
                                 break;
                             }
                         }
                     }
-                }else{
+                } else {
                     List<TrackedEntityTypeAttribute> typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
                             .byTrackedEntityTypeUid().eq(searchTei.getTei().trackedEntityType())
                             .byDisplayInList().isTrue()
                             .blockingGet();
-                    for(TrackedEntityTypeAttribute typeAttribute : typeAttributes){
+                    for (TrackedEntityTypeAttribute typeAttribute : typeAttributes) {
                         TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
                                 .uid(typeAttribute.trackedEntityAttribute().uid())
                                 .blockingGet();
-                        for(TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()){
-                            if(attrValue.trackedEntityAttribute().equals(attribute.uid())){
+                        for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
+                            if (attrValue.trackedEntityAttribute().equals(attribute.uid())) {
                                 addAttribute(searchTei, attrValue, attribute);
                                 break;
                             }
