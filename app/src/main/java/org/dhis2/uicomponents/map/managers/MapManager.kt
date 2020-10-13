@@ -79,13 +79,6 @@ abstract class MapManager(val mapView: MapView) {
         return LatLng(point.latitude(), point.longitude())
     }
 
-    fun findFeatureFor(featureUidProperty: String): Feature? {
-        if (!isMapReady()) return null
-        return mapLayerManager.getLayers().mapNotNull { mapLayer ->
-            mapLayer.findFeatureWithUid(featureUidProperty)
-        }.firstOrNull()
-    }
-
     fun isMapReady() = ::map.isInitialized && style?.isFullyLoaded ?: false
 
     fun onStart() {
