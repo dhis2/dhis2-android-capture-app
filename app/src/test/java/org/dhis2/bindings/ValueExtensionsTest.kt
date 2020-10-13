@@ -14,6 +14,7 @@ class ValueExtensionsTest {
             "1.2",
             "1",
             "1234",
+            "214748999",
             null
         )
 
@@ -23,6 +24,7 @@ class ValueExtensionsTest {
             "1",
             "1",
             "1234",
+            "214748999",
             null
         )
 
