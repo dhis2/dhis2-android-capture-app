@@ -33,7 +33,7 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 public class YesNoView extends FieldLayout {
 
     private ViewDataBinding binding;
-
+    private boolean hasValue;
     private ConstraintLayout checksLayout;
     private RadioGroup radioGroup;
     private RadioButton yes;
@@ -286,21 +286,26 @@ public class YesNoView extends FieldLayout {
 
     public void setInitialValue(String value) {
         if (value != null && Boolean.valueOf(value)) {
+            hasValue = true;
             radioGroup.check(R.id.yes);
             checkYes.setChecked(true);
             checkNo.setChecked(false);
             yesOnlyToggle.setChecked(true);
         } else if (value != null) {
+            hasValue = true;
             radioGroup.check(R.id.no);
             checkYes.setChecked(false);
             checkNo.setChecked(true);
             yesOnlyToggle.setChecked(false);
         } else {
+            hasValue = false;
             radioGroup.clearCheck();
             checkYes.setChecked(false);
             checkNo.setChecked(false);
             yesOnlyToggle.setChecked(false);
         }
+
+        updateDeleteVisibility(clearButton);
     }
 
     public void setEditable(Boolean editable) {
@@ -321,11 +326,23 @@ public class YesNoView extends FieldLayout {
                 yesOnlyToggle,
                 clearButton,
                 findViewById(R.id.descriptionLabel)
-                );
+        );
+
+        updateDeleteVisibility(clearButton);
     }
 
     public interface OnValueChanged {
         void onValueChanged(boolean isActive);
         void onClearValue();
+    }
+
+    @Override
+    protected boolean hasValue() {
+        return hasValue;
+    }
+
+    @Override
+    protected boolean isEditable() {
+        return clearButton.isEnabled();
     }
 }
