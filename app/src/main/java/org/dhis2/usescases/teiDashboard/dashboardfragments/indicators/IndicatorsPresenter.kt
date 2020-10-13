@@ -50,8 +50,8 @@ class IndicatorsPresenter(
     fun init() {
         compositeDisposable.add(
             Flowable.zip<List<Trio<ProgramIndicator, String, String>>?,
-                    List<Trio<ProgramIndicator, String, String>>?,
-                    List<Trio<ProgramIndicator, String, String>>>(
+                List<Trio<ProgramIndicator, String, String>>?,
+                List<Trio<ProgramIndicator, String, String>>>(
                 getIndicators(),
                 getRulesIndicators(),
                 BiFunction { indicators, ruleIndicators ->
@@ -116,7 +116,7 @@ class IndicatorsPresenter(
             .flatMapPublisher { ruleAction ->
                 if (ruleAction.isEmpty()) {
                     return@flatMapPublisher Flowable.just<List<Trio<ProgramIndicator,
-                            String, String>>>(listOf())
+                                String, String>>>(listOf())
                 } else {
                     return@flatMapPublisher ruleEngineRepository.updateRuleEngine()
                         .flatMap { ruleEngineRepository.reCalculate() }
@@ -128,40 +128,40 @@ class IndicatorsPresenter(
             }
 
     private fun applyRuleEffects(calcResult: Result<RuleEffect>):
-            List<Trio<ProgramIndicator, String, String>> {
-        val indicators = arrayListOf<Trio<ProgramIndicator, String, String>>()
+        List<Trio<ProgramIndicator, String, String>> {
+            val indicators = arrayListOf<Trio<ProgramIndicator, String, String>>()
 
-        if (calcResult.error() != null) {
-            Timber.e(calcResult.error())
-            return arrayListOf()
-        }
+            if (calcResult.error() != null) {
+                Timber.e(calcResult.error())
+                return arrayListOf()
+            }
 
-        for (ruleEffect in calcResult.items()) {
-            val ruleAction = ruleEffect.ruleAction()
-            if (!ruleEffect.data().contains("#{")) {
-                if (ruleAction is RuleActionDisplayKeyValuePair) {
-                    val indicator = Trio.create(
-                        ProgramIndicator.builder()
-                            .uid((ruleAction).content())
-                            .displayName((ruleAction).content())
-                            .build(),
-                        ruleEffect.data(), ""
-                    )
+            for (ruleEffect in calcResult.items()) {
+                val ruleAction = ruleEffect.ruleAction()
+                if (!ruleEffect.data().contains("#{")) {
+                    if (ruleAction is RuleActionDisplayKeyValuePair) {
+                        val indicator = Trio.create(
+                            ProgramIndicator.builder()
+                                .uid((ruleAction).content())
+                                .displayName((ruleAction).content())
+                                .build(),
+                            ruleEffect.data(), ""
+                        )
 
-                    indicators.add(indicator)
-                } else if (ruleAction is RuleActionDisplayText) {
-                    val indicator: Trio<ProgramIndicator, String, String> = Trio.create(
-                        null,
-                        ruleAction.content() + ruleEffect.data(), ""
-                    )
+                        indicators.add(indicator)
+                    } else if (ruleAction is RuleActionDisplayText) {
+                        val indicator: Trio<ProgramIndicator, String, String> = Trio.create(
+                            null,
+                            ruleAction.content() + ruleEffect.data(), ""
+                        )
 
-                    indicators.add(indicator)
+                        indicators.add(indicator)
+                    }
                 }
             }
-        }
 
-        return indicators
-    }
+            return indicators
+        }
 
     fun onDettach() = compositeDisposable.clear()
 
