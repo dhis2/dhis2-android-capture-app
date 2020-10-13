@@ -50,8 +50,8 @@ class IndicatorsPresenter(
     fun init() {
         compositeDisposable.add(
             Flowable.zip<List<Trio<ProgramIndicator, String, String>>?,
-                List<Trio<ProgramIndicator, String, String>>?,
-                List<Trio<ProgramIndicator, String, String>>>(
+                    List<Trio<ProgramIndicator, String, String>>?,
+                    List<Trio<ProgramIndicator, String, String>>>(
                 getIndicators(),
                 getRulesIndicators(),
                 BiFunction { indicators, ruleIndicators ->
@@ -76,19 +76,23 @@ class IndicatorsPresenter(
     private fun getIndicators(): Flowable<List<Trio<ProgramIndicator, String, String>>> {
         return dashboardRepository.getIndicators(programUid)
             .filter { !DhisTextUtils.isEmpty(enrollmentUid) }
-            .map {
-                indicators ->
+            .map { indicators ->
                 Observable.fromIterable(indicators)
                     .filter { it.displayInForm() != null && it.displayInForm()!! }
                     .map { indicator ->
-                        val indicatorValue = d2.programModule()
-                            .programIndicatorEngine().getProgramIndicatorValue(
-                                enrollmentUid,
-                                null,
-                                indicator.uid()
-                            )
+                        val indicatorValue = try {
+                            d2.programModule()
+                                .programIndicatorEngine().getProgramIndicatorValue(
+                                    enrollmentUid,
+                                    null,
+                                    indicator.uid()
+                                )
+                        } catch (e: Exception) {
+                            Timber.e(e)
+                            null
+                        }
                         return@map Pair.create(indicator, indicatorValue ?: "")
-                    }.filter { !it.val1().isEmpty() }
+                    }.filter { it.val1().isNotEmpty() }
                     .flatMap {
                         dashboardRepository
                             .getLegendColorForIndicator(it.val0(), it.val1())
@@ -112,7 +116,7 @@ class IndicatorsPresenter(
             .flatMapPublisher { ruleAction ->
                 if (ruleAction.isEmpty()) {
                     return@flatMapPublisher Flowable.just<List<Trio<ProgramIndicator,
-                                String, String>>>(listOf())
+                            String, String>>>(listOf())
                 } else {
                     return@flatMapPublisher ruleEngineRepository.updateRuleEngine()
                         .flatMap { ruleEngineRepository.reCalculate() }
@@ -124,40 +128,40 @@ class IndicatorsPresenter(
             }
 
     private fun applyRuleEffects(calcResult: Result<RuleEffect>):
-        List<Trio<ProgramIndicator, String, String>> {
-            val indicators = arrayListOf<Trio<ProgramIndicator, String, String>>()
+            List<Trio<ProgramIndicator, String, String>> {
+        val indicators = arrayListOf<Trio<ProgramIndicator, String, String>>()
 
-            if (calcResult.error() != null) {
-                Timber.e(calcResult.error())
-                return arrayListOf()
-            }
+        if (calcResult.error() != null) {
+            Timber.e(calcResult.error())
+            return arrayListOf()
+        }
 
-            for (ruleEffect in calcResult.items()) {
-                val ruleAction = ruleEffect.ruleAction()
-                if (!ruleEffect.data().contains("#{")) {
-                    if (ruleAction is RuleActionDisplayKeyValuePair) {
-                        val indicator = Trio.create(
-                            ProgramIndicator.builder()
-                                .uid((ruleAction).content())
-                                .displayName((ruleAction).content())
-                                .build(),
-                            ruleEffect.data(), ""
-                        )
+        for (ruleEffect in calcResult.items()) {
+            val ruleAction = ruleEffect.ruleAction()
+            if (!ruleEffect.data().contains("#{")) {
+                if (ruleAction is RuleActionDisplayKeyValuePair) {
+                    val indicator = Trio.create(
+                        ProgramIndicator.builder()
+                            .uid((ruleAction).content())
+                            .displayName((ruleAction).content())
+                            .build(),
+                        ruleEffect.data(), ""
+                    )
 
-                        indicators.add(indicator)
-                    } else if (ruleAction is RuleActionDisplayText) {
-                        val indicator: Trio<ProgramIndicator, String, String> = Trio.create(
-                            null,
-                            ruleAction.content() + ruleEffect.data(), ""
-                        )
+                    indicators.add(indicator)
+                } else if (ruleAction is RuleActionDisplayText) {
+                    val indicator: Trio<ProgramIndicator, String, String> = Trio.create(
+                        null,
+                        ruleAction.content() + ruleEffect.data(), ""
+                    )
 
-                        indicators.add(indicator)
-                    }
+                    indicators.add(indicator)
                 }
             }
-
-            return indicators
         }
+
+        return indicators
+    }
 
     fun onDettach() = compositeDisposable.clear()
 
