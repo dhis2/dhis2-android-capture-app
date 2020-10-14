@@ -77,7 +77,7 @@ class CarouselTeiHolder(
                     itemView.context.getString(R.string.no_coordinates_item)
                         .format(teTypeName.toLowerCase(Locale.ROOT))
             } else {
-                binding.noCoordinatesLabel.root.visibility = View.INVISIBLE
+                binding.noCoordinatesLabel.root.visibility = View.GONE
             }
             binding.sortingFieldName.text = data.sortingKey
             binding.sortingFieldValue.text = data.sortingValue

@@ -48,7 +48,7 @@ class CarouselProgramEventHolder(
                                 .toLowerCase(Locale.getDefault())
                         )
                 }
-                else -> binding.noCoordinatesLabel.root.visibility = View.INVISIBLE
+                else -> binding.noCoordinatesLabel.root.visibility = View.GONE
             }
         }
     }

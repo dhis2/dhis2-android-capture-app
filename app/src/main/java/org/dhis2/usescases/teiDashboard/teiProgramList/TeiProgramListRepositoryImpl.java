@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.usescases.main.program.ProgramViewModel;
 import org.dhis2.usescases.main.program.ProgramViewModelMapper;
-import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
