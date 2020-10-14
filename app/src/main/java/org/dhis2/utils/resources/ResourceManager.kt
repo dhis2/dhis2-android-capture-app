@@ -29,4 +29,8 @@ class ResourceManager(val context: Context) {
             false
         }
     }
+
+    fun defaultEventLabel(): String = context.getString(R.string.events)
+    fun defaultDataSetLabel(): String = context.getString(R.string.data_sets)
+    fun defaultTeiLabel(): String = context.getString(R.string.tei)
 }

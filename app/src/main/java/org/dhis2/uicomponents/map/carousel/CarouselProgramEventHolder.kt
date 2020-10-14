@@ -10,6 +10,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
 import org.dhis2.R
+import org.dhis2.animations.collapse
+import org.dhis2.animations.expand
 import org.dhis2.data.tuples.Pair
 import org.dhis2.databinding.ItemCarouselProgramEventBinding
 import org.dhis2.databinding.ItemFieldValueBinding
@@ -26,7 +28,7 @@ class CarouselProgramEventHolder(
     override fun bind(data: ProgramEventViewModel) {
         with(data) {
             binding.event = this
-            itemView.setOnClickListener {
+            binding.eventInfoCard.setOnClickListener {
                 onClick(uid(), orgUnitUid(), uid())
             }
 
@@ -46,7 +48,7 @@ class CarouselProgramEventHolder(
                                 .toLowerCase(Locale.getDefault())
                         )
                 }
-                else -> binding.noCoordinatesLabel.root.visibility = View.INVISIBLE
+                else -> binding.noCoordinatesLabel.root.visibility = View.GONE
             }
         }
     }
@@ -57,6 +59,14 @@ class CarouselProgramEventHolder(
     ) {
         binding.showValuesButton.visibility = View.VISIBLE
         binding.showValuesButton.setOnClickListener {
+            if (programEventModel.openedAttributeList) {
+                binding.dataElementList.collapse {
+                    initValues(false, programEventModel.eventDisplayData())
+                }
+            } else {
+                initValues(true, programEventModel.eventDisplayData())
+                binding.dataElementList.expand()
+            }
             toggleList.invoke()
         }
         initValues(programEventModel.openedAttributeList, programEventModel.eventDisplayData())

@@ -16,94 +16,101 @@
             type="org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:paddingStart="16dp"
-        android:paddingTop="10dp"
-        android:paddingEnd="16dp">
+        app:cardElevation="0dp"
+        app:rippleColor="@color/rippleColor">
 
-        <TextView
-            android:id="@+id/OrgUnit"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/rubik_regular"
-            android:text='@{dataset.nameOrgUnit}'
-            android:visibility="@{dataset.displayOrgUnitName() ? View.VISIBLE : View.INVISIBLE}"
-            android:textColor="@color/black_de0"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/status_text"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/Period"
-            tools:text="Org Unit" />
-
-        <TextView
-            android:id="@+id/Period"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/rubik_regular"
-            android:text='@{dataset.namePeriod}'
-            android:textColor="@color/black_de0"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/status_text"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Period" />
-
-        <TextView
-            android:id="@+id/optionCombo"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="@font/rubik_regular"
-            android:gravity="end"
-            android:visibility='@{dataset.nameCatCombo().equals("default") ? View.GONE : View.VISIBLE}'
-            android:text='@{dataset.nameCatCombo().equals("default") ?"":dataset.nameCatCombo}'
-            android:textColor="@color/black_de0"
-            android:textSize="12sp"
-            app:layout_constraintTop_toBottomOf="@id/OrgUnit"
-            tools:text="Cat combo" />
+            android:padding="10dp"
+            android:paddingStart="16dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="16dp">
+
+            <TextView
+                android:id="@+id/OrgUnit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/rubik_regular"
+                android:text='@{dataset.nameOrgUnit}'
+                android:textColor="@color/black_de0"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:visibility="@{dataset.displayOrgUnitName() ? View.VISIBLE : View.INVISIBLE}"
+                app:layout_constraintEnd_toStartOf="@id/status_text"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/Period"
+                tools:text="Org Unit" />
+
+            <TextView
+                android:id="@+id/Period"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/rubik_regular"
+                android:text='@{dataset.namePeriod}'
+                android:textColor="@color/black_de0"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/status_text"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Period" />
+
+            <TextView
+                android:id="@+id/optionCombo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/rubik_regular"
+                android:gravity="end"
+                android:text='@{dataset.nameCatCombo().equals("default") ?"":dataset.nameCatCombo}'
+                android:textColor="@color/black_de0"
+                android:textSize="12sp"
+                android:visibility='@{dataset.nameCatCombo().equals("default") ? View.GONE : View.VISIBLE}'
+                app:layout_constraintTop_toBottomOf="@id/OrgUnit"
+                tools:text="Cat combo" />
 
 
-        <ImageView
-            android:id="@+id/sync_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:stateIcon='@{dataset.state}'
-            tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_sync" />
+            <ImageView
+                android:id="@+id/sync_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:stateIcon='@{dataset.state}'
+                tools:ignore="ContentDescription"
+                tools:src="@drawable/ic_sync" />
 
-        <ImageView
-            android:id="@+id/status_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:tint="@color/text_black_333"
-            app:layout_constraintEnd_toStartOf="@id/sync_icon"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_edit" />
+            <ImageView
+                android:id="@+id/status_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toStartOf="@id/sync_icon"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription"
+                tools:src="@drawable/ic_edit"
+                app:tint="@color/text_black_333" />
 
-        <TextView
-            android:id="@+id/status_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:fontFamily="@font/rubik_regular"
-            android:gravity="end"
-            android:maxWidth="50dp"
-            android:textColor="@color/text_black_333"
-            android:textSize="9sp"
-            app:layout_constraintBottom_toBottomOf="@id/status_icon"
-            app:layout_constraintEnd_toStartOf="@id/status_icon"
-            app:layout_constraintTop_toTopOf="@id/status_icon"
-            tools:text="@string/event_open" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/status_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/rubik_regular"
+                android:gravity="end"
+                android:maxWidth="50dp"
+                android:textColor="@color/text_black_333"
+                android:textSize="9sp"
+                app:layout_constraintBottom_toBottomOf="@id/status_icon"
+                app:layout_constraintEnd_toStartOf="@id/status_icon"
+                app:layout_constraintTop_toTopOf="@id/status_icon"
+                tools:text="@string/event_open" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 </layout>

@@ -95,7 +95,6 @@ class CarouselAdapter private constructor(
                     onEventClickListener,
                     { item ->
                         (items.first { it == item } as ProgramEventViewModel).toggleAttributeList()
-                        notifyItemChanged(items.indexOf(item))
                     }
                 )
         }

@@ -37,7 +37,11 @@ abstract class MapManager(val mapView: MapView) {
             markerViewManager = MarkerViewManager(mapView, map)
         }
         mapLayerManager = MapLayerManager().apply {
-            styleChangeCallback = { loadDataForStyle() }
+            styleChangeCallback = {
+                mapLayerManager.clearLayers()
+                loadDataForStyle()
+                setSource()
+            }
         }
     }
 
@@ -73,13 +77,6 @@ abstract class MapManager(val mapView: MapView) {
 
     fun pointToLatLn(point: Point): LatLng {
         return LatLng(point.latitude(), point.longitude())
-    }
-
-    fun findFeatureFor(featureUidProperty: String): Feature? {
-        if (!isMapReady()) return null
-        return mapLayerManager.getLayers().mapNotNull { mapLayer ->
-            mapLayer.findFeatureWithUid(featureUidProperty)
-        }.firstOrNull()
     }
 
     fun isMapReady() = ::map.isInitialized && style?.isFullyLoaded ?: false

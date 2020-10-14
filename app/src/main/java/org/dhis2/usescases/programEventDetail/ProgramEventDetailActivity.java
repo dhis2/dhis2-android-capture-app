@@ -165,9 +165,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     protected void onResume() {
         super.onResume();
         if (isMapVisible()) {
-            animations.initMapLoading(binding.mapCarousel);
-            binding.toolbarProgress.show();
             if (updateEvent != null) {
+                animations.initMapLoading(binding.mapCarousel);
+                binding.toolbarProgress.show();
                 presenter.getEventInfo(updateEvent);
             }
         } else {

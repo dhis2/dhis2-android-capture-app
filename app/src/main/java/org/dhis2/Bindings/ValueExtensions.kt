@@ -143,7 +143,9 @@ fun String?.withValueTypeCheck(valueType: ValueType?): String? {
             ValueType.INTEGER,
             ValueType.INTEGER_POSITIVE,
             ValueType.INTEGER_NEGATIVE,
-            ValueType.INTEGER_ZERO_OR_POSITIVE -> it.toFloat().toInt().toString()
+            ValueType.INTEGER_ZERO_OR_POSITIVE -> (
+                it.toIntOrNull() ?: it.toFloat().toInt()
+                ).toString()
             ValueType.UNIT_INTERVAL -> it.toFloat().toString()
             else -> this
         }
