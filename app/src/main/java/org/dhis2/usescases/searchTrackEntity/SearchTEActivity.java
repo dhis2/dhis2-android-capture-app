@@ -126,6 +126,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     SearchTEContractsModule.Presenter presenter;
     @Inject
     CarouselViewAnimations animations;
+    @Inject
+    FiltersAdapter filtersAdapter;
 
     private String initialProgram;
     private String tEType;
@@ -139,7 +141,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
      * 2 - it was closed
      */
     private int switchOpenClose = 2;
-    private FiltersAdapter filtersAdapter;
 
     ObservableBoolean needsSearch = new ObservableBoolean(true);
 
@@ -213,7 +214,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             return true;
         });
 
-        filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.TRACKER);
         filtersAdapter.addEnrollmentStatus();
         filtersAdapter.addEventStatus();
         try {

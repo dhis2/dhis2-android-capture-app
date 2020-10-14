@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.data.dagger.PerFragment;
 import org.dhis2.data.dhislogic.DhisEventUtils;
+import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
@@ -12,6 +13,7 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -77,4 +79,9 @@ public class TEIDataModule {
         return new EnrollmentRuleEngineRepository(formRepository, enrollmentUid, d2);
     }
 
+    @Provides
+    @PerFragment
+    FiltersAdapter provideFiltersAdapter(FilterPresenter filterPresenter) {
+        return new FiltersAdapter(FiltersAdapter.ProgramType.DASHBOARD, filterPresenter);
+    }
 }

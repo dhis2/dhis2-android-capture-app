@@ -8,7 +8,7 @@ import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
-import org.dhis2.data.filter.FilterController;
+import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
@@ -25,6 +25,7 @@ import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent;
 import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 
@@ -92,8 +93,8 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchRepository searchRepository(@NonNull D2 d2, FilterController filterController, ResourceManager resources, SearchSortingValueSetter searchSortingValueSetter) {
-        return new SearchRepositoryImpl(teiType, d2, filterController, resources, searchSortingValueSetter);
+    SearchRepository searchRepository(@NonNull D2 d2, FilterPresenter filterPresenter, ResourceManager resources, SearchSortingValueSetter searchSortingValueSetter) {
+        return new SearchRepositoryImpl(teiType, d2, filterPresenter, resources, searchSortingValueSetter);
     }
 
     @Provides
@@ -125,5 +126,11 @@ public class SearchTEModule {
     @PerActivity
     CarouselViewAnimations animations() {
         return new CarouselViewAnimations();
+    }
+
+    @Provides
+    @PerActivity
+    FiltersAdapter provideFiltersAdapter(FilterPresenter filterPresenter) {
+        return new FiltersAdapter(FiltersAdapter.ProgramType.TRACKER, filterPresenter);
     }
 }

@@ -97,6 +97,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Inject
     FilterManager filterManager;
 
+    @Inject
+    FiltersAdapter filtersAdapter;
+
+
     private EventAdapter adapter;
     private CustomDialog dialog;
     private String lastModifiedEventUid;
@@ -109,7 +113,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     private DashboardViewModel dashboardViewModel;
     private DashboardProgramModel dashboardModel;
     private TeiDashboardMobileActivity activity;
-    private FiltersAdapter filtersAdapter;
     private PopupMenu popupMenu;
 
     public static TEIDataFragment newInstance(String programUid, String teiUid, String enrollmentUid) {
@@ -155,7 +158,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         });
         activity.observeFilters().observe(this, showFilters -> showHideFilters(showFilters));
         activity.updatedEnrollment().observe(this, enrollmentUid -> updateEnrollment(enrollmentUid));
-        filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.TRACKER);
         if (presenter.hasAssignment()) {
             filtersAdapter.addAssignedToMe();
         }

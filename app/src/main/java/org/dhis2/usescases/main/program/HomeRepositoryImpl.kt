@@ -4,7 +4,7 @@ import io.reactivex.Flowable
 import io.reactivex.parallel.ParallelFlowable
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
-import org.dhis2.data.filter.FilterController
+import org.dhis2.data.filter.FilterPresenter
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
@@ -13,7 +13,7 @@ import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
 
 internal class HomeRepositoryImpl(
     private val d2: D2,
-    private val filterController: FilterController,
+    private val filterPresenter: FilterPresenter,
     private val dhisProgramUtils: DhisProgramUtils,
     private val dhisTeiUtils: DhisTrackedEntityInstanceUtils,
     private val resourceManager: ResourceManager,
@@ -23,7 +23,7 @@ internal class HomeRepositoryImpl(
     private val programViewModelMapper = ProgramViewModelMapper()
 
     override fun aggregatesModels(): Flowable<List<ProgramViewModel>> {
-        return filterController.filteredDataSetInstances().get()
+        return filterPresenter.filteredDataSetInstances().get()
             .toFlowable()
             .map { dataSetSummaries ->
                 dataSetSummaries.map {
@@ -33,13 +33,13 @@ internal class HomeRepositoryImpl(
                     programViewModelMapper.map(
                         dataSet,
                         it,
-                        if (filterController.isAssignedToMeApplied()) {
+                        if (filterPresenter.isAssignedToMeApplied()) {
                             0
                         } else {
                             it.dataSetInstanceCount()
                         },
                         resourceManager.defaultDataSetLabel(),
-                        filterController.areFiltersActive()
+                        filterPresenter.areFiltersActive()
                     )
                 }
             }
@@ -72,20 +72,20 @@ internal class HomeRepositoryImpl(
                     recordLabel,
                     state,
                     hasOverdue,
-                    filterController.areFiltersActive()
+                    filterPresenter.areFiltersActive()
                 )
             }.toList().toFlowable()
     }
 
     private fun getSingleEventCount(program: Program): Pair<Int, Boolean> {
         return Pair(
-            filterController.filteredEventProgram(program).blockingCount(),
+            filterPresenter.filteredEventProgram(program).blockingCount(),
             false
         )
     }
 
     private fun getTrackerTeiCountAndOverdue(program: Program): Pair<Int, Boolean> {
-        val teis = filterController.filteredTrackerProgram(program)
+        val teis = filterPresenter.filteredTrackerProgram(program)
             .offlineFirst().blockingGet()
         val mCount = teis.size
         val mOverdue = teis.firstOrNull {
