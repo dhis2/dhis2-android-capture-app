@@ -9,7 +9,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
-import org.dhis2.data.filter.FilterController
+import org.dhis2.data.filter.FilterPresenter
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.resources.ResourceManager
@@ -34,8 +34,8 @@ class HomeRepositoryImplTest {
 
     private lateinit var homeRepository: HomeRepository
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
-    private val filterController: FilterController =
-        Mockito.mock(FilterController::class.java, Mockito.RETURNS_DEEP_STUBS)
+    private val filterPresenter: FilterPresenter =
+        Mockito.mock(FilterPresenter::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val dhisProgramUtils: DhisProgramUtils = mock()
     private val dhisTeiUtils: DhisTrackedEntityInstanceUtils = mock()
     private val scheduler = TrampolineSchedulerProvider()
@@ -45,7 +45,7 @@ class HomeRepositoryImplTest {
     fun setUp() {
         homeRepository = HomeRepositoryImpl(
             d2,
-            filterController,
+            filterPresenter,
             dhisProgramUtils,
             dhisTeiUtils,
             resourceManager,
@@ -92,13 +92,13 @@ class HomeRepositoryImplTest {
     @Test
     fun `Should return list of data set ProgramViewModel`() {
         whenever(
-            filterController.filteredDataSetInstances()
+            filterPresenter.filteredDataSetInstances()
         ) doReturn mock()
         whenever(
-            filterController.filteredDataSetInstances().get()
+            filterPresenter.filteredDataSetInstances().get()
         ) doReturn Single.just(mockedDataSetInstanceSummaries())
         whenever(
-            filterController.isAssignedToMeApplied()
+            filterPresenter.isAssignedToMeApplied()
         ) doReturn false
 
         val testObserver = homeRepository.aggregatesModels().test()
@@ -113,16 +113,16 @@ class HomeRepositoryImplTest {
     @Test
     fun `Should set data set count to 0 if assign to me is active`() {
         whenever(
-            filterController.filteredDataSetInstances()
+            filterPresenter.filteredDataSetInstances()
         ) doReturn mock()
         whenever(
-            filterController.filteredDataSetInstances().get()
+            filterPresenter.filteredDataSetInstances().get()
         ) doReturn Single.just(mockedDataSetInstanceSummaries())
         whenever(
-            filterController.isAssignedToMeApplied()
+            filterPresenter.isAssignedToMeApplied()
         ) doReturn true
         whenever(
-            filterController.areFiltersActive()
+            filterPresenter.areFiltersActive()
         ) doReturn true
 
         val testObserver = homeRepository.aggregatesModels().test()
@@ -142,7 +142,7 @@ class HomeRepositoryImplTest {
     fun `Should return list of program ProgramViewModels`() {
         initWheneverForPrograms()
         whenever(
-            filterController.areFiltersActive()
+            filterPresenter.areFiltersActive()
         ) doReturn false
         val testOvserver = homeRepository.programModels().test()
 
@@ -171,19 +171,19 @@ class HomeRepositoryImplTest {
             dhisProgramUtils.getProgramState(any<Program>())
         ) doReturnConsecutively arrayListOf(State.SYNCED, State.TO_POST)
         whenever(
-            filterController.filteredEventProgram(any())
+            filterPresenter.filteredEventProgram(any())
         ) doReturn mock()
         whenever(
-            filterController.filteredEventProgram(any()).blockingCount()
+            filterPresenter.filteredEventProgram(any()).blockingCount()
         ) doReturn 10
         whenever(
-            filterController.filteredTrackerProgram(any())
+            filterPresenter.filteredTrackerProgram(any())
         ) doReturn mock()
         whenever(
-            filterController.filteredTrackerProgram(any()).offlineFirst()
+            filterPresenter.filteredTrackerProgram(any()).offlineFirst()
         ) doReturn mock()
         whenever(
-            filterController.filteredTrackerProgram(any<Program>()).offlineFirst().blockingGet()
+            filterPresenter.filteredTrackerProgram(any<Program>()).offlineFirst().blockingGet()
         ) doReturn mockedTrackedEntities()
 
         whenever(

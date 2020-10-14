@@ -13,8 +13,7 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.TrackedEntityInstanceExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.data.filter.FilterController;
-import org.dhis2.data.filter.TrackerFilterSearchHelper;
+import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.StoreResult;
 import org.dhis2.data.forms.dataentry.ValueStore;
@@ -85,14 +84,14 @@ public class SearchRepositoryImpl implements SearchRepository {
     private TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery;
     private SearchParametersModel savedSearchParameters;
     private FilterManager savedFilters;
-    private FilterController filterController;
+    private FilterPresenter filterPresenter;
 
-    SearchRepositoryImpl(String teiType, D2 d2, FilterController filterController, ResourceManager resources, SearchSortingValueSetter sortingValueSetter) {
+    SearchRepositoryImpl(String teiType, D2 d2, FilterPresenter filterPresenter, ResourceManager resources, SearchSortingValueSetter sortingValueSetter) {
         this.teiType = teiType;
         this.d2 = d2;
         this.resources = resources;
         this.sortingValueSetter = sortingValueSetter;
-        this.filterController = filterController;
+        this.filterPresenter = filterPresenter;
     }
 
 
@@ -210,7 +209,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.savedSearchParameters = searchParametersModel.copy();
         this.savedFilters = FilterManager.getInstance().copy();
 
-        trackedEntityInstanceQuery = filterController.filteredTrackedEntityInstances(
+        trackedEntityInstanceQuery = filterPresenter.filteredTrackedEntityInstances(
                 searchParametersModel.getSelectedProgram(), searchParametersModel.getTrackedEntityType()
         );
 

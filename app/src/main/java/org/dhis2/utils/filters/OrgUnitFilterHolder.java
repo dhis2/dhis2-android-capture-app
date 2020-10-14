@@ -11,6 +11,7 @@ import androidx.databinding.ObservableField;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.databinding.ItemFilterOrgUnitBinding;
 import org.dhis2.utils.filters.ou.OUFilterAdapter;
 import org.dhis2.utils.filters.sorting.SortingItem;
@@ -22,12 +23,14 @@ import java.util.List;
 
 class OrgUnitFilterHolder extends FilterHolder {
 
+    private final FilterPresenter filterPresenter;
     private OrganisationUnit currentOrgUnit;
 
-    OrgUnitFilterHolder(@NonNull ItemFilterOrgUnitBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem, FiltersAdapter.ProgramType programType) {
+    OrgUnitFilterHolder(@NonNull ItemFilterOrgUnitBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem, FiltersAdapter.ProgramType programType, FilterPresenter filterPresenter) {
         super(binding, openedFilter, sortingItem);
         filterType = Filters.ORG_UNIT;
         this.programType = programType;
+        this.filterPresenter = filterPresenter;
     }
 
     @Override

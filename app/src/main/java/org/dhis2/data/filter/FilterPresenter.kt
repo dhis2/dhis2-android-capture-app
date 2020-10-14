@@ -7,7 +7,7 @@ import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
 
-class FilterController @Inject constructor(
+class FilterPresenter @Inject constructor(
     private val filterRepository: FilterRepository,
     val filterManager: FilterManager
 ) {
@@ -56,4 +56,6 @@ class FilterController @Inject constructor(
     fun areFiltersActive(): Boolean {
         return filterManager.totalFilters != 0
     }
+
+    fun getOrgUnitsByName(name: String) = filterRepository.orgUnitsByName(name)
 }

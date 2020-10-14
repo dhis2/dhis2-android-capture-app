@@ -51,8 +51,10 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Inject
     FilterManager filterManager;
 
+    @Inject
+    FiltersAdapter filtersAdapter;
+
     DataSetDetailAdapter adapter;
-    private FiltersAdapter filtersAdapter;
     private boolean backDropActive;
 
     @Override
@@ -67,8 +69,6 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         binding.setPresenter(presenter);
 
         adapter = new DataSetDetailAdapter(presenter);
-
-        filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.DATASET);
 
         ViewExtensionsKt.clipWithRoundedCorners(binding.recycler, ExtensionsKt.getDp(16));
         binding.filterLayout.setAdapter(filtersAdapter);

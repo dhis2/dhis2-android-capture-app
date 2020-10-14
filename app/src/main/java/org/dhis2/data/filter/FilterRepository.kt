@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.dataset.DataSetInstanceSummaryCollectionReposi
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.event.EventStatus
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
@@ -188,4 +189,10 @@ class FilterRepository @Inject constructor(private val d2: D2) {
     ): DataSetInstanceSummaryCollectionRepository {
         return repository.byPeriodStartDate().inDatePeriods(datePeriods)
     }
+
+    fun orgUnitsByName(name: String): List<OrganisationUnit> =
+        d2.organisationUnitModule()
+            .organisationUnits()
+            .byDisplayName().like("%$name%")
+            .blockingGet()
 }

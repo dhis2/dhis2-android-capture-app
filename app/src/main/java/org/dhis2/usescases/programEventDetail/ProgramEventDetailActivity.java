@@ -90,9 +90,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Inject
     CarouselViewAnimations animations;
 
+    @Inject
+    FiltersAdapter filtersAdapter;
+
     private ProgramEventDetailLiveAdapter liveAdapter;
     private boolean backDropActive;
-    private FiltersAdapter filtersAdapter;
     private String programUid;
     private MarkerView currentMarker;
     private FeatureType featureType;
@@ -126,7 +128,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         liveAdapter = new ProgramEventDetailLiveAdapter(presenter.getProgram(), presenter);
         binding.recycler.setAdapter(liveAdapter);
 
-        filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.EVENT);
         filtersAdapter.addEventStatus();
         if (presenter.hasAssignment()) {
             filtersAdapter.addAssignedToMe();

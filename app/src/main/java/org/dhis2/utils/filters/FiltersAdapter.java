@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.databinding.ObservableField;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemFilterAssignedBinding;
 import org.dhis2.databinding.ItemFilterCatOptCombBinding;
@@ -26,6 +27,7 @@ import java.util.Objects;
 public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
 
     private final ProgramType programType;
+    private final FilterPresenter filterPresenter;
     private String enrollmentDateLabel;
 
     public enum ProgramType {ALL, EVENT, TRACKER, DATASET, DASHBOARD}
@@ -35,9 +37,10 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
     private ObservableField<SortingItem> sortingItem;
     private Pair<CategoryCombo, List<CategoryOptionCombo>> catCombData;
 
-    public FiltersAdapter(ProgramType programType) {
+    public FiltersAdapter(ProgramType programType, FilterPresenter filterPresenter) {
         this.filtersList = new ArrayList<>();
         this.programType = programType;
+        this.filterPresenter = filterPresenter;
         filtersList.add(Filters.PERIOD);
         filtersList.add(Filters.ORG_UNIT);
         filtersList.add(Filters.SYNC_STATE);
@@ -55,7 +58,7 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
             case ENROLLMENT_DATE:
                 return new EnrollmentDateFilterHolder(ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter, sortingItem, programType);
             case ORG_UNIT:
-                return new OrgUnitFilterHolder(ItemFilterOrgUnitBinding.inflate(inflater, parent, false), openedFilter, sortingItem, programType);
+                return new OrgUnitFilterHolder(ItemFilterOrgUnitBinding.inflate(inflater, parent, false), openedFilter, sortingItem, programType, filterPresenter);
             case SYNC_STATE:
                 return new SyncStateFilterHolder(ItemFilterStateBinding.inflate(inflater, parent, false), openedFilter, sortingItem, programType);
             case CAT_OPT_COMB:

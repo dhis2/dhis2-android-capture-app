@@ -5,7 +5,7 @@ import dagger.Provides
 import org.dhis2.data.dagger.PerFragment
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
-import org.dhis2.data.filter.FilterController
+import org.dhis2.data.filter.FilterPresenter
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.filters.FilterManager
@@ -37,7 +37,7 @@ class ProgramModule(private val view: ProgramView) {
     @PerFragment
     internal fun homeRepository(
         d2: D2,
-        filterController: FilterController,
+        filterPresenter: FilterPresenter,
         dhisProgramUtils: DhisProgramUtils,
         dhisTrackedEntityInstanceUtils: DhisTrackedEntityInstanceUtils,
         schedulerProvider: SchedulerProvider,
@@ -45,7 +45,7 @@ class ProgramModule(private val view: ProgramView) {
     ): HomeRepository {
         return HomeRepositoryImpl(
             d2,
-            filterController,
+            filterPresenter,
             dhisProgramUtils,
             dhisTrackedEntityInstanceUtils,
             resourceManager,
