@@ -39,6 +39,19 @@
             app:layout_constraintGuide_end="16dp"
             />
 
+        <ImageView
+            android:id="@+id/fieldSelected"
+            android:layout_width="2dp"
+            android:layout_height="50dp"
+            android:background="?colorPrimary"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="6dp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/addImageBtn"/>
+
+
         <TextView
             android:id="@+id/label"
             style="@style/FieldLabel"

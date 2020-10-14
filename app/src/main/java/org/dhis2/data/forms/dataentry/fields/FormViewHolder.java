@@ -1,12 +1,10 @@
 package org.dhis2.data.forms.dataentry.fields;
 
 import android.app.Activity;
-import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,11 +27,13 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
     protected String fieldUid;
     protected ObjectStyle objectStyle;
     protected static String selectedFieldUid;
+    protected ImageView fieldSelected;
 
     public FormViewHolder(ViewDataBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
         this.description = binding.getRoot().findViewById(R.id.descriptionLabel);
+        this.fieldSelected = binding.getRoot().findViewById(R.id.fieldSelected);
         if (description != null) {
             description.setOnClickListener(v ->
                     new CustomDialog(
@@ -52,11 +52,10 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
         if (currentUid != null) {
             currentUid.observeForever(fieldUid -> {
                 if(fieldWasSelectedManually() || currentSelectedItem(fieldUid)){
-                    Drawable bgDrawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg);
-                    itemView.setBackground(bgDrawable);
+                    fieldSelected.setVisibility(View.VISIBLE);
                     itemView.setActivated(true);
                 } else {
-                    itemView.setBackgroundResource(R.color.form_field_background);
+                    fieldSelected.setVisibility(View.GONE);
                     itemView.setActivated(false);
                 }
             });
