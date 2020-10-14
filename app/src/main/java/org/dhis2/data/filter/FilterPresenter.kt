@@ -2,10 +2,13 @@ package org.dhis2.data.filter
 
 import javax.inject.Inject
 import org.dhis2.utils.filters.FilterManager
+import org.dhis2.utils.filters.sorting.FilteredOrgUnitResult
 import org.hisp.dhis.android.core.dataset.DataSetInstanceSummaryCollectionRepository
 import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
+
+const val ORG_UNT_FILTER_MIN_CHAR = 3
 
 class FilterPresenter @Inject constructor(
     private val filterRepository: FilterRepository,
@@ -21,6 +24,8 @@ class FilterPresenter @Inject constructor(
     private val eventProgramFilterSearchHelper: EventProgramFilterSearchHelper by lazy {
         EventProgramFilterSearchHelper(filterRepository, filterManager)
     }
+
+    private lateinit var filteredOrgUnitResult: FilteredOrgUnitResult
 
     fun filteredDataSetInstances(): DataSetInstanceSummaryCollectionRepository {
         return dataSetFilterSearchHelper.getFilteredDataSetSearchRepository()
@@ -57,5 +62,25 @@ class FilterPresenter @Inject constructor(
         return filterManager.totalFilters != 0
     }
 
-    fun getOrgUnitsByName(name: String) = filterRepository.orgUnitsByName(name)
+    fun getOrgUnitsByName(name: String): FilteredOrgUnitResult {
+        filteredOrgUnitResult = FilteredOrgUnitResult(
+            if (name.length > ORG_UNT_FILTER_MIN_CHAR) {
+                filterRepository.orgUnitsByName(name)
+            } else {
+                emptyList()
+            }
+        )
+        return filteredOrgUnitResult
+    }
+
+    fun addOrgUnitToFilter(callback: () -> Unit) {
+        if (filteredOrgUnitResult.firstResult() != null) {
+            filterManager.addOrgUnit(filteredOrgUnitResult.firstResult())
+            callback.invoke()
+        }
+    }
+
+    fun onOpenOrgUnitTreeSelector() {
+        filterManager.ouTreeProcessor.onNext(true)
+    }
 }

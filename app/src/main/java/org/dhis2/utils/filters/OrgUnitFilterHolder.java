@@ -13,22 +13,22 @@ import org.dhis2.R;
 import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.databinding.ItemFilterOrgUnitBinding;
 import org.dhis2.utils.filters.ou.OUFilterAdapter;
+import org.dhis2.utils.filters.sorting.FilteredOrgUnitResult;
 import org.dhis2.utils.filters.sorting.SortingItem;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
-import java.util.ArrayList;
-import java.util.List;
+import kotlin.Unit;
 
 class OrgUnitFilterHolder extends FilterHolder {
 
+    private ItemFilterOrgUnitBinding localBinding;
     private final FilterPresenter filterPresenter;
-    private OrganisationUnit currentOrgUnit;
 
     OrgUnitFilterHolder(@NonNull ItemFilterOrgUnitBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem, FiltersAdapter.ProgramType programType, FilterPresenter filterPresenter) {
         super(binding, openedFilter, sortingItem);
         filterType = Filters.ORG_UNIT;
         this.programType = programType;
         this.filterPresenter = filterPresenter;
+        this.localBinding = (ItemFilterOrgUnitBinding) binding;
     }
 
     @Override
@@ -36,14 +36,10 @@ class OrgUnitFilterHolder extends FilterHolder {
         super.bind();
         filterIcon.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_filter_ou));
         filterTitle.setText(R.string.filters_title_org_unit);
-
         setUpAdapter();
-
     }
 
     private void setUpAdapter() {
-        ItemFilterOrgUnitBinding localBinding = (ItemFilterOrgUnitBinding) binding;
-
         OUFilterAdapter ouFilterAdapter = new OUFilterAdapter();
         localBinding.filterOrgUnit.ouRecycler.setAdapter(ouFilterAdapter);
 
@@ -56,22 +52,12 @@ class OrgUnitFilterHolder extends FilterHolder {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence.length() > 3) {
-                    List<OrganisationUnit> orgUnits = filterPresenter.getOrgUnitsByName(charSequence.toString());
-
-                    currentOrgUnit = !orgUnits.isEmpty() ? orgUnits.get(0) : null;
-                    List<String> orgUnitsNames = new ArrayList<>();
-                    for (OrganisationUnit orgUnit: orgUnits) {
-                        orgUnitsNames.add(orgUnit.displayName());
-                    }
-                    if (!orgUnitsNames.isEmpty()) {
-                        ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(itemView.getContext(), android.R.layout.simple_dropdown_item_1line, orgUnitsNames);
-                        localBinding.filterOrgUnit.orgUnitSearchEditText.setAdapter(autoCompleteAdapter);
-                        localBinding.filterOrgUnit.orgUnitSearchEditText.showDropDown();
-                    }
-                } else
-                    localBinding.filterOrgUnit.orgUnitHint.setText(null);
-
+                FilteredOrgUnitResult filteredOrgUnitResult = filterPresenter.getOrgUnitsByName(charSequence.toString());
+                if (filteredOrgUnitResult.hasResult()) {
+                    ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(itemView.getContext(), android.R.layout.simple_dropdown_item_1line, filteredOrgUnitResult.names());
+                    localBinding.filterOrgUnit.orgUnitSearchEditText.setAdapter(autoCompleteAdapter);
+                    localBinding.filterOrgUnit.orgUnitSearchEditText.showDropDown();
+                }
             }
 
             @Override
@@ -80,19 +66,16 @@ class OrgUnitFilterHolder extends FilterHolder {
             }
         });
 
-        localBinding.filterOrgUnit.addButton.setOnClickListener(view -> {
-            if (currentOrgUnit != null) {
-                FilterManager.getInstance().addOrgUnit(currentOrgUnit);
-                currentOrgUnit = null;
-                localBinding.filterOrgUnit.orgUnitSearchEditText.setText(null);
-                localBinding.filterOrgUnit.orgUnitHint.setText(null);
-                ouFilterAdapter.notifyDataSetChanged();
-            }
-        });
+        localBinding.filterOrgUnit.addButton.setOnClickListener(view ->
+                filterPresenter.addOrgUnitToFilter(() -> {
+                    localBinding.filterOrgUnit.orgUnitSearchEditText.setText(null);
+                    ouFilterAdapter.notifyDataSetChanged();
+                    return Unit.INSTANCE;
+                }));
 
         localBinding.filterOrgUnit.ouTreeButton.setOnClickListener(view -> {
-                localBinding.root.clearFocus();
-                FilterManager.getInstance().getOuTreeProcessor().onNext(true);
+            localBinding.root.clearFocus();
+            filterPresenter.onOpenOrgUnitTreeSelector();
         });
     }
 }
