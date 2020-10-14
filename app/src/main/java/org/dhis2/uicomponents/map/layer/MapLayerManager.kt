@@ -170,4 +170,8 @@ class MapLayerManager {
             false
         )
     }
+
+    fun clearLayers() {
+        mapLayers.clear()
+    }
 }

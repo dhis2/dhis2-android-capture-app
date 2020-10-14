@@ -9,13 +9,12 @@ import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
-import com.evrencoskun.tableview.filter.Filter;
-
-import org.apache.commons.lang3.SerializationUtils;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.TrackedEntityInstanceExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.data.filter.FilterController;
+import org.dhis2.data.filter.TrackerFilterSearchHelper;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.StoreResult;
 import org.dhis2.data.forms.dataentry.ValueStore;
@@ -33,12 +32,10 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.sorting.SortingItem;
-import org.dhis2.utils.filters.sorting.SortingStatus;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
-import org.hisp.dhis.android.core.common.AssignedUserMode;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -50,7 +47,6 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
@@ -68,7 +64,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -76,14 +71,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import timber.log.Timber;
-
-import static android.text.TextUtils.isEmpty;
 
 public class SearchRepositoryImpl implements SearchRepository {
 
@@ -94,13 +85,14 @@ public class SearchRepositoryImpl implements SearchRepository {
     private TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery;
     private SearchParametersModel savedSearchParameters;
     private FilterManager savedFilters;
+    private FilterController filterController;
 
-
-    SearchRepositoryImpl(String teiType, D2 d2, ResourceManager resources, SearchSortingValueSetter sortingValueSetter) {
+    SearchRepositoryImpl(String teiType, D2 d2, FilterController filterController, ResourceManager resources, SearchSortingValueSetter sortingValueSetter) {
         this.teiType = teiType;
         this.d2 = d2;
         this.resources = resources;
         this.sortingValueSetter = sortingValueSetter;
+        this.filterController = filterController;
     }
 
 
@@ -215,66 +207,12 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     private TrackedEntityInstanceQueryCollectionRepository getFilteredRepository(SearchParametersModel searchParametersModel) {
-
-
         this.savedSearchParameters = searchParametersModel.copy();
         this.savedFilters = FilterManager.getInstance().copy();
 
-        TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery = d2.trackedEntityModule().trackedEntityInstanceQuery();
-        if (searchParametersModel.getSelectedProgram() != null)
-            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgram().eq(searchParametersModel.getSelectedProgram().uid());
-        else
-            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byTrackedEntityType().eq(searchParametersModel.getTrackedEntityType());
-
-        if (!FilterManager.getInstance().getEnrollmentStatusFilters().isEmpty()) {
-            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byEnrollmentStatus().in(FilterManager.getInstance().getEnrollmentStatusFilters());
-        }
-
-        if (!FilterManager.getInstance().getEventStatusFilters().isEmpty()) {
-            trackedEntityInstanceQuery = trackedEntityInstanceQuery
-                    .byEventStartDate().eq(DateUtils.yearsBeforeNow(5))
-                    .byEventEndDate().eq(DateUtils.yearsAfterNow(1))
-                    .byEventStatus().in(FilterManager.getInstance().getEventStatusFilters());
-        }
-
-        OrganisationUnitMode ouMode;
-        List<String> orgUnits = new ArrayList<>();
-        if (FilterManager.getInstance().getOrgUnitUidsFilters().isEmpty()) {
-            orgUnits.addAll(UidsHelper.getUidsList(d2.organisationUnitModule().organisationUnits()
-                    .byRootOrganisationUnit(true)
-                    .blockingGet()));
-            ouMode = OrganisationUnitMode.DESCENDANTS;
-        } else {
-            orgUnits.addAll(FilterManager.getInstance().getOrgUnitUidsFilters());
-            ouMode = OrganisationUnitMode.SELECTED;
-        }
-
-        trackedEntityInstanceQuery = trackedEntityInstanceQuery
-                .byOrgUnits().in(orgUnits)
-                .byOrgUnitMode().eq(ouMode);
-
-        if (!FilterManager.getInstance().getStateFilters().isEmpty())
-            trackedEntityInstanceQuery = trackedEntityInstanceQuery
-                    .byStates().in(FilterManager.getInstance().getStateFilters());
-
-        List<DatePeriod> periods = FilterManager.getInstance().getEnrollmentPeriodFilters();
-
-        if (!periods.isEmpty()) {
-            searchParametersModel.getQueryData().remove(Constants.ENROLLMENT_DATE_UID);
-            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramStartDate().eq(periods.get(0).startDate());
-            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramEndDate().eq(periods.get(0).endDate());
-        } else if (searchParametersModel.getQueryData() != null && !isEmpty(searchParametersModel.getQueryData().get(Constants.ENROLLMENT_DATE_UID))) {
-            try {
-                Date enrollmentDate = DateUtils.uiDateFormat().parse(searchParametersModel.getQueryData().get(Constants.ENROLLMENT_DATE_UID));
-                searchParametersModel.getQueryData().remove(Constants.ENROLLMENT_DATE_UID);
-                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramStartDate().eq(enrollmentDate);
-                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramEndDate().eq(enrollmentDate);
-                periods.add(DatePeriod.create(enrollmentDate, enrollmentDate));
-
-            } catch (ParseException ex) {
-                Timber.d(ex);
-            }
-        }
+        trackedEntityInstanceQuery = filterController.filteredTrackedEntityInstances(
+                searchParametersModel.getSelectedProgram(), searchParametersModel.getTrackedEntityType()
+        );
 
         for (int i = 0; i < searchParametersModel.getQueryData().keySet().size(); i++) {
             String dataId = searchParametersModel.getQueryData().keySet().toArray()[i].toString();
@@ -286,43 +224,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).like(dataValue);
         }
 
-        if (FilterManager.getInstance().getAssignedFilter()) {
-            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAssignedUserMode().eq(AssignedUserMode.CURRENT);
-        }
-
-        if (FilterManager.getInstance().getSortingItem() != null) {
-            switch (FilterManager.getInstance().getSortingItem().component1()) {
-                case ORG_UNIT:
-                    if (FilterManager.getInstance().getSortingItem().getSortingStatus() == SortingStatus.ASC)
-                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByOrganisationUnitName().eq(RepositoryScope.OrderByDirection.ASC);
-                    if (FilterManager.getInstance().getSortingItem().getSortingStatus() == SortingStatus.DESC)
-                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByOrganisationUnitName().eq(RepositoryScope.OrderByDirection.DESC);
-                    break;
-                case ENROLLMENT_DATE:
-                    if (FilterManager.getInstance().getSortingItem().getSortingStatus() == SortingStatus.ASC)
-                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEnrollmentDate().eq(RepositoryScope.OrderByDirection.ASC);
-                    if (FilterManager.getInstance().getSortingItem().getSortingStatus() == SortingStatus.DESC)
-                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEnrollmentDate().eq(RepositoryScope.OrderByDirection.DESC);
-                    break;
-                case PERIOD:
-                    if (FilterManager.getInstance().getSortingItem().getSortingStatus() == SortingStatus.ASC)
-                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEventDate().eq(RepositoryScope.OrderByDirection.ASC);
-                    if (FilterManager.getInstance().getSortingItem().getSortingStatus() == SortingStatus.DESC)
-                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEventDate().eq(RepositoryScope.OrderByDirection.DESC);
-                    break;
-                case ENROLLMENT_STATUS:
-                    if (FilterManager.getInstance().getSortingItem().getSortingStatus() == SortingStatus.ASC)
-                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEnrollmentStatus().eq(RepositoryScope.OrderByDirection.ASC);
-                    if (FilterManager.getInstance().getSortingItem().getSortingStatus() == SortingStatus.DESC)
-                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEnrollmentStatus().eq(RepositoryScope.OrderByDirection.DESC);
-                    break;
-                default:
-                    break;
-            }
-        }
-
         return trackedEntityInstanceQuery;
-
     }
 
     @NonNull
@@ -788,34 +690,34 @@ public class SearchRepositoryImpl implements SearchRepository {
         } else {
             searchTei.setTei(tei);
             if (tei.trackedEntityAttributeValues() != null) {
-                if(selectedProgram!=null){
+                if (selectedProgram != null) {
                     List<ProgramTrackedEntityAttribute> programAttributes = d2.programModule().programTrackedEntityAttributes()
                             .byProgram().eq(selectedProgram.uid())
                             .byDisplayInList().isTrue()
                             .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                             .blockingGet();
-                    for(ProgramTrackedEntityAttribute programAttribute: programAttributes){
+                    for (ProgramTrackedEntityAttribute programAttribute : programAttributes) {
                         TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
                                 .uid(programAttribute.trackedEntityAttribute().uid())
                                 .blockingGet();
-                        for(TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()){
-                            if(attrValue.trackedEntityAttribute().equals(attribute.uid())){
+                        for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
+                            if (attrValue.trackedEntityAttribute().equals(attribute.uid())) {
                                 addAttribute(searchTei, attrValue, attribute);
                                 break;
                             }
                         }
                     }
-                }else{
+                } else {
                     List<TrackedEntityTypeAttribute> typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
                             .byTrackedEntityTypeUid().eq(searchTei.getTei().trackedEntityType())
                             .byDisplayInList().isTrue()
                             .blockingGet();
-                    for(TrackedEntityTypeAttribute typeAttribute : typeAttributes){
+                    for (TrackedEntityTypeAttribute typeAttribute : typeAttributes) {
                         TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
                                 .uid(typeAttribute.trackedEntityAttribute().uid())
                                 .blockingGet();
-                        for(TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()){
-                            if(attrValue.trackedEntityAttribute().equals(attribute.uid())){
+                        for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
+                            if (attrValue.trackedEntityAttribute().equals(attribute.uid())) {
                                 addAttribute(searchTei, attrValue, attribute);
                                 break;
                             }

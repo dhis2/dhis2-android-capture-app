@@ -1,17 +1,17 @@
 package org.dhis2.utils.customviews;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
 import androidx.databinding.ViewDataBinding;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -19,17 +19,16 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
-import org.dhis2.utils.ColorUtils;
-import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
+import org.dhis2.utils.ColorUtils;
+import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
 
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
-import androidx.databinding.ObservableField;
 import timber.log.Timber;
 
 /**
@@ -53,6 +52,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     private ImageView clearButton;
     private TextView labelText;
     private View descriptionLabel;
+    private ImageView descriptionIcon;
 
     public DateView(Context context) {
         super(context);
@@ -83,15 +83,17 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         editText = findViewById(R.id.inputEditText);
         clearButton = findViewById(R.id.clear_button);
         labelText = findViewById(R.id.label);
+        descriptionIcon = findViewById(R.id.descIcon);
         descriptionLabel = findViewById(R.id.descriptionLabel);
         inputLayout.setHint(getContext().getString(R.string.choose_date));
-        ((ImageView) findViewById(R.id.descIcon)).setImageResource(R.drawable.ic_form_date);
+        descriptionIcon.setImageResource(R.drawable.ic_form_date);
         selectedCalendar = Calendar.getInstance();
         editText.setFocusable(false); //Makes editText not editable
         editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this::onFocusChanged);
         editText.setOnClickListener(this);
         clearButton.setOnClickListener( v -> { clearDate(); });
+        descriptionIcon.setOnClickListener(this);
     }
 
     public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale){
@@ -162,6 +164,8 @@ public class DateView extends FieldLayout implements View.OnClickListener {
             editText.setText("");
         }
         editText.setText(data);
+
+        updateDeleteVisibility(clearButton);
     }
 
     public void setWarning(String msg) {
@@ -224,6 +228,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                         listener.onDateSelected(selectedDate);
                         nextFocus(DateView.this);
                         date = null;
+                        updateDeleteVisibility(clearButton);
                     }
                 }).show();
     }
@@ -232,6 +237,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         editText.setText(null);
         listener.onDateSelected(null);
         date = null;
+        updateDeleteVisibility(clearButton);
     }
 
     public TextInputEditText getEditText() {
@@ -241,6 +247,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     public void setEditable(Boolean editable) {
         editText.setEnabled(editable);
         clearButton.setEnabled(editable);
+        descriptionIcon.setEnabled(editable);
         editText.setTextColor(
                 !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
                         ContextCompat.getColor(getContext(), R.color.textPrimary)
@@ -253,5 +260,17 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                 descriptionLabel,
                 clearButton
         );
+
+        updateDeleteVisibility(clearButton);
+    }
+
+    @Override
+    protected boolean hasValue() {
+        return editText.getText() != null && !editText.getText().toString().isEmpty();
+    }
+
+    @Override
+    protected boolean isEditable() {
+        return editText.isEnabled();
     }
 }

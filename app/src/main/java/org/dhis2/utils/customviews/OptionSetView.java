@@ -5,7 +5,6 @@ import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -115,8 +114,6 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
 
     public void deleteSelectedOption() {
         setValueOption(null, null);
-        if (delete != null)
-            delete.setVisibility(View.GONE);
     }
 
     public void setOnSelectedOptionListener(OnSelectedOption listener) {
@@ -139,19 +136,9 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
     }
 
     private void setValueOption(String optionDisplayName, String optionCode) {
-
         editText.setText(optionDisplayName);
-
-        if (delete != null) {
-            if (optionDisplayName != null && !optionDisplayName.isEmpty()) {
-                delete.setVisibility(View.VISIBLE);
-            } else {
-                delete.setVisibility(View.GONE);
-            }
-        }
-
+        updateDeleteVisibility(delete);
         listener.onSelectedOption(optionDisplayName, optionCode);
-
     }
 
     public void setObjectStyle(ObjectStyle objectStyle) {
@@ -164,7 +151,6 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         editText.setClickable(isEditable);
         if (delete != null) {
             delete.setEnabled(isEditable);
-            delete.setVisibility(isEditable ? View.VISIBLE : View.GONE);
         }
         editText.setTextColor(
                 !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
@@ -190,9 +176,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
             inputLayout.setHintAnimationEnabled(true);
         }
 
-        if (delete != null && editText.getText() != null && !editText.getText().toString().isEmpty()) {
-            delete.setVisibility(View.VISIBLE);
-        }
+        updateDeleteVisibility(delete);
     }
 
     public void setWarning(String warning, String error) {
@@ -227,5 +211,15 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
 
     public interface OnSelectedOption {
         void onSelectedOption(String optionName, String optionCode);
+    }
+
+    @Override
+    protected boolean hasValue() {
+        return editText.getText() != null && !editText.getText().toString().isEmpty();
+    }
+
+    @Override
+    protected boolean isEditable() {
+        return editText.isEnabled();
     }
 }

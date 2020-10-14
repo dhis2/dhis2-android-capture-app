@@ -46,7 +46,7 @@ class CarouselEventHolder(
             this.eventInfo.text = eventInfo
         }
 
-        itemView.setOnClickListener {
+        binding.eventInfoCard.setOnClickListener {
             onClick(data.enrollment.trackedEntityInstance(), data.enrollment.uid(), data.eventUid)
         }
 

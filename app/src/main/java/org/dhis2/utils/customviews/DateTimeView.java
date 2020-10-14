@@ -105,6 +105,8 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
             editText.setText("");
         }
         editText.setText(data);
+
+        updateDeleteVisibility(clearButton);
     }
 
     public void setWarning(String msg) {
@@ -137,6 +139,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         labelText = findViewById(R.id.label);
         inputLayout.setHint(getContext().getString(R.string.choose_date));
         icon.setImageResource(R.drawable.ic_form_date_time);
+        icon.setOnClickListener(this);
         selectedCalendar = Calendar.getInstance();
         dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         editText.setFocusable(false); //Makes editText not editable
@@ -213,6 +216,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
             listener.onDateSelected(selectedDate);
             nextFocus(view);
             date = null;
+            updateDeleteVisibility(clearButton);
         },
                 hour,
                 minute,
@@ -228,6 +232,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     public void setEditable(Boolean editable) {
         editText.setEnabled(editable);
         clearButton.setEnabled(editable);
+        icon.setEnabled(editable);
         editText.setTextColor(
                 !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
                         ContextCompat.getColor(getContext(), R.color.textPrimary)
@@ -240,11 +245,23 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
                 findViewById(R.id.descriptionLabel),
                 clearButton
         );
+        updateDeleteVisibility(clearButton);
     }
 
     private void clearDate() {
         editText.setText(null);
         listener.onDateSelected(null);
         date = null;
+        updateDeleteVisibility(clearButton);
+    }
+
+    @Override
+    protected boolean hasValue() {
+        return editText.getText() != null && !editText.getText().toString().isEmpty();
+    }
+
+    @Override
+    protected boolean isEditable() {
+        return editText.isEnabled();
     }
 }

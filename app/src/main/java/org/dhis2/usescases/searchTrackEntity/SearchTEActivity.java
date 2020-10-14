@@ -51,6 +51,7 @@ import com.mapbox.mapboxsdk.maps.Style;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
@@ -191,6 +192,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             Timber.d(e.getMessage());
         }
 
+        ViewExtensionsKt.clipWithRoundedCorners(binding.scrollView, ExtensionsKt.getDp(16));
         if (fromRelationship) {
             relationshipLiveAdapter = new RelationshipLiveAdapter(presenter, getSupportFragmentManager());
             binding.scrollView.setAdapter(relationshipLiveAdapter);
@@ -287,8 +289,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             presenter.restoreQueryData((HashMap<String, String>) savedInstanceState.getSerializable(Constants.QUERY_DATA));
         }
         updateFiltersSearch(presenter.getQueryData().size());
-        binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
-        filtersAdapter.notifyDataSetChanged();
 
         teiMapManager = new TeiMapManager(binding.mapView);
         teiMapManager.setTeiFeatureType(presenter.getTrackedEntityType(tEType).featureType());
@@ -327,6 +327,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (teiMapManager != null) {
             teiMapManager.onResume();
         }
+        FilterManager.getInstance().clearUnsupportedFilters();
+        binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+        filtersAdapter.notifyDataSetChanged();
     }
 
     @Override
