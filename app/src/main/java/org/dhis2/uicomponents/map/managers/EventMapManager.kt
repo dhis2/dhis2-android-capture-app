@@ -50,7 +50,7 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
     }
 
     override fun setLayer() {
-        mapLayerManager.initMap(map)
+        mapLayerManager
             .addStartLayer(LayerType.EVENT_LAYER, featureType)
             .addLayer(LayerType.SATELLITE_LAYER)
     }

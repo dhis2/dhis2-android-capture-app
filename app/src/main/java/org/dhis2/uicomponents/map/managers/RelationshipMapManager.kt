@@ -87,7 +87,7 @@ class RelationshipMapManager(mapView: MapView) : MapManager(mapView) {
     }
 
     override fun setLayer() {
-        mapLayerManager.initMap(map)
+        mapLayerManager
             .addLayers(LayerType.RELATIONSHIP_LAYER, featureCollections.keys.toList(), true)
             .addLayer(LayerType.SATELLITE_LAYER)
     }
