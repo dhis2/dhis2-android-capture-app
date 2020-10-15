@@ -30,18 +30,18 @@ abstract class MapManager(val mapView: MapView) {
     fun init() {
         mapView.getMapAsync {
             this.map = it
+            mapLayerManager = MapLayerManager(it).apply {
+                styleChangeCallback = {
+                    mapLayerManager.clearLayers()
+                    loadDataForStyle()
+                    setSource()
+                }
+            }
             map.setStyle(Style.MAPBOX_STREETS) { loadDataForStyle() }
             onMapClickListener?.let { mapClickListener ->
                 map.addOnMapClickListener(mapClickListener)
             }
             markerViewManager = MarkerViewManager(mapView, map)
-        }
-        mapLayerManager = MapLayerManager().apply {
-            styleChangeCallback = {
-                mapLayerManager.clearLayers()
-                loadDataForStyle()
-                setSource()
-            }
         }
     }
 
