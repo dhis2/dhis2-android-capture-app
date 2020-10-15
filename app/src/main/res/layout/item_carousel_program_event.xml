@@ -32,18 +32,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="4.3dp"
-            app:rippleColor="@color/rippleColor"
             app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="6dp"
             app:cardElevation="4dp"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:rippleColor="@color/rippleColor">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="16dp"
                 android:paddingTop="10dp"
-                android:paddingEnd="16dp"
                 android:paddingBottom="10dp">
 
                 <ImageView
@@ -109,7 +108,7 @@
                     android:maxLines="1"
                     android:textColor="@color/text_black_C4C"
                     android:textSize="12sp"
-                    app:layout_constraintEnd_toStartOf="@+id/showValuesButton"
+                    app:layout_constraintEnd_toStartOf="@+id/showValuesButtonContainer"
                     app:layout_constraintStart_toStartOf="@+id/eventDate"
                     app:layout_constraintTop_toBottomOf="@id/optionCombo"
                     tools:text="69 | Transferred | C123 Posterior wall of hypophafuhrynx" />
@@ -118,6 +117,7 @@
                     android:id="@+id/sync_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:stateIcon='@{event.eventState()}'
@@ -132,33 +132,42 @@
                     android:layout_marginTop="11dp"
                     android:layout_marginEnd="14dp"
                     android:background="#1F000000"
-                    app:layout_constraintEnd_toStartOf="@id/showValuesButton"
+                    app:layout_constraintEnd_toStartOf="@id/showValuesButtonContainer"
                     app:layout_constraintStart_toStartOf="@id/eventDate"
                     app:layout_constraintTop_toBottomOf="@id/optionCombo" />
 
-                <ImageView
-                    android:id="@+id/showValuesButton"
-                    style="@style/ActionIconSmallPadding"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/showValuesButtonContainer"
                     android:layout_width="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    style="@style/ActionIconSmallPadding"
                     android:layout_height="wrap_content"
-                    android:paddingEnd="0dp"
                     app:layout_constraintBottom_toBottomOf="@+id/dataValue"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/dataValue"
-                    app:srcCompat="@drawable/ic_arrow_down"
-                    app:tint="#61333333" />
+                    app:layout_constraintTop_toTopOf="@+id/dataValue">
+
+                    <ImageView
+                        android:id="@+id/showValuesButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:srcCompat="@drawable/ic_arrow_down"
+                        app:tint="#61333333" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <LinearLayout
                     android:id="@+id/dataElementList"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="11dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="15dp"
                     android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@id/dataElementListGuideline"
-                    app:layout_constraintTop_toBottomOf="@id/dataElementListGuideline"
-                    android:layout_marginBottom="15dp"/>
+                    app:layout_constraintTop_toBottomOf="@id/dataElementListGuideline" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
