@@ -1,5 +1,7 @@
 package org.dhis2.data.filter
 
+import java.util.Calendar
+import javax.inject.Inject
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.AssignedUserMode
@@ -12,8 +14,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
-import java.util.Calendar
-import javax.inject.Inject
 
 class FilterRepository @Inject constructor(private val d2: D2) {
 
