@@ -873,6 +873,14 @@ class DataValueRepositoryTest {
         ) doReturn listOf(OrganisationUnit.builder().uid(UUID.randomUUID().toString()).build())
         whenever(
             d2.userModule().authorities()
+                .byName()
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD)
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
                 .byName().eq(AUTH_DATAVALUE_ADD)
                 .blockingIsEmpty()
         ) doReturn true
