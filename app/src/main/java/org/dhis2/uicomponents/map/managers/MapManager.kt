@@ -24,24 +24,32 @@ abstract class MapManager(val mapView: MapView) {
     var symbolManager: SymbolManager? = null
     var onMapClickListener: MapboxMap.OnMapClickListener? = null
     var carouselAdapter: CarouselAdapter? = null
-    val style: Style?
-        get() = map.style
+    var style: Style? = null
 
-    fun init() {
-        mapView.getMapAsync {
-            this.map = it
-            mapLayerManager = MapLayerManager(it).apply {
-                styleChangeCallback = {
-                    mapLayerManager.clearLayers()
+    fun init(onInitializationFinished: () -> Unit={}) {
+        if (style == null) {
+            mapView.getMapAsync { mapLoaded ->
+                this.map = mapLoaded
+                map.setStyle(Style.MAPBOX_STREETS) { styleLoaded ->
+                    this.style = styleLoaded
+                    mapLayerManager = MapLayerManager(map).apply {
+                        styleChangeCallback = { newStyle ->
+                            style = newStyle
+                            mapLayerManager.clearLayers()
+                            loadDataForStyle()
+                            setSource()
+                        }
+                    }
+                    onMapClickListener?.let { mapClickListener ->
+                        map.addOnMapClickListener(mapClickListener)
+                    }
+                    markerViewManager = MarkerViewManager(mapView, map)
                     loadDataForStyle()
-                    setSource()
+                    onInitializationFinished()
                 }
             }
-            map.setStyle(Style.MAPBOX_STREETS) { loadDataForStyle() }
-            onMapClickListener?.let { mapClickListener ->
-                map.addOnMapClickListener(mapClickListener)
-            }
-            markerViewManager = MarkerViewManager(mapView, map)
+        } else {
+            onInitializationFinished()
         }
     }
 
