@@ -25,7 +25,7 @@ class FilterPresenter @Inject constructor(
         EventProgramFilterSearchHelper(filterRepository, filterManager)
     }
 
-    private lateinit var filteredOrgUnitResult: FilteredOrgUnitResult
+    private var filteredOrgUnitResult: FilteredOrgUnitResult? = null
 
     fun filteredDataSetInstances(): DataSetInstanceSummaryCollectionRepository {
         return dataSetFilterSearchHelper.getFilteredDataSetSearchRepository()
@@ -70,12 +70,12 @@ class FilterPresenter @Inject constructor(
                 emptyList()
             }
         )
-        return filteredOrgUnitResult
+        return filteredOrgUnitResult!!
     }
 
     fun addOrgUnitToFilter(callback: () -> Unit) {
-        if (filteredOrgUnitResult.firstResult() != null) {
-            filterManager.addOrgUnit(filteredOrgUnitResult.firstResult())
+        if (filteredOrgUnitResult?.firstResult() != null) {
+            filterManager.addOrgUnit(filteredOrgUnitResult!!.firstResult())
             callback.invoke()
         }
     }
