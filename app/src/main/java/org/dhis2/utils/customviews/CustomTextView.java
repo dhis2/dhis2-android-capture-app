@@ -25,8 +25,9 @@ import androidx.databinding.ViewDataBinding;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.BR;
+import org.dhis2.Components;
+import org.dhis2.DaggerAppComponent;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.validation.ValueTypeValidatorFactoryKt;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.Validator;
@@ -34,7 +35,12 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
+import java.util.Map;
 import java.util.regex.Pattern;
+
+import javax.inject.Inject;
+
+import dagger.internal.DaggerCollections;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -54,7 +60,6 @@ public class CustomTextView extends FieldLayout {
     private String label;
     private ValueType valueType;
     private ViewDataBinding binding;
-    private Validator validator;
 
     private OnFocusChangeListener focusListener;
 
@@ -64,20 +69,25 @@ public class CustomTextView extends FieldLayout {
     private View descriptionLabel;
     private View dummy;
     private TextView labelText;
+    private Map<ValueType, Validator> validators;
+    private Validator validator;
 
     public CustomTextView(Context context) {
         super(context);
         init(context);
+        validators = ((Components) context.getApplicationContext()).appComponent().injectValidators();
     }
 
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
+        validators = ((Components) context.getApplicationContext()).appComponent().injectValidators();
     }
 
     public CustomTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
+        validators = ((Components) context.getApplicationContext()).appComponent().injectValidators();
     }
 
     public void init(Context context) {
@@ -205,7 +215,7 @@ public class CustomTextView extends FieldLayout {
 
     public void setValueType(ValueType valueType) {
         this.valueType = valueType;
-        this.validator = ValueTypeValidatorFactoryKt.getValidator(valueType);
+        this.validator = validators.get(valueType);
 
         configureViews();
     }
