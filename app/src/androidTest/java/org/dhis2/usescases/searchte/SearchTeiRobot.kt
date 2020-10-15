@@ -19,6 +19,7 @@ import org.dhis2.common.viewactions.openSpinnerPopup
 import org.dhis2.common.viewactions.typeChildViewWithId
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
+import org.dhis2.utils.filters.FilterHolder
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
 
@@ -127,5 +128,15 @@ class SearchTeiRobot : BaseRobot() {
                     hasDescendant(withText("Address")), hasDescendant(withText(displayListFieldsUIModel.address))
                 ))
             ))
+    }
+
+    fun clickOnFilter() {
+        onView(withId(R.id.search_filter_general)).perform(click())
+    }
+
+    fun clickOnFilterBy(filter: String) {
+        onView(withId(R.id.filterRecyclerLayout)).perform(
+            actionOnItem<FilterHolder>(hasDescendant(withText(filter)), click())
+        )
     }
 }

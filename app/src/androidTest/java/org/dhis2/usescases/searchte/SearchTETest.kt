@@ -110,6 +110,21 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Test
+    fun shouldSuccessfullyFilterByEnrollmentStatusCompleted() {
+        /**
+         * click on completed
+         * close search form
+         * check all items has text completed
+         * */
+
+        prepareChildProgrammeIntentAndLaunchActivity()
+
+        searchTeiRobot {
+            clickOnFilter()
+            clickOnFilterBy("ENROLLMENT STATUS")
+        }
+    }
 
     @Ignore("WIP")
     @Test
