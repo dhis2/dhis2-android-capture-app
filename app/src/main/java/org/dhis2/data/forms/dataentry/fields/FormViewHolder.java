@@ -9,6 +9,9 @@ import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ValueExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.customviews.CustomDialog;
@@ -34,6 +37,9 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
         this.description = binding.getRoot().findViewById(R.id.descriptionLabel);
         this.fieldSelected = binding.getRoot().findViewById(R.id.fieldSelected);
+        if(fieldSelected!=null) {
+            ViewExtensionsKt.clipWithAllRoundedCorners(fieldSelected, ExtensionsKt.getDp(2));
+        }
         if (description != null) {
             description.setOnClickListener(v ->
                     new CustomDialog(
