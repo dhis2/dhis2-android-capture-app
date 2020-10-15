@@ -1,6 +1,5 @@
 package org.dhis2.data.filter
 
-import javax.inject.Inject
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.AssignedUserMode
@@ -13,6 +12,8 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
+import java.util.Calendar
+import javax.inject.Inject
 
 class FilterRepository @Inject constructor(private val d2: D2) {
 
@@ -47,7 +48,15 @@ class FilterRepository @Inject constructor(private val d2: D2) {
         repository: TrackedEntityInstanceQueryCollectionRepository,
         eventStatuses: List<EventStatus>
     ): TrackedEntityInstanceQueryCollectionRepository {
+        val fromDate = Calendar.getInstance().apply {
+            add(Calendar.YEAR, -1)
+        }.time
+        val toDate = Calendar.getInstance().apply {
+            add(Calendar.YEAR, 1)
+        }.time
         return repository.byEventStatus().`in`(eventStatuses)
+            .byEventStartDate().eq(fromDate)
+            .byEventEndDate().eq(toDate)
     }
 
     fun applyOrgUnitFilter(
