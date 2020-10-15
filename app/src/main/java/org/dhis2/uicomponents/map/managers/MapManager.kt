@@ -26,7 +26,7 @@ abstract class MapManager(val mapView: MapView) {
     var carouselAdapter: CarouselAdapter? = null
     var style: Style? = null
 
-    fun init(onInitializationFinished: () -> Unit={}) {
+    fun init(onInitializationFinished: () -> Unit = {}) {
         if (style == null) {
             mapView.getMapAsync { mapLoaded ->
                 this.map = mapLoaded
