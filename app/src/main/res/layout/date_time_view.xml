@@ -90,11 +90,11 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageView
-                android:layout_gravity="center"
                 android:id="@+id/descIcon"
+                style="@style/ActionIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:paddingHorizontal="11dp"
+                android:layout_gravity="center"
                 tools:visibility="visible"
                 tools:src="@drawable/ic_form_date"/>
 
