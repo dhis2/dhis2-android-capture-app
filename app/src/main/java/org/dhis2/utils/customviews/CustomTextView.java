@@ -75,23 +75,21 @@ public class CustomTextView extends FieldLayout {
     public CustomTextView(Context context) {
         super(context);
         init(context);
-        validators = ((Components) context.getApplicationContext()).appComponent().injectValidators();
     }
 
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
-        validators = ((Components) context.getApplicationContext()).appComponent().injectValidators();
     }
 
     public CustomTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
-        validators = ((Components) context.getApplicationContext()).appComponent().injectValidators();
     }
 
     public void init(Context context) {
         inflater = LayoutInflater.from(context);
+        validators = ((Components) context.getApplicationContext()).appComponent().injectValidators();
     }
 
     @SuppressLint("ClickableViewAccessibility")
