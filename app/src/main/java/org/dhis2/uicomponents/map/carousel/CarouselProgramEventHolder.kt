@@ -57,8 +57,8 @@ class CarouselProgramEventHolder(
         programEventModel: ProgramEventViewModel,
         toggleList: () -> Unit
     ) {
-        binding.showValuesButton.visibility = View.VISIBLE
-        binding.showValuesButton.setOnClickListener {
+        binding.showValuesButtonContainer.visibility = View.VISIBLE
+        binding.showValuesButtonContainer.setOnClickListener {
             if (programEventModel.openedAttributeList) {
                 binding.dataElementList.collapse {
                     initValues(false, programEventModel.eventDisplayData())
@@ -73,11 +73,11 @@ class CarouselProgramEventHolder(
     }
 
     private fun hideEventValueLayout() {
-        binding.showValuesButton.visibility = View.INVISIBLE
+        binding.showValuesButtonContainer.visibility = View.INVISIBLE
         binding.dataElementListGuideline.visibility = View.INVISIBLE
         binding.dataElementList.visibility = View.GONE
         binding.dataValue.text = itemView.context.getString(R.string.no_data)
-        binding.showValuesButton.setOnClickListener(null)
+        binding.showValuesButtonContainer.setOnClickListener(null)
     }
 
     private fun initValues(
