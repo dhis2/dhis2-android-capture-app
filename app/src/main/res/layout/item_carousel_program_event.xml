@@ -43,7 +43,6 @@
                 android:layout_height="wrap_content"
                 android:paddingStart="16dp"
                 android:paddingTop="10dp"
-                android:paddingEnd="16dp"
                 android:paddingBottom="10dp">
 
                 <ImageView
@@ -119,6 +118,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="16dp"
                     app:layout_constraintTop_toTopOf="parent"
                     app:stateIcon='@{event.eventState()}'
                     tools:ignore="ContentDescription"
@@ -140,8 +140,8 @@
                     android:id="@+id/showValuesButton"
                     style="@style/ActionIconSmallPadding"
                     android:layout_width="wrap_content"
+                    android:layout_marginEnd="10dp"
                     android:layout_height="wrap_content"
-                    android:paddingEnd="0dp"
                     app:layout_constraintBottom_toBottomOf="@+id/dataValue"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/dataValue"
