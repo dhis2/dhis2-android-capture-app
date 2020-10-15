@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.mapbox.geojson.Feature
-import org.dhis2.Bindings.dp
 import kotlin.math.abs
+import org.dhis2.Bindings.dp
 import org.dhis2.uicomponents.map.camera.centerCameraOnFeature
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.carousel.CarouselLayoutManager
