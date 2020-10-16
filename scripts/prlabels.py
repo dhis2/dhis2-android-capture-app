@@ -85,4 +85,4 @@ for pr in opened_prs:
 
     print(str(labels_to_add)[1:-1])
     payload = '{"labels":%s}' % json.dumps(labels_to_add)
-    requests.post("https://api.github.com/repos/dhis2/dhis2-android-capture-app/issues/%s/labels?access_token=%s" %(pr['number'], GITHUB_RELEASE_API_TOKEN), data = payload)
+    requests.put("https://api.github.com/repos/dhis2/dhis2-android-capture-app/issues/%s/labels?access_token=%s" %(pr['number'], GITHUB_RELEASE_API_TOKEN), data = payload)
