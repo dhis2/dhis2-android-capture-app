@@ -139,4 +139,8 @@ class SearchTeiRobot : BaseRobot() {
             actionOnItem<FilterHolder>(hasDescendant(withText(filter)), click())
         )
     }
+
+    fun clickOnFilterCancelledOption() {
+        onView(withId(R.id.layoutCancelled)).perform(click())
+    }
 }

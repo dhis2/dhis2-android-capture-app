@@ -123,6 +123,8 @@ class SearchTETest : BaseTest() {
         searchTeiRobot {
             clickOnFilter()
             clickOnFilterBy("ENROLLMENT STATUS")
+            clickOnFilterCancelledOption()
+            closeSearchForm()
         }
     }
 
