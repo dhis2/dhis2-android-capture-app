@@ -25,7 +25,7 @@ class SearchTETest : BaseTest() {
         val firstNamePosition = 0
         val filterCount = "1"
 
-        prepareChildProgrammeIntentAndLaunchActivity()
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
         
         searchTeiRobot {
             typeAttributeAtPosition(firstName, firstNamePosition)
@@ -43,7 +43,7 @@ class SearchTETest : BaseTest() {
         val filterCount = "1"
         val noResultMessage = context.getString(R.string.search_criteria_not_met).replace("%s","Person")
 
-        prepareTestProgramRulesProgrammeIntentAndLaunchActivity()
+        prepareTestProgramRulesProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
             typeAttributeAtPosition(firstName, firstNamePosition)
@@ -62,7 +62,7 @@ class SearchTETest : BaseTest() {
         val lastNamePosition = 1
         val filterCount = "2"
 
-        prepareChildProgrammeIntentAndLaunchActivity()
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
             typeAttributeAtPosition(firstName, firstNamePosition)
@@ -78,7 +78,7 @@ class SearchTETest : BaseTest() {
     fun shouldSuccessfullyChangeBetweenPrograms() {
         val tbProgram = "TB program"
 
-        prepareChildProgrammeIntentAndLaunchActivity()
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
             clickOnProgramSpinner()
@@ -95,7 +95,7 @@ class SearchTETest : BaseTest() {
         val lastNamePosition = 1
         val filterCount = "3"
 
-        prepareTestAdultWomanProgrammeIntentAndLaunchActivity()
+        prepareTestAdultWomanProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
             typeAttributeAtPosition(displayInListData.name, namePosition)
@@ -112,26 +112,47 @@ class SearchTETest : BaseTest() {
 
     @Test
     fun shouldSuccessfullyFilterByEnrollmentStatusCompleted() {
-        /**
-         * click on completed
-         * close search form
-         * check all items has text completed
-         * */
+        val enrollmentStatusFilter = context.getString(R.string.filters_title_enrollment_status)
 
-        prepareChildProgrammeIntentAndLaunchActivity()
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
             clickOnFilter()
-            clickOnFilterBy("ENROLLMENT STATUS")
+            clickOnFilterBy(enrollmentStatusFilter)
             clickOnFilterCancelledOption()
             closeSearchForm()
+            checkTEIsAreCancelled()
+        }
+    }
+
+    @Test
+    fun shouldSuccessfullyFilterByEventStatusOverdue() {
+        /*
+        * launch program
+        * click on filter event status
+        * click on overdue
+        * click on close
+        * check overdue label and icon
+        * */
+        val eventStatusFilter = context.getString(R.string.filters_title_event_status)
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
+
+        searchTeiRobot {
+            clickOnFilter()
+            clickOnFilterBy(eventStatusFilter)
+            clickOnFilterOverdueOption()
+            closeSearchForm()
+            closeFilterRowAtField(eventStatusFilter)
+            closeSearchForm()
+            checkEventsAreOverdue()
+            Thread.sleep(1000)
         }
     }
 
     @Ignore("WIP")
     @Test
     fun shouldSuccessfullyFilterBySync() {
-        prepareChildProgrammeIntentAndLaunchActivity()
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
             /*clickOnSearchFilter()
@@ -157,7 +178,7 @@ class SearchTETest : BaseTest() {
         "167"
     )
 
-    private fun prepareChildProgrammeIntentAndLaunchActivity() {
+    /*private fun prepareChildProgrammeIntentAndLaunchActivity() {
         Intent().apply {
             putExtra(PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
             putExtra(CHILD_TE_TYPE, CHILD_TE_TYPE_VALUE)
@@ -176,7 +197,7 @@ class SearchTETest : BaseTest() {
             putExtra(PROGRAM_UID, ADULT_WOMAN_PROGRAM_UID_VALUE)
             putExtra(CHILD_TE_TYPE, ADULT_WOMAN_TE_TYPE_VALUE)
         }.also { rule.launchActivity(it) }
-    }
+    }*/
 
     companion object {
         const val PROGRAM_UID = "PROGRAM_UID"

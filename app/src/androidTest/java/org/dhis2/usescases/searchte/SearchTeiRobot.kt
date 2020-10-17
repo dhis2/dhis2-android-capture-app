@@ -143,4 +143,23 @@ class SearchTeiRobot : BaseRobot() {
     fun clickOnFilterCancelledOption() {
         onView(withId(R.id.layoutCancelled)).perform(click())
     }
+
+    fun checkTEIsAreCancelled() {
+        onView(withId(R.id.scrollView))
+            .check(matches(hasItem(hasDescendant(withText(R.string.completed)))))
+    }
+
+    fun clickOnFilterOverdueOption() {
+        onView(withId(R.id.layoutOverdue)).perform(click())
+    }
+
+    fun closeFilterRowAtField(filter: String) {
+        onView(withId(R.id.filterRecyclerLayout)).perform(actionOnItem<FilterHolder>(hasDescendant(
+            withText(filter)), clickChildViewWithId(R.id.filterArrow)))
+    }
+
+    fun checkEventsAreOverdue() {
+        onView(withId(R.id.scrollView))
+            .check(matches(hasItem(hasDescendant(withId(R.id.overdueIcon)))))
+    }
 }
