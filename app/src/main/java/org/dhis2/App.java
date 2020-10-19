@@ -85,8 +85,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
-    protected boolean wantToImportDB = false;
-
     @NonNull
     @Singleton
     AppComponent appComponent;
@@ -150,11 +148,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
             matomoTracker = TrackerBuilder.createDefault(BuildConfig.MATOMO_URL, BuildConfig.MATOMO_ID).build(Matomo.getInstance(this));
         }
         return matomoTracker;
-    }
-
-    private void populateDBIfNeeded() {
-        DBTestLoader dbTestLoader = new DBTestLoader(getApplicationContext());
-        dbTestLoader.copyDatabaseFromAssetsIfNeeded();
     }
 
     private void upgradeSecurityProviderSync() {
