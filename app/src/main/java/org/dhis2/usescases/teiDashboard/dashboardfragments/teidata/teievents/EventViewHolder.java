@@ -8,6 +8,7 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
@@ -23,10 +24,12 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.program.ProgramType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import kotlin.Pair;
 import kotlin.Unit;
@@ -43,10 +46,10 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
     private ItemEventBinding binding;
 
     public EventViewHolder(ItemEventBinding binding,
-                    Program program,
-                    Function1<String, Unit> syncClick,
-                    Function2<String, View, Unit> scheduleClick,
-                    Function4<String, String, EventStatus, View, Unit> onEventSelected
+                           Program program,
+                           Function1<String, Unit> syncClick,
+                           Function2<String, View, Unit> scheduleClick,
+                           Function4<String, String, EventStatus, View, Unit> onEventSelected
     ) {
         super(binding.getRoot());
         this.binding = binding;
@@ -66,11 +69,15 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         binding.executePendingBindings();
 
         if (eventModel.getGroupedByStage()) {
+            binding.eventCard.setCardBackgroundColor(
+                    ContextCompat.getColor(itemView.getContext(),
+                            program.programType() == ProgramType.WITH_REGISTRATION ? R.color.form_field_background : R.color.white));
             binding.programStageName.setVisibility(View.GONE);
-            binding.stageIconImage.setVisibility(View.GONE);
-            binding.stageIconStatusImage.setVisibility(View.GONE);
+            binding.stageIconImage.setVisibility(View.INVISIBLE);
+            binding.stageIconStatusImage.setVisibility(View.INVISIBLE);
             binding.eventStatus.setVisibility(View.VISIBLE);
         } else {
+            binding.eventCard.setCardBackgroundColor(Color.WHITE);
             binding.programStageName.setVisibility(View.VISIBLE);
             binding.stageIconImage.setVisibility(View.VISIBLE);
             binding.stageIconStatusImage.setVisibility(View.VISIBLE);
@@ -90,19 +97,14 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         }
 
         if (eventModel.getDataElementValues() != null && !eventModel.getDataElementValues().isEmpty()) {
-            binding.showValuesButton.setVisibility(View.VISIBLE);
-            binding.showValuesButton.setOnClickListener(view -> toggleList.invoke());
-            initValues(eventModel.getValueListIsOpen(), eventModel.getDataElementValues());
+            setEventValueLayout(eventModel, toggleList);
         } else {
-            binding.showValuesButton.setVisibility(View.GONE);
-            binding.dataElementListGuideline.setVisibility(View.GONE);
-            binding.dataElementList.setVisibility(View.GONE);
-            binding.showValuesButton.setOnClickListener(null);
+            hideEventValueLayout();
         }
 
         binding.syncIcon.setOnClickListener(view -> onSyncClick.invoke(event.uid()));
 
-        itemView.setOnClickListener(view -> {
+        binding.eventCard.setOnClickListener(view -> {
             switch (eventModel.getEvent().status()) {
                 case SCHEDULE:
                 case OVERDUE:
@@ -113,10 +115,25 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
                     break;
                 case ACTIVE:
                 case COMPLETED:
-                    onEventSelected.invoke(event.uid(),event.organisationUnit(), event.status(), binding.sharedView);
+                    onEventSelected.invoke(event.uid(), event.organisationUnit(), event.status(), binding.sharedView);
                     break;
             }
         });
+
+        showShadows(eventModel);
+    }
+
+    private void setEventValueLayout(EventViewModel eventModel, @NotNull Function0<Unit> toggleList) {
+        binding.showValuesButton.setVisibility(View.VISIBLE);
+        binding.showValuesButton.setOnClickListener(view -> toggleList.invoke());
+        initValues(eventModel.getValueListIsOpen(), eventModel.getDataElementValues());
+    }
+
+    private void hideEventValueLayout() {
+        binding.showValuesButton.setVisibility(View.GONE);
+        binding.dataElementListGuideline.setVisibility(View.INVISIBLE);
+        binding.dataElementList.setVisibility(View.GONE);
+        binding.showValuesButton.setOnClickListener(null);
     }
 
     private void renderStageIcon(ObjectStyle style) {
@@ -142,7 +159,15 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
     private void initValues(boolean valueListIsOpen, List<Pair<String, String>> dataElementValues) {
         binding.dataElementList.removeAllViews();
         binding.eventInfo.setText(null);
-        binding.showValuesButton.setScaleY(valueListIsOpen ? -1F : 1F);
+        binding.showValuesButton.setScaleY(valueListIsOpen ? 1F : -1F);
+        binding.showValuesButton
+                .animate()
+                .scaleY(valueListIsOpen ? -1F : 1F)
+                .setDuration(500)
+                .withStartAction(() -> binding.showValuesButton.setScaleY(valueListIsOpen ? 1F : -1F))
+                .withEndAction(() -> binding.showValuesButton.setScaleY(valueListIsOpen ? -1F : 1F))
+                .start();
+
         if (valueListIsOpen) {
             binding.dataElementListGuideline.setVisibility(View.VISIBLE);
             binding.dataElementList.setVisibility(View.VISIBLE);
@@ -153,19 +178,32 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
                 binding.dataElementList.addView(fieldValueBinding.getRoot());
             }
         } else {
-            binding.dataElementListGuideline.setVisibility(View.GONE);
+            binding.dataElementListGuideline.setVisibility(View.INVISIBLE);
             binding.dataElementList.setVisibility(View.GONE);
             SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
             for (Pair<String, String> nameValuePair : dataElementValues) {
-                SpannableString value = new SpannableString(nameValuePair.component2());
-                int colorToUse = dataElementValues.indexOf(nameValuePair) % 2 == 0 ? Color.parseColor("#8A333333") : Color.parseColor("#61333333");
-                value.setSpan(new ForegroundColorSpan(colorToUse), 0, value.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-                stringBuilder.append(value);
-                if (dataElementValues.indexOf(nameValuePair) != dataElementValues.size() - 1) {
-                    stringBuilder.append(" ");
+                if (nameValuePair.component2()!= null && !Objects.equals(nameValuePair.component2(), "-")) {
+                    SpannableString value = new SpannableString(nameValuePair.component2());
+                    int colorToUse = dataElementValues.indexOf(nameValuePair) % 2 == 0 ?
+                            ContextCompat.getColor(itemView.getContext(), R.color.textPrimary) : ContextCompat.getColor(itemView.getContext(), R.color.textSecondary);
+                    value.setSpan(new ForegroundColorSpan(colorToUse), 0, value.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                    stringBuilder.append(value);
+                    if (dataElementValues.indexOf(nameValuePair) != dataElementValues.size() - 1) {
+                        stringBuilder.append(" ");
+                    }
                 }
             }
-            binding.eventInfo.setText(stringBuilder);
+
+            if (stringBuilder.toString().isEmpty()) {
+                hideEventValueLayout();
+            } else {
+                binding.eventInfo.setText(stringBuilder);
+            }
         }
+    }
+
+    public void showShadows(EventViewModel eventViewModel) {
+        binding.shadowTop.setVisibility(eventViewModel.getGroupedByStage() && eventViewModel.getShowTopShadow() ? View.VISIBLE : View.GONE);
+        binding.shadowBottom.setVisibility(eventViewModel.getGroupedByStage() && eventViewModel.getShowBottomShadow() ? View.VISIBLE : View.GONE);
     }
 }

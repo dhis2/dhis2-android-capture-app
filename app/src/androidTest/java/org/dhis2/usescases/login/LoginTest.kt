@@ -3,6 +3,7 @@ package org.dhis2.usescases.login
 import android.Manifest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.common.rules.RetryRule
 import org.dhis2.data.prefs.Preference.Companion.PIN
 import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.usescases.BaseTest
@@ -36,11 +37,7 @@ class LoginTest : BaseTest() {
     fun shouldLoginSuccessfullyWhenCredentialsAreRight() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, API_SYSTEM_INFO_RESPONSE_OK)
-        mockWebServerRobot.addResponse(
-            GET,
-            "/api/dataStore/ANDROID_SETTING_APP/general_settings?.*",
-            API_METADATA_SETTINGS_RESPONSE_ERROR
-        )
+        mockWebServerRobot.addResponse(GET, PATH_WEBAPP_REGEX, API_METADATA_SETTINGS_RESPONSE_ERROR)
 
         enableIntents()
         startLoginActivity()
@@ -169,6 +166,7 @@ class LoginTest : BaseTest() {
             "mocks/settingswebapp/programsettings_404.json"
         const val API_METADATA_SETTINGS_DATASET_RESPONSE_ERROR =
             "mocks/settingswebapp/datasetsettings_404.json"
+        const val PATH_WEBAPP_REGEX = "/api/dataStore/ANDROID_SETTING_APP/general_settings?.*"
         const val DB_GENERATED_BY_LOGIN = "127-0-0-1-8080_test_unencrypted.db"
         const val PIN_PASSWORD = 1234
 

@@ -1,6 +1,5 @@
 package org.dhis2.utils.customviews;
 
-import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.util.AttributeSet;
@@ -9,6 +8,7 @@ import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -68,6 +68,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     public void setDescription(String description) {
         binding.setDescription(description);
+        binding.descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
     }
 
     public void initData(String data) {
@@ -79,7 +80,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
                 Timber.w(e);
             }
 
-            if (date == null)
+            if (date == null) {
                 try {
                     if (DateUtils.dateHasNoSeconds(data))
                         date = DateUtils.databaseDateFormatNoSeconds().parse(data);
@@ -88,12 +89,24 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
                 } catch (ParseException e) {
                     Timber.e(e);
                 }
+            }
 
-            data = DateUtils.dateTimeFormat().format(date);
+            if (date == null) {
+                try {
+                    date = DateUtils.dateTimeFormat().parse(data);
+                    data = DateUtils.dateTimeFormat().format(date);
+                } catch (ParseException e) {
+                    Timber.e(e);
+                }
+            }
+
+            data = date != null ? DateUtils.dateTimeFormat().format(date) : data;
         } else {
             editText.setText("");
         }
         editText.setText(data);
+
+        updateDeleteVisibility(clearButton);
     }
 
     public void setWarning(String msg) {
@@ -126,13 +139,16 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         labelText = findViewById(R.id.label);
         inputLayout.setHint(getContext().getString(R.string.choose_date));
         icon.setImageResource(R.drawable.ic_form_date_time);
+        icon.setOnClickListener(this);
         selectedCalendar = Calendar.getInstance();
         dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         editText.setFocusable(false); //Makes editText not editable
         editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this);
         editText.setOnClickListener(this);
-        clearButton.setOnClickListener(v -> { clearDate(); });
+        clearButton.setOnClickListener(v -> {
+            clearDate();
+        });
     }
 
     @Override
@@ -147,6 +163,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     @Override
     public void onClick(View view) {
+        requestFocus();
         activate();
         showCustomCalendar(view);
     }
@@ -157,7 +174,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         if (activated) {
             labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
         } else {
-            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
         }
     }
 
@@ -182,6 +199,9 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     private void showTimePicker(View view) {
         final Calendar c = Calendar.getInstance();
+        if (date != null) {
+            c.setTime(date);
+        }
         int hour = c.get(Calendar.HOUR_OF_DAY);
         int minute = c.get(Calendar.MINUTE);
         boolean is24HourFormat = android.text.format.DateFormat.is24HourFormat(getContext());
@@ -196,6 +216,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
             listener.onDateSelected(selectedDate);
             nextFocus(view);
             date = null;
+            updateDeleteVisibility(clearButton);
         },
                 hour,
                 minute,
@@ -210,20 +231,37 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     public void setEditable(Boolean editable) {
         editText.setEnabled(editable);
+        clearButton.setEnabled(editable);
+        icon.setEnabled(editable);
+        editText.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
+        );
 
         setEditable(editable,
                 labelText,
                 inputLayout,
-                editText,
                 findViewById(R.id.descIcon),
                 findViewById(R.id.descriptionLabel),
                 clearButton
         );
+        updateDeleteVisibility(clearButton);
     }
 
     private void clearDate() {
         editText.setText(null);
         listener.onDateSelected(null);
         date = null;
+        updateDeleteVisibility(clearButton);
+    }
+
+    @Override
+    protected boolean hasValue() {
+        return editText.getText() != null && !editText.getText().toString().isEmpty();
+    }
+
+    @Override
+    protected boolean isEditable() {
+        return editText.isEnabled();
     }
 }

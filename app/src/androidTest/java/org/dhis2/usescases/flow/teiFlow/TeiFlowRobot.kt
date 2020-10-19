@@ -2,6 +2,7 @@ package org.dhis2.usescases.flow.teiFlow
 
 
 import org.dhis2.common.BaseRobot
+import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.searchte.searchTeiRobot
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
@@ -21,8 +22,8 @@ class TeiFlowRobot : BaseRobot() {
         val enrollmentDate = registrationModel.enrollmentDate
 
         searchTeiRobot {
-            searchByPosition(registrationModel.name, 0)
-            searchByPosition(registrationModel.lastName, 1)
+            typeAttributeAtPosition(registrationModel.name, 0)
+            typeAttributeAtPosition(registrationModel.lastName, 1)
             clickOnDateField()
             selectSpecificDate(registrationDate.year,registrationDate.month,registrationDate.day)
             acceptDate()
@@ -46,6 +47,7 @@ class TeiFlowRobot : BaseRobot() {
         enrollmentRobot {
             clickOnSameProgramForEnrollment(program)
             clickOnAcceptEnrollmentDate()
+            waitToDebounce(5000)
             scrollToBottomProgramForm()
             clickOnSaveEnrollment()
         }

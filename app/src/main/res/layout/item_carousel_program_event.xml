@@ -35,14 +35,14 @@
             app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="6dp"
             app:cardElevation="4dp"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:rippleColor="@color/rippleColor">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="16dp"
                 android:paddingTop="10dp"
-                android:paddingEnd="16dp"
                 android:paddingBottom="10dp">
 
                 <ImageView
@@ -62,7 +62,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="35dp"
                     android:layout_marginEnd="4dp"
-                    android:textColor="@color/text_black_DE3"
+                    android:textColor="@color/textPrimary"
                     android:textSize="14sp"
                     app:date='@{event.date()}'
                     app:layout_constraintEnd_toStartOf="@+id/sync_icon"
@@ -77,7 +77,7 @@
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="4dp"
                     android:text="@{event.orgUnitName()}"
-                    android:textColor="@color/text_black_8A3"
+                    android:textColor="@color/textSecondary"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toStartOf="@+id/sync_icon"
                     app:layout_constraintStart_toStartOf="@+id/eventDate"
@@ -91,7 +91,7 @@
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="4dp"
                     android:text="@{event.attributeOptionComboName()}"
-                    android:textColor="@color/text_black_8A3"
+                    android:textColor="@color/textSecondary"
                     android:textSize="12sp"
                     android:visibility="@{event.attributeOptionComboName().empty ? View.GONE : View.VISIBLE}"
                     app:layout_constraintEnd_toStartOf="@+id/sync_icon"
@@ -104,13 +104,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="10dp"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:textColor="@color/text_black_C4C"
                     android:textSize="12sp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/showValuesButtonContainer"
                     app:layout_constraintStart_toStartOf="@+id/eventDate"
                     app:layout_constraintTop_toBottomOf="@id/optionCombo"
                     tools:text="69 | Transferred | C123 Posterior wall of hypophafuhrynx" />
@@ -119,12 +117,57 @@
                     android:id="@+id/sync_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:stateIcon='@{event.eventState()}'
                     tools:ignore="ContentDescription"
                     tools:src="@drawable/ic_sync" />
 
+
+                <View
+                    android:id="@+id/dataElementListGuideline"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="11dp"
+                    android:layout_marginEnd="14dp"
+                    android:background="#1F000000"
+                    app:layout_constraintEnd_toStartOf="@id/showValuesButtonContainer"
+                    app:layout_constraintStart_toStartOf="@id/eventDate"
+                    app:layout_constraintTop_toBottomOf="@id/optionCombo" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/showValuesButtonContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    style="@style/ActionIconSmallPadding"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/dataValue"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/dataValue">
+
+                    <ImageView
+                        android:id="@+id/showValuesButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:srcCompat="@drawable/ic_arrow_down"
+                        app:tint="#61333333" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <LinearLayout
+                    android:id="@+id/dataElementList"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="11dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="15dp"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/dataElementListGuideline"
+                    app:layout_constraintTop_toBottomOf="@id/dataElementListGuideline" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>

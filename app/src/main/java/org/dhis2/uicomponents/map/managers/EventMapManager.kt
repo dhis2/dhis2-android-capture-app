@@ -4,6 +4,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
+import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.R
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
@@ -12,10 +13,10 @@ import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFea
 import org.dhis2.uicomponents.map.layer.LayerType
 import org.hisp.dhis.android.core.common.FeatureType
 
-class EventMapManager : MapManager() {
+class EventMapManager(mapView: MapView) : MapManager(mapView) {
 
-    private lateinit var boundingBox: BoundingBox
-    private lateinit var featureCollection: FeatureCollection
+    private var featureCollection: FeatureCollection? = null
+    var featureType: FeatureType? = null
 
     companion object {
         const val ICON_ID = "ICON_ID"
@@ -24,16 +25,12 @@ class EventMapManager : MapManager() {
 
     fun update(
         featureCollection: FeatureCollection,
-        boundingBox: BoundingBox,
-        featureType: FeatureType?
+        boundingBox: BoundingBox
     ) {
-        this.featureType = featureType ?: FeatureType.POINT
         this.featureCollection = featureCollection
-        this.boundingBox = boundingBox
-        if (isMapReady()) {
-            (style?.getSource(EVENTS) as GeoJsonSource?)?.setGeoJson(featureCollection)
-                ?: loadDataForStyle()
-        }
+        initCameraPosition(boundingBox)
+        setSymbolManager(featureCollection)
+        setSource()
     }
 
     override fun loadDataForStyle() {
@@ -44,20 +41,17 @@ class EventMapManager : MapManager() {
                 R.drawable.map_marker
             )!!
         )
-        setSource()
         setLayer()
-        setSymbolManager(featureCollection)
-        initCameraPosition(boundingBox)
     }
 
     override fun setSource() {
-        style?.addSource(GeoJsonSource(EVENTS, featureCollection))
+        (style?.getSource(EVENTS) as GeoJsonSource?)?.setGeoJson(featureCollection)
+            ?: style?.addSource(GeoJsonSource(EVENTS, featureCollection))
     }
 
     override fun setLayer() {
-        mapLayerManager.initMap(map)
-            .withFeatureType(featureType)
-            .addStartLayer(LayerType.EVENT_LAYER)
+        mapLayerManager
+            .addStartLayer(LayerType.EVENT_LAYER, featureType)
             .addLayer(LayerType.SATELLITE_LAYER)
     }
 
@@ -66,7 +60,7 @@ class EventMapManager : MapManager() {
         propertyName: String,
         propertyValue: String
     ): Feature? {
-        return featureCollection.features()?.firstOrNull() {
+        return featureCollection?.features()?.firstOrNull() {
             it.getStringProperty(propertyName) == propertyValue
         }
     }

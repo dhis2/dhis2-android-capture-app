@@ -3,7 +3,7 @@ package org.dhis2.usescases.teiDashboard.teiProgramList;
 import androidx.annotation.NonNull;
 
 import org.dhis2.usescases.main.program.ProgramViewModel;
-import org.dhis2.utils.CodeGenerator;
+import org.dhis2.usescases.main.program.ProgramViewModelMapper;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
@@ -23,9 +23,11 @@ import io.reactivex.Observable;
 public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
 
     private final D2 d2;
+    private final ProgramViewModelMapper programViewModelMapper;
 
-    TeiProgramListRepositoryImpl(D2 d2) {
+    TeiProgramListRepositoryImpl(D2 d2, ProgramViewModelMapper programViewModelMapper) {
         this.d2 = d2;
+        this.programViewModelMapper = programViewModelMapper;
     }
 
     @NonNull
@@ -96,21 +98,16 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                         .byOrganisationUnitList(orgUnits)
                         .byTrackedEntityTypeUid().eq(trackedEntityType).blockingGet()))
                 .flatMapIterable(programs -> programs)
-                .map(program -> ProgramViewModel.Companion.create(
-                        program.uid(),
-                        program.displayName(),
-                        program.style() != null ? program.style().color() : null,
-                        program.style() != null ? program.style().icon() : null,
-                        0,
-                        program.trackedEntityType().name(),
-                        "",
-                        program.programType().name(),
-                        program.displayDescription(),
-                        program.onlyEnrollOnce(),
-                        program.access().data().write(),
-                        State.SYNCED.name(),
-                        false
-                ))
+                .map(program ->
+                        programViewModelMapper.map(
+                                program,
+                                0,
+                                "",
+                                State.SYNCED,
+                                false,
+                                false
+                        )
+                )
                 .toList()
                 .toObservable();
     }
@@ -140,7 +137,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                 .map(enrollmentUid ->
                         d2.enrollmentModule().enrollments().uid(enrollmentUid))
                 .map(enrollmentRepository -> {
-                    if(d2.programModule().programs().uid(programUid).blockingGet().displayIncidentDate()){
+                    if (d2.programModule().programs().uid(programUid).blockingGet().displayIncidentDate()) {
                         enrollmentRepository.setIncidentDate(DateUtils.getInstance().getToday());
                     }
                     enrollmentRepository.setEnrollmentDate(enrollmentDate);

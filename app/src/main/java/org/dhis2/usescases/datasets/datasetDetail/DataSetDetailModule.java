@@ -29,8 +29,10 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -60,5 +62,11 @@ public class DataSetDetailModule {
     @PerActivity
     DataSetDetailRepository eventDetailRepository(D2 d2) {
         return new DataSetDetailRepositoryImpl(dataSetUid, d2);
+    }
+
+    @Provides
+    @PerActivity
+    FiltersAdapter provideFiltersAdapter(FilterPresenter filterPresenter) {
+        return new FiltersAdapter(FiltersAdapter.ProgramType.DATASET, filterPresenter);
     }
 }

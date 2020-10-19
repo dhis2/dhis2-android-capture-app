@@ -112,7 +112,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             Timber::e)
             );
         }
+        setTotalFilters();
+    }
 
+    @Override
+    public void setTotalFilters() {
         compositeDisposable.add(
                 filterManager.asFlowable()
                         .startWith(filterManager)

@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
@@ -50,6 +51,8 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     private String description;
     private Date date;
     private View clearButton;
+    private View descriptionLabel;
+    private ImageView descriptionIcon;
 
     public TimeView(Context context) {
         super(context);
@@ -71,8 +74,10 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         editText = findViewById(R.id.inputEditText);
         inputLayout = findViewById(R.id.inputLayout);
         labelText = findViewById(R.id.label);
+        descriptionLabel = findViewById(R.id.descriptionLabel);
+        descriptionIcon = findViewById(R.id.descIcon);
         inputLayout.setHint(getContext().getString(R.string.select_time));
-        ((ImageView) findViewById(R.id.descIcon)).setImageResource(R.drawable.ic_form_time);
+        descriptionIcon.setImageResource(R.drawable.ic_form_time);
         clearButton = findViewById(R.id.clear_button);
         clearButton.setOnClickListener(v -> {
             clearTime();
@@ -81,6 +86,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this::onFocusChanged);
         editText.setOnClickListener(this);
+        descriptionIcon.setOnClickListener(this);
     }
 
     public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale) {
@@ -106,6 +112,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
 
     public void setDescription(String description) {
         this.description = description;
+        descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
         binding.setVariable(BR.description, description);
         binding.executePendingBindings();
     }
@@ -118,11 +125,10 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
             } catch (ParseException e) {
                 Timber.e(e);
             }
-
-
-            data = DateUtils.timeFormat().format(date);
+            data = date != null ? DateUtils.timeFormat().format(date) : data;
         }
         editText.setText(data);
+        updateDeleteVisibility(clearButton);
     }
 
     public void setWarning(String msg) {
@@ -153,6 +159,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+        requestFocus();
         activate();
         final Calendar c = Calendar.getInstance();
         if (date != null)
@@ -180,6 +187,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
             listener.onDateSelected(selectedDate);
             nextFocus(view);
             date = null;
+            updateDeleteVisibility(clearButton);
         }, hour, minute, is24HourFormat);
         dialog.setTitle(label);
 
@@ -196,7 +204,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         if (activated) {
             labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
         } else {
-            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
         }
     }
 
@@ -207,20 +215,36 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
 
     public void setEditable(Boolean editable) {
         editText.setEnabled(editable);
-
+        clearButton.setEnabled(editable);
+        descriptionIcon.setEnabled(editable);
+        editText.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
+        );
         setEditable(editable,
                 labelText,
                 inputLayout,
-                editText,
                 findViewById(R.id.descIcon),
-                findViewById(R.id.descriptionLabel),
+                descriptionLabel,
                 clearButton
         );
+        updateDeleteVisibility(clearButton);
     }
 
     private void clearTime() {
         editText.setText(null);
         listener.onDateSelected(null);
         date = null;
+        updateDeleteVisibility(clearButton);
+    }
+
+    @Override
+    protected boolean hasValue() {
+        return editText.getText() != null && !editText.getText().toString().isEmpty();
+    }
+
+    @Override
+    protected boolean isEditable() {
+        return editText.isEnabled();
     }
 }

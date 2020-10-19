@@ -29,7 +29,6 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.legendset.Legend;
 import org.hisp.dhis.android.core.legendset.LegendSet;
 import org.hisp.dhis.android.core.maintenance.D2Error;
-import org.hisp.dhis.android.core.note.NoteCreateProjection;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramIndicator;
@@ -51,16 +50,13 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 30/11/2017.
  */
 
-public class DashboardRepositoryImpl
-        implements
-        DashboardRepository {
+public class DashboardRepositoryImpl implements DashboardRepository {
 
     private final D2 d2;
     private final ResourceManager resources;
@@ -77,12 +73,6 @@ public class DashboardRepositoryImpl
         this.programUid = programUid;
         this.enrollmentUid = enrollmentUid;
         this.resources = resources;
-    }
-
-    @Override
-    public Observable<List<TrackedEntityAttributeValue>> mainTrackedEntityAttributes(String teiUid) {
-        return d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance().eq(teiUid).get()
-                .toObservable();
     }
 
     @Override
@@ -245,6 +235,7 @@ public class DashboardRepositoryImpl
     public Observable<List<TrackedEntityAttributeValue>> getTEIAttributeValues(String programUid, String teiUid) {
         if (programUid != null) {
             return d2.programModule().programTrackedEntityAttributes()
+                    .byDisplayInList().isTrue()
                     .byProgram().eq(programUid)
                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get()
                     .map(programTrackedEntityAttributes -> {
@@ -258,6 +249,14 @@ public class DashboardRepositoryImpl
                                             ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
                                     );
                                 }
+                            } else {
+                                attributeValues.add(
+                                        TrackedEntityAttributeValue.builder()
+                                                .trackedEntityAttribute(programAttribute.trackedEntityAttribute().uid())
+                                                .trackedEntityInstance(teiUid)
+                                                .value("")
+                                                .build()
+                                );
                             }
                         }
                         return attributeValues;
@@ -298,21 +297,6 @@ public class DashboardRepositoryImpl
             Timber.e(d2Error);
             return followUp;
         }
-    }
-
-    @Override
-    public Consumer<Pair<String, Boolean>> handleNote() {
-        return stringBooleanPair -> {
-            if (stringBooleanPair.val1()) {
-
-                d2.noteModule().notes().blockingAdd(
-                        NoteCreateProjection.builder()
-                                .enrollment(enrollmentUid)
-                                .value(stringBooleanPair.val0())
-                                .build()
-                );
-            }
-        };
     }
 
     @Override

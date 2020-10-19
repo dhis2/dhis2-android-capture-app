@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
 import io.reactivex.Single
 import org.dhis2.Bindings.applyFilters
+import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.dhislogic.DhisEventUtils
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
@@ -130,7 +131,9 @@ class TeiDataRepositoryImpl(
                         )
                     )
                     if (selectedStage != null && selectedStage == programStage.uid()) {
-                        checkEventStatus(eventList).forEach { event ->
+                        checkEventStatus(eventList).forEachIndexed { index, event ->
+                            val showTopShadow = index == 0
+                            val showBottomShadow = index == eventList.size - 1
                             eventViewModels.add(
                                 EventViewModel(
                                     EventViewModelType.EVENT,
@@ -148,7 +151,9 @@ class TeiDataRepositoryImpl(
                                         event.uid(),
                                         programStage.uid()
                                     ),
-                                    groupedByStage = true
+                                    groupedByStage = true,
+                                    showTopShadow = showTopShadow,
+                                    showBottomShadow = showBottomShadow
                                 )
                             )
                         }
@@ -171,10 +176,12 @@ class TeiDataRepositoryImpl(
             .byDeleted().isFalse
             .get()
             .map { eventList ->
-                checkEventStatus(eventList).forEach { event ->
+                checkEventStatus(eventList).forEachIndexed { index, event ->
                     val stageUid = d2.programModule().programStages()
                         .uid(event.programStage())
                         .blockingGet()
+                    val showTopShadow = index == 0
+                    val showBottomShadow = index == eventList.size - 1
                     eventViewModels.add(
                         EventViewModel(
                             EventViewModelType.EVENT,
@@ -257,7 +264,7 @@ class TeiDataRepositoryImpl(
                 Pair(
                     de.displayFormName() ?: de.displayName() ?: "",
                     if (valueRepo.blockingExists()) {
-                        valueRepo.blockingGet().value()
+                        valueRepo.blockingGet().userFriendlyValue(d2)
                     } else {
                         "-"
                     }

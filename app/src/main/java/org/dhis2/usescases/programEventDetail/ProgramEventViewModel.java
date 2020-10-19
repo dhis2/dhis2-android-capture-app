@@ -50,6 +50,12 @@ public abstract class ProgramEventViewModel implements CarouselItemModel {
     @NonNull
     public abstract Boolean canBeEdited();
 
+    public boolean openedAttributeList = false;
+
+    public void toggleAttributeList() {
+        this.openedAttributeList = !this.openedAttributeList;
+    }
+
     @NonNull
     public static ProgramEventViewModel create(@NonNull String uid, @NonNull String orgUnitUid, @NonNull String orgUnitName, @NonNull Date date,
                                                @NonNull State eventState, @NonNull List<Pair<String, String>> data, @NonNull EventStatus status,

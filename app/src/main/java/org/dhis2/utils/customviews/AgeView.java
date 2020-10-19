@@ -9,6 +9,7 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.ViewDataBinding;
 
@@ -71,6 +72,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
 
     public void setLabel(String label, String description) {
         this.label = label;
+        descriptionLabel.setVisibility(description!=null ? View.VISIBLE : View.GONE);
         if (binding instanceof AgeCustomViewAccentBinding) {
             ((AgeCustomViewAccentBinding) binding).setLabel(label);
             ((AgeCustomViewAccentBinding) binding).setDescription(description);
@@ -88,8 +90,11 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     public void setError(String msg) {
         inputLayout.setErrorTextAppearance(R.style.error_appearance);
         inputLayout.setError(msg);
-        clearValues();
         date.requestFocus();
+    }
+
+    public void clearErrors(){
+        inputLayout.setError(null);
     }
 
     private void onFocusChanged(View view, boolean b) {
@@ -119,7 +124,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         if (activated) {
             labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
         } else {
-            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
         }
     }
 
@@ -232,7 +237,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
 
 
     public void setIsBgTransparent(Boolean isBgTransparent) {
-
+        this.isBgTransparent = isBgTransparent;
         if (!isBgTransparent)
             binding = AgeCustomViewAccentBinding.inflate(inflater, this, true);
         else
@@ -292,16 +297,29 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         month.setEnabled(editable);
         year.setEnabled(editable);
 
+        date.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
+        );
+        day.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
+        );
+        month.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
+        );
+        year.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
+        );
+
         setEditable(editable,
                 labelText,
                 descriptionLabel,
-                date,
                 inputLayout,
-                day,
                 dayInputLayout,
-                month,
                 monthInputLayout,
-                year,
                 yearInputLayout
                 );
     }

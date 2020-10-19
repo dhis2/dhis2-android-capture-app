@@ -36,7 +36,7 @@ public abstract class ImageViewModel extends FieldViewModel {
                 allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null);
     }
 
-   @NonNull
+    @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_ImageViewModel(uid(), label(), mandatory(), data, programStageSection(),
@@ -50,19 +50,32 @@ public abstract class ImageViewModel extends FieldViewModel {
                 allowFutureDate(), isEditable, optionSet(), warning(), error(), description(), objectStyle(), null);
     }
 
-    public String fieldUid(){
+    public String fieldUid() {
         return uid().split("\\.")[0];
     }
 
-    public String optionUid(){
+    public String optionUid() {
         return uid().split("\\.")[1];
     }
 
-    public String optionDisplayName(){
+    public String fieldDisplayName() {
         return label().split(NAME_CODE_DELIMITATOR)[0];
     }
 
-    public String optionCode(){
+    public String optionDisplayName() {
         return label().split(NAME_CODE_DELIMITATOR)[1];
+    }
+
+    public String optionCode() {
+        return label().split(NAME_CODE_DELIMITATOR)[2];
+    }
+
+    @Override
+    public String getFormattedLabel() {
+        if (mandatory()) {
+            return optionDisplayName() + " *";
+        } else {
+            return optionDisplayName();
+        }
     }
 }

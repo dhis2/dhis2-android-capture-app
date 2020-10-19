@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import java.util.Date
+import org.dhis2.usescases.main.program.ProgramViewModelMapper
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -20,10 +21,11 @@ class TeiProgramListRepositoryImplTest {
 
     private lateinit var teiProgramRepository: TeiProgramListRepository
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
+    private val programViewModelMapper: ProgramViewModelMapper = mock()
 
     @Before
     fun setUp() {
-        teiProgramRepository = TeiProgramListRepositoryImpl(d2)
+        teiProgramRepository = TeiProgramListRepositoryImpl(d2, programViewModelMapper)
     }
 
     @Test

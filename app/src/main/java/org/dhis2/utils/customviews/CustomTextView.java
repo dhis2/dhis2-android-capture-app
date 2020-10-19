@@ -17,6 +17,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
@@ -25,8 +26,10 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.BR;
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.validation.ValueTypeValidatorFactoryKt;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.ObjectStyleUtils;
+import org.dhis2.utils.Validator;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
@@ -51,6 +54,7 @@ public class CustomTextView extends FieldLayout {
     private String label;
     private ValueType valueType;
     private ViewDataBinding binding;
+    private Validator validator;
 
     private OnFocusChangeListener focusListener;
 
@@ -110,7 +114,7 @@ public class CustomTextView extends FieldLayout {
     }
 
     public void setDescription(String description) {
-        descriptionLabel.setVisibility(label.length() > 16 || description != null ? View.VISIBLE : View.GONE);
+        descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
     }
 
     private void configureViews() {
@@ -123,14 +127,10 @@ public class CustomTextView extends FieldLayout {
             switch (valueType) {
                 case PHONE_NUMBER:
                     editText.setInputType(InputType.TYPE_CLASS_PHONE);
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_number);
                     break;
                 case EMAIL:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT |
                             InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_email);
                     break;
                 case TEXT:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -150,6 +150,7 @@ public class CustomTextView extends FieldLayout {
                     editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
                     findViewById(R.id.clear_button).setOnClickListener(v -> {
                         editText.getText().clear();
+                        updateDeleteVisibility(findViewById(R.id.clear_button));
                     });
                     break;
                 case LETTER:
@@ -163,32 +164,22 @@ public class CustomTextView extends FieldLayout {
                                     return source;
                                 return "";
                             }});
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_letter);
                     break;
                 case NUMBER:
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER |
                             InputType.TYPE_NUMBER_FLAG_DECIMAL |
                             InputType.TYPE_NUMBER_FLAG_SIGNED);
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_number);
                     break;
                 case INTEGER_NEGATIVE:
                 case INTEGER:
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_number);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
                     break;
                 case INTEGER_ZERO_OR_POSITIVE:
                 case INTEGER_POSITIVE:
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_number);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                     editText.setKeyListener(DigitsKeyListener.getInstance(false, false));
                     break;
                 case UNIT_INTERVAL:
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_number);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                     break;
                 case PERCENTAGE:
@@ -197,8 +188,6 @@ public class CustomTextView extends FieldLayout {
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                     break;
                 case URL:
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_i_url);
                     editText.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);
                     break;
                 default:
@@ -216,6 +205,8 @@ public class CustomTextView extends FieldLayout {
 
     public void setValueType(ValueType valueType) {
         this.valueType = valueType;
+        this.validator = ValueTypeValidatorFactoryKt.getValidator(valueType);
+
         configureViews();
     }
 
@@ -224,9 +215,19 @@ public class CustomTextView extends FieldLayout {
         editText.setFocusableInTouchMode(editable);
         editText.setClickable(editable);
         editText.setEnabled(editable);
+        editText.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
+        );
+
+        if (findViewById(R.id.clear_button) != null) {
+            findViewById(R.id.clear_button).setVisibility(editable ? View.VISIBLE : View.GONE);
+        }
 
         setEditable(editable, labelText,
-                inputLayout, editText, descIcon, descriptionLabel, findViewById(R.id.clear_button));
+                inputLayout, descIcon, descriptionLabel, findViewById(R.id.clear_button));
+
+        updateDeleteVisibility(findViewById(R.id.clear_button));
     }
 
     public void setWarning(String warning, String error) {
@@ -246,6 +247,7 @@ public class CustomTextView extends FieldLayout {
         editText.setText(text);
         editText.setSelection(editText.getText() == null ?
                 0 : editText.getText().length());
+        updateDeleteVisibility(findViewById(R.id.clear_button));
     }
 
     public void setLabel(String label, boolean mandatory) {
@@ -293,22 +295,21 @@ public class CustomTextView extends FieldLayout {
                         return false;
                     }
                 case INTEGER_NEGATIVE:
-                    if (Float.valueOf(editText.getText().toString()) < 0)
+                    if (validator.validate(editText.getText().toString()))
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_negative_number));
                         return false;
                     }
                 case INTEGER_ZERO_OR_POSITIVE:
-                    if (editText.getText() != null &&
-                            Float.valueOf(editText.getText().toString()) >= 0)
+                    if (validator.validate(editText.getText().toString()))
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
                         return false;
                     }
                 case INTEGER_POSITIVE:
-                    if (Float.valueOf(editText.getText().toString()) > 0)
+                    if (validator.validate(editText.getText().toString()))
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive));
@@ -334,6 +335,14 @@ public class CustomTextView extends FieldLayout {
                         return true;
                     } else {
                         inputLayout.setError(getContext().getString(R.string.validation_url));
+                        return false;
+                    }
+                case INTEGER:
+                case NUMBER:
+                    if (validator.validate(editText.getText().toString()))
+                        return true;
+                    else {
+                        inputLayout.setError(editText.getContext().getString(R.string.formatting_error));
                         return false;
                     }
                 default:
@@ -379,7 +388,17 @@ public class CustomTextView extends FieldLayout {
         if (activated) {
             labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
         } else {
-            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
         }
+    }
+
+    @Override
+    protected boolean hasValue(){
+        return editText.getText()!=null && !editText.getText().toString().isEmpty();
+    }
+
+    @Override
+    protected boolean isEditable(){
+        return editText.isEnabled();
     }
 }

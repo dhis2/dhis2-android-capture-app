@@ -30,7 +30,8 @@
         android:layout_height="wrap_content"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:paddingTop="32dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
         tools:background="?attr/colorPrimary">
 
         <View
@@ -105,7 +106,6 @@
                     android:id="@+id/input_editText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:enabled="@{isEditable.get()}"
                     android:gravity="start"
                     android:imeOptions="actionNext"
                     android:maxLines="1"

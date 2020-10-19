@@ -9,7 +9,6 @@ import org.dhis2.uicomponents.map.layer.types.HeatmapMapLayer
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
 import org.dhis2.uicomponents.map.model.MapStyle
-import org.hisp.dhis.android.core.common.FeatureType
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
@@ -24,7 +23,7 @@ class MapLayerManagerTest {
 
     @Before
     fun setup() {
-        mapLayerManager = MapLayerManager()
+        mapLayerManager = MapLayerManager(mapboxMap)
     }
 
     @Test
@@ -32,8 +31,7 @@ class MapLayerManagerTest {
     fun `Should add layer with sourceId`() {
         whenever(mapboxMap.style) doReturn style
         mapLayerManager
-            .initMap(mapboxMap)
-            .addLayer(LayerType.TEI_LAYER, sourceId)
+            .addLayer(LayerType.TEI_LAYER, sourceId = sourceId)
 
         assert(mapLayerManager.mapLayers.isNotEmpty())
         assert(mapLayerManager.mapLayers[sourceId] is TeiMapLayer)
@@ -44,8 +42,6 @@ class MapLayerManagerTest {
     fun `Should add layer without sourceId`() {
         whenever(mapboxMap.style) doReturn style
         mapLayerManager
-            .initMap(mapboxMap)
-            .withFeatureType(FeatureType.POINT)
             .withMapStyle(mapStyle)
             .addLayer(LayerType.HEATMAP_LAYER)
 
@@ -59,8 +55,6 @@ class MapLayerManagerTest {
         val otherSourceId = "otherSourceId"
         whenever(mapboxMap.style) doReturn style
         mapLayerManager
-            .initMap(mapboxMap)
-            .withFeatureType(FeatureType.POINT)
             .addLayers(LayerType.RELATIONSHIP_LAYER, listOf(sourceId, otherSourceId), false)
 
         assert(mapLayerManager.mapLayers.isNotEmpty())
