@@ -11,13 +11,13 @@ import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.junit.Rule
 import org.junit.Test
 
-class EventCaptureTest: BaseTest() {
+class ProgramEventTest: BaseTest() {
 
     @get:Rule
     val rule = ActivityTestRule(ProgramEventDetailActivity::class.java, false, false)
 
     @Test
-    fun shouldCreateNewEvent() {
+    fun shouldCreateNewEventAndCompleteIt() {
         val eventOrgUnit = "Ngelehun CHC"
         prepareProgramAndLaunchActivity()
 
@@ -26,12 +26,12 @@ class EventCaptureTest: BaseTest() {
         }
 
         eventRegistrationRobot {
-            clickLocationButton()
             clickNextButton()
             waitToDebounce(600)
         }
         eventRobot {
             clickOnFormFabButton()
+            clickOnFinishAndComplete()
         }
 
         programEventsRobot {
@@ -41,7 +41,7 @@ class EventCaptureTest: BaseTest() {
     }
     @Test
     fun shouldOpenExistingEvent() {
-        val eventDate = "1/1/2020"
+        val eventDate = "15/3/2020"
         val eventOrgUnit = "Ngelehun CHC"
 
         prepareProgramAndLaunchActivity()
@@ -58,7 +58,7 @@ class EventCaptureTest: BaseTest() {
 
     @Test
     fun shouldAddNoteOnExistingEvent() {
-        val eventDate = "1/1/2020"
+        val eventDate = "15/3/2020"
         val eventOrgUnit = "Ngelehun CHC"
 
         prepareProgramAndLaunchActivity()
@@ -80,31 +80,9 @@ class EventCaptureTest: BaseTest() {
         }
     }
 
-    @Test
-    fun shouldOpenDetailsOnExistingEvent() {
-        val eventDate = "1/1/2020"
-        val eventOrgUnit = "Ngelehun CHC"
-
-        prepareProgramAndLaunchActivity()
-
-        programEventsRobot {
-            waitToDebounce(600)
-            clickOnEvent(eventDate, eventOrgUnit)
-        }
-
-        eventRobot {
-            openMenuMoreOptions()
-            clickOnDetails()
-        }
-
-        eventRegistrationRobot {
-        }
-
-    }
-
     private fun prepareProgramAndLaunchActivity() {
         Intent().apply {
-            putExtra(ProgramEventDetailActivity.EXTRA_PROGRAM_UID, "q04UBOqq3rp")
+            putExtra(ProgramEventDetailActivity.EXTRA_PROGRAM_UID, "lxAQ7Zs9VYR")
         }.also { rule.launchActivity(it) }
     }
 
