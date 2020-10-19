@@ -10,10 +10,12 @@ abstract class StatusLogItem {
 
     abstract fun description(): String
 
+    abstract fun openLogs(): Boolean
+
     companion object {
 
-        fun create(date: Date, description: String): StatusLogItem {
-            return AutoValue_StatusLogItem(date, description)
+        fun create(date: Date, description: String, openLogs: Boolean = false): StatusLogItem {
+            return AutoValue_StatusLogItem(date, description, openLogs)
         }
     }
 }

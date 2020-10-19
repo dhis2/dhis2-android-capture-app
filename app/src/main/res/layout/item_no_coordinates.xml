@@ -17,7 +17,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:gravity="center_vertical"
-            android:textColor="@color/text_black_8A3"
+            android:textColor="@color/textPrimary"
             tools:text="This TEType/event has no coordinates" />
     </com.google.android.material.card.MaterialCardView>
 </layout>

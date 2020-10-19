@@ -45,4 +45,6 @@ interface MainView : AbstractActivityContracts.View {
     fun updateFilters(totalFilters: Int)
 
     fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest)
+
+    fun goToHome()
 }

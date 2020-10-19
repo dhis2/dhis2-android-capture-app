@@ -3,7 +3,9 @@ package org.dhis2.usescases.searchTrackEntity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
 
+import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
@@ -34,26 +36,10 @@ public interface SearchRepository {
     Observable<List<Program>> programsWithRegistration(String programTypeId);
 
     @NonNull
-    LiveData searchTrackedEntities(@Nullable Program selectedProgram,
-                                   @NonNull String trackedEntityType,
-                                   @NonNull List<String> orgUnits,
-                                  @NonNull List<State> states,
-                                   @NonNull List<EventStatus> statuses,
-                                   @Nullable HashMap<String, String> queryData,
-                                   @Nullable SortingItem sortingItem,
-                                   boolean assignedToMe,
-                                   boolean isOnline);
+    LiveData<PagedList<SearchTeiModel>> searchTrackedEntities(SearchParametersModel searchParametersModel, boolean isOnline);
 
     @NonNull
-    Flowable<List<SearchTeiModel>> searchTeiForMap(@Nullable Program selectedProgram,
-                                                   @NonNull String trackedEntityType,
-                                                   @NonNull List<String> orgUnits,
-                                                  @NonNull List<State> states,
-                                                   @NonNull List<EventStatus> statuses,
-                                                   @Nullable HashMap<String, String> queryData,
-                                                   @Nullable SortingItem sortingItem,
-                                                   boolean assignedToMe,
-                                                   boolean isOnline);
+    Flowable<List<SearchTeiModel>> searchTeiForMap(SearchParametersModel searchParametersModel, boolean isOnline);
 
     SearchTeiModel getTrackedEntityInfo(String teiUid, Program selectedProgram, SortingItem sortingItem);
 

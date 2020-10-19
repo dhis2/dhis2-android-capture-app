@@ -126,6 +126,8 @@ public class SearchTEContractsModule {
 
         TrackedEntityType getTrackedEntityName();
 
+        TrackedEntityType getTrackedEntityType(String trackedEntityTypeUid);
+
         Program getProgram();
 
         void addRelationship(@NonNull String teiUid, @Nullable String relationshipTypeUid, boolean online);
@@ -179,5 +181,7 @@ public class SearchTEContractsModule {
         SearchTeiModel getTeiInfo(String teiUid);
 
         EventUiComponentModel getEventInfo(String eventUid, String teiUid);
+
+        void setProgramForTesting(Program program);
     }
 }

@@ -33,6 +33,13 @@
             android:clipToPadding="false"
             tools:listitem="@layout/custom_text_view" />
 
+        <RelativeLayout
+            android:id="@+id/headerContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/formRecycler"
+            app:layout_constraintStart_toStartOf="@id/formRecycler"
+            app:layout_constraintEnd_toEndOf="@id/formRecycler"/>
 
         <FrameLayout
             android:id="@+id/header"

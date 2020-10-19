@@ -66,6 +66,9 @@ import timber.log.Timber;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
+import static org.dhis2.utils.Constants.CAMERA_REQUEST;
+import static org.dhis2.utils.Constants.GALLERY_REQUEST;
+import static org.dhis2.utils.Constants.RQ_MAP_LOCATION_VIEW;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 import static org.dhis2.utils.session.PinDialogKt.PIN_DIALOG_TAG;
@@ -84,6 +87,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     public AnalyticsHelper analyticsHelper;
     public ScanTextView scanTextView;
     private PinDialog pinDialog;
+    private boolean comesFromImageSource = false;
 
     public void requestLocationPermission(CoordinatesView coordinatesView) {
         this.coordinatesView = coordinatesView;
@@ -149,10 +153,19 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         lifeCycleObservable.onNext(Status.ON_RESUME);
-        if (ExtensionsKt.app(this).isSessionBlocked() && !(this instanceof SplashActivity)) {
-            if (getPinDialog() == null) {
-                initPinDialog();
-                showPinDialog();
+        shouldCheckPIN();
+    }
+
+    private void shouldCheckPIN() {
+        if (comesFromImageSource) {
+            ExtensionsKt.app(this).disableBackGroundFlag();
+            comesFromImageSource = false;
+        } else {
+            if (ExtensionsKt.app(this).isSessionBlocked() && !(this instanceof SplashActivity)) {
+                if (getPinDialog() == null) {
+                    initPinDialog();
+                    showPinDialog();
+                }
             }
         }
     }
@@ -199,7 +212,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         pinDialog.show(getSupportFragmentManager(), PIN_DIALOG_TAG);
     }
 
-    public PinDialog getPinDialog(){
+    public PinDialog getPinDialog() {
         return (PinDialog) getSupportFragmentManager().findFragmentByTag(PIN_DIALOG_TAG);
     }
 
@@ -395,7 +408,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         startActivityForResult(MapSelectorActivity.Companion.create(this,
                 coordinatesView.getFeatureType(),
                 coordinatesView.currentCoordinates()),
-                Constants.RQ_MAP_LOCATION_VIEW);
+                RQ_MAP_LOCATION_VIEW);
     }
 
     @Override
@@ -421,6 +434,13 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
                 coordinatesView.updateLocation(geometry);
             }
             this.coordinatesView = null;
+        }
+
+        switch (requestCode) {
+            case GALLERY_REQUEST:
+            case CAMERA_REQUEST:
+                comesFromImageSource = true;
+                break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

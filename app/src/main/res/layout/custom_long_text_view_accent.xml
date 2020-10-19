@@ -23,7 +23,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="32dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
         tools:background="?attr/colorPrimary">
 
         <View
@@ -87,12 +88,10 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout"
-            style="@style/ValueType_Text"
             android:paddingTop="10dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint='@{fieldHint}'
-            android:textColorHint="@color/text_black_DE3"
             android:theme="@style/loginInputText"
             android:layout_marginHorizontal="12dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -109,7 +108,7 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="36dp"
                 android:textAlignment="textStart"
-                android:textColor="@color/text_black_DE3"
+                android:textColor="@color/textPrimary"
                 android:textIsSelectable="true"
                 android:textSize="@dimen/form_edit_text_size"
                 tools:text="hello" />

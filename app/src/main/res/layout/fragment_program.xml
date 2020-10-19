@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:animateLayoutChanges="true"
-        android:background="@drawable/ic_front_backdrop_bg"
+        android:background="@drawable/ic_front_home_backdrop_bg"
         android:clipToPadding="false"
         tools:openDrawer="end">
 
@@ -35,7 +35,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
                 android:onClick="@{()->presenter.clearFilterClick()}"
-                android:tint="?colorPrimary"
+                app:tint="?colorPrimary"
                 app:layout_constraintBottom_toTopOf="@+id/view"
                 app:layout_constraintEnd_toStartOf="@id/close_filter"
                 app:layout_constraintTop_toTopOf="parent"
@@ -48,7 +48,7 @@
                 android:layout_marginEnd="26dp"
                 android:layout_marginBottom="8dp"
                 android:onClick="@{()->presenter.showHideFilterClick()}"
-                android:tint="?colorPrimary"
+                app:tint="?colorPrimary"
                 app:layout_constraintBottom_toTopOf="@+id/view"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

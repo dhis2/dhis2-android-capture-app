@@ -15,6 +15,7 @@ import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.relationshipRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -381,9 +382,8 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-   @Test
+    @Test
     fun shouldDeleteEnrollmentSuccessfully() {
-
         val teiName = "Anna"
         val teiLastName = "Jones"
 

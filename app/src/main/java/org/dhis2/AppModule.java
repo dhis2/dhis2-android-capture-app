@@ -1,13 +1,10 @@
 package org.dhis2;
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 
 import org.apache.commons.jexl2.JexlEngine;
-import org.dhis2.utils.CodeGenerator;
-import org.dhis2.utils.CodeGeneratorImpl;
 import org.dhis2.utils.ExpressionEvaluatorImpl;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.resources.ResourceManager;
@@ -37,12 +34,6 @@ public class AppModule {
     @Singleton
     JexlEngine jexlEngine() {
         return new JexlEngine();
-    }
-
-    @Provides
-    @Singleton
-    CodeGenerator codeGenerator() {
-        return new CodeGeneratorImpl();
     }
 
     @Provides

@@ -76,7 +76,7 @@ class TeiMapLayer(
             ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_POINT_SOURCE_ID)
                 .withProperties(
                     PropertyFactory.iconImage(Expression.get(TEI_UID)),
-                    PropertyFactory.iconOffset(arrayOf(0f, -25f)),
+                    PropertyFactory.iconOffset(arrayOf(0f, -20f)),
                     PropertyFactory.iconAllowOverlap(true),
                     PropertyFactory.textAllowOverlap(true)
                 ).withFilter(
@@ -177,7 +177,8 @@ class TeiMapLayer(
         }
 
         selectedPointLayer.setProperties(
-            PropertyFactory.iconSize(1.5f)
+            PropertyFactory.iconSize(1.5f),
+            PropertyFactory.visibility(Property.VISIBLE)
         )
     }
 
@@ -204,7 +205,7 @@ class TeiMapLayer(
     private fun deselectCurrentPoint() {
         if (featureType == FeatureType.POINT) {
             selectedPointLayer.setProperties(
-                PropertyFactory.iconSize(1f)
+                PropertyFactory.visibility(Property.NONE)
             )
         } else {
             selectedPolygonLayer.setProperties(

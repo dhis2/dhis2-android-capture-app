@@ -119,7 +119,7 @@ fun startTeiDashboardActivity(
 
 fun prepareChildProgrammeIntentAndLaunchActivity(ruleSearch: ActivityTestRule<SearchTEActivity>) {
     Intent().apply {
-        putExtra(SearchTETest.CHILD_PROGRAM_UID, SearchTETest.CHILD_PROGRAM_UID_VALUE)
+        putExtra(SearchTETest.PROGRAM_UID, SearchTETest.CHILD_PROGRAM_UID_VALUE)
         putExtra(SearchTETest.CHILD_TE_TYPE, SearchTETest.CHILD_TE_TYPE_VALUE)
     }.also { ruleSearch.launchActivity(it) }
 }

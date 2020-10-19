@@ -33,18 +33,18 @@ class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interc
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val response = chain.proceed(request)
-        if (response.code >= 400) {
+        if (response.code() >= 400) {
             analyticHelper.setEvent(
                 API_CALL,
                 HashMap<String, String>().apply {
-                    put(API_CALL_RESPONSE_CODE, response.code.toString())
-                    put(API_CALL_ENDPOINT, request.url.toString())
+                    put(API_CALL_RESPONSE_CODE, response.code().toString())
+                    put(API_CALL_ENDPOINT, request.url().toString())
                 }
             )
             analyticHelper.trackMatomoEvent(
                 API_CALL,
-                request.url.toString(),
-                response.code.toString()
+                request.url().toString(),
+                response.code().toString()
             )
         }
         return response

@@ -96,7 +96,6 @@ class EventAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is EventViewHolder -> {
-                presenter
                 holder.bind(
                     getItem(position), enrollment
                 ) {

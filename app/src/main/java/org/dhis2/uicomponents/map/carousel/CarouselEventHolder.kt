@@ -46,7 +46,7 @@ class CarouselEventHolder(
             this.eventInfo.text = eventInfo
         }
 
-        itemView.setOnClickListener {
+        binding.eventInfoCard.setOnClickListener {
             onClick(data.enrollment.trackedEntityInstance(), data.enrollment.uid(), data.eventUid)
         }
 
@@ -75,7 +75,7 @@ class CarouselEventHolder(
                         .toLowerCase(Locale.getDefault())
                 )
         } else {
-            binding.noCoordinatesLabel.root.visibility = View.INVISIBLE
+            binding.noCoordinatesLabel.root.visibility = View.GONE
         }
     }
 

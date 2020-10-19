@@ -23,7 +23,6 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
-import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
@@ -33,6 +32,8 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerView;
 
 import org.dhis2.App;
+import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.tuples.Pair;
@@ -67,6 +68,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import kotlin.Unit;
 import timber.log.Timber;
 
 import static org.dhis2.R.layout.activity_program_event_detail;
@@ -89,9 +91,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Inject
     CarouselViewAnimations animations;
 
+    @Inject
+    FiltersAdapter filtersAdapter;
+
     private ProgramEventDetailLiveAdapter liveAdapter;
     private boolean backDropActive;
-    private FiltersAdapter filtersAdapter;
     private String programUid;
     private MarkerView currentMarker;
     private FeatureType featureType;
@@ -121,11 +125,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.setPresenter(presenter);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
 
-        liveAdapter = new ProgramEventDetailLiveAdapter(presenter.getProgram(),presenter);
+        ViewExtensionsKt.clipWithRoundedCorners(binding.recycler, ExtensionsKt.getDp(16));
+        liveAdapter = new ProgramEventDetailLiveAdapter(presenter.getProgram(), presenter);
         binding.recycler.setAdapter(liveAdapter);
-        binding.recycler.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-        filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.EVENT);
         filtersAdapter.addEventStatus();
         if (presenter.hasAssignment()) {
             filtersAdapter.addAssignedToMe();
@@ -144,9 +147,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                         .show(getSupportFragmentManager(), MapLayerDialog.class.getName())
         );
 
-        eventMapManager = new EventMapManager();
+        eventMapManager = new EventMapManager(binding.mapView);
+        eventMapManager.setFeatureType(presenter.getFeatureType());
         eventMapManager.setOnMapClickListener(this);
-        eventMapManager.init(binding.mapView);
         presenter.init();
     }
 
@@ -163,9 +166,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     protected void onResume() {
         super.onResume();
         if (isMapVisible()) {
-            animations.initMapLoading(binding.mapCarousel);
-            binding.toolbarProgress.show();
-            if(updateEvent != null) {
+            if (updateEvent != null) {
+                animations.initMapLoading(binding.mapCarousel);
+                binding.toolbarProgress.show();
                 presenter.getEventInfo(updateEvent);
             }
         } else {
@@ -386,34 +389,37 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setMap(FeatureCollection featureCollection, BoundingBox boundingBox, List<ProgramEventViewModel> programEventViewModels) {
-        eventMapManager.update(
-                featureCollection,
-                boundingBox,
-                featureType
-        );
+        eventMapManager.init(() -> {
+            eventMapManager.update(
+                    featureCollection,
+                    boundingBox
+            );
+            if (binding.mapCarousel.getAdapter() == null) {
+                CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
+                        .addOnSyncClickListener(
+                                teiUid -> {
+                                    if (binding.mapCarousel.getCarouselEnabled()) {
+                                        presenter.onSyncIconClick(teiUid);
+                                    }
+                                    return true;
+                                })
+                        .addOnEventClickListener((teiUid, orgUnit, eventUid) -> {
+                            if (binding.mapCarousel.getCarouselEnabled()) {
+                                presenter.onEventClick(teiUid, orgUnit);
+                            }
+                            return true;
+                        })
+                        .build();
+                binding.mapCarousel.setAdapter(carouselAdapter);
+                binding.mapCarousel.attachToMapManager(eventMapManager, () -> true);
+                carouselAdapter.addItems(programEventViewModels);
+            } else {
+                ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(programEventViewModels);
+            }
 
-        if (binding.mapCarousel.getAdapter() == null) {
-            CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
-                    .addOnSyncClickListener(
-                            teiUid -> {
-                                if (binding.mapCarousel.getCarouselEnabled()) {
-                                    presenter.onSyncIconClick(teiUid);
-                                }
-                                return true;
-                            })
-                    .addOnEventClickListener((teiUid, orgUnit, eventUid) -> {
-                        if (binding.mapCarousel.getCarouselEnabled()) {
-                            presenter.onEventClick(teiUid, orgUnit);
-                        }
-                        return true;
-                    })
-                    .build();
-            binding.mapCarousel.setAdapter(carouselAdapter);
-            binding.mapCarousel.attachToMapManager(eventMapManager, () -> true);
-            carouselAdapter.addItems(programEventViewModels);
-        } else {
-            ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(programEventViewModels);
-        }
+            eventMapManager.mapLayerManager.selectFeature(null);
+            return Unit.INSTANCE;
+        });
 
         animations.endMapLoading(binding.mapCarousel);
         binding.toolbarProgress.hide();

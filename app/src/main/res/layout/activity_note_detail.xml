@@ -94,7 +94,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:textColor="#DE333333"
+            android:textColor="@color/textPrimary"
             android:textSize="16sp"
             android:transitionName="@string/transitionElement_storeBy"
             android:visibility="@{isForm ? View.GONE : View.VISIBLE}"

@@ -32,6 +32,7 @@
                     android:id="@+id/aboutApp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
                     android:text="@string/about_app"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,6 +40,7 @@
                     android:id="@+id/appSDK"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
                     android:text="@string/about_sdk"
                     app:layout_constraintTop_toBottomOf="@id/aboutApp" />
 
@@ -46,6 +48,7 @@
                     android:id="@+id/aboutMore"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
                     android:layout_marginTop="15dp"
                     android:text="@string/about_more"
                     android:textColorLink="?colorPrimary"
@@ -55,6 +58,7 @@
                     android:id="@+id/privacyPolicy"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
                     android:layout_marginTop="15dp"
                     android:text="@string/open_privacy_policy"
                     android:textColorLink="?colorPrimary"
@@ -66,6 +70,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
+                    app:layout_constraintStart_toStartOf="parent"
                     android:text="@string/about_connected"
                     app:layout_constraintTop_toBottomOf="@id/aboutMore" />
 
@@ -73,6 +78,7 @@
                     android:id="@+id/about_user"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
                     android:text="@string/about_user"
                     app:layout_constraintTop_toBottomOf="@id/about_connected" />
 
@@ -80,6 +86,7 @@
                     android:id="@+id/about_git"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
                     android:layout_marginTop="15dp"
                     android:text="@string/about_git"
                     android:textColorLink="?colorPrimary"
@@ -90,6 +97,7 @@
                     android:id="@+id/about_dev"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
                     android:layout_marginTop="15dp"
                     android:text="@string/about_dev"
                     android:textColorLink="?colorPrimary"
@@ -101,6 +109,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
+                    app:layout_constraintStart_toStartOf="parent"
                     android:text="@string/about_contact"
                     android:textColorLink="?colorPrimary"
                     app:layout_constraintTop_toBottomOf="@id/about_dev" />

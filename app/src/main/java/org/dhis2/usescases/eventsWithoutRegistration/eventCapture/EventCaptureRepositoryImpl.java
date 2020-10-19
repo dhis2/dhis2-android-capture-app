@@ -48,6 +48,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -72,7 +73,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private List<FieldViewModel> sectionFields;
     private final DhisEventUtils dhisEventUtils;
 
-    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2,DhisEventUtils dhisEventUtils) {
+    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2, DhisEventUtils dhisEventUtils) {
         this.eventUid = eventUid;
         this.formRepository = formRepository;
         this.d2 = d2;
@@ -234,9 +235,19 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                     renderList.add(fieldFactory.create(
                             fieldViewModel.uid() + "." + option.uid(),
-                            option.displayName() + ImageViewModel.NAME_CODE_DELIMITATOR + option.code(), ValueType.TEXT, false,
-                            fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                            fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, options.size(), objectStyle, fieldViewModel.fieldMask()));
+                            fieldViewModel.label() + ImageViewModel.NAME_CODE_DELIMITATOR + option.displayName() + ImageViewModel.NAME_CODE_DELIMITATOR + option.code(),
+                            ValueType.TEXT,
+                            fieldViewModel.mandatory(),
+                            fieldViewModel.optionSet(),
+                            fieldViewModel.value(),
+                            fieldViewModel.programStageSection(),
+                            fieldViewModel.allowFutureDate(),
+                            fieldViewModel.editable() == null ? false : fieldViewModel.editable(),
+                            renderingType, fieldViewModel.description(),
+                            fieldRendering,
+                            options.size(),
+                            objectStyle,
+                            fieldViewModel.fieldMask()));
 
                 }
             } else if (fieldViewModel instanceof OptionSetViewModel) {
@@ -272,8 +283,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 value = friendlyValue;
                             }
                         }
+
+                        String error = checkConflicts(uid, valueRepository.blockingExists() ? valueRepository.blockingGet().value() : null);
+
                         boolean editable = fieldViewModel.editable() != null ? fieldViewModel.editable() : true;
-                        fieldViewModel = fieldViewModel.withValue(value).withEditMode(editable || isEventEditable);
+                        fieldViewModel = fieldViewModel.withValue(value).withEditMode(editable || isEventEditable).withError(error.isEmpty() ? null : error);
 
                         return fieldViewModel;
                     }).toList().toFlowable()
@@ -342,19 +356,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                         ObjectStyle objectStyle = de.style() != null ? de.style() : ObjectStyle.builder().build();
 
-                        List<TrackerImportConflict> conflicts =
-                                d2.importModule().trackerImportConflicts()
-                                        .byEventUid().eq(eventUid)
-                                        .blockingGet();
-
-                        String error = "";
-                        for (TrackerImportConflict conflict: conflicts) {
-                            if (conflict.event().equals(eventUid) && conflict.dataElement().equals(de.uid())) {
-                                if (conflict.value().equals(dataValue)) {
-                                    error = conflict.displayDescription();
-                                }
-                            }
-                        }
+                        String error = checkConflicts(de.uid(), dataValue);
 
                         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
                             dataValue = dataValue + "_ou_" + friendlyValue;
@@ -384,6 +386,23 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     .map(data -> sectionFields = data)
                     .map(this::checkRenderType);
         }
+    }
+
+    private String checkConflicts(String dataElementUid, String value) {
+        List<TrackerImportConflict> conflicts =
+                d2.importModule().trackerImportConflicts()
+                        .byEventUid().eq(eventUid)
+                        .blockingGet();
+        String error = "";
+        for (TrackerImportConflict conflict : conflicts) {
+            if (conflict.event() != null && conflict.event().equals(eventUid) &&
+                    conflict.dataElement() != null && conflict.dataElement().equals(dataElementUid)) {
+                if (Objects.equals(conflict.value(), value)) {
+                    error = conflict.displayDescription();
+                }
+            }
+        }
+        return error;
     }
 
     @NonNull

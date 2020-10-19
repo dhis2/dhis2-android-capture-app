@@ -19,7 +19,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="32dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
         tools:background="?attr/colorPrimary">
 
         <ImageView
@@ -92,13 +93,13 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageView
-                android:layout_gravity="center"
                 android:id="@+id/descIcon"
+                style="@style/ActionIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:paddingHorizontal="11dp"
-                tools:visibility="visible"
+                android:layout_gravity="center"
                 app:tint="?colorAccent"
+                tools:visibility="visible"
                 tools:src="@drawable/ic_form_date"/>
 
             <ImageView

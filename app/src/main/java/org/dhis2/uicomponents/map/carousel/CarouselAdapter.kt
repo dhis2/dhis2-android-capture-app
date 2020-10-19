@@ -92,7 +92,10 @@ class CarouselAdapter private constructor(
                         parent,
                         false
                     ),
-                    onEventClickListener
+                    onEventClickListener,
+                    { item ->
+                        (items.first { it == item } as ProgramEventViewModel).toggleAttributeList()
+                    }
                 )
         }
     }
@@ -279,7 +282,7 @@ class CarouselAdapter private constructor(
             this.onProfileImageClick = onProfileImageClick
         }
 
-        fun addProgram(program: Program) = apply {
+        fun addProgram(program: Program?) = apply {
             this.program = program
         }
 

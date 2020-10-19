@@ -15,6 +15,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import javax.inject.Inject
 import org.dhis2.App
+import org.dhis2.Bindings.clipWithRoundedCorners
+import org.dhis2.Bindings.dp
 import org.dhis2.R
 import org.dhis2.databinding.FragmentProgramBinding
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
@@ -69,6 +71,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         (binding.drawerLayout.background as GradientDrawable).cornerRadius = 0f
         return binding.apply {
             presenter = this@ProgramFragment.presenter
+            programRecycler.clipWithRoundedCorners(16.dp)
             programRecycler.itemAnimator = null
             programRecycler.adapter = adapter
             programRecycler.addItemDecoration(

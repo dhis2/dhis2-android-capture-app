@@ -5,10 +5,10 @@ import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
@@ -59,6 +59,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
     }
 
     public void setLayoutData(boolean isBgTransparent, String renderType) {
+        this.isBgTransparent = isBgTransparent;
         if (isBgTransparent)
             binding = FormSpinnerBinding.inflate(inflater, this, true);
         else
@@ -89,6 +90,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
 
     public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale) {
         binding = DataBindingUtil.inflate(inflater, R.layout.custom_cell_view, this, true);
+        isBgTransparent = true;
         ((CustomCellViewBinding) binding).setTableScale(tableScale);
         editText = findViewById(R.id.inputEditText);
         editText.setFocusable(false); //Makes editText not editable
@@ -112,8 +114,6 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
 
     public void deleteSelectedOption() {
         setValueOption(null, null);
-        if (delete != null)
-            delete.setVisibility(View.GONE);
     }
 
     public void setOnSelectedOptionListener(OnSelectedOption listener) {
@@ -131,24 +131,14 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         if (activated) {
             labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
         } else {
-            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.text_black_DE3, null));
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
         }
     }
 
     private void setValueOption(String optionDisplayName, String optionCode) {
-
         editText.setText(optionDisplayName);
-
-        if (delete != null) {
-            if (optionDisplayName != null && !optionDisplayName.isEmpty()) {
-                delete.setVisibility(View.VISIBLE);
-            } else {
-                delete.setVisibility(View.GONE);
-            }
-        }
-
+        updateDeleteVisibility(delete);
         listener.onSelectedOption(optionDisplayName, optionCode);
-
     }
 
     public void setObjectStyle(ObjectStyle objectStyle) {
@@ -161,11 +151,12 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         editText.setClickable(isEditable);
         if (delete != null) {
             delete.setEnabled(isEditable);
-            delete.setVisibility(isEditable ? View.VISIBLE : View.GONE);
         }
-
+        editText.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
+        );
         setEditable(isEditable,
-                editText,
                 inputLayout,
                 descriptionLabel,
                 labelText,
@@ -177,13 +168,15 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         if (value != null && value.contains("_os_"))
             value = value.split("_os_")[0];
 
-        inputLayout.setHintAnimationEnabled(false);
-        editText.setText(value);
-        inputLayout.setHintAnimationEnabled(true);
-
-        if (delete != null && editText.getText() != null && !editText.getText().toString().isEmpty()) {
-            delete.setVisibility(View.VISIBLE);
+        if (inputLayout != null) {
+            inputLayout.setHintAnimationEnabled(false);
         }
+        editText.setText(value);
+        if (inputLayout != null) {
+            inputLayout.setHintAnimationEnabled(true);
+        }
+
+        updateDeleteVisibility(delete);
     }
 
     public void setWarning(String warning, String error) {
@@ -209,7 +202,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
     }
 
     public void setDescription(String description) {
-        descriptionLabel.setVisibility(label.length() > 16 || description != null ? View.VISIBLE : View.GONE);
+        descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
     }
 
     public boolean openOptionDialog() {
@@ -218,5 +211,15 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
 
     public interface OnSelectedOption {
         void onSelectedOption(String optionName, String optionCode);
+    }
+
+    @Override
+    protected boolean hasValue() {
+        return editText.getText() != null && !editText.getText().toString().isEmpty();
+    }
+
+    @Override
+    protected boolean isEditable() {
+        return editText.isEnabled();
     }
 }

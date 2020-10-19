@@ -5,6 +5,7 @@ import org.dhis2.utils.filters.sorting.SortingItem
 import org.dhis2.utils.filters.sorting.SortingStatus
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
@@ -122,5 +123,26 @@ class FilterManagerTest {
 
         assertTrue(filterManager.sortingItem.filterSelectedForSorting == Filters.ORG_UNIT)
         assertTrue(filterManager.sortingItem.sortingStatus == SortingStatus.ASC)
+    }
+
+    @Test
+    fun `Should not count enrollment filters in total if they are in unsupported list`() {
+        filterManager.setUnsupportedFilters(Filters.ENROLLMENT_DATE, Filters.ENROLLMENT_STATUS)
+
+        filterManager.addEnrollmentPeriod(listOf(DatePeriod.create(Date(), Date())))
+        filterManager.addEnrollmentStatus(false, EnrollmentStatus.ACTIVE)
+        filterManager.addEventStatus(false, EventStatus.ACTIVE)
+
+        assertTrue(filterManager.totalFilters == 1)
+    }
+
+    @Test
+    fun `Should count enrollment filters in total if they are not in unsupported list`() {
+        filterManager.clearUnsupportedFilters()
+        filterManager.addEnrollmentPeriod(listOf(DatePeriod.create(Date(), Date())))
+        filterManager.addEnrollmentStatus(false, EnrollmentStatus.ACTIVE)
+        filterManager.addEventStatus(false, EventStatus.ACTIVE)
+
+        assertTrue(filterManager.totalFilters == 3)
     }
 }

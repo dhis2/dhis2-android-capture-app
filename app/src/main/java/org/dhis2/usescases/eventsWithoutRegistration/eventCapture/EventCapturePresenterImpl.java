@@ -51,6 +51,7 @@ import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.BehaviorSubject;
+import kotlin.Pair;
 import timber.log.Timber;
 
 @Singleton
@@ -94,6 +95,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private final int MAX_LOOP_CALCULATIONS = 5;
     private PreferenceProvider preferences;
     private GetNextVisibleSection getNextVisibleSection;
+    private Pair<Boolean, Boolean> showErrors;
 
 
     public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
@@ -101,7 +103,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                      RulesUtilsProvider rulesUtils,
                                      ValueStore valueStore, SchedulerProvider schedulerProvider,
                                      PreferenceProvider preferences,
-                                     GetNextVisibleSection getNextVisibleSection) {
+                                     GetNextVisibleSection getNextVisibleSection,
+                                     EventFieldMapper fieldMapper) {
         this.view = view;
         this.eventUid = eventUid;
         this.eventCaptureRepository = eventCaptureRepository;
@@ -118,6 +121,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.compositeDisposable = new CompositeDisposable();
         this.preferences = preferences;
         this.getNextVisibleSection = getNextVisibleSection;
+        this.showErrors = new Pair<>(false, false);
+        this.fieldMapper = fieldMapper;
 
         currentSectionPosition = PublishProcessor.create();
         sectionProcessor = PublishProcessor.create();
@@ -128,7 +133,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         notesCounterProcessor = PublishProcessor.create();
         formFieldsProcessor = BehaviorSubject.createDefault(new ArrayList<>());
 
-        fieldMapper = new EventFieldMapper();
     }
 
     @Override
@@ -223,17 +227,24 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 eventCaptureRepository.eventSections()
                         .flatMap(sectionList ->
                                 sectionProcessor.startWith(sectionList.get(0).sectionUid())
+                                        .observeOn(schedulerProvider.io())
                                         .switchMap(section ->
                                                 fieldFlowable.map(fields ->
                                                         fieldMapper.map(
                                                                 fields,
                                                                 sectionList,
                                                                 sectionsToHide,
-                                                                getNextVisibleSection.get(section, sectionList, sectionsToHide)
+                                                                getNextVisibleSection.get(section, sectionList, sectionsToHide),
+                                                                errors,
+                                                                emptyMandatoryFields,
+                                                                showErrors
                                                         ))))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(sectionsAndFields -> {
+                                    if (showErrors.component1() || showErrors.component2()) {
+                                        qualityCheck();
+                                    }
                                     if (assignedValueChanged && errors.isEmpty() && calculationLoop < MAX_LOOP_CALCULATIONS) {
                                         calculationLoop++;
                                         nextCalculation(true);
@@ -302,7 +313,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         return showCalculationProcessor
                 .startWith(true)
                 .filter(newCalculation -> newCalculation)
-                .flatMap(newCalculation -> Flowable.zip(
+                .observeOn(schedulerProvider.io())
+                .switchMap(newCalculation -> Flowable.zip(
                         eventCaptureRepository.list(),
                         eventCaptureRepository.calculate(),
                         this::applyEffects)
@@ -310,8 +322,13 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         {
                             emptyMandatoryFields = new HashMap<>();
                             for (FieldViewModel fieldViewModel : fields) {
-                                if (fieldViewModel.mandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection()))
-                                    emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
+                                if (fieldViewModel.mandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection())) {
+                                    if(fieldViewModel instanceof ImageViewModel && !emptyMandatoryFields.containsKey(((ImageViewModel) fieldViewModel).fieldUid())){
+                                        emptyMandatoryFields.put(((ImageViewModel) fieldViewModel).fieldUid(), fieldViewModel);
+                                    }else if(!(fieldViewModel instanceof  ImageViewModel)){
+                                        emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
+                                    }
+                                }
                             }
                             return fields;
                         }
@@ -441,6 +458,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void attempFinish() {
+
+        qualityCheck();
 
         if (!errors.isEmpty() && errors.get(currentSection.get()) != null) {
             view.showErrorSnackBar();
@@ -756,5 +775,14 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void showProgress() {
         view.showProgress();
+    }
+
+    private void qualityCheck() {
+        Pair<Boolean, Boolean> currentShowError = showErrors;
+        showErrors = new Pair<>(!emptyMandatoryFields.isEmpty(), !errors.isEmpty());
+        showCalculationProcessor.onNext(
+                currentShowError.getFirst() != showErrors.getFirst() ||
+                        currentShowError.getSecond() != showErrors.getSecond()
+        );
     }
 }

@@ -15,6 +15,7 @@ import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
 
 import java.io.File;
+import java.util.Objects;
 
 import kotlin.Unit;
 
@@ -28,7 +29,14 @@ public class RelationshipLiveAdapter extends PagedListAdapter<SearchTeiModel, Se
 
         @Override
         public boolean areContentsTheSame(@NonNull SearchTeiModel oldItem, @NonNull SearchTeiModel newItem) {
-            return oldItem.getTei().uid().equals(newItem.getTei().uid());
+            return oldItem.getTei().uid().equals(newItem.getTei().uid()) &&
+                    Objects.equals(oldItem.getTei().state(), newItem.getTei().state()) &&
+                    oldItem.getAttributeValues().equals(newItem.getAttributeValues()) &&
+                    oldItem.getEnrollments().equals(newItem.getEnrollments()) &&
+                    oldItem.getProfilePicturePath().equals(newItem.getProfilePicturePath()) &&
+                    oldItem.isAttributeListOpen() == newItem.isAttributeListOpen() &&
+                    Objects.equals(oldItem.getSortingKey(), newItem.getSortingKey()) &&
+                    Objects.equals(oldItem.getSortingValue(), newItem.getSortingValue());
         }
     };
 

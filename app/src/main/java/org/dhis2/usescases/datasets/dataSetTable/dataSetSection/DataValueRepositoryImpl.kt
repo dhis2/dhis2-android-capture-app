@@ -4,6 +4,7 @@ import android.text.TextUtils
 import io.reactivex.Flowable
 import java.util.ArrayList
 import java.util.HashMap
+import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
 import org.dhis2.data.tuples.Pair
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.hisp.dhis.android.core.D2
@@ -458,7 +459,10 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
                                             ).blockingGet()
                                     canWriteOrgUnit = organisationUnits.isNotEmpty()
                                 }
-                                canWriteCatOption && canWriteOrgUnit
+                                val hasDataValueAuthority = !d2.userModule().authorities()
+                                    .byName().eq(AUTH_DATAVALUE_ADD)
+                                    .blockingIsEmpty()
+                                hasDataValueAuthority && canWriteCatOption && canWriteOrgUnit
                             }
                     else -> Flowable.just(false)
                 }
