@@ -238,7 +238,7 @@ In the original implementation, each of the command based SMS listeners inherite
 
 See the following diagram.
 
-![](resources/images/smscompression.png)
+![](resources/images/sms-compression/smscompression.png)
 
 
 #### SMS Parser/Listener Implementation for New SMS Format
