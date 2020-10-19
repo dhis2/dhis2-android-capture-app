@@ -17,24 +17,23 @@ public class IssueRequest {
 
     private class Fields {
         private Project project;
-        private String summary;
-        private String description;
         private Issue issuetype;
+        private String summary;
         private ArrayList<Component> components;
-        private ArrayList<FixVersion> fixVersions;
+        private String description;
+        private String environment;
+        private ArrayList<FixVersion> affectedVersions;
 
         Fields(String summary, String description) {
             this.summary = summary;
-            this.description = description;
+            this.description = formatDescription(description);
             this.project = new Project("10200");
             this.issuetype = new Issue("Bug");
             this.components = new ArrayList<>();
             this.components.add(new Component("AndroidApp"));
-            this.fixVersions = new ArrayList<FixVersion>();
-            this.fixVersions.add(new FixVersion());
+            this.affectedVersions = new ArrayList<FixVersion>();
+            this.affectedVersions.add(new FixVersion());
         }
-
-
     }
 
     private class Project {
@@ -63,5 +62,9 @@ public class IssueRequest {
 
     private class FixVersion {
         String name = BuildConfig.VERSION_NAME;
+    }
+
+    public String formatDescription(String description) {
+        return String.format("{panel:title=Bug description}\n%s\n{panel}", description);
     }
 }

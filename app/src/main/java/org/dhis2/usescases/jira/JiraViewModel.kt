@@ -16,18 +16,16 @@ import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.prefs.PreferenceProviderImpl
 import org.dhis2.utils.Constants
 import org.dhis2.utils.jira.IssueRequest
+import org.dhis2.utils.jira.JiraIssue
 import org.dhis2.utils.jira.JiraIssueListRequest
+import org.dhis2.utils.jira.JiraIssueListResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.http.Body
-import retrofit2.http.Header
-import retrofit2.http.POST
+import java.io.IOException
+import java.util.ArrayList
 
-/**
- * QUADRAM. Created by ppajuelo on 11/04/2019.
- */
 class JiraViewModel : ViewModel(), JiraActions {
 
     private lateinit var issueService: JiraIssueService
@@ -44,8 +42,8 @@ class JiraViewModel : ViewModel(), JiraActions {
     private val description = MutableLiveData<String>()
     private val formCompleted = ObservableField<Boolean>(false)
 
-    private val issueListResponse = MutableLiveData<Response<ResponseBody>>()
-    private var issueMessage: MutableLiveData<String> = MutableLiveData()
+    private val issueListResponse = MutableLiveData<Result<List<JiraIssue>>>()
+    private var issueMessage: MutableLiveData<Result<String>> = MutableLiveData()
 
     fun init(preferenceProvider: PreferenceProviderImpl) {
         val retrofit = Retrofit.Builder()
@@ -59,27 +57,10 @@ class JiraViewModel : ViewModel(), JiraActions {
 
         session.value = prefs.getString(Constants.JIRA_AUTH, null)
         rememberCredentials.value = prefs.contains(Constants.JIRA_AUTH)
-        issueMessage.value = ""
 
         if (prefs.contains(Constants.JIRA_USER)) {
             getJiraIssues()
         }
-    }
-
-    private interface JiraIssueService {
-        @POST("rest/api/2/issue")
-        fun createIssue(
-            @Header("Authorization")
-            auth: String,
-            @Body issueRequest: RequestBody
-        ): Call<ResponseBody>
-
-        @POST("rest/api/2/search")
-        fun getJiraIssues(
-            @Header("Authorization")
-            auth: String?,
-            @Body issueRequest: RequestBody
-        ): Call<ResponseBody>
     }
 
     override fun openSession() {
@@ -101,20 +82,37 @@ class JiraViewModel : ViewModel(), JiraActions {
         return object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
-                    if (rememberCredentials.value!! && !prefs.contains(Constants.JIRA_AUTH)) {
-                        prefs.saveJiraCredentials(getAuth())
-                        prefs.saveJiraUser(userName.value!!)
-                    }
+                    saveCredentialsIfNeeded()
                     isSessionOpen.set(true)
-                    issueListResponse.value = response
+                    var issueList: List<JiraIssue> = ArrayList()
+                    try {
+                        val jiraIssueListRes = Gson()
+                            .fromJson(
+                                response.body()!!.string(),
+                                JiraIssueListResponse::class.java
+                            )
+                        issueList = jiraIssueListRes.issues
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                    issueListResponse.value = Result.success(issueList)
                 } else {
+                    issueListResponse.value = Result.failure(Exception(response.message()))
                     closeSession()
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                issueListResponse.value = Result.failure(t)
                 closeSession()
             }
+        }
+    }
+
+    private fun saveCredentialsIfNeeded(){
+        if (rememberCredentials.value!! && !prefs.contains(Constants.JIRA_AUTH)) {
+            prefs.saveJiraCredentials(getAuth())
+            prefs.saveJiraUser(userName.value!!)
         }
     }
 
@@ -125,11 +123,11 @@ class JiraViewModel : ViewModel(), JiraActions {
         isSessionOpen.set(false)
     }
 
-    fun issueListResponse(): LiveData<Response<ResponseBody>> {
+    fun issueListResponse(): LiveData<Result<List<JiraIssue>>> {
         return issueListResponse
     }
 
-    fun issueMessage(): LiveData<String> {
+    fun issueMessage(): LiveData<Result<String>> {
         return issueMessage
     }
 
@@ -149,19 +147,19 @@ class JiraViewModel : ViewModel(), JiraActions {
         issueService.createIssue(basic, requestBody).enqueue(getIssueCallback())
     }
 
-    private fun getIssueCallback(): Callback<ResponseBody>? {
+    private fun getIssueCallback(): Callback<ResponseBody> {
         return object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
-                    issueMessage.value = "Issue Sent"
+                    issueMessage.value = Result.success("Issue Sent")
                     getJiraIssues()
                 } else {
-                    issueMessage.value = "Error sending issue"
+                    issueMessage.value = Result.failure(Exception("Error sending issue"))
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                issueMessage.value = "Error sending issue"
+                issueMessage.value = Result.failure(t)
             }
         }
     }
