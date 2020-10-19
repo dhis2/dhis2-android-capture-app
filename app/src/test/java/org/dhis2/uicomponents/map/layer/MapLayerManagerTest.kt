@@ -23,7 +23,7 @@ class MapLayerManagerTest {
 
     @Before
     fun setup() {
-        mapLayerManager = MapLayerManager()
+        mapLayerManager = MapLayerManager(mapboxMap)
     }
 
     @Test
@@ -31,7 +31,6 @@ class MapLayerManagerTest {
     fun `Should add layer with sourceId`() {
         whenever(mapboxMap.style) doReturn style
         mapLayerManager
-            .initMap(mapboxMap)
             .addLayer(LayerType.TEI_LAYER, sourceId = sourceId)
 
         assert(mapLayerManager.mapLayers.isNotEmpty())
@@ -43,7 +42,6 @@ class MapLayerManagerTest {
     fun `Should add layer without sourceId`() {
         whenever(mapboxMap.style) doReturn style
         mapLayerManager
-            .initMap(mapboxMap)
             .withMapStyle(mapStyle)
             .addLayer(LayerType.HEATMAP_LAYER)
 
@@ -57,7 +55,6 @@ class MapLayerManagerTest {
         val otherSourceId = "otherSourceId"
         whenever(mapboxMap.style) doReturn style
         mapLayerManager
-            .initMap(mapboxMap)
             .addLayers(LayerType.RELATIONSHIP_LAYER, listOf(sourceId, otherSourceId), false)
 
         assert(mapLayerManager.mapLayers.isNotEmpty())

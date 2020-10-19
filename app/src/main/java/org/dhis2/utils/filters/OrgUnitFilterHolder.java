@@ -28,7 +28,7 @@ class OrgUnitFilterHolder extends FilterHolder {
         filterType = Filters.ORG_UNIT;
         this.programType = programType;
         this.filterPresenter = filterPresenter;
-        this.localBinding = (ItemFilterOrgUnitBinding) binding;
+        this.localBinding = binding;
     }
 
     @Override
