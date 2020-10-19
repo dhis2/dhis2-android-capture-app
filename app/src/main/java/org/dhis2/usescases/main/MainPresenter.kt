@@ -139,4 +139,8 @@ class MainPresenter(
         }
         return false
     }
+
+    fun onNavigateBackToHome() {
+        view.goToHome()
+    }
 }

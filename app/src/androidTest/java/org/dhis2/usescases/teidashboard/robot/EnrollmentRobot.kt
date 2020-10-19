@@ -18,7 +18,7 @@ import org.dhis2.common.viewactions.typeChildViewWithId
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextCustomHolder
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
-import org.dhis2.usescases.teiFlow.entity.EnrollmentListUIModel
+import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.containsString
 

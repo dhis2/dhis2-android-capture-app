@@ -59,6 +59,9 @@ class MainActivity :
     @Inject
     lateinit var presenter: MainPresenter
 
+    @Inject
+    lateinit var adapter: FiltersAdapter
+
     private var programFragment: ProgramFragment? = null
 
     var activeFragment: FragmentGlobalAbstract? = null
@@ -69,8 +72,6 @@ class MainActivity :
     private var fragId: Int = 0
     private var prefs: SharedPreferences? = null
     private var backDropActive = false
-    var adapter: FiltersAdapter? = null
-        private set
 
     //region LIFECYCLE
 
@@ -107,9 +108,8 @@ class MainActivity :
             Constants.SHARE_PREFS, Context.MODE_PRIVATE
         )
 
-        adapter = FiltersAdapter(FiltersAdapter.ProgramType.ALL)
         if (presenter.hasProgramWithAssignment()) {
-            adapter!!.addAssignedToMe()
+            adapter.addAssignedToMe()
         }
         binding.filterLayout.adapter = adapter
 
@@ -147,7 +147,7 @@ class MainActivity :
             )
         }
         binding.totalFilters = FilterManager.getInstance().totalFilters
-        adapter!!.notifyDataSetChanged()
+        adapter.notifyDataSetChanged()
     }
 
     override fun onPause() {
@@ -215,12 +215,15 @@ class MainActivity :
 
     override fun onBackPressed() {
         when {
-            fragId != R.id.menu_home -> changeFragment(R.id.menu_home)
-            isPinLayoutVisible -> {
-                isPinLayoutVisible = false
-            }
+            fragId != R.id.menu_home -> presenter.onNavigateBackToHome()
+            isPinLayoutVisible -> isPinLayoutVisible = false
             else -> super.onBackPressed()
         }
+    }
+
+    override fun goToHome() {
+        changeFragment(R.id.menu_home)
+        initCurrentScreen()
     }
 
     override fun changeFragment(id: Int) {
@@ -263,7 +266,7 @@ class MainActivity :
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
-            adapter!!.notifyDataSetChanged()
+            adapter.notifyDataSetChanged()
             updateFilters(FilterManager.getInstance().totalFilters)
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -350,6 +353,7 @@ class MainActivity :
                 R.anim.fragment_enter_left,
                 R.anim.fragment_exit_right
             )
+
             transaction.replace(R.id.fragment_container, activeFragment!!, tag)
                 .commitAllowingStateLoss()
             binding.title.text = tag

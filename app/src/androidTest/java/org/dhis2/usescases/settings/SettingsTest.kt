@@ -4,6 +4,7 @@ import android.Manifest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.common.rules.DataBindingIdlingResourceRule
+import org.dhis2.common.rules.RetryRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.login.loginRobot
 import org.dhis2.usescases.main.MainActivity

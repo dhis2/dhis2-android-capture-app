@@ -7,7 +7,10 @@ import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.R
 import org.dhis2.databinding.ItemSyncConflictBinding
 
-class SyncConflictAdapter(private val conflicts: MutableList<StatusLogItem>) :
+class SyncConflictAdapter(
+    private val conflicts: MutableList<StatusLogItem>,
+    private val showErrorLog: () -> Unit
+) :
     RecyclerView.Adapter<SyncConflictHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SyncConflictHolder {
@@ -22,6 +25,13 @@ class SyncConflictAdapter(private val conflicts: MutableList<StatusLogItem>) :
 
     override fun onBindViewHolder(holder: SyncConflictHolder, position: Int) {
         holder.bind(conflicts[position])
+        if (conflicts[position].openLogs()) {
+            holder.itemView.setOnClickListener {
+                showErrorLog()
+            }
+        } else {
+            holder.itemView.setOnClickListener(null)
+        }
     }
 
     override fun getItemCount(): Int {

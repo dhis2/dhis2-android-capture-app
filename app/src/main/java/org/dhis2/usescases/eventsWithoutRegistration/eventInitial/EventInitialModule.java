@@ -19,9 +19,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRe
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
-
-import javax.annotation.Nonnull;
-
 import dagger.Module;
 import dagger.Provides;
 
@@ -33,7 +30,7 @@ public class EventInitialModule {
     @Nullable
     private String eventUid;
 
-    public EventInitialModule(@Nonnull EventInitialContract.View view,
+    public EventInitialModule(@NonNull EventInitialContract.View view,
                               @Nullable String eventUid) {
         this.view = view;
         this.eventUid = eventUid;
@@ -44,8 +41,8 @@ public class EventInitialModule {
     EventInitialContract.Presenter providesPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
                                                      @NonNull EventInitialRepository eventInitialRepository,
                                                      @NonNull SchedulerProvider schedulerProvider,
-                                                     @Nonnull PreferenceProvider preferenceProvider,
-                                                     @Nonnull AnalyticsHelper analyticsHelper) {
+                                                    @NonNull PreferenceProvider preferenceProvider,
+                                                    @NonNull AnalyticsHelper analyticsHelper) {
         return new EventInitialPresenter(
                 view,
                 eventSummaryRepository,

@@ -33,6 +33,7 @@ import org.dhis2.Bindings.checkSMSPermission
 import org.dhis2.Bindings.showSMS
 import org.dhis2.R
 import org.dhis2.databinding.SyncBottomDialogBinding
+import org.dhis2.usescases.settings.ErrorDialog
 import org.dhis2.usescases.sms.InputArguments
 import org.dhis2.usescases.sms.SmsSendingService
 import org.dhis2.usescases.sms.StatusText
@@ -44,6 +45,7 @@ import org.dhis2.utils.analytics.SYNC_GRANULAR
 import org.dhis2.utils.analytics.SYNC_GRANULAR_ONLINE
 import org.dhis2.utils.analytics.SYNC_GRANULAR_SMS
 import org.dhis2.utils.customviews.MessageAmountDialog
+import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 
@@ -53,6 +55,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
     @Inject
     lateinit var presenter: GranularSyncContracts.Presenter
+
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
@@ -183,7 +186,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.sync_bottom_dialog, container, false)
-        adapter = SyncConflictAdapter(ArrayList())
+        adapter = SyncConflictAdapter(ArrayList()) { showErrorLog() }
         val layoutManager = LinearLayoutManager(context)
         binding!!.synsStatusRecycler.layoutManager = layoutManager
         binding!!.synsStatusRecycler.adapter = adapter
@@ -193,6 +196,12 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         retainInstance = true
 
         return binding!!.root
+    }
+
+    private fun showErrorLog() {
+        ErrorDialog()
+            .setData(presenter.syncErrors())
+            .show(childFragmentManager.beginTransaction(), ErrorDialog.TAG)
     }
 
     override fun showTitle(displayName: String) {
@@ -272,8 +281,14 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
         val listStatusLog = ArrayList<StatusLogItem>()
 
-        for (tracker in conflicts)
-            listStatusLog.add(StatusLogItem.create(tracker.created()!!, tracker.conflict()!!))
+        for (tracker in conflicts) {
+            listStatusLog.add(
+                StatusLogItem.create(
+                    tracker.created()!!,
+                    tracker.displayDescription() ?: tracker.conflict() ?: ""
+                )
+            )
+        }
 
         adapter!!.addItems(listStatusLog)
         setNetworkMessage()
@@ -491,6 +506,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         binding!!.synsStatusRecycler.visibility = View.VISIBLE
         when (workInfo.state) {
             WorkInfo.State.ENQUEUED -> {
+                CountingIdlingResourceSingleton.countingIdlingResource.increment()
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     binding!!.syncIcon.setImageResource(R.drawable.animator_sync_grey)
                     if (binding!!.syncIcon.drawable is AnimatedVectorDrawable) {
@@ -522,6 +538,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 binding!!.noConflictMessage.text = getString(R.string.no_conflicts_synced_message)
                 Bindings.setStateIcon(binding!!.syncIcon, State.SYNCED, true)
                 dismissListenerDialog!!.onDismiss(true)
+                CountingIdlingResourceSingleton.countingIdlingResource.decrement()
             }
             WorkInfo.State.FAILED -> {
                 val listStatusLog = ArrayList<StatusLogItem>()
@@ -552,18 +569,21 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                     adapter!!.addItem(
                         StatusLogItem.create(
                             Calendar.getInstance().time,
-                            getString(R.string.error_sync)
+                            getString(R.string.error_sync_check_logs),
+                            true
                         )
                     )
                 }
                 Bindings.setStateIcon(binding!!.syncIcon, State.ERROR, true)
                 dismissListenerDialog!!.onDismiss(false)
+                CountingIdlingResourceSingleton.countingIdlingResource.decrement()
             }
             WorkInfo.State.CANCELLED ->
                 adapter!!.addItem(
                     StatusLogItem.create(
                         Calendar.getInstance().time,
-                        getString(R.string.cancel_sync)
+                        getString(R.string.cancel_sync),
+                        true
                     )
                 )
             else -> {

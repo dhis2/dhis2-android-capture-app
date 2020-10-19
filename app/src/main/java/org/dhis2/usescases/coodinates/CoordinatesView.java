@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
@@ -30,6 +31,7 @@ import org.dhis2.databinding.FormCoordinatesAccentBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
 import org.dhis2.uicomponents.map.geometry.LngLatValidatorKt;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -59,6 +61,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private TextInputEditText polygon;
     private FeatureType featureType;
     private Geometry currentGeometry;
+    private TextView labelText;
 
     public CoordinatesView(Context context) {
         super(context);
@@ -109,6 +112,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
         errorView = findViewById(R.id.errorMessage);
         clearButton = findViewById(R.id.clearButton);
+        labelText = findViewById(R.id.label);
 
         latitude.setOnEditorActionListener((v, actionId, event) -> {
             if (validateCoordinates()) {
@@ -164,7 +168,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         clearButton.setOnClickListener(this);
 
         longitude.setOnFocusChangeListener((v, hasFocus) -> {
-            if(!hasFocus) {
+            if (!hasFocus) {
                 if (!longitude.getText().toString().isEmpty()) {
                     Double lon = DoubleExtensionsKt.truncate(getLongitude());
                     longitude.setText(lon.toString());
@@ -177,11 +181,13 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                         }
                     }
                 }
+            } else {
+                activate();
             }
         });
 
         latitude.setOnFocusChangeListener((v, hasFocus) -> {
-            if(!hasFocus)
+            if (!hasFocus) {
                 if (!latitude.getText().toString().isEmpty()) {
                     Double lat = DoubleExtensionsKt.truncate(getLatitude());
                     latitude.setText(lat.toString());
@@ -194,6 +200,9 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                         }
                     }
                 }
+            } else {
+                activate();
+            }
         });
     }
 
@@ -246,7 +255,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                         .coordinates(initialValue)
                         .type(featureType)
                         .build());
-        this.clearButton.setVisibility(VISIBLE);
+        updateDeleteVisibility(clearButton);
 
     }
 
@@ -285,7 +294,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             case R.id.clearButton:
                 clearValueData();
                 updateLocation(null);
-                if (errorView.getVisibility()== VISIBLE) {
+                if (errorView.getVisibility() == VISIBLE) {
                     setError(null);
                 }
                 break;
@@ -294,8 +303,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     public void getLocation() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if(this.getContext() instanceof ActivityGlobalAbstract){
-                ((ActivityGlobalAbstract)this.getContext()).requestLocationPermission(this);
+            if (this.getContext() instanceof ActivityGlobalAbstract) {
+                ((ActivityGlobalAbstract) this.getContext()).requestLocationPermission(this);
             }
         } else {
 
@@ -321,9 +330,30 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         latitude.setEnabled(editable);
         longitude.setEnabled(editable);
         clearButton.setEnabled(editable);
-        clearButton.setVisibility(editable ? View.VISIBLE : View.GONE);
         findViewById(R.id.location1).setEnabled(editable);
         findViewById(R.id.location2).setEnabled(editable);
+
+        latitude.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
+        );
+
+        longitude.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
+        );
+
+        setEditable(editable,
+                labelText,
+                latitudeInputLayout,
+                longitudeInputLayout,
+                findViewById(R.id.formLabel),
+                findViewById(R.id.location1),
+                findViewById(R.id.location2),
+                clearButton,
+                findViewById(R.id.descriptionLabel)
+        );
+        updateDeleteVisibility(clearButton);
     }
 
     @Override
@@ -331,6 +361,16 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         if (hasFocus) {
             activate();
             latitude.performClick();
+        }
+    }
+
+    @Override
+    public void dispatchSetActivated(boolean activated) {
+        super.dispatchSetActivated(activated);
+        if (activated) {
+            labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+        } else {
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
         }
     }
 
@@ -370,8 +410,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             } else if (geometry.type() == FeatureType.MULTI_POLYGON) {
                 this.polygon.setText(getContext().getString(R.string.polygon_captured));
             }
-            this.clearButton.setVisibility(VISIBLE);
         }
+        updateDeleteVisibility(clearButton);
     }
 
     private void startRequestingLocation() {
@@ -418,6 +458,17 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     public String currentCoordinates() {
         return currentGeometry != null ? currentGeometry.coordinates() : null;
+    }
+
+    @Override
+    protected boolean hasValue(){
+        return latitude.getText()!=null && !latitude.getText().toString().isEmpty() &&
+                longitude.getText()!=null && !longitude.getText().toString().isEmpty();
+    }
+
+    @Override
+    protected boolean isEditable(){
+        return latitude.isEnabled() && longitude.isEnabled();
     }
 }
 

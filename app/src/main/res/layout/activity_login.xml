@@ -76,14 +76,12 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton
-                    android:id="@+id/urlInfo"
+                    android:id="@+id/clearUrl"
                     style="@style/ActionIconNoPadding"
-                    android:onClick="@{()-> presenter.onUrlInfoClick()}"
-                    android:tint="#5C5C5C"
                     app:layout_constraintBottom_toBottomOf="@id/server_url"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/server_url"
-                    app:srcCompat="@drawable/ic_info_outline"
+                    app:srcCompat="@drawable/ic_close"
                     tools:ignore="ContentDescription" />
 
                 <ImageView
@@ -105,7 +103,7 @@
                     android:textColorHint="@color/text_black_808"
                     android:theme="@style/loginInputText"
                     app:layout_constraintBottom_toTopOf="@+id/user_name"
-                    app:layout_constraintEnd_toStartOf="@id/urlInfo"
+                    app:layout_constraintEnd_toStartOf="@id/clearUrl"
                     app:layout_constraintStart_toEndOf="@id/serverIcon"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_chainStyle="packed">

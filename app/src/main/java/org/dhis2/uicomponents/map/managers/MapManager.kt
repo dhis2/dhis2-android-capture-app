@@ -13,39 +13,43 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions
 import org.dhis2.uicomponents.map.camera.initCameraToViewAllElements
+import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.layer.MapLayerManager
-import org.hisp.dhis.android.core.common.FeatureType
 
-abstract class MapManager {
+abstract class MapManager(val mapView: MapView) {
 
-    lateinit var mapView: MapView
     lateinit var map: MapboxMap
-    open lateinit var featureType: FeatureType
     lateinit var mapLayerManager: MapLayerManager
     var markerViewManager: MarkerViewManager? = null
     var symbolManager: SymbolManager? = null
     var onMapClickListener: MapboxMap.OnMapClickListener? = null
-    val style: Style?
-        get() = map.style
+    var carouselAdapter: CarouselAdapter? = null
+    var style: Style? = null
 
-    fun init(mapView: MapView) {
-        this.mapView = mapView
-        mapView.getMapAsync {
-            this.map = it
-            map.setStyle(
-                Style.MAPBOX_STREETS
-            ) {
-                if (this::featureType.isInitialized) {
+    fun init(onInitializationFinished: () -> Unit = {}) {
+        if (style == null) {
+            mapView.getMapAsync { mapLoaded ->
+                this.map = mapLoaded
+                map.setStyle(Style.MAPBOX_STREETS) { styleLoaded ->
+                    this.style = styleLoaded
+                    mapLayerManager = MapLayerManager(map).apply {
+                        styleChangeCallback = { newStyle ->
+                            style = newStyle
+                            mapLayerManager.clearLayers()
+                            loadDataForStyle()
+                            setSource()
+                        }
+                    }
+                    onMapClickListener?.let { mapClickListener ->
+                        map.addOnMapClickListener(mapClickListener)
+                    }
+                    markerViewManager = MarkerViewManager(mapView, map)
                     loadDataForStyle()
+                    onInitializationFinished()
                 }
             }
-            onMapClickListener?.let { mapClickListener ->
-                map.addOnMapClickListener(mapClickListener)
-            }
-            markerViewManager = MarkerViewManager(mapView, map)
-        }
-        mapLayerManager = MapLayerManager().apply {
-            styleChangeCallback = { loadDataForStyle() }
+        } else {
+            onInitializationFinished()
         }
     }
 
@@ -81,13 +85,6 @@ abstract class MapManager {
 
     fun pointToLatLn(point: Point): LatLng {
         return LatLng(point.latitude(), point.longitude())
-    }
-
-    fun findFeatureFor(featureUidProperty: String): Feature? {
-        if (!isMapReady()) return null
-        return mapLayerManager.getLayers().mapNotNull { mapLayer ->
-            mapLayer.findFeatureWithUid(featureUidProperty)
-        }.firstOrNull()
     }
 
     fun isMapReady() = ::map.isInitialized && style?.isFullyLoaded ?: false

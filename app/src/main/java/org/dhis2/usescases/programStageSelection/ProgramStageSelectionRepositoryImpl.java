@@ -20,9 +20,6 @@ import org.hisp.dhis.rules.models.TriggerEnvironment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.annotation.Nonnull;
-
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 
@@ -97,7 +94,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                                 ))).toFlowable();
     }
 
-    @Nonnull
+   @NonNull
     private String getOrgUnitCode(String orgUnitUid) {
         String ouCode = d2.organisationUnitModule().organisationUnits().byUid().eq(orgUnitUid).one().blockingGet().code();
         return ouCode == null ? "" : ouCode;

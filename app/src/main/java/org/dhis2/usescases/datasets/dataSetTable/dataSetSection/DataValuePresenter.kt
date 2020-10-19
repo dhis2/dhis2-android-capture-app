@@ -274,7 +274,7 @@ class DataValuePresenter(
                 val values = ArrayList<String>()
                 val fields = ArrayList<FieldViewModel>()
                 var totalRow = 0
-                var fieldIsNumber = dataElement.valueType()!!.isNumeric
+                val fieldIsNumber = dataElement.valueType()!!.isNumeric
                 if (!isNumber) {
                     isNumber = dataElement.valueType()!!.isNumeric
                 }
@@ -288,24 +288,11 @@ class DataValuePresenter(
                         )
                     )
                 ) {
-                    var editable = true
-                    for (disabledDataElement in dataTableModel.dataElementDisabled()!!)
-                        if (disabledDataElement.categoryOptionCombo() != null &&
-                            disabledDataElement.categoryOptionCombo()!!.uid()
-                            == categoryOptionCombo.uid() &&
-                            disabledDataElement.dataElement()!!.uid() == dataElement.uid() ||
-                            disabledDataElement.dataElement()!!.uid() == dataElement.uid()
-                        ) {
-                            editable = false
-                        }
-
-                    for (
-                        categoryOption in
-                        repository.getCatOptionFromCatOptionCombo(categoryOptionCombo)
+                    val isEditable = validateIfIsEditable(
+                        dataTableModel.dataElementDisabled()!!,
+                        dataElement,
+                        categoryOptionCombo
                     )
-                        if (!categoryOption.access().data().write()) {
-                            editable = false
-                        }
 
                     var fieldViewModel: FieldViewModel? = null
                     for (dataValue in dataTableModel.dataValues()!!)
@@ -321,7 +308,7 @@ class DataValuePresenter(
                                 dataValue.value(),
                                 sectionName,
                                 true,
-                                editable,
+                                isEditable,
                                 null,
                                 categoryOptionCombo.displayName(),
                                 dataElement.uid(),
@@ -344,7 +331,7 @@ class DataValuePresenter(
                             "",
                             sectionName,
                             true,
-                            editable,
+                            isEditable,
                             null,
                             categoryOptionCombo.displayName(),
                             dataElement.uid(),
@@ -425,6 +412,32 @@ class DataValuePresenter(
 
             return Quartet.create(dataTableModel, listFields, cells, isEditable)
         }
+
+    @VisibleForTesting()
+    fun validateIfIsEditable(
+        dataElementDisabled: List<DataElementOperand>,
+        dataElement: DataElement,
+        categoryOptionCombo: CategoryOptionCombo
+    ): Boolean {
+        var editable = true
+        for (disabledDataElement in dataElementDisabled) {
+            if (disabledDataElement.categoryOptionCombo() != null &&
+                disabledDataElement.categoryOptionCombo()!!.uid() == categoryOptionCombo.uid() &&
+                disabledDataElement.dataElement()!!.uid() == dataElement.uid() &&
+                disabledDataElement.categoryOptionCombo()!!.uid() == categoryOptionCombo.uid()
+            ) {
+                editable = false
+            }
+        }
+
+        for (categoryOption in repository.getCatOptionFromCatOptionCombo(categoryOptionCombo)) {
+            if (!categoryOption.access().data().write()) {
+                editable = false
+            }
+        }
+
+        return editable
+    }
 
     private fun isExpired(dataSet: DataSet?): Boolean {
         return if (0 == dataSet?.expiryDays()) {

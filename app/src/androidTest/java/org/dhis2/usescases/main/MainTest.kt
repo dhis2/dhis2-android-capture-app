@@ -4,7 +4,6 @@ import android.Manifest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.login.loginRobot
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -24,7 +23,7 @@ class MainTest : BaseTest() {
         super.setUp()
     }
 
-    @Test
+  @Test
     fun checkHomeScreenRecyclerviewHasElements() {
         startActivity()
         homeRobot {
@@ -35,22 +34,30 @@ class MainTest : BaseTest() {
     @Test
     fun shouldRedirectToLoginIfClickOnLogOut() {
         setupCredentials()
-        enableIntents()
         startActivity()
+        enableIntents()
 
         homeRobot {
             clickOnNavigationDrawerMenu()
             clickOnLogout()
             checkLogInIsLaunched()
         }
+    }
 
-        loginRobot {
-            checkUsernameFieldIsClear()
-            checkPasswordFieldIsClear()
+    @Test
+    fun shouldNavigateToHomeWhenBackPressed() {
+        setupCredentials()
+        startActivity()
+
+        homeRobot {
+            clickOnNavigationDrawerMenu()
+            clickOnSettings()
+            pressBack()
+            checkHomeIsDisplayed()
         }
     }
 
-    fun startActivity() {
+    private fun startActivity() {
         rule.launchActivity(null)
     }
 }

@@ -10,6 +10,8 @@ abstract class ScanTextViewModel : FieldViewModel() {
 
     abstract val fieldRendering: ValueTypeDeviceRendering?
 
+    abstract val hint: String?
+
     companion object {
         @JvmStatic
         fun create(
@@ -22,7 +24,8 @@ abstract class ScanTextViewModel : FieldViewModel() {
             optionSet: String?,
             description: String?,
             objectStyle: ObjectStyle?,
-            fieldRendering: ValueTypeDeviceRendering?
+            fieldRendering: ValueTypeDeviceRendering?,
+            hint: String?
         ): FieldViewModel =
             AutoValue_ScanTextViewModel(
                 id,
@@ -38,7 +41,8 @@ abstract class ScanTextViewModel : FieldViewModel() {
                 description,
                 objectStyle,
                 null,
-                fieldRendering
+                fieldRendering,
+                hint
             )
     }
 
@@ -57,7 +61,8 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
-            fieldRendering
+            fieldRendering,
+            hint
         )
 
     override fun withError(error: String): FieldViewModel =
@@ -75,7 +80,8 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
-            fieldRendering
+            fieldRendering,
+            hint
         )
 
     override fun withWarning(warning: String): FieldViewModel =
@@ -93,7 +99,8 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
-            fieldRendering
+            fieldRendering,
+            hint
         )
 
     override fun withValue(data: String?): FieldViewModel =
@@ -111,7 +118,8 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
-            fieldRendering
+            fieldRendering,
+            hint
         )
 
     override fun withEditMode(isEditable: Boolean): FieldViewModel =
@@ -129,6 +137,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
-            fieldRendering
+            fieldRendering,
+            hint
         )
 }

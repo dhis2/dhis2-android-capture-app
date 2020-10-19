@@ -10,6 +10,7 @@ import androidx.test.espresso.matcher.ViewMatchers.hasSibling
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withTagValue
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
@@ -18,12 +19,17 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
 import org.dhis2.common.matchers.clickOnTab
 import org.dhis2.common.matchers.isToast
+import org.dhis2.usescases.event.entity.EventStatusUIModel
 import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.StageViewHolder
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.isOneOf
 import org.hamcrest.Matchers.not
 
 fun teiDashboardRobot(teiDashboardRobot: TeiDashboardRobot.() -> Unit) {
@@ -78,6 +84,26 @@ class TeiDashboardRobot : BaseRobot() {
             .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, click()))
     }
 
+    fun clickOnEventWith(eventDate: String, orgUnit:String){
+        onView(withId(R.id.tei_recycler))
+            .perform(actionOnItem<DashboardProgramViewHolder>(allOf(hasDescendant(withText(eventDate)), hasDescendant(
+                withText(orgUnit))), click()))
+    }
+
+    fun clickOnEventWith(eventName: String, eventStatus: Int, date: String){
+        onView(withId(R.id.tei_recycler))
+            .perform(actionOnItem<DashboardProgramViewHolder>(allOf(
+                hasDescendant(withText(eventName)),
+                hasDescendant(withText(eventStatus)),
+                hasDescendant(withText(date))),
+                click()))
+    }
+
+    fun clickOnGroupEventByName(name: String){
+        onView(withId(R.id.tei_recycler))
+            .perform(actionOnItem<DashboardProgramViewHolder>(hasDescendant(withText(name)), click()))
+    }
+
     fun clickOnFab() {
         onView(withId(R.id.fab)).perform(click())
     }
@@ -113,7 +139,7 @@ class TeiDashboardRobot : BaseRobot() {
         onView(withId(R.id.tei_recycler))
             .check(matches(allOf(isDisplayed(), isNotEmpty(),
                 atPosition(0, hasDescendant(
-                    hasSibling(allOf(withId(R.id.event_name), withText(eventName))))))))
+                    hasSibling(allOf(withId(R.id.programStageName), withText(eventName))))))))
     }
 
     fun clickOnMenuDeactivate() {
@@ -218,7 +244,9 @@ class TeiDashboardRobot : BaseRobot() {
             .check(matches(allOf(isDisplayed(), isNotEmpty(),
                 atPosition(position, allOf(
                     hasDescendant(withText(eventName)),
-                    hasDescendant(withText(R.string.event_open)))))))
+                    hasDescendant(withTagValue(equalTo(
+                        R.drawable.ic_event_status_open
+                    ))))))))
     }
 
     fun checkEventWasCreatedAndClosed(eventName: String, position: Int) {
@@ -226,7 +254,7 @@ class TeiDashboardRobot : BaseRobot() {
             .check(matches(allOf(isDisplayed(), isNotEmpty(),
                 atPosition(position, allOf(
                                 hasDescendant(withText(eventName)),
-                                hasDescendant(withText(R.string.event_completed)))))))
+                                hasDescendant(withTagValue(isOneOf(R.drawable.ic_event_status_complete, R.drawable.ic_event_status_complete_read))))))))
     }
 
     fun clickOnMenuDeleteEnrollment() {
@@ -246,30 +274,42 @@ class TeiDashboardRobot : BaseRobot() {
             .check(matches(allOf(isDisplayed(), isNotEmpty(),
                 atPosition(position, allOf(
                     hasDescendant(withText(eventName)),
-                    hasDescendant(withText(R.string.event_schedule)))))))
+                    hasDescendant(withTagValue(isOneOf(R.drawable.ic_event_status_schedule, R.drawable.ic_event_status_schedule_read))))))))
     }
 
     private fun checkEventIsClosed(position: Int) {
         onView(withId(R.id.tei_recycler))
                 .check(matches(allOf(isDisplayed(), isNotEmpty(),
-                        atPosition(position, hasDescendant(withText(R.string.program_completed))))))
+                        atPosition(position, hasDescendant(withTagValue(isOneOf(
+                            R.drawable.ic_event_status_open_read,
+                            R.drawable.ic_event_status_overdue_read,
+                            R.drawable.ic_event_status_complete_read,
+                            R.drawable.ic_event_status_skipped_read,
+                            R.drawable.ic_event_status_schedule_read
+                        )))))))
     }
 
     private fun checkEventIsOpen(position: Int) {
         onView(withId(R.id.tei_recycler))
                 .check(matches(allOf(isDisplayed(), isNotEmpty(),
-                        atPosition(position, hasDescendant(withText(R.string.event_open))))))
+                        atPosition(position, hasDescendant(withTagValue(isOneOf(R.drawable.ic_event_status_open, R.drawable.ic_event_status_open_read)))))))
     }
 
     private fun checkEventIsCompleted(position: Int) {
         onView(withId(R.id.tei_recycler))
             .check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(position, hasDescendant(withText(R.string.event_completed))))))
+                atPosition(position, hasDescendant(withTagValue(isOneOf(R.drawable.ic_event_status_complete, R.drawable.ic_event_status_complete_read)))))))
     }
 
     private fun checkEventIsInactivate(position: Int) {
         onView(withId(R.id.tei_recycler))
-                .check(matches(allOf(isDisplayed(), isNotEmpty(), atPosition(position, hasDescendant(withText(R.string.program_inactive))))))
+                .check(matches(allOf(isDisplayed(), isNotEmpty(), atPosition(position, hasDescendant(withTagValue(
+                    isOneOf(
+                        R.drawable.ic_event_status_open_read,
+                        R.drawable.ic_event_status_overdue_read,
+                        R.drawable.ic_event_status_complete_read,
+                        R.drawable.ic_event_status_skipped_read,
+                        R.drawable.ic_event_status_schedule_read)))))))
     }
 
     fun checkAllEventsAreInactive(totalEvents: Int) {
@@ -306,12 +346,12 @@ class TeiDashboardRobot : BaseRobot() {
 
     fun clickOnStageGroup(programStageName: String) {
         onView(withId(R.id.tei_recycler))
-            .perform(actionOnItem<DashboardProgramViewHolder>(hasDescendant(withText(programStageName)), click()))
+            .perform(actionOnItem<StageViewHolder>(hasDescendant(withText(programStageName)), click()))
     }
 
-    fun clickOnEventGroupByStage(eventName: String) {
+    fun clickOnEventGroupByStage(eventDate: String) {
         onView(withId(R.id.tei_recycler))
-            .perform(actionOnItem<DashboardProgramViewHolder>(hasDescendant(allOf(withText(eventName), withId(R.id.event_name))), click()))
+            .perform(actionOnItem<EventViewHolder>(hasDescendant(allOf(withText(eventDate), withId(R.id.event_date))), click()))
     }
 
     fun checkEventWasDeletedStageGroup(teiProgramStages: TEIProgramStagesUIModel) {
@@ -325,5 +365,29 @@ class TeiDashboardRobot : BaseRobot() {
                 hasItem(allOf(hasDescendant(withText(secondProgramStage.name)), hasDescendant(withText(secondProgramStage.events)))),
                 hasItem(allOf(hasDescendant(withText(thirdProgramStage.name)), hasDescendant(withText(thirdProgramStage.events))))
             )))
+    }
+
+    fun checkEventStateStageGroup(eventDetails: EventStatusUIModel) {
+        var status = R.drawable.ic_event_status_open
+        when (eventDetails.status) {
+            "Open" -> status =  R.drawable.ic_event_status_open
+            "Overdue" -> status = R.drawable.ic_event_status_overdue
+            "Event Completed" -> status = R.drawable.ic_event_status_complete
+            "Skip" -> status = R.drawable.ic_event_status_skipped
+            "Schedule" -> status = R.drawable.ic_event_status_schedule
+        }
+
+        onView(withId(R.id.tei_recycler))
+            .check(matches(
+                hasItem(allOf(
+                    hasDescendant(withText(eventDetails.date)),
+                    hasDescendant(withText(eventDetails.orgUnit)),
+                    hasDescendant(withTagValue(isOneOf(status)))
+                ))))
+    }
+
+    companion object {
+        const val OPEN_EVENT_STATUS = R.string.event_open
+        const val OVERDUE_EVENT_STATUS = R.string.event_overdue
     }
 }

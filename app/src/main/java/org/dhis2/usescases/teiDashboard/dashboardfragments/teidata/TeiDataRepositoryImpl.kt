@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
 import io.reactivex.Single
 import org.dhis2.Bindings.applyFilters
+import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.dhislogic.DhisEventUtils
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
@@ -123,11 +124,16 @@ class TeiDataRepositoryImpl(
                                 programStage,
                                 isSelected
                             ),
-                            orgUnitName = ""
+                            orgUnitName = "",
+                            catComboName = "",
+                            dataElementValues = emptyList(),
+                            groupedByStage = true
                         )
                     )
                     if (selectedStage != null && selectedStage == programStage.uid()) {
-                        checkEventStatus(eventList).forEach { event ->
+                        checkEventStatus(eventList).forEachIndexed { index, event ->
+                            val showTopShadow = index == 0
+                            val showBottomShadow = index == eventList.size - 1
                             eventViewModels.add(
                                 EventViewModel(
                                     EventViewModelType.EVENT,
@@ -137,7 +143,17 @@ class TeiDataRepositoryImpl(
                                     null,
                                     isSelected = true,
                                     canAddNewEvent = true,
-                                    orgUnitName = ""
+                                    orgUnitName = d2.organisationUnitModule().organisationUnits()
+                                        .uid(event.organisationUnit()).blockingGet().displayName()
+                                        ?: "",
+                                    catComboName = getCatComboName(event.attributeOptionCombo()),
+                                    dataElementValues = getEventValues(
+                                        event.uid(),
+                                        programStage.uid()
+                                    ),
+                                    groupedByStage = true,
+                                    showTopShadow = showTopShadow,
+                                    showBottomShadow = showBottomShadow
                                 )
                             )
                         }
@@ -160,10 +176,12 @@ class TeiDataRepositoryImpl(
             .byDeleted().isFalse
             .get()
             .map { eventList ->
-                checkEventStatus(eventList).forEach { event ->
+                checkEventStatus(eventList).forEachIndexed { index, event ->
                     val stageUid = d2.programModule().programStages()
                         .uid(event.programStage())
                         .blockingGet()
+                    val showTopShadow = index == 0
+                    val showBottomShadow = index == eventList.size - 1
                     eventViewModels.add(
                         EventViewModel(
                             EventViewModelType.EVENT,
@@ -173,7 +191,12 @@ class TeiDataRepositoryImpl(
                             null,
                             isSelected = true,
                             canAddNewEvent = true,
-                            orgUnitName = ""
+                            orgUnitName = d2.organisationUnitModule().organisationUnits()
+                                .uid(event.organisationUnit()).blockingGet().displayName()
+                                ?: "",
+                            catComboName = getCatComboName(event.attributeOptionCombo()),
+                            dataElementValues = getEventValues(event.uid(), stageUid.uid()),
+                            groupedByStage = false
                         )
                     )
                 }
@@ -222,6 +245,40 @@ class TeiDataRepositoryImpl(
             } else {
                 event
             }
+        }
+    }
+
+    private fun getEventValues(eventUid: String, stageUid: String): List<Pair<String, String?>> {
+        val displayInListDataElements = d2.programModule().programStageDataElements()
+            .byProgramStage().eq(stageUid)
+            .byDisplayInReports().isTrue
+            .blockingGet().map {
+                it.dataElement()?.uid()!!
+            }
+        return if (displayInListDataElements.isNotEmpty()) {
+            displayInListDataElements.map {
+                val valueRepo = d2.trackedEntityModule().trackedEntityDataValues()
+                    .value(eventUid, it)
+                val de = d2.dataElementModule().dataElements()
+                    .uid(it).blockingGet()
+                Pair(
+                    de.displayFormName() ?: de.displayName() ?: "",
+                    if (valueRepo.blockingExists()) {
+                        valueRepo.blockingGet().userFriendlyValue(d2)
+                    } else {
+                        "-"
+                    }
+                )
+            }
+        } else {
+            emptyList()
+        }
+    }
+
+    private fun getCatComboName(categoryOptionComboUid: String?): String? {
+        return categoryOptionComboUid?.let {
+            d2.categoryModule().categoryOptionCombos().uid(categoryOptionComboUid).blockingGet()
+                .displayName()
         }
     }
 }

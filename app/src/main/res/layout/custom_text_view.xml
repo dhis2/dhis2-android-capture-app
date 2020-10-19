@@ -29,7 +29,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="70dp"
-        android:padding="5dp">
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
 
         <View
             android:id="@+id/dummyFocusView"
@@ -56,38 +57,44 @@
         <TextView
             android:id="@+id/label"
             style="@style/FieldLabel"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{label}"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/renderImage"
             tools:text="@string/lorem" />
+
+        <ImageView
+            android:id="@+id/descriptionLabel"
+            android:layout_width="12dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/label"
+            app:layout_constraintTop_toTopOf="@+id/label"
+            app:srcCompat="@drawable/ic_info_outline"
+            app:tint="?colorPrimary" />
 
         <LinearLayout
             android:layout_width="match_parent"
             app:layout_constraintTop_toBottomOf="@id/label"
+            android:layout_marginHorizontal="12dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/renderImage"
             android:orientation="horizontal">
-
-            <ImageView
-                android:layout_gravity="center"
-                android:id="@+id/descIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="8dp"
-                android:visibility="gone"
-                tools:visibility="visible"
-                app:srcCompat="@drawable/ic_form_text" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/input_layout"
-                style="@style/ValueType_Text"
                 android:theme="@style/loginInputText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint='@{fieldHint}'
-                android:textColorHint="@color/text_black_808"
                 tools:hint="hint">
 
                 <org.dhis2.utils.customviews.TextInputAutoCompleteTextView
@@ -98,20 +105,21 @@
                     android:imeOptions="actionNext"
                     android:maxLines="1"
                     android:textAlignment="textStart"
-                    android:textColor="@color/text_black_333"
-                    android:textSize="15sp"
+                    android:textSize="@dimen/form_edit_text_size"
                     android:textIsSelectable="true"
                     tools:text="hello" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageView
-                android:id="@+id/descriptionLabel"
+                android:layout_gravity="center"
+                android:id="@+id/descIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:visibility="visible"
-                app:srcCompat="@drawable/ic_info_outline"
-                app:tint="?colorPrimary" />
+                android:padding="10dp"
+                android:visibility="gone"
+                tools:visibility="visible"
+                tools:src="@drawable/ic_form_email"/>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

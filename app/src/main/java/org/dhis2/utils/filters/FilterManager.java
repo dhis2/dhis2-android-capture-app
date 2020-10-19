@@ -13,15 +13,18 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import kotlin.Pair;
 
-public class FilterManager {
+public class FilterManager implements Serializable {
 
     public static final int OU_TREE = 1986;
 
@@ -52,6 +55,8 @@ public class FilterManager {
     private List<EnrollmentStatus> enrollmentStatusFilters;
     private boolean assignedFilter;
     private SortingItem sortingItem;
+
+    private ArrayList<Filters> unsupportedFilters = new ArrayList<>();
 
     private ObservableField<Integer> ouFiltersApplied;
     private ObservableField<Integer> stateFiltersApplied;
@@ -109,6 +114,32 @@ public class FilterManager {
         ouTreeProcessor = PublishProcessor.create();
         periodRequestProcessor = PublishProcessor.create();
         catOptComboRequestProcessor = PublishProcessor.create();
+    }
+
+    public FilterManager copy() {
+        FilterManager copy = new FilterManager();
+        copy.ouFilters = new ArrayList<>(getOrgUnitFilters());
+        copy.stateFilters = new ArrayList<>(getStateFilters());
+        copy.periodFilters = new ArrayList<>(getPeriodFilters());
+        copy.enrollmentPeriodFilters = new ArrayList<>(getEnrollmentPeriodFilters());
+        copy.catOptComboFilters = new ArrayList<>(getCatOptComboFilters());
+        copy.eventStatusFilters = new ArrayList<>(getEventStatusFilters());
+        copy.enrollmentStatusFilters = new ArrayList<>(getEnrollmentStatusFilters());
+        copy.assignedFilter = getAssignedFilter();
+        copy.sortingItem = getSortingItem();
+        return copy;
+    }
+
+    public boolean sameFilters(FilterManager filterManager) {
+        return Objects.equals(filterManager.ouFilters, this.ouFilters) &&
+                Objects.equals(filterManager.stateFilters, this.stateFilters) &&
+                Objects.equals(filterManager.periodFilters, this.periodFilters) &&
+                Objects.equals(filterManager.enrollmentPeriodFilters, this.enrollmentPeriodFilters) &&
+                Objects.equals(filterManager.catOptComboFilters, this.catOptComboFilters) &&
+                Objects.equals(filterManager.eventStatusFilters, this.eventStatusFilters) &&
+                Objects.equals(filterManager.enrollmentStatusFilters, this.enrollmentStatusFilters) &&
+                filterManager.assignedFilter == this.assignedFilter &&
+                Objects.equals(filterManager.sortingItem, this.sortingItem);
     }
 
     public void setPeriodIdSelected(int selected) {
@@ -190,14 +221,14 @@ public class FilterManager {
     public void addPeriod(List<DatePeriod> datePeriod) {
         this.periodFilters = datePeriod;
 
-        periodFiltersApplied.set(datePeriod != null ? 1 : 0);
+        periodFiltersApplied.set(datePeriod != null && !datePeriod.isEmpty() ? 1 : 0);
         filterProcessor.onNext(this);
     }
 
     public void addEnrollmentPeriod(List<DatePeriod> datePeriod) {
         this.enrollmentPeriodFilters = datePeriod;
 
-        enrollmentPeriodFiltersApplied.set(datePeriod != null ? 1 : 0);
+        enrollmentPeriodFiltersApplied.set(datePeriod != null && !datePeriod.isEmpty() ? 1 : 0);
         filterProcessor.onNext(this);
     }
 
@@ -269,13 +300,21 @@ public class FilterManager {
         return ouTreeProcessor;
     }
 
+    public void setUnsupportedFilters(Filters... unsupported) {
+        this.unsupportedFilters.addAll(Arrays.asList(unsupported));
+    }
+
+    public void clearUnsupportedFilters(){
+        this.unsupportedFilters.clear();
+    }
+
     public int getTotalFilters() {
         int ouIsApplying = ouFilters.isEmpty() ? 0 : 1;
         int stateIsApplying = stateFilters.isEmpty() ? 0 : 1;
         int periodIsApplying = periodFilters == null || periodFilters.isEmpty() ? 0 : 1;
-        int enrollmentPeriodIsApplying = enrollmentPeriodFilters == null || enrollmentPeriodFilters.isEmpty() ? 0 : 1;
+        int enrollmentPeriodIsApplying = unsupportedFilters.contains(Filters.ENROLLMENT_DATE) || enrollmentPeriodFilters == null || enrollmentPeriodFilters.isEmpty() ? 0 : 1;
         int eventStatusApplying = eventStatusFilters.isEmpty() ? 0 : 1;
-        int enrollmentStatusApplying = enrollmentStatusFilters.isEmpty() ? 0 : 1;
+        int enrollmentStatusApplying = unsupportedFilters.contains(Filters.ENROLLMENT_STATUS) || enrollmentStatusFilters.isEmpty() ? 0 : 1;
         int catComboApplying = catOptComboFilters.isEmpty() ? 0 : 1;
         int assignedApplying = assignedFilter ? 1 : 0;
         int sortingIsActive = sortingItem != null ? 1 : 0;
@@ -369,9 +408,11 @@ public class FilterManager {
     }
 
     public void clearAssignToMe() {
-        assignedFilter = false;
-        assignedToMeApplied.set(0);
-        filterProcessor.onNext(this);
+        if(assignedFilter) {
+            assignedFilter = false;
+            assignedToMeApplied.set(0);
+            filterProcessor.onNext(this);
+        }
     }
 
     public void clearEnrollmentDate() {

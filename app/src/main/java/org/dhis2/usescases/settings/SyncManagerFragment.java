@@ -9,7 +9,6 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
@@ -19,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -48,7 +48,6 @@ import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
-import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.settings.LimitScope;
 import org.jetbrains.annotations.NotNull;
 
@@ -56,6 +55,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import kotlin.Unit;
+
+import static android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
+import static android.text.Spanned.SPAN_INCLUSIVE_EXCLUSIVE;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_12_HOUR;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_24_HOUR;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_30_MIN;
@@ -92,8 +95,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private boolean metadataInit;
     private boolean scopeLimitInit;
     private boolean dataWorkRunning;
-    private boolean metadataWorkRunning;
-//    scopeLimitInit = false;
 
     public SyncManagerFragment() {
         // Required empty public constructor
@@ -128,9 +129,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
                 String metaText = metaSyncSettings().concat("\n").concat(context.getString(R.string.syncing_configuration));
                 binding.syncMetaLayout.message.setText(metaText);
-                metadataWorkRunning = true;
             } else {
-                metadataWorkRunning = false;
                 presenter.checkData();
             }
             checkSyncMetaButtonStatus();
@@ -405,8 +404,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             SpannableString str = new SpannableString(src);
             int wIndex = src.indexOf('@');
             int eIndex = src.indexOf('$');
-            str.setSpan(new ImageSpan(context, R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            str.setSpan(new ImageSpan(context, R.drawable.ic_sync_problem_red), eIndex, eIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            str.setSpan(new ImageSpan(context, R.drawable.ic_sync_warning), wIndex, wIndex + 1, SPAN_EXCLUSIVE_EXCLUSIVE);
+            str.setSpan(new ImageSpan(context, R.drawable.ic_sync_problem_red), eIndex, eIndex + 1, SPAN_EXCLUSIVE_EXCLUSIVE);
             binding.syncDataLayout.message.setText(str);
             binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.red_060));
 
@@ -414,7 +413,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             String src = dataSyncSetting().concat("\n").concat(getString(R.string.data_sync_warning));
             SpannableString str = new SpannableString(src);
             int wIndex = src.indexOf('@');
-            str.setSpan(new ImageSpan(context, R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            str.setSpan(new ImageSpan(context, R.drawable.ic_sync_warning), wIndex, wIndex + 1, SPAN_EXCLUSIVE_EXCLUSIVE);
             binding.syncDataLayout.message.setText(str);
             binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryOrange));
         }
@@ -602,7 +601,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             str.setSpan(new ForegroundColorSpan(ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)),
                     indexOfNumber,
                     indexOfNumber + 1,
-                    Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                    SPAN_INCLUSIVE_EXCLUSIVE);
             binding.specificSettingsText.setText(str);
             binding.specificSettingsButton.setOnClickListener(view ->
                     startActivity(SettingsProgramActivity.Companion.getIntentActivity(context)));
@@ -610,9 +609,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.specificSettingsText.setVisibility(View.GONE);
             binding.specificSettingsButton.setVisibility(View.GONE);
         }
-
-        /*binding.downloadLimitScope.setAdapter(new ArrayAdapter<>(context, R.layout.spinner_settings_item,
-                context.getResources().getStringArray(R.array.download_limit_scope)));*/
 
         if (parameterSettings.getLimitScopeIsEditable()) {
             binding.downloadLimitScopeHint.setVisibility(View.VISIBLE);
@@ -639,7 +635,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     private void setUpSyncParameterListeners() {
-        if(binding.downloadLimitScope.getOnItemSelectedListener()==null) {
+        if (binding.downloadLimitScope.getOnItemSelectedListener() == null) {
             binding.downloadLimitScope.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
@@ -734,48 +730,44 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     private void setUpSmsListeners() {
-        binding.settingsSms.settingsSmsReceiver.setOnEditorActionListener((view, actionId, keyEvent) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE && !binding.settingsSms.settingsSmsReceiver.getText().toString().isEmpty()) {
-                ViewExtensionsKt.closeKeyboard(view);
-                presenter.saveGatewayNumber(binding.settingsSms.settingsSmsReceiver.getText().toString());
-                return true;
-            } else {
-                return false;
-            }
+        ViewExtensionsKt.clearFocusOnDone(binding.settingsSms.settingsSmsReceiver);
+        ViewExtensionsKt.clearFocusOnDone(binding.settingsSms.settingsSmsResultSender);
+        ViewExtensionsKt.clearFocusOnDone(binding.settingsSms.settingsSmsResultTimeout);
+
+        ViewExtensionsKt.onFocusRemoved(binding.settingsSms.settingsSmsReceiver, () -> {
+            presenter.saveGatewayNumber(binding.settingsSms.settingsSmsReceiver.getText().toString());
+            return Unit.INSTANCE;
         });
 
-        binding.settingsSms.settingsSmsResultSender.setOnEditorActionListener((view, actionId, keyEvent) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE && !binding.settingsSms.settingsSmsResultSender.getText().toString().isEmpty()) {
-                ViewExtensionsKt.closeKeyboard(view);
-                presenter.saveSmsResultSender(binding.settingsSms.settingsSmsResultSender.getText().toString());
-                return true;
-            } else {
-                return false;
-            }
+        ViewExtensionsKt.onFocusRemoved(binding.settingsSms.settingsSmsResultSender, () -> {
+            presenter.saveSmsResultSender(binding.settingsSms.settingsSmsResultSender.getText().toString());
+            return Unit.INSTANCE;
         });
 
-        binding.settingsSms.settingsSmsResultTimeout.setOnEditorActionListener((view, actionId, keyEvent) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE && !binding.settingsSms.settingsSmsResultTimeout.getText().toString().isEmpty()) {
-                ViewExtensionsKt.closeKeyboard(view);
-                presenter.saveSmsResponseTimeout(
-                        Integer.valueOf(binding.settingsSms.settingsSmsResultTimeout.getText().toString()));
-                return true;
-            } else {
-                return false;
-            }
+        ViewExtensionsKt.onFocusRemoved(binding.settingsSms.settingsSmsResultTimeout, () -> {
+            presenter.saveSmsResponseTimeout(Integer.valueOf(binding.settingsSms.settingsSmsResultTimeout.getText().toString()));
+            return Unit.INSTANCE;
         });
 
         binding.settingsSms.settingsSmsResponseWaitSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            clearSmsFocus();
             if (!isChecked || !binding.settingsSms.settingsSmsResultSender.getText().toString().isEmpty()) {
                 presenter.saveWaitForSmsResponse(isChecked);
             }
         });
 
         binding.settingsSms.settingsSmsSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            clearSmsFocus();
             if (!isChecked || presenter.isGatewaySetAndValid(binding.settingsSms.settingsSmsReceiver.getText().toString())) {
                 presenter.enableSmsModule(isChecked);
             }
         });
+    }
+
+    private void clearSmsFocus(){
+        binding.settingsSms.settingsSmsReceiver.clearFocus();
+        binding.settingsSms.settingsSmsResultSender.clearFocus();
+        binding.settingsSms.settingsSmsResultTimeout.clearFocus();
     }
 
     @Override
