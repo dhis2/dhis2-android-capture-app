@@ -1,7 +1,7 @@
 
 # Android Compressed SMS Sync
 
-![quick overvier of the architecture](resources/images/compressed-sms.png)
+![quick overvier of the architecture](resources/images/sms-sync/compressed-sms.png)
 
 The android app compresses the SMS using a specific module from the SDK. After the SMS is compressed it will be sent to a gateway that was configured in the settings screen of the app. When the gateway receives the SMS, a custom webhook will redirect the SMS to dhis2 server using /sms/inbound API. Finally if everything works fine, dhis2 will send a confirmation SMS using the gateway API to the originator device.
 
@@ -112,7 +112,7 @@ Compress the information using the lib mentioned before and encode the SMS in ba
 ## Android APP
 Configure SMS gateway (ej: +34670872412) and enable SMS submission in settings:
 
-![Android SMS Settings](resources/images/android-sms-settings.png)
+![Android SMS Settings](resources/images/sms-sync/android-sms-settings.png)
 
 If you really want to get a confirmation SMS to check if the sync was performed successfully on the server side you should enable *wait for SMS result response*.
 
