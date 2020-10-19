@@ -132,9 +132,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
             upgradeSecurityProviderSync();
 
         setUpAppComponent();
-        if (wantToImportDB) {
-            populateDBIfNeeded();
-        }
         setUpServerComponent();
         setUpRxPlugin();
         initAcra();

@@ -1,5 +1,6 @@
 package org.dhis2
 
+import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.preferences.PreferencesTestingModule
 import org.dhis2.data.schedulers.SchedulerModule
 import org.dhis2.data.schedulers.SchedulersProviderImpl
@@ -13,8 +14,14 @@ class AppTest : App() {
 
     @Override
     override fun onCreate() {
-        wantToImportDB = true
+        populateDBIfNeeded()
         super.onCreate()
+    }
+
+    private fun populateDBIfNeeded() {
+        TestingInjector.provideDBImporter(applicationContext).apply {
+            copyDatabaseFromAssetsIfNeeded()
+        }
     }
 
     @Override
