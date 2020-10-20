@@ -61,6 +61,7 @@ class ProgramEventTest: BaseTest() {
         val eventDate = "15/3/2020"
         val eventOrgUnit = "Ngelehun CHC"
 
+        setupCredentials()
         prepareProgramAndLaunchActivity()
 
         programEventsRobot {
@@ -78,6 +79,41 @@ class ProgramEventTest: BaseTest() {
             clickOnSaveButton()
             checkNewNoteWasCreated(NOTE_VALID)
         }
+    }
+
+    @Test
+    fun shouldCompleteAnEventAndReopenIt() {
+        val eventDate = "15/3/2020"
+        val eventOrgUnit = "Ngelehun CHC"
+
+        prepareProgramAndLaunchActivity()
+
+        programEventsRobot {
+            waitToDebounce(600)
+            clickOnEvent(eventDate, eventOrgUnit)
+        }
+
+        eventRobot {
+            clickOnFormFabButton()
+            clickOnFinishAndComplete()
+        }
+
+        programEventsRobot {
+            checkEventIsComplete(eventDate, eventOrgUnit)
+            clickOnEvent(eventDate, eventOrgUnit)
+        }
+
+        eventRobot {
+            clickOnFormFabButton()
+            clickOnReopen()
+            pressBack()
+        }
+
+        programEventsRobot {
+            waitToDebounce(600)
+            checkEventIsOpen(eventDate, eventOrgUnit)
+        }
+
     }
 
     private fun prepareProgramAndLaunchActivity() {

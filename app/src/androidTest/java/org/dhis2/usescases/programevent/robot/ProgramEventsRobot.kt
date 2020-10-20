@@ -3,25 +3,20 @@ package org.dhis2.usescases.programevent.robot
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withTagValue
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
-import org.dhis2.common.viewactions.clickChildViewWithId
-import org.dhis2.common.viewactions.typeChildViewWithId
-import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
-import org.hamcrest.Matchers
 import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.not
+import org.hamcrest.Matchers.isOneOf
 
 fun programEventsRobot(programEventsRobot: ProgramEventsRobot.() -> Unit) {
     ProgramEventsRobot().apply {
@@ -60,8 +55,8 @@ class ProgramEventsRobot : BaseRobot() {
                     position, allOf(
                         hasDescendant(withText(eventName)),
                         hasDescendant(
-                            ViewMatchers.withTagValue(
-                                Matchers.isOneOf(
+                            withTagValue(
+                                isOneOf(
                                     R.drawable.ic_event_status_complete,
                                     R.drawable.ic_event_status_complete_read
                                 )
@@ -72,5 +67,33 @@ class ProgramEventsRobot : BaseRobot() {
             )))
     }
 
+    fun checkEventIsComplete(eventDate: String, eventOrgUnit: String) {
+        onView(withId(R.id.recycler))
+            .check(matches(allOf(
+                hasItem(allOf(
+                    hasDescendant(withText(eventDate)),
+                    hasDescendant(withText(eventOrgUnit)),
+                    hasDescendant(withTagValue(isOneOf(
+                            R.drawable.ic_event_status_complete,
+                            R.drawable.ic_event_status_complete_read
+                        )
+                    ))
+                ))
+            )))
+    }
 
+    fun checkEventIsOpen(eventDate: String, eventOrgUnit: String) {
+        onView(withId(R.id.recycler))
+            .check(matches(allOf(
+                hasItem(allOf(
+                    hasDescendant(withText(eventDate)),
+                    hasDescendant(withText(eventOrgUnit)),
+                    hasDescendant(withTagValue(isOneOf(
+                        R.drawable.ic_event_status_open,
+                        R.drawable.ic_event_status_open_read
+                    )
+                    ))
+                ))
+            )))
+    }
 }
