@@ -5,6 +5,7 @@ import os
 print("Updating pull request labels")
 
 GITHUB_RELEASE_API_TOKEN = os.environ.get('GITHUB_RELEASE_API_TOKEN')
+JIRA_AUTH = os.environ.get('JIRA_AUTH')
 
 # Get all OPEN PR
 opened_prs = requests.get("https://api.github.com/repos/dhis2/dhis2-android-capture-app/pulls?state=open&access_token=%s" %(GITHUB_RELEASE_API_TOKEN)).json()
@@ -45,14 +46,17 @@ for pr in opened_prs:
 
     if jira_issue_init_pos-1 != jira_issue_end_pos:
 
-        jira_issue_label = pr['title'][jira_issue_init_pos: jira_issue_end_pos]
+        jira_issue_label = pr['title'][jira_issue_init_pos: jira_issue_end_pos].replace(" ", "-")
 
-        print('Checking jira issue: %s' % jira_issue_init_pos)
+        print('Checking jira issue: %s' % jira_issue_label)
 
-        jira_issue = requests.get('https://jira.dhis2.org/rest/api/latest/issue/%s' %(jira_issue_label)).json()
-        print(jira_issue)
-        status = jira_issue['fields']['status']['name']
-        jira_assignee = jira_issue['fields']['assignee']['name']
+        jira_issue = requests.get('https://jira.dhis2.org/rest/api/latest/issue/%s' %(jira_issue_label), headers = {'Authorization': JIRA_AUTH}).json()
+        if "fields" in jira_issue:
+            print('issue found with id %s' % jira_issue['id'])
+            status = jira_issue['fields']['status']['name']
+            jira_assignee = jira_issue['fields']['assignee']['name']
+        else:
+            print('No jira issue found')
 
         labelState = ""
         if status == 'In Review':
@@ -86,3 +90,4 @@ for pr in opened_prs:
     print(str(labels_to_add)[1:-1])
     payload = '{"labels":%s}' % json.dumps(labels_to_add)
     requests.put("https://api.github.com/repos/dhis2/dhis2-android-capture-app/issues/%s/labels?access_token=%s" %(pr['number'], GITHUB_RELEASE_API_TOKEN), data = payload)
+print("Finished updating labels")
