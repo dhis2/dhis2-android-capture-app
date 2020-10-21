@@ -1,8 +1,8 @@
-package org.dhis2.utils.jira
+package org.dhis2.data.jira
 
 data class JiraIssue(
     val id: Int = 0,
-    val key: String? = null,
+    val key: String,
     val fields: JiraIssueField? = null
 )
 

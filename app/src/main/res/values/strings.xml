@@ -759,4 +759,6 @@
     <string name="customactivityoncrash_error_activity_error_details_copy">Copy to clipboard</string>
     <string name="customactivityoncrash_error_activity_error_details_copied">Copied to clipboard</string>
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Error information</string>
+    <string name="jira_issue_sent">Issue Sent</string>
+    <string name="jira_issue_sent_error">Error sending issue</string>
 </resources>

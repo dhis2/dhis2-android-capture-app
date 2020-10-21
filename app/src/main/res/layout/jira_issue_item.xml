@@ -7,7 +7,7 @@
 
         <variable
             name="issue"
-            type="org.dhis2.utils.jira.JiraIssue" />
+            type="org.dhis2.data.jira.JiraIssue" />
     </data>
 
     <com.google.android.material.card.MaterialCardView

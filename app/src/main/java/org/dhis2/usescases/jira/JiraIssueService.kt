@@ -11,7 +11,7 @@ interface JiraIssueService {
     @POST("rest/api/2/issue")
     fun createIssue(
         @Header("Authorization")
-        auth: String,
+        auth: String?,
         @Body issueRequest: RequestBody
     ): Call<ResponseBody>
 

@@ -5,33 +5,26 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Browser
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
-import com.google.gson.Gson
-import okhttp3.ResponseBody
-import org.dhis2.R
-import org.dhis2.data.prefs.PreferenceProviderImpl
+import org.dhis2.data.jira.ClickedIssueData
+import org.dhis2.data.jira.JiraIssuesResult
 import org.dhis2.databinding.FragmentJiraBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.NetworkUtils
-import org.dhis2.utils.jira.JiraIssue
-import org.dhis2.utils.jira.JiraIssueListResponse
-import org.dhis2.utils.jira.OnJiraIssueClick
-import retrofit2.Response
-import java.io.IOException
-import java.util.ArrayList
 
-class JiraFragment : FragmentGlobalAbstract(), OnJiraIssueClick {
+class JiraFragment : FragmentGlobalAbstract() {
     private lateinit var mContext: Context
-    private val jiraViewModel: JiraViewModel by viewModels()
-    private val adapter = JiraIssueAdapter(this)
+    private val jiraModel: JiraViewModel by viewModels {
+        JiraViewModelFactory(mContext.applicationContext)
+    }
+    private val jiraIssueAdapter by lazy {
+        JiraIssueAdapter { jiraModel.onJiraIssueClick(it) }
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -43,49 +36,55 @@ class JiraFragment : FragmentGlobalAbstract(), OnJiraIssueClick {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding: FragmentJiraBinding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_jira, container, false)
-
-        jiraViewModel.init(PreferenceProviderImpl(mContext.applicationContext))
-
-        jiraViewModel.issueListResponse().observe(viewLifecycleOwner, Observer { result ->
-            if (result.isSuccess) {
-                adapter.submitList(result.getOrDefault(arrayListOf()))
-            } else {
-                displayMessage(result.exceptionOrNull()?.message)
+        return FragmentJiraBinding.inflate(inflater, container, false).apply {
+            jiraViewModel = jiraModel
+            rememberCheck.setOnCheckedChangeListener { _, isChecked ->
+                jiraModel.onCheckedChanged(isChecked)
             }
-        })
-
-        jiraViewModel.issueMessage().observe(
-            viewLifecycleOwner,
-            Observer { result ->
-                if(result.isSuccess){
-                    displayMessage("Issue Sent")
-                }else{
-                    displayMessage(result.exceptionOrNull()?.message)
-                }
+            sendReportButton.isEnabled = NetworkUtils.isOnline(context)
+            issueRecycler.apply {
+                adapter = jiraIssueAdapter
+                addItemDecoration(
+                    DividerItemDecoration(
+                        context,
+                        DividerItemDecoration.VERTICAL
+                    )
+                )
             }
-        )
-        binding.jiraViewModel = jiraViewModel
-        binding.sendReportButton.isEnabled = NetworkUtils.isOnline(context)
-        binding.issueRecycler.adapter = adapter
-        binding.issueRecycler.addItemDecoration(
-            DividerItemDecoration(
-                context,
-                DividerItemDecoration.VERTICAL
-            )
-        )
-        return binding.root
+            jiraModel.apply {
+                init()
+                issueListResponse.observe(viewLifecycleOwner, Observer { handleListResponse(it) })
+                issueMessage.observe(viewLifecycleOwner, Observer { handleMessage(it) })
+                clickedIssueData.observe(
+                    viewLifecycleOwner,
+                    Observer { openJiraTicketInBrowser(it) }
+                )
+            }
+        }.root
     }
 
-    override fun onJiraIssueClick(issueKey: String) {
+    private fun handleListResponse(result: JiraIssuesResult) {
+        if (result.isSuccess()) {
+            jiraIssueAdapter.submitList(result.issues)
+        } else {
+            displayMessage(result.errorMessage)
+        }
+    }
+
+    private fun handleMessage(message: String) {
+        displayMessage(message)
+    }
+
+    private fun openJiraTicketInBrowser(clickedIssueData: ClickedIssueData) {
         val browserIntent = Intent(
             Intent.ACTION_VIEW,
-            Uri.parse("https://jira.dhis2.org/browse/$issueKey")
-        )
-        val bundle = Bundle()
-        bundle.putString("Authorization", String.format("Basic %s", jiraViewModel!!.getAuth()))
-        browserIntent.putExtra(Browser.EXTRA_HEADERS, bundle)
+            Uri.parse(clickedIssueData.uriString)
+        ).apply {
+            val bundle = Bundle().apply {
+                putString(clickedIssueData.authHeader(), clickedIssueData.basicAuth())
+            }
+            putExtra(Browser.EXTRA_HEADERS, bundle)
+        }
         startActivity(browserIntent)
     }
 }
