@@ -4,9 +4,11 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.util.Patterns;
@@ -111,6 +113,25 @@ public class CustomTextView extends FieldLayout {
                 focusListener.onFocusChange(v, hasFocus);
             }
         });
+
+        if(isLongText){
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    updateDeleteVisibility(findViewById(R.id.clear_button));
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+
+                }
+            });
+        }
     }
 
     public void setDescription(String description) {
@@ -216,7 +237,7 @@ public class CustomTextView extends FieldLayout {
         editText.setClickable(editable);
         editText.setEnabled(editable);
         editText.setTextColor(
-                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                !isBgTransparent && !isLongText ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
                         ContextCompat.getColor(getContext(), R.color.textPrimary)
         );
 
