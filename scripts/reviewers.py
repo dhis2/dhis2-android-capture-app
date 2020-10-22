@@ -28,8 +28,9 @@ else:
 
     if (pr_owner in quadram_devs):
         quadram_devs.remove(pr_owner)
-    else:
+    elif (pr_owner in dhis_devs):
         dhis_devs.remove(pr_owner)
+
     quadram_reviewer = random.choice(quadram_devs)
     dhis_reviewer = random.choice(dhis_devs)
 
