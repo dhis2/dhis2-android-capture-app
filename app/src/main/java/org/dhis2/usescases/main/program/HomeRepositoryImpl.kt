@@ -88,9 +88,7 @@ internal class HomeRepositoryImpl(
         val teiIds = filterPresenter.filteredTrackerProgram(program)
             .offlineFirst().blockingGetUids()
         val mCount = teiIds.size
-        val mOverdue = teiIds.firstOrNull {
-            dhisTeiUtils.hasOverdueInProgram(it, program)
-        } != null
+        val mOverdue = dhisTeiUtils.hasOverdueInProgram(teiIds, program)
 
         return Pair(mCount, mOverdue)
     }
