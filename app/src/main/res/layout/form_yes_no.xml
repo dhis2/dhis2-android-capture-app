@@ -20,10 +20,23 @@
 
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/fieldSelected"
+            android:layout_width="2dp"
+            android:layout_height="50dp"
+            android:background="?colorPrimary"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="6dp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
 
         <org.dhis2.utils.customviews.YesNoView
             android:id="@+id/customYesNo"
@@ -31,7 +44,10 @@
             android:layout_height="wrap_content"
             app:description="@{description}"
             app:label="@{label}"
-            app:valueType="@{valueType}" />
+            app:valueType="@{valueType}"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
             android:id="@+id/warningError"
@@ -42,7 +58,10 @@
             android:textSize="18sp"
             android:visibility="gone"
             android:textColor="@color/colorPrimaryOrange"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/customYesNo"
             tools:text="This is a error message"
             tools:visibility="visible"/>
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

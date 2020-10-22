@@ -141,7 +141,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
     }
 
     override fun setLayer() {
-        mapLayerManager.initMap(map)
+        mapLayerManager
             .withMapStyle(mapStyle)
             .withCarousel(carouselAdapter)
             .addStartLayer(LayerType.TEI_LAYER, teiFeatureType, TEIS_SOURCE_ID)

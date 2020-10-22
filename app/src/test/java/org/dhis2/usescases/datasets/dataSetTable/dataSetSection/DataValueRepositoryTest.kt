@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import java.util.UUID
+import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -680,6 +681,19 @@ class DataValueRepositoryTest {
                 .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
                 .get()
         ) doReturn Single.just(listOf(categoryOptionCombo))
+        whenever(
+            d2.userModule().authorities()
+                .byName()
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD)
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD)
+                .blockingIsEmpty()
+        ) doReturn false
 
         val testObserver = repository.canWriteAny().test()
 
@@ -725,6 +739,19 @@ class DataValueRepositoryTest {
                 .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
                 .get()
         ) doReturn Single.just(listOf(categoryOptionCombo))
+        whenever(
+            d2.userModule().authorities()
+                .byName()
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD)
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD)
+                .blockingIsEmpty()
+        ) doReturn false
 
         val testObserver = repository.canWriteAny().test()
 
@@ -778,6 +805,85 @@ class DataValueRepositoryTest {
                     OrganisationUnit.Scope.SCOPE_DATA_CAPTURE
                 ).blockingGet()
         ) doReturn listOf(OrganisationUnit.builder().uid(UUID.randomUUID().toString()).build())
+        whenever(
+            d2.userModule().authorities()
+                .byName()
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD)
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD)
+                .blockingIsEmpty()
+        ) doReturn false
+
+        val testObserver = repository.canWriteAny().test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValue(false)
+
+        testObserver.dispose()
+    }
+
+    @Test
+    fun `Should return user don't have data value authority`() {
+        val dataSet = dummyDataSet()
+        val categoryOption = CategoryOption.builder()
+            .uid(UUID.randomUUID().toString())
+            .access(Access.create(false, false, DataAccess.create(false, false)))
+            .build()
+        val categoryOptionCombo = CategoryOptionCombo.builder()
+            .uid(UUID.randomUUID().toString())
+            .categoryOptions(listOf(categoryOption))
+            .build()
+
+        whenever(
+            d2.dataSetModule().dataSets().uid(dataSetUid).get()
+        ) doReturn Single.just(dataSet)
+
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
+                .get()
+        ) doReturn Single.just(listOf(categoryOptionCombo))
+
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+                .byDataSetUids(listOf(dataSetUid))
+                .byOrganisationUnitScope(
+                    OrganisationUnit.Scope.SCOPE_DATA_CAPTURE
+                ).blockingGet()
+        ) doReturn listOf(OrganisationUnit.builder().uid(UUID.randomUUID().toString()).build())
+        whenever(
+            d2.userModule().authorities()
+                .byName()
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD)
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD)
+                .blockingIsEmpty()
+        ) doReturn true
 
         val testObserver = repository.canWriteAny().test()
 

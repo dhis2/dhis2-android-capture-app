@@ -295,7 +295,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         teiMapManager.setEnrollmentFeatureType(presenter.getProgram() != null ? presenter.getProgram().featureType() : null);
         teiMapManager.setCarouselAdapter(carouselAdapter);
         teiMapManager.setOnMapClickListener(this);
-        teiMapManager.init();
 
         binding.mapCarousel.attachToMapManager(teiMapManager, () -> true);
     }
@@ -464,7 +463,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     showMap(false);
                     break;
                 case R.id.menu_map:
-                    if(backDropActive){
+                    if (backDropActive) {
                         closeFilters();
                     }
                     showMap(true);
@@ -945,11 +944,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(allItems);
         }
 
-        teiMapManager.update(
-                teiFeatureCollections,
-                events,
-                boundingBox
-        );
+        teiMapManager.init(() -> {
+            teiMapManager.update(
+                    teiFeatureCollections,
+                    events,
+                    boundingBox
+            );
+            return Unit.INSTANCE;
+        });
 
         animations.endMapLoading(binding.mapCarousel);
         binding.toolbarProgress.hide();

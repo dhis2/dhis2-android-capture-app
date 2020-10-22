@@ -5,9 +5,6 @@ import androidx.lifecycle.MutableLiveData;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormOrgUnitBinding;
-import org.hisp.dhis.android.core.common.ObjectStyle;
-
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -44,7 +41,6 @@ public class OrgUnitHolder extends FormViewHolder {
             ouName = uid_value_name.split("_ou_")[1];
         }
 
-        binding.orgUnitView.setObjectStyle(viewModel.objectStyle());
         if (model.objectStyle() != null) {
             objectStyle = model.objectStyle();
         }

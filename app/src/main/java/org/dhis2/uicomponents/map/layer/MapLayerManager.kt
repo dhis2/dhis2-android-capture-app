@@ -3,6 +3,7 @@ package org.dhis2.uicomponents.map.layer
 import android.graphics.Color
 import com.mapbox.geojson.Feature
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.Style
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.layer.types.EnrollmentMapLayer
 import org.dhis2.uicomponents.map.layer.types.EventMapLayer
@@ -14,13 +15,12 @@ import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
 import org.dhis2.uicomponents.map.model.MapStyle
 import org.hisp.dhis.android.core.common.FeatureType
 
-class MapLayerManager {
+class MapLayerManager(val mapboxMap: MapboxMap) {
 
     private var currentLayerSelection: MapLayer? = null
     var mapLayers: HashMap<String, MapLayer> = hashMapOf()
-    lateinit var mapboxMap: MapboxMap
     private var mapStyle: MapStyle? = null
-    var styleChangeCallback: (() -> Unit)? = null
+    var styleChangeCallback: ((Style) -> Unit)? = null
     private val relationShipColors =
         mutableListOf(
             Color.parseColor("#E71409"),
@@ -41,10 +41,6 @@ class MapLayerManager {
         const val TEI_ICON_ID = "TEI_ICON_ID"
         const val ENROLLMENT_ICON_ID = "ENROLLMENT_ICON_ID"
         const val STAGE_ICON_ID = "STAGE_ICON_ID"
-    }
-
-    fun initMap(mapboxMap: MapboxMap) = apply {
-        this.mapboxMap = mapboxMap
     }
 
     fun withMapStyle(mapStyle: MapStyle?) = apply {

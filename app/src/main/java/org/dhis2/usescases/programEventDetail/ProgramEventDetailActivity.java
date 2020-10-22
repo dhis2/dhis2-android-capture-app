@@ -68,6 +68,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import kotlin.Unit;
 import timber.log.Timber;
 
 import static org.dhis2.R.layout.activity_program_event_detail;
@@ -149,7 +150,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         eventMapManager = new EventMapManager(binding.mapView);
         eventMapManager.setFeatureType(presenter.getFeatureType());
         eventMapManager.setOnMapClickListener(this);
-        eventMapManager.init();
         presenter.init();
     }
 
@@ -389,35 +389,38 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setMap(FeatureCollection featureCollection, BoundingBox boundingBox, List<ProgramEventViewModel> programEventViewModels) {
-        eventMapManager.update(
-                featureCollection,
-                boundingBox
-        );
+        eventMapManager.init(() -> {
+            eventMapManager.update(
+                    featureCollection,
+                    boundingBox
+            );
+            if (binding.mapCarousel.getAdapter() == null) {
+                CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
+                        .addOnSyncClickListener(
+                                teiUid -> {
+                                    if (binding.mapCarousel.getCarouselEnabled()) {
+                                        presenter.onSyncIconClick(teiUid);
+                                    }
+                                    return true;
+                                })
+                        .addOnEventClickListener((teiUid, orgUnit, eventUid) -> {
+                            if (binding.mapCarousel.getCarouselEnabled()) {
+                                presenter.onEventClick(teiUid, orgUnit);
+                            }
+                            return true;
+                        })
+                        .build();
+                binding.mapCarousel.setAdapter(carouselAdapter);
+                binding.mapCarousel.attachToMapManager(eventMapManager, () -> true);
+                carouselAdapter.addItems(programEventViewModels);
+            } else {
+                ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(programEventViewModels);
+            }
 
-        if (binding.mapCarousel.getAdapter() == null) {
-            CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
-                    .addOnSyncClickListener(
-                            teiUid -> {
-                                if (binding.mapCarousel.getCarouselEnabled()) {
-                                    presenter.onSyncIconClick(teiUid);
-                                }
-                                return true;
-                            })
-                    .addOnEventClickListener((teiUid, orgUnit, eventUid) -> {
-                        if (binding.mapCarousel.getCarouselEnabled()) {
-                            presenter.onEventClick(teiUid, orgUnit);
-                        }
-                        return true;
-                    })
-                    .build();
-            binding.mapCarousel.setAdapter(carouselAdapter);
-            binding.mapCarousel.attachToMapManager(eventMapManager, () -> true);
-            carouselAdapter.addItems(programEventViewModels);
-        } else {
-            ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(programEventViewModels);
-        }
+            eventMapManager.mapLayerManager.selectFeature(null);
+            return Unit.INSTANCE;
+        });
 
-        eventMapManager.mapLayerManager.selectFeature(null);
         animations.endMapLoading(binding.mapCarousel);
         binding.toolbarProgress.hide();
     }

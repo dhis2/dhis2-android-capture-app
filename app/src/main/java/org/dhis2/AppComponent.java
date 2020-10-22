@@ -1,5 +1,6 @@
 package org.dhis2;
 
+import org.dhis2.data.forms.dataentry.validation.ValidatorModule;
 import org.dhis2.data.prefs.PreferenceModule;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerModule;
@@ -10,10 +11,14 @@ import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.splash.SplashComponent;
 import org.dhis2.usescases.splash.SplashModule;
+import org.dhis2.utils.Validator;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsModule;
 import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
+import org.hisp.dhis.android.core.common.ValueType;
+
+import java.util.Map;
 
 import javax.inject.Singleton;
 
@@ -25,7 +30,7 @@ import dagger.Component;
 @Singleton
 @Component(modules = {
         AppModule.class, SchedulerModule.class, AnalyticsModule.class, PreferenceModule.class, WorkManagerModule.class,
-        MatomoAnalyticsModule.class
+        MatomoAnalyticsModule.class, ValidatorModule.class
 })
 public interface AppComponent {
 
@@ -43,6 +48,8 @@ public interface AppComponent {
 
         AppComponent build();
     }
+
+    Map<ValueType, Validator> injectValidators();
 
     PreferenceProvider preferenceProvider();
 
