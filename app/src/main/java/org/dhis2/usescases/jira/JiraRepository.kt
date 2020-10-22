@@ -42,21 +42,21 @@ class JiraRepository(
         val requestBody =
             RequestBody.create(MediaType.parse(MEDIA_TYPE_APPLICATION_JSON), Gson().toJson(request))
         jiraApi.getJiraIssues(basic, requestBody).enqueue(
-            object : Callback<ResponseBody> {
+            object : Callback<JiraIssueListResponse> {
                 override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
+                    call: Call<JiraIssueListResponse>,
+                    response: Response<JiraIssueListResponse>
                 ) {
                     if (response.isSuccessful) {
-                        val issueList: List<JiraIssue> =
-                            JiraIssueListResponse.fromJson(response.body()?.string()).issues
+                        val issueList: List<JiraIssue> = response.body()?.issues?: emptyList()
+//                            JiraIssueListResponse.fromJson(response.body()?.string()).issues
                         onResponse(JiraIssuesResult(issueList))
                     } else {
                         onResponse(JiraIssuesResult(errorMessage = response.message()))
                     }
                 }
 
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                override fun onFailure(call: Call<JiraIssueListResponse>, t: Throwable) {
                     onResponse(JiraIssuesResult(errorMessage = t.localizedMessage))
                 }
             }

@@ -2,6 +2,7 @@ package org.dhis2.usescases.jira
 
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
+import org.dhis2.data.jira.JiraIssueListResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.Header
@@ -20,5 +21,5 @@ interface JiraIssueService {
         @Header("Authorization")
         auth: String?,
         @Body issueRequest: RequestBody
-    ): Call<ResponseBody>
+    ): Call<JiraIssueListResponse>
 }

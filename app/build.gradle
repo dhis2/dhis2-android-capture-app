@@ -280,11 +280,13 @@ dependencies {
 
     //GSON
     implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
     //CRASHLYTICS
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
         transitive = true
     }
+
 
     implementation 'org.matomo.sdk:tracker:4.1.2'
     implementation "ch.acra:acra-http:5.6.1"

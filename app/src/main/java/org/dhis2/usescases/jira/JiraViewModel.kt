@@ -64,7 +64,7 @@ class JiraViewModel(
     }
 
     fun getJiraTickets() {
-        jiraRepository.getJiraIssues { handleResponse(it) }
+        jiraRepository.getJiraIssues(userName) { handleResponse(it) }
     }
 
     fun onSummaryChanged(s: CharSequence, start: Int, before: Int, count: Int) {

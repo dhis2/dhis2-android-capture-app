@@ -8,6 +8,7 @@ import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.prefs.PreferenceProviderImpl
 import org.dhis2.utils.resources.ResourceManager
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 const val JIRA_URL = "https://jira.dhis2.org/"
 
@@ -19,6 +20,7 @@ class JiraViewModelFactory(
         val retrofit = Retrofit.Builder()
             .baseUrl(JIRA_URL)
             .client(OkHttpClient())
+            .addConverterFactory(GsonConverterFactory.create())
             .validateEagerly(true)
             .build()
 
