@@ -57,31 +57,6 @@ class ProgramEventTest: BaseTest() {
     }
 
     @Test
-    fun shouldAddNoteOnExistingEvent() {
-        val eventDate = "15/3/2020"
-        val eventOrgUnit = "Ngelehun CHC"
-
-        setupCredentials()
-        prepareProgramAndLaunchActivity()
-
-        programEventsRobot {
-            waitToDebounce(600)
-            clickOnEvent(eventDate, eventOrgUnit)
-        }
-
-        eventRobot {
-            clickOnNotesTab()
-        }
-
-        noteRobot {
-            clickOnFabAddNewNote()
-            typeNote(NOTE_VALID)
-            clickOnSaveButton()
-            checkNewNoteWasCreated(NOTE_VALID)
-        }
-    }
-
-    @Test
     fun shouldCompleteAnEventAndReopenIt() {
         val eventDate = "15/3/2020"
         val eventOrgUnit = "Ngelehun CHC"
@@ -120,9 +95,5 @@ class ProgramEventTest: BaseTest() {
         Intent().apply {
             putExtra(ProgramEventDetailActivity.EXTRA_PROGRAM_UID, "lxAQ7Zs9VYR")
         }.also { rule.launchActivity(it) }
-    }
-
-    companion object {
-        const val NOTE_VALID = "ThisIsJustATest"
     }
 }
