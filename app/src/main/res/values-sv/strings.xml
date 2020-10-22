@@ -115,7 +115,6 @@
     <string name="confirm_delete_event">Är du säker på att du vill radera den här händelsen?</string>
     <string name="event_was_deleted">Händelse raderats</string>
     <string name="total">Totalt</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Inskrivningslista</string>
     <string name="active_programs">Aktiva program</string>
@@ -310,7 +309,6 @@
     <string name="login_server_info_title">Server URL</string>
     <string name="state_warning">Varning</string>
     <string name="action_close">Stänga</string>
-    <string name="data_set_open">Öppen</string>
     <string name="data_every_day">Dagligen</string>
     <string name="data_every_week">Varje vecka</string>
     <string name="sms_completed">Avklarad</string>
