@@ -132,7 +132,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public boolean isEventEditable(String eventUid) {
-        return dhisEventUtils.isEventEditable(eventUid);
+        return d2.eventModule().eventService().blockingIsEditable(eventUid);
     }
 
     @Override
