@@ -754,4 +754,4 @@
     <string name="customactivityoncrash_error_activity_error_details_copy">نسخ إلى الحافظة</string>
     <string name="customactivityoncrash_error_activity_error_details_copied">تم النسخ إلى الحافظة</string>
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">معلومات الخطأ</string>
-</resources>
+    </resources>

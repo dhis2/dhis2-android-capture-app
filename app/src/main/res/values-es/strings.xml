@@ -748,4 +748,4 @@
     <string name="customactivityoncrash_error_activity_error_details_copy">Copiar al portapapeles</string>
     <string name="customactivityoncrash_error_activity_error_details_copied">Copiado al portapapeles</string>
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Información del error</string>
-</resources>
+    </resources>
