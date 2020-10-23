@@ -494,13 +494,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private void showMap(boolean showMap) {
         binding.scrollView.setVisibility(showMap ? View.GONE : View.VISIBLE);
         binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
-        binding.mapLayerButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
         binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : View.GONE);
 
         if (showMap) {
             binding.toolbarProgress.setVisibility(View.VISIBLE);
             binding.toolbarProgress.show();
             presenter.getMapData();
+        } else {
+            binding.mapLayerButton.setVisibility(View.GONE);
         }
     }
 
@@ -940,21 +941,21 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             allItems.addAll(new MapRelationshipToRelationshipMapModel().mapList(searchTeiModel.getRelationships()));
         }
 
-        if (binding.mapCarousel.getAdapter() != null) {
-            ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(allItems);
-        }
-
         teiMapManager.init(() -> {
-            teiMapManager.update(
-                    teiFeatureCollections,
-                    events,
-                    boundingBox
-            );
+            teiMapManager.update(teiFeatureCollections, events, boundingBox);
+            updateCarousel(allItems);
+            binding.mapLayerButton.setVisibility(View.VISIBLE);
             return Unit.INSTANCE;
         });
 
         animations.endMapLoading(binding.mapCarousel);
         binding.toolbarProgress.hide();
+    }
+
+    private void updateCarousel(List<CarouselItemModel> allItems) {
+        if (binding.mapCarousel.getAdapter() != null) {
+            ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(allItems);
+        }
     }
 
 
