@@ -55,7 +55,7 @@ class MainActivity :
     ExporterListener,
     DrawerLayout.DrawerListener {
     private lateinit var binding: ActivityMainBinding
-
+    lateinit var mainComponent: MainComponent
     @Inject
     lateinit var presenter: MainPresenter
 
@@ -77,7 +77,9 @@ class MainActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         app().userComponent()?.let {
-            it.plus(MainModule(this)).inject(this)
+            mainComponent = it.plus(MainModule(this)).apply {
+                inject(this@MainActivity)
+            }
         } ?: navigateTo<LoginActivity>(true)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)

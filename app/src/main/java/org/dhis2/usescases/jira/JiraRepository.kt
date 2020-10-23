@@ -2,21 +2,17 @@ package org.dhis2.usescases.jira
 
 import android.util.Base64
 import com.google.gson.Gson
+import io.reactivex.Single
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import org.dhis2.data.jira.IssueRequest
-import org.dhis2.data.jira.JiraIssue
 import org.dhis2.data.jira.JiraIssueListRequest
 import org.dhis2.data.jira.JiraIssueListResponse
-import org.dhis2.data.jira.JiraIssuesResult
 import org.dhis2.data.jira.toBasicAuth
 import org.dhis2.data.jira.toJiraJql
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.utils.Constants
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class JiraRepository(
     private val jiraApi: JiraIssueService,
@@ -29,10 +25,7 @@ class JiraRepository(
         return prefs.contains(Constants.JIRA_USER)
     }
 
-    fun getJiraIssues(
-        userName: String? = null,
-        onResponse: (JiraIssuesResult) -> Unit
-    ) {
+    fun getJiraIssues(userName: String? = null): Single<JiraIssueListResponse> {
         userName?.let { this.userName = userName }
         val basic = session?.toBasicAuth()
         val request = JiraIssueListRequest(
@@ -41,34 +34,10 @@ class JiraRepository(
         )
         val requestBody =
             RequestBody.create(MediaType.parse(MEDIA_TYPE_APPLICATION_JSON), Gson().toJson(request))
-        jiraApi.getJiraIssues(basic, requestBody).enqueue(
-            object : Callback<JiraIssueListResponse> {
-                override fun onResponse(
-                    call: Call<JiraIssueListResponse>,
-                    response: Response<JiraIssueListResponse>
-                ) {
-                    if (response.isSuccessful) {
-                        val issueList: List<JiraIssue> = response.body()?.issues?: emptyList()
-//                            JiraIssueListResponse.fromJson(response.body()?.string()).issues
-                        onResponse(JiraIssuesResult(issueList))
-                    } else {
-                        onResponse(JiraIssuesResult(errorMessage = response.message()))
-                    }
-                }
-
-                override fun onFailure(call: Call<JiraIssueListResponse>, t: Throwable) {
-                    onResponse(JiraIssuesResult(errorMessage = t.localizedMessage))
-                }
-            }
-        )
+        return jiraApi.getJiraIssues(basic, requestBody)
     }
 
-    fun sendJiraIssue(
-        summary: String,
-        description: String,
-        onResponse: (Response<ResponseBody>) -> Unit,
-        onError: (Throwable) -> Unit
-    ) {
+    fun sendJiraIssue(summary: String, description: String): Single<ResponseBody> {
         val basic = session?.toBasicAuth()
         val issueRequest = IssueRequest(summary, description)
         val requestBody =
@@ -76,15 +45,7 @@ class JiraRepository(
                 MediaType.parse(MEDIA_TYPE_APPLICATION_JSON),
                 Gson().toJson(issueRequest)
             )
-        jiraApi.createIssue(basic, requestBody).enqueue(object : Callback<ResponseBody> {
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                onResponse(response)
-            }
-
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                onError(t)
-            }
-        })
+        return jiraApi.createIssue(basic, requestBody)
     }
 
     fun saveCredentials() {

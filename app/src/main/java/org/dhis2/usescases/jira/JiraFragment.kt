@@ -11,16 +11,19 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
+import javax.inject.Inject
 import org.dhis2.data.jira.ClickedIssueData
 import org.dhis2.data.jira.JiraIssuesResult
 import org.dhis2.databinding.FragmentJiraBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
+import org.dhis2.usescases.main.MainActivity
 import org.dhis2.utils.NetworkUtils
 
 class JiraFragment : FragmentGlobalAbstract() {
-    private lateinit var mContext: Context
+    @Inject
+    lateinit var jiraViewModelFactory: JiraViewModelFactory
     private val jiraModel: JiraViewModel by viewModels {
-        JiraViewModelFactory(mContext.applicationContext)
+        jiraViewModelFactory
     }
     private val jiraIssueAdapter by lazy {
         JiraIssueAdapter { jiraModel.onJiraIssueClick(it) }
@@ -28,7 +31,9 @@ class JiraFragment : FragmentGlobalAbstract() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        this.mContext = context
+        if (context is MainActivity) {
+            context.mainComponent.plus(JiraModule()).inject(this)
+        }
     }
 
     override fun onCreateView(

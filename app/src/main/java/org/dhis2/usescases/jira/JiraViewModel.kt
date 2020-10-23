@@ -1,13 +1,15 @@
 package org.dhis2.usescases.jira
 
-import androidx.annotation.VisibleForTesting
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.data.jira.ClickedIssueData
 import org.dhis2.data.jira.JiraIssuesResult
 import org.dhis2.data.jira.toJiraIssueUri
+import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.resources.ResourceManager
+import timber.log.Timber
 
 const val MEDIA_TYPE_APPLICATION_JSON = "application/json"
 const val BASIC_AUTH_CODE = "%s:%s"
@@ -15,8 +17,11 @@ const val MAX_RESULTS = 20
 
 class JiraViewModel(
     private val jiraRepository: JiraRepository,
-    private val resources: ResourceManager
+    private val resources: ResourceManager,
+    private val schedulerProvider: SchedulerProvider
 ) : ViewModel() {
+
+    private var disposable = CompositeDisposable()
 
     private var userName: String? = null
     private var pass: String? = null
@@ -52,19 +57,29 @@ class JiraViewModel(
     }
 
     fun sendIssue() {
-        jiraRepository.sendJiraIssue(
-            summary, description,
-            onResponse = {
-                handleSendResponse(it.isSuccessful)
-            },
-            onError = {
-                handleThrowableResponse(it)
-            }
+        disposable.add(
+            jiraRepository.sendJiraIssue(summary, description)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { handleSendResponse(true) },
+                    { handleThrowableResponse(it) }
+                )
         )
     }
 
     fun getJiraTickets() {
-        jiraRepository.getJiraIssues(userName) { handleResponse(it) }
+        disposable.add(
+            jiraRepository.getJiraIssues(userName)
+                .map { JiraIssuesResult(it.issues) }
+                .onErrorReturn { JiraIssuesResult(errorMessage = it.message) }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { handleResponse(it) },
+                    { t -> Timber.e(t) }
+                )
+        )
     }
 
     fun onSummaryChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -102,8 +117,7 @@ class JiraViewModel(
         }
     }
 
-    @VisibleForTesting
-    fun handleSendResponse(responseIsSuccessful: Boolean) {
+    private fun handleSendResponse(responseIsSuccessful: Boolean) {
         if (responseIsSuccessful) {
             issueMessage.value = resources.jiraIssueSentMessage()
             getJiraTickets()
@@ -112,13 +126,11 @@ class JiraViewModel(
         }
     }
 
-    @VisibleForTesting
-    fun handleThrowableResponse(throwable: Throwable) {
+    private fun handleThrowableResponse(throwable: Throwable) {
         issueMessage.value = throwable.localizedMessage
     }
 
-    @VisibleForTesting
-    fun handleResponse(jiraIssuesResult: JiraIssuesResult) {
+    private fun handleResponse(jiraIssuesResult: JiraIssuesResult) {
         if (jiraIssuesResult.isSuccess()) {
             saveCredentialsIfNeeded()
             isSessionOpen.set(true)
@@ -134,5 +146,10 @@ class JiraViewModel(
             isSessionOpen.get() ?: false
 
         formCompleted.set(check)
+    }
+
+    override fun onCleared() {
+        disposable.clear()
+        super.onCleared()
     }
 }

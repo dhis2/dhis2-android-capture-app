@@ -1,9 +1,9 @@
 package org.dhis2.usescases.jira
 
+import io.reactivex.Single
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import org.dhis2.data.jira.JiraIssueListResponse
-import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -14,12 +14,12 @@ interface JiraIssueService {
         @Header("Authorization")
         auth: String?,
         @Body issueRequest: RequestBody
-    ): Call<ResponseBody>
+    ): Single<ResponseBody>
 
     @POST("rest/api/2/search")
     fun getJiraIssues(
         @Header("Authorization")
         auth: String?,
         @Body issueRequest: RequestBody
-    ): Call<JiraIssueListResponse>
+    ): Single<JiraIssueListResponse>
 }
