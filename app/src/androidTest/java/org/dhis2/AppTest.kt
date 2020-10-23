@@ -8,6 +8,7 @@ import org.dhis2.data.service.workManager.WorkManagerModule
 import org.dhis2.data.user.UserModule
 import org.dhis2.utils.analytics.AnalyticsModule
 import org.hisp.dhis.android.core.D2Manager
+import org.matomo.sdk.Tracker
 
 class AppTest : App() {
 
@@ -48,6 +49,10 @@ class AppTest : App() {
             .analyticsModule(AnalyticsModule())
             .preferenceModule(PreferencesTestingModule())
             .workManagerController(WorkManagerModule())
+    }
+
+    override fun getTracker(): Tracker? {
+        return null
     }
 
     companion object {
