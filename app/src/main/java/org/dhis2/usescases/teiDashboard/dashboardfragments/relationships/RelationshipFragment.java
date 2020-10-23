@@ -100,7 +100,10 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
         relationshipMapManager = new RelationshipMapManager(binding.mapView);
         relationshipMapManager.setOnMapClickListener(this);
-        relationshipMapManager.init(() -> Unit.INSTANCE);
+        relationshipMapManager.init(() -> {
+            binding.relationshipRecycler.setAdapter(relationshipAdapter);
+            return Unit.INSTANCE;
+        });
 
         TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) getContext();
         activity.relationshipMap().observe(this, showMap -> {
