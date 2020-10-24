@@ -96,11 +96,10 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_relationships, container, false);
         relationshipAdapter = new RelationshipAdapter(presenter);
-
+        binding.relationshipRecycler.setAdapter(relationshipAdapter);
         relationshipMapManager = new RelationshipMapManager(binding.mapView);
         relationshipMapManager.setOnMapClickListener(this);
         relationshipMapManager.init(() -> {
-            binding.relationshipRecycler.setAdapter(relationshipAdapter);
             return Unit.INSTANCE;
         });
 
