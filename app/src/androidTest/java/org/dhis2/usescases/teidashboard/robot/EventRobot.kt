@@ -2,8 +2,11 @@ package org.dhis2.usescases.teidashboard.robot
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withSubstring
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
@@ -13,6 +16,7 @@ import org.dhis2.common.viewactions.scrollToBottomRecyclerView
 import org.dhis2.common.viewactions.typeChildViewWithId
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextCustomHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
+import org.hamcrest.Matchers
 
 fun eventRobot(eventRobot: EventRobot.() -> Unit) {
     EventRobot().apply {
@@ -35,6 +39,10 @@ class EventRobot : BaseRobot() {
 
     fun clickOnFinishAndComplete() {
         onView(withId(R.id.complete)).perform(click())
+    }
+
+    fun clickOnReopen() {
+        onView(withId(R.id.reopen)).perform(click())
     }
 
     fun fillRadioButtonForm(numberFields: Int) {
@@ -82,5 +90,26 @@ class EventRobot : BaseRobot() {
         clickOnEditDate()
         acceptUpdateEventDate()
         clickOnUpdate()
+    }
+
+    fun checkDetails(eventDate: String, eventOrgUnit: String) {
+        onView(withId(R.id.eventSecundaryInfo)).check(matches(
+            Matchers.allOf(
+                withSubstring(eventDate),
+                withSubstring(eventOrgUnit)
+            )
+        ))
+    }
+
+    fun clickOnNotesTab() {
+        onView(clickOnTab(1)).perform(click())
+    }
+
+    fun openMenuMoreOptions() {
+        onView(withId(R.id.moreOptions)).perform(click())
+    }
+
+    fun clickOnDetails() {
+        onView(withText(R.string.event_overview)).perform(click())
     }
 }

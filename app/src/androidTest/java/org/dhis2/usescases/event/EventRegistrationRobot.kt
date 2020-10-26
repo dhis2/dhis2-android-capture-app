@@ -69,4 +69,12 @@ class EventRegistrationRobot : BaseRobot() {
     fun clickOnDeleteDialog() {
         onView(withId(R.id.possitive)).perform(click())
     }
+
+    fun clickLocationButton() {
+        onView(withId(R.id.location1)).perform(click())
+    }
+
+    fun clickNextButton() {
+        onView(withId(R.id.action_button)).perform(click())
+    }
 }
