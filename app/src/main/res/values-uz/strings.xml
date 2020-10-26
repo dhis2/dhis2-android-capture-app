@@ -153,7 +153,7 @@
     <string name="most_recent_event_date">Охирги тадбир санаси</string>
 
     <!--TEI Enrollment list-->
-    <string name="enrollment_list">Рўйхатга олинганлар рўйхати</string>
+    <string name="enrollment_list">Қайд журнали</string>
     <string name="active_programs">Фаол дастурлар</string>
     <string name="to_enroll_programs">Рўйхатга олиш дастурлари</string>
     <string name="enroll">Рўйхатдан ўтиш</string>
@@ -246,6 +246,7 @@
     <string name="tuto_main_1">DHIS2 га Хуш келибсиз</string>
     <string name="next">Кейинги</string>
     <string name="SAVE">Сақлаш</string>
+    <string name="button_ok">ОК</string>
     <string name="qr_attributes">Аттрибутлар</string>
     <string name="qr_events">Ҳодиса/Тадбирлар</string>
     <string name="qr_relationships">Ўзаро алоқалар</string>
@@ -279,6 +280,7 @@
     <string name="action_close">Ёпиқ</string>
     <string name="data_set_complete">Бажарилди</string>
     <string name="data_set_open">Очиш</string>
+    <string name="unsupported_value_type">Қўллаб қувватланмайдиган қиймат тури</string>
     <string name="data_every_day">Кунлик</string>
     <string name="data_every_week">Ҳафталик</string>
     <string name="period_week">Ҳафта</string>
@@ -313,7 +315,8 @@
     <string name="formula">Формула</string>
     <string name="filters_title_event_status">Воқеа ҳолати</string>
     <string name="filters_title_enrollment_status">рўйхатга олиш ҳолати</string>
-    <string name="enrollment_date">Рўйхатга олинган сана</string>
+    <string name="enrollment_date">Қайд қилинган сана</string>
+    <string name="action_apply">Мурожаат қилиш</string>
     <string name="enrollment_status_active">Очиш</string>
     <string name="enrollment_status_completed">Бажарилди</string>
     <string name="enrollment_status_cancelled">Бекор қилинди</string>
