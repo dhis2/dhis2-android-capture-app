@@ -85,7 +85,7 @@
     <string name="program_inactive">Дастур нофаол</string>
 
     <string name="event_open">Очиш</string>
-    <string name="event_completed">Тадбир тугалланди</string>
+    <string name="event_completed">Ҳодиса/Тадбир тугалланди</string>
     <string name="event_skipped">Тадбир ўтказиб юборилди</string>
     <string name="event_schedule">Тадбир режаси</string>
     <string name="event_expired">Тадбир муддати тугаган</string>
@@ -311,9 +311,10 @@
     <string name="interval_yesterday">Кеча</string>
     <string name="filter_sync_error">Синхронлашда хатолик</string>
     <string name="dataset_overview">Тафсилотлари</string>
+    <string name="dataset_comments">Изоҳлар</string>
     <string name="name">Исми</string>
     <string name="formula">Формула</string>
-    <string name="filters_title_event_status">Воқеа ҳолати</string>
+    <string name="filters_title_event_status">Ҳодиса/Тадбир ҳолати</string>
     <string name="filters_title_enrollment_status">рўйхатга олиш ҳолати</string>
     <string name="enrollment_date">Қайд қилинган сана</string>
     <string name="action_apply">Мурожаат қилиш</string>
