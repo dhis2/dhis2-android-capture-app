@@ -118,7 +118,7 @@ open class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
             if (pass.isNotEmpty()) {
                 SecurePreferences.setValue(context, SECURE_PASS, pass)
             }
-        } catch (e: SecureStorageException){
+        } catch (e: SecureStorageException) {
             e.printStackTrace()
         }
     }
