@@ -156,6 +156,50 @@ class SearchTETest : BaseTest() {
     }
 
     @Test
+    fun shouldSuccessfullyFilterByEnrollmentDateAndSort() {
+        val enrollmentDate = "DATE OF ENROLLMENT"
+        val enrollmentDateFrom = createFromEnrollmentDate()
+        val enrollmentDateTo = createToEnrollmentDate()
+
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
+
+        searchTeiRobot {
+            clickOnFilter()
+            clickOnFilterBy(enrollmentDate)
+            clickOnFromToDate()
+            selectSpecificDate(enrollmentDateFrom.year, enrollmentDateFrom.month, enrollmentDateFrom.day)
+            acceptDate()
+            selectSpecificDate(enrollmentDateTo.year, enrollmentDateTo.month, enrollmentDateTo.day)
+            acceptDate()
+            clickOnSortByField(enrollmentDate)
+            closeSearchForm()
+            // how to check enrollment date?
+        }
+    }
+
+    @Test
+    fun shouldSuccessfullyFilterByEventDateAndSort() {
+        val eventDate = "EVENT DATE"
+        val eventDateFrom = createFromEventDate()
+        val eventDateTo = createToEventDate()
+
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
+
+        searchTeiRobot {
+            clickOnFilter()
+            clickOnSortByField(eventDate)
+            /*clickOnFromToDate()
+            selectSpecificDate(eventDateFrom.year, eventDateFrom.month, eventDateFrom.day)
+            acceptDate()
+            selectSpecificDate(eventDateTo.year, eventDateTo.month, eventDateTo.day)
+            acceptDate()
+            clickOnSortByField(eventDate)
+            closeSearchForm()*/
+            // how to check event date
+        }
+    }
+
+    @Test
     fun shouldSuccessfullyFilterBySync() {
         val teiName = "Frank"
         val teiLastName = "Fjordsen"
@@ -197,6 +241,30 @@ class SearchTETest : BaseTest() {
         "Main street 1",
         "56",
         "167"
+    )
+
+    private fun createFromEnrollmentDate() = DateRegistrationUIModel(
+        2019,
+        9,
+        1
+    )
+
+    private fun createToEnrollmentDate() = DateRegistrationUIModel(
+        2019,
+        9,
+        30
+    )
+
+    private fun createFromEventDate() = DateRegistrationUIModel(
+        2020,
+        5,
+        1
+    )
+
+    private fun createToEventDate() = DateRegistrationUIModel(
+        2020,
+        5,
+        31
     )
 
     companion object {

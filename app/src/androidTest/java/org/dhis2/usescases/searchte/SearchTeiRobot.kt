@@ -143,7 +143,7 @@ class SearchTeiRobot : BaseRobot() {
     }
 
     fun clickOnFilterCancelledOption() {
-        onView(withId(R.id.layoutCancelled)).perform(click())
+        onView(withId(R.id.stateCancelled)).perform(click())
     }
 
     fun checkTEIsAreCancelled() {
@@ -188,5 +188,9 @@ class SearchTeiRobot : BaseRobot() {
     fun checkTEINotSync() {
         onView(withId(R.id.scrollView))
             .check(matches(hasItem(hasDescendant(withId(R.id.syncState)))))
+    }
+
+    fun clickOnFromToDate() {
+        onView(allOf(withId(R.id.fromTo), isDisplayed())).perform(click())
     }
 }

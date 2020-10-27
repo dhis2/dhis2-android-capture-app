@@ -16,37 +16,24 @@ private const val ADULT_WOMAN_TE_TYPE_VALUE = "nEenWmSyUEp"
 private const val CHILD_TE_TYPE = "TRACKED_ENTITY_UID"
 
 fun prepareChildProgrammeIntentAndLaunchActivity(ruleSearch: ActivityTestRule<SearchTEActivity>) {
-    Intent().apply {
-        putExtra(PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
-        putExtra(CHILD_TE_TYPE, CHILD_TE_TYPE_VALUE)
-    }.also { ruleSearch.launchActivity(it) }
+    startSearchActivity(CHILD_PROGRAM_UID_VALUE, CHILD_TE_TYPE_VALUE, ruleSearch)
 }
 
 fun prepareTestProgramRulesProgrammeIntentAndLaunchActivity(ruleSearch: ActivityTestRule<SearchTEActivity>) {
-    Intent().apply {
-        putExtra(PROGRAM_UID, XX_TEST_PROGRAM_RULES_UID_VALUE)
-        putExtra(CHILD_TE_TYPE, PROGRAM_RULES_TE_TYPE_VALUE)
-    }.also { ruleSearch.launchActivity(it) }
+    startSearchActivity(XX_TEST_PROGRAM_RULES_UID_VALUE, PROGRAM_RULES_TE_TYPE_VALUE, ruleSearch)
 }
 
 fun prepareTestAdultWomanProgrammeIntentAndLaunchActivity(ruleSearch: ActivityTestRule<SearchTEActivity>) {
-    Intent().apply {
-        putExtra(PROGRAM_UID, ADULT_WOMAN_PROGRAM_UID_VALUE)
-        putExtra(CHILD_TE_TYPE, ADULT_WOMAN_TE_TYPE_VALUE)
-    }.also { ruleSearch.launchActivity(it) }
+    startSearchActivity(ADULT_WOMAN_PROGRAM_UID_VALUE, ADULT_WOMAN_TE_TYPE_VALUE, ruleSearch)
 }
 
 fun prepareTBIntentAndLaunchActivity(ruleSearch: ActivityTestRule<SearchTEActivity>) {
-    Intent().apply {
-        putExtra(PROGRAM_UID, TB_PROGRAM_UID_VALUE)
-        putExtra(CHILD_TE_TYPE, CHILD_TE_TYPE_VALUE)
-    }.also { ruleSearch.launchActivity(it) }
+    startSearchActivity(TB_PROGRAM_UID_VALUE, CHILD_TE_TYPE_VALUE, ruleSearch)
 }
 
-/*
-fun prepareChildProgrammeIntentAndLaunchActivity(ruleSearch: ActivityTestRule<SearchTEActivity>) {
+fun startSearchActivity(programUID: String?, teType: String, ruleSearch: ActivityTestRule<SearchTEActivity>) {
     Intent().apply {
-        putExtra(SearchTETest.PROGRAM_UID, SearchTETest.CHILD_PROGRAM_UID_VALUE)
-        putExtra(SearchTETest.CHILD_TE_TYPE, SearchTETest.CHILD_TE_TYPE_VALUE)
+        putExtra(PROGRAM_UID, programUID)
+        putExtra(CHILD_TE_TYPE, teType)
     }.also { ruleSearch.launchActivity(it) }
-}*/
+}
