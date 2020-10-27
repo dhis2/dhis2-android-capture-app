@@ -144,6 +144,7 @@ You have multiple ways of testing this feature:
   - **Important**: Everytime the gateway app redirects a SMS, it will send a confirmation SMS to the originator (capture app). Ideally the confirmation SMS would follow a specific format, but due to limitation you will only see a success/fail SMS message in this confirmation.
     - Success message : 200 http code
     - Error message: client and server errors (4xx / 5xx)
+  - **Other considerations**: If you send long SMSs (more than 160 chars) this app does not re-assemble the different parts. 
 - **Manual gateway** Using postman
   - POST sms/inbound/
   - https://docs.dhis2.org/master/en/developer/html/webapi_sms.html
