@@ -110,3 +110,7 @@ External USB 3G/4G dongle or Wifi hotspot <br />
 </tr>
 </tbody>
 </table>
+
+> **Note**
+> 
+> Please note that currently the DHIS2 Mobile application relies on some (Google Play Services)[https://developers.google.com/android/guides/overview] and therefore will not work on devices not running this service. This is common in late Huawei phones and AOSP devices. 

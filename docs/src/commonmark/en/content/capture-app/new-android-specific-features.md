@@ -214,6 +214,10 @@ The record is marked as “SMS synced”.
 
 ![](resources/images/image90.png){ width=25%}
 
+> **Note**
+>
+>  Note that in order to user the SMS sync capabilities the SMS services needs to be enabled in the server side as described in the (official documentation)[https://docs.dhis2.org/master/en/dhis2_user_manual_en/mobile.html#sms-service]. You can also find more information on how to use different gateways in the (Android Implementation Guidelines)[https://docs.dhis2.org/master/en/dhis2_android_implementation_guideline/about-this-guide.html].
+
 ## Org unit
 
 <!-- DHIS2-SECTION-ID:generic_ou -->

@@ -15,6 +15,7 @@ applicable_txt: 'Applicable to version 2.2'
 !INCLUDE "content/implementation-guide/dhis2-server-requirements.md"
 !INCLUDE "content/implementation-guide/data-security-and-privacy.md"
 !INCLUDE "content/implementation-guide/mobile-device-specs.md"
+!INCLUDE "content/implementation-guide/SMS-for-reporting.md"
 !INCLUDE "content/implementation-guide/dhis2-configuration-for-android.md"
 !INCLUDE "content/implementation-guide/installing-the-app.md"
 !INCLUDE "content/implementation-guide/testing.md"

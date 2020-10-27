@@ -52,6 +52,9 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
+
 import static android.app.Activity.RESULT_OK;
 import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.RELATIONSHIP_UID;
 
@@ -97,7 +100,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
         relationshipMapManager = new RelationshipMapManager(binding.mapView);
         relationshipMapManager.setOnMapClickListener(this);
-        relationshipMapManager.init();
+        relationshipMapManager.init(() -> Unit.INSTANCE);
 
         TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) getContext();
         activity.relationshipMap().observe(this, showMap -> {
