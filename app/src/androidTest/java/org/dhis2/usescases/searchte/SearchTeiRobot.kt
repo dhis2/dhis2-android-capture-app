@@ -1,6 +1,7 @@
 package org.dhis2.usescases.searchte
 
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
@@ -8,6 +9,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withChild
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -150,7 +152,7 @@ class SearchTeiRobot : BaseRobot() {
     }
 
     fun clickOnFilterOverdueOption() {
-        onView(withId(R.id.layoutOverdue)).perform(click())
+        onView(withId(R.id.stateOverdue)).perform(click())
     }
 
     fun closeFilterRowAtField(filter: String) {
@@ -160,6 +162,31 @@ class SearchTeiRobot : BaseRobot() {
 
     fun checkEventsAreOverdue() {
         onView(withId(R.id.scrollView))
-            .check(matches(hasItem(hasDescendant(withId(R.id.overdueIcon)))))
+            .check(matches(allOf(hasItem(hasDescendant(withId(R.id.overdueIcon))), isDisplayed())))
+    }
+
+    fun clickOnSortByField(fieldFilter: String) {
+        onView(withId(R.id.filterRecyclerLayout))
+            .perform(actionOnItem<FilterHolder>(hasDescendant(withText(fieldFilter)), clickChildViewWithId(R.id.sortingIcon)))
+    }
+
+    fun typeOrgUnitField(orgUnit: String) {
+        onView(withId(R.id.orgUnitSearchEditText)).perform(TypeTextAction(orgUnit))
+        closeKeyboard()
+        onView(withId(R.id.addButton)).perform(click())
+    }
+
+    fun checkTEIWithOrgUnit(orgUnit: String) {
+        onView(withId(R.id.scrollView))
+            .check(matches(hasItem(hasDescendant(withText(orgUnit)))))
+    }
+
+    fun clickOnNotSync() {
+        onView(withId(R.id.stateNotSynced)).perform(click())
+    }
+
+    fun checkTEINotSync() {
+        onView(withId(R.id.scrollView))
+            .check(matches(hasItem(hasDescendant(withId(R.id.syncState)))))
     }
 }

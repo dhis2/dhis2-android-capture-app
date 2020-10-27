@@ -1,6 +1,5 @@
 package org.dhis2.usescases.searchte
 
-import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.R
@@ -8,7 +7,7 @@ import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
-import org.junit.Ignore
+import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -127,13 +126,6 @@ class SearchTETest : BaseTest() {
 
     @Test
     fun shouldSuccessfullyFilterByEventStatusOverdue() {
-        /*
-        * launch program
-        * click on filter event status
-        * click on overdue
-        * click on close
-        * check overdue label and icon
-        * */
         val eventStatusFilter = context.getString(R.string.filters_title_event_status)
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
@@ -141,24 +133,53 @@ class SearchTETest : BaseTest() {
             clickOnFilter()
             clickOnFilterBy(eventStatusFilter)
             clickOnFilterOverdueOption()
-            closeSearchForm()
             closeFilterRowAtField(eventStatusFilter)
             closeSearchForm()
             checkEventsAreOverdue()
-            Thread.sleep(1000)
         }
     }
 
-    @Ignore("WIP")
     @Test
-    fun shouldSuccessfullyFilterBySync() {
+    fun shouldSuccessfullyFilterByOrgUnitAndUseSort() {
+        val orgUnitFilter = "ORG. UNIT"
+        val orgUnitNgelehun = "Ngelehun CHC"
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
-            /*clickOnSearchFilter()
-            clickOnFilterByName("SYNC")*/
-            //clickOnFilterByName("Synced")
+            clickOnFilter()
+            clickOnFilterBy(orgUnitFilter)
+            clickOnSortByField(orgUnitFilter)
+            typeOrgUnitField(orgUnitNgelehun)
             closeSearchForm()
+            checkTEIWithOrgUnit(orgUnitNgelehun)
+        }
+    }
+
+    @Test
+    fun shouldSuccessfullyFilterBySync() {
+        val teiName = "Frank"
+        val teiLastName = "Fjordsen"
+        val syncFilter = "SYNC"
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
+
+        searchTeiRobot {
+            closeSearchForm()
+            clickOnTEI(teiName, teiLastName)
+        }
+
+        teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnMenuReOpen()
+            checkUnlockIconIsDisplay()
+            pressBack()
+        }
+
+        searchTeiRobot {
+            clickOnFilter()
+            clickOnFilterBy(syncFilter)
+            clickOnNotSync()
+            closeSearchForm()
+            checkTEINotSync()
         }
     }
 
@@ -178,37 +199,11 @@ class SearchTETest : BaseTest() {
         "167"
     )
 
-    /*private fun prepareChildProgrammeIntentAndLaunchActivity() {
-        Intent().apply {
-            putExtra(PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
-            putExtra(CHILD_TE_TYPE, CHILD_TE_TYPE_VALUE)
-        }.also { rule.launchActivity(it) }
-    }
-
-    private fun prepareTestProgramRulesProgrammeIntentAndLaunchActivity() {
-        Intent().apply {
-            putExtra(PROGRAM_UID, XX_TEST_PROGRAM_RULES_UID_VALUE)
-            putExtra(CHILD_TE_TYPE, PROGRAM_RULES_TE_TYPE_VALUE)
-        }.also { rule.launchActivity(it) }
-    }
-
-    private fun prepareTestAdultWomanProgrammeIntentAndLaunchActivity() {
-        Intent().apply {
-            putExtra(PROGRAM_UID, ADULT_WOMAN_PROGRAM_UID_VALUE)
-            putExtra(CHILD_TE_TYPE, ADULT_WOMAN_TE_TYPE_VALUE)
-        }.also { rule.launchActivity(it) }
-    }*/
-
     companion object {
         const val PROGRAM_UID = "PROGRAM_UID"
         const val CHILD_PROGRAM_UID_VALUE = "IpHINAT79UW"
-        const val XX_TEST_PROGRAM_RULES_UID_VALUE = "jIT6KcSZiAN"
-        const val ADULT_WOMAN_PROGRAM_UID_VALUE = "uy2gU8kT1jF"
-
 
         const val CHILD_TE_TYPE_VALUE = "nEenWmSyUEp"
-        const val PROGRAM_RULES_TE_TYPE_VALUE = "nEenWmSyUEp"
-        const val ADULT_WOMAN_TE_TYPE_VALUE = "nEenWmSyUEp"
         const val CHILD_TE_TYPE = "TRACKED_ENTITY_UID"
     }
 }
