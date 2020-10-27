@@ -11,7 +11,7 @@ class MapIdlingResource(
     activityTestRule: ActivityTestRule<*>
 ) : IdlingResource, OnMapReadyCallback {
 
-    var mapboxMap: MapboxMap? = null
+    var map: MapboxMap? = null
     private var resourceCallback: IdlingResource.ResourceCallback? = null
 
     init {
@@ -25,18 +25,16 @@ class MapIdlingResource(
 
     override fun getName(): String = javaClass.simpleName
 
-    override fun isIdleNow() = mapboxMap != null
+    override fun isIdleNow() = map != null
 
     override fun registerIdleTransitionCallback(resourceCallback: IdlingResource.ResourceCallback) {
         this.resourceCallback = resourceCallback
     }
 
-    override fun onMapReady(mapboxMap: MapboxMap) {
-        this.mapboxMap = mapboxMap
+    override fun onMapReady(map: MapboxMap) {
+        this.map = map
         if (resourceCallback != null) {
             resourceCallback!!.onTransitionToIdle()
         }
     }
-
-    fun getMap() = mapboxMap
 }
