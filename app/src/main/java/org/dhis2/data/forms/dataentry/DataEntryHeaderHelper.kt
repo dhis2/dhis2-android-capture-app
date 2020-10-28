@@ -41,15 +41,16 @@ class DataEntryHeaderHelper(
         } ?: NO_POSITION
 
         if (visiblePos != NO_POSITION && dataEntryAdapter.sectionSize > 1) {
-            val headerSection: SectionViewModel = dataEntryAdapter.getSectionForPosition(visiblePos)
-            if (headerSection.isOpen && !dataEntryAdapter.isSection(visiblePos + 1)) {
-                if (currentSection.value == null || currentSection.value!!
-                    .uid() != headerSection.uid()
-                ) {
-                    currentSection.value = headerSection
+            dataEntryAdapter.getSectionForPosition(visiblePos)?.let { headerSection ->
+                if (headerSection.isOpen && !dataEntryAdapter.isSection(visiblePos + 1)) {
+                    if (currentSection.value == null || currentSection.value!!
+                        .uid() != headerSection.uid()
+                    ) {
+                        currentSection.value = headerSection
+                    }
+                } else {
+                    currentSection.setValue(null)
                 }
-            } else {
-                currentSection.setValue(null)
             }
         }
     }
