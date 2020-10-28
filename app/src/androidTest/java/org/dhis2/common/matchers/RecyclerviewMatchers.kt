@@ -1,9 +1,12 @@
 package org.dhis2.common.matchers
 
 import android.view.View
+import android.widget.TextView
 import androidx.annotation.NonNull
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.matcher.BoundedMatcher
+import kotlinx.android.synthetic.main.item_carousel_tei.view.sorting_field_value
+import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
@@ -57,6 +60,25 @@ class RecyclerviewMatchers {
                 }
             }
         }
+
+        /*fun hasDateBetween(@NonNull matcher: Matcher<View>, id: Int) : Matcher<View> {
+            return object : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
+                override fun describeTo(description: Description) {
+                    description.appendText("has item: ")
+                    matcher.describeTo(description)
+                }
+
+                override fun matchesSafely(view: RecyclerView): Boolean {
+                    val adapter = view.adapter
+                    for (position in 0 until adapter!!.itemCount) {
+                        val type = adapter.getItemViewType(position)
+                        val holder = adapter.createViewHolder(view, type) as SearchTEViewHolder
+                        val fieldValue = holder.itemView.findViewById<TextView>(id)
+                    }
+                    return false
+                }
+            }
+        }*/
 
         fun atPosition(
             position: Int,

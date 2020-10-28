@@ -195,7 +195,7 @@ class SearchTETest : BaseTest() {
             acceptDate()
             clickOnSortByField(eventDate)
             closeSearchForm()*/
-            // how to check event date
+            // how to check event date: custom matcher
         }
     }
 

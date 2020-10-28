@@ -179,6 +179,8 @@ class SearchTeiRobot : BaseRobot() {
     fun checkTEIWithOrgUnit(orgUnit: String) {
         onView(withId(R.id.scrollView))
             .check(matches(hasItem(hasDescendant(withText(orgUnit)))))
+
+        // all element of the list are visible and has org unit label
     }
 
     fun clickOnNotSync() {
