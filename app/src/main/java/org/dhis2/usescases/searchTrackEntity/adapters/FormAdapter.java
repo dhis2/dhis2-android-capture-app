@@ -39,6 +39,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.program.Program;
@@ -129,6 +130,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         String hint = ValueTypeExtensionsKt.toHint(attr.valueType(), context);
         switch (holder.getItemViewType()) {
             case EDITTEXT:
+            case LONG_TEXT:
                 viewModel = EditTextViewModel.create(attr.uid(), label, false,
                         queryData.get(attr.uid()), hint, 1, attr.valueType(), null, true,
                         attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask());
@@ -197,7 +199,8 @@ public class FormAdapter extends RecyclerView.Adapter {
                 return SPINNER;
             }
         else {
-            switch (attributeList.get(position).valueType()) {
+            ValueType valueType = attributeList.get(position).valueType();
+            switch (valueType) {
                 case AGE:
                     return AGEVIEW;
                 case TEXT:
@@ -219,7 +222,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                                     (renderingTypes.get(position).type() == ValueTypeRenderingType.QR_CODE))) {
                         return SCAN_CODE;
                     } else {
-                        return EDITTEXT;
+                        return valueType == ValueType.LONG_TEXT? LONG_TEXT : EDITTEXT;
                     }
                 case TIME:
                     return TIME;
