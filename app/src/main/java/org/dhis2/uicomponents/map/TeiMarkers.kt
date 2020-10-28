@@ -3,8 +3,7 @@ package org.dhis2.uicomponents.map
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
@@ -42,7 +41,7 @@ object TeiMarkers {
 
     fun getMarker(context: Context, bitmap: Bitmap): Bitmap {
         val drawable: Drawable =
-            ContextCompat.getDrawable(context, R.drawable.bg_image_marker)!!
+            ContextCompat.getDrawable(context, R.drawable.ic_image_poi)!!
         drawable.mutate()
 
         val canvasMarker = Bitmap.createBitmap(
@@ -60,22 +59,39 @@ object TeiMarkers {
         canvas.drawBitmap(
             bitmap,
             canvas.width / 2f - bitmap.width / 2f,
-            canvas.height / 2f - bitmap.height / 2f,
+            canvas.height / 2f - bitmap.height / 2f - 5,
             null
         )
         return markerBitmap
     }
 
     fun getMarker(context: Context, teiImage: Drawable, color: Int): Bitmap {
-        val (canvas, markerBitmap) = initMarkerCanvas(context, color)
+        return getMarker(context, drawableToBitmap(teiImage))
+    }
 
-        val paint = Paint()
-        paint.color = Color.WHITE
-        canvas.drawRect(15f, 10f, canvas.width - 15f, canvas.width - 25f, paint)
-
-        teiImage.setBounds(15, 10, canvas.width - 15, canvas.width - 25)
-        teiImage.draw(canvas)
-
-        return markerBitmap
+    fun drawableToBitmap(drawable: Drawable): Bitmap {
+        if (drawable is BitmapDrawable) {
+            val bitmapDrawable: BitmapDrawable = drawable as BitmapDrawable
+            if (bitmapDrawable.bitmap != null) {
+                return bitmapDrawable.bitmap
+            }
+        }
+        var bitmap: Bitmap = if (drawable.intrinsicWidth <= 0 || drawable.intrinsicHeight <= 0) {
+            Bitmap.createBitmap(
+                1,
+                1,
+                Bitmap.Config.ARGB_8888
+            ) // Single color bitmap will be created of 1x1 pixel
+        } else {
+            Bitmap.createBitmap(
+                drawable.intrinsicWidth,
+                drawable.intrinsicHeight,
+                Bitmap.Config.ARGB_8888
+            )
+        }
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+        return bitmap
     }
 }

@@ -38,7 +38,7 @@ public interface ProgramEventDetailRepository {
             boolean assignedToUser);
 
     @NonNull
-    Flowable<Triple<FeatureCollection, BoundingBox, List<ProgramEventViewModel>>> filteredEventsForMap(
+    Flowable<ProgramEventMapData> filteredEventsForMap(
             List<DatePeriod> dateFilter,
             List<String> orgUnitFilter,
             List<CategoryOptionCombo> catOptionComboUid,

@@ -24,3 +24,9 @@ data class EventViewModel(
         this.valueListIsOpen = !valueListIsOpen
     }
 }
+
+fun List<EventViewModel>.uids(): List<String> {
+    return map {
+        it.event?.uid()!!
+    }
+}

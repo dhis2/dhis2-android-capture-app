@@ -32,4 +32,29 @@ class MapGeometryToFeature(
             else -> null
         }
     }
+
+    fun map(
+        geometry: Geometry,
+        propertyMap: Map<String, String>,
+        bounds: BoundsGeometry
+    ): Feature? {
+        return when {
+            geometry.type() == FeatureType.POINT -> {
+                val pairPointBounds = pointMapper.map(geometry, bounds)
+                val point = pairPointBounds?.first
+                propertyMap.entries.forEach {
+                    point?.addStringProperty(it.key, it.value)
+                }
+                point
+            }
+            geometry.type() == FeatureType.POLYGON -> {
+                val polygon = polygonMapper.map(geometry, bounds)?.first
+                propertyMap.entries.forEach {
+                    polygon?.addStringProperty(it.key, it.value)
+                }
+                polygon
+            }
+            else -> null
+        }
+    }
 }
