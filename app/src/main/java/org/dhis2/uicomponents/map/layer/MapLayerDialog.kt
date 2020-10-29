@@ -20,6 +20,7 @@ import org.dhis2.databinding.ItemLayerBinding
 import org.dhis2.uicomponents.map.layer.types.DataElementMapLayer
 import org.dhis2.uicomponents.map.layer.types.EnrollmentMapLayer
 import org.dhis2.uicomponents.map.layer.types.EventMapLayer
+import org.dhis2.uicomponents.map.layer.types.HEATMAP_ICON
 import org.dhis2.uicomponents.map.layer.types.HeatmapMapLayer
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
 import org.dhis2.uicomponents.map.layer.types.SatelliteMapLayer
@@ -140,7 +141,7 @@ class MapLayerDialog(
                     addCheckBox(
                         source,
                         context!!.getString(R.string.dialog_layer_heatmap),
-                        "HEATMAP"
+                        HEATMAP_ICON
                     )
                 )
                 is SatelliteMapLayer -> layerMap["SATELLITE"]?.add(
@@ -229,7 +230,7 @@ class MapLayerDialog(
                             mapManager.mapLayerManager.relationshipUsedColors[source]!!
                         )
                     )
-                } else if (it == "HEATMAP") {
+                } else if (it == HEATMAP_ICON) {
                     layerIcon.setImageResource(R.drawable.ic_heatmap_icon)
                 } else {
                     layerIcon.setImageBitmap(

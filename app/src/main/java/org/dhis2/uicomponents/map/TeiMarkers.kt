@@ -71,7 +71,7 @@ object TeiMarkers {
 
     fun drawableToBitmap(drawable: Drawable): Bitmap {
         if (drawable is BitmapDrawable) {
-            val bitmapDrawable: BitmapDrawable = drawable as BitmapDrawable
+            val bitmapDrawable: BitmapDrawable = drawable
             if (bitmapDrawable.bitmap != null) {
                 return bitmapDrawable.bitmap
             }

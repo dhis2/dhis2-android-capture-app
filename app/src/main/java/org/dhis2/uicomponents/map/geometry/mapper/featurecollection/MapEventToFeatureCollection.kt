@@ -15,7 +15,8 @@ class MapEventToFeatureCollection(
         val features = eventList.filter { it.geometry() != null }.mapNotNull {
             mapGeometryToFeature.map(
                 it.geometry()!!,
-                EVENT, it.uid()!!, bounds
+                mapOf(EVENT to it.uid()),
+                bounds
             )
         }
 

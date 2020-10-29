@@ -9,10 +9,12 @@ import com.mapbox.mapboxsdk.style.layers.Property
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import org.dhis2.uicomponents.map.geometry.TEI_UID
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeatureCollection.Companion.DE_NAME
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.managers.EventMapManager
+import org.dhis2.uicomponents.map.managers.TeiMapManager
 
 class DataElementMapLayer(
     var style: Style,
@@ -108,8 +110,8 @@ class DataElementMapLayer(
     }
 
     override fun findFeatureWithUid(featureUidProperty: String): Feature? {
-        return style.getSourceAs<GeoJsonSource>("TEIS_SOURCE_ID")
-            ?.querySourceFeatures(Expression.eq(Expression.get("teiUid"), featureUidProperty))
+        return style.getSourceAs<GeoJsonSource>(TeiMapManager.TEIS_SOURCE_ID)
+            ?.querySourceFeatures(Expression.eq(Expression.get(TEI_UID), featureUidProperty))
             ?.firstOrNull()
             .also { setSelectedItem(it) }
     }

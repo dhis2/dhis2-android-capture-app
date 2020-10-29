@@ -202,4 +202,12 @@ class TeiEventMapLayer(
         private const val LINE_WIDTH = 2f
         private const val SELECTED_LINE_WIDTH = 4f
     }
+
+    override fun getId(): String {
+        return if (featureType == FeatureType.POINT) {
+            POINT_LAYER_ID
+        } else {
+            POLYGON_LAYER_ID
+        }
+    }
 }
