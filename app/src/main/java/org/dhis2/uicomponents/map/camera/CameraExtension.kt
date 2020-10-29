@@ -14,6 +14,9 @@ import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox
 
+const val DEFAULT_BOUND_PADDING = 500
+const val DEFAULT_EASE_CAMERA_ANIM_DURATION = 1200
+
 fun MapboxMap.initCameraToViewAllElements(context: Context?, bounds: LatLngBounds) {
     if (bounds.latNorth == 0.0 && bounds.latSouth == 0.0 &&
         bounds.lonEast == 0.0 && bounds.lonWest == 0.0
@@ -23,7 +26,13 @@ fun MapboxMap.initCameraToViewAllElements(context: Context?, bounds: LatLngBound
             .build()
         context?.let { Toast.makeText(context, "No data to load on map", LENGTH_LONG).show() }
     } else {
-        this.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 500), 1200)
+        this.easeCamera(
+            CameraUpdateFactory.newLatLngBounds(
+                bounds,
+                DEFAULT_BOUND_PADDING
+            ),
+            DEFAULT_EASE_CAMERA_ANIM_DURATION
+        )
     }
 }
 

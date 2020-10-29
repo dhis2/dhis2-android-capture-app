@@ -224,4 +224,12 @@ class TeiMapLayer(
             ?.firstOrNull()
             .also { setSelectedItem(it) }
     }
+
+    override fun getId(): String {
+        return if (featureType == FeatureType.POINT) {
+            POINT_LAYER_ID
+        } else {
+            POLYGON_LAYER_ID
+        }
+    }
 }

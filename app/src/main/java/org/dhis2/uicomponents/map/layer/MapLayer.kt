@@ -18,7 +18,5 @@ interface MapLayer {
 
     var visible: Boolean
 
-    fun getId(): String {
-        return ""
-    }
+    fun getId(): String
 }
