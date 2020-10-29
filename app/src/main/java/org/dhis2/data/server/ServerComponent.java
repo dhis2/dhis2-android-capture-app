@@ -13,9 +13,10 @@ import org.dhis2.utils.granularsync.GranularSyncComponent;
 import org.dhis2.utils.granularsync.GranularSyncModule;
 
 import dagger.Subcomponent;
+import dhis2.org.analytics.DhisAnalyticsModule;
 
 @PerServer
-@Subcomponent(modules = {ServerModule.class})
+@Subcomponent(modules = {ServerModule.class, DhisAnalyticsModule.class})
 public interface ServerComponent {
 
     @NonNull
