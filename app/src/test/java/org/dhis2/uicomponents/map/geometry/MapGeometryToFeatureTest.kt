@@ -40,13 +40,9 @@ class MapGeometryToFeatureTest {
     @Test
     fun `Should map single point to feature`() {
         val geometry = GeometryHelper.createPointGeometry(listOf(longitudePoint, latitudePoint))
-        val boundsGeometry = BoundsGeometry()
         val featurePoint = createFeaturePoint(longitudePoint, latitudePoint)
 
-        whenever(pointMapper.map(geometry, boundsGeometry)) doReturn Pair(
-            featurePoint,
-            boundsGeometry
-        )
+        whenever(pointMapper.map(geometry)) doReturn featurePoint
 
         val featureResult =
             mapGeometryToFeature.map(geometry, mapOf(EVENT to EVENT_UID_VALUE))
@@ -66,13 +62,10 @@ class MapGeometryToFeatureTest {
                 listOf(longitude2Polygon, latitude2Polygon)
             )
         )
-        val boundsGeometry = BoundsGeometry()
+
         val geometry = GeometryHelper.createPolygonGeometry(coordinates)
         val featurePolygon = createFeaturePolygon()
-        whenever(polygonMapper.map(geometry, boundsGeometry)) doReturn Pair(
-            featurePolygon,
-            boundsGeometry
-        )
+        whenever(polygonMapper.map(geometry)) doReturn featurePolygon
 
         val featureResult =
             mapGeometryToFeature.map(geometry, mapOf(EVENT to EVENT_UID_VALUE))
