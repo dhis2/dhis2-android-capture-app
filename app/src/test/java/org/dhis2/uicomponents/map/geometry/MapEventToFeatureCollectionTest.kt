@@ -45,7 +45,7 @@ class MapEventToFeatureCollectionTest {
         )
 
         whenever(
-            mapGeometryToFeature.map(any(), any(), any())
+            mapGeometryToFeature.map(any(), any())
         ) doReturn firstFeature doReturn secondFeature
 
         val result = mapEventToFeatureCollection.map(listOf(firstEvent, secondEvent))

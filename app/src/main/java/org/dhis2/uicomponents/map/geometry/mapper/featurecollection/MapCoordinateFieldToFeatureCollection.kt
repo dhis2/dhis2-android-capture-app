@@ -5,43 +5,11 @@ import com.mapbox.geojson.FeatureCollection
 import org.dhis2.data.dhislogic.CoordinateAttributeInfo
 import org.dhis2.data.dhislogic.CoordinateDataElementInfo
 import org.dhis2.data.dhislogic.CoordinateFieldInfo
-import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
-import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature
+import org.dhis2.uicomponents.map.geometry.mapper.feature.MapCoordinateFieldToFeature
 
 class MapCoordinateFieldToFeatureCollection(
-    private val mapGeometryToFeature: MapGeometryToFeature,
-    private val bounds: BoundsGeometry
+    private val mapCoordinateFieldToFeature: MapCoordinateFieldToFeature
 ) {
-    private fun map(coordinateDataElementInfo: CoordinateDataElementInfo): Feature? {
-        bounds.initOrReset()
-
-        return mapGeometryToFeature.map(
-            coordinateDataElementInfo.geometry,
-            hashMapOf(
-                FIELD_NAME to coordinateDataElementInfo.dataElement.displayFormName()!!,
-                EVENT to coordinateDataElementInfo.event.uid()!!,
-                STAGE to coordinateDataElementInfo.stage.displayName()!!
-            ).apply {
-                coordinateDataElementInfo.enrollment?.let { enrollment ->
-                    put(TEI, enrollment.trackedEntityInstance()!!)
-                }
-            },
-            bounds
-        )
-    }
-
-    private fun map(coordinateAttributeInfo: CoordinateAttributeInfo): Feature? {
-        bounds.initOrReset()
-
-        return mapGeometryToFeature.map(
-            coordinateAttributeInfo.geometry,
-            hashMapOf(
-                FIELD_NAME to coordinateAttributeInfo.attribute.displayFormName()!!,
-                TEI to coordinateAttributeInfo.tei.uid()!!
-            ),
-            bounds
-        )
-    }
 
     fun map(coordinateFieldInfos: List<CoordinateFieldInfo>): Map<String, FeatureCollection> {
         return when {
@@ -64,7 +32,7 @@ class MapCoordinateFieldToFeatureCollection(
             val featureMap = mutableMapOf<String, MutableList<Feature>>()
             coordinateDataElementInfos.forEach {
                 val key = it.dataElement.displayFormName()!!
-                map(it)?.let { feature ->
+                mapCoordinateFieldToFeature.map(it)?.let { feature ->
                     if (!featureMap.containsKey(key)) {
                         featureMap[key] = mutableListOf()
                     }
@@ -85,7 +53,7 @@ class MapCoordinateFieldToFeatureCollection(
             val featureMap = mutableMapOf<String, MutableList<Feature>>()
             coordinateAttributeInfos.forEach {
                 val key = it.attribute.displayFormName()!!
-                map(it)?.let { feature ->
+                mapCoordinateFieldToFeature.map(it)?.let { feature ->
                     if (!featureMap.containsKey(key)) {
                         featureMap[key] = mutableListOf()
                     }

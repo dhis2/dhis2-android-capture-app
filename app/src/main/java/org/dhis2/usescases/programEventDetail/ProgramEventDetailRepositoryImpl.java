@@ -11,6 +11,7 @@ import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
 import org.dhis2.uicomponents.map.managers.EventMapManager;
@@ -129,7 +130,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                     programEventFeatures.put(EventMapManager.EVENTS, eventFeatureCollection.getFirst());
                     Map<String, FeatureCollection> deFeatureCollection = mapCoordinateFieldToFeatureCollection.map(mapUtils.getCoordinateDataElementInfo(UidsHelper.getUidsList(listEvents)));
                     programEventFeatures.putAll(deFeatureCollection);
-
                     return new ProgramEventMapData(
                             mapper.eventsToProgramEvents(listEvents),
                             programEventFeatures,

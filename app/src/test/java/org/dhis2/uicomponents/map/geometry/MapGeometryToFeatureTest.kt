@@ -49,7 +49,7 @@ class MapGeometryToFeatureTest {
         )
 
         val featureResult =
-            mapGeometryToFeature.map(geometry, mapOf(EVENT to EVENT_UID_VALUE), boundsGeometry)
+            mapGeometryToFeature.map(geometry, mapOf(EVENT to EVENT_UID_VALUE))
 
         val property = featureResult?.getStringProperty(EVENT)
         val pointResult = featureResult?.geometry() as Point
@@ -75,7 +75,7 @@ class MapGeometryToFeatureTest {
         )
 
         val featureResult =
-            mapGeometryToFeature.map(geometry, mapOf(EVENT to EVENT_UID_VALUE), boundsGeometry)
+            mapGeometryToFeature.map(geometry, mapOf(EVENT to EVENT_UID_VALUE))
 
         val property = featureResult?.getStringProperty(EVENT)
         val polygonResult = featureResult?.geometry() as Polygon
@@ -101,7 +101,7 @@ class MapGeometryToFeatureTest {
 
         val result = mapGeometryToFeature.map(
             geometry,
-            mapOf(EVENT to EVENT_UID_VALUE), boundsGeometry
+            mapOf(EVENT to EVENT_UID_VALUE)
         )
 
         assertEquals(result, null)

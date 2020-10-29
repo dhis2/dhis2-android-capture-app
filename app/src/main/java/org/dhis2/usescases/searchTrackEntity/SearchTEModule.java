@@ -17,6 +17,7 @@ import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
 import org.dhis2.uicomponents.map.geometry.line.MapLineRelationshipToFeature;
 import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature;
+import org.dhis2.uicomponents.map.geometry.mapper.feature.MapCoordinateFieldToFeature;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection;
@@ -104,15 +105,20 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    MapCoordinateFieldToFeatureCollection provideMapDataElementToFeatureCollection(MapGeometryToFeature mapGeometryToFeature) {
-        return new MapCoordinateFieldToFeatureCollection(mapGeometryToFeature,
-                new BoundsGeometry(0.0, 0.0, 0.0, 0.0));
+    MapCoordinateFieldToFeatureCollection provideMapDataElementToFeatureCollection(MapCoordinateFieldToFeature mapCoordinateFieldToFeature) {
+        return new MapCoordinateFieldToFeatureCollection(mapCoordinateFieldToFeature);
     }
 
     @Provides
     @PerActivity
     MapGeometryToFeature provideMapGeometryToFeature() {
         return new MapGeometryToFeature(new MapPointToFeature(), new MapPolygonToFeature());
+    }
+
+    @Provides
+    @PerActivity
+    MapCoordinateFieldToFeature provideMapCoordinateFieldToFeature(MapGeometryToFeature mapGeometryToFeature){
+        return new MapCoordinateFieldToFeature(mapGeometryToFeature);
     }
 
     @Provides

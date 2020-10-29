@@ -8,8 +8,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.data.dhislogic.CoordinateAttributeInfo
 import org.dhis2.data.dhislogic.CoordinateDataElementInfo
-import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
-import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature
+import org.dhis2.uicomponents.map.geometry.mapper.feature.MapCoordinateFieldToFeature
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
@@ -26,18 +25,17 @@ import org.junit.Test
 class MapCoordinateFieldToFeatureCollectionTest {
 
     private lateinit var mapper: MapCoordinateFieldToFeatureCollection
-    private val mapGeometryToFeature: MapGeometryToFeature = mock()
-    private val bounds: BoundsGeometry = mock()
+    private val mapCoordinateFieldToFeature: MapCoordinateFieldToFeature = mock()
 
     @Before
     fun setUp() {
-        mapper = MapCoordinateFieldToFeatureCollection(mapGeometryToFeature, bounds)
+        mapper = MapCoordinateFieldToFeatureCollection(mapCoordinateFieldToFeature)
     }
 
     @Test
     fun `Should map data element list to feature collection map`() {
         whenever(
-            mapGeometryToFeature.map(any(), any(), any())
+            mapCoordinateFieldToFeature.map(any<CoordinateDataElementInfo>())
         ) doReturnConsecutively mockedFeatures()
 
         mapper.map(mockedDataElementInfoList()).apply {
@@ -49,7 +47,7 @@ class MapCoordinateFieldToFeatureCollectionTest {
     @Test
     fun `Should map attribute list to feature collection map`() {
         whenever(
-            mapGeometryToFeature.map(any(), any(), any())
+            mapCoordinateFieldToFeature.map(any<CoordinateAttributeInfo>())
         ) doReturnConsecutively mockedFeatures()
 
         mapper.map(mockedAttributeInfoList()).apply {

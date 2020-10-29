@@ -10,6 +10,7 @@ import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
 import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature;
+import org.dhis2.uicomponents.map.geometry.mapper.feature.MapCoordinateFieldToFeature;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
@@ -63,9 +64,14 @@ public class ProgramEventDetailModule {
 
     @Provides
     @PerActivity
-    MapCoordinateFieldToFeatureCollection provideMapDataElementToFeatureCollection(MapGeometryToFeature mapGeometryToFeature) {
-        return new MapCoordinateFieldToFeatureCollection(mapGeometryToFeature,
-                new BoundsGeometry(0.0, 0.0, 0.0, 0.0));
+    MapCoordinateFieldToFeatureCollection provideMapDataElementToFeatureCollection(MapCoordinateFieldToFeature mapCoordinateFieldToFeature) {
+        return new MapCoordinateFieldToFeatureCollection(mapCoordinateFieldToFeature);
+    }
+
+    @Provides
+    @PerActivity
+    MapCoordinateFieldToFeature provideMapCoordinateFieldToFeature(MapGeometryToFeature mapGeometryToFeature){
+        return new MapCoordinateFieldToFeature(mapGeometryToFeature);
     }
 
     @Provides
