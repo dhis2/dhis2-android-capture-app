@@ -54,7 +54,7 @@ for pr in opened_prs:
         if "fields" in jira_issue:
             print('issue found with id %s' % jira_issue['id'])
             status = jira_issue['fields']['status']['name']
-            if "assignee" in jira_issue['fields']:
+            if "assignee" in jira_issue['fields'] and jira_issue['fields']['assignee'] is not None:
                 jira_assignee = jira_issue['fields']['assignee']['name']
             else:
                 jira_assignee = ""
