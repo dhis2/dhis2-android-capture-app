@@ -97,10 +97,11 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_relationships, container, false);
         relationshipAdapter = new RelationshipAdapter(presenter);
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
-
         relationshipMapManager = new RelationshipMapManager(binding.mapView);
         relationshipMapManager.setOnMapClickListener(this);
-        relationshipMapManager.init(() -> Unit.INSTANCE);
+        relationshipMapManager.init(() -> {
+            return Unit.INSTANCE;
+        });
 
         TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) getContext();
         activity.relationshipMap().observe(this, showMap -> {
