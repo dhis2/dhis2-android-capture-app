@@ -11,7 +11,6 @@ import kotlin.collections.set
 import org.dhis2.Bindings.profilePicturePath
 import org.dhis2.Bindings.toDate
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.DataEntryRepository
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
@@ -51,7 +50,7 @@ class EnrollmentPresenterImpl(
     val view: EnrollmentView,
     val d2: D2,
     private val enrollmentObjectRepository: EnrollmentObjectRepository,
-    private val dataEntryRepository: DataEntryRepository,
+    private val dataEntryRepository: EnrollmentRepository,
     private val teiRepository: TrackedEntityInstanceObjectRepository,
     private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
     private val schedulerProvider: SchedulerProvider,
@@ -73,6 +72,8 @@ class EnrollmentPresenterImpl(
     private var uniqueFields = mutableMapOf<String, String>()
     private val backButtonProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
     private var showErrors: Pair<Boolean, Boolean> = Pair(first = false, second = false)
+    private var hasShownIncidentDateEditionWarning = false
+    private var hasShownEnrollmentDateEditionWarning = false
 
     fun init() {
         view.setSaveButtonVisible(false)
@@ -148,7 +149,7 @@ class EnrollmentPresenterImpl(
                             )
                             Flowable.just(
                                 StoreResult(
-                                    "",
+                                    EnrollmentRepository.ENROLLMENT_DATE_UID,
                                     ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
                                 )
                             )
@@ -157,7 +158,7 @@ class EnrollmentPresenterImpl(
                             enrollmentObjectRepository.setIncidentDate(rowAction.value()?.toDate())
                             Flowable.just(
                                 StoreResult(
-                                    "",
+                                    EnrollmentRepository.INCIDENT_DATE_UID,
                                     ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
                                 )
                             )
@@ -209,6 +210,9 @@ class EnrollmentPresenterImpl(
                     {
                         when (it.valueStoreResult) {
                             ValueStoreImpl.ValueStoreResult.VALUE_CHANGED -> {
+                                if (shouldShowDateEditionWarning(it.uid)) {
+                                    view.showDateEditionWarning()
+                                }
                                 lastFocusItem = it.uid
                                 fieldsFlowable.onNext(true)
                             }
@@ -275,6 +279,24 @@ class EnrollmentPresenterImpl(
             this.selectedSection = sectionUid
         }
         return selectedSection
+    }
+
+    private fun shouldShowDateEditionWarning(uid: String): Boolean {
+        return if (uid == EnrollmentRepository.ENROLLMENT_DATE_UID &&
+            dataEntryRepository.hasEventsGeneratedByEnrollmentDate() &&
+            !hasShownEnrollmentDateEditionWarning
+        ) {
+            hasShownEnrollmentDateEditionWarning = true
+            true
+        } else if (uid == EnrollmentRepository.INCIDENT_DATE_UID &&
+            dataEntryRepository.hasEventsGeneratedByIncidentDate() &&
+            !hasShownIncidentDateEditionWarning
+        ) {
+            hasShownIncidentDateEditionWarning = true
+            true
+        } else {
+            false
+        }
     }
 
     fun setFieldsToShow(section: String, fieldList: List<FieldViewModel>): List<FieldViewModel> {

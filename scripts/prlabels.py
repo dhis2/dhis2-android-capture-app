@@ -54,7 +54,7 @@ for pr in opened_prs:
         if "fields" in jira_issue:
             print('issue found with id %s' % jira_issue['id'])
             status = jira_issue['fields']['status']['name']
-            if "assigne" in jira_issue['fields']:
+            if "assignee" in jira_issue['fields']:
                 jira_assignee = jira_issue['fields']['assignee']['name']
             else:
                 jira_assignee = ""
@@ -62,6 +62,7 @@ for pr in opened_prs:
             print('No jira issue found')
 
         labelState = ""
+        labelMerge = ""
         if status == 'In Review':
             if has_reviews and len(pr['requested_reviewers']) > 0:
                 labelState = 'Waiting for approval'
@@ -72,13 +73,18 @@ for pr in opened_prs:
         elif status == 'Testing' or status == 'Retesting':
             if jira_assignee == 'nancyespinoza' or jira_assignee == "fgomez011" or jira_assignee == "":
                 labelState = 'Tested'
+                labelMerge = 'Ready for merge'
+            else:
+                labelState = 'Internal testing'
         elif status == 'Needs Update' or status == 'Reopen':
             labelState = 'changes requested'
         else:
             labelState = ""
 
-        if labelType != "":
+        if labelState != "":
             labels_to_add.append(labelState)
+        if labelMerge != "":
+            labels_to_add.append(labelMerge)
     else:
         labelState = ""
         if has_reviews and len(pr['requested_reviewers']) > 0:
@@ -87,7 +93,7 @@ for pr in opened_prs:
             labelState = 'Ready for testing'
         else:
             labelState = 'Waiting for approval'
-        if labelType != "":
+        if labelState != "":
             labels_to_add.append(labelState)
 
     print(str(labels_to_add)[1:-1])

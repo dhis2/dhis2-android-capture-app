@@ -6,8 +6,8 @@ import dagger.Provides
 import org.dhis2.Bindings.valueTypeHintMap
 import org.dhis2.R
 import org.dhis2.data.dagger.PerActivity
+import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.RulesRepository
-import org.dhis2.data.forms.dataentry.DataEntryRepository
 import org.dhis2.data.forms.dataentry.DataEntryStore
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.ValueStore
@@ -54,7 +54,11 @@ class EnrollmentModule(
 
     @Provides
     @PerActivity
-    fun provideDataEntrytRepository(context: Context, d2: D2): DataEntryRepository {
+    fun provideDataEntrytRepository(
+        context: Context,
+        d2: D2,
+        dhisEnrollmentUtils: DhisEnrollmentUtils
+    ): EnrollmentRepository {
         val modelFactory = FieldViewModelFactoryImpl(context.valueTypeHintMap())
         val enrollmentDataSectionLabel = context.getString(R.string.enrollment_data_section_label)
         val singleSectionLabel = context.getString(R.string.enrollment_single_section_label)
@@ -68,6 +72,7 @@ class EnrollmentModule(
             modelFactory,
             enrollmentUid,
             d2,
+            dhisEnrollmentUtils,
             enrollmentMode,
             enrollmentDataSectionLabel,
             singleSectionLabel,
@@ -86,7 +91,7 @@ class EnrollmentModule(
         context: Context,
         d2: D2,
         enrollmentObjectRepository: EnrollmentObjectRepository,
-        dataEntryRepository: DataEntryRepository,
+        dataEntryRepository: EnrollmentRepository,
         teiRepository: TrackedEntityInstanceObjectRepository,
         programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
         schedulerProvider: SchedulerProvider,
