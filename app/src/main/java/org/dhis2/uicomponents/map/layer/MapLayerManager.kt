@@ -6,9 +6,9 @@ import com.mapbox.geojson.Feature
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
-import org.dhis2.uicomponents.map.layer.types.DataElementMapLayer
 import org.dhis2.uicomponents.map.layer.types.EnrollmentMapLayer
 import org.dhis2.uicomponents.map.layer.types.EventMapLayer
+import org.dhis2.uicomponents.map.layer.types.FieldMapLayer
 import org.dhis2.uicomponents.map.layer.types.HeatmapMapLayer
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
 import org.dhis2.uicomponents.map.layer.types.SatelliteMapLayer
@@ -95,7 +95,7 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
                     sourceId!!,
                     mapStyle?.programDarkColor!!
                 )
-                LayerType.DE_COORDINATE_LAYER -> DataElementMapLayer(
+                LayerType.FIELD_COORDINATE_LAYER -> FieldMapLayer(
                     style,
                     sourceId!!
                 )
@@ -154,7 +154,7 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
             LayerType.RELATIONSHIP_LAYER -> mapLayers.filterValues { it is RelationshipMapLayer }
             LayerType.EVENT_LAYER -> mapLayers.filterValues { it is EventMapLayer }
             LayerType.TEI_EVENT_LAYER -> mapLayers.filterValues { it is TeiEventMapLayer }
-            LayerType.DE_COORDINATE_LAYER -> mapLayers.filterValues { it is DataElementMapLayer }
+            LayerType.FIELD_COORDINATE_LAYER -> mapLayers.filterValues { it is FieldMapLayer }
         }
         filterLayers.keys.forEach {
             if (!sourceIds.contains(it)) {

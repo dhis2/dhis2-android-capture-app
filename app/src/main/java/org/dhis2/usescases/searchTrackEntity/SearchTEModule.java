@@ -17,7 +17,7 @@ import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
 import org.dhis2.uicomponents.map.geometry.line.MapLineRelationshipToFeature;
 import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature;
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeatureCollection;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection;
@@ -66,10 +66,10 @@ public class SearchTEModule {
                                                        AnalyticsHelper analyticsHelper,
                                                        MapTeisToFeatureCollection mapTeisToFeatureCollection,
                                                        MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
-                                                       MapDataElementToFeatureCollection mapDataElementToFeatureCollection,
+                                                       MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
                                                        PreferenceProvider preferenceProvider) {
         return new SearchTEPresenter(view, d2, mapUtils, searchRepository, schedulerProvider,
-                analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapDataElementToFeatureCollection,
+                analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapCoordinateFieldToFeatureCollection,
                 new EventToEventUiComponent(), preferenceProvider);
     }
 
@@ -104,8 +104,8 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    MapDataElementToFeatureCollection provideMapDataElementToFeatureCollection(MapGeometryToFeature mapGeometryToFeature) {
-        return new MapDataElementToFeatureCollection(mapGeometryToFeature,
+    MapCoordinateFieldToFeatureCollection provideMapDataElementToFeatureCollection(MapGeometryToFeature mapGeometryToFeature) {
+        return new MapCoordinateFieldToFeatureCollection(mapGeometryToFeature,
                 new BoundsGeometry(0.0, 0.0, 0.0, 0.0));
     }
 

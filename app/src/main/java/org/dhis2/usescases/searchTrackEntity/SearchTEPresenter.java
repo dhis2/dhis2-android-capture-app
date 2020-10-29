@@ -28,13 +28,14 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage;
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeatureCollection;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection;
 import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent;
 import org.dhis2.uicomponents.map.model.EventUiComponentModel;
 import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
+import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModelExtensionsKt;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelKt;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
@@ -112,7 +113,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private boolean showList = true;
     private MapTeisToFeatureCollection mapTeisToFeatureCollection;
     private MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection;
-    private MapDataElementToFeatureCollection mapDataElementToFeatureCollection;
+    private MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection;
     private EventToEventUiComponent eventToEventUiComponent;
     private boolean teiTypeHasAttributesToDisplay = true;
     private boolean isSearching;
@@ -127,7 +128,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              @Nullable String initialProgram,
                              MapTeisToFeatureCollection mapTeisToFeatureCollection,
                              MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
-                             MapDataElementToFeatureCollection mapDataElementToFeatureCollection,
+                             MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
                              EventToEventUiComponent eventToEventUiComponent,
                              PreferenceProvider preferenceProvider) {
         this.view = view;
@@ -139,7 +140,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.analyticsHelper = analyticsHelper;
         this.mapTeisToFeatureCollection = mapTeisToFeatureCollection;
         this.mapTeiEventsToFeatureCollection = mapTeiEventsToFeatureCollection;
-        this.mapDataElementToFeatureCollection = mapDataElementToFeatureCollection;
+        this.mapCoordinateFieldToFeatureCollection = mapCoordinateFieldToFeatureCollection;
 
         this.eventToEventUiComponent = eventToEventUiComponent;
         compositeDisposable = new CompositeDisposable();
@@ -299,10 +300,18 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         NetworkUtils.isOnline(view.getContext())))
                         .map(teis -> new kotlin.Pair<>(teis, searchRepository.getEventsForMap(teis)))
                         .map(teis -> {
-                                    Map<String, FeatureCollection> dataElements = mapDataElementToFeatureCollection.map(
+                                    Map<String, FeatureCollection> coordinateFields = new HashMap<>();
+                                    Map<String, FeatureCollection> dataElements = mapCoordinateFieldToFeatureCollection.map(
                                             mapUtils.getCoordinateDataElementInfo(
                                                     EventViewModelKt.uids(teis.component2())
                                             ));
+                                    Map<String, FeatureCollection> attributes = mapCoordinateFieldToFeatureCollection.map(
+                                            mapUtils.getCoordinateAttributeInfo(
+                                                    SearchTeiModelExtensionsKt.uids(teis.component1())
+                                            )
+                                    );
+                                    coordinateFields.putAll(dataElements);
+                                    coordinateFields.putAll(attributes);
                                     List<EventUiComponentModel> eventsUi = eventToEventUiComponent.mapList(teis.component2(), teis.component1());
                                     kotlin.Pair<HashMap<String, FeatureCollection>, BoundingBox> teisFeatCollection = mapTeisToFeatureCollection.map(teis.component1());
                                     EventsByProgramStage events = mapTeiEventsToFeatureCollection.map(eventsUi).component1();
@@ -312,7 +321,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                             teisFeatCollection.component1(),
                                             teisFeatCollection.component2(),
                                             eventsUi,
-                                            dataElements
+                                            coordinateFields
                                     );
                                 }
                         )

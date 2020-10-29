@@ -10,13 +10,12 @@ import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
 import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature;
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeatureCollection;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
-import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -64,8 +63,8 @@ public class ProgramEventDetailModule {
 
     @Provides
     @PerActivity
-    MapDataElementToFeatureCollection provideMapDataElementToFeatureCollection(MapGeometryToFeature mapGeometryToFeature) {
-        return new MapDataElementToFeatureCollection(mapGeometryToFeature,
+    MapCoordinateFieldToFeatureCollection provideMapDataElementToFeatureCollection(MapGeometryToFeature mapGeometryToFeature) {
+        return new MapCoordinateFieldToFeatureCollection(mapGeometryToFeature,
                 new BoundsGeometry(0.0, 0.0, 0.0, 0.0));
     }
 
@@ -73,9 +72,9 @@ public class ProgramEventDetailModule {
     @PerActivity
     ProgramEventDetailRepository eventDetailRepository(D2 d2, ProgramEventMapper mapper,
                                                        MapEventToFeatureCollection mapEventToFeatureCollection,
-                                                       MapDataElementToFeatureCollection mapDataElementToFeatureCollection,
+                                                       MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
                                                        DhisMapUtils dhisMapUtils) {
-        return new ProgramEventDetailRepositoryImpl(programUid, d2, mapper, mapEventToFeatureCollection, mapDataElementToFeatureCollection,dhisMapUtils);
+        return new ProgramEventDetailRepositoryImpl(programUid, d2, mapper, mapEventToFeatureCollection, mapCoordinateFieldToFeatureCollection,dhisMapUtils);
     }
 
     @Provides

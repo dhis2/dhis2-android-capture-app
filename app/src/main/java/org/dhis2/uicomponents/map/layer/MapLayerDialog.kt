@@ -17,9 +17,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.dhis2.R
 import org.dhis2.databinding.DialogMapLayerBinding
 import org.dhis2.databinding.ItemLayerBinding
-import org.dhis2.uicomponents.map.layer.types.DataElementMapLayer
 import org.dhis2.uicomponents.map.layer.types.EnrollmentMapLayer
 import org.dhis2.uicomponents.map.layer.types.EventMapLayer
+import org.dhis2.uicomponents.map.layer.types.FieldMapLayer
 import org.dhis2.uicomponents.map.layer.types.HeatmapMapLayer
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
 import org.dhis2.uicomponents.map.layer.types.SatelliteMapLayer
@@ -163,7 +163,7 @@ class MapLayerDialog(
                         EventMapManager.ICON_ID
                     )
                 )
-                is DataElementMapLayer -> layerMap["DE"]?.add(
+                is FieldMapLayer -> layerMap["DE"]?.add(
                     addCheckBox(
                         source,
                         mapManager.getLayerName(source),
