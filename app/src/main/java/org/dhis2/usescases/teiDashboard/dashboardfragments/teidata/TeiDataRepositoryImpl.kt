@@ -111,6 +111,12 @@ class TeiDataRepositoryImpl(
 
                     val isSelected = programStage.uid() == selectedStage
 
+                    val canAddEventToEnrollment = enrollmentUid?.let {
+                        d2.eventModule().eventService().blockingCanAddEventToEnrollment(
+                            it,
+                            programStage.uid())
+                    } ?: false
+
                     eventViewModels.add(
                         EventViewModel(
                             EventViewModelType.STAGE,
@@ -119,11 +125,7 @@ class TeiDataRepositoryImpl(
                             eventList.size,
                             if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
                             isSelected,
-                            dhisEventUtils.checkAddEventInEnrollment(
-                                enrollmentUid,
-                                programStage,
-                                isSelected
-                            ),
+                            canAddEventToEnrollment,
                             orgUnitName = "",
                             catComboName = "",
                             dataElementValues = emptyList(),
