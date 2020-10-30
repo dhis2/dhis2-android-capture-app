@@ -25,16 +25,41 @@ android {
     }
 
     buildTypes {
+        debug{
+
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    flavorDimensions "default"
+
+    productFlavors {
+        dhis {
+
+        }
+
+        dhisNoSMS {
+
+        }
+
+        dhisUITesting {
+
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
-    //DHIS
+
     debugImplementation project(':core')
+
     releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }

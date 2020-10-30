@@ -5,7 +5,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import dhis2.org.analytics.charts.ChartsProvider
+import dhis2.org.analytics.charts.Charts
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -38,7 +38,7 @@ class IndicatorsPresenterTest {
     private val ruleEngineRepository: RuleEngineRepository = mock()
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val view: IndicatorsView = mock()
-    private val chartsProvider: ChartsProvider = mock()
+    private val charts: Charts = mock()
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private lateinit var presenter: IndicatorsPresenter
 
@@ -86,7 +86,7 @@ class IndicatorsPresenterTest {
 
         presenter = IndicatorsPresenter(
             d2, "program_uid", "tei_uid",
-            dashboardRepository, ruleEngineRepository, schedulers, view, chartsProvider
+            dashboardRepository, ruleEngineRepository, schedulers, view, charts
         )
     }
 

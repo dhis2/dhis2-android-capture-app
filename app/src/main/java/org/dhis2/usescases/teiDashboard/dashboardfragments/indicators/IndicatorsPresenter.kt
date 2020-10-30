@@ -1,6 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 
-import dhis2.org.analytics.charts.ChartsProvider
+import dhis2.org.analytics.charts.Charts
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -29,7 +29,7 @@ class IndicatorsPresenter(
     private val ruleEngineRepository: RuleEngineRepository,
     val schedulerProvider: SchedulerProvider,
     val view: IndicatorsView,
-    val chartsProvider: ChartsProvider
+    val charts: Charts?
 ) {
 
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -51,7 +51,7 @@ class IndicatorsPresenter(
 
     fun init() {
         // TODO: THIS MUST BE REMOVED FOR RELEASE
-        view.displayMessage("Analytic module is ready: ${chartsProvider.hasCharts()} ")
+        view.displayMessage("Analytic module is ready: ${charts?.hasCharts() ?: false} ")
 
         compositeDisposable.add(
             Flowable.zip<List<Trio<ProgramIndicator, String, String>>?,
