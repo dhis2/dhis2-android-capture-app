@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 import io.reactivex.Single
 import org.dhis2.Bindings.applyFilters
 import org.dhis2.Bindings.userFriendlyValue
-import org.dhis2.data.dhislogic.DhisEventUtils
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
 import org.dhis2.utils.DateUtils
@@ -27,8 +26,7 @@ class TeiDataRepositoryImpl(
     private val d2: D2,
     private val programUid: String?,
     private val teiUid: String,
-    private val enrollmentUid: String?,
-    private val dhisEventUtils: DhisEventUtils
+    private val enrollmentUid: String?
 ) : TeiDataRepository {
 
     override fun getTEIEnrollmentEvents(
@@ -114,7 +112,8 @@ class TeiDataRepositoryImpl(
                     val canAddEventToEnrollment = enrollmentUid?.let {
                         d2.eventModule().eventService().blockingCanAddEventToEnrollment(
                             it,
-                            programStage.uid())
+                            programStage.uid()
+                        )
                     } ?: false
 
                     eventViewModels.add(
