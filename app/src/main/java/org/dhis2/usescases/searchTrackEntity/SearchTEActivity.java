@@ -79,6 +79,7 @@ import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.customviews.ScanTextView;
 import org.dhis2.utils.filters.FilterManager;
@@ -232,8 +233,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 .addOnTeiClickListener(
                         (teiUid, enrollmentUid, isDeleted) -> {
                             if (binding.mapCarousel.getCarouselEnabled()) {
-                                updateTei = teiUid;
-                                presenter.onTEIClick(teiUid, enrollmentUid, isDeleted);
+                                if (fromRelationship) {
+                                    presenter.addRelationship(teiUid, null, NetworkUtils.isOnline(this));
+                                } else {
+                                    updateTei = teiUid;
+                                    presenter.onTEIClick(teiUid, enrollmentUid, isDeleted);
+                                }
                             }
                             return true;
                         })
@@ -494,7 +499,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private void showMap(boolean showMap) {
         binding.scrollView.setVisibility(showMap ? View.GONE : View.VISIBLE);
         binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
-        binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : View.GONE);
 
         if (showMap) {
             binding.toolbarProgress.setVisibility(View.VISIBLE);
@@ -502,6 +506,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             presenter.getMapData();
         } else {
             binding.mapLayerButton.setVisibility(View.GONE);
+            binding.mapCarousel.setVisibility(View.GONE);
         }
     }
 
@@ -941,9 +946,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             allItems.addAll(new MapRelationshipToRelationshipMapModel().mapList(searchTeiModel.getRelationships()));
         }
 
+        updateCarousel(allItems);
+
         teiMapManager.init(() -> {
             teiMapManager.update(teiFeatureCollections, events, boundingBox);
-            updateCarousel(allItems);
+            binding.mapCarousel.setVisibility(View.VISIBLE);
             binding.mapLayerButton.setVisibility(View.VISIBLE);
             return Unit.INSTANCE;
         });

@@ -288,8 +288,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         NetworkUtils.isOnline(view.getContext())))
                         .map(teis -> new kotlin.Pair<>(teis, searchRepository.getEventsForMap(teis)))
                         .map(teis -> {
-                                    List<EventUiComponentModel> eventsUi = eventToEventUiComponent.mapList(teis.component2(), teis.component1());
-                                    kotlin.Pair<HashMap<String, FeatureCollection>, BoundingBox> teisFeatCollection = mapTeisToFeatureCollection.map(teis.component1());
+                                    List<EventUiComponentModel> eventsUi = selectedProgram != null ? eventToEventUiComponent.mapList(teis.component2(), teis.component1()) : Collections.emptyList();
+                                    kotlin.Pair<HashMap<String, FeatureCollection>, BoundingBox> teisFeatCollection = mapTeisToFeatureCollection.map(teis.component1(), selectedProgram != null);
                                     EventsByProgramStage events = mapTeiEventsToFeatureCollection.map(eventsUi).component1();
                                     return Quartet.create(teis.component1(), teisFeatCollection, events, eventsUi);
                                 }
