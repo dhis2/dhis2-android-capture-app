@@ -83,6 +83,11 @@ class ProgramEventDetailPresenterTest {
             BoundingBox.fromLngLats(0.0, 0.0, 0.0, 0.0),
             listOf()
         )
+        val mapData = ProgramEventMapData(
+            mutableListOf(),
+            mutableMapOf("key" to FeatureCollection.fromFeature(Feature.fromGeometry(null))),
+            BoundingBox.fromLngLats(0.0, 0.0, 0.0, 0.0)
+        )
         filterManager.sortingItem = SortingItem(Filters.ORG_UNIT, SortingStatus.NONE)
         whenever(repository.featureType()) doReturn Single.just(FeatureType.POINT)
         whenever(repository.accessDataWrite) doReturn true
@@ -94,7 +99,7 @@ class ProgramEventDetailPresenterTest {
         ) doReturn events
         whenever(
             repository.filteredEventsForMap(any(), any(), any(), any(), any(), any())
-        ) doReturn Flowable.just(mapEvents)
+        ) doReturn Flowable.just(mapData)
         presenter.init()
         verify(view).setFeatureType(FeatureType.POINT)
         verify(view).setWritePermission(true)

@@ -8,8 +8,10 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.schedulers.TestScheduler
 import junit.framework.TestCase.assertTrue
+import org.dhis2.data.dhislogic.DhisMapUtils
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent
@@ -32,9 +34,11 @@ class SearchTEPresenterTest {
     private val analyticsHelper: AnalyticsHelper = mock()
     private val mapTeisToFeatureCollection: MapTeisToFeatureCollection = mock()
     private val mapTeiEventsToFeatureCollection: MapTeiEventsToFeatureCollection = mock()
+    private val mapDataElementToFeatureCollection: MapDataElementToFeatureCollection = mock()
     private val eventToEventUiComponent: EventToEventUiComponent = mock()
     private val initialProgram = "programUid"
     private val preferenceProvider: PreferenceProvider = mock()
+    private val dhisMapUtils: DhisMapUtils = mock()
 
     @Before
     fun setUp() {
@@ -48,12 +52,14 @@ class SearchTEPresenterTest {
         presenter = SearchTEPresenter(
             view,
             d2,
+            dhisMapUtils,
             repository,
             schedulers,
             analyticsHelper,
             initialProgram,
             mapTeisToFeatureCollection,
             mapTeiEventsToFeatureCollection,
+            mapDataElementToFeatureCollection,
             eventToEventUiComponent,
             preferenceProvider
         )

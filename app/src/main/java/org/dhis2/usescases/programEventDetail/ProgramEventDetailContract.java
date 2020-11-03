@@ -48,7 +48,7 @@ public class ProgramEventDetailContract {
 
         void openOrgUnitTreeSelector();
 
-        void setMap(FeatureCollection featureCollection, BoundingBox boundingBox, List<ProgramEventViewModel> programEventViewModels);
+        void setMap(ProgramEventMapData mapData);
 
         void setEventInfo(Pair<ProgramEventViewModel,LatLng> programEventViewModel);
 

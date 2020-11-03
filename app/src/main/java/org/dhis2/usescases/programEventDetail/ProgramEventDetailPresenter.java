@@ -169,7 +169,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                map -> view.setMap(map.component1(), map.component2(), map.component3()),
+                                map -> view.setMap(map),
                                 throwable -> view.renderError(throwable.getMessage())
                         ));
 
