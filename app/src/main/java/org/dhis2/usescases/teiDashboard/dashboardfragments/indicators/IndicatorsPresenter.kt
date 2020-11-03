@@ -50,8 +50,8 @@ class IndicatorsPresenter(
     }
 
     fun init() {
-        // TODO: THIS MUST BE REMOVED FOR RELEASE
-        view.displayMessage("Analytic module is ready: ${charts?.hasCharts() ?: false} ")
+
+        view.showGraphs(charts?.getCharts(enrollmentUid));
 
         compositeDisposable.add(
             Flowable.zip<List<Trio<ProgramIndicator, String, String>>?,

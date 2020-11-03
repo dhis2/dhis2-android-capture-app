@@ -65,7 +65,7 @@ dependencies {
     }
 
     //Graphs
-    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    api 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
     //region DAGGER
     implementation "com.google.dagger:dagger:${libraries.dagger}"
