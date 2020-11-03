@@ -32,4 +32,5 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun showProgress()
     fun hideProgress()
     fun displayTeiPicture(picturePath: String)
+    fun showDateEditionWarning()
 }

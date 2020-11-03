@@ -132,6 +132,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         setTestingCredentials()
         setAutocompleteAdapters()
         setUpLoginInfo()
+
+        presenter.apply {
+            init(userManager)
+            checkServerInfoAndShowBiometricButton()
+        }
     }
 
     private fun checkUrl(urlString: String): Boolean {
@@ -169,10 +174,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun onResume() {
         super.onResume()
-        presenter.apply {
-            init(userManager)
-            checkServerInfoAndShowBiometricButton()
-        }
         NetworkUtils.isGooglePlayServicesAvailable(this)
     }
 

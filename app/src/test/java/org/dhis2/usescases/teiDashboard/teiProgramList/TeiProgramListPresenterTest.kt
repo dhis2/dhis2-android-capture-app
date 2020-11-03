@@ -4,10 +4,11 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.usescases.main.program.ProgramViewModel
 import org.dhis2.utils.analytics.AnalyticsHelper
+import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
+import org.hisp.dhis.android.core.enrollment.EnrollmentService
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -20,7 +21,7 @@ class TeiProgramListPresenterTest {
     private val interactor: TeiProgramListContract.Interactor = mock()
     private val preferenceProvider: PreferenceProvider = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
-    private val dhisEnrollmentUtils: DhisEnrollmentUtils = mock()
+    private val enrollmentService: EnrollmentService = mock()
 
     @Before
     fun setUp() {
@@ -30,7 +31,7 @@ class TeiProgramListPresenterTest {
             "teiUid",
             preferenceProvider,
             analyticsHelper,
-            dhisEnrollmentUtils
+            enrollmentService
         )
     }
 
@@ -47,13 +48,13 @@ class TeiProgramListPresenterTest {
     }
 
     @Test
-    fun `Should enroll in open program`() {
+    fun `Should enroll for write access in program`() {
         whenever(
-            dhisEnrollmentUtils.canCreateEnrollmentInProtectedProgram(
+            enrollmentService.blockingGetEnrollmentAccess(
                 anyString(),
                 anyString()
             )
-        ) doReturn DhisEnrollmentUtils.CreateEnrollmentStatus.OPEN_PROGRAM_OK
+        ) doReturn EnrollmentAccess.WRITE_ACCESS
         presenter.onEnrollClick(
             mockedProgramViewModel()
         )
@@ -63,29 +64,27 @@ class TeiProgramListPresenterTest {
     }
 
     @Test
-    fun `Should enroll in protected program`() {
+    fun `Should show message for closed program`() {
         whenever(
-            dhisEnrollmentUtils.canCreateEnrollmentInProtectedProgram(
+            enrollmentService.blockingGetEnrollmentAccess(
                 anyString(),
                 anyString()
             )
-        ) doReturn DhisEnrollmentUtils.CreateEnrollmentStatus.PROTECTED_PROGRAM_OK
+        ) doReturn EnrollmentAccess.CLOSED_PROGRAM_DENIED
         presenter.onEnrollClick(
             mockedProgramViewModel()
         )
-        verify(analyticsHelper).setEvent(anyString(), anyString(), anyString())
-        verify(preferenceProvider).removeValue(anyString())
-        verify(interactor).enroll(anyString(), anyString())
+        verify(view).displayBreakGlassError()
     }
 
     @Test
     fun `Should show message for protected program`() {
         whenever(
-            dhisEnrollmentUtils.canCreateEnrollmentInProtectedProgram(
+            enrollmentService.blockingGetEnrollmentAccess(
                 anyString(),
                 anyString()
             )
-        ) doReturn DhisEnrollmentUtils.CreateEnrollmentStatus.PROTECTED_PROGRAM_DENIED
+        ) doReturn EnrollmentAccess.PROTECTED_PROGRAM_DENIED
         presenter.onEnrollClick(
             mockedProgramViewModel()
         )
@@ -95,11 +94,25 @@ class TeiProgramListPresenterTest {
     @Test
     fun `Should show message for no access in program`() {
         whenever(
-            dhisEnrollmentUtils.canCreateEnrollmentInProtectedProgram(
+            enrollmentService.blockingGetEnrollmentAccess(
                 anyString(),
                 anyString()
             )
-        ) doReturn DhisEnrollmentUtils.CreateEnrollmentStatus.PROGRAM_ACCESS_DENIED
+        ) doReturn EnrollmentAccess.NO_ACCESS
+        presenter.onEnrollClick(
+            mockedProgramViewModel()
+        )
+        verify(view).displayAccessError()
+    }
+
+    @Test
+    fun `Should show message for no read only access in program`() {
+        whenever(
+            enrollmentService.blockingGetEnrollmentAccess(
+                anyString(),
+                anyString()
+            )
+        ) doReturn EnrollmentAccess.READ_ACCESS
         presenter.onEnrollClick(
             mockedProgramViewModel()
         )

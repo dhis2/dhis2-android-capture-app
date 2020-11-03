@@ -40,4 +40,6 @@ class ResourceManager(val context: Context) {
     fun defaultEventLabel(): String = context.getString(R.string.events)
     fun defaultDataSetLabel(): String = context.getString(R.string.data_sets)
     fun defaultTeiLabel(): String = context.getString(R.string.tei)
+    fun jiraIssueSentMessage(): String = context.getString(R.string.jira_issue_sent)
+    fun jiraIssueSentErrorMessage(): String = context.getString(R.string.jira_issue_sent_error)
 }
