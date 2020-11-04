@@ -40,6 +40,8 @@ class WebViewActivity : ActivityGlobalAbstract() {
                     return super.shouldOverrideUrlLoading(view, url)
                 }
             }
+
+            binding.webView.settings.javaScriptEnabled = true
             binding.webView.loadUrl(it)
         }
     }
