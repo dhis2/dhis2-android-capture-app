@@ -419,6 +419,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             }
 
             eventMapManager.mapLayerManager.selectFeature(null);
+            binding.mapLayerButton.setVisibility(View.VISIBLE);
             return Unit.INSTANCE;
         });
 
@@ -534,7 +535,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private void showMap(boolean showMap) {
         binding.recycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
         binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
-        binding.mapLayerButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
         binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : View.GONE);
         binding.addEventButton.setVisibility(showMap ? View.GONE : View.VISIBLE);
 
@@ -542,6 +542,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             binding.toolbarProgress.setVisibility(View.VISIBLE);
             binding.toolbarProgress.show();
             presenter.getMapData();
+        } else {
+            binding.mapLayerButton.setVisibility(View.GONE);
         }
     }
 
