@@ -1,15 +1,13 @@
 package org.dhis2.uicomponents.map.geometry
 
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.Point
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturnConsecutively
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.verify
 import org.dhis2.data.dhislogic.CoordinateAttributeInfo
 import org.dhis2.data.dhislogic.CoordinateDataElementInfo
-import org.dhis2.uicomponents.map.geometry.mapper.feature.MapCoordinateFieldToFeature
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapAttributeToFeature
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeature
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -25,35 +23,33 @@ import org.junit.Test
 class MapCoordinateFieldToFeatureCollectionTest {
 
     private lateinit var mapper: MapCoordinateFieldToFeatureCollection
-    private val mapCoordinateFieldToFeature: MapCoordinateFieldToFeature = mock()
+    private val attributeToFeatureMapper: MapAttributeToFeature = mock()
+    private val dataElementToFeatureMapper: MapDataElementToFeature = mock()
 
     @Before
     fun setUp() {
-        mapper = MapCoordinateFieldToFeatureCollection(mapCoordinateFieldToFeature)
+        mapper = MapCoordinateFieldToFeatureCollection(
+            dataElementToFeatureMapper,
+            attributeToFeatureMapper
+        )
     }
 
     @Test
     fun `Should map data element list to feature collection map`() {
-        whenever(
-            mapCoordinateFieldToFeature.map(any<CoordinateDataElementInfo>())
-        ) doReturnConsecutively mockedFeatures()
-
-        mapper.map(mockedDataElementInfoList()).apply {
-            assertTrue(size == 2)
-            assertTrue(keys.containsAll(arrayListOf("deName", "de2Name")))
-        }
+        mapper.map(mockedDataElementInfoList())
+        verify(dataElementToFeatureMapper).mapDataElement(any())
     }
 
     @Test
     fun `Should map attribute list to feature collection map`() {
-        whenever(
-            mapCoordinateFieldToFeature.map(any<CoordinateAttributeInfo>())
-        ) doReturnConsecutively mockedFeatures()
+        mapper.map(mockedAttributeInfoList())
+        verify(attributeToFeatureMapper).mapAttribute(any())
+    }
 
-        mapper.map(mockedAttributeInfoList()).apply {
-            assertTrue(size == 2)
-            assertTrue(keys.containsAll(arrayListOf("attrName", "attr2Name")))
-        }
+    @Test
+    fun `Should return empty map`() {
+        val result = mapper.map(emptyList())
+        assertTrue(result.isEmpty())
     }
 
     private fun mockedDataElementInfoList(): List<CoordinateDataElementInfo> {
@@ -100,44 +96,6 @@ class MapCoordinateFieldToFeatureCollectionTest {
                 TrackedEntityAttribute.builder().uid("attrUid").displayFormName("attrName").build(),
                 Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build()
             )
-        )
-    }
-
-    private fun mockedFeatures(): List<Feature> {
-        return listOf(
-            Feature.fromGeometry(
-                Point.fromLngLat(
-                    MapEventToFeatureCollectionTest.FIRST_FEATURE_LONGITUDE,
-                    MapEventToFeatureCollectionTest.FIRST_FEATURE_LATITUDE
-                )
-            ).also {
-                it.addStringProperty(
-                    MapEventToFeatureCollectionTest.UID,
-                    MapEventToFeatureCollectionTest.UID_FIRST_EVENT_VALUE
-                )
-            },
-            Feature.fromGeometry(
-                Point.fromLngLat(
-                    MapEventToFeatureCollectionTest.SECOND_FEATURE_LONGITUDE,
-                    MapEventToFeatureCollectionTest.SECOND_FEATURE_LATITUDE
-                )
-            ).also {
-                it.addStringProperty(
-                    MapEventToFeatureCollectionTest.UID,
-                    MapEventToFeatureCollectionTest.UID_SECOND_EVENT_VALUE
-                )
-            },
-            Feature.fromGeometry(
-                Point.fromLngLat(
-                    MapEventToFeatureCollectionTest.SECOND_FEATURE_LONGITUDE,
-                    MapEventToFeatureCollectionTest.SECOND_FEATURE_LATITUDE
-                )
-            ).also {
-                it.addStringProperty(
-                    MapEventToFeatureCollectionTest.UID,
-                    MapEventToFeatureCollectionTest.UID_SECOND_EVENT_VALUE
-                )
-            }
         )
     }
 }

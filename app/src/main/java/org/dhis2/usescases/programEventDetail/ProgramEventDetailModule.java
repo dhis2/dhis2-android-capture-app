@@ -11,7 +11,9 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
 import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature;
 import org.dhis2.uicomponents.map.geometry.mapper.feature.MapCoordinateFieldToFeature;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapAttributeToFeature;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeature;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
@@ -64,8 +66,8 @@ public class ProgramEventDetailModule {
 
     @Provides
     @PerActivity
-    MapCoordinateFieldToFeatureCollection provideMapDataElementToFeatureCollection(MapCoordinateFieldToFeature mapCoordinateFieldToFeature) {
-        return new MapCoordinateFieldToFeatureCollection(mapCoordinateFieldToFeature);
+    MapCoordinateFieldToFeatureCollection provideMapDataElementToFeatureCollection(MapAttributeToFeature attributeToFeatureMapper, MapDataElementToFeature dataElementToFeatureMapper) {
+        return new MapCoordinateFieldToFeatureCollection(dataElementToFeatureMapper, attributeToFeatureMapper);
     }
 
     @Provides
