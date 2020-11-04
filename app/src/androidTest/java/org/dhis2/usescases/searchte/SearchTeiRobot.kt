@@ -2,6 +2,7 @@ package org.dhis2.usescases.searchte
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.swipeLeft
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
@@ -13,6 +14,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
+import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.openSpinnerPopup
@@ -127,5 +129,22 @@ class SearchTeiRobot : BaseRobot() {
                     hasDescendant(withText("Address")), hasDescendant(withText(displayListFieldsUIModel.address))
                 ))
             ))
+    }
+
+    fun clickOnOptionMenu() {
+        onView(withId(R.id.moreOptions)).perform(click())
+    }
+
+    fun clickOnShowMap() {
+        onView(withText(R.string.show_in_map)).perform(click())
+    }
+
+    fun swipeCarouselToLeft() {
+        onView(withId(R.id.map_carousel)).perform(swipeLeft())
+    }
+
+    fun checkCarouselTEICardInfo(firstName: String) {
+        onView(withId(R.id.map_carousel))
+            .check(matches(atPosition(3, hasDescendant(withText(firstName)))))
     }
 }
