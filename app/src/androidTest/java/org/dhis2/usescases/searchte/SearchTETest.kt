@@ -133,6 +133,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore
     @Test
     fun shouldSuccessfullyShowMapAndTeiCard() {
         val firstName = "Gertrude"
