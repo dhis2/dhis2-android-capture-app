@@ -135,7 +135,7 @@ class SearchTETest : BaseTest() {
 
     @Test
     fun shouldSuccessfullyShowMapAndTeiCard() {
-        val firstName = "Gertrude"
+        val firstName = "Tim"
 
         prepareChildProgrammeIntentAndLaunchActivity()
 
