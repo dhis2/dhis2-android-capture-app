@@ -1,13 +1,14 @@
 package org.dhis2.usescases.searchte
 
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.swipeLeft
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
+import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withChild
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -140,7 +141,7 @@ class SearchTeiRobot : BaseRobot() {
     }
 
     fun swipeCarouselToLeft() {
-        onView(withId(R.id.map_carousel)).perform(swipeLeft())
+        onView(withId(R.id.map_carousel)).perform(scrollToPosition<RecyclerView.ViewHolder>(3))
     }
 
     fun checkCarouselTEICardInfo(firstName: String) {
