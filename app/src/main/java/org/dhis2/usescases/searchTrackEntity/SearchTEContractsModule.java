@@ -91,7 +91,7 @@ public class SearchTEContractsModule {
 
         Consumer<FeatureType> featureType();
 
-        void setMap(List<SearchTeiModel> teis, HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox, EventsByProgramStage events, List<EventUiComponentModel> eventUiComponentModels);
+        void setMap(TrackerMapData trackerMapData);
 
         Consumer<D2Progress> downloadProgress();
 

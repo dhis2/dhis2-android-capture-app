@@ -9,8 +9,11 @@ import androidx.paging.PagedList;
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
+import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
+import org.dhis2.uicomponents.map.managers.EventMapManager;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
 import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.filters.sorting.SortingStatus;
@@ -28,12 +31,13 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import kotlin.Triple;
 
 
 public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepository {
@@ -42,12 +46,17 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     private D2 d2;
     private ProgramEventMapper mapper;
     private MapEventToFeatureCollection mapEventToFeatureCollection;
+    private MapDataElementToFeatureCollection mapDataElementToFeatureCollection;
+    private DhisMapUtils mapUtils;
 
-    ProgramEventDetailRepositoryImpl(String programUid, D2 d2, ProgramEventMapper mapper, MapEventToFeatureCollection mapEventToFeatureCollection) {
+    ProgramEventDetailRepositoryImpl(String programUid, D2 d2, ProgramEventMapper mapper, MapEventToFeatureCollection mapEventToFeatureCollection, MapDataElementToFeatureCollection mapDataElementToFeatureCollection,
+                                     DhisMapUtils mapUtils) {
         this.programUid = programUid;
         this.d2 = d2;
         this.mapper = mapper;
         this.mapEventToFeatureCollection = mapEventToFeatureCollection;
+        this.mapDataElementToFeatureCollection = mapDataElementToFeatureCollection;
+        this.mapUtils = mapUtils;
     }
 
     @NonNull
@@ -89,7 +98,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @NonNull
     @Override
-    public Flowable<Triple<FeatureCollection, BoundingBox, List<ProgramEventViewModel>>> filteredEventsForMap(
+    public Flowable<ProgramEventMapData> filteredEventsForMap(
             List<DatePeriod> dateFilter,
             List<String> orgUnitFilter,
             List<CategoryOptionCombo> catOptCombList,
@@ -112,11 +121,21 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
 
         return eventRepo.byDeleted().isFalse().withTrackedEntityDataValues().get()
-                .map(listEvents -> new Triple<>(
-                        mapEventToFeatureCollection.map(listEvents).getFirst(),
-                        mapEventToFeatureCollection.map(listEvents).getSecond(),
-                        mapper.eventsToProgramEvents(listEvents)
-                ))
+                .map(listEvents -> {
+                    kotlin.Pair<FeatureCollection, BoundingBox> eventFeatureCollection =
+                            mapEventToFeatureCollection.map(listEvents);
+
+                    HashMap<String, FeatureCollection> programEventFeatures = new HashMap<>();
+                    programEventFeatures.put(EventMapManager.EVENTS, eventFeatureCollection.getFirst());
+                    Map<String, FeatureCollection> deFeatureCollection = mapDataElementToFeatureCollection.map(mapUtils.getCoordinateDataElementInfo(UidsHelper.getUidsList(listEvents)));
+                    programEventFeatures.putAll(deFeatureCollection);
+
+                    return new ProgramEventMapData(
+                            mapper.eventsToProgramEvents(listEvents),
+                            programEventFeatures,
+                            eventFeatureCollection.getSecond()
+                    );
+                })
                 .toFlowable();
     }
 

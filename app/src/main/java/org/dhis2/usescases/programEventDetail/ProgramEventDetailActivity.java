@@ -24,7 +24,6 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
-import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -41,6 +40,7 @@ import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.InfoWindowEventBinding;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.layer.LayerType;
+import org.dhis2.uicomponents.map.layer.MapLayer;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.EventMapManager;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -64,6 +64,7 @@ import org.hisp.dhis.android.core.program.Program;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -143,7 +144,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         }
 
         binding.mapLayerButton.setOnClickListener(view ->
-                new MapLayerDialog(eventMapManager.mapLayerManager)
+                new MapLayerDialog(eventMapManager)
                         .show(getSupportFragmentManager(), MapLayerDialog.class.getName())
         );
 
@@ -388,11 +389,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public void setMap(FeatureCollection featureCollection, BoundingBox boundingBox, List<ProgramEventViewModel> programEventViewModels) {
+    public void setMap(ProgramEventMapData mapData) {
         eventMapManager.init(() -> {
             eventMapManager.update(
-                    featureCollection,
-                    boundingBox
+                    mapData.getFeatureCollectionMap(),
+                    mapData.getBoundingBox()
             );
             if (binding.mapCarousel.getAdapter() == null) {
                 CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
@@ -412,9 +413,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                         .build();
                 binding.mapCarousel.setAdapter(carouselAdapter);
                 binding.mapCarousel.attachToMapManager(eventMapManager, () -> true);
-                carouselAdapter.addItems(programEventViewModels);
+                carouselAdapter.addItems(mapData.getEvents());
             } else {
-                ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(programEventViewModels);
+                ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(mapData.getEvents());
             }
 
             eventMapManager.mapLayerManager.selectFeature(null);
@@ -548,7 +549,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public boolean onMapClick(@NonNull LatLng point) {
         PointF pointf = eventMapManager.getMap().getProjection().toScreenLocation(point);
         RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
-        List<Feature> features = eventMapManager.getMap().queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "POINT_LAYER" : "POLYGON_LAYER");
+
+        List<Feature> features = new ArrayList<>();
+        for (MapLayer mapLayer : eventMapManager.mapLayerManager.getLayers()) {
+            features.addAll(eventMapManager.getMap().queryRenderedFeatures(rectF, mapLayer.getId()));
+        }
         if (!features.isEmpty()) {
             Feature selectedFeature = eventMapManager.findFeature(LayerType.EVENT_LAYER.name(), EVENT, features.get(0).getStringProperty(EVENT));
             eventMapManager.mapLayerManager.getLayer(LayerType.EVENT_LAYER.name(), true).setSelectedItem(selectedFeature);
