@@ -414,7 +414,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 binding.mapCarousel.attachToMapManager(eventMapManager, () -> true);
                 carouselAdapter.addItems(programEventViewModels);
             } else {
-                ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(programEventViewModels);
+                ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(programEventViewModels, eventMapManager.mapLayerManager);
             }
 
             eventMapManager.mapLayerManager.selectFeature(null);
