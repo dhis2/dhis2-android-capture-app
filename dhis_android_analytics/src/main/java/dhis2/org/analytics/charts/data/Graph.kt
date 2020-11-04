@@ -10,9 +10,37 @@ data class Graph(
     val periodToDisplay: String,
     val eventPeriodType: PeriodType,
     val periodStep: Long
-)
+) {
+    fun numberOfStepsToDate(date: Date): Float {
+        return if (coordinates.isEmpty()) {
+            return 0f
+        } else {
+            ((date.time - coordinates.first().eventDate.time) / periodStep).toFloat()
+        }
+    }
+
+    fun dateFromSteps(numberOfSteps: Long): Date? {
+        return if(coordinates.isEmpty()){
+            return null
+        } else {
+            Date(coordinates.first().eventDate.time + numberOfSteps * periodStep)
+        }
+    }
+
+    fun maxValue(): GraphPoint? {
+        return coordinates.maxBy { it.fieldValue }
+    }
+
+    fun minValue(): GraphPoint? {
+        return coordinates.minBy { it.fieldValue }
+    }
+}
 
 data class GraphPoint(
     val eventDate: Date,
     val fieldValue: Float
 )
+
+fun Graph.toChartBuilder(): Chart.ChartBuilder {
+    return Chart.ChartBuilder()
+}

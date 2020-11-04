@@ -50,8 +50,7 @@ class IndicatorsPresenter(
     }
 
     fun init() {
-
-        view.showGraphs(charts?.getCharts(enrollmentUid));
+        view.showGraphs(charts?.getCharts(enrollmentUid))
 
         compositeDisposable.add(
             Flowable.zip<List<Trio<ProgramIndicator, String, String>>?,

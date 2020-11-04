@@ -3,74 +3,65 @@ package dhis2.org.analytics.charts.mappers
 import android.content.Context
 import android.view.ViewGroup
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.ValueFormatter
 import dhis2.org.analytics.charts.data.Graph
-import java.text.DateFormat
-import java.util.Date
+import dhis2.org.analytics.charts.formatters.DateLabelFormatter
 
 const val DEFAULT_VALUE = 0f
 const val VALUE_PADDING = 50f
+const val DEFAULT_GRID_LINE_LENGTH = 10f
+const val DEFAULT_GRID_SPACE_LENGTH = 10f
+const val DEFAULT_GRIP_PHASE = 0f
+const val DEFAULT_ANIM_TIME = 1500
+const val DEFAULT_GRANULARITY = 1f
+const val X_AXIS_DEFAULT_MIN = -1f
+const val DEFAULT_CHART_HEIGHT = 500
 
-fun Graph.toLineChart(context: Context): LineChart {
-    return LineChart(context).apply {
-        isDragEnabled = true
-        setScaleEnabled(true)
-        setPinchZoom(true)
-        xAxis.apply {
-            enableGridDashedLine(10f, 10f, 0f)
-            setDrawLimitLinesBehindData(true)
-            position = XAxis.XAxisPosition.BOTTOM
-            valueFormatter = object : ValueFormatter() {
-                override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-                    val labelDate =
-                        Date(coordinates.first().eventDate.time + value.toLong() * periodStep)
-                    return DateFormat.getDateInstance().format(labelDate)
-                }
+class GraphToLineChart {
+    fun map(context: Context, graph: Graph): LineChart {
+        val lineData = GraphToLineData().map(graph)
+        return LineChart(context).apply {
+            isDragEnabled = true
+            setScaleEnabled(true)
+            setPinchZoom(true)
+
+            xAxis.apply {
+                enableGridDashedLine(
+                    DEFAULT_GRID_LINE_LENGTH,
+                    DEFAULT_GRID_SPACE_LENGTH,
+                    DEFAULT_GRIP_PHASE
+                )
+                setDrawLimitLinesBehindData(true)
+                position = XAxis.XAxisPosition.BOTTOM
+                valueFormatter = DateLabelFormatter { graph.dateFromSteps(it) }
+                granularity = DEFAULT_GRANULARITY
+                axisMinimum = X_AXIS_DEFAULT_MIN
+                axisMaximum = graph.numberOfStepsToDate(graph.coordinates.last().eventDate) + 1f
             }
-            granularity = 1f
-            axisMinimum = -1f
-            axisMaximum =
-                ((coordinates.last().eventDate.time - coordinates.first().eventDate.time) / periodStep).toFloat()+1f
+
+            axisLeft.apply {
+                enableGridDashedLine(
+                    DEFAULT_GRID_LINE_LENGTH,
+                    DEFAULT_GRID_SPACE_LENGTH,
+                    DEFAULT_GRIP_PHASE
+                )
+                axisMaximum = (graph.maxValue()?.fieldValue ?: DEFAULT_VALUE) + VALUE_PADDING
+                axisMinimum = (graph.minValue()?.fieldValue ?: DEFAULT_VALUE) - VALUE_PADDING
+                setDrawLimitLinesBehindData(true)
+            }
+            axisRight.isEnabled = false
+
+            animateX(DEFAULT_ANIM_TIME)
+
+            legend.apply {
+                form = Legend.LegendForm.LINE
+            }
+
+            data = lineData
+
+            layoutParams =
+                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DEFAULT_CHART_HEIGHT)
         }
-
-        axisLeft.apply {
-            enableGridDashedLine(10f, 10f, 0f)
-            axisMaximum =
-                (coordinates.maxBy { it.fieldValue }?.fieldValue ?: DEFAULT_VALUE) + VALUE_PADDING
-            axisMinimum =
-                (coordinates.minBy { it.fieldValue }?.fieldValue ?: DEFAULT_VALUE) - VALUE_PADDING
-            setDrawLimitLinesBehindData(true)
-        }
-        axisRight.isEnabled = false
-
-        animateX(1500)
-
-        legend.apply {
-            form = Legend.LegendForm.LINE
-        }
-
-        data = LineData(
-            LineDataSet(
-                coordinates.mapIndexed { index, graphPoint ->
-                    Entry(
-                        if (index > 0) {
-                            ((graphPoint.eventDate.time - coordinates.first().eventDate.time) / periodStep).toFloat()
-                        } else {
-                            index.toFloat()
-                        },
-                        graphPoint.fieldValue
-                    )
-                },
-                title
-            )
-        )
-
-        layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 500)
     }
 }

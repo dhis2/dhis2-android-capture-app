@@ -6,8 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
-import dhis2.org.analytics.charts.mappers.toLineChart
+import dhis2.org.analytics.charts.data.toChartBuilder
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
@@ -82,10 +83,11 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
     override fun showGraphs(charts: List<Graph>?) {
         binding.charts.removeAllViews()
         charts?.forEach {
-            val chart = it.toLineChart(requireContext())
-            binding.charts.addView(chart)
+            val chartView = it.toChartBuilder()
+                .withType(ChartType.LINE_CHART)
+                .withGraphData(it)
+                .build().getChartView(requireContext())
+            binding.charts.addView(chartView)
         }
     }
-
-
 }
