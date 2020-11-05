@@ -33,7 +33,7 @@ class ChartsRepositoryImpl(
                         programStage.periodType() ?: PeriodType.Daily,
                         baseRepository.periodStep(programStage.periodType())
                     )
-                }
+                }.filter { it.coordinates.isNotEmpty() }
             }.flatten()
     }
 }

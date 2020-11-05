@@ -37,7 +37,7 @@ class GraphToLineChart {
                 valueFormatter = DateLabelFormatter { graph.dateFromSteps(it) }
                 granularity = DEFAULT_GRANULARITY
                 axisMinimum = X_AXIS_DEFAULT_MIN
-                axisMaximum = graph.numberOfStepsToDate(graph.coordinates.last().eventDate) + 1f
+                axisMaximum = graph.numberOfStepsToLastDate() + 1f
             }
 
             axisLeft.apply {

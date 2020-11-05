@@ -19,6 +19,14 @@ data class Graph(
         }
     }
 
+    fun numberOfStepsToLastDate():Float {
+        return if(coordinates.isEmpty()){
+            return 0f
+        }else{
+            numberOfStepsToDate(coordinates.last().eventDate)
+        }
+    }
+
     fun dateFromSteps(numberOfSteps: Long): Date? {
         return if(coordinates.isEmpty()){
             return null
