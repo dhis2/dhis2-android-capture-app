@@ -5,7 +5,6 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.widget.CompoundButton;
 
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
@@ -13,6 +12,7 @@ import androidx.databinding.DataBindingUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.DevelopmentActivityBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -28,9 +28,6 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * QUADRAM. Created by ppajuelo on 15/04/2019.
- */
 public class DevelopmentActivity extends ActivityGlobalAbstract {
 
     private int count;
@@ -42,6 +39,45 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.development_activity);
 
+        loadAnalyticsDevTools();
+        loadLocaleDevTools();
+        loadIconsDevTools();
+
+
+    }
+
+    private void loadAnalyticsDevTools() {
+        binding.matomoButton.setOnClickListener(view -> {
+            if (!binding.matomoUrl.getText().toString().isEmpty() &&
+                    !binding.matomoId.getText().toString().isEmpty()) {
+                ((App) getApplicationContext()).appComponent().matomoController().updateDhisImplementationTracker(
+                        binding.matomoUrl.getText().toString(),
+                        Integer.parseInt(binding.matomoId.getText().toString()),
+                        "dev-tracker"
+                );
+            }
+        });
+    }
+
+    private void loadLocaleDevTools() {
+        binding.localeButton.setOnClickListener(view -> {
+            if (binding.locale.getText().toString() != null) {
+                String localeCode = binding.locale.getText().toString();
+                Resources resources = getResources();
+                DisplayMetrics dm = resources.getDisplayMetrics();
+                Configuration config = resources.getConfiguration();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    config.setLocale(new Locale(localeCode.toLowerCase()));
+                } else {
+                    config.locale = new Locale(localeCode.toLowerCase());
+                }
+                resources.updateConfiguration(config, dm);
+                startActivity(MainActivity.class, null, true, true, null);
+            }
+        });
+    }
+
+    private void loadIconsDevTools() {
         InputStream is = getResources().openRawResource(R.raw.icon_names);
         Writer writer = new StringWriter();
         char[] buffer = new char[1024];
@@ -71,27 +107,11 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         });
 
         binding.automaticErrorCheck.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if(isChecked)
+            if (isChecked)
                 nextDrawable();
         });
 
         renderIconForPosition(count);
-
-        binding.localeButton.setOnClickListener(view->{
-            if(binding.locale.getText().toString()!=null){
-                String localeCode = binding.locale.getText().toString();
-                Resources resources = getResources();
-                DisplayMetrics dm = resources.getDisplayMetrics();
-                Configuration config = resources.getConfiguration();
-                if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN_MR1){
-                    config.setLocale(new Locale(localeCode.toLowerCase()));
-                } else {
-                    config.locale = new Locale(localeCode.toLowerCase());
-                }
-                resources.updateConfiguration(config, dm);
-                startActivity(MainActivity.class,null,true,true,null);
-            }
-        });
     }
 
     private void renderIconForPosition(int position) {
@@ -161,15 +181,14 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         }
 
 
-
-        if(hasError){
+        if (hasError) {
             binding.iconInput.setError("This drawable has errors");
-        }else if(binding.automaticErrorCheck.isChecked()){
+        } else if (binding.automaticErrorCheck.isChecked()) {
             nextDrawable();
         }
     }
 
-    private void nextDrawable(){
+    private void nextDrawable() {
         count++;
         if (count == iconNames.size()) {
             count = 0;
