@@ -19,7 +19,6 @@ public class DisplayHolder extends FormViewHolder {
         this.binding = binding;
     }
 
-
     public void update(DisplayViewModel viewModel) {
 
         this.viewModel = viewModel;

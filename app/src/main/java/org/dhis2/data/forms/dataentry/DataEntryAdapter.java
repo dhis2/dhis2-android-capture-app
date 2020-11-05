@@ -63,7 +63,7 @@ import io.reactivex.processors.PublishProcessor;
 
 public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHolder> {
 
-    private static final int SECTION = 17;
+   /* private static final int SECTION = 17;
     private static final int EDITTEXT = 0;
     private static final int BUTTON = 1;
     private static final int CHECKBOX = 2;
@@ -81,7 +81,8 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
     private static final int DISPLAY = 14;
     private static final int PICTURE = 15;
     private static final int SCAN_CODE = 16;
-    private static final int OPTION_SET_SELECT = 18;
+    private static final int OPTION_SET_SELECT = 18; */
+
     private SectionHandler sectionHandler = new SectionHandler();
 
     @NonNull
@@ -184,6 +185,10 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+        //GET POSITION AND THROUGH A HASHMAP OR EXTENSION FUNCTION GET SPECIFIC HOLDER
+        //AVOID ROWS
+        //ROWS ARE ALSO USED IN SEARCH
         if (viewType == IMAGE)
             return ((ImageRow) rows.get(IMAGE)).onCreate(parent, totalFields, imageSelector, rendering);
         else
@@ -227,7 +232,12 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
     public int getItemViewType(int position) {
 
         FieldViewModel viewModel = getItem(position);
-        if (viewModel instanceof EditTextModel) {
+        DataEntryViewHolderTypes holderType = viewModel.dataEntryViewType();
+        return DataEntryViewHolderTypes.valueOf(holderType.name()).ordinal();
+
+          //We could have
+          // WE DONT NEED THIS
+    /*    if (viewModel instanceof EditTextModel) {
             if (((EditTextModel) viewModel).valueType() != ValueType.LONG_TEXT)
                 return EDITTEXT;
             else
@@ -269,7 +279,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         } else {
             throw new IllegalStateException("Unsupported view model type: "
                     + viewModel.getClass());
-        }
+        } */
     }
 
     @Override

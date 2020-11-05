@@ -1,5 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields;
 
+import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 
 import androidx.annotation.NonNull;
@@ -59,6 +60,9 @@ public abstract class FieldViewModel {
 
     @Nullable
     public abstract String fieldMask();
+
+    @Nullable
+    public abstract DataEntryViewHolderTypes dataEntryViewType();
 
     public String getFormattedLabel() {
         if (mandatory()) {
