@@ -19,21 +19,23 @@ import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.R;
+import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Quartet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection;
 import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent;
 import org.dhis2.uicomponents.map.model.EventUiComponentModel;
 import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelKt;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DhisTextUtils;
@@ -110,28 +112,35 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private boolean showList = true;
     private MapTeisToFeatureCollection mapTeisToFeatureCollection;
     private MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection;
+    private MapDataElementToFeatureCollection mapDataElementToFeatureCollection;
     private EventToEventUiComponent eventToEventUiComponent;
     private boolean teiTypeHasAttributesToDisplay = true;
     private boolean isSearching;
+    private DhisMapUtils mapUtils;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
+                             DhisMapUtils mapUtils,
                              SearchRepository searchRepository,
                              SchedulerProvider schedulerProvider,
                              AnalyticsHelper analyticsHelper,
                              @Nullable String initialProgram,
                              MapTeisToFeatureCollection mapTeisToFeatureCollection,
                              MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
+                             MapDataElementToFeatureCollection mapDataElementToFeatureCollection,
                              EventToEventUiComponent eventToEventUiComponent,
                              PreferenceProvider preferenceProvider) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
         this.d2 = d2;
+        this.mapUtils = mapUtils;
         this.schedulerProvider = schedulerProvider;
         this.analyticsHelper = analyticsHelper;
         this.mapTeisToFeatureCollection = mapTeisToFeatureCollection;
         this.mapTeiEventsToFeatureCollection = mapTeiEventsToFeatureCollection;
+        this.mapDataElementToFeatureCollection = mapDataElementToFeatureCollection;
+
         this.eventToEventUiComponent = eventToEventUiComponent;
         compositeDisposable = new CompositeDisposable();
         queryData = new HashMap<>();
@@ -227,9 +236,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                     Timber.d("outer updaterFlowable before %s", element.getValue());
                 })
                 .switchMap(program ->
-                                Flowable.combineLatest(queryProcessor.startWith(queryData),
-                                        FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
-                                        Pair::create).doOnEach(element -> {Timber.d("inner %s", element.getValue());})
+                        Flowable.combineLatest(queryProcessor.startWith(queryData),
+                                FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
+                                Pair::create).doOnEach(element -> {
+                            Timber.d("inner %s", element.getValue());
+                        })
 
                 )
                 .doOnEach(element -> {
@@ -288,22 +299,27 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         NetworkUtils.isOnline(view.getContext())))
                         .map(teis -> new kotlin.Pair<>(teis, searchRepository.getEventsForMap(teis)))
                         .map(teis -> {
+                                    Map<String, FeatureCollection> dataElements = mapDataElementToFeatureCollection.map(
+                                            mapUtils.getCoordinateDataElementInfo(
+                                                    EventViewModelKt.uids(teis.component2())
+                                            ));
                                     List<EventUiComponentModel> eventsUi = eventToEventUiComponent.mapList(teis.component2(), teis.component1());
                                     kotlin.Pair<HashMap<String, FeatureCollection>, BoundingBox> teisFeatCollection = mapTeisToFeatureCollection.map(teis.component1());
                                     EventsByProgramStage events = mapTeiEventsToFeatureCollection.map(eventsUi).component1();
-                                    return Quartet.create(teis.component1(), teisFeatCollection, events, eventsUi);
+                                    return new TrackerMapData(
+                                            teis.component1(),
+                                            events,
+                                            teisFeatCollection.component1(),
+                                            teisFeatCollection.component2(),
+                                            eventsUi,
+                                            dataElements
+                                    );
                                 }
                         )
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                teiAndMap -> view.setMap(
-                                        teiAndMap.val0(),
-                                        teiAndMap.val1().component1(),
-                                        teiAndMap.val1().component2(),
-                                        teiAndMap.val2(),
-                                        teiAndMap.val3()
-                                ),
+                                view::setMap,
                                 Timber::e,
                                 () -> Timber.d("COMPLETED")
                         ));

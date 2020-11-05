@@ -1,13 +1,19 @@
 package org.dhis2.usescases.searchte
 
+import android.content.Intent
+import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.IdlingResourceTimeoutException
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import com.mapbox.mapboxsdk.maps.MapboxMap
 import org.dhis2.R
+import org.dhis2.common.idlingresources.MapIdlingResource
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
+import org.junit.After
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
@@ -18,6 +24,9 @@ class SearchTETest : BaseTest() {
 
     @get:Rule
     val rule = ActivityTestRule(SearchTEActivity::class.java, false, false)
+
+    private var mapIdlingResource: MapIdlingResource? = null
+    private var map: MapboxMap? = null
 
     @Test
     fun shouldSuccessfullySearchByName() {
@@ -229,6 +238,35 @@ class SearchTETest : BaseTest() {
             clickOnNotSync()
             closeSearchForm()
             checkTEINotSync()
+        }
+    }
+
+    @Ignore
+    @Test
+    fun shouldSuccessfullyShowMapAndTeiCard() {
+        val firstName = "Gertrude"
+
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
+
+        searchTeiRobot {
+            clickOnOptionMenu()
+            clickOnShowMap()
+            swipeCarouselToLeft()
+            checkCarouselTEICardInfo(firstName)
+            try {
+                mapIdlingResource = MapIdlingResource(rule)
+                IdlingRegistry.getInstance().register(mapIdlingResource)
+                map = mapIdlingResource!!.map
+            } catch (ex: IdlingResourceTimeoutException) {
+                throw RuntimeException("Could not start test")
+            }
+        }
+    }
+
+    @After
+    fun unregisterIdlingResource() {
+        if (mapIdlingResource != null) {
+            IdlingRegistry.getInstance().unregister(mapIdlingResource)
         }
     }
 

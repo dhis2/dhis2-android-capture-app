@@ -692,6 +692,8 @@
     <string name="sync_parameters_not_editable">Sync parameters are not editable</string>
     <string name="rv_no_editable">Number of reserved values downloaded is not editable</string>
     <string name="dialog_layer_satellite">Show satellite view</string>
+    <string name="dialog_layer_satellite_base_map">Satellite view</string>
+    <string name="dialog_layer_street_base_map">Street view</string>
     <string name="dialog_layer_event">Show events</string>
     <string name="dialog_layer_tei_coordinates">Show tei coordinates</string>
     <string name="dialog_layer_enrollment_coordinates">Show enrollment coordinates</string>
@@ -759,6 +761,7 @@
     <string name="customactivityoncrash_error_activity_error_details_copy">Copy to clipboard</string>
     <string name="customactivityoncrash_error_activity_error_details_copied">Copied to clipboard</string>
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Error information</string>
+    <string name="enrollment_date_edition_warning">There are planned events that won\'t be re-scheduled</string>
     <string name="jira_issue_sent">Issue Sent</string>
     <string name="jira_issue_sent_error">Error sending issue</string>
 </resources>

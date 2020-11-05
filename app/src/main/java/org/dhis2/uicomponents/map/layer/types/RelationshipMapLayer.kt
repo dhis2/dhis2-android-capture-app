@@ -327,4 +327,8 @@ class RelationshipMapLayer(
         private const val LINE_WIDTH = 2f
         private const val SELECTED_LINE_WIDTH = 4f
     }
+
+    override fun getId(): String {
+        return LINE_LAYER_ID
+    }
 }

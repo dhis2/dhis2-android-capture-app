@@ -3,6 +3,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 import androidx.annotation.NonNull
 import dagger.Module
 import dagger.Provides
+import dhis2.org.analytics.charts.Charts
 import org.dhis2.data.dagger.PerFragment
 import org.dhis2.data.forms.FormRepository
 import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository
@@ -25,14 +26,16 @@ class IndicatorsModule(
         d2: D2,
         dashboardRepository: DashboardRepository,
         ruleEngineRepository: RuleEngineRepository,
-        schedulerProvider: SchedulerProvider
+        schedulerProvider: SchedulerProvider,
+        charts: Charts?
     ): IndicatorsPresenter {
         return IndicatorsPresenter(
             d2,
             programUid, teiUid,
             dashboardRepository,
             ruleEngineRepository,
-            schedulerProvider, view
+            schedulerProvider, view,
+            charts
         )
     }
 

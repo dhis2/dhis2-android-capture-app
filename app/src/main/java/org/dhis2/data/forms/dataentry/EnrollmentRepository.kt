@@ -6,6 +6,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.ArrayList
 import org.dhis2.Bindings.userFriendlyValue
+import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
@@ -34,6 +35,7 @@ class EnrollmentRepository(
     private val fieldFactory: FieldViewModelFactory,
     private val enrollmentUid: String,
     private val d2: D2,
+    private val dhisEnrollmentUtils: DhisEnrollmentUtils,
     private val enrollmentMode: EnrollmentActivity.EnrollmentMode,
     private val enrollmentDataSectionLabel: String,
     private val singleSectionLabel: String,
@@ -308,24 +310,17 @@ class EnrollmentRepository(
         val enrollmentDataList = ArrayList<FieldViewModel>()
         enrollmentDataList.add(getEnrollmentDataSection(program.description()))
 
-        val (enrollmentDateEdition, incidentDateEdition) = areDatesEditable(
-            enrollmentMode == EnrollmentActivity.EnrollmentMode.NEW,
-            program.uid()
-        )
-
         enrollmentDataList.add(
             getEnrollmentDateField(
                 program.enrollmentDateLabel() ?: enrollmentDateDefaultLabel,
-                program.selectEnrollmentDatesInFuture(),
-                enrollmentDateEdition
+                program.selectEnrollmentDatesInFuture()
             )
         )
         if (program.displayIncidentDate()!!) {
             enrollmentDataList.add(
                 getIncidentDateField(
                     program.incidentDateLabel() ?: incidentDateDefaultLabel,
-                    program.selectIncidentDatesInFuture(),
-                    incidentDateEdition
+                    program.selectIncidentDatesInFuture()
                 )
             )
         }
@@ -369,8 +364,7 @@ class EnrollmentRepository(
 
     private fun getEnrollmentDateField(
         enrollmentDateLabel: String,
-        allowFutureDates: Boolean?,
-        editable: Boolean?
+        allowFutureDates: Boolean?
     ): FieldViewModel {
         return DateTimeViewModel.create(
             ENROLLMENT_DATE_UID,
@@ -383,15 +377,15 @@ class EnrollmentRepository(
             },
             ENROLLMENT_DATA_SECTION_UID,
             allowFutureDates,
-            editable, null,
+            true,
+            null,
             ObjectStyle.builder().build()
         )
     }
 
     private fun getIncidentDateField(
         incidentDateLabel: String,
-        allowFutureDates: Boolean?,
-        editable: Boolean
+        allowFutureDates: Boolean?
     ): FieldViewModel {
         return DateTimeViewModel.create(
             INCIDENT_DATE_UID,
@@ -403,7 +397,8 @@ class EnrollmentRepository(
             ),
             ENROLLMENT_DATA_SECTION_UID,
             allowFutureDates,
-            editable, null,
+            true,
+            null,
             ObjectStyle.builder().build()
         )
     }
@@ -483,28 +478,16 @@ class EnrollmentRepository(
         }
     }
 
-    private fun areDatesEditable(canbeEdited: Boolean, programUid: String): Pair<Boolean, Boolean> {
-        if (canbeEdited) {
-            return Pair(true, true)
-        }
-        var enrollmentDateEditable = true
-        var incidentDateEditable = true
-        val stages = d2.programModule().programStages()
-            .byProgramUid().eq(programUid)
-            .byAutoGenerateEvent().isTrue
-            .blockingGet()
-        for (stage in stages) {
-            if (stage.reportDateToUse() != null &&
-                stage.reportDateToUse() == "enrollmentDate" ||
-                stage.generatedByEnrollmentDate() == true
-            ) {
-                enrollmentDateEditable = false
-            } else {
-                incidentDateEditable = false
-            }
-        }
+    fun hasEventsGeneratedByEnrollmentDate(): Boolean {
+        return dhisEnrollmentUtils.hasEventsGeneratedByEnrollmentDate(
+            enrollmentRepository.blockingGet()
+        )
+    }
 
-        return Pair(enrollmentDateEditable, incidentDateEditable)
+    fun hasEventsGeneratedByIncidentDate(): Boolean {
+        return dhisEnrollmentUtils.hasEventsGeneratedByIncidentDate(
+            enrollmentRepository.blockingGet()
+        )
     }
 
     companion object {

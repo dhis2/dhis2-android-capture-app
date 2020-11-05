@@ -724,36 +724,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                         }
                     }
                 }
-
-                /*for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
-                    TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
-                            .uid(attrValue.trackedEntityAttribute())
-                            .blockingGet();
-                    if (attribute != null) {
-                        if (selectedProgram == null) {
-                            List<TrackedEntityTypeAttribute> typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
-                                    .byTrackedEntityTypeUid().eq(searchTei.getTei().trackedEntityType())
-                                    .byDisplayInList().isTrue()
-                                    .blockingGet();
-                            for (TrackedEntityTypeAttribute typeAttribute : typeAttributes) {
-                                if (typeAttribute.trackedEntityAttribute().uid().equals(attribute.uid())) {
-                                    addAttribute(searchTei, attrValue, attribute);
-                                }
-                            }
-                        } else {
-                            List<ProgramTrackedEntityAttribute> programAttributes = d2.programModule().programTrackedEntityAttributes()
-                                    .byProgram().eq(selectedProgram.uid())
-                                    .byDisplayInList().isTrue()
-                                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                                    .blockingGet();
-                            for (ProgramTrackedEntityAttribute programAttribute : programAttributes) {
-                                if (programAttribute.trackedEntityAttribute().uid().equals(attribute.uid())) {
-                                    addAttribute(searchTei, attrValue, attribute);
-                                }
-                            }
-                        }
-                    }
-                }*/
             }
         }
 
@@ -790,5 +760,4 @@ public class SearchRepositoryImpl implements SearchRepository {
         return d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingExists() &&
                 d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingGet().valueType() == ValueType.IMAGE;
     }
-
 }

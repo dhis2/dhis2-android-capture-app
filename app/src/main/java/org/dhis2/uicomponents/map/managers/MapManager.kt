@@ -107,5 +107,20 @@ abstract class MapManager(val mapView: MapView) {
     }
 
     abstract fun findFeature(source: String, propertyName: String, propertyValue: String): Feature?
+    open fun findFeatures(
+        source: String,
+        propertyName: String,
+        propertyValue: String
+    ): List<Feature>? {
+        return emptyList()
+    }
+
     abstract fun findFeature(propertyValue: String): Feature?
+    open fun findFeatures(propertyValue: String): List<Feature>? {
+        return emptyList()
+    }
+
+    open fun getLayerName(source: String): String {
+        return source
+    }
 }

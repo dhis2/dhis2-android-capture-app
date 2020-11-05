@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 import io.reactivex.Single
 import org.dhis2.Bindings.applyFilters
 import org.dhis2.Bindings.userFriendlyValue
-import org.dhis2.data.dhislogic.DhisEventUtils
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
 import org.dhis2.utils.DateUtils
@@ -27,8 +26,7 @@ class TeiDataRepositoryImpl(
     private val d2: D2,
     private val programUid: String?,
     private val teiUid: String,
-    private val enrollmentUid: String?,
-    private val dhisEventUtils: DhisEventUtils
+    private val enrollmentUid: String?
 ) : TeiDataRepository {
 
     override fun getTEIEnrollmentEvents(
@@ -111,6 +109,13 @@ class TeiDataRepositoryImpl(
 
                     val isSelected = programStage.uid() == selectedStage
 
+                    val canAddEventToEnrollment = enrollmentUid?.let {
+                        d2.eventModule().eventService().blockingCanAddEventToEnrollment(
+                            it,
+                            programStage.uid()
+                        )
+                    } ?: false
+
                     eventViewModels.add(
                         EventViewModel(
                             EventViewModelType.STAGE,
@@ -119,11 +124,7 @@ class TeiDataRepositoryImpl(
                             eventList.size,
                             if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
                             isSelected,
-                            dhisEventUtils.checkAddEventInEnrollment(
-                                enrollmentUid,
-                                programStage,
-                                isSelected
-                            ),
+                            canAddEventToEnrollment,
                             orgUnitName = "",
                             catComboName = "",
                             dataElementValues = emptyList(),
