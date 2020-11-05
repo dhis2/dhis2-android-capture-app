@@ -1,6 +1,5 @@
 package org.dhis2.usescases.searchte
 
-import android.content.Intent
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResourceTimeoutException
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -166,12 +165,14 @@ class SearchTETest : BaseTest() {
         }
     }
 
-    @Ignore("WIP")
+    @Ignore("enrollmentDate request takes endDate as programStartDate")
     @Test
     fun shouldSuccessfullyFilterByEnrollmentDateAndSort() {
         val enrollmentDate = "DATE OF ENROLLMENT"
         val enrollmentDateFrom = createFromEnrollmentDate()
         val enrollmentDateTo = createToEnrollmentDate()
+        val startDate = "2019-09-01"
+        val endDate = "2019-09-30"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
@@ -185,7 +186,7 @@ class SearchTETest : BaseTest() {
             acceptDate()
             clickOnSortByField(enrollmentDate)
             closeSearchForm()
-            // how to check enrollment date?
+            checkDateIsInRange(startDate, endDate)
         }
     }
 
