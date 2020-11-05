@@ -8,6 +8,7 @@ import java.util.Date
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.CategoryOption
+import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
@@ -15,15 +16,14 @@ import org.hisp.dhis.android.core.program.ProgramStage
 import timber.log.Timber
 
 class ScheduledEventPresenterImpl(
+    val view: ScheduledEventContract.View,
     val d2: D2,
     val eventUid: String
 ) : ScheduledEventContract.Presenter {
 
-    private lateinit var view: ScheduledEventContract.View
     private lateinit var disposable: CompositeDisposable
 
-    override fun init(view: ScheduledEventContract.View) {
-        this.view = view
+    override fun init() {
         disposable = CompositeDisposable()
 
         disposable.add(
@@ -42,24 +42,9 @@ class ScheduledEventPresenterImpl(
                 .subscribe(
                     { stageProgramEventData ->
                         val (stage, program, event) = stageProgramEventData
-                        val catComboUid = program.categoryComboUid()
                         view.setProgram(program)
                         view.setStage(stage)
                         view.setEvent(event)
-                        if (program.categoryComboUid() !== null && d2
-                            .categoryModule()
-                            .categoryCombos()
-                            .uid(catComboUid)
-                            .blockingGet()
-                            .isDefault == false
-                        ) {
-                            view.setCatCombo(
-                                d2
-                                    .categoryModule()
-                                    .categoryCombos().uid(catComboUid).blockingGet()!!,
-                                getCatOptions(event.attributeOptionCombo())
-                            )
-                        }
                     },
                     { Timber.e(it) }
                 )
@@ -74,16 +59,23 @@ class ScheduledEventPresenterImpl(
         view.back()
     }
 
-    private fun getCatOptions(categoryOptionComboUid: String?): HashMap<String, CategoryOption> {
-        var map = HashMap<String, CategoryOption>()
-
-        return map
+    override fun getEventTei(): String {
+        return d2.eventModule().events().uid(eventUid)
+            .get()
+            .map {
+                d2.enrollmentModule().enrollments().uid(it.enrollment()).blockingGet()
+                    .trackedEntityInstance()
+            }.blockingGet()!!
     }
 
     override fun setEventDate(date: Date) {
         d2.eventModule().events().uid(eventUid).setEventDate(date)
         d2.eventModule().events().uid(eventUid).setStatus(EventStatus.ACTIVE)
-        view.back()
+        if (stageHasExtraInfo()) {
+            view.openInitialActivity()
+        } else {
+            view.openFormActivity()
+        }
     }
 
     override fun setDueDate(date: Date) {
@@ -111,5 +103,18 @@ class ScheduledEventPresenterImpl(
             .blockingGet()
             .uid()
         d2.eventModule().events().uid(eventUid).setAttributeOptionComboUid(catOptComboUid)
+    }
+
+    fun stageHasExtraInfo(): Boolean {
+        val event = d2.eventModule().events().uid(eventUid)
+            .blockingGet()
+        val stage = d2.programModule().programStages().uid(event.programStage())
+            .blockingGet()
+        val program = d2.programModule().programs().uid(stage.program()?.uid())
+            .blockingGet()
+        val hasCoordinates = stage.featureType() != null && stage.featureType() != FeatureType.NONE
+        val hasNonDefaultCatCombo = d2.categoryModule().categoryCombos()
+            .uid(program.categoryComboUid()).blockingGet().isDefault != true
+        return hasCoordinates || hasNonDefaultCatCombo
     }
 }

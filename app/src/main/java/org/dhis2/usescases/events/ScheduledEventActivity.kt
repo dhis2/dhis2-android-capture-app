@@ -15,11 +15,14 @@ import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.databinding.ActivityEventScheduledBinding
 import org.dhis2.databinding.WidgetDatepickerBinding
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
+import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
+import org.dhis2.utils.Constants
 import org.dhis2.utils.DateUtils
+import org.dhis2.utils.EventCreationType
+import org.dhis2.utils.EventMode
 import org.dhis2.utils.customviews.PeriodDialog
-import org.hisp.dhis.android.core.category.CategoryCombo
-import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.PeriodType
@@ -52,7 +55,8 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                 ScheduledEventModule(
                     intent.extras!!.getString(
                         EXTRA_EVENT_UID
-                    )!!
+                    )!!,
+                    this
                 )
             )
             ).inject(this)
@@ -63,7 +67,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
 
     override fun onResume() {
         super.onResume()
-        presenter.init(this)
+        presenter.init()
     }
 
     override fun onPause() {
@@ -292,37 +296,48 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
         datePickerDialog.show()
     }
 
-    override fun setCatCombo(
-        catCombo: CategoryCombo,
-        selectedOptions: HashMap<String, CategoryOption>
-    ) {
-        binding.catComboLayout.removeAllViews()
+    override fun openInitialActivity() {
+        val intent =
+            Intent(activity, EventInitialActivity::class.java)
+        val bundle = Bundle()
+        bundle.putString(
+            Constants.PROGRAM_UID,
+            program.uid()
+        )
+        bundle.putString(
+            Constants.TRACKED_ENTITY_INSTANCE,
+            presenter.getEventTei()
+        )
+        bundle.putString(
+            Constants.ENROLLMENT_UID,
+            event.enrollment()
+        )
+        bundle.putString(Constants.EVENT_CREATION_TYPE, EventCreationType.DEFAULT.name)
+        bundle.putBoolean(Constants.EVENT_REPEATABLE, stage.repeatable() == true)
+        bundle.putSerializable(
+            Constants.EVENT_PERIOD_TYPE,
+            stage.periodType()
+        )
+        bundle.putString(Constants.PROGRAM_STAGE_UID, stage.uid())
+        bundle.putInt(
+            Constants.EVENT_SCHEDULE_INTERVAL,
+            stage.standardInterval() ?: 0
+        )
+        intent.putExtras(bundle)
+        startActivity(intent)
+        finish()
+    }
 
-        /*for (category in catCombo.categories()!!) {
-            val catSelectorBinding = CategorySelectorBinding.inflate(LayoutInflater.from(this))
-            catSelectorBinding.catCombLayout.setHint(category.displayName())
-            catSelectorBinding.catCombo.setOnClickListener(
-                    { view ->
-                        CategoryOptionPopUp.getInstance()
-                                .setCategory(category)
-                                .setDate(event.dueDate())
-                                .setOnClick { item ->
-                                    if (item != null)
-                                        selectedOptions[category.uid()] = item
-                                    else
-                                        selectedOptions.remove(category.uid())
-                                    catSelectorBinding.catCombo.setText(item?.displayName())
-                                    if (selectedOptions.size == catCombo.categories()!!.size)
-                                        presenter.setCatOptionCombo(catCombo.uid(), ArrayList(selectedOptions.values))
-                                }
-                                .show(this, catSelectorBinding.getRoot())
-                    }
-            )
-
-            if (selectedOptions[category.uid()] != null)
-                catSelectorBinding.catCombo.setText(selectedOptions[category.uid()]!!.displayName())
-
-            binding.catComboLayout.addView(catSelectorBinding.getRoot())
-        }*/
+    override fun openFormActivity() {
+        val bundle = EventCaptureActivity.getActivityBundle(
+            event.uid(),
+            program.uid(),
+            EventMode.CHECK
+        )
+        Intent(activity, EventCaptureActivity::class.java).apply {
+            putExtras(bundle)
+            startActivity(this)
+            finish()
+        }
     }
 }
