@@ -81,6 +81,7 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
     }
 
     override fun showGraphs(charts: List<Graph>?) {
+        // TODO: ANDROAPP-3491 This should be changed. The layout as also been altered for testing purposes
         binding.charts.removeAllViews()
         charts?.forEach {
             val chartView = it.toChartBuilder()

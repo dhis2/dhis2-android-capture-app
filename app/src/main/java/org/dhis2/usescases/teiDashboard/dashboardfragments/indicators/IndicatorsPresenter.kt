@@ -50,6 +50,7 @@ class IndicatorsPresenter(
     }
 
     fun init() {
+        // TODO: ANDROAPP-3491 This should be changed
         view.showGraphs(charts?.getCharts(enrollmentUid))
 
         compositeDisposable.add(
