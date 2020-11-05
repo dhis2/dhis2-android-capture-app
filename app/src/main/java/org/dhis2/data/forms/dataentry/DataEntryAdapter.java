@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
@@ -53,7 +54,6 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,10 +82,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
     private static final int PICTURE = 15;
     private static final int SCAN_CODE = 16;
     private static final int OPTION_SET_SELECT = 18;
-
-
-    @NonNull
-    private final List<FieldViewModel> viewModels;
+    private SectionHandler sectionHandler = new SectionHandler();
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
@@ -119,7 +116,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         super(new DataEntryDiff());
         setHasStableIds(true);
         rows = new ArrayList<>();
-        viewModels = new ArrayList<>();
         processor = PublishProcessor.create();
         sectionProcessor = PublishProcessor.create();
         imageSelector = new ObservableField<>("");
@@ -157,7 +153,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         super(new DataEntryDiff());
         setHasStableIds(true);
         rows = new ArrayList<>();
-        viewModels = new ArrayList<>();
         this.processor = processor;
         this.sectionProcessor = sectionProcessor;
         imageSelector = new ObservableField<>("");
@@ -393,19 +388,16 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         return sectionPositions.size();
     }
 
+    @Nullable
     public SectionViewModel getSectionForPosition(int visiblePos) {
-        if (getItemViewType(visiblePos) == SECTION) {
-            return (SectionViewModel) getItem(visiblePos);
-        } else {
-            int sectionPosition = 0;
-            for (Map.Entry<String, Integer> entry : sectionPositions.entrySet()) {
-                if (entry.getValue() < visiblePos) {
-                    sectionPosition = entry.getValue();
-                } else {
-                    break;
-                }
-            }
+        int sectionPosition = sectionHandler.getSectionPositionFromVisiblePosition(
+                visiblePos,
+                isSection(visiblePos),
+                new ArrayList<>(sectionPositions.values()));
+        if (sectionPosition != -1) {
             return (SectionViewModel) getItem(sectionPosition);
+        } else {
+            return null;
         }
     }
 

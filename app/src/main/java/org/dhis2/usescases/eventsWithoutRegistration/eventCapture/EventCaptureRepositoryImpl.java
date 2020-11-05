@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.Bindings.RuleExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
-import org.dhis2.data.dhislogic.DhisEventUtils;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -71,13 +70,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private final HashMap<String, ProgramStageDataElement> stageDataElementsMap;
     private RuleEvent.Builder eventBuilder;
     private List<FieldViewModel> sectionFields;
-    private final DhisEventUtils dhisEventUtils;
 
-    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2, DhisEventUtils dhisEventUtils) {
+    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2) {
         this.eventUid = eventUid;
         this.formRepository = formRepository;
         this.d2 = d2;
-        this.dhisEventUtils = dhisEventUtils;
 
         currentEvent = d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).blockingGet();
         currentStage = d2.programModule().programStages().uid(currentEvent.programStage()).blockingGet();
