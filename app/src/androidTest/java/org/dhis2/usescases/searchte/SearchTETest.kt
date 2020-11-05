@@ -180,26 +180,27 @@ class SearchTETest : BaseTest() {
         }
     }
 
-    @Ignore("WIP")
     @Test
     fun shouldSuccessfullyFilterByEventDateAndSort() {
         val eventDate = "EVENT DATE"
         val eventDateFrom = createFromEventDate()
         val eventDateTo = createToEventDate()
+        val startDate = "2020-05-01"
+        val endDate = "2020-05-31"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
             clickOnFilter()
-            clickOnSortByField(eventDate)
-            /*clickOnFromToDate()
+            clickOnFilterBy(eventDate)
+            clickOnFromToDate()
             selectSpecificDate(eventDateFrom.year, eventDateFrom.month, eventDateFrom.day)
             acceptDate()
             selectSpecificDate(eventDateTo.year, eventDateTo.month, eventDateTo.day)
             acceptDate()
             clickOnSortByField(eventDate)
-            closeSearchForm()*/
-            // how to check event date: custom matcher
+            closeSearchForm()
+            checkDateIsInRange(startDate, endDate)
         }
     }
 

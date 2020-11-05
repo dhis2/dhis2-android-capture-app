@@ -16,6 +16,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.allElementsHave
+import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.dateIsInRange
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.openSpinnerPopup
@@ -194,5 +195,10 @@ class SearchTeiRobot : BaseRobot() {
 
     fun clickOnFromToDate() {
         onView(allOf(withId(R.id.fromTo), isDisplayed())).perform(click())
+    }
+
+    fun checkDateIsInRange(startDate: String, endDate: String) {
+        onView(withId(R.id.scrollView))
+            .check(matches(dateIsInRange(startDate, endDate)))
     }
 }
