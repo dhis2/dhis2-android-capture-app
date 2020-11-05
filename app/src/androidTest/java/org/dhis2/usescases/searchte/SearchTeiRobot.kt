@@ -15,6 +15,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
+import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.allElementsHave
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.openSpinnerPopup
@@ -86,9 +87,10 @@ class SearchTeiRobot : BaseRobot() {
 
     fun checkListOfSearchTEI(firstSearchWord: String, secondSearchWord: String) {
         onView(withId(R.id.scrollView))
-            .check(matches(hasItem(allOf(
+            .check(matches(allElementsHave(allOf(
                 hasDescendant(withText(firstSearchWord)),
-                hasDescendant(withText(secondSearchWord))))))
+                hasDescendant(withText(secondSearchWord))
+            ))))
     }
 
     fun checkFilterCount(filterCount: String) {
@@ -98,7 +100,7 @@ class SearchTeiRobot : BaseRobot() {
 
     fun checkNoSearchResult(searchWord: String, message: String) {
         onView(withId(R.id.scrollView))
-            .check(matches(not(hasItem(hasDescendant(withText(searchWord))))))
+            .check(matches(not(allElementsHave(hasDescendant(withText(searchWord))))))
 
         onView(withId(R.id.message))
             .check(matches(withText(message)))
@@ -142,13 +144,13 @@ class SearchTeiRobot : BaseRobot() {
         )
     }
 
-    fun clickOnFilterCancelledOption() {
-        onView(withId(R.id.stateCancelled)).perform(click())
+    fun clickOnFilterActiveOption() {
+        onView(withId(R.id.stateActive)).perform(click())
     }
 
-    fun checkTEIsAreCancelled() {
+    fun checkTEIsAreOpen() {
         onView(withId(R.id.scrollView))
-            .check(matches(hasItem(hasDescendant(withText(R.string.completed)))))
+            .check(matches(allElementsHave(hasDescendant(withText(R.string.event_open)))))
     }
 
     fun clickOnFilterOverdueOption() {
@@ -162,7 +164,7 @@ class SearchTeiRobot : BaseRobot() {
 
     fun checkEventsAreOverdue() {
         onView(withId(R.id.scrollView))
-            .check(matches(allOf(hasItem(hasDescendant(withId(R.id.overdueIcon))), isDisplayed())))
+            .check(matches(allOf(allElementsHave(hasDescendant(withId(R.id.overdueIcon))), isDisplayed())))
     }
 
     fun clickOnSortByField(fieldFilter: String) {
@@ -178,9 +180,7 @@ class SearchTeiRobot : BaseRobot() {
 
     fun checkTEIWithOrgUnit(orgUnit: String) {
         onView(withId(R.id.scrollView))
-            .check(matches(hasItem(hasDescendant(withText(orgUnit)))))
-
-        // all element of the list are visible and has org unit label
+            .check(matches(allElementsHave(hasDescendant(withText(orgUnit)))))
     }
 
     fun clickOnNotSync() {
@@ -189,7 +189,7 @@ class SearchTeiRobot : BaseRobot() {
 
     fun checkTEINotSync() {
         onView(withId(R.id.scrollView))
-            .check(matches(hasItem(hasDescendant(withId(R.id.syncState)))))
+            .check(matches(allElementsHave(hasDescendant(withId(R.id.syncState)))))
     }
 
     fun clickOnFromToDate() {

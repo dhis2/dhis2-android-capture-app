@@ -61,24 +61,24 @@ class RecyclerviewMatchers {
             }
         }
 
-        /*fun hasDateBetween(@NonNull matcher: Matcher<View>, id: Int) : Matcher<View> {
+        fun allElementsHave(@NonNull matcher: Matcher<View>) : Matcher<View> {
             return object : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
                 override fun describeTo(description: Description) {
-                    description.appendText("has item: ")
+                    description.appendText("all elements have: ")
                     matcher.describeTo(description)
                 }
-
                 override fun matchesSafely(view: RecyclerView): Boolean {
                     val adapter = view.adapter
                     for (position in 0 until adapter!!.itemCount) {
                         val type = adapter.getItemViewType(position)
-                        val holder = adapter.createViewHolder(view, type) as SearchTEViewHolder
-                        val fieldValue = holder.itemView.findViewById<TextView>(id)
+                        val holder = adapter.createViewHolder(view, type)
+                        adapter.onBindViewHolder(holder, position)
+                        if (!matcher.matches(holder.itemView)) return false
                     }
-                    return false
+                    return true
                 }
             }
-        }*/
+        }
 
         fun atPosition(
             position: Int,

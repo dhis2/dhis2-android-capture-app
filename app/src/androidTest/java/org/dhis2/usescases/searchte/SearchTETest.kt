@@ -8,6 +8,7 @@ import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -110,7 +111,7 @@ class SearchTETest : BaseTest() {
     }
 
     @Test
-    fun shouldSuccessfullyFilterByEnrollmentStatusCompleted() {
+    fun shouldSuccessfullyFilterByEnrollmentStatusActive() {
         val enrollmentStatusFilter = context.getString(R.string.filters_title_enrollment_status)
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
@@ -118,9 +119,10 @@ class SearchTETest : BaseTest() {
         searchTeiRobot {
             clickOnFilter()
             clickOnFilterBy(enrollmentStatusFilter)
-            clickOnFilterCancelledOption()
+            clickOnFilterActiveOption()
+            clickOnSortByField(enrollmentStatusFilter)
             closeSearchForm()
-            checkTEIsAreCancelled()
+            checkTEIsAreOpen()
         }
     }
 
@@ -155,6 +157,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("WIP")
     @Test
     fun shouldSuccessfullyFilterByEnrollmentDateAndSort() {
         val enrollmentDate = "DATE OF ENROLLMENT"
@@ -177,6 +180,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("WIP")
     @Test
     fun shouldSuccessfullyFilterByEventDateAndSort() {
         val eventDate = "EVENT DATE"
