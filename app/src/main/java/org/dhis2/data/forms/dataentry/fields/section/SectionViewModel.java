@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
+import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
@@ -49,6 +50,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 description,
                 ObjectStyle.builder().build(),
                 null,
+                DataEntryViewHolderTypes.SECTION,
                 isOpen,
                 totalFields,
                 completedFields,
@@ -73,6 +75,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 null,
                 ObjectStyle.builder().build(),
                 null,
+                DataEntryViewHolderTypes.SECTION,
                 false,
                 0,
                 0,
@@ -103,6 +106,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 null,
+                DataEntryViewHolderTypes.SECTION,
                 isOpen(),
                 totalFields(),
                 completedFields(),
@@ -129,6 +133,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 null,
+                DataEntryViewHolderTypes.SECTION,
                 isOpen(),
                 totalFields(),
                 completedFields(),
@@ -155,6 +160,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 null,
+                DataEntryViewHolderTypes.SECTION,
                 isOpen(),
                 totalFields(),
                 completedFields(),
@@ -204,6 +210,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 null,
+                DataEntryViewHolderTypes.SECTION,
                 isOpen,
                 totalFields(),
                 completedFields(),
@@ -228,6 +235,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 null,
+                DataEntryViewHolderTypes.SECTION,
                 isOpen(),
                 totalFields,
                 completedFields(),
@@ -252,6 +260,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 null,
+                DataEntryViewHolderTypes.SECTION,
                 isOpen(),
                 totalFields(),
                 completedFields,

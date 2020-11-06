@@ -61,7 +61,6 @@ public abstract class FieldViewModel {
     @Nullable
     public abstract String fieldMask();
 
-    @Nullable
     public abstract DataEntryViewHolderTypes dataEntryViewType();
 
     public String getFormattedLabel() {

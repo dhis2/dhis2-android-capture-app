@@ -1,6 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.scan
 
 import com.google.auto.value.AutoValue
+import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
@@ -41,6 +42,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
                 description,
                 objectStyle,
                 null,
+                DataEntryViewHolderTypes.SCAN_CODE,
                 fieldRendering,
                 hint
             )
@@ -61,6 +63,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
+            DataEntryViewHolderTypes.SCAN_CODE,
             fieldRendering,
             hint
         )
@@ -80,6 +83,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
+            DataEntryViewHolderTypes.SCAN_CODE,
             fieldRendering,
             hint
         )
@@ -99,6 +103,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
+            DataEntryViewHolderTypes.SCAN_CODE,
             fieldRendering,
             hint
         )
@@ -118,6 +123,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
+            DataEntryViewHolderTypes.SCAN_CODE,
             fieldRendering,
             hint
         )
@@ -137,6 +143,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
+            DataEntryViewHolderTypes.SCAN_CODE,
             fieldRendering,
             hint
         )

@@ -163,7 +163,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), false, currentFocusUid));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
-        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+//        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, true, dataEntryArguments.renderType(), currentFocusUid));
         rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid, FeatureType.POINT));
         rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, dataEntryArguments.renderType(), currentFocusUid));
@@ -234,52 +234,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         FieldViewModel viewModel = getItem(position);
         DataEntryViewHolderTypes holderType = viewModel.dataEntryViewType();
         return DataEntryViewHolderTypes.valueOf(holderType.name()).ordinal();
-
-          //We could have
-          // WE DONT NEED THIS
-    /*    if (viewModel instanceof EditTextModel) {
-            if (((EditTextModel) viewModel).valueType() != ValueType.LONG_TEXT)
-                return EDITTEXT;
-            else
-                return LONG_TEXT;
-        } else if (viewModel instanceof RadioButtonViewModel) {
-            return CHECKBOX;
-        } else if (viewModel instanceof SpinnerViewModel) {
-            return SPINNER;
-        } else if (viewModel instanceof CoordinateViewModel) {
-            return COORDINATES;
-
-        } else if (viewModel instanceof DateTimeViewModel) {
-            if (((DateTimeViewModel) viewModel).valueType() == ValueType.DATE)
-                return DATE;
-            if (((DateTimeViewModel) viewModel).valueType() == ValueType.TIME)
-                return TIME;
-            else
-                return DATETIME;
-        } else if (viewModel instanceof AgeViewModel) {
-            return AGEVIEW;
-        } else if (viewModel instanceof FileViewModel) {
-            return BUTTON;
-        } else if (viewModel instanceof OrgUnitViewModel) {
-            return ORG_UNIT;
-        } else if (viewModel instanceof ImageViewModel) {
-            return IMAGE;
-        } else if (viewModel instanceof UnsupportedViewModel) {
-            return UNSUPPORTED;
-        } else if (viewModel instanceof DisplayViewModel) {
-            return DISPLAY;
-        } else if (viewModel instanceof PictureViewModel) {
-            return PICTURE;
-        } else if (viewModel instanceof ScanTextViewModel) {
-            return SCAN_CODE;
-        } else if (viewModel instanceof SectionViewModel) {
-            return SECTION;
-        } else if (viewModel instanceof OptionSetViewModel) {
-            return OPTION_SET_SELECT;
-        } else {
-            throw new IllegalStateException("Unsupported view model type: "
-                    + viewModel.getClass());
-        } */
     }
 
     @Override

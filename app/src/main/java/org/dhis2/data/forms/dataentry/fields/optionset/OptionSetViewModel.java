@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 
+import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
@@ -47,6 +48,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description,
                 objectStyle,
                 null,
+                DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 fieldRendering,
                 new ArrayList<>()
         );
@@ -68,6 +70,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 fieldMask(),
+                DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 fieldRendering(),
                 options()
         );
@@ -90,6 +93,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 fieldMask(),
+                DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 fieldRendering(),
                 options()
         );
@@ -112,6 +116,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 fieldMask(),
+                DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 fieldRendering(),
                 options()
         );
@@ -134,6 +139,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 fieldMask(),
+                DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 fieldRendering(),
                 options()
         );
@@ -155,6 +161,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 fieldMask(),
+                DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 fieldRendering(),
                 options
         );
@@ -177,19 +184,20 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 fieldMask(),
+                DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 fieldRendering(),
                 options()
         );
     }
 
     public void setOptionsToHide(List<String> optionsToHide) {
-        if(optionsToHide!=null) {
+        if (optionsToHide != null) {
             this.optionsToHide.addAll(optionsToHide);
         }
     }
 
     public void setOptionsToShow(List<String> optionsToShow) {
-        if(optionsToShow!=null) {
+        if (optionsToShow != null) {
             this.optionsToShow.addAll(optionsToShow);
         }
     }

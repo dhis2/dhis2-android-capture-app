@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
+import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -29,7 +30,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
                                            @NonNull Boolean editable, @Nullable String description,
                                            @Nullable ValueTypeDeviceRendering fieldRendering, ObjectStyle objectStyle, @Nullable String fieldMask) {
         return new AutoValue_EditTextViewModel(uid, label, mandatory,
-                value, section, null, editable, null, description, objectStyle, fieldMask,hint, lines,
+                value, section, null, editable, null, description, objectStyle, fieldMask, DataEntryViewHolderTypes.EDIT_TEXT, hint, lines,
                 InputType.TYPE_CLASS_TEXT, valueType, null, null, fieldRendering);
     }
 
@@ -38,7 +39,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public EditTextViewModel withWarning(@NonNull String warning) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 value(), programStageSection(), null, editable(), null,
-                description(), objectStyle(), fieldMask(), hint(), maxLines(), inputType(), valueType(), warning, error(), fieldRendering());
+                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, hint(), maxLines(), inputType(), valueType(), warning, error(), fieldRendering());
     }
 
     @NonNull
@@ -46,7 +47,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public EditTextViewModel withError(@NonNull String error) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 value(), programStageSection(), null, true, null,
-                description(), objectStyle(), fieldMask(), hint(), maxLines(), inputType(), valueType(), warning(), error,
+                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, hint(), maxLines(), inputType(), valueType(), warning(), error,
                 fieldRendering());
     }
 
@@ -55,16 +56,16 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public FieldViewModel setMandatory() {
         return new AutoValue_EditTextViewModel(uid(), label(), true,
                 value(), programStageSection(), null, editable(), null,
-                description(), objectStyle(), fieldMask(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
+                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
                 fieldRendering());
     }
 
-   @NonNull
+    @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 data, programStageSection(), null, false, null,
-                description(), objectStyle(), fieldMask(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
+                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
                 fieldRendering());
     }
 
@@ -73,6 +74,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public FieldViewModel withEditMode(boolean isEditable) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 value(), programStageSection(), null, isEditable, null,
-                description(), objectStyle(), fieldMask(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
-                fieldRendering());    }
+                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
+                fieldRendering());
+    }
 }
