@@ -452,7 +452,7 @@
     <string name="delete_local_data">Delete local data</string>
     <string name="dashboard_overview">Overview</string>
     <string name="dashboard_relationships">Relationships</string>
-    <string name="dashboard_indicators">Indicators</string>
+    <string name="dashboard_analytics">Analytics</string>
     <string name="empty_indicators">There are no indicators for this program.</string>
     <string name="dashboard_notes">Notes</string>
     <string name="unable_to_complete">Unable to complete</string>

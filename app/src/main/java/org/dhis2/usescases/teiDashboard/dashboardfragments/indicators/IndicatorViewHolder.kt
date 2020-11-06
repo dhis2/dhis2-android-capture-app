@@ -5,7 +5,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.BR
 import org.dhis2.R
-import org.dhis2.data.tuples.Trio
+import org.dhis2.data.analytics.AnalyticsModel
 import org.dhis2.databinding.ItemIndicatorBinding
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
@@ -15,8 +15,8 @@ class IndicatorViewHolder(
     val binding: ItemIndicatorBinding
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(programIndicatorModel: Trio<ProgramIndicator, String, String>) {
-        if (programIndicatorModel.val0() == null) {
+    fun bind(programIndicatorModel: AnalyticsModel.IndicatorModel) {
+        if (programIndicatorModel.programIndicator == null) {
             val params = binding.guideline.layoutParams as ConstraintLayout.LayoutParams
             params.guidePercent = 0F
             binding.guideline.layoutParams = params
@@ -24,21 +24,21 @@ class IndicatorViewHolder(
             val params = binding.guideline.layoutParams as ConstraintLayout.LayoutParams
             params.guidePercent = 0.6F
             binding.guideline.layoutParams = params
-            binding.setVariable(BR.label, programIndicatorModel.val0()!!.displayName())
-            binding.setVariable(BR.description, programIndicatorModel.val0()!!.displayDescription())
+            binding.setVariable(BR.label, programIndicatorModel.programIndicator.displayName())
+            binding.setVariable(BR.description, programIndicatorModel.programIndicator.displayDescription())
         }
 
         val color = when {
-            programIndicatorModel.val2().isNullOrEmpty() -> -1
-            else -> Color.parseColor(programIndicatorModel.val2())
+            programIndicatorModel.color.isNullOrEmpty() -> -1
+            else -> Color.parseColor(programIndicatorModel.color)
         }
 
-        binding.setVariable(BR.value, programIndicatorModel.val1())
+        binding.setVariable(BR.value, programIndicatorModel.value)
         binding.setVariable(BR.colorBg, color)
         binding.executePendingBindings()
 
         binding.descriptionLabel.setOnClickListener {
-            showDescription(programIndicatorModel.val0()!!)
+            showDescription(programIndicatorModel.programIndicator!!)
         }
     }
 

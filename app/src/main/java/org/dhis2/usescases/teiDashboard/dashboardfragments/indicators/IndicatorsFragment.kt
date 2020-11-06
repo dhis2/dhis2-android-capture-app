@@ -6,9 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import dhis2.org.analytics.charts.data.Graph
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
+import org.dhis2.data.analytics.AnalyticsModel
 import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.FragmentIndicatorsBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -21,7 +23,7 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
     lateinit var presenter: IndicatorsPresenter
 
     private lateinit var binding: FragmentIndicatorsBinding
-    private lateinit var adapter: IndicatorsAdapter
+    private lateinit var adapter: AnalyticsAdapter
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -47,7 +49,7 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
             inflater,
             R.layout.fragment_indicators, container, false
         )
-        adapter = IndicatorsAdapter()
+        adapter = AnalyticsAdapter()
         binding.indicatorsRecycler.adapter = adapter
         return binding.root
     }
@@ -64,9 +66,9 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
     }
 
     override fun swapIndicators(indicators: List<Trio<ProgramIndicator, String, String>>) {
-        if (adapter != null) {
-            adapter.setIndicators(indicators)
-        }
+        adapter.setIndicators(
+            indicators.map { AnalyticsModel.IndicatorModel(it.val0(), it.val1(), it.val2()) }
+        )
 
         binding.spinner.visibility = View.GONE
 
@@ -75,5 +77,9 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
         } else {
             binding.emptyIndicators.visibility = View.VISIBLE
         }
+    }
+
+    override fun showGraphs(charts: List<Graph>?) {
+        charts?.let { adapter.setCharts(charts.map { AnalyticsModel.ChartModel(it) }) }
     }
 }
