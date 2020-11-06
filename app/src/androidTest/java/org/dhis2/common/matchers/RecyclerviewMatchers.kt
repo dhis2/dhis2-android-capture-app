@@ -1,6 +1,7 @@
 package org.dhis2.common.matchers
 
 import android.view.View
+import android.widget.TextView
 import androidx.annotation.NonNull
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.matcher.BoundedMatcher
@@ -80,11 +81,10 @@ class RecyclerviewMatchers {
             }
         }
 
-        fun dateIsInRange(startDate: String, endDate: String) : Matcher<View> {
+        fun dateIsInRange(id:Int, startDate: String, endDate: String) : Matcher<View> {
             return object : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
                 override fun describeTo(description: Description) {
                     description.appendText("all elements have dates between $startDate and $endDate : ")
-                    //matcher.describeTo(description)
                 }
                 override fun matchesSafely(view: RecyclerView): Boolean {
                     val adapter = view.adapter
@@ -96,15 +96,11 @@ class RecyclerviewMatchers {
                         val start = Date.valueOf(startDate)
                         val end = Date.valueOf(endDate)
                         val range = start..end
-                        val date = holder.itemView.sorting_field_value.text.toString()
+                        val date = holder.itemView.findViewById<TextView>(id).text.toString()
                         val initialFormattedDate = SimpleDateFormat("dd/M/yyyy").parse(date)
                         val formatter = SimpleDateFormat("yyyy-MM-dd")
                         val parsedDate = formatter.format(initialFormattedDate)
                         if (Date.valueOf(parsedDate) !in range) return false
-
-                        // id getText
-                        // holder.itemView.findViewById(id)
-                        // val text = holder.itemView.findViewById<TextView>(sorting_field_value)
                     }
                     return true
                 }

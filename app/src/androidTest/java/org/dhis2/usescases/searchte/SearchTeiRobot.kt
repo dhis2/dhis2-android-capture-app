@@ -202,7 +202,7 @@ class SearchTeiRobot : BaseRobot() {
 
     fun checkDateIsInRange(startDate: String, endDate: String) {
         onView(withId(R.id.scrollView))
-            .check(matches(dateIsInRange(startDate, endDate)))
+            .check(matches(dateIsInRange(R.id.sorting_field_value, startDate, endDate)))
     }
 
     fun clickOnOptionMenu() {
