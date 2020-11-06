@@ -31,7 +31,6 @@ ext {
             analytics       : "17.0.0",
             gson             : "2.8.5",
             workmanager      : "1.0.0-alpha10",
-            crashlytics      : "2.9.5@aar",
             stetho           : "1.5.0",
             rxlint           : "1.6",
             jodatime         : "2.9.9",
