@@ -61,6 +61,7 @@ class SearchTeiRobot : BaseRobot() {
             .perform(
                 actionOnItemAtPosition<SearchTEViewHolder>(position, typeChildViewWithId(searchWord, R.id.input_editText))
             )
+        closeKeyboard()
     }
 
     fun typeAttribute(searchWord: String, field: String) {

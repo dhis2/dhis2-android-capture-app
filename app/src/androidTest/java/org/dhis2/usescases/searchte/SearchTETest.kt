@@ -185,7 +185,6 @@ class SearchTETest : BaseTest() {
             selectSpecificDate(enrollmentDateTo.year, enrollmentDateTo.month, enrollmentDateTo.day)
             acceptDate()
             clickOnSortByField(enrollmentDate)
-            closeSearchForm()
             checkDateIsInRange(startDate, endDate)
         }
     }
