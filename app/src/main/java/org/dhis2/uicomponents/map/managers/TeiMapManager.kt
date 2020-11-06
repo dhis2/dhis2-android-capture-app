@@ -19,7 +19,7 @@ import org.dhis2.Bindings.dp
 import org.dhis2.R
 import org.dhis2.uicomponents.map.TeiMarkers
 import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeatureCollection
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.Companion.RELATIONSHIP_UID
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.ENROLLMENT_UID
@@ -32,7 +32,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 
 class TeiMapManager(mapView: MapView) : MapManager(mapView) {
 
-    private var deFeatureCollections: Map<String, FeatureCollection> = emptyMap()
+    private var fieldFeatureCollections: Map<String, FeatureCollection> = emptyMap()
     private var teiFeatureCollections: HashMap<String, FeatureCollection>? = null
     private var eventsFeatureCollection: Map<String, FeatureCollection>? = null
     var mapStyle: MapStyle? = null
@@ -49,13 +49,13 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
     fun update(
         teiFeatureCollections: HashMap<String, FeatureCollection>,
         eventsFeatureCollection: EventsByProgramStage,
-        dataElementFeatures: MutableMap<String, FeatureCollection>,
+        fieldFeatures: MutableMap<String, FeatureCollection>,
         boundingBox: BoundingBox
     ) {
         this.teiFeatureCollections = teiFeatureCollections
         this.eventsFeatureCollection = eventsFeatureCollection.featureCollectionMap
         this.teiFeatureCollections?.putAll(eventsFeatureCollection.featureCollectionMap)
-        this.deFeatureCollections = dataElementFeatures
+        this.fieldFeatureCollections = fieldFeatures
         this.boundingBox = boundingBox
         addDynamicIcons()
         teiFeatureCollections[TEIS_SOURCE_ID]?.let {
@@ -164,7 +164,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
             style?.getSourceAs<GeoJsonSource>(it)?.setGeoJson(teiFeatureCollections!![it])
                 ?: style?.addSource(GeoJsonSource(it, teiFeatureCollections!![it]))
         }
-        deFeatureCollections.forEach {
+        fieldFeatureCollections.forEach {
             (style?.getSource(it.key) as GeoJsonSource?)?.setGeoJson(it.value)
                 ?: style?.addSource(GeoJsonSource(it.key, it.value))
         }
@@ -221,13 +221,13 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                 LayerType.TEI_EVENT_LAYER,
                 eventsFeatureCollection?.keys?.toList() ?: emptyList()
             ).updateLayers(
-                LayerType.DE_COORDINATE_LAYER,
-                deFeatureCollections.keys.toList() ?: emptyList()
+                LayerType.FIELD_COORDINATE_LAYER,
+                fieldFeatureCollections.keys.toList() ?: emptyList()
             )
     }
 
     private fun addDynamicIcons() {
-        deFeatureCollections.entries.forEach {
+        fieldFeatureCollections.entries.forEach {
             style?.addImage(
                 "${EventMapManager.DE_ICON_ID}_${it.key}",
                 getTintedDrawable(it.key)
@@ -297,15 +297,15 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                 }?.let { addAll(it) }
             }
 
-            deFeatureCollections.values.map { collection ->
+            fieldFeatureCollections.values.map { collection ->
                 collection.features()?.filter {
                     mapLayerManager.getLayer(
-                        it.getStringProperty(MapDataElementToFeatureCollection.DE_NAME)
+                        it.getStringProperty(MapCoordinateFieldToFeatureCollection.FIELD_NAME)
                     )?.visible == true &&
                         it.getStringProperty(propertyName) == propertyValue
                 }?.map {
                     mapLayerManager.getLayer(
-                        it.getStringProperty(MapDataElementToFeatureCollection.DE_NAME)
+                        it.getStringProperty(MapCoordinateFieldToFeatureCollection.FIELD_NAME)
                     )?.setSelectedItem(it)
                     it
                 }?.let { addAll(it) }
@@ -349,7 +349,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
             )
             sources.add(eventSource)
         }
-        deFeatureCollections.keys.forEach { deSource ->
+        fieldFeatureCollections.keys.forEach { deSource ->
             layers.add(
                 arrayOf(
                     "DE_POINT_LAYER_ID_$deSource"
@@ -362,13 +362,17 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
     }
 
     override fun getLayerName(source: String): String {
-        return if (deFeatureCollections.containsKey(source)) {
-            deFeatureCollections[source]?.features()?.get(0)?.let {
-                "${it.getStringProperty(
-                    MapDataElementToFeatureCollection.STAGE
-                )} - ${it.getStringProperty(
-                    MapDataElementToFeatureCollection.DE_NAME
-                )}"
+        return if (fieldFeatureCollections.containsKey(source)) {
+            fieldFeatureCollections[source]?.features()?.get(0)?.let {
+                if (it.hasProperty(MapCoordinateFieldToFeatureCollection.STAGE)) {
+                    "${it.getStringProperty(
+                        MapCoordinateFieldToFeatureCollection.STAGE
+                    )} - ${it.getStringProperty(
+                        MapCoordinateFieldToFeatureCollection.FIELD_NAME
+                    )}"
+                } else {
+                    it.getStringProperty(MapCoordinateFieldToFeatureCollection.FIELD_NAME)
+                }
             } ?: super.getLayerName(source)
         } else {
             super.getLayerName(source)
