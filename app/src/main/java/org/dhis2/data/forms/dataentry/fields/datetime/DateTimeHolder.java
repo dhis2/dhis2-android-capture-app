@@ -4,6 +4,7 @@ import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.BR;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormDateTextBinding;
@@ -30,7 +31,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
     private DateTimeViewModel dateTimeViewModel;
 
-    DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
+    public DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
         this.processor = processor;
         this.isSearchMode = isSearchMode;
@@ -39,8 +40,8 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         if (binding instanceof FormTimeTextBinding) {
             ((FormTimeTextBinding) binding).timeView.setDateListener(this);
             ((FormTimeTextBinding) binding).timeView.setActivationListener(() -> {
-                    setSelectedBackground(isSearchMode);
-                    closeKeyboard(binding.getRoot());
+                setSelectedBackground(isSearchMode);
+                closeKeyboard(binding.getRoot());
             });
         }
 
@@ -61,9 +62,9 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         }
     }
 
-
-    public void update(DateTimeViewModel viewModel) {
-        this.dateTimeViewModel = viewModel;
+    @Override
+    public void update(FieldViewModel viewModel) {
+        this.dateTimeViewModel = (DateTimeViewModel) viewModel;
         fieldUid = viewModel.uid();
         descriptionText = viewModel.description();
         label = new StringBuilder(dateTimeViewModel.label());
@@ -119,6 +120,8 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         binding.executePendingBindings();
 
         initFieldFocus();
+
+        setFormFieldBackground();
     }
 
     @Override

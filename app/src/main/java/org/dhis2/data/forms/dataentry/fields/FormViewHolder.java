@@ -37,7 +37,7 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
         this.description = binding.getRoot().findViewById(R.id.descriptionLabel);
         this.fieldSelected = binding.getRoot().findViewById(R.id.fieldSelected);
-        if(fieldSelected!=null) {
+        if (fieldSelected != null) {
             ViewExtensionsKt.clipWithAllRoundedCorners(fieldSelected, ExtensionsKt.getDp(2));
         }
         if (description != null) {
@@ -57,7 +57,7 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
     public void initFieldFocus() {
         if (currentUid != null) {
             currentUid.observeForever(fieldUid -> {
-                if(fieldWasSelectedManually() || currentSelectedItem(fieldUid)){
+                if (fieldWasSelectedManually() || currentSelectedItem(fieldUid)) {
                     fieldSelected.setVisibility(View.VISIBLE);
                     itemView.setActivated(true);
                 } else {
@@ -103,8 +103,19 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public void clearCurrentSelection(){
+    public void clearCurrentSelection() {
         selectedFieldUid = "";
         currentUid.setValue("");
+    }
+
+    public void bind(FieldViewModel viewModel) {
+        update(viewModel);
+    }
+
+    protected abstract void update(FieldViewModel viewModel);
+
+    protected void setFormFieldBackground() {
+        itemView.setBackgroundResource(R.color.form_field_background);
+        itemView.setActivated(false);
     }
 }

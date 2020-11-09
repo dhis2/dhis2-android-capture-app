@@ -46,7 +46,7 @@ public class EditTextCustomHolder extends FormViewHolder {
     private FormEditTextCustomBinding binding;
     private EditTextViewModel editTextModel;
 
-    EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
+    public EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
         this.binding = binding;
         this.processor = processor;
@@ -66,12 +66,12 @@ public class EditTextCustomHolder extends FormViewHolder {
             validateRegex();
         });
         binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
-            if(editTextModel.valueType() != ValueType.LONG_TEXT) {
+            if (editTextModel.valueType() != ValueType.LONG_TEXT) {
                 selectedFieldUid = null;
                 binding.customEdittext.getEditText().clearFocus();
                 closeKeyboard(binding.customEdittext.getEditText());
                 return true;
-            }else{
+            } else {
                 return false;
             }
         });
@@ -102,6 +102,7 @@ public class EditTextCustomHolder extends FormViewHolder {
         clearBackground(isSearchMode);
     }
 
+    @Override
     public void update(@NonNull FieldViewModel model) {
         this.editTextModel = (EditTextViewModel) model;
         fieldUid = model.uid();
@@ -133,6 +134,8 @@ public class EditTextCustomHolder extends FormViewHolder {
         initFieldFocus();
 
         setLongClick();
+
+        setFormFieldBackground();
     }
 
     private void checkAutocompleteRendering() {

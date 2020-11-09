@@ -2,6 +2,7 @@ package org.dhis2.data.forms.dataentry.fields.optionset
 
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.processors.FlowableProcessor
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.databinding.FormOptionSetSelectorBinding
@@ -33,8 +34,8 @@ class OptionSetHolder(
         )
     }
 
-    fun update(viewModel: OptionSetViewModel) {
-        this.viewModel = viewModel
+    override fun update(viewModel: FieldViewModel) {
+        this.viewModel = viewModel as OptionSetViewModel
         label = StringBuilder().append(viewModel.label())
         formBinding.optionSetSelectionView.setOptionsToShow(
             viewModel.optionsToHide, viewModel.optionsToShow
@@ -46,5 +47,7 @@ class OptionSetHolder(
         )
         formBinding.optionSetSelectionView.setLabel(viewModel.label(), viewModel.mandatory())
         formBinding.optionSetSelectionView.setDescription(viewModel.description())
+
+        setFormFieldBackground()
     }
 }

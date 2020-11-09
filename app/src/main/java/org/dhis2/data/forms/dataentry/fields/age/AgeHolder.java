@@ -1,9 +1,8 @@
 package org.dhis2.data.forms.dataentry.fields.age;
 
-import android.graphics.Color;
-
 import androidx.lifecycle.MutableLiveData;
 
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormAgeCustomBinding;
@@ -24,7 +23,7 @@ public class AgeHolder extends FormViewHolder {
     private FormAgeCustomBinding binding;
     private AgeViewModel ageViewModel;
 
-    AgeHolder(FormAgeCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
+    public AgeHolder(FormAgeCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
         this.binding = binding;
         this.currentUid = currentSelection;
@@ -41,9 +40,9 @@ public class AgeHolder extends FormViewHolder {
 
     }
 
-
-    public void update(AgeViewModel ageViewModel) {
-        this.ageViewModel = ageViewModel;
+    @Override
+    public void update(FieldViewModel fieldViewModel) {
+        this.ageViewModel = (AgeViewModel) fieldViewModel;
         fieldUid = ageViewModel.uid();
 
         descriptionText = ageViewModel.description();
@@ -69,5 +68,6 @@ public class AgeHolder extends FormViewHolder {
 
         initFieldFocus();
 
+        setFormFieldBackground();
     }
 }

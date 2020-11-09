@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 
 import androidx.lifecycle.MutableLiveData;
 
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.CustomFormCoordinateBinding;
@@ -16,11 +17,11 @@ import static android.text.TextUtils.isEmpty;
 
 public class CoordinateHolder extends FormViewHolder {
 
-    private CustomFormCoordinateBinding binding;
-    private CoordinateViewModel model;
+    private final CustomFormCoordinateBinding binding;
+    private CoordinateViewModel coordinateViewModel;
 
     @SuppressLint("CheckResult")
-    CoordinateHolder(CustomFormCoordinateBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
+    public CoordinateHolder(CustomFormCoordinateBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
         this.binding = binding;
         this.currentUid = currentSelection;
@@ -28,10 +29,10 @@ public class CoordinateHolder extends FormViewHolder {
         binding.formCoordinates.setCurrentLocationListener(geometry -> {
                     closeKeyboard(binding.formCoordinates);
                     processor.onNext(
-                            RowAction.create(model.uid(),
+                            RowAction.create(coordinateViewModel.uid(),
                                     geometry == null ? null : geometry.coordinates(),
                                     getAdapterPosition(),
-                                    model.featureType().name()));
+                                    coordinateViewModel.featureType().name()));
                     clearBackground(isSearchMode);
                 }
         );
@@ -43,9 +44,10 @@ public class CoordinateHolder extends FormViewHolder {
 
     }
 
-    void update(CoordinateViewModel coordinateViewModel) {
+    @Override
+    public void update(FieldViewModel viewModel) {
+        this.coordinateViewModel = (CoordinateViewModel) viewModel;
         binding.formCoordinates.setFeatureType(coordinateViewModel.featureType());
-        model = coordinateViewModel;
         fieldUid = coordinateViewModel.uid();
 
         descriptionText = coordinateViewModel.description();
@@ -71,5 +73,7 @@ public class CoordinateHolder extends FormViewHolder {
 
         binding.executePendingBindings();
         initFieldFocus();
+
+        setFormFieldBackground();
     }
 }

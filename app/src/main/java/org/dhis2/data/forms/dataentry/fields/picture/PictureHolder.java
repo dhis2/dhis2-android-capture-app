@@ -1,5 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.picture;
 
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.CustomFormPictureBinding;
@@ -26,7 +27,8 @@ public class PictureHolder extends FormViewHolder {
         });
     }
 
-    void update(PictureViewModel pictureViewModel) {
+    @Override
+    public void update(FieldViewModel pictureViewModel) {
         binding.formPictures.setProcessor(
                 pictureViewModel.uid().contains("_") ? pictureViewModel.uid().split("_")[0] : pictureViewModel.uid(),
                 pictureViewModel.uid().contains("_") ? pictureViewModel.uid().split("_")[1] : pictureViewModel.uid(),
@@ -48,5 +50,6 @@ public class PictureHolder extends FormViewHolder {
 
         binding.formPictures.setEditable(pictureViewModel.editable());
 
+        setFormFieldBackground();
     }
 }

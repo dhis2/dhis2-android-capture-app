@@ -4,9 +4,9 @@ import android.graphics.Color;
 import android.view.View;
 import android.widget.Button;
 
-import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.MutableLiveData;
 
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.databinding.FormButtonBinding;
 
@@ -23,13 +23,20 @@ public class FileHolder extends FormViewHolder {
         currentUid = currentSelection;
         Button button = binding.formButton;
         button.setOnFocusChangeListener((v, hasFocus) -> {
-            if(hasFocus){
+            if (hasFocus) {
                 View nextView;
                 if ((nextView = v.focusSearch(FOCUS_DOWN)) != null)
                     nextView.requestFocus();
-            }else
+            } else
                 itemView.setBackgroundColor(Color.WHITE);
 
         });
+    }
+
+    @Override
+    protected void update(FieldViewModel viewModel) {
+        ((FormButtonBinding) binding).setLabel(viewModel.label());
+
+        setFormFieldBackground();
     }
 }

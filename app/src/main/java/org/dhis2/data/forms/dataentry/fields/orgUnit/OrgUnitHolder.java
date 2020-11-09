@@ -2,9 +2,11 @@ package org.dhis2.data.forms.dataentry.fields.orgUnit;
 
 import androidx.lifecycle.MutableLiveData;
 
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormOrgUnitBinding;
+
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -17,7 +19,7 @@ public class OrgUnitHolder extends FormViewHolder {
     private final FormOrgUnitBinding binding;
     private OrgUnitViewModel model;
 
-    OrgUnitHolder(FormOrgUnitBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
+    public OrgUnitHolder(FormOrgUnitBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
         this.binding = binding;
         this.currentUid = currentSelection;
@@ -29,8 +31,9 @@ public class OrgUnitHolder extends FormViewHolder {
         binding.orgUnitView.setActivationListener(() -> setSelectedBackground(isSearchMode));
     }
 
-    public void update(OrgUnitViewModel viewModel) {
-        this.model = viewModel;
+    @Override
+    public void update(FieldViewModel viewModel) {
+        this.model = (OrgUnitViewModel) viewModel;
         fieldUid = viewModel.uid();
 
         String uid_value_name = viewModel.value();
@@ -54,5 +57,7 @@ public class OrgUnitHolder extends FormViewHolder {
         label = new StringBuilder().append(viewModel.label());
 
         initFieldFocus();
+
+        setFormFieldBackground();
     }
 }

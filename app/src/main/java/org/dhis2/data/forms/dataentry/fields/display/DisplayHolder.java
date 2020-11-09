@@ -4,6 +4,7 @@ package org.dhis2.data.forms.dataentry.fields.display;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.dhis2.BR;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.databinding.ItemIndicatorBinding;
 
@@ -19,9 +20,10 @@ public class DisplayHolder extends FormViewHolder {
         this.binding = binding;
     }
 
-    public void update(DisplayViewModel viewModel) {
+    @Override
+    public void update(FieldViewModel viewModel) {
 
-        this.viewModel = viewModel;
+        this.viewModel = (DisplayViewModel) viewModel;
 
         if(viewModel.label().isEmpty()){
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.guideline.getLayoutParams();
@@ -38,5 +40,6 @@ public class DisplayHolder extends FormViewHolder {
         binding.setVariable(BR.colorBg, -1);
         binding.executePendingBindings();
 
+        setFormFieldBackground();
     }
 }

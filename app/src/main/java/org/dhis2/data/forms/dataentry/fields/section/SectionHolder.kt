@@ -13,6 +13,7 @@ import io.reactivex.processors.FlowableProcessor
 import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.getThemePrimaryColor
 import org.dhis2.R
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.databinding.FormSectionBinding
 import org.dhis2.utils.customviews.CustomDialog
@@ -42,8 +43,9 @@ class SectionHolder(
         }
     }
 
-    fun update(viewModel: SectionViewModel) {
-        this.viewModel = viewModel
+
+    public override fun update(viewModel: FieldViewModel) {
+        this.viewModel = viewModel as SectionViewModel
         checkVisibility(viewModel.uid() == SectionViewModel.CLOSING_SECTION_UID)
         formBinding.apply {
             sectionName.text = viewModel.label()

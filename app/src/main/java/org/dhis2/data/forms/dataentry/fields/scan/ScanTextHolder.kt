@@ -2,6 +2,7 @@ package org.dhis2.data.forms.dataentry.fields.scan
 
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.processors.FlowableProcessor
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.databinding.FormScanBinding
@@ -21,8 +22,8 @@ class ScanTextHolder(
     private lateinit var model: ScanTextViewModel
     private var scanTextView: ScanTextView = binding.scanTextView
 
-    fun update(viewModel: ScanTextViewModel) {
-        this.model = viewModel
+    public override fun update(viewModel: FieldViewModel) {
+        this.model = viewModel as ScanTextViewModel
         label = StringBuilder().append(viewModel.label())
         fieldUid = viewModel.uid()
         scanTextView.run {
@@ -50,5 +51,6 @@ class ScanTextHolder(
             }
         }
         initFieldFocus()
+        setFormFieldBackground()
     }
 }

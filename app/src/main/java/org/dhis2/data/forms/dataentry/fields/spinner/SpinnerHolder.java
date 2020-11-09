@@ -5,6 +5,7 @@ import android.view.View;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.MutableLiveData;
 
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormOptionSetBinding;
@@ -24,7 +25,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     private SpinnerViewModel viewModel;
 
-    SpinnerHolder(FormOptionSetBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
+    public SpinnerHolder(FormOptionSetBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
         this.binding = binding;
         this.isSearchMode = isSearchMode;
@@ -43,9 +44,9 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     }
 
-
-    public void update(SpinnerViewModel viewModel) {
-        this.viewModel = viewModel;
+    @Override
+    public void update(FieldViewModel fieldViewModel) {
+        this.viewModel = (SpinnerViewModel) fieldViewModel;
         fieldUid = viewModel.uid();
         binding.optionSetView.setNumberOfOptions(viewModel.numberOfOptions());
         binding.optionSetView.updateEditable(viewModel.editable());
@@ -57,6 +58,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         binding.optionSetView.setOnClickListener(this);
         label = new StringBuilder().append(viewModel.label());
         initFieldFocus();
+        setFormFieldBackground();
     }
 
     @Override

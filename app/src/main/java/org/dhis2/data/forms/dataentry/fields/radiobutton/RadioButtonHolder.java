@@ -4,6 +4,7 @@ import android.view.View;
 
 import androidx.lifecycle.MutableLiveData;
 
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormYesNoBinding;
@@ -26,7 +27,7 @@ public class RadioButtonHolder extends FormViewHolder {
 
     private RadioButtonViewModel viewModel;
 
-    RadioButtonHolder(FormYesNoBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
+    public RadioButtonHolder(FormYesNoBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
         currentUid = currentSelection;
         this.binding = binding;
@@ -36,10 +37,10 @@ public class RadioButtonHolder extends FormViewHolder {
         binding.customYesNo.setActivationListener(() -> setSelectedBackground(isSearchMode));
     }
 
+    @Override
+    public void update(FieldViewModel checkBoxViewModel) {
 
-    public void update(RadioButtonViewModel checkBoxViewModel) {
-
-        this.viewModel = checkBoxViewModel;
+        this.viewModel = (RadioButtonViewModel) checkBoxViewModel;
         fieldUid = checkBoxViewModel.uid();
 
         binding.customYesNo.setValueListener(null);
@@ -47,13 +48,13 @@ public class RadioButtonHolder extends FormViewHolder {
         descriptionText = viewModel.description();
         binding.setDescription(descriptionText);
         label = new StringBuilder(checkBoxViewModel.label());
-        binding.customYesNo.setValueType(checkBoxViewModel.valueType());
-        binding.customYesNo.setRendering(checkBoxViewModel.renderingType() != null ?
-                checkBoxViewModel.renderingType() : ValueTypeRenderingType.DEFAULT);
+        binding.customYesNo.setValueType(viewModel.valueType());
+        binding.customYesNo.setRendering(viewModel.renderingType() != null ?
+                viewModel.renderingType() : ValueTypeRenderingType.DEFAULT);
         if (checkBoxViewModel.mandatory())
             label.append("*");
         binding.setLabel(label.toString());
-        binding.setValueType(checkBoxViewModel.valueType());
+        binding.setValueType(viewModel.valueType());
 
         binding.customYesNo.setInitialValue(checkBoxViewModel.value());
 
@@ -101,5 +102,7 @@ public class RadioButtonHolder extends FormViewHolder {
 
 
         initFieldFocus();
+
+        setFormFieldBackground();
     }
 }
