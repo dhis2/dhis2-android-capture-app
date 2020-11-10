@@ -132,9 +132,9 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
             teiFeatureCollections?.get(TEIS_SOURCE_ID)?.features()
                 ?.firstOrNull { id == it.getStringProperty(TEI_UID) }
                 ?.let {
-                    teiImages[id]?.let { it1 -> style?.addImageAsync(id, it1) }
+                    teiImages[id]?.let { it1 -> style?.addImage(id, it1) }
                 } ?: mapStyle?.teiSymbolIcon?.let {
-                style?.addImageAsync(
+                style?.addImage(
                     id,
                     TeiMarkers.getMarker(
                         mapView.context,

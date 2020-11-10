@@ -499,7 +499,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (showMap) {
             binding.toolbarProgress.setVisibility(View.VISIBLE);
             binding.toolbarProgress.show();
-            presenter.getMapData();
+            teiMapManager.init(() -> {
+                presenter.getMapData();
+                return Unit.INSTANCE;
+            });
         } else {
             binding.mapLayerButton.setVisibility(View.GONE);
         }
@@ -941,17 +944,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             allItems.addAll(new MapRelationshipToRelationshipMapModel().mapList(searchTeiModel.getRelationships()));
         }
 
-        teiMapManager.init(() -> {
-            teiMapManager.update(
-                    trackerMapData.getTeiFeatures(),
-                    trackerMapData.getEventFeatures(),
-                    trackerMapData.getDataElementFeaturess(),
-                    trackerMapData.getTeiBoundingBox()
-            );
-            updateCarousel(allItems);
-            binding.mapLayerButton.setVisibility(View.VISIBLE);
-            return Unit.INSTANCE;
-        });
+        teiMapManager.update(
+                trackerMapData.getTeiFeatures(),
+                trackerMapData.getEventFeatures(),
+                trackerMapData.getDataElementFeaturess(),
+                trackerMapData.getTeiBoundingBox()
+        );
+        updateCarousel(allItems);
+        binding.mapLayerButton.setVisibility(View.VISIBLE);
 
         animations.endMapLoading(binding.mapCarousel);
         binding.toolbarProgress.hide();
