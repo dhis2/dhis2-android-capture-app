@@ -63,11 +63,6 @@ class MapEventToFeatureCollectionTest {
         assertThat(secondUid, `is`(UID_SECOND_EVENT_VALUE))
         assertThat(secondCoordinates.longitude(), `is`(SECOND_FEATURE_LONGITUDE))
         assertThat(secondCoordinates.latitude(), `is`(SECOND_FEATURE_LATITUDE))
-
-        assertThat(bounding.north(), `is`(0.0))
-        assertThat(bounding.south(), `is`(0.0))
-        assertThat(bounding.west(), `is`(0.0))
-        assertThat(bounding.east(), `is`(0.0))
     }
 
     private fun createFeatures(): Pair<Feature, Feature> {
