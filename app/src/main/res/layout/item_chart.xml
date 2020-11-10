@@ -14,6 +14,7 @@
             android:id="@+id/chart_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:textColor="@color/text_black_333"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -24,6 +25,8 @@
             android:id="@+id/chart_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/chart_title"/>

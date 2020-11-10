@@ -10,10 +10,11 @@ class ChartViewHolder(
 
     fun bind(chart: AnalyticsModel.ChartModel) {
         binding.chartTitle.text = chart.graph.title
-        /*ChartView = chart.graph.toChartBuilder()
+        /*val chartView = chart.graph.toChartBuilder()
             .withType(ChartType.LINE_CHART)
-            .withGraphData(it)
-            .build().getChartView(requireContext())
+            .withGraphData(chart.graph)
+            .build().getChartView(binding.root.context)
+        binding.chartContainer.removeAllViews()
         binding.chartContainer.addView(chartView)*/
     }
 }

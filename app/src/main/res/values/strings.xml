@@ -452,6 +452,7 @@
     <string name="delete_local_data">Delete local data</string>
     <string name="dashboard_overview">Overview</string>
     <string name="dashboard_relationships">Relationships</string>
+    <string name="dashboard_indicators">Indicators</string>
     <string name="dashboard_analytics">Analytics</string>
     <string name="empty_indicators">There are no indicators for this program.</string>
     <string name="dashboard_notes">Notes</string>
@@ -764,4 +765,5 @@
     <string name="enrollment_date_edition_warning">There are planned events that won\'t be re-scheduled</string>
     <string name="jira_issue_sent">Issue Sent</string>
     <string name="jira_issue_sent_error">Error sending issue</string>
+    <string name="section_charts">Charts</string>
 </resources>

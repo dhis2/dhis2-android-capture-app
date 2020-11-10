@@ -49,7 +49,7 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
             inflater,
             R.layout.fragment_indicators, container, false
         )
-        adapter = AnalyticsAdapter()
+        adapter = AnalyticsAdapter(requireContext())
         binding.indicatorsRecycler.adapter = adapter
         return binding.root
     }

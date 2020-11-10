@@ -6,6 +6,8 @@ import org.hisp.dhis.android.core.program.ProgramIndicator
 
 sealed class AnalyticsModel {
 
+    class SectionTitle(val title: String): AnalyticsModel()
+    
     class ChartModel(val graph: Graph): AnalyticsModel()
 
     class IndicatorModel(
