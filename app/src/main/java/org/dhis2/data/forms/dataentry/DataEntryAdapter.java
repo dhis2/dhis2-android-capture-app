@@ -410,6 +410,10 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
     }
 
     public boolean isSection(int position) {
-        return getItemViewType(position) == SECTION;
+        if (position <= getItemCount()) {
+            return getItemViewType(position) == SECTION;
+        } else {
+            return false;
+        }
     }
 }

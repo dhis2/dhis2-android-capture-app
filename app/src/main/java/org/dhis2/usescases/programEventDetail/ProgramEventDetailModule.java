@@ -9,6 +9,7 @@ import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
+import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
 import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature;
 import org.dhis2.uicomponents.map.geometry.mapper.feature.MapCoordinateFieldToFeature;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapAttributeToFeature;
@@ -61,7 +62,7 @@ public class ProgramEventDetailModule {
     @PerActivity
     MapEventToFeatureCollection provideMapEventToFeatureCollection(MapGeometryToFeature mapGeometryToFeature) {
         return new MapEventToFeatureCollection(mapGeometryToFeature,
-                new BoundsGeometry(0.0, 0.0, 0.0, 0.0));
+                new GetBoundingBox());
     }
 
     @Provides

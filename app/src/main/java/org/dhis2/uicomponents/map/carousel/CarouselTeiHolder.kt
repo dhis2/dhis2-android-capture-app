@@ -47,9 +47,9 @@ class CarouselTeiHolder(
             programInfo.addEnrollmentIcons(
                 itemView.context,
                 binding.programList,
-                if (selectedEnrollment != null) selectedEnrollment.program() else null
+                selectedEnrollment?.program()
             )
-            selectedEnrollment.setStatusText(
+            selectedEnrollment?.setStatusText(
                 itemView.context,
                 binding.enrollmentStatus,
                 isHasOverdue,
