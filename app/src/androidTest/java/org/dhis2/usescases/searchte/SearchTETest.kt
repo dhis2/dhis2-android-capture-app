@@ -167,14 +167,13 @@ class SearchTETest : BaseTest() {
         }
     }
 
-    @Ignore("enrollmentDate request takes endDate as programStartDate")
     @Test
     fun shouldSuccessfullyFilterByEnrollmentDateAndSort() {
         val enrollmentDate = "DATE OF ENROLLMENT"
         val enrollmentDateFrom = createFromEnrollmentDate()
         val enrollmentDateTo = createToEnrollmentDate()
-        val startDate = "2019-09-01"
-        val endDate = "2019-09-30"
+        val startDate = "2021-05-01"
+        val endDate = "2021-05-31"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
@@ -185,6 +184,7 @@ class SearchTETest : BaseTest() {
             chooseDate(enrollmentDateFrom.year, enrollmentDateFrom.month, enrollmentDateFrom.day)
             chooseDate(enrollmentDateTo.year, enrollmentDateTo.month, enrollmentDateTo.day)
             clickOnSortByField(enrollmentDate)
+            closeSearchForm()
             checkDateIsInRange(startDate, endDate)
         }
     }
@@ -285,15 +285,15 @@ class SearchTETest : BaseTest() {
     )
 
     private fun createFromEnrollmentDate() = DateRegistrationUIModel(
-        2019,
-        9,
+        2021,
+        5,
         1
     )
 
     private fun createToEnrollmentDate() = DateRegistrationUIModel(
-        2019,
-        9,
-        30
+        2021,
+        5,
+        31
     )
 
     private fun createFromEventDate() = DateRegistrationUIModel(
