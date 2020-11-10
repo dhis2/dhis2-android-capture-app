@@ -7,7 +7,7 @@ import org.matomo.sdk.TrackerBuilder
 
 class TrackerController {
     companion object {
-        fun generateTracker(matomo: Matomo): Tracker? {
+        fun dhis2InternalTracker(matomo: Matomo): Tracker? {
             return when (BuildConfig.DEBUG) {
                 true -> null
                 false -> TrackerBuilder.createDefault(
@@ -17,7 +17,7 @@ class TrackerController {
             }
         }
 
-        fun generateSecondaryTracker(
+        fun dhis2ExternalTracker(
             matomo: Matomo,
             matomoUrl: String,
             siteId: Int,

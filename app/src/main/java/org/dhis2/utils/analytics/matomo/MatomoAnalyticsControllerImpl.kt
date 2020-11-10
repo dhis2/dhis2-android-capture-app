@@ -8,7 +8,7 @@ import org.matomo.sdk.extra.TrackHelper
 class MatomoAnalyticsControllerImpl(
     val matomoInstance: Matomo,
     val apkChecksum: ApkChecksum,
-    var matomoTracker: Tracker? = TrackerController.generateTracker(matomoInstance),
+    var matomoTracker: Tracker? = TrackerController.dhis2InternalTracker(matomoInstance),
     var dhisImplementationTracker: Tracker? = null
 ) : MatomoAnalyticsController {
 
@@ -117,7 +117,7 @@ class MatomoAnalyticsControllerImpl(
     }
 
     override fun updateDefaultTracker() {
-        matomoTracker = TrackerController.generateTracker(matomoInstance)
+        matomoTracker = TrackerController.dhis2InternalTracker(matomoInstance)
     }
 
     override fun updateDhisImplementationTracker(
@@ -125,7 +125,7 @@ class MatomoAnalyticsControllerImpl(
         siteId: Int,
         trackerName: String
     ) {
-        dhisImplementationTracker = TrackerController.generateSecondaryTracker(
+        dhisImplementationTracker = TrackerController.dhis2ExternalTracker(
             matomoInstance,
             matomoUrl,
             siteId,
