@@ -13,6 +13,7 @@ import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelations
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.layer.MapLayer
+import org.dhis2.uicomponents.map.layer.MapLayerManager
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiEventMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
@@ -156,12 +157,13 @@ class CarouselAdapter private constructor(
         notifyDataSetChanged()
     }
 
-    fun updateAllData(data: List<CarouselItemModel>) {
+    fun updateAllData(data: List<CarouselItemModel>, mapLayerManager: MapLayerManager) {
         allItems.clear()
         allItems.addAll(data)
         items.clear()
-        items.addAll(data)
-        notifyDataSetChanged()
+        mapLayerManager.mapLayers.forEach { (sourceId, mapLayer) ->
+            update(sourceId, mapLayer, mapLayer.visible)
+        }
     }
 
     fun removeItems(data: List<CarouselItemModel>) {
