@@ -1,8 +1,7 @@
-package org.dhis2.usescases.searchte
+package org.dhis2.usescases.searchte.robot
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
@@ -11,7 +10,6 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withChild
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -19,14 +17,12 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.allElementsHave
-import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.dateIsInRange
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.openSpinnerPopup
 import org.dhis2.common.viewactions.typeChildViewWithId
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
-import org.dhis2.utils.filters.FilterHolder
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
 
@@ -62,13 +58,6 @@ class SearchTeiRobot : BaseRobot() {
                 actionOnItemAtPosition<SearchTEViewHolder>(position, typeChildViewWithId(searchWord, R.id.input_editText))
             )
         closeKeyboard()
-    }
-
-    fun typeAttribute(searchWord: String, field: String) {
-        onView(withId(R.id.form_recycler))
-            .perform(
-                actionOnItem<SearchTEViewHolder>(hasDescendant(withText(field)), typeChildViewWithId(searchWord, R.id.input_editText))
-            )
     }
 
     fun clickOnDateField() {
@@ -137,73 +126,6 @@ class SearchTeiRobot : BaseRobot() {
                     hasDescendant(withText("Address")), hasDescendant(withText(displayListFieldsUIModel.address))
                 ))
             ))
-    }
-
-    fun clickOnFilter() {
-        onView(withId(R.id.search_filter_general)).perform(click())
-    }
-
-    fun clickOnFilterBy(filter: String) {
-        onView(withId(R.id.filterRecyclerLayout)).perform(
-            actionOnItem<FilterHolder>(hasDescendant(withText(filter)), click())
-        )
-    }
-
-    fun clickOnFilterActiveOption() {
-        onView(withId(R.id.stateActive)).perform(click())
-    }
-
-    fun checkTEIsAreOpen() {
-        onView(withId(R.id.scrollView))
-            .check(matches(allElementsHave(hasDescendant(withText(R.string.event_open)))))
-    }
-
-    fun clickOnFilterOverdueOption() {
-        onView(withId(R.id.stateOverdue)).perform(click())
-    }
-
-    fun closeFilterRowAtField(filter: String) {
-        onView(withId(R.id.filterRecyclerLayout)).perform(actionOnItem<FilterHolder>(hasDescendant(
-            withText(filter)), clickChildViewWithId(R.id.filterArrow)))
-    }
-
-    fun checkEventsAreOverdue() {
-        onView(withId(R.id.scrollView))
-            .check(matches(allOf(allElementsHave(hasDescendant(withId(R.id.overdueIcon))), isDisplayed())))
-    }
-
-    fun clickOnSortByField(fieldFilter: String) {
-        onView(withId(R.id.filterRecyclerLayout))
-            .perform(actionOnItem<FilterHolder>(hasDescendant(withText(fieldFilter)), clickChildViewWithId(R.id.sortingIcon)))
-    }
-
-    fun typeOrgUnitField(orgUnit: String) {
-        onView(withId(R.id.orgUnitSearchEditText)).perform(TypeTextAction(orgUnit))
-        closeKeyboard()
-        onView(withId(R.id.addButton)).perform(click())
-    }
-
-    fun checkTEIWithOrgUnit(orgUnit: String) {
-        onView(withId(R.id.scrollView))
-            .check(matches(allElementsHave(hasDescendant(withText(orgUnit)))))
-    }
-
-    fun clickOnNotSync() {
-        onView(withId(R.id.stateNotSynced)).perform(click())
-    }
-
-    fun checkTEINotSync() {
-        onView(withId(R.id.scrollView))
-            .check(matches(allElementsHave(hasDescendant(withId(R.id.syncState)))))
-    }
-
-    fun clickOnFromToDate() {
-        onView(allOf(withId(R.id.fromTo), isDisplayed())).perform(click())
-    }
-
-    fun checkDateIsInRange(startDate: String, endDate: String) {
-        onView(withId(R.id.scrollView))
-            .check(matches(dateIsInRange(R.id.sorting_field_value, startDate, endDate)))
     }
 
     fun clickOnOptionMenu() {

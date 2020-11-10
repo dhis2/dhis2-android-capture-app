@@ -11,6 +11,8 @@ import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
+import org.dhis2.usescases.searchte.robot.filterRobot
+import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.After
 import org.junit.Ignore
@@ -34,7 +36,7 @@ class SearchTETest : BaseTest() {
         val filterCount = "1"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
-        
+
         searchTeiRobot {
             typeAttributeAtPosition(firstName, firstNamePosition)
             clickOnFab()
@@ -124,7 +126,7 @@ class SearchTETest : BaseTest() {
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        filterRobot {
             clickOnFilter()
             clickOnFilterBy(enrollmentStatusFilter)
             clickOnFilterActiveOption()
@@ -139,7 +141,7 @@ class SearchTETest : BaseTest() {
         val eventStatusFilter = context.getString(R.string.filters_title_event_status)
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        filterRobot {
             clickOnFilter()
             clickOnFilterBy(eventStatusFilter)
             clickOnFilterOverdueOption()
@@ -155,7 +157,7 @@ class SearchTETest : BaseTest() {
         val orgUnitNgelehun = "Ngelehun CHC"
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        filterRobot {
             clickOnFilter()
             clickOnFilterBy(orgUnitFilter)
             clickOnSortByField(orgUnitFilter)
@@ -176,14 +178,12 @@ class SearchTETest : BaseTest() {
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        filterRobot {
             clickOnFilter()
             clickOnFilterBy(enrollmentDate)
             clickOnFromToDate()
-            selectSpecificDate(enrollmentDateFrom.year, enrollmentDateFrom.month, enrollmentDateFrom.day)
-            acceptDate()
-            selectSpecificDate(enrollmentDateTo.year, enrollmentDateTo.month, enrollmentDateTo.day)
-            acceptDate()
+            chooseDate(enrollmentDateFrom.year, enrollmentDateFrom.month, enrollmentDateFrom.day)
+            chooseDate(enrollmentDateTo.year, enrollmentDateTo.month, enrollmentDateTo.day)
             clickOnSortByField(enrollmentDate)
             checkDateIsInRange(startDate, endDate)
         }
@@ -199,14 +199,12 @@ class SearchTETest : BaseTest() {
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        filterRobot {
             clickOnFilter()
             clickOnFilterBy(eventDate)
             clickOnFromToDate()
-            selectSpecificDate(eventDateFrom.year, eventDateFrom.month, eventDateFrom.day)
-            acceptDate()
-            selectSpecificDate(eventDateTo.year, eventDateTo.month, eventDateTo.day)
-            acceptDate()
+            chooseDate(eventDateFrom.year, eventDateFrom.month, eventDateFrom.day)
+            chooseDate(eventDateTo.year, eventDateTo.month, eventDateTo.day)
             clickOnSortByField(eventDate)
             closeSearchForm()
             checkDateIsInRange(startDate, endDate)
@@ -232,7 +230,7 @@ class SearchTETest : BaseTest() {
             pressBack()
         }
 
-        searchTeiRobot {
+        filterRobot {
             clickOnFilter()
             clickOnFilterBy(syncFilter)
             clickOnNotSync()
