@@ -39,7 +39,7 @@ class AnalyticsAdapter(val context: Context) : ListAdapter<AnalyticsModel, Recyc
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when(AnalyticType.values()[viewType]) {
+        return when (AnalyticType.values()[viewType]) {
             AnalyticType.INDICATOR -> IndicatorViewHolder(
                 ItemIndicatorBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
@@ -67,7 +67,7 @@ class AnalyticsAdapter(val context: Context) : ListAdapter<AnalyticsModel, Recyc
 
         items.removeAll {
             it is AnalyticsModel.IndicatorModel ||
-                    it is AnalyticsModel.SectionTitle && it.title == title
+                it is AnalyticsModel.SectionTitle && it.title == title
         }
         if (indicators.isNotEmpty()) {
             items.addAll(0, listOf(AnalyticsModel.SectionTitle(title)) + indicators)
@@ -80,7 +80,7 @@ class AnalyticsAdapter(val context: Context) : ListAdapter<AnalyticsModel, Recyc
         val title = context.getString(R.string.section_charts)
         items.removeAll {
             it is AnalyticsModel.ChartModel ||
-                    it is AnalyticsModel.SectionTitle && it.title == title
+                it is AnalyticsModel.SectionTitle && it.title == title
         }
         if (charts.isNotEmpty()) {
             items.addAll(itemCount, listOf(AnalyticsModel.SectionTitle(title)) + charts)

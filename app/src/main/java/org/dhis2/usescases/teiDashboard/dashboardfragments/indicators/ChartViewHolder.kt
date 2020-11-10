@@ -6,7 +6,7 @@ import org.dhis2.databinding.ItemChartBinding
 
 class ChartViewHolder(
     val binding: ItemChartBinding
-): RecyclerView.ViewHolder(binding.root) {
+) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(chart: AnalyticsModel.ChartModel) {
         binding.chartTitle.text = chart.graph.title
