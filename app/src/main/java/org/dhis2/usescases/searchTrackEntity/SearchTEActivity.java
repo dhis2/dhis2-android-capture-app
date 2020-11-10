@@ -76,6 +76,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
+import org.dhis2.utils.customviews.DhisBottomNavigationOption;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.customviews.ScanTextView;
 import org.dhis2.utils.filters.FilterManager;
@@ -182,7 +183,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.setNeedsSearch(needsSearch);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         binding.setTotalFiltersSearch(presenter.getQueryData().size());
-
         try {
             fromRelationship = getIntent().getBooleanExtra("FROM_RELATIONSHIP", false);
             fromRelationshipTeiUid = getIntent().getStringExtra("FROM_RELATIONSHIP_TEI");

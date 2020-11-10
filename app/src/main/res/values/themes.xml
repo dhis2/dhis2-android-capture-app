@@ -30,6 +30,15 @@
         <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Action</item>
     </style>
 
+    <style name="DhisBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="materialThemeOverlay">@style/DhisBottomNavigationViewOverlay</item>
+    </style>
+
+    <style name="DhisBottomNavigationViewOverlay" parent="">
+        <item name="colorPrimary">@color/red_060</item>
+        <item name="colorOnSurface">@color/green_7ed</item>
+    </style>
+
     <style name="SplashTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
