@@ -23,6 +23,7 @@ import org.dhis2.utils.DateUtils
 import org.dhis2.utils.EventCreationType
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.customviews.PeriodDialog
+import org.dhis2.utils.extension.navigateTo
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.PeriodType
@@ -297,35 +298,16 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
     }
 
     override fun openInitialActivity() {
-        val intent =
-            Intent(activity, EventInitialActivity::class.java)
-        val bundle = Bundle()
-        bundle.putString(
-            Constants.PROGRAM_UID,
-            program.uid()
-        )
-        bundle.putString(
-            Constants.TRACKED_ENTITY_INSTANCE,
-            presenter.getEventTei()
-        )
-        bundle.putString(
-            Constants.ENROLLMENT_UID,
-            event.enrollment()
-        )
-        bundle.putString(Constants.EVENT_CREATION_TYPE, EventCreationType.DEFAULT.name)
-        bundle.putBoolean(Constants.EVENT_REPEATABLE, stage.repeatable() == true)
-        bundle.putSerializable(
-            Constants.EVENT_PERIOD_TYPE,
-            stage.periodType()
-        )
-        bundle.putString(Constants.PROGRAM_STAGE_UID, stage.uid())
-        bundle.putInt(
-            Constants.EVENT_SCHEDULE_INTERVAL,
-            stage.standardInterval() ?: 0
-        )
-        intent.putExtras(bundle)
-        startActivity(intent)
-        finish()
+        navigateTo<EventInitialActivity>(true) {
+            putString(Constants.PROGRAM_UID, program.uid())
+            putString(Constants.TRACKED_ENTITY_INSTANCE, presenter.getEventTei())
+            putString(Constants.ENROLLMENT_UID, event.enrollment())
+            putString(Constants.EVENT_CREATION_TYPE, EventCreationType.DEFAULT.name)
+            putBoolean(Constants.EVENT_REPEATABLE, stage.repeatable() == true)
+            putSerializable(Constants.EVENT_PERIOD_TYPE, stage.periodType())
+            putString(Constants.PROGRAM_STAGE_UID, stage.uid())
+            putInt(Constants.EVENT_SCHEDULE_INTERVAL, stage.standardInterval() ?: 0)
+        }
     }
 
     override fun openFormActivity() {
