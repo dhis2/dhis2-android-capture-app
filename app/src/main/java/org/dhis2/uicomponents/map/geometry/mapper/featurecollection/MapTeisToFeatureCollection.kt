@@ -23,7 +23,8 @@ class MapTeisToFeatureCollection(
     private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection
 ) {
     fun map(
-        teiList: List<SearchTeiModel>
+        teiList: List<SearchTeiModel>,
+        shouldAddRelationships: Boolean
     ): Pair<HashMap<String?, FeatureCollection>, BoundingBox>? {
         val featureMap: HashMap<String?, ArrayList<Feature>> = HashMap()
         val featureCollectionMap = HashMap<String?, FeatureCollection>()
@@ -52,7 +53,7 @@ class MapTeisToFeatureCollection(
                 }
             }
 
-            if (searchTeiModel.relationships.isNotEmpty()) {
+            if (shouldAddRelationships && searchTeiModel.relationships.isNotEmpty()) {
                 val relationshipModels =
                     mapRelationshipToRelationshipMapModel.mapList(searchTeiModel.relationships)
                 val relationshipsFeatureCollections =

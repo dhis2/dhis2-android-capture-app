@@ -313,7 +313,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     coordinateFields.putAll(dataElements);
                                     coordinateFields.putAll(attributes);
                                     List<EventUiComponentModel> eventsUi = eventToEventUiComponent.mapList(teis.component2(), teis.component1());
-                                    kotlin.Pair<HashMap<String, FeatureCollection>, BoundingBox> teisFeatCollection = mapTeisToFeatureCollection.map(teis.component1());
+                                    kotlin.Pair<HashMap<String, FeatureCollection>, BoundingBox> teisFeatCollection = mapTeisToFeatureCollection.map(teis.component1(), selectedProgram != null);
                                     EventsByProgramStage events = mapTeiEventsToFeatureCollection.map(eventsUi).component1();
                                     return new TrackerMapData(
                                             teis.component1(),

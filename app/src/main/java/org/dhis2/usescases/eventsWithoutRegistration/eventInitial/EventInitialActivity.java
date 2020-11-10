@@ -178,11 +178,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         initVariables();
-        setScreenName(this.getLocalClassName());
         ((App) getApplicationContext()).userComponent().plus(
                 new EventInitialModule(this,
                         eventUid)
         ).inject(this);
+        setScreenName(this.getLocalClassName());
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_initial);
