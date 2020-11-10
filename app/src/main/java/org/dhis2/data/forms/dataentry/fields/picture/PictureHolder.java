@@ -1,5 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.picture;
 
+import androidx.databinding.ViewDataBinding;
+
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -14,13 +16,12 @@ public class PictureHolder extends FormViewHolder {
     private CustomFormPictureBinding binding;
 
     public PictureHolder(
-            PictureView.OnIntentSelected onIntentSelected,
-            CustomFormPictureBinding binding,
+            ViewDataBinding binding,
             FlowableProcessor<RowAction> processor, boolean isSearchMode) {
         super(binding);
         this.processor = processor;
-        this.binding = binding;
-        this.binding.formPictures.setOnIntentSelected(onIntentSelected);
+        this.binding = (CustomFormPictureBinding) binding;
+        this.binding.formPictures.setOnIntentSelected((PictureView.OnIntentSelected) (this.binding).formPictures.getContext());
         this.binding.formPictures.setOnImageListener((file, value, uid) -> {
             processor.onNext(
                     RowAction.create(uid, file != null ? file.getPath() : null, getAdapterPosition()));

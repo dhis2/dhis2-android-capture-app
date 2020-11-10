@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -49,6 +50,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle,
                 null,
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                R.layout.form_option_set_selector,
                 fieldRendering,
                 new ArrayList<>()
         );
@@ -71,6 +73,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle(),
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                R.layout.form_option_set_selector,
                 fieldRendering(),
                 options()
         );
@@ -94,6 +97,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle(),
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                R.layout.form_option_set_selector,
                 fieldRendering(),
                 options()
         );
@@ -117,6 +121,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle(),
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                R.layout.form_option_set_selector,
                 fieldRendering(),
                 options()
         );
@@ -140,6 +145,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle(),
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                R.layout.form_option_set_selector,
                 fieldRendering(),
                 options()
         );
@@ -162,6 +168,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle(),
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                R.layout.form_option_set_selector,
                 fieldRendering(),
                 options
         );
@@ -185,6 +192,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle(),
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                R.layout.form_option_set_selector,
                 fieldRendering(),
                 options()
         );
@@ -209,5 +217,4 @@ public abstract class OptionSetViewModel extends FieldViewModel {
     public List<String> getOptionsToShow() {
         return optionsToShow;
     }
-
 }

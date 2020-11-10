@@ -9,6 +9,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.Observable
 import androidx.databinding.Observable.OnPropertyChangedCallback
 import androidx.databinding.ObservableField
+import androidx.databinding.ViewDataBinding
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.getThemePrimaryColor
@@ -20,12 +21,13 @@ import org.dhis2.utils.customviews.CustomDialog
 import org.jetbrains.annotations.NotNull
 
 class SectionHolder(
-    private val formBinding: @NotNull FormSectionBinding,
+    binding: @NotNull ViewDataBinding,
     private val selectedSection: @NotNull ObservableField<String>,
     private val sectionProcessor: @NotNull FlowableProcessor<String>
-) : FormViewHolder(formBinding), View.OnClickListener {
+) : FormViewHolder(binding), View.OnClickListener {
 
     private lateinit var viewModel: SectionViewModel
+    private val formBinding: FormSectionBinding = binding as FormSectionBinding
 
     init {
         selectedSection.addOnPropertyChangedCallback(object : OnPropertyChangedCallback() {

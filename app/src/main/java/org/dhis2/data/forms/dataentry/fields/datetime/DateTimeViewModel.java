@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -20,41 +21,53 @@ public abstract class DateTimeViewModel extends FieldViewModel {
     public abstract ValueType valueType();
 
     public static FieldViewModel create(String id, String label, Boolean mandatory, ValueType type, String value, String section, Boolean allowFutureDates, Boolean editable, String description, ObjectStyle objectStyle) {
-        return new AutoValue_DateTimeViewModel(id, label, mandatory, value, section, allowFutureDates, editable, null, null, null, description, objectStyle, null, provideDataEntryViewHolderType(type), type);
+        return new AutoValue_DateTimeViewModel(id, label, mandatory, value, section, allowFutureDates, editable, null, null, null, description, objectStyle, null, provideDataEntryViewHolderType(type), provideLayoutId(type), type);
     }
 
     @Override
     public FieldViewModel setMandatory() {
         return new AutoValue_DateTimeViewModel(uid(), label(), true, value(), programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), valueType());
+                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), provideLayoutId(valueType()), valueType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
         return new AutoValue_DateTimeViewModel(uid(), label(), mandatory(), value(), programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning(), error, description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), valueType());
+                allowFutureDate(), editable(), optionSet(), warning(), error, description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), provideLayoutId(valueType()), valueType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
         return new AutoValue_DateTimeViewModel(uid(), label(), mandatory(), value(), programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), valueType());
+                allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), provideLayoutId(valueType()), valueType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_DateTimeViewModel(uid(), label(), mandatory(), data, programStageSection(),
-                allowFutureDate(), false, optionSet(), warning(), error(), description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), valueType());
+                allowFutureDate(), false, optionSet(), warning(), error(), description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), provideLayoutId(valueType()), valueType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withEditMode(boolean isEditable) {
         return new AutoValue_DateTimeViewModel(uid(), label(), mandatory(), value(), programStageSection(),
-                allowFutureDate(), isEditable, optionSet(), warning(), error(), description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), valueType());
+                allowFutureDate(), isEditable, optionSet(), warning(), error(), description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), provideLayoutId(valueType()), valueType());
+    }
+
+    public static Integer provideLayoutId(ValueType type) {
+        switch (type) {
+            case DATE:
+                return R.layout.form_date_text;
+            case TIME:
+                return R.layout.form_time_text;
+            case DATETIME:
+            default:
+                return R.layout.form_date_time_text;
+        }
     }
 
     private static DataEntryViewHolderTypes provideDataEntryViewHolderType(ValueType type) {

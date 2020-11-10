@@ -2,6 +2,7 @@ package org.dhis2.data.forms.dataentry.fields.radiobutton;
 
 import android.view.View;
 
+import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -27,14 +28,14 @@ public class RadioButtonHolder extends FormViewHolder {
 
     private RadioButtonViewModel viewModel;
 
-    public RadioButtonHolder(FormYesNoBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
+    public RadioButtonHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
         currentUid = currentSelection;
-        this.binding = binding;
+        this.binding = (FormYesNoBinding) binding;
         this.processor = processor;
         this.isSearchMode = isSearchMode;
 
-        binding.customYesNo.setActivationListener(() -> setSelectedBackground(isSearchMode));
+        this.binding.customYesNo.setActivationListener(() -> setSelectedBackground(isSearchMode));
     }
 
     @Override

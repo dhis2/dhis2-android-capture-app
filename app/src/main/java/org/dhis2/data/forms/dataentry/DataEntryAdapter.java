@@ -6,7 +6,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
+import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.ListAdapter;
@@ -71,7 +73,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, FormView
         this.processorOptionSet = PublishProcessor.create();
         this.currentFocusUid = new MutableLiveData<>();
         this.formViewHolderFactory = new FormViewHolderFactory(
-                layoutInflater,
                 processor,
                 dataEntryArguments.renderType(),
                 currentFocusUid,
@@ -96,7 +97,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, FormView
         selectedSection = new ObservableField<>("");
         this.processorOptionSet = processorOptSet;
         this.currentFocusUid = new MutableLiveData<>();
-        this.formViewHolderFactory = new FormViewHolderFactory(layoutInflater,
+        this.formViewHolderFactory = new FormViewHolderFactory(
                 processor,
                 dataEntryArguments.renderType(),
                 currentFocusUid,
@@ -112,9 +113,9 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, FormView
     @Override
     public FormViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        return Objects.requireNonNull(
-                formViewHolderFactory.provideHolder(parent, DataEntryViewHolderTypes.values()[viewType])
-        );
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        ViewDataBinding binding = DataBindingUtil.inflate(layoutInflater, viewType, parent, false);
+        return Objects.requireNonNull(formViewHolderFactory.provideHolder(binding, viewType));
     }
 
     @Override
@@ -148,10 +149,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, FormView
 
     @Override
     public int getItemViewType(int position) {
-
-        FieldViewModel viewModel = getItem(position);
-        DataEntryViewHolderTypes holderType = viewModel.dataEntryViewType();
-        return DataEntryViewHolderTypes.valueOf(holderType.name()).ordinal();
+        return getItem(position).getLayoutId();
     }
 
     @Override

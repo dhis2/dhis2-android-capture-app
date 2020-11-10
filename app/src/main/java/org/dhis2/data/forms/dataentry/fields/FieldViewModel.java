@@ -63,6 +63,8 @@ public abstract class FieldViewModel {
 
     public abstract DataEntryViewHolderTypes dataEntryViewType();
 
+    public abstract Integer getLayoutId();
+
     public String getFormattedLabel() {
         if (mandatory()) {
             return label() + " *";

@@ -1,5 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.scan
 
+import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
@@ -9,7 +10,7 @@ import org.dhis2.databinding.FormScanBinding
 import org.dhis2.utils.customviews.ScanTextView
 
 class ScanTextHolder(
-    binding: FormScanBinding,
+    binding: ViewDataBinding,
     val processor: FlowableProcessor<RowAction>,
     val isSearchMode: Boolean,
     val currentSelection: MutableLiveData<String>?
@@ -20,7 +21,7 @@ class ScanTextHolder(
     }
 
     private lateinit var model: ScanTextViewModel
-    private var scanTextView: ScanTextView = binding.scanTextView
+    private var scanTextView: ScanTextView = (binding as FormScanBinding).scanTextView
 
     public override fun update(viewModel: FieldViewModel) {
         this.model = viewModel as ScanTextViewModel

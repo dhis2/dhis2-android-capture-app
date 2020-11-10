@@ -2,6 +2,7 @@ package org.dhis2.data.forms.dataentry.fields.image
 
 import android.view.View
 import androidx.databinding.ObservableField
+import androidx.databinding.ViewDataBinding
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.Bindings.Bindings
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
@@ -10,7 +11,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.databinding.FormImageBinding
 
 class ImageHolder(
-    private val imageBinding: FormImageBinding,
+    private val imageBinding: ViewDataBinding,
     processor: FlowableProcessor<RowAction>,
     imageSelector: ObservableField<String>
 ) : FormViewHolder(imageBinding) {
@@ -45,7 +46,7 @@ class ImageHolder(
 
         label = StringBuilder(viewModel.formattedLabel)
 
-        imageBinding.apply {
+        (imageBinding as FormImageBinding).apply {
             setLabel(viewModel.formattedLabel)
             optionName = viewModel.optionDisplayName()
             currentSelection = currentSelector

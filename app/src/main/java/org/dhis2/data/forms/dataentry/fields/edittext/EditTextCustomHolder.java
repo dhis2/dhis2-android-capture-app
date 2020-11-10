@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.gson.Gson;
@@ -46,14 +47,14 @@ public class EditTextCustomHolder extends FormViewHolder {
     private FormEditTextCustomBinding binding;
     private EditTextViewModel editTextModel;
 
-    public EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
+    public EditTextCustomHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
-        this.binding = binding;
+        this.binding = (FormEditTextCustomBinding) binding;
         this.processor = processor;
         this.isSearchMode = isSearchMode;
         this.currentUid = currentSelection;
 
-        binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
+        this.binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
             if (!hasFocus) {
                 clearBackground(isSearchMode);
             }
@@ -65,23 +66,23 @@ public class EditTextCustomHolder extends FormViewHolder {
             }
             validateRegex();
         });
-        binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
+        this.binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
             if (editTextModel.valueType() != ValueType.LONG_TEXT) {
                 selectedFieldUid = null;
-                binding.customEdittext.getEditText().clearFocus();
-                closeKeyboard(binding.customEdittext.getEditText());
+                this.binding.customEdittext.getEditText().clearFocus();
+                closeKeyboard(this.binding.customEdittext.getEditText());
                 return true;
             } else {
                 return false;
             }
         });
 
-        binding.customEdittext.setActivationListener(() -> {
+        this.binding.customEdittext.setActivationListener(() -> {
             setSelectedBackground(isSearchMode);
-            binding.customEdittext.getEditText().setFocusable(true);
-            binding.customEdittext.getEditText().setFocusableInTouchMode(true);
-            binding.customEdittext.getEditText().requestFocus();
-            openKeyboard(binding.customEdittext.getEditText());
+            this.binding.customEdittext.getEditText().setFocusable(true);
+            this.binding.customEdittext.getEditText().setFocusableInTouchMode(true);
+            this.binding.customEdittext.getEditText().requestFocus();
+            openKeyboard(this.binding.customEdittext.getEditText());
             if (isSearchMode) {
                 sendAction();
             }

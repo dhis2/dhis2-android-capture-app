@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -50,13 +51,13 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
                                                     @NonNull Boolean mandatory, @Nullable String value, @Nullable String section,
                                                     Boolean editable, @Nullable String description, ObjectStyle objectStyle, ValueTypeRenderingType renderingType) {
         if (value == null) {
-            return new AutoValue_RadioButtonViewModel(id, label, null, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, mandatory, type, renderingType);
+            return new AutoValue_RadioButtonViewModel(id, label, null, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, R.layout.form_yes_no, mandatory, type, renderingType);
         } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED.toString())) {
-            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED.toString(), section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, mandatory, type, renderingType);
+            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED.toString(), section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, R.layout.form_yes_no, mandatory, type, renderingType);
         } else if (value.toLowerCase(Locale.US).equals(Value.UNCHECKED.toString())) {
-            return new AutoValue_RadioButtonViewModel(id, label, Value.UNCHECKED.toString(), section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, mandatory, type, renderingType);
+            return new AutoValue_RadioButtonViewModel(id, label, Value.UNCHECKED.toString(), section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, R.layout.form_yes_no, mandatory, type, renderingType);
         } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED_NO.toString())) {
-            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED_NO.toString(), section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, mandatory, type, renderingType);
+            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED_NO.toString(), section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, R.layout.form_yes_no, mandatory, type, renderingType);
         } else {
             throw new IllegalArgumentException("Unsupported value: " + value);
         }
@@ -64,30 +65,30 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
 
     @Override
     public FieldViewModel setMandatory() {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, true, valueType(), renderingType());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, R.layout.form_yes_no,true, valueType(), renderingType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error, description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, mandatory(), valueType(), renderingType());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error, description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, R.layout.form_yes_no, mandatory(), valueType(), renderingType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, mandatory(), valueType(), renderingType());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, R.layout.form_yes_no, mandatory(), valueType(), renderingType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), data, programStageSection(), allowFutureDate(), false, optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, mandatory(), valueType(), renderingType());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), data, programStageSection(), allowFutureDate(), false, optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, R.layout.form_yes_no, mandatory(), valueType(), renderingType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withEditMode(boolean isEditable) {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), isEditable, optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, mandatory(), valueType(), renderingType());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), isEditable, optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, R.layout.form_yes_no, mandatory(), valueType(), renderingType());
     }
 }

@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -18,10 +19,10 @@ import static android.view.View.FOCUS_DOWN;
 
 public class FileHolder extends FormViewHolder {
 
-    public FileHolder(FormButtonBinding binding, MutableLiveData<String> currentSelection) {
+    public FileHolder(ViewDataBinding binding, MutableLiveData<String> currentSelection) {
         super(binding);
         currentUid = currentSelection;
-        Button button = binding.formButton;
+        Button button = ((FormButtonBinding) binding).formButton;
         button.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 View nextView;

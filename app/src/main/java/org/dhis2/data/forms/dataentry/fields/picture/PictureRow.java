@@ -11,7 +11,6 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.CustomFormPictureBinding;
-import org.dhis2.utils.customviews.PictureView;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -58,9 +57,7 @@ public class PictureRow implements Row<PictureHolder, PictureViewModel> {
                 R.layout.custom_form_picture, parent, false);
         binding.formPictures.setIsBgTransparent(isBgTransparent);
         binding.formPictures.setFragmentManager(fm);
-        PictureView.OnIntentSelected onIntentSelected = (PictureView.OnIntentSelected) binding.formPictures.getContext();
-        return new PictureHolder(onIntentSelected,
-                binding, processor, isSearchMode);
+        return new PictureHolder(binding, processor, isSearchMode);
     }
 
     @Override

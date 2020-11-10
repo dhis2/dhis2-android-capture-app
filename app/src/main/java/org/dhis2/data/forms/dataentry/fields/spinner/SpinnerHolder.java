@@ -2,6 +2,7 @@ package org.dhis2.data.forms.dataentry.fields.spinner;
 
 import android.view.View;
 
+import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.MutableLiveData;
 
@@ -25,13 +26,13 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     private SpinnerViewModel viewModel;
 
-    public SpinnerHolder(FormOptionSetBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
+    public SpinnerHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
-        this.binding = binding;
+        this.binding = (FormOptionSetBinding) binding;
         this.isSearchMode = isSearchMode;
         this.currentUid = currentSelection;
 
-        binding.optionSetView.setOnSelectedOptionListener((optionName, optionCode) -> {
+        this.binding.optionSetView.setOnSelectedOptionListener((optionName, optionCode) -> {
             processor.onNext(
                     RowAction.create(viewModel.uid(), isSearchMode ? optionName + "_os_" + optionCode : optionCode, true, optionCode, optionName, getAdapterPosition())
             );
@@ -40,7 +41,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
             clearBackground(isSearchMode);
         });
 
-        binding.optionSetView.setActivationListener(() -> setSelectedBackground(isSearchMode));
+        this.binding.optionSetView.setActivationListener(() -> setSelectedBackground(isSearchMode));
 
     }
 

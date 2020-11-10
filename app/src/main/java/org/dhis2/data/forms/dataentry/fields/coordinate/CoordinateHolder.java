@@ -3,6 +3,7 @@ package org.dhis2.data.forms.dataentry.fields.coordinate;
 
 import android.annotation.SuppressLint;
 
+import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -21,13 +22,13 @@ public class CoordinateHolder extends FormViewHolder {
     private CoordinateViewModel coordinateViewModel;
 
     @SuppressLint("CheckResult")
-    public CoordinateHolder(CustomFormCoordinateBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
+    public CoordinateHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
-        this.binding = binding;
+        this.binding = (CustomFormCoordinateBinding) binding;
         this.currentUid = currentSelection;
 
-        binding.formCoordinates.setCurrentLocationListener(geometry -> {
-                    closeKeyboard(binding.formCoordinates);
+        this.binding.formCoordinates.setCurrentLocationListener(geometry -> {
+                    closeKeyboard(this.binding.formCoordinates);
                     processor.onNext(
                             RowAction.create(coordinateViewModel.uid(),
                                     geometry == null ? null : geometry.coordinates(),
@@ -36,11 +37,11 @@ public class CoordinateHolder extends FormViewHolder {
                     clearBackground(isSearchMode);
                 }
         );
-        binding.formCoordinates.setMapListener(
-                (CoordinatesView.OnMapPositionClick) binding.formCoordinates.getContext()
+        this.binding.formCoordinates.setMapListener(
+                (CoordinatesView.OnMapPositionClick) this.binding.formCoordinates.getContext()
         );
 
-        binding.formCoordinates.setActivationListener(() -> setSelectedBackground(isSearchMode));
+        this.binding.formCoordinates.setActivationListener(() -> setSelectedBackground(isSearchMode));
 
     }
 

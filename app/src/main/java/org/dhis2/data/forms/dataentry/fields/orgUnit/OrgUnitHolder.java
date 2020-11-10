@@ -1,5 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.orgUnit;
 
+import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -19,16 +20,16 @@ public class OrgUnitHolder extends FormViewHolder {
     private final FormOrgUnitBinding binding;
     private OrgUnitViewModel model;
 
-    public OrgUnitHolder(FormOrgUnitBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
+    public OrgUnitHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
-        this.binding = binding;
+        this.binding = (FormOrgUnitBinding) binding;
         this.currentUid = currentSelection;
 
-        binding.orgUnitView.setListener(orgUnitUid -> {
+        this.binding.orgUnitView.setListener(orgUnitUid -> {
             processor.onNext(RowAction.create(model.uid(), orgUnitUid, getAdapterPosition()));
         });
 
-        binding.orgUnitView.setActivationListener(() -> setSelectedBackground(isSearchMode));
+        this.binding.orgUnitView.setActivationListener(() -> setSelectedBackground(isSearchMode));
     }
 
     @Override

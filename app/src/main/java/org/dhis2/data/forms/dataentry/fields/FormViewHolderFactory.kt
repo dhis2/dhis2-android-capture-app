@@ -1,15 +1,11 @@
 package org.dhis2.data.forms.dataentry.fields
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
+import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
 import org.dhis2.data.forms.dataentry.fields.age.AgeHolder
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateHolder
 import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeHolder
@@ -25,28 +21,8 @@ import org.dhis2.data.forms.dataentry.fields.scan.ScanTextHolder
 import org.dhis2.data.forms.dataentry.fields.section.SectionHolder
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerHolder
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedHolder
-import org.dhis2.databinding.CustomFormCoordinateBinding
-import org.dhis2.databinding.CustomFormPictureBinding
-import org.dhis2.databinding.FormAgeCustomBinding
-import org.dhis2.databinding.FormButtonBinding
-import org.dhis2.databinding.FormDateTextBinding
-import org.dhis2.databinding.FormDateTimeTextBinding
-import org.dhis2.databinding.FormEditTextCustomBinding
-import org.dhis2.databinding.FormImageBinding
-import org.dhis2.databinding.FormOptionSetBinding
-import org.dhis2.databinding.FormOptionSetSelectorBinding
-import org.dhis2.databinding.FormOrgUnitBinding
-import org.dhis2.databinding.FormScanBinding
-import org.dhis2.databinding.FormSectionBinding
-import org.dhis2.databinding.FormTimeTextBinding
-import org.dhis2.databinding.FormUnsupportedCustomBinding
-import org.dhis2.databinding.FormYesNoBinding
-import org.dhis2.databinding.ItemIndicatorBinding
-import org.dhis2.utils.customviews.PictureView.OnIntentSelected
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 
 class FormViewHolderFactory(
-    private val layoutInflater: LayoutInflater,
     private val processor: FlowableProcessor<RowAction>,
     private val renderType: String?,
     private val currentFocusUid: MutableLiveData<String>,
@@ -59,256 +35,145 @@ class FormViewHolderFactory(
 ) {
 
     fun provideHolder(
-        parent: ViewGroup,
-        type: DataEntryViewHolderTypes
+        binding: ViewDataBinding,
+        viewType: Int
     ): FormViewHolder? {
-        return when (type) {
-            DataEntryViewHolderTypes.AGE_VIEW -> provideAgeViewHolder(parent)
-            DataEntryViewHolderTypes.COORDINATES -> provideCoordinateViewHolder(parent)
-            DataEntryViewHolderTypes.TIME -> provideTimeViewHolder(parent)
-            DataEntryViewHolderTypes.DATE -> provideDateViewHolder(parent)
-            DataEntryViewHolderTypes.DATETIME -> provideDateTimeViewHolder(parent)
-            DataEntryViewHolderTypes.DISPLAY -> provideDisplayViewHolder(parent)
-            DataEntryViewHolderTypes.EDIT_TEXT -> provideEditTextViewHolder(parent)
-            DataEntryViewHolderTypes.LONG_TEXT -> provideLongTextViewHolder(parent)
-            DataEntryViewHolderTypes.BUTTON -> provideFileViewHolder(parent)
-            DataEntryViewHolderTypes.IMAGE -> provideImageViewHolder(parent)
-            DataEntryViewHolderTypes.OPTION_SET_SELECT -> provideOptionSetViewHolder(parent)
-            DataEntryViewHolderTypes.ORG_UNIT -> provideOrgUnitViewHolder(parent)
-            DataEntryViewHolderTypes.PICTURE -> providePictureViewHolder(parent)
-            DataEntryViewHolderTypes.YES_NO -> provideYesNoViewHolder(parent)
-            DataEntryViewHolderTypes.SCAN_CODE -> provideScanViewHolder(parent)
-            DataEntryViewHolderTypes.SECTION -> provideSectionViewHolder(parent)
-            DataEntryViewHolderTypes.OPTION_SET_SPINNER -> provideSpinnerViewHolder(parent)
-            DataEntryViewHolderTypes.UNSUPPORTED -> provideUnsupportedViewHolder(parent)
+        return when (viewType) {
+            R.layout.form_age_custom -> provideAgeViewHolder(binding)
+            R.layout.custom_form_coordinate -> provideCoordinateViewHolder(binding)
+            R.layout.form_time_text -> provideTimeViewHolder(binding)
+            R.layout.form_date_text -> provideDateViewHolder(binding)
+            R.layout.form_date_time_text -> provideDateTimeViewHolder(binding)
+            R.layout.item_indicator -> provideDisplayViewHolder(binding)
+            R.layout.form_edit_text_custom -> provideEditTextViewHolder(binding)
+//            DataEntryViewHolderTypes.LONG_TEXT -> provideLongTextViewHolder(binding)
+            R.layout.form_button -> provideFileViewHolder(binding)
+            R.layout.form_image -> provideImageViewHolder(binding)
+            R.layout.form_option_set_selector -> provideOptionSetViewHolder(binding)
+            R.layout.form_org_unit -> provideOrgUnitViewHolder(binding)
+            R.layout.custom_form_picture -> providePictureViewHolder(binding)
+            R.layout.form_yes_no -> provideYesNoViewHolder(binding)
+            R.layout.form_scan -> provideScanViewHolder(binding)
+            R.layout.form_section -> provideSectionViewHolder(binding)
+            R.layout.form_option_set -> provideSpinnerViewHolder(binding)
+            else -> provideUnsupportedViewHolder(binding)
         }
     }
 
 
-    private fun provideAgeViewHolder(parent: ViewGroup): AgeHolder {
-        val binding: FormAgeCustomBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.form_age_custom,
-            parent,
-            false
-        )
-        binding.customAgeview.setIsBgTransparent(true)
+    private fun provideAgeViewHolder(binding: ViewDataBinding): AgeHolder {
+//        binding.customAgeview.setIsBgTransparent(true)
         return AgeHolder(binding, processor, false, currentFocusUid)
     }
 
-    private fun provideCoordinateViewHolder(parent: ViewGroup): CoordinateHolder {
-        val binding: CustomFormCoordinateBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.custom_form_coordinate,
-            parent,
-            false
-        )
-        binding.formCoordinates.setIsBgTransparent(true)
-
+    private fun provideCoordinateViewHolder(binding: ViewDataBinding): CoordinateHolder {
+//        binding.formCoordinates.setIsBgTransparent(true)
         return CoordinateHolder(binding, processor, false, currentFocusUid)
     }
 
-    private fun provideTimeViewHolder(parent: ViewGroup): DateTimeHolder {
-        val binding: FormTimeTextBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.form_time_text,
-            parent,
-            false
-        )
-        binding.timeView.setIsBgTransparent(true)
+    private fun provideTimeViewHolder(binding: ViewDataBinding): DateTimeHolder {
+//        binding.timeView.setIsBgTransparent(true)
         return DateTimeHolder(binding, processor, false, currentFocusUid)
     }
 
-    private fun provideDateViewHolder(parent: ViewGroup): DateTimeHolder {
-        val binding: FormDateTextBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.form_date_text,
-            parent,
-            false
-        )
-        binding.dateView.setIsBgTransparent(true)
+    private fun provideDateViewHolder(binding: ViewDataBinding): DateTimeHolder {
+//        binding.dateView.setIsBgTransparent(true)
         return DateTimeHolder(binding, processor, false, currentFocusUid)
     }
 
-    private fun provideDateTimeViewHolder(parent: ViewGroup): DateTimeHolder {
-        val binding: FormDateTimeTextBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.form_date_time_text,
-            parent,
-            false
-        )
-        binding.dateTimeView.setIsBgTransparent(true)
+    private fun provideDateTimeViewHolder(binding: ViewDataBinding): DateTimeHolder {
+//        binding.dateTimeView.setIsBgTransparent(true)
         return DateTimeHolder(binding, processor, false, currentFocusUid)
     }
 
-    private fun provideDisplayViewHolder(parent: ViewGroup): DisplayHolder {
-        val binding: ItemIndicatorBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.item_indicator,
-            parent,
-            false
-        )
-
+    private fun provideDisplayViewHolder(binding: ViewDataBinding): DisplayHolder {
         return DisplayHolder(binding)
     }
 
-    private fun provideEditTextViewHolder(parent: ViewGroup): EditTextCustomHolder {
-        val binding: FormEditTextCustomBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.form_edit_text_custom,
-            parent,
-            false
-        )
-        binding.customEdittext.setLayoutData(true, false)
-        binding.customEdittext.setRenderType(renderType)
+    private fun provideEditTextViewHolder(binding: ViewDataBinding): EditTextCustomHolder {
+//        binding.customEdittext.setLayoutData(true, false)
+//        binding.customEdittext.setRenderType(renderType)
         return EditTextCustomHolder(binding, processor, false, currentFocusUid)
     }
 
-    private fun provideLongTextViewHolder(parent: ViewGroup): EditTextCustomHolder {
-        val binding: FormEditTextCustomBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.form_edit_text_custom,
-            parent,
-            false
-        )
-        binding.customEdittext.setLayoutData(true, true)
-        binding.customEdittext.setRenderType(renderType)
+    private fun provideLongTextViewHolder(binding: ViewDataBinding): EditTextCustomHolder {
+//        binding.customEdittext.setLayoutData(true, true)
+//        binding.customEdittext.setRenderType(renderType)
         return EditTextCustomHolder(binding, processor, false, currentFocusUid)
     }
 
-    private fun provideFileViewHolder(parent: ViewGroup): FileHolder {
-        val binding: FormButtonBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.form_button,
-            parent,
-            false
-        )
-        binding.formButton.setTextColor(
+    private fun provideFileViewHolder(binding: ViewDataBinding): FileHolder {
+        /*binding.formButton.setTextColor(
             ContextCompat.getColor(
                 parent.context,
                 R.color.colorPrimary
             )
-        )
+        )*/
         return FileHolder(binding, currentFocusUid)
     }
 
-    private fun provideImageViewHolder(parent: ViewGroup): ImageHolder {
-        val binding: FormImageBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.form_image,
-            parent,
-            false
-        )
+    private fun provideImageViewHolder(binding: ViewDataBinding): ImageHolder {
+        /* var height: Int? = null
+         val parentHeight: Int = parent.height
+         sectionRendering?.let {
+             when (it) {
+                 ProgramStageSectionRenderingType.SEQUENTIAL.name -> {
+                     height = parentHeight / if (totalFields > 2) 3 else totalFields
+                 }
+                 ProgramStageSectionRenderingType.MATRIX.name -> {
+                     height = parentHeight / (totalFields / 2 + 1)
+                 }
+             }
+         }
 
-        var height: Int? = null
-        val parentHeight: Int = parent.height
-        sectionRendering?.let {
-            when (it) {
-                ProgramStageSectionRenderingType.SEQUENTIAL.name -> {
-                    height = parentHeight / if (totalFields > 2) 3 else totalFields
-                }
-                ProgramStageSectionRenderingType.MATRIX.name -> {
-                    height = parentHeight / (totalFields / 2 + 1)
-                }
-            }
-        }
-
-        height?.let {
-            val rootView = binding.root
-            val layoutParams = rootView.layoutParams
-            layoutParams.height = it
-            rootView.layoutParams = layoutParams
-        }
+         height?.let {
+             val rootView = binding.root
+             val layoutParams = rootView.layoutParams
+             layoutParams.height = it
+             rootView.layoutParams = layoutParams
+         }*/
 
         return ImageHolder(binding, processor, imageSelector)
     }
 
-    private fun provideOptionSetViewHolder(parent: ViewGroup): OptionSetHolder {
-        val binding: FormOptionSetSelectorBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.form_option_set_selector,
-            parent,
-            false
-        )
-        binding.optionSetSelectionView.setLayoutData(true, renderType)
+    private fun provideOptionSetViewHolder(binding: ViewDataBinding): OptionSetHolder {
+//        binding.optionSetSelectionView.setLayoutData(true, renderType)
         return OptionSetHolder(binding, processor, true, currentFocusUid)
     }
 
-    private fun provideOrgUnitViewHolder(parent: ViewGroup): OrgUnitHolder {
-        val binding: FormOrgUnitBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.form_org_unit,
-            parent,
-            false
-        )
-        binding.orgUnitView.setLayoutData(true, renderType)
-        binding.orgUnitView.setFragmentManager(fragmentManager)
+    private fun provideOrgUnitViewHolder(binding: ViewDataBinding): OrgUnitHolder {
+//        binding.orgUnitView.setLayoutData(true, renderType)
+//        binding.orgUnitView.setFragmentManager(fragmentManager)
         return OrgUnitHolder(binding, processor, false, currentFocusUid)
     }
 
-    private fun providePictureViewHolder(parent: ViewGroup): PictureHolder {
-        val binding: CustomFormPictureBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.custom_form_picture,
-            parent,
-            false
-        )
-        binding.formPictures.setIsBgTransparent(true)
-        binding.formPictures.setFragmentManager(fragmentManager)
-        val onIntentSelected = binding.formPictures.context as OnIntentSelected
-        return PictureHolder(onIntentSelected, binding, processor, false)
+    private fun providePictureViewHolder(binding: ViewDataBinding): PictureHolder {
+//        binding.formPictures.setIsBgTransparent(true)
+//        binding.formPictures.setFragmentManager(fragmentManager)
+//        val onIntentSelected = binding.formPictures.context as OnIntentSelected
+        return PictureHolder(binding, processor, false)
     }
 
-    private fun provideYesNoViewHolder(parent: ViewGroup): RadioButtonHolder {
-        val binding: FormYesNoBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.form_yes_no,
-            parent,
-            false
-        )
-        binding.customYesNo.setIsBgTransparent(true)
+    private fun provideYesNoViewHolder(binding: ViewDataBinding): RadioButtonHolder {
+//        binding.customYesNo.setIsBgTransparent(true)
         return RadioButtonHolder(binding, processor, false, currentFocusUid)
     }
 
-    private fun provideScanViewHolder(parent: ViewGroup): ScanTextHolder {
-        val binding: FormScanBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.form_scan,
-            parent,
-            false
-        )
-        binding.scanTextView.setLayoutData(true)
+    private fun provideScanViewHolder(binding: ViewDataBinding): ScanTextHolder {
+//        binding.scanTextView.setLayoutData(true)
         return ScanTextHolder(binding, processor, false, currentFocusUid)
     }
 
-    private fun provideSectionViewHolder(parent: ViewGroup): SectionHolder {
-        val binding: FormSectionBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.form_section,
-            parent,
-            false
-        )
+    private fun provideSectionViewHolder(binding: ViewDataBinding): SectionHolder {
         return SectionHolder(binding, selectedSection, sectionProcessor)
     }
 
-    private fun provideSpinnerViewHolder(parent: ViewGroup): SpinnerHolder {
-        val binding: FormOptionSetBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.form_option_set,
-            parent,
-            false
-        )
-        binding.optionSetView.setLayoutData(true, renderType)
+    private fun provideSpinnerViewHolder(binding: ViewDataBinding): SpinnerHolder {
+//        binding.optionSetView.setLayoutData(true, renderType)
         return SpinnerHolder(binding, processor, false, currentFocusUid)
     }
 
-    private fun provideUnsupportedViewHolder(parent: ViewGroup): UnsupportedHolder {
-        val binding: FormUnsupportedCustomBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.form_unsupported_custom,
-            parent,
-            false
-        )
+    private fun provideUnsupportedViewHolder(binding: ViewDataBinding): UnsupportedHolder {
         return UnsupportedHolder(binding)
     }
 }
