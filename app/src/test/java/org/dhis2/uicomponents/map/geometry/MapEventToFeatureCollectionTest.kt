@@ -6,7 +6,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
+import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox
 import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.hamcrest.CoreMatchers.`is`
@@ -20,7 +20,7 @@ import org.junit.Test
 class MapEventToFeatureCollectionTest {
 
     private val mapGeometryToFeature: MapGeometryToFeature = mock()
-    private val bounds: BoundsGeometry = mock()
+    private val bounds: GetBoundingBox = mock()
     private lateinit var mapEventToFeatureCollection: MapEventToFeatureCollection
 
     @Before
