@@ -88,7 +88,7 @@ class FilterRepository @Inject constructor(private val d2: D2) {
         datePeriod: DatePeriod
     ): TrackedEntityInstanceQueryCollectionRepository {
         return repository.byProgramStartDate().eq(datePeriod.startDate())
-            .byProgramStartDate().eq(datePeriod.endDate())
+            .byProgramEndDate().eq(datePeriod.endDate())
     }
 
     fun applyAssignToMe(
