@@ -214,7 +214,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         filtersAdapter.addEnrollmentStatus();
         filtersAdapter.addEventStatus();
         try {
-            binding.filterLayout.setAdapter(filtersAdapter);
+            binding.filterRecyclerLayout.setAdapter(filtersAdapter);
 
         } catch (Exception e) {
             Timber.e(e);
@@ -792,7 +792,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void showHideFilter() {
-        binding.filterLayout.setVisibility(View.GONE);
+        binding.filterRecyclerLayout.setVisibility(View.GONE);
         binding.formRecycler.setVisibility(View.VISIBLE);
 
         swipeFilters(false);
@@ -800,7 +800,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void showHideFilterGeneral() {
-        binding.filterLayout.setVisibility(View.VISIBLE);
+        binding.filterRecyclerLayout.setVisibility(View.VISIBLE);
         binding.formRecycler.setVisibility(View.GONE);
 
         swipeFilters(true);
@@ -829,7 +829,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         initSet.clone(binding.backdropLayout);
 
         if (backDropActive) {
-            initSet.connect(R.id.mainLayout, ConstraintSet.TOP, general ? R.id.filterLayout : R.id.form_recycler, ConstraintSet.BOTTOM, 50);
+            initSet.connect(R.id.mainLayout, ConstraintSet.TOP, general ? R.id.filterRecyclerLayout : R.id.form_recycler, ConstraintSet.BOTTOM, 50);
         } else {
             initSet.connect(R.id.mainLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
         }
