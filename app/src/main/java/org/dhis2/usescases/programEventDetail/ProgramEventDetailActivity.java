@@ -25,7 +25,6 @@ import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
 import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerView;
@@ -390,38 +389,35 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setMap(ProgramEventMapData mapData) {
-        eventMapManager.init(() -> {
-            eventMapManager.update(
-                    mapData.getFeatureCollectionMap(),
-                    mapData.getBoundingBox()
-            );
-            if (binding.mapCarousel.getAdapter() == null) {
-                CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
-                        .addOnSyncClickListener(
-                                teiUid -> {
-                                    if (binding.mapCarousel.getCarouselEnabled()) {
-                                        presenter.onSyncIconClick(teiUid);
-                                    }
-                                    return true;
-                                })
-                        .addOnEventClickListener((teiUid, orgUnit, eventUid) -> {
-                            if (binding.mapCarousel.getCarouselEnabled()) {
-                                presenter.onEventClick(teiUid, orgUnit);
-                            }
-                            return true;
-                        })
-                        .build();
-                binding.mapCarousel.setAdapter(carouselAdapter);
-                binding.mapCarousel.attachToMapManager(eventMapManager, () -> true);
-                carouselAdapter.addItems(mapData.getEvents());
-            } else {
-                ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(mapData.getEvents());
-            }
+        eventMapManager.update(
+                mapData.getFeatureCollectionMap(),
+                mapData.getBoundingBox()
+        );
+        if (binding.mapCarousel.getAdapter() == null) {
+            CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
+                    .addOnSyncClickListener(
+                            teiUid -> {
+                                if (binding.mapCarousel.getCarouselEnabled()) {
+                                    presenter.onSyncIconClick(teiUid);
+                                }
+                                return true;
+                            })
+                    .addOnEventClickListener((teiUid, orgUnit, eventUid) -> {
+                        if (binding.mapCarousel.getCarouselEnabled()) {
+                            presenter.onEventClick(teiUid, orgUnit);
+                        }
+                        return true;
+                    })
+                    .build();
+            binding.mapCarousel.setAdapter(carouselAdapter);
+            binding.mapCarousel.attachToMapManager(eventMapManager, () -> true);
+            carouselAdapter.addItems(mapData.getEvents());
+        } else {
+            ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(mapData.getEvents(), eventMapManager.mapLayerManager);
+        }
 
-            eventMapManager.mapLayerManager.selectFeature(null);
-            binding.mapLayerButton.setVisibility(View.VISIBLE);
-            return Unit.INSTANCE;
-        });
+        eventMapManager.mapLayerManager.selectFeature(null);
+        binding.mapLayerButton.setVisibility(View.VISIBLE);
 
         animations.endMapLoading(binding.mapCarousel);
         binding.toolbarProgress.hide();
@@ -541,7 +537,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         if (showMap) {
             binding.toolbarProgress.setVisibility(View.VISIBLE);
             binding.toolbarProgress.show();
-            presenter.getMapData();
+            eventMapManager.init(() -> {
+                presenter.getMapData();
+                return Unit.INSTANCE;
+            });
         } else {
             binding.mapLayerButton.setVisibility(View.GONE);
         }

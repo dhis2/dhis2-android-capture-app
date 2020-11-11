@@ -17,7 +17,10 @@ import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
 import org.dhis2.uicomponents.map.geometry.line.MapLineRelationshipToFeature;
 import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature;
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeatureCollection;
+import org.dhis2.uicomponents.map.geometry.mapper.feature.MapCoordinateFieldToFeature;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapAttributeToFeature;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeature;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection;
@@ -66,10 +69,10 @@ public class SearchTEModule {
                                                        AnalyticsHelper analyticsHelper,
                                                        MapTeisToFeatureCollection mapTeisToFeatureCollection,
                                                        MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
-                                                       MapDataElementToFeatureCollection mapDataElementToFeatureCollection,
+                                                       MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
                                                        PreferenceProvider preferenceProvider) {
         return new SearchTEPresenter(view, d2, mapUtils, searchRepository, schedulerProvider,
-                analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapDataElementToFeatureCollection,
+                analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapCoordinateFieldToFeatureCollection,
                 new EventToEventUiComponent(), preferenceProvider);
     }
 
@@ -104,15 +107,20 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    MapDataElementToFeatureCollection provideMapDataElementToFeatureCollection(MapGeometryToFeature mapGeometryToFeature) {
-        return new MapDataElementToFeatureCollection(mapGeometryToFeature,
-                new BoundsGeometry(0.0, 0.0, 0.0, 0.0));
+    MapCoordinateFieldToFeatureCollection provideMapDataElementToFeatureCollection(MapAttributeToFeature attributeToFeatureMapper, MapDataElementToFeature dataElementToFeatureMapper) {
+        return new MapCoordinateFieldToFeatureCollection(dataElementToFeatureMapper, attributeToFeatureMapper);
     }
 
     @Provides
     @PerActivity
     MapGeometryToFeature provideMapGeometryToFeature() {
         return new MapGeometryToFeature(new MapPointToFeature(), new MapPolygonToFeature());
+    }
+
+    @Provides
+    @PerActivity
+    MapCoordinateFieldToFeature provideMapCoordinateFieldToFeature(MapGeometryToFeature mapGeometryToFeature) {
+        return new MapCoordinateFieldToFeature(mapGeometryToFeature);
     }
 
     @Provides
