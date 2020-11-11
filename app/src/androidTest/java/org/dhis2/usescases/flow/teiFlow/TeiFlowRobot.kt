@@ -2,8 +2,7 @@ package org.dhis2.usescases.flow.teiFlow
 
 
 import org.dhis2.common.BaseRobot
-import org.dhis2.usescases.enrollment.EnrollmentActivity
-import org.dhis2.usescases.searchte.searchTeiRobot
+import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
@@ -25,11 +24,11 @@ class TeiFlowRobot : BaseRobot() {
             typeAttributeAtPosition(registrationModel.name, 0)
             typeAttributeAtPosition(registrationModel.lastName, 1)
             clickOnDateField()
-            selectSpecificDate(registrationDate.year,registrationDate.month,registrationDate.day)
+            selectSpecificDate(registrationDate.year, registrationDate.month, registrationDate.day)
             acceptDate()
             clickOnFab()
             clickOnFab()
-            selectSpecificDate(enrollmentDate.year,enrollmentDate.month,enrollmentDate.day)
+            selectSpecificDate(enrollmentDate.year, enrollmentDate.month, enrollmentDate.day)
             acceptDate()
         }
 

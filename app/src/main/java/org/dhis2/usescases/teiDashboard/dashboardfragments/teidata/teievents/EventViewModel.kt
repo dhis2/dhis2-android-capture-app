@@ -23,6 +23,14 @@ data class EventViewModel(
     fun toggleValueList() {
         this.valueListIsOpen = !valueListIsOpen
     }
+
+    fun canShowAddButton(): Boolean {
+        return if (type == EventViewModelType.STAGE) {
+            canAddNewEvent && (isSelected || eventCount == 0)
+        } else {
+            true
+        }
+    }
 }
 
 fun List<EventViewModel>.uids(): List<String> {

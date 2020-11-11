@@ -65,7 +65,7 @@ class MapTeisToFeatureCollectionTest {
             bounds
         )
 
-        val result = mapTeisToFeatureCollection.map(teiList)
+        val result = mapTeisToFeatureCollection.map(teiList, true)
         val featureCollectionResults = result?.first?.get(TEI)
 
         val pointFeatureResult = featureCollectionResults?.features()?.get(0)?.geometry() as Point
@@ -98,7 +98,7 @@ class MapTeisToFeatureCollectionTest {
             boundingBox.getEnclosingBoundingBox(listOf())
         )
 
-        val result = mapTeisToFeatureCollection.map(teiList)
+        val result = mapTeisToFeatureCollection.map(teiList, true)
         val featureCollectionResults =
             result?.first?.get(RelationshipUiCompomentDummy.DISPLAY_NAME_FIRST)
 
@@ -141,7 +141,7 @@ class MapTeisToFeatureCollectionTest {
             )
         ) doReturn Pair(enrollmentFeaturePoint, bounds)
 
-        val result = mapTeisToFeatureCollection.map(teiList)
+        val result = mapTeisToFeatureCollection.map(teiList, true)
         val featureTeiCollectionResults = result?.first?.get(TEI)
         val featureEnrollmentCollectionResults = result?.first?.get(ENROLLMENT)
 
@@ -177,7 +177,7 @@ class MapTeisToFeatureCollectionTest {
         ) doReturn Pair(enrollmentFeaturePoint, bounds)
         whenever(mapPolygonPointToFeature.map(any())) doReturn enrollmentFeaturePoint
 
-        val result = mapTeisToFeatureCollection.map(teiList)
+        val result = mapTeisToFeatureCollection.map(teiList, true)
         val featureTeiCollectionResults = result?.first?.get(TEI)
         val featureEnrollmentCollectionResults = result?.first?.get(ENROLLMENT)
 

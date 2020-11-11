@@ -15,6 +15,8 @@ import org.dhis2.utils.Validator;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsModule;
+import org.dhis2.utils.reporting.CrashReportController;
+import org.dhis2.utils.reporting.CrashReportModule;
 import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -30,8 +32,14 @@ import dagger.Component;
  */
 @Singleton
 @Component(modules = {
-        AppModule.class, SchedulerModule.class, AnalyticsModule.class, PreferenceModule.class, WorkManagerModule.class,
-        MatomoAnalyticsModule.class, ValidatorModule.class
+        AppModule.class,
+        SchedulerModule.class,
+        AnalyticsModule.class,
+        PreferenceModule.class,
+        WorkManagerModule.class,
+        MatomoAnalyticsModule.class,
+        ValidatorModule.class,
+        CrashReportModule.class
 })
 public interface AppComponent {
 
@@ -47,10 +55,14 @@ public interface AppComponent {
 
         Builder workManagerController(WorkManagerModule workManagerModule);
 
+        Builder crashReportModule(CrashReportModule crashReportModule);
+
         AppComponent build();
     }
 
     Map<ValueType, Validator> injectValidators();
+
+    CrashReportController injectCrashReportController();
 
     PreferenceProvider preferenceProvider();
 
