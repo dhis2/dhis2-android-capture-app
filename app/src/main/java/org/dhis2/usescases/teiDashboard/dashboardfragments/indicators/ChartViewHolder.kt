@@ -1,6 +1,8 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 
 import androidx.recyclerview.widget.RecyclerView
+import dhis2.org.analytics.charts.data.ChartType
+import dhis2.org.analytics.charts.data.toChartBuilder
 import org.dhis2.data.analytics.AnalyticsModel
 import org.dhis2.databinding.ItemChartBinding
 
@@ -10,11 +12,11 @@ class ChartViewHolder(
 
     fun bind(chart: AnalyticsModel.ChartModel) {
         binding.chartTitle.text = chart.graph.title
-        /*val chartView = chart.graph.toChartBuilder()
+        val chartView = chart.graph.toChartBuilder()
             .withType(ChartType.LINE_CHART)
             .withGraphData(chart.graph)
             .build().getChartView(binding.root.context)
         binding.chartContainer.removeAllViews()
-        binding.chartContainer.addView(chartView)*/
+        binding.chartContainer.addView(chartView)
     }
 }
