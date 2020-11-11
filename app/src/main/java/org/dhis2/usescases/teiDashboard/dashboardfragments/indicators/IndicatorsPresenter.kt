@@ -5,6 +5,8 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
+import org.dhis2.data.analytics.AnalyticsModel
+import org.dhis2.data.analytics.IndicatorModel
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.tuples.Pair
@@ -54,9 +56,9 @@ class IndicatorsPresenter(
         view.displayMessage("Analytic module is ready: ${charts?.hasCharts() ?: false} ")
 
         compositeDisposable.add(
-            Flowable.zip<List<Trio<ProgramIndicator, String, String>>?,
-                List<Trio<ProgramIndicator, String, String>>?,
-                List<Trio<ProgramIndicator, String, String>>>(
+            Flowable.zip<List<AnalyticsModel>?,
+                    List<AnalyticsModel>?,
+                    List<AnalyticsModel>>(
                 getIndicators(),
                 getRulesIndicators(),
                 BiFunction { indicators, ruleIndicators ->
@@ -66,7 +68,7 @@ class IndicatorsPresenter(
                             indicatorsMutable.add(indicator)
                         }
                     }
-                    return@BiFunction indicatorsMutable.sortedBy { it.val0()?.displayName() }
+                    return@BiFunction indicatorsMutable.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
                 }
             )
                 .subscribeOn(schedulerProvider.io())
@@ -78,7 +80,7 @@ class IndicatorsPresenter(
         )
     }
 
-    private fun getIndicators(): Flowable<List<Trio<ProgramIndicator, String, String>>> {
+    private fun getIndicators(): Flowable<List<AnalyticsModel>> {
         return dashboardRepository.getIndicators(programUid)
             .filter { !DhisTextUtils.isEmpty(enrollmentUid) }
             .map { indicators ->
@@ -101,12 +103,14 @@ class IndicatorsPresenter(
                     .flatMap {
                         dashboardRepository
                             .getLegendColorForIndicator(it.val0(), it.val1())
+                    }.map {
+                        IndicatorModel(it.val0(), it.val1(), it.val2())
                     }
                     .toList()
             }.flatMap { it.toFlowable() }
     }
 
-    private fun getRulesIndicators(): Flowable<List<Trio<ProgramIndicator, String, String>>> =
+    private fun getRulesIndicators(): Flowable<List<AnalyticsModel>> =
         d2.programModule().programRules().byProgramUid().eq(programUid).get()
             .map { UidsHelper.getUidsList(it) }
             .flatMap {
@@ -120,53 +124,54 @@ class IndicatorsPresenter(
             }
             .flatMapPublisher { ruleAction ->
                 if (ruleAction.isEmpty()) {
-                    return@flatMapPublisher Flowable.just<List<Trio<ProgramIndicator,
-                                String, String>>>(listOf())
+                    return@flatMapPublisher Flowable.just<List<AnalyticsModel>>(listOf())
                 } else {
                     return@flatMapPublisher ruleEngineRepository.updateRuleEngine()
                         .flatMap { ruleEngineRepository.reCalculate() }
-                        .map {
+                        .map { effects ->
                             // Restart rule engine to take into account value changes
-                            applyRuleEffects(it)
+                            applyRuleEffects(effects).map {
+                                IndicatorModel(it.val0(), it.val1(), it.val2())
+                            }
                         }
                 }
             }
 
     private fun applyRuleEffects(calcResult: Result<RuleEffect>):
-        List<Trio<ProgramIndicator, String, String>> {
-            val indicators = arrayListOf<Trio<ProgramIndicator, String, String>>()
+            List<Trio<ProgramIndicator, String, String>> {
+        val indicators = arrayListOf<Trio<ProgramIndicator, String, String>>()
 
-            if (calcResult.error() != null) {
-                Timber.e(calcResult.error())
-                return arrayListOf()
-            }
+        if (calcResult.error() != null) {
+            Timber.e(calcResult.error())
+            return arrayListOf()
+        }
 
-            for (ruleEffect in calcResult.items()) {
-                val ruleAction = ruleEffect.ruleAction()
-                if (!ruleEffect.data().contains("#{")) {
-                    if (ruleAction is RuleActionDisplayKeyValuePair) {
-                        val indicator = Trio.create(
-                            ProgramIndicator.builder()
-                                .uid((ruleAction).content())
-                                .displayName((ruleAction).content())
-                                .build(),
-                            ruleEffect.data(), ""
-                        )
+        for (ruleEffect in calcResult.items()) {
+            val ruleAction = ruleEffect.ruleAction()
+            if (!ruleEffect.data().contains("#{")) {
+                if (ruleAction is RuleActionDisplayKeyValuePair) {
+                    val indicator = Trio.create(
+                        ProgramIndicator.builder()
+                            .uid((ruleAction).content())
+                            .displayName((ruleAction).content())
+                            .build(),
+                        ruleEffect.data(), ""
+                    )
 
-                        indicators.add(indicator)
-                    } else if (ruleAction is RuleActionDisplayText) {
-                        val indicator: Trio<ProgramIndicator, String, String> = Trio.create(
-                            null,
-                            ruleAction.content() + ruleEffect.data(), ""
-                        )
+                    indicators.add(indicator)
+                } else if (ruleAction is RuleActionDisplayText) {
+                    val indicator: Trio<ProgramIndicator, String, String> = Trio.create(
+                        null,
+                        ruleAction.content() + ruleEffect.data(), ""
+                    )
 
-                        indicators.add(indicator)
-                    }
+                    indicators.add(indicator)
                 }
             }
-
-            return indicators
         }
+
+        return indicators
+    }
 
     fun onDettach() = compositeDisposable.clear()
 

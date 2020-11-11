@@ -7,15 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import dhis2.org.analytics.charts.data.Graph
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.analytics.AnalyticsModel
-import org.dhis2.data.tuples.Trio
+import org.dhis2.data.analytics.ChartModel
+import org.dhis2.data.analytics.IndicatorModel
 import org.dhis2.databinding.FragmentIndicatorsBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import org.hisp.dhis.android.core.program.ProgramIndicator
+import javax.inject.Inject
 
 class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
 
@@ -65,10 +65,8 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
         super.onPause()
     }
 
-    override fun swapIndicators(indicators: List<Trio<ProgramIndicator, String, String>>) {
-        adapter.setIndicators(
-            indicators.map { AnalyticsModel.IndicatorModel(it.val0(), it.val1(), it.val2()) }
-        )
+    override fun swapIndicators(indicators: List<AnalyticsModel>) {
+        adapter.setIndicators(indicators as List<IndicatorModel>)
 
         binding.spinner.visibility = View.GONE
 
@@ -80,6 +78,6 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
     }
 
     override fun showGraphs(charts: List<Graph>?) {
-        charts?.let { adapter.setCharts(charts.map { AnalyticsModel.ChartModel(it) }) }
+        charts?.let { adapter.setCharts(charts.map { ChartModel(it) }) }
     }
 }

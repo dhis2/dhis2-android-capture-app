@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.BR
 import org.dhis2.R
 import org.dhis2.data.analytics.AnalyticsModel
+import org.dhis2.data.analytics.IndicatorModel
 import org.dhis2.databinding.ItemIndicatorBinding
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
@@ -15,7 +16,7 @@ class IndicatorViewHolder(
     val binding: ItemIndicatorBinding
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(programIndicatorModel: AnalyticsModel.IndicatorModel) {
+    fun bind(programIndicatorModel: IndicatorModel) {
         if (programIndicatorModel.programIndicator == null) {
             val params = binding.guideline.layoutParams as ConstraintLayout.LayoutParams
             params.guidePercent = 0F
