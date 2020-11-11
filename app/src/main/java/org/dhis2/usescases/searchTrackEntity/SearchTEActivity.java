@@ -21,6 +21,7 @@ import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -40,6 +41,7 @@ import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.geojson.Feature;
@@ -76,7 +78,6 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
-import org.dhis2.utils.customviews.DhisBottomNavigationOption;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.customviews.ScanTextView;
 import org.dhis2.utils.filters.FilterManager;
@@ -183,6 +184,23 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.setNeedsSearch(needsSearch);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         binding.setTotalFiltersSearch(presenter.getQueryData().size());
+        binding.navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.navigation_list_view:
+                        showMap(false);
+                        break;
+                    case R.id.navigation_map_view:
+                        if (backDropActive) {
+                            closeFilters();
+                        }
+                        showMap(true);
+                        break;
+                }
+                return false;
+            }
+        });
         try {
             fromRelationship = getIntent().getBooleanExtra("FROM_RELATIONSHIP", false);
             fromRelationshipTeiUid = getIntent().getStringExtra("FROM_RELATIONSHIP_TEI");
