@@ -17,7 +17,6 @@ import org.dhis2.utils.RulesUtilsProvider
 import org.dhis2.utils.RulesUtilsProviderImpl
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.AnalyticsInterceptor
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsControllerImpl
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.D2Configuration
 import org.hisp.dhis.android.core.D2Manager
@@ -60,14 +59,13 @@ class ServerModule {
         fun getD2Configuration(context: Context): D2Configuration {
             val interceptors: MutableList<Interceptor> =
                 ArrayList()
-            val matomoTracker = (context as App).tracker
             interceptors.add(StethoInterceptor())
             interceptors.add(
                 AnalyticsInterceptor(
                     AnalyticsHelper(
                         FirebaseAnalytics.getInstance(context),
                         PreferenceProviderImpl(context),
-                        MatomoAnalyticsControllerImpl(matomoTracker)
+                        (context as App).appComponent().matomoController()
                     )
                 )
             )

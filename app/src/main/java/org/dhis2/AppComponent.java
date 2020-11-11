@@ -13,6 +13,7 @@ import org.dhis2.usescases.splash.SplashComponent;
 import org.dhis2.usescases.splash.SplashModule;
 import org.dhis2.utils.Validator;
 import org.dhis2.utils.analytics.AnalyticsModule;
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsModule;
 import org.dhis2.utils.reporting.CrashReportController;
 import org.dhis2.utils.reporting.CrashReportModule;
@@ -64,6 +65,8 @@ public interface AppComponent {
     CrashReportController injectCrashReportController();
 
     PreferenceProvider preferenceProvider();
+
+    MatomoAnalyticsController matomoController();
 
     //injection targets
     void inject(App app);

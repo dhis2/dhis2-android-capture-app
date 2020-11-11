@@ -110,7 +110,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     private boolean fromBackGround = false;
     private boolean recreated;
-    private Tracker matomoTracker;
 
     @Override
     public void onCreate() {
@@ -133,22 +132,13 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         setUpRxPlugin();
         initAcra();
         initCustomCrashActivity();
-        if (getTracker() != null) {
-            TrackHelper.track().download().identifier(new DownloadTracker.Extra.ApkChecksum(this)).with(getTracker());
-        }
+        appComponent.matomoController().trackDownload();
     }
 
     private void initCustomCrashActivity() {
         CaocConfig.Builder.create()
                 .errorDrawable(R.drawable.ic_dhis)
                 .apply();
-    }
-
-    public synchronized Tracker getTracker() {
-        if (matomoTracker == null) {
-            matomoTracker = TrackerController.Companion.generateTracker(this);
-        }
-        return matomoTracker;
     }
 
     private void upgradeSecurityProviderSync() {
