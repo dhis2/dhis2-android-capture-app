@@ -184,22 +184,19 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.setNeedsSearch(needsSearch);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         binding.setTotalFiltersSearch(presenter.getQueryData().size());
-        binding.navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.navigation_list_view:
-                        showMap(false);
-                        break;
-                    case R.id.navigation_map_view:
-                        if (backDropActive) {
-                            closeFilters();
-                        }
-                        showMap(true);
-                        break;
-                }
-                return false;
+        binding.navigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()){
+                case R.id.navigation_list_view:
+                    showMap(false);
+                    break;
+                case R.id.navigation_map_view:
+                    if (backDropActive) {
+                        closeFilters();
+                    }
+                    showMap(true);
+                    break;
             }
+            return true;
         });
         try {
             fromRelationship = getIntent().getBooleanExtra("FROM_RELATIONSHIP", false);
