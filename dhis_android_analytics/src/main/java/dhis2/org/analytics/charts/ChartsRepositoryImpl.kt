@@ -2,11 +2,10 @@ package dhis2.org.analytics.charts
 
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.GraphPoint
-import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.period.PeriodType
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.Date
+import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.period.PeriodType
 
 class ChartsRepositoryImpl(
     private val d2: D2,
@@ -28,8 +27,9 @@ class ChartsRepositoryImpl(
                         )
                     }
 
+                    val period = programStage.periodType() ?: PeriodType.Daily
                     Graph(
-                        "${programStage.periodType()?.name?:PeriodType.Daily.name}-${dataElement.displayFormName()}",
+                        "${period.name}-${dataElement.displayFormName()}",
                         false,
                         coordinates,
                         "",
@@ -40,12 +40,12 @@ class ChartsRepositoryImpl(
             }.flatten()
     }
 
-    private fun formattedDate(date: Date):Date{
+    private fun formattedDate(date: Date): Date {
         return try {
             val formattedDateString = SimpleDateFormat("yyyy-MM-dd").format(date)
             val formattedDate = SimpleDateFormat("yyyy-MM-dd").parse(formattedDateString)
-            formattedDate?:date
-        }catch (e:Exception){
+            formattedDate ?: date
+        } catch (e: Exception) {
             date
         }
     }
