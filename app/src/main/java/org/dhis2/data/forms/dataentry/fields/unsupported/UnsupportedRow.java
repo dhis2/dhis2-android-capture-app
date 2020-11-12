@@ -27,6 +27,6 @@ public class UnsupportedRow implements Row<UnsupportedHolder, UnsupportedViewMod
 
     @Override
     public void onBind(@NonNull UnsupportedHolder viewHolder, @NonNull UnsupportedViewModel viewModel) {
-        viewHolder.update(viewModel);
+        viewHolder.bind(viewModel);
     }
 }

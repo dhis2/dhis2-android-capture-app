@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -19,6 +18,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.dhis2.BR;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.databinding.CustomTextViewAccentBinding;
 import org.dhis2.databinding.CustomTextViewBinding;
 import org.dhis2.utils.ColorUtils;
@@ -200,5 +201,27 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
 
     public interface OnDataChanged {
         void onDataChanged(String orgUnitUid);
+    }
+
+    public void setViewModel(OrgUnitViewModel viewModel) {
+        setLayoutData(viewModel.isBackgroundTransparent(), viewModel.renderType());
+//        setFragmentManager(binding.getRoot());
+        setLabel(viewModel.label(), viewModel.mandatory());
+        setDescription(viewModel.description());
+        setWarning(viewModel.warning(), viewModel.error());
+
+        String uid_value_name = viewModel.value();
+        String ouUid = null;
+        String ouName = null;
+        if (!isEmpty(uid_value_name)) {
+            ouUid = uid_value_name.split("_ou_")[0];
+            ouName = uid_value_name.split("_ou_")[1];
+        }
+        setValue(ouUid, ouName);
+        getEditText().setText(ouName);
+        
+        updateEditable(viewModel.editable());
+        setListener(viewModel::onDataChange);
+        setActivationListener(viewModel::onActivate);
     }
 }

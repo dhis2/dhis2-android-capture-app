@@ -3,6 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="item"
+            type="org.dhis2.data.forms.dataentry.fields.section.SectionViewModel" />
+
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -28,6 +38,7 @@
             android:minHeight="48dp"
             android:paddingStart="16dp"
             android:paddingEnd="15dp"
+            android:visibility="@{item.isClosingSection() ? View.GONE : View.VISIBLE}"
             app:layout_constraintTop_toBottomOf="@id/shadow_bottom">
 
             <ImageView
@@ -61,6 +72,7 @@
                 android:layout_marginStart="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:text="@{item.label()}"
                 android:textColor="@color/textPrimary"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -100,8 +112,10 @@
                     android:padding="4dp"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
-                    android:textColor="@color/placeholder"
+                    android:text="@{item.getFormattedSectionFieldsInfo()}"
+                    android:textColor="@{item.areAllFieldsCompleted() ? @color/colorPrimary : @color/placeholder}"
                     android:textSize="12sp"
+                    android:visibility="@{item.hasNotAnyErrorOrWarning() ? View.VISIBLE : View.GONE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="2/6" />
@@ -110,8 +124,10 @@
                     android:id="@+id/sectionFieldsWarningInfo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@{item.warnings().toString()}"
                     android:textColor="@color/white"
                     android:textSize="12sp"
+                    android:visibility="@{item.warnings() == null ? View.GONE : View.VISIBLE}"
                     app:chipBackgroundColor="@color/section_warning_color"
                     app:chipIcon="@drawable/ic_menu_info"
                     app:chipIconTint="@color/white"
@@ -123,8 +139,10 @@
                     android:id="@+id/sectionFieldsErrorInfo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@{item.errors().toString()}"
                     android:textColor="@color/white"
                     android:textSize="12sp"
+                    android:visibility="@{item.hasOnlyErrors() ? View.VISIBLE : View.GONE}"
                     app:chipBackgroundColor="@color/section_error_color"
                     app:chipIcon="@drawable/ic_menu_info"
                     app:chipIconTint="@color/white"
@@ -136,8 +154,10 @@
                     android:id="@+id/sectionFieldsWarningErrorInfo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@{item.errors().toString()}"
                     android:textColor="@color/white"
                     android:textSize="12sp"
+                    android:visibility="@{item.hasErrorAndWarnings() ? View.VISIBLE : View.GONE}"
                     app:chipBackgroundColor="@color/section_error_color"
                     app:chipIcon="@drawable/ic_menu_info"
                     app:chipIconTint="@color/white"
@@ -151,6 +171,7 @@
                 android:id="@+id/openIndicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:scaleY="@{item.isOpen ? 1f : -1f}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -165,6 +186,7 @@
             android:background="@color/white"
             android:paddingStart="16dp"
             android:paddingEnd="15dp"
+            android:visibility="@{item.isClosingSection() ? View.VISIBLE : View.GONE}"
             app:layout_constraintTop_toBottomOf="@id/section_details" />
 
         <ImageView
@@ -174,7 +196,7 @@
             android:background="@color/form_field_background"
             android:scaleType="fitXY"
             android:src="@drawable/inner_shadow_top"
-            android:visibility="gone"
+            android:visibility="@{item.isOpen() ? View.VISIBLE : View.GONE}"
             app:layout_constraintTop_toBottomOf="@id/last_section_details"
             tools:visibility="visible" />
 
@@ -183,10 +205,9 @@
             android:layout_width="match_parent"
             android:layout_height="8dp"
             android:background="@drawable/shadow"
-            android:visibility="gone"
+            android:visibility="@{item.isClosingSection() ? View.VISIBLE : View.GONE}"
             app:layout_constraintTop_toBottomOf="@id/last_section_details"
             tools:visibility="visible" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </layout>

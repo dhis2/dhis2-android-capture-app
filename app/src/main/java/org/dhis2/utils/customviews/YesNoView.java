@@ -21,6 +21,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import org.dhis2.BR;
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.utils.ColorUtils;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
@@ -195,7 +196,7 @@ public class YesNoView extends FieldLayout {
         labelView = findViewById(R.id.label);
 
         clearButton.setOnClickListener(v -> {
-            if(valueListener!=null){
+            if (valueListener != null) {
                 valueListener.onClearValue();
             }
         });
@@ -234,9 +235,9 @@ public class YesNoView extends FieldLayout {
             }
             if (!changingChecks && valueListener != null) {
                 boolean anyCheck = checkYes.isChecked() || checkNo.isChecked();
-                if(anyCheck){
+                if (anyCheck) {
                     valueListener.onValueChanged(checkYes.isChecked());
-                }else{
+                } else {
                     valueListener.onClearValue();
                 }
             }
@@ -244,9 +245,9 @@ public class YesNoView extends FieldLayout {
 
         toggleListener = (buttonView, isChecked) -> {
             if (valueListener != null) {
-                if(isChecked) {
+                if (isChecked) {
                     valueListener.onValueChanged(true);
-                }else{
+                } else {
                     valueListener.onClearValue();
                 }
             }
@@ -312,7 +313,7 @@ public class YesNoView extends FieldLayout {
         for (int i = 0; i < radioGroup.getChildCount(); i++) {
             View view = radioGroup.getChildAt(i);
             view.setEnabled(editable);
-            setEditable(editable,view);
+            setEditable(editable, view);
         }
         checkYes.setEnabled(editable);
         checkNo.setEnabled(editable);
@@ -333,6 +334,7 @@ public class YesNoView extends FieldLayout {
 
     public interface OnValueChanged {
         void onValueChanged(boolean isActive);
+
         void onClearValue();
     }
 
@@ -344,5 +346,54 @@ public class YesNoView extends FieldLayout {
     @Override
     protected boolean isEditable() {
         return clearButton.isEnabled();
+    }
+
+    public void setViewModel(RadioButtonViewModel viewModel) {
+        setIsBgTransparent(viewModel.isBackgroundTransparent());
+        setActivationListener(new OnActivation() {
+            @Override
+            public void onActivation() {
+//                setSelectedBackground(isSearchMode));
+            }
+        });
+
+        setLabel(viewModel.getFormattedLabel());
+        setDescription(viewModel.description());
+        setValueType(viewModel.valueType());
+        setRendering(viewModel.renderingType());
+        setInitialValue(viewModel.value());
+        setEditable(viewModel.editable());
+        setValueListener(new OnValueChanged() {
+            @Override
+            public void onValueChanged(boolean isActive) {
+                /*
+                RowAction rowAction;
+                setSelectedBackground(isSearchMode);
+                if (isActive) {
+                    viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(String.valueOf(true));
+                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(true), getAdapterPosition());
+                } else {
+                    viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(String.valueOf(false));
+                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(false), getAdapterPosition());
+                }
+                binding.customYesNo.nextFocus(binding.customYesNo);
+                processor.onNext(rowAction);
+                clearBackground(isSearchMode);
+                 */
+            }
+
+            @Override
+            public void onClearValue() {
+                /*
+                setSelectedBackground(isSearchMode);
+                viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(null);
+                RowAction rowAction = RowAction.create(checkBoxViewModel.uid(), null, getAdapterPosition());
+                binding.customYesNo.nextFocus(binding.customYesNo);
+                processor.onNext(rowAction);
+                clearBackground(isSearchMode);
+                 */
+            }
+        });
+
     }
 }

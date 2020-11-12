@@ -36,7 +36,7 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
     @Override
     public ImageHolder onCreate(@NonNull ViewGroup parent) {
         FormImageBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.form_image, parent, false);
-        return new ImageHolder(binding, processor, null);
+        return new ImageHolder(binding);
     }
 
     public ImageHolder onCreate(@NonNull ViewGroup parent, int count, ObservableField<String> imageSelector, String sectionRendering) {
@@ -58,11 +58,11 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
             rootView.setLayoutParams(layoutParams);
         }
 
-        return new ImageHolder(binding, processor, imageSelector);
+        return new ImageHolder(binding);
     }
 
     @Override
     public void onBind(@NonNull ImageHolder viewHolder, @NonNull ImageViewModel viewModel) {
-        viewHolder.update(viewModel);
+        viewHolder.bind(viewModel);
     }
 }

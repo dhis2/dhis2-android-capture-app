@@ -57,11 +57,11 @@ public class PictureRow implements Row<PictureHolder, PictureViewModel> {
                 R.layout.custom_form_picture, parent, false);
         binding.formPictures.setIsBgTransparent(isBgTransparent);
         binding.formPictures.setFragmentManager(fm);
-        return new PictureHolder(binding, processor, isSearchMode);
+        return new PictureHolder(binding);
     }
 
     @Override
     public void onBind(@NonNull PictureHolder viewHolder, @NonNull PictureViewModel viewModel) {
-        viewHolder.update(viewModel);
+        viewHolder.bind(viewModel);
     }
 }

@@ -56,11 +56,11 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
         FormOrgUnitBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_org_unit, parent, false);
         binding.orgUnitView.setLayoutData(isBgTransparent, renderType);
         binding.orgUnitView.setFragmentManager(fm);
-        return new OrgUnitHolder(binding, processor, isSearchMode, currentSelection);
+        return new OrgUnitHolder(binding, currentSelection);
     }
 
     @Override
     public void onBind(@NonNull OrgUnitHolder viewHolder, @NonNull OrgUnitViewModel viewModel) {
-        viewHolder.update(viewModel);
+        viewHolder.bind(viewModel);
     }
 }

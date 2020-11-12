@@ -14,24 +14,29 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.databinding.FormSpinnerAccentBinding;
 import org.dhis2.databinding.FormSpinnerBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.optionset.OptionSetDialog;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
 
-public class OptionSetView extends FieldLayout implements OptionSetOnClickListener {
+public class OptionSetView extends FieldLayout implements OptionSetOnClickListener, View.OnClickListener {
     private ViewDataBinding binding;
 
     private ImageView iconView;
@@ -209,6 +214,26 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         return numberOfOptions > getContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE).getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15);
     }
 
+    @Override
+    public void onClick(View v) {
+        requestFocus();
+        closeKeyboard(v);
+//        setSelectedBackground(isSearchMode);
+        /*OptionSetDialog dialog = new OptionSetDialog();
+        dialog.create(itemView.getContext());
+        dialog.setOptionSet(viewModel);
+
+        if (dialog.showDialog()) {
+            dialog.setListener(this);
+            dialog.setClearListener((view) -> deleteSelectedOption());
+            dialog.show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), OptionSetDialog.Companion.getTAG());
+        } else {
+            dialog.dismiss();
+            new OptionSetPopUp(itemView.getContext(), v, viewModel,
+                    this);
+        }*/
+    }
+
     public interface OnSelectedOption {
         void onSelectedOption(String optionName, String optionCode);
     }
@@ -221,5 +246,30 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
     @Override
     protected boolean isEditable() {
         return editText.isEnabled();
+    }
+
+    public void setViewModel(SpinnerViewModel viewModel) {
+        setLayoutData(viewModel.isBackgroundTransparent(), viewModel.renderType());
+        setOnSelectedOptionListener(new OnSelectedOption() {
+            @Override
+            public void onSelectedOption(String optionName, String optionCode) {
+                /*processor.onNext(
+                        RowAction.create(viewModel.uid(), isSearchMode ? optionName + "_os_" + optionCode : optionCode, true, optionCode, optionName, getAdapterPosition())
+                );
+                if (isSearchMode)
+                    viewModel.withValue(optionName);
+                clearBackground(isSearchMode);*/
+            }
+        });
+        setActivationListener(() -> {
+//                setSelectedBackground(isSearchMode);
+        });
+        setNumberOfOptions(viewModel.numberOfOptions());
+        updateEditable(viewModel.editable());
+        setValue(viewModel.value());
+        setWarning(viewModel.warning(), viewModel.error());
+        setLabel(viewModel.label(), viewModel.mandatory());
+        setDescription(viewModel.description());
+        setOnClickListener(this);
     }
 }

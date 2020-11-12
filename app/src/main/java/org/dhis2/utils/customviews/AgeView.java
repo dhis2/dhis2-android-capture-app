@@ -18,6 +18,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.age.AgeViewModel;
 import org.dhis2.databinding.AgeCustomViewAccentBinding;
 import org.dhis2.databinding.AgeCustomViewBinding;
 import org.dhis2.utils.ColorUtils;
@@ -27,6 +28,7 @@ import org.dhis2.utils.DateUtils;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -72,7 +74,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
 
     public void setLabel(String label, String description) {
         this.label = label;
-        descriptionLabel.setVisibility(description!=null ? View.VISIBLE : View.GONE);
+        descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
         if (binding instanceof AgeCustomViewAccentBinding) {
             ((AgeCustomViewAccentBinding) binding).setLabel(label);
             ((AgeCustomViewAccentBinding) binding).setDescription(description);
@@ -93,7 +95,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         date.requestFocus();
     }
 
-    public void clearErrors(){
+    public void clearErrors() {
         inputLayout.setError(null);
     }
 
@@ -321,7 +323,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
                 dayInputLayout,
                 monthInputLayout,
                 yearInputLayout
-                );
+        );
     }
 
     public void clearValues() {
@@ -337,5 +339,41 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
 
     public interface OnAgeSet {
         void onAgeSet(Date ageDate);
+    }
+
+    public void setViewModel(AgeViewModel viewModel) {
+        setIsBgTransparent(viewModel.isBackgroundTransparent());
+        setAgeChangedListener(new OnAgeSet() {
+            @Override
+            public void onAgeSet(Date ageDate) {
+                if (viewModel.value() == null || !Objects.equals(viewModel.value(), ageDate == null ? null : DateUtils.databaseDateFormat().format(ageDate))) {
+//                    processor.onNext(RowAction.create(ageViewModel.uid(), ageDate == null ? null : DateUtils.oldUiDateFormat().format(ageDate), getAdapterPosition()));
+//                    clearBackground(isSearchMode);
+                }
+            }
+        });
+        setActivationListener(new OnActivation() {
+            @Override
+            public void onActivation() {
+//                setSelectedBackground(isSearchMode);
+            }
+        });
+
+        setLabel(viewModel.getFormattedLabel(), viewModel.description());
+
+        if (!isEmpty(viewModel.value())) {
+            setInitialValue(viewModel.value());
+        } else {
+            clearValues();
+        }
+
+        if (viewModel.warning() != null)
+            setWarning(viewModel.warning());
+        else if (viewModel.error() != null)
+            setError(viewModel.error());
+        else
+            clearErrors();
+
+        setEditable(viewModel.editable());
     }
 }

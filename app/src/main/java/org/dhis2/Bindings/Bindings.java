@@ -582,4 +582,9 @@ public class Bindings {
             DrawableCompat.setTint(mutableDrawable, ContextCompat.getColor(view.getContext(), R.color.text_black_333));
 
     }
+
+    @BindingAdapter(value = "textColor")
+    public static void setTextColor(TextView view, int color) {
+        view.setTextColor(color);
+    }
 }

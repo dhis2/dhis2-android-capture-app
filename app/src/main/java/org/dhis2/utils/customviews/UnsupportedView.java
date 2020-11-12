@@ -3,6 +3,7 @@ package org.dhis2.utils.customviews;
 import android.content.Context;
 import android.util.AttributeSet;
 
+import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.databinding.FormUnsupportedBinding;
 
 public class UnsupportedView extends FieldLayout {
@@ -33,6 +34,11 @@ public class UnsupportedView extends FieldLayout {
 
     public void setLabel(String label) {
         binding.formButton.setText(label);
+    }
+
+    public void setViewModel(UnsupportedViewModel viewModel) {
+        setLabel(viewModel.label());
+
     }
 
 }

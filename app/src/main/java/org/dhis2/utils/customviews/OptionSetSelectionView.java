@@ -13,6 +13,7 @@ import androidx.databinding.ViewDataBinding;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
 import org.dhis2.databinding.FormSpinnerSelectionAccentBinding;
 import org.dhis2.databinding.FormSpinnerSelectionBinding;
 import org.dhis2.databinding.OptionSetSelectCheckItemBinding;
@@ -242,5 +243,28 @@ public class OptionSetSelectionView extends FieldLayout {
         void onSelectedOption(String optionName, String optionCode);
 
         void onOptionsClear();
+    }
+
+    public void setViewModel(OptionSetViewModel viewModel) {
+        setLayoutData(viewModel.isBackgroundTransparent(), viewModel.renderType());
+        setOnSelectedOptionListener(new OnSelectedOption() {
+            @Override
+            public void onSelectedOption(String optionName, String optionCode) {
+//                processor.onNext(RowAction.create(viewModel.uid(), optionCode))
+            }
+
+            @Override
+            public void onOptionsClear() {
+//                processor.onNext(RowAction.create(viewModel.uid(), null))
+            }
+        });
+        setOptionsToShow(
+                viewModel.getOptionsToHide(), viewModel.getOptionsToShow()
+        );
+        setObjectStyle(viewModel.objectStyle());
+        setEditable(viewModel.editable());
+        setInitValue(viewModel.value(), viewModel.options(), viewModel.fieldRendering().type());
+        setLabel(viewModel.label(), viewModel.mandatory());
+        setDescription(viewModel.description());
     }
 }

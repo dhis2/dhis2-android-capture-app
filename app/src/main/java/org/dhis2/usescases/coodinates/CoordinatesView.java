@@ -27,6 +27,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.dhis2.Bindings.DoubleExtensionsKt;
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.databinding.FormCoordinatesAccentBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
 import org.dhis2.uicomponents.map.geometry.LngLatValidatorKt;
@@ -461,14 +462,30 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     @Override
-    protected boolean hasValue(){
-        return latitude.getText()!=null && !latitude.getText().toString().isEmpty() &&
-                longitude.getText()!=null && !longitude.getText().toString().isEmpty();
+    protected boolean hasValue() {
+        return latitude.getText() != null && !latitude.getText().toString().isEmpty() &&
+                longitude.getText() != null && !longitude.getText().toString().isEmpty();
     }
 
     @Override
-    protected boolean isEditable(){
+    protected boolean isEditable() {
         return latitude.isEnabled() && longitude.isEnabled();
+    }
+
+    public void setViewModel(CoordinateViewModel viewModel) {
+        setIsBgTransparent(viewModel.isBackgroundTransparent());
+        setCurrentLocationListener(viewModel::onCurrentLocationClick);
+//        setMapListener((CoordinatesView.OnMapPositionClick) this);
+        setActivationListener(viewModel::onActivate);
+
+        setFeatureType(viewModel.featureType());
+        setLabel(viewModel.getFormattedLabel());
+        setDescription(viewModel.description());
+
+        setInitialValue(viewModel.value());
+        setWarning(viewModel.warning());
+        setError(viewModel.error());
+        setEditable(viewModel.editable());
     }
 }
 

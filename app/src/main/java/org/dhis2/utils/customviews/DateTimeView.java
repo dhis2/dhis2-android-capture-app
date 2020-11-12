@@ -15,6 +15,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
 import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import org.dhis2.databinding.DateTimeViewBinding;
 import org.dhis2.utils.ColorUtils;
@@ -146,9 +147,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this);
         editText.setOnClickListener(this);
-        clearButton.setOnClickListener(v -> {
-            clearDate();
-        });
+        clearButton.setOnClickListener(v -> clearDate());
     }
 
     @Override
@@ -263,5 +262,18 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     @Override
     protected boolean isEditable() {
         return editText.isEnabled();
+    }
+
+    public void setViewModel(DateTimeViewModel viewModel) {
+        setIsBgTransparent(viewModel.isBackgroundTransparent());
+        setLabel(viewModel.getFormattedLabel());
+        setDescription(viewModel.description());
+        initData(viewModel.value());
+        setError(viewModel.error());
+        setAllowFutureDates(viewModel.allowFutureDate());
+        setWarning(viewModel.warning());
+        setEditable(viewModel.editable());
+        setDateListener(viewModel::onDateSelected);
+        setActivationListener(viewModel::onActivate);
     }
 }

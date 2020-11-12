@@ -8,21 +8,15 @@
         <import type="android.view.View" />
 
         <variable
-            name="currentSelection"
-            type="androidx.databinding.ObservableField&lt;String&gt;" />
+            name="item"
+            type="org.dhis2.data.forms.dataentry.fields.image.ImageViewModel" />
 
-        <variable
-            name="label"
-            type="java.lang.String" />
-
-        <variable
-            name="optionName"
-            type="java.lang.String" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="@{(view)-> item.onItemClick(view)}"
         tools:background="@color/colorPrimaryLightRed"
         tools:layout_height="200dp">
 
@@ -32,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:visibility="@{optionName.equals(currentSelection) ? View.VISIBLE : View.GONE}"
+            android:visibility="@{item.isCurrentSelector() ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_check_circle" />
@@ -43,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:visibility="@{optionName.equals(currentSelection) ? View.GONE : View.VISIBLE}"
+            android:visibility="@{item.isCurrentSelector() ? View.GONE : View.VISIBLE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_unchecked_circle" />
@@ -56,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:gravity="center"
-            android:text="@{label}"
+            android:text="@{item.formattedLabel}"
             app:layout_constraintBottom_toBottomOf="@id/icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/icon"
@@ -78,9 +72,10 @@
             android:layout_marginBottom="25dp"
             android:background="@color/white"
             android:gravity="center"
+            android:text="@{item.errorMessage}"
             android:textColor="@color/red_060"
             android:textSize="18sp"
-            android:visibility="gone"
+            android:visibility="@{item.shouldShowError() ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

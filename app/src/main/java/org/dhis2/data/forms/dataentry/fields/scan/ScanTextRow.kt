@@ -30,6 +30,6 @@ class ScanTextRow(
     }
 
     override fun onBind(viewHolder: ScanTextHolder, viewModel: ScanTextViewModel) {
-        viewHolder.update(viewModel)
+        viewHolder.bind(viewModel)
     }
 }

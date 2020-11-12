@@ -19,6 +19,7 @@ import org.dhis2.BR
 import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
+import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.databinding.ScanTextViewAccentBinding
 import org.dhis2.databinding.ScanTextViewBinding
 import org.dhis2.usescases.qrScanner.ScanActivity
@@ -79,9 +80,9 @@ class ScanTextView @JvmOverloads constructor(
 
     private fun checkCameraPermission() {
         if (ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.CAMERA
-        ) == PERMISSION_GRANTED
+                context,
+                Manifest.permission.CAMERA
+            ) == PERMISSION_GRANTED
         ) {
             val intent = Intent(context, ScanActivity::class.java)
             intent.putExtra(Constants.OPTION_SET, optionSet)
@@ -196,5 +197,33 @@ class ScanTextView @JvmOverloads constructor(
 
     interface OnScanClick {
         fun onsScanClicked(intent: Intent, scanTextView: ScanTextView)
+    }
+
+    fun setViewModel(viewModel: ScanTextViewModel) {
+        setLayoutData(viewModel.isBackgroundTransparent())
+        viewModel.apply {
+            setText(value())
+            setRenderingType(fieldRendering?.type())
+            setLabel(label(), mandatory())
+            setHint(hint)
+            setDescription(description())
+            setAlert(warning(), error())
+            updateEditable(editable() ?: false)
+            optionSet = optionSet()
+            setOnScannerListener { value ->
+                setText(value)
+                if (!viewModel.isSearchMode()) {
+//                    clearCurrentSelection()
+                }
+                /*val rowAction = RowAction.create(
+                    uid(), value,
+                    adapterPosition
+                )*/
+//                processor.onNext(rowAction)
+            }
+            setActivationListener {
+//                setSelectedBackground(isSearchMode)
+            }
+        }
     }
 }

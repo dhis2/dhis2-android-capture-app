@@ -54,11 +54,11 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
     public SpinnerHolder onCreate(@NonNull ViewGroup parent) {
         FormOptionSetBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_option_set, parent, false);
         binding.optionSetView.setLayoutData(isBackgroundTransparent, renderType);
-        return new SpinnerHolder(binding, processor, isSearchMode,currentSelection);
+        return new SpinnerHolder(binding, currentSelection);
     }
 
     @Override
     public void onBind(@NonNull SpinnerHolder viewHolder, @NonNull SpinnerViewModel viewModel) {
-        viewHolder.update(viewModel);
+        viewHolder.bind(viewModel);
     }
 }

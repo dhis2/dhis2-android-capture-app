@@ -1,69 +1,12 @@
 package org.dhis2.data.forms.dataentry.fields.image
 
-import android.view.View
-import androidx.databinding.ObservableField
 import androidx.databinding.ViewDataBinding
-import io.reactivex.processors.FlowableProcessor
-import org.dhis2.Bindings.Bindings
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
-import org.dhis2.data.forms.dataentry.fields.RowAction
-import org.dhis2.databinding.FormImageBinding
 
 class ImageHolder(
-    private val imageBinding: ViewDataBinding,
-    processor: FlowableProcessor<RowAction>,
-    imageSelector: ObservableField<String>
+    imageBinding: ViewDataBinding
 ) : FormViewHolder(imageBinding) {
 
-    private val currentSelector: ObservableField<String> = imageSelector
-    private var isEditable = false
-    private var model: ImageViewModel? = null
-
-    init {
-        itemView.setOnClickListener {
-            if (isEditable) {
-                val label = model!!.optionDisplayName()
-                val code = model!!.optionCode()
-
-                val value = if (imageSelector.get() == label) {
-                    currentSelector.set("")
-                    null
-                } else {
-                    currentSelector.set(label)
-                    code
-                }
-                processor.onNext(RowAction.create(model!!.fieldUid(), value, adapterPosition))
-            }
-        }
-    }
-
-    override fun update(viewModel: FieldViewModel) {
-        model = viewModel as ImageViewModel
-
-        isEditable = viewModel.editable()!!
-        descriptionText = viewModel.description()
-
-        label = StringBuilder(viewModel.formattedLabel)
-
-        (imageBinding as FormImageBinding).apply {
-            setLabel(viewModel.formattedLabel)
-            optionName = viewModel.optionDisplayName()
-            currentSelection = currentSelector
-            errorMessage.apply {
-                visibility = if (viewModel.shouldShowError()) View.VISIBLE else View.GONE
-                text = viewModel.errorMessage
-            }
-            Bindings.setObjectStyle(icon, itemView, viewModel.objectStyle())
-            Bindings.setObjectStyle(label, itemView, viewModel.objectStyle())
-        }
-
-        viewModel.value()?.let { value ->
-            if (value != currentSelector.get()) {
-                currentSelector.set(value)
-            }
-        } ?: if (currentSelector.get() != null) {
-            currentSelector.set("")
-        }
-    }
+    override fun update(viewModel: FieldViewModel) {}
 }

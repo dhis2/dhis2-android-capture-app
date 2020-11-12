@@ -51,11 +51,11 @@ public class AgeRow implements Row<AgeHolder, AgeViewModel> {
         FormAgeCustomBinding binding = DataBindingUtil.inflate(inflater,
                 R.layout.form_age_custom, parent, false);
         binding.customAgeview.setIsBgTransparent(isBgTransparent);
-        return new AgeHolder(binding, processor, isSearchMode,currentSelection);
+        return new AgeHolder(binding, currentSelection);
     }
 
     @Override
     public void onBind(@NonNull AgeHolder viewHolder, @NonNull AgeViewModel viewModel) {
-        viewHolder.update(viewModel);
+        viewHolder.bind(viewModel);
     }
 }

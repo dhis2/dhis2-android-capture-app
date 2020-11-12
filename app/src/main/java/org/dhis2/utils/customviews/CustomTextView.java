@@ -1,6 +1,8 @@
 package org.dhis2.utils.customviews;
 
 import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
@@ -12,12 +14,15 @@ import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.util.Patterns;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -25,32 +30,42 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.BR;
 import org.dhis2.Components;
-import org.dhis2.DaggerAppComponent;
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.utils.ColorUtils;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.ObjectStyleUtils;
+import org.dhis2.utils.Preconditions;
+import org.dhis2.utils.ValidationUtils;
 import org.dhis2.utils.Validator;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import javax.inject.Inject;
+import timber.log.Timber;
 
-import dagger.internal.DaggerCollections;
-
+import static android.content.Context.MODE_PRIVATE;
 import static android.text.TextUtils.isEmpty;
+import static java.lang.String.valueOf;
+import static org.dhis2.Bindings.ValueExtensionsKt.withValueTypeCheck;
 
 /**
  * QUADRAM. Created by frodriguez on 1/17/2018.
  */
 
-public class CustomTextView extends FieldLayout {
+public class CustomTextView extends FieldLayout implements View.OnFocusChangeListener, TextView.OnEditorActionListener, FieldLayout.OnActivation {
 
     String urlStringPattern = "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$";
     Pattern urlPattern = Pattern.compile(urlStringPattern);
@@ -73,6 +88,10 @@ public class CustomTextView extends FieldLayout {
     private TextView labelText;
     private Map<ValueType, Validator> validators;
     private Validator validator;
+
+    private List<String> autoCompleteValues;
+
+    private EditTextViewModel viewModel;
 
     public CustomTextView(Context context) {
         super(context);
@@ -122,7 +141,7 @@ public class CustomTextView extends FieldLayout {
             }
         });
 
-        if(isLongText){
+        if (isLongText) {
             editText.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -422,12 +441,146 @@ public class CustomTextView extends FieldLayout {
     }
 
     @Override
-    protected boolean hasValue(){
-        return editText.getText()!=null && !editText.getText().toString().isEmpty();
+    protected boolean hasValue() {
+        return editText.getText() != null && !editText.getText().toString().isEmpty();
     }
 
     @Override
-    protected boolean isEditable(){
+    protected boolean isEditable() {
         return editText.isEnabled();
+    }
+
+    public void setViewModel(EditTextViewModel viewModel) {
+        this.viewModel = viewModel;
+        setLayoutData(viewModel.isBackgroundTransparent(), viewModel.isLongText());
+        setRenderType(viewModel.renderType());
+        setFocusChangedListener(this);
+        setOnEditorActionListener(this);
+        setActivationListener(this);
+        setValueType(viewModel.valueType());
+        setObjectStyle(viewModel.objectStyle());
+        setLabel(viewModel.label(), viewModel.mandatory());
+        setHint(viewModel.hint());
+        setDescription(viewModel.description());
+        setText(withValueTypeCheck(viewModel.value(), viewModel.valueType()));
+        setWarning(viewModel.warning(), viewModel.error());
+        if (!viewModel.isSearchMode() && viewModel.value() != null && !viewModel.value().isEmpty()
+                && viewModel.fieldMask() != null && !viewModel.value().matches(viewModel.fieldMask()))
+            setWarning(binding.getRoot().getContext().getString(R.string.wrong_pattern), "");
+        setEditable(viewModel.editable());
+        setRenderingType(viewModel.fieldRendering(), viewModel.uid());
+        setOnLongActionListener(view -> {
+            ClipboardManager clipboard = (ClipboardManager) binding.getRoot().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            try {
+                if (!((TextInputAutoCompleteTextView) view).getText().toString().equals("")) {
+                    ClipData clip = ClipData.newPlainText("copy", ((TextInputAutoCompleteTextView) view).getText());
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(binding.getRoot().getContext(),
+                            binding.getRoot().getContext().getString(R.string.copied_text), Toast.LENGTH_LONG).show();
+                }
+                return true;
+            } catch (Exception e) {
+                Timber.e(e);
+                return false;
+            }
+        });
+    }
+
+    private void setRenderingType(ValueTypeDeviceRendering renderingType, String uid) {
+        if (renderingType != null && renderingType.type() == ValueTypeRenderingType.AUTOCOMPLETE) {
+            autoCompleteValues = getListFromPreference(uid);
+            ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, autoCompleteValues);
+            getEditText().setAdapter(autoCompleteAdapter);
+        }
+    }
+
+    private List<String> getListFromPreference(String key) {
+        Gson gson = new Gson();
+        String json = getContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getString(key, "[]");
+        Type type = new TypeToken<List<String>>() {
+        }.getType();
+
+        return gson.fromJson(json, type);
+    }
+
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (!hasFocus) {
+//            clearBackground(viewModel.isSearchMode());
+        }
+
+        if (viewModel.isSearchMode() || (!hasFocus && viewModel.editable())) {
+            if (viewModel.isSearchMode() || valueHasChanged()) {
+                sendAction();
+            }
+        }
+        validateRegex();
+    }
+
+    private void sendAction() {
+        if (!isEmpty(getEditText().getText())) {
+            checkAutocompleteRendering();
+            viewModel.withValue(getEditText().getText().toString());
+            String value = ValidationUtils.validate(viewModel.valueType(), getEditText().getText().toString());
+//            processor.onNext(RowAction.create(viewModel.uid(), value, getAdapterPosition()));
+
+        } else {
+//            processor.onNext(RowAction.create(viewModel.uid(), null, getAdapterPosition()));
+        }
+
+//        clearBackground(isSearchMode);
+    }
+
+    private void checkAutocompleteRendering() {
+        if (viewModel.fieldRendering() != null &&
+                viewModel.fieldRendering().type() == ValueTypeRenderingType.AUTOCOMPLETE &&
+                !autoCompleteValues.contains(getEditText().getText().toString())) {
+            autoCompleteValues.add(getEditText().getText().toString());
+            saveListToPreference(viewModel.uid(), autoCompleteValues);
+        }
+    }
+
+    private void saveListToPreference(String key, List<String> list) {
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
+        getContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
+    }
+
+    private void validateRegex() {
+        if (!viewModel.isSearchMode())
+            if (viewModel.fieldMask() != null && !getEditText().getText().toString().isEmpty() &&
+                    !getEditText().getText().toString().matches(viewModel.fieldMask()))
+                setWarning(binding.getRoot().getContext().getString(R.string.wrong_pattern), "");
+            else
+                setWarning(viewModel.warning(), viewModel.error());
+    }
+
+    private Boolean valueHasChanged() {
+        return !Preconditions.equals(isEmpty(getEditText().getText()) ? "" : getEditText().getText().toString(),
+                viewModel.value() == null ? "" : valueOf(viewModel.value())) || viewModel.error() != null;
+    }
+
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if (viewModel.valueType() != ValueType.LONG_TEXT) {
+//            selectedFieldUid = null;
+            getEditText().clearFocus();
+//            closeKeyboard(getEditText());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void onActivation() {
+//        setSelectedBackground(isSearchMode);
+        getEditText().setFocusable(true);
+        getEditText().setFocusableInTouchMode(true);
+        getEditText().requestFocus();
+        /*openKeyboard(this.binding.customEdittext.getEditText());
+        if (isSearchMode) {
+            sendAction();
+        }*/
     }
 }

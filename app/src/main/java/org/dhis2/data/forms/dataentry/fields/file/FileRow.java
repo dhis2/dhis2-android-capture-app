@@ -63,6 +63,6 @@ public class FileRow implements Row<FileHolder, FileViewModel> {
 
     @Override
     public void onBind(@NonNull FileHolder viewHolder, @NonNull FileViewModel viewModel) {
-        binding.setLabel(viewModel.label());
+        viewHolder.bind(viewModel);
     }
 }

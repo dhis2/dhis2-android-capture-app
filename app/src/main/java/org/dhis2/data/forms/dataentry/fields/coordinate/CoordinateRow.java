@@ -29,7 +29,7 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
     private final String renderType;
     private final MutableLiveData<String> currentSelection;
     private boolean isSearchMode = false;
-    private  FeatureType featureType;
+    private FeatureType featureType;
 
     public CoordinateRow(@NonNull LayoutInflater layoutInflater,
                          @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent, FeatureType featureType) {
@@ -44,7 +44,7 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
 
     public CoordinateRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor,
                          boolean isBgTransparent, String renderType,
-                         MutableLiveData<String> currentSelection,  FeatureType featureType) {
+                         MutableLiveData<String> currentSelection, FeatureType featureType) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
@@ -59,11 +59,11 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
         CustomFormCoordinateBinding binding = DataBindingUtil.inflate(inflater,
                 R.layout.custom_form_coordinate, parent, false);
         binding.formCoordinates.setIsBgTransparent(isBgTransparent);
-        return new CoordinateHolder(binding, processor, isSearchMode, currentSelection);
+        return new CoordinateHolder(binding, currentSelection);
     }
 
     @Override
     public void onBind(@NonNull CoordinateHolder viewHolder, @NonNull CoordinateViewModel viewModel) {
-        viewHolder.update(viewModel);
+        viewHolder.bind(viewModel);
     }
 }

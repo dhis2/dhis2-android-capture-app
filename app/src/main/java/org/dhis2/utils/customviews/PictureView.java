@@ -32,6 +32,7 @@ import org.dhis2.Bindings.FileExtensionsKt;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.databinding.FormPictureAccentBinding;
 import org.dhis2.databinding.FormPictureBinding;
 import org.dhis2.utils.Constants;
@@ -154,7 +155,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
         setLayout();
     }
 
-    public void setProcessor(String primaryUid, String uid, FlowableProcessor<RowAction> processor) {
+    public void setProcessor(String primaryUid, String uid) {
         this.primaryUid = primaryUid;
         this.uid = uid;
     }
@@ -270,6 +271,34 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     public void setOnIntentSelected(OnIntentSelected onIntentSelected) {
         this.onIntentSelected = onIntentSelected;
+    }
+
+    public void setViewModel(PictureViewModel viewModel) {
+        setIsBgTransparent(viewModel.isBackgroundTransparent);
+//        setFragmentManager(fm);
+        setOnIntentSelected(new OnIntentSelected() {
+            @Override
+            public void intentSelected(String uuid, Intent intent, int request, OnPictureSelected onPictureSelected) {
+                /*
+                processor.onNext(
+                    RowAction.create(uid, file != null ? file.getPath() : null, getAdapterPosition()));
+                 */
+            }
+        });
+        setOnImageListener(new OnPictureSelected() {
+            @Override
+            public void onSelected(File file, String value, String uid) {
+
+            }
+        });
+        setProcessor(viewModel.uid().contains("_") ? viewModel.uid().split("_")[0] : viewModel.uid(),
+                viewModel.uid().contains("_") ? viewModel.uid().split("_")[1] : viewModel.uid());
+        setLabel(viewModel.getFormattedLabel());
+        setDescription(viewModel.description());
+        setInitialValue(viewModel.value());
+        setEditable(viewModel.editable());
+        setWarning(viewModel.warning());
+        setError(viewModel.error());
     }
 
 }

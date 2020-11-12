@@ -81,11 +81,11 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
                 break;
         }
 
-        return new DateTimeHolder(binding, processor, isSearchMode, currentSelection);
+        return new DateTimeHolder(binding, currentSelection);
     }
 
     @Override
     public void onBind(@NonNull DateTimeHolder viewHolder, @NonNull DateTimeViewModel viewModel) {
-        viewHolder.update(viewModel);
+        viewHolder.bind(viewModel);
     }
 }

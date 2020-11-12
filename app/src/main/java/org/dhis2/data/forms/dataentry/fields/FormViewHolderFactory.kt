@@ -62,28 +62,23 @@ class FormViewHolderFactory(
 
 
     private fun provideAgeViewHolder(binding: ViewDataBinding): AgeHolder {
-//        binding.customAgeview.setIsBgTransparent(true)
-        return AgeHolder(binding, processor, false, currentFocusUid)
+        return AgeHolder(binding, currentFocusUid)
     }
 
     private fun provideCoordinateViewHolder(binding: ViewDataBinding): CoordinateHolder {
-//        binding.formCoordinates.setIsBgTransparent(true)
-        return CoordinateHolder(binding, processor, false, currentFocusUid)
+        return CoordinateHolder(binding, currentFocusUid)
     }
 
     private fun provideTimeViewHolder(binding: ViewDataBinding): DateTimeHolder {
-//        binding.timeView.setIsBgTransparent(true)
-        return DateTimeHolder(binding, processor, false, currentFocusUid)
+        return DateTimeHolder(binding, currentFocusUid)
     }
 
     private fun provideDateViewHolder(binding: ViewDataBinding): DateTimeHolder {
-//        binding.dateView.setIsBgTransparent(true)
-        return DateTimeHolder(binding, processor, false, currentFocusUid)
+        return DateTimeHolder(binding, currentFocusUid)
     }
 
     private fun provideDateTimeViewHolder(binding: ViewDataBinding): DateTimeHolder {
-//        binding.dateTimeView.setIsBgTransparent(true)
-        return DateTimeHolder(binding, processor, false, currentFocusUid)
+        return DateTimeHolder(binding, currentFocusUid)
     }
 
     private fun provideDisplayViewHolder(binding: ViewDataBinding): DisplayHolder {
@@ -91,8 +86,6 @@ class FormViewHolderFactory(
     }
 
     private fun provideEditTextViewHolder(binding: ViewDataBinding): EditTextCustomHolder {
-//        binding.customEdittext.setLayoutData(true, false)
-//        binding.customEdittext.setRenderType(renderType)
         return EditTextCustomHolder(binding, processor, false, currentFocusUid)
     }
 
@@ -103,64 +96,30 @@ class FormViewHolderFactory(
     }
 
     private fun provideFileViewHolder(binding: ViewDataBinding): FileHolder {
-        /*binding.formButton.setTextColor(
-            ContextCompat.getColor(
-                parent.context,
-                R.color.colorPrimary
-            )
-        )*/
         return FileHolder(binding, currentFocusUid)
     }
 
     private fun provideImageViewHolder(binding: ViewDataBinding): ImageHolder {
-        /* var height: Int? = null
-         val parentHeight: Int = parent.height
-         sectionRendering?.let {
-             when (it) {
-                 ProgramStageSectionRenderingType.SEQUENTIAL.name -> {
-                     height = parentHeight / if (totalFields > 2) 3 else totalFields
-                 }
-                 ProgramStageSectionRenderingType.MATRIX.name -> {
-                     height = parentHeight / (totalFields / 2 + 1)
-                 }
-             }
-         }
-
-         height?.let {
-             val rootView = binding.root
-             val layoutParams = rootView.layoutParams
-             layoutParams.height = it
-             rootView.layoutParams = layoutParams
-         }*/
-
-        return ImageHolder(binding, processor, imageSelector)
+        return ImageHolder(binding)
     }
 
     private fun provideOptionSetViewHolder(binding: ViewDataBinding): OptionSetHolder {
-//        binding.optionSetSelectionView.setLayoutData(true, renderType)
-        return OptionSetHolder(binding, processor, true, currentFocusUid)
+        return OptionSetHolder(binding, currentFocusUid)
     }
 
     private fun provideOrgUnitViewHolder(binding: ViewDataBinding): OrgUnitHolder {
-//        binding.orgUnitView.setLayoutData(true, renderType)
-//        binding.orgUnitView.setFragmentManager(fragmentManager)
-        return OrgUnitHolder(binding, processor, false, currentFocusUid)
+        return OrgUnitHolder(binding, currentFocusUid)
     }
 
     private fun providePictureViewHolder(binding: ViewDataBinding): PictureHolder {
-//        binding.formPictures.setIsBgTransparent(true)
-//        binding.formPictures.setFragmentManager(fragmentManager)
-//        val onIntentSelected = binding.formPictures.context as OnIntentSelected
-        return PictureHolder(binding, processor, false)
+        return PictureHolder(binding)
     }
 
     private fun provideYesNoViewHolder(binding: ViewDataBinding): RadioButtonHolder {
-//        binding.customYesNo.setIsBgTransparent(true)
-        return RadioButtonHolder(binding, processor, false, currentFocusUid)
+        return RadioButtonHolder(binding, currentFocusUid)
     }
 
     private fun provideScanViewHolder(binding: ViewDataBinding): ScanTextHolder {
-//        binding.scanTextView.setLayoutData(true)
         return ScanTextHolder(binding, processor, false, currentFocusUid)
     }
 
@@ -169,8 +128,7 @@ class FormViewHolderFactory(
     }
 
     private fun provideSpinnerViewHolder(binding: ViewDataBinding): SpinnerHolder {
-//        binding.optionSetView.setLayoutData(true, renderType)
-        return SpinnerHolder(binding, processor, false, currentFocusUid)
+        return SpinnerHolder(binding, currentFocusUid)
     }
 
     private fun provideUnsupportedViewHolder(binding: ViewDataBinding): UnsupportedHolder {

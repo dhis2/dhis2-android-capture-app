@@ -9,8 +9,8 @@ import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.dhis2.BR;
 import org.dhis2.Bindings.ExtensionsKt;
-import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.utils.Constants;
@@ -109,7 +109,15 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(FieldViewModel viewModel) {
+        fieldUid = viewModel.uid();
+        label = new StringBuilder().append(viewModel.label());
+        descriptionText = viewModel.description();
+        binding.setVariable(BR.item, viewModel);
         update(viewModel);
+        initFieldFocus();
+        setFormFieldBackground();
+
+        binding.executePendingBindings();
     }
 
     protected abstract void update(FieldViewModel viewModel);

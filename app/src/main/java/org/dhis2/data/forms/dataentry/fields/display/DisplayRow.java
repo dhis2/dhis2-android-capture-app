@@ -28,6 +28,6 @@ public class DisplayRow implements Row<DisplayHolder, DisplayViewModel> {
 
     @Override
     public void onBind(@NonNull DisplayHolder viewHolder, @NonNull DisplayViewModel viewModel) {
-        viewHolder.update(viewModel);
+        viewHolder.bind(viewModel);
     }
 }

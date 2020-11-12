@@ -20,6 +20,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.BR;
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
 import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
@@ -246,5 +247,17 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     @Override
     protected boolean isEditable() {
         return editText.isEnabled();
+    }
+
+    public void setViewModel(DateTimeViewModel viewModel) {
+        setIsBgTransparent(viewModel.isBackgroundTransparent());
+        setLabel(viewModel.getFormattedLabel());
+        setDescription(viewModel.description());
+        initData(viewModel.value());
+        setError(viewModel.error());
+        setWarning(viewModel.warning());
+        setEditable(viewModel.editable());
+        setDateListener(viewModel::onDateSelected);
+        setActivationListener(viewModel::onActivate);
     }
 }

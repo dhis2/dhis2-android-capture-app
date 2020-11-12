@@ -41,6 +41,6 @@ public class SectionRow implements Row<SectionHolder, SectionViewModel> {
 
     @Override
     public void onBind(@NonNull SectionHolder viewHolder, @NonNull SectionViewModel viewModel) {
-        viewHolder.update(viewModel);
+        viewHolder.bind(viewModel);
     }
 }

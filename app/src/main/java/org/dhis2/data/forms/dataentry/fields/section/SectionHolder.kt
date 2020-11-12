@@ -5,14 +5,12 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.Observable
 import androidx.databinding.Observable.OnPropertyChangedCallback
 import androidx.databinding.ObservableField
 import androidx.databinding.ViewDataBinding
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.Bindings.dp
-import org.dhis2.Bindings.getThemePrimaryColor
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
@@ -48,53 +46,6 @@ class SectionHolder(
 
     public override fun update(viewModel: FieldViewModel) {
         this.viewModel = viewModel as SectionViewModel
-        checkVisibility(viewModel.uid() == SectionViewModel.CLOSING_SECTION_UID)
-        formBinding.apply {
-            sectionName.text = viewModel.label()
-            openIndicator.scaleY = if (viewModel.isOpen) 1f else -1f
-
-            if (viewModel.errors() == null && viewModel.warnings() == null) {
-                sectionFieldsErrorInfo.visibility = GONE
-                sectionFieldsWarningErrorInfo.visibility = GONE
-                sectionFieldsWarningInfo.visibility = GONE
-                sectionFieldsInfo.visibility = VISIBLE
-                sectionFieldsInfo.apply {
-                    text = String.format(
-                        "%s/%s",
-                        viewModel.completedFields(),
-                        viewModel.totalFields()
-                    )
-                    background = null
-                    setTextColor(
-                        when {
-                            viewModel.completedFields() == viewModel.totalFields() ->
-                                root.getThemePrimaryColor()
-                            else ->
-                                ResourcesCompat.getColor(root.resources, R.color.placeholder, null)
-                        }
-                    )
-                }
-            } else if (viewModel.errors() != null && viewModel.warnings() != null) {
-                sectionFieldsErrorInfo.visibility = GONE
-                sectionFieldsWarningErrorInfo.visibility = VISIBLE
-                sectionFieldsWarningInfo.visibility = VISIBLE
-                sectionFieldsInfo.visibility = GONE
-                sectionFieldsWarningErrorInfo.chipText = viewModel.errors().toString()
-                sectionFieldsWarningInfo.chipText = viewModel.warnings().toString()
-            } else if (viewModel.errors() != null && viewModel.warnings() == null) {
-                sectionFieldsErrorInfo.visibility = VISIBLE
-                sectionFieldsWarningErrorInfo.visibility = GONE
-                sectionFieldsWarningInfo.visibility = GONE
-                sectionFieldsInfo.visibility = GONE
-                sectionFieldsErrorInfo.chipText = viewModel.errors().toString()
-            } else {
-                sectionFieldsErrorInfo.visibility = GONE
-                sectionFieldsWarningErrorInfo.visibility = GONE
-                sectionFieldsWarningInfo.visibility = VISIBLE
-                sectionFieldsInfo.visibility = GONE
-                sectionFieldsWarningInfo.chipText = viewModel.warnings().toString()
-            }
-        }
 
         formBinding.descriptionIcon.visibility = GONE
         formBinding.sectionName.viewTreeObserver.addOnGlobalLayoutListener {
@@ -107,24 +58,6 @@ class SectionHolder(
         }
 
         setShadows()
-    }
-
-    private fun checkVisibility(isClosingSection: Boolean) {
-        formBinding.sectionDetails.visibility = if (isClosingSection) {
-            GONE
-        } else {
-            VISIBLE
-        }
-        formBinding.lastSectionDetails.visibility = if (isClosingSection) {
-            VISIBLE
-        } else {
-            GONE
-        }
-        formBinding.shadowEnd.visibility = if (isClosingSection) {
-            VISIBLE
-        } else {
-            GONE
-        }
     }
 
     override fun onClick(v: View) {

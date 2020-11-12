@@ -280,4 +280,28 @@ public abstract class SectionViewModel extends FieldViewModel {
     public int getLayoutId() {
         return R.layout.form_section;
     }
+
+    public boolean isClosingSection() {
+        return uid().equals(CLOSING_SECTION_UID);
+    }
+
+    public boolean hasErrorAndWarnings() {
+        return (errors() != null && warnings() != null);
+    }
+
+    public boolean hasNotAnyErrorOrWarning() {
+        return (errors() == null && warnings() == null);
+    }
+
+    public boolean hasOnlyErrors() {
+        return (errors() != null && warnings() == null);
+    }
+
+    public String getFormattedSectionFieldsInfo() {
+        return String.format("%s/%s", completedFields(), totalFields());
+    }
+
+    public boolean areAllFieldsCompleted() {
+        return completedFields().equals(totalFields());
+    }
 }

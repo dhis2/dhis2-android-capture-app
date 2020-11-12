@@ -36,7 +36,7 @@ public class OptionSetRow implements Row<OptionSetHolder, OptionSetViewModel> {
     public OptionSetHolder onCreate(@NonNull ViewGroup parent) {
         FormOptionSetSelectorBinding binding = FormOptionSetSelectorBinding.inflate(inflater, parent, false);
         binding.optionSetSelectionView.setLayoutData(isBgTransparent, renderType);
-        return new OptionSetHolder(binding, processor, isSearchMode, currentSelection);
+        return new OptionSetHolder(binding, currentSelection);
     }
 
     @Override
