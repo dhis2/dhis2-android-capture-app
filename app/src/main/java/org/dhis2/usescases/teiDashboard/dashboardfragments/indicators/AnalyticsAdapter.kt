@@ -26,8 +26,6 @@ class AnalyticsAdapter(val context: Context) : ListAdapter<AnalyticsModel, Recyc
         }
     }) {
 
-//    private val items: MutableList<AnalyticsModel> = mutableListOf()
-
     enum class AnalyticType {
         INDICATOR, CHART, SECTION_TITLE
     }
