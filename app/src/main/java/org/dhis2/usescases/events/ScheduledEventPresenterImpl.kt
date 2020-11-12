@@ -9,6 +9,7 @@ import org.dhis2.data.dhislogic.DhisEventUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.CategoryOption
+import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
@@ -67,6 +68,14 @@ class ScheduledEventPresenterImpl(
                 d2.enrollmentModule().enrollments().uid(it.enrollment()).blockingGet()
                     .trackedEntityInstance()
             }.blockingGet()!!
+    }
+
+    override fun getEnrollment(): Enrollment {
+        return d2.eventModule().events().uid(eventUid)
+            .get()
+            .map { it.enrollment() }
+            .flatMap { d2.enrollmentModule().enrollments().uid(it).get() }
+            .blockingGet()
     }
 
     override fun setEventDate(date: Date) {
