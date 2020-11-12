@@ -21,6 +21,14 @@ import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 @AutoValue
 public abstract class EditTextViewModel extends EditTextModel<String> {
 
+    public abstract String renderType();
+
+    public abstract boolean isLongText();
+
+    public abstract boolean isBackgroundTransparent();
+
+    public abstract boolean isSearchMode();
+
     @Nullable
     public abstract ValueTypeDeviceRendering fieldRendering();
 
@@ -29,10 +37,10 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
                                            @NonNull Boolean mandatory, @Nullable String value, @NonNull String hint,
                                            @NonNull Integer lines, @NonNull ValueType valueType, @Nullable String section,
                                            @NonNull Boolean editable, @Nullable String description,
-                                           @Nullable ValueTypeDeviceRendering fieldRendering, ObjectStyle objectStyle, @Nullable String fieldMask) {
+                                           @Nullable ValueTypeDeviceRendering fieldRendering, ObjectStyle objectStyle, @Nullable String fieldMask, String renderType, boolean isLongText, boolean isBackgroundTransparent, boolean isSearchMode) {
         return new AutoValue_EditTextViewModel(uid, label, mandatory,
                 value, section, null, editable, null, description, objectStyle, fieldMask, DataEntryViewHolderTypes.EDIT_TEXT, hint, lines,
-                InputType.TYPE_CLASS_TEXT, valueType, null, null, fieldRendering);
+                InputType.TYPE_CLASS_TEXT, valueType, null, null, renderType, isLongText, isBackgroundTransparent, isSearchMode, fieldRendering);
     }
 
     @NonNull
@@ -40,7 +48,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public EditTextViewModel withWarning(@NonNull String warning) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 value(), programStageSection(), null, editable(), null,
-                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, hint(), maxLines(), inputType(), valueType(), warning, error(), fieldRendering());
+                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, hint(), maxLines(), inputType(), valueType(), warning, error(), renderType(), isLongText(), isBackgroundTransparent(), isSearchMode(), fieldRendering());
     }
 
     @NonNull
@@ -49,7 +57,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 value(), programStageSection(), null, true, null,
                 description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, hint(), maxLines(), inputType(), valueType(), warning(), error,
-                fieldRendering());
+                renderType(), isLongText(), isBackgroundTransparent(), isSearchMode(), fieldRendering());
     }
 
     @NonNull
@@ -58,7 +66,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
         return new AutoValue_EditTextViewModel(uid(), label(), true,
                 value(), programStageSection(), null, editable(), null,
                 description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
-                fieldRendering());
+                renderType(), isLongText(), isBackgroundTransparent(), isSearchMode(), fieldRendering());
     }
 
     @NonNull
@@ -66,8 +74,8 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public FieldViewModel withValue(String data) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 data, programStageSection(), null, false, null,
-                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT,hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
-                fieldRendering());
+                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
+                renderType(), isLongText(), isBackgroundTransparent(), isSearchMode(), fieldRendering());
     }
 
     @NonNull
@@ -76,7 +84,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 value(), programStageSection(), null, isEditable, null,
                 description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
-                fieldRendering());
+                renderType(), isLongText(), isBackgroundTransparent(), isSearchMode(), fieldRendering());
     }
 
     @Override

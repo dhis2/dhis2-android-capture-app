@@ -20,9 +20,13 @@ public abstract class OptionSetViewModel extends FieldViewModel {
     private List<String> optionsToHide = new ArrayList<>();
     private List<String> optionsToShow = new ArrayList<>();
 
-    abstract ValueTypeDeviceRendering fieldRendering();
+    public abstract boolean isBackgroundTransparent();
 
-    abstract List<Option> options();
+    public abstract String renderType();
+
+    public abstract ValueTypeDeviceRendering fieldRendering();
+
+    public abstract List<Option> options();
 
     public static OptionSetViewModel create(String id,
                                             String label,
@@ -33,6 +37,8 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                                             Boolean editable,
                                             String description,
                                             ObjectStyle objectStyle,
+                                            boolean isBackgroundTransparent,
+                                            String renderType,
                                             ValueTypeDeviceRendering fieldRendering) {
 
         return new AutoValue_OptionSetViewModel(
@@ -50,6 +56,8 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle,
                 null,
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                isBackgroundTransparent,
+                renderType,
                 fieldRendering,
                 new ArrayList<>()
         );
@@ -72,6 +80,8 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle(),
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                isBackgroundTransparent(),
+                renderType(),
                 fieldRendering(),
                 options()
         );
@@ -95,6 +105,8 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle(),
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                isBackgroundTransparent(),
+                renderType(),
                 fieldRendering(),
                 options()
         );
@@ -118,6 +130,8 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle(),
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                isBackgroundTransparent(),
+                renderType(),
                 fieldRendering(),
                 options()
         );
@@ -141,6 +155,8 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle(),
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                isBackgroundTransparent(),
+                renderType(),
                 fieldRendering(),
                 options()
         );
@@ -163,6 +179,8 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle(),
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                isBackgroundTransparent(),
+                renderType(),
                 fieldRendering(),
                 options
         );
@@ -186,6 +204,8 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle(),
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                isBackgroundTransparent(),
+                renderType(),
                 fieldRendering(),
                 options()
         );

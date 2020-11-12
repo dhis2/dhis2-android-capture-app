@@ -55,4 +55,16 @@ public abstract class FileViewModel extends FieldViewModel {
     public int getLayoutId() {
         return R.layout.form_button;
     }
+
+    /*
+    button.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                View nextView;
+                if ((nextView = v.focusSearch(FOCUS_DOWN)) != null)
+                    nextView.requestFocus();
+            } else
+                itemView.setBackgroundColor(Color.WHITE);
+
+        });
+     */
 }

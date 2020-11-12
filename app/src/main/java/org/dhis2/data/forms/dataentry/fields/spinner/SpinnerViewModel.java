@@ -33,37 +33,37 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     public abstract Integer numberOfOptions();
 
     public static SpinnerViewModel create(String id, String label, String hintFilterOptions, Boolean mandatory,
-                                          String optionSet, String value, String section, Boolean editable, String description, Integer numberOfOptions, ObjectStyle objectStyle) {
-        return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, editable, null, null, description, objectStyle, null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, hintFilterOptions, optionSet, numberOfOptions == null ? 0 : numberOfOptions);
+                                          String optionSet, String value, String section, Boolean editable, String description, Integer numberOfOptions, ObjectStyle objectStyle, boolean isBackgroundTransparent, String renderType) {
+        return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, editable, null, null, description, objectStyle, null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, hintFilterOptions, optionSet, numberOfOptions == null ? 0 : numberOfOptions, isBackgroundTransparent, renderType);
     }
 
     @Override
     public FieldViewModel setMandatory() {
-        return new AutoValue_SpinnerViewModel(uid(), label(), true, value(), programStageSection(), allowFutureDate(), editable(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, hint(), optionSet(), numberOfOptions());
+        return new AutoValue_SpinnerViewModel(uid(), label(), true, value(), programStageSection(), allowFutureDate(), editable(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, hint(), optionSet(), numberOfOptions(), isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), editable(), warning(), error, description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, hint(), optionSet(), numberOfOptions());
+        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), editable(), warning(), error, description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, hint(), optionSet(), numberOfOptions(), isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), editable(), warning, error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER,  hint(), optionSet(), numberOfOptions());
+        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), editable(), warning, error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER,  hint(), optionSet(), numberOfOptions(), isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), data, programStageSection(), allowFutureDate(), false, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, hint(), optionSet(), numberOfOptions());
+        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), data, programStageSection(), allowFutureDate(), false, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, hint(), optionSet(), numberOfOptions(), isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withEditMode(boolean isEditable) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), isEditable, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, hint(), optionSet(), numberOfOptions());
+        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), isEditable, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, hint(), optionSet(), numberOfOptions(), isBackgroundTransparent(), renderType());
     }
 
     public void setOptionsToHide(List<String> optionsToHide, List<String> optionsGroupsToHide) {
@@ -88,8 +88,13 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     public List<String> getOptionGroupsToShow() {
         return optionGroupsToShow;
     }
+
     @Override
     public int getLayoutId() {
         return R.layout.form_option_set;
     }
- }
+
+    public abstract boolean isBackgroundTransparent();
+
+    public abstract String renderType();
+}
