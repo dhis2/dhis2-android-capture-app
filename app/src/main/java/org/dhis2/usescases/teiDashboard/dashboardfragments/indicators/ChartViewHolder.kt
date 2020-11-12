@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 import androidx.recyclerview.widget.RecyclerView
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.toChartBuilder
-import org.dhis2.data.analytics.AnalyticsModel
 import org.dhis2.data.analytics.ChartModel
 import org.dhis2.databinding.ItemChartBinding
 

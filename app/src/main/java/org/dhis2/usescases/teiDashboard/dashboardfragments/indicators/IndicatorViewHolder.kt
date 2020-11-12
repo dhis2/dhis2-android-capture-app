@@ -5,7 +5,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.BR
 import org.dhis2.R
-import org.dhis2.data.analytics.AnalyticsModel
 import org.dhis2.data.analytics.IndicatorModel
 import org.dhis2.databinding.ItemIndicatorBinding
 import org.dhis2.utils.Constants

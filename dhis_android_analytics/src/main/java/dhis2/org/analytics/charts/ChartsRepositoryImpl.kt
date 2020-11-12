@@ -42,8 +42,8 @@ class ChartsRepositoryImpl(
 
     private fun formattedDate(date: Date):Date{
         return try {
-            val formattedDateString = SimpleDateFormat("yyyy-mm-dd").format(date)
-            val formattedDate = SimpleDateFormat("yyyy-mm-dd").parse(formattedDateString)
+            val formattedDateString = SimpleDateFormat("yyyy-MM-dd").format(date)
+            val formattedDate = SimpleDateFormat("yyyy-MM-dd").parse(formattedDateString)
             formattedDate?:date
         }catch (e:Exception){
             date

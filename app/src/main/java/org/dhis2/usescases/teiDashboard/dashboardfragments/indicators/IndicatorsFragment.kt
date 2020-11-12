@@ -6,15 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.analytics.AnalyticsModel
-import org.dhis2.data.analytics.ChartModel
-import org.dhis2.data.analytics.IndicatorModel
 import org.dhis2.databinding.FragmentIndicatorsBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import javax.inject.Inject
 
 class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
 
