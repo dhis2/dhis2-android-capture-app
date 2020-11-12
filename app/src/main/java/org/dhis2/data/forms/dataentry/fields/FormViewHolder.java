@@ -108,7 +108,8 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
         currentUid.setValue("");
     }
 
-    public void bind(FieldViewModel viewModel) {
+    public void bind(FieldUiModel uiModel) {
+        FieldViewModel viewModel = (FieldViewModel) uiModel;
         fieldUid = viewModel.uid();
         label = new StringBuilder().append(viewModel.label());
         descriptionText = viewModel.description();

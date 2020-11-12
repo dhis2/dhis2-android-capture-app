@@ -1,10 +1,11 @@
 package org.dhis2.data.forms.dataentry.fields;
 
-import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
-import org.hisp.dhis.android.core.common.ObjectStyle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
+import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class FieldViewModel implements FieldUiModel {
 
@@ -63,8 +64,6 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     public abstract DataEntryViewHolderTypes dataEntryViewType();
 
-  //  public abstract Integer getLayoutId();
-
     public String getFormattedLabel() {
         if (mandatory()) {
             return label() + " *";
@@ -85,5 +84,35 @@ public abstract class FieldViewModel implements FieldUiModel {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public @NotNull String getUid() {
+        return uid();
+    }
+
+    @Override
+    public boolean equals(FieldUiModel o) {
+        if (o == this) {
+            return true;
+        }
+        if (o instanceof FieldViewModel) {
+            FieldViewModel that = (FieldViewModel) o;
+            return this.uid().equals(that.uid())
+                    && this.label().equals(that.label())
+                    && (this.programStageSection() == null ? that.programStageSection() == null : this.programStageSection().equals(that.programStageSection()))
+                    && (this.allowFutureDate() == null ? that.allowFutureDate() == null : this.allowFutureDate().equals(that.allowFutureDate()))
+                    && (this.editable() == null ? that.editable() == null : this.editable().equals(that.editable()))
+                    && (this.optionSet() == null ? that.optionSet() == null : this.optionSet().equals(that.optionSet()))
+                    && (this.warning() == null ? that.warning() == null : this.warning().equals(that.warning()))
+                    && (this.error() == null ? that.error() == null : this.error().equals(that.error()))
+                    && (this.description() == null ? that.description() == null : this.description().equals(that.description()))
+                    && this.objectStyle().equals(that.objectStyle())
+                    && (this.fieldMask() == null ? that.fieldMask() == null : this.fieldMask().equals(that.fieldMask()))
+                    && this.dataEntryViewType().equals(that.dataEntryViewType())
+                    && this.mandatory().equals(that.mandatory())
+                    && (this.value() == null ? that.value() == null : this.value().equals(that.value()));
+        }
+        return false;
     }
 }

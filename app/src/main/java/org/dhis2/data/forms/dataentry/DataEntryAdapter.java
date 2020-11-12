@@ -155,7 +155,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
 
     @Override
     public long getItemId(int position) {
-        return getItem(position).uid().hashCode();
+        return getItem(position).getUid().hashCode();
     }
 
     @NonNull
@@ -172,46 +172,52 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
         sectionPositions = new LinkedHashMap<>();
         rendering = null;
         int imageFields = 0;
+        List<FieldUiModel> items = new ArrayList<>();
         for (FieldViewModel fieldViewModel : updates) {
             if (fieldViewModel instanceof SectionViewModel) {
-                sectionPositions.put(fieldViewModel.uid(), updates.indexOf(fieldViewModel));
+                sectionPositions.put(fieldViewModel.getUid(), updates.indexOf(fieldViewModel));
                 if (((SectionViewModel) fieldViewModel).isOpen()) {
                     rendering = ((SectionViewModel) fieldViewModel).rendering();
                     totalFields = ((SectionViewModel) fieldViewModel).totalFields();
-                    setOpenSectionPos(updates.indexOf(fieldViewModel), fieldViewModel.uid());
-                } else if (fieldViewModel.uid().equals(lastOpenedSectionUid)) {
+                    setOpenSectionPos(updates.indexOf(fieldViewModel), fieldViewModel.getUid());
+                } else if (fieldViewModel.getUid().equals(lastOpenedSectionUid)) {
                     openSectionPos = -1;
                 }
             } else if (fieldViewModel instanceof ImageViewModel) {
                 imageFields++;
             }
+
+            items.add(fieldViewModel);
         }
 
         totalFields = imageFields;
 
-        submitList(updates, () -> {
+        submitList(items, () -> {
             int currentFocusPosition = -1;
             int lastFocusPosition = -1;
 
             if (lastFocusItem != null) {
                 nextFocusPosition = -1;
-                for (int i = 0; i < updates.size(); i++) {
-                    if (updates.get(i).uid().equals(lastFocusItem)) {
+                for (int i = 0; i < items.size(); i++) {
+
+                    FieldViewModel item = (FieldViewModel) items.get(i);
+
+                    if (item.getUid().equals(lastFocusItem)) {
                         lastFocusPosition = i;
                         nextFocusPosition = i + 1;
                     }
-                    if (i == nextFocusPosition && !updates.get(i).editable() && !(updates.get(i) instanceof SectionViewModel)) {
+                    if (i == nextFocusPosition && !item.editable() && !(item instanceof SectionViewModel)) {
                         nextFocusPosition++;
                     }
-                    if (updates.get(i).uid().equals(currentFocusUid.getValue()))
+                    if (item.getUid().equals(currentFocusUid.getValue()))
                         currentFocusPosition = i;
                 }
             }
 
-            if (nextFocusPosition != -1 && currentFocusPosition == lastFocusPosition && nextFocusPosition < updates.size())
-                currentFocusUid.setValue(getItem(nextFocusPosition).uid());
-            else if (currentFocusPosition != -1 && currentFocusPosition < updates.size())
-                currentFocusUid.setValue(getItem(currentFocusPosition).uid());
+            if (nextFocusPosition != -1 && currentFocusPosition == lastFocusPosition && nextFocusPosition < items.size())
+                currentFocusUid.setValue(getItem(nextFocusPosition).getUid());
+            else if (currentFocusPosition != -1 && currentFocusPosition < items.size())
+                currentFocusUid.setValue(getItem(currentFocusPosition).getUid());
 
             commitCallback.run();
         });
