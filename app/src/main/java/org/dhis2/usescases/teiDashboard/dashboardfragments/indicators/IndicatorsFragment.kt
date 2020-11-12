@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import dhis2.org.analytics.charts.data.Graph
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
