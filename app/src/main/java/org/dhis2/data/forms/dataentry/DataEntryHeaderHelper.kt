@@ -1,12 +1,17 @@
 package org.dhis2.data.forms.dataentry
 
+import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ObservableField
+import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.processors.PublishProcessor
 import org.dhis2.data.forms.dataentry.fields.section.SectionHolder
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 
@@ -44,7 +49,7 @@ class DataEntryHeaderHelper(
             dataEntryAdapter.getSectionForPosition(visiblePos)?.let { headerSection ->
                 if (headerSection.isOpen && !dataEntryAdapter.isSection(visiblePos + 1)) {
                     if (currentSection.value == null || currentSection.value!!
-                        .uid() != headerSection.uid()
+                            .uid() != headerSection.uid()
                     ) {
                         currentSection.value = headerSection
                     }
@@ -56,10 +61,18 @@ class DataEntryHeaderHelper(
     }
 
     private fun loadHeader(section: SectionViewModel?) {
-   /*     val dataEntryAdapter = recyclerView.adapter as DataEntryAdapter
+        val dataEntryAdapter = recyclerView.adapter as DataEntryAdapter
         if (section != null && section.isOpen) {
+            val layoutInflater = LayoutInflater.from(headerContainer.context)
+            val binding =
+                DataBindingUtil.inflate<ViewDataBinding>(
+                    layoutInflater,
+                    section.getLayoutId(),
+                    headerContainer,
+                    false
+                )
             val sectionHolder: SectionHolder =
-                dataEntryAdapter.rowSection.onCreate(headerContainer)
+                SectionHolder(binding, ObservableField(String()), PublishProcessor.create())
             val sectionPosition: Int = dataEntryAdapter.getSectionPosition(section.uid())
             dataEntryAdapter.updateSectionData(sectionHolder, sectionPosition, true)
             headerContainer.removeAllViews()
@@ -67,7 +80,7 @@ class DataEntryHeaderHelper(
             sectionHolder.update(section)
         } else {
             headerContainer.removeAllViews()
-        } */
+        }
     }
 
     fun onItemsUpdatedCallback() {

@@ -61,4 +61,13 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
     public int getLayoutId() {
         return R.layout.form_org_unit;
     }
+
+    public void onDataChange(String data) {
+
+    }
+
+
+    public void onActivate() {
+
+    }
 }

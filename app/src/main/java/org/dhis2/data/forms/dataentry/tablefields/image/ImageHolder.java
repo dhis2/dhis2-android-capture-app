@@ -67,7 +67,6 @@ public class ImageHolder extends FormViewHolder {
         label = new StringBuilder(viewModel.label());
         if (viewModel.mandatory())
             label.append("*");
-        binding.setLabel(label.toString());
 
         if (viewModel.warning() != null) {
             binding.errorMessage.setVisibility(View.VISIBLE);
