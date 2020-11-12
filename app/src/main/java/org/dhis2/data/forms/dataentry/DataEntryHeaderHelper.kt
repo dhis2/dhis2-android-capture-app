@@ -56,7 +56,7 @@ class DataEntryHeaderHelper(
     }
 
     private fun loadHeader(section: SectionViewModel?) {
-        val dataEntryAdapter = recyclerView.adapter as DataEntryAdapter
+   /*     val dataEntryAdapter = recyclerView.adapter as DataEntryAdapter
         if (section != null && section.isOpen) {
             val sectionHolder: SectionHolder =
                 dataEntryAdapter.rowSection.onCreate(headerContainer)
@@ -67,7 +67,7 @@ class DataEntryHeaderHelper(
             sectionHolder.update(section)
         } else {
             headerContainer.removeAllViews()
-        }
+        } */
     }
 
     fun onItemsUpdatedCallback() {

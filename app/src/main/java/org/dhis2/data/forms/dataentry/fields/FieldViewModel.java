@@ -6,7 +6,7 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public abstract class FieldViewModel {
+public abstract class FieldViewModel implements FieldUiModel {
 
     @NonNull
     public abstract String uid();
@@ -63,7 +63,7 @@ public abstract class FieldViewModel {
 
     public abstract DataEntryViewHolderTypes dataEntryViewType();
 
-    public abstract Integer getLayoutId();
+  //  public abstract Integer getLayoutId();
 
     public String getFormattedLabel() {
         if (mandatory()) {

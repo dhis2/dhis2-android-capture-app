@@ -44,7 +44,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
                 objectStyle,
                 null,
                 DataEntryViewHolderTypes.SCAN_CODE,
-                R.layout.form_scan,
                 fieldRendering,
                 hint
             )
@@ -66,7 +65,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
-            R.layout.form_scan,
             fieldRendering,
             hint
         )
@@ -87,7 +85,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
-            R.layout.form_scan,
             fieldRendering,
             hint
         )
@@ -108,7 +105,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
-            R.layout.form_scan,
             fieldRendering,
             hint
         )
@@ -129,7 +125,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
-            R.layout.form_scan,
             fieldRendering,
             hint
         )
@@ -150,8 +145,12 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
-            R.layout.form_scan,
             fieldRendering,
             hint
         )
+
+
+    override fun getLayoutId(): Int {
+        return R.layout.form_scan
+    }
 }

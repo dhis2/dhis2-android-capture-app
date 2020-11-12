@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.ListAdapter;
 
+import org.dhis2.data.forms.dataentry.fields.FieldUiModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolderFactory;
@@ -32,7 +33,7 @@ import java.util.Objects;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
-public final class DataEntryAdapter extends ListAdapter<FieldViewModel, FormViewHolder> {
+public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHolder> {
 
     private final SectionHandler sectionHandler = new SectionHandler();
 

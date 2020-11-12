@@ -52,7 +52,6 @@ public abstract class SectionViewModel extends FieldViewModel {
                 ObjectStyle.builder().build(),
                 null,
                 DataEntryViewHolderTypes.SECTION,
-                R.layout.form_section,
                 isOpen,
                 totalFields,
                 completedFields,
@@ -78,7 +77,6 @@ public abstract class SectionViewModel extends FieldViewModel {
                 ObjectStyle.builder().build(),
                 null,
                 DataEntryViewHolderTypes.SECTION,
-                R.layout.form_section,
                 false,
                 0,
                 0,
@@ -110,7 +108,6 @@ public abstract class SectionViewModel extends FieldViewModel {
                 objectStyle(),
                 null,
                 DataEntryViewHolderTypes.SECTION,
-                R.layout.form_section,
                 isOpen(),
                 totalFields(),
                 completedFields(),
@@ -138,7 +135,6 @@ public abstract class SectionViewModel extends FieldViewModel {
                 objectStyle(),
                 null,
                 DataEntryViewHolderTypes.SECTION,
-                R.layout.form_section,
                 isOpen(),
                 totalFields(),
                 completedFields(),
@@ -166,7 +162,6 @@ public abstract class SectionViewModel extends FieldViewModel {
                 objectStyle(),
                 null,
                 DataEntryViewHolderTypes.SECTION,
-                R.layout.form_section,
                 isOpen(),
                 totalFields(),
                 completedFields(),
@@ -217,7 +212,6 @@ public abstract class SectionViewModel extends FieldViewModel {
                 objectStyle(),
                 null,
                 DataEntryViewHolderTypes.SECTION,
-                R.layout.form_section,
                 isOpen,
                 totalFields(),
                 completedFields(),
@@ -243,7 +237,6 @@ public abstract class SectionViewModel extends FieldViewModel {
                 objectStyle(),
                 null,
                 DataEntryViewHolderTypes.SECTION,
-                R.layout.form_section,
                 isOpen(),
                 totalFields,
                 completedFields(),
@@ -269,7 +262,6 @@ public abstract class SectionViewModel extends FieldViewModel {
                 objectStyle(),
                 null,
                 DataEntryViewHolderTypes.SECTION,
-                R.layout.form_section,
                 isOpen(),
                 totalFields(),
                 completedFields,
@@ -282,5 +274,10 @@ public abstract class SectionViewModel extends FieldViewModel {
     public boolean hasToShowDescriptionIcon(boolean isTitleEllipsized) {
         return (description() != null && !Objects.requireNonNull(description()).isEmpty()) ||
                 isTitleEllipsized;
+    }
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.form_section;
     }
 }

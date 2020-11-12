@@ -31,7 +31,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
                                            @NonNull Boolean editable, @Nullable String description,
                                            @Nullable ValueTypeDeviceRendering fieldRendering, ObjectStyle objectStyle, @Nullable String fieldMask) {
         return new AutoValue_EditTextViewModel(uid, label, mandatory,
-                value, section, null, editable, null, description, objectStyle, fieldMask, DataEntryViewHolderTypes.EDIT_TEXT, R.layout.form_edit_text_custom, hint, lines,
+                value, section, null, editable, null, description, objectStyle, fieldMask, DataEntryViewHolderTypes.EDIT_TEXT, hint, lines,
                 InputType.TYPE_CLASS_TEXT, valueType, null, null, fieldRendering);
     }
 
@@ -40,7 +40,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public EditTextViewModel withWarning(@NonNull String warning) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 value(), programStageSection(), null, editable(), null,
-                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, R.layout.form_edit_text_custom, hint(), maxLines(), inputType(), valueType(), warning, error(), fieldRendering());
+                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, hint(), maxLines(), inputType(), valueType(), warning, error(), fieldRendering());
     }
 
     @NonNull
@@ -48,7 +48,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public EditTextViewModel withError(@NonNull String error) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 value(), programStageSection(), null, true, null,
-                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, R.layout.form_edit_text_custom, hint(), maxLines(), inputType(), valueType(), warning(), error,
+                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, hint(), maxLines(), inputType(), valueType(), warning(), error,
                 fieldRendering());
     }
 
@@ -57,7 +57,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public FieldViewModel setMandatory() {
         return new AutoValue_EditTextViewModel(uid(), label(), true,
                 value(), programStageSection(), null, editable(), null,
-                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, R.layout.form_edit_text_custom, hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
+                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
                 fieldRendering());
     }
 
@@ -66,7 +66,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public FieldViewModel withValue(String data) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 data, programStageSection(), null, false, null,
-                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, R.layout.form_edit_text_custom, hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
+                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT,hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
                 fieldRendering());
     }
 
@@ -75,7 +75,12 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public FieldViewModel withEditMode(boolean isEditable) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 value(), programStageSection(), null, isEditable, null,
-                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, R.layout.form_edit_text_custom, hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
+                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
                 fieldRendering());
+    }
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.form_edit_text_custom;
     }
 }
