@@ -10,13 +10,13 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.uicomponents.map.geometry.TEI_UID
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeatureCollection.Companion.DE_NAME
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection.Companion.FIELD_NAME
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.managers.EventMapManager
 import org.dhis2.uicomponents.map.managers.TeiMapManager
 
-class DataElementMapLayer(
+class FieldMapLayer(
     var style: Style,
     val sourceId: String
 ) : MapLayer {
@@ -49,7 +49,7 @@ class DataElementMapLayer(
                 .withProperties(
                     PropertyFactory.iconImage("${EventMapManager.DE_ICON_ID}_$sourceId"),
                     PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.textField(Expression.get(DE_NAME)),
+                    PropertyFactory.textField(Expression.get(FIELD_NAME)),
                     PropertyFactory.textAllowOverlap(false),
                     PropertyFactory.textAnchor(Property.TEXT_ANCHOR_TOP),
                     PropertyFactory.textRadialOffset(2f),

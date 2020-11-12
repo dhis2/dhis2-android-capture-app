@@ -3,16 +3,12 @@ apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'io.fabric'
 apply plugin: 'hu.supercluster.paperwork'
 
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
 
 repositories {
-    maven {
-        url("https://maven.fabric.io/public")
-    }
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     mavenCentral()
 }
@@ -92,9 +88,6 @@ android {
             // androidTest and test source sets
             testCoverageEnabled = false
 
-            // Disable fabric build ID generation for debug builds
-//          ext.enableCrashlytics = false
-
             // Using dataentry.jks to sign debug build type.
             signingConfig = signingConfigs.debug
 
@@ -111,7 +104,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            ext.enableCrashlytics = true
 
             def bitriseAcraUserProd = System.getenv("ACRA_USER_PROD")
             def bitriseAcraPassProd = System.getenv("ACRA_PASS_PROD")
@@ -281,11 +273,6 @@ dependencies {
     //GSON
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-
-    //CRASHLYTICS
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
-        transitive = true
-    }
 
 
     implementation 'org.matomo.sdk:tracker:4.1.2'

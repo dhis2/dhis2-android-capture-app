@@ -5,7 +5,7 @@ import androidx.test.rule.ActivityTestRule
 import org.dhis2.R
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
-import org.dhis2.usescases.searchte.searchTeiRobot
+import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
@@ -15,7 +15,6 @@ import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.relationshipRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
