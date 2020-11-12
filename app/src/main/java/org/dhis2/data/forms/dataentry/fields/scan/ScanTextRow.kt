@@ -26,7 +26,7 @@ class ScanTextRow(
             false
         )
         binding.scanTextView.setLayoutData(isBgTransparent)
-        return ScanTextHolder(binding, processor, isSearchMode, currentSelection)
+        return ScanTextHolder(binding, currentSelection)
     }
 
     override fun onBind(viewHolder: ScanTextHolder, viewModel: ScanTextViewModel) {

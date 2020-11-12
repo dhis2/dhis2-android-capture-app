@@ -4,7 +4,6 @@ import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import java.util.ArrayList
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
@@ -30,6 +29,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import timber.log.Timber
+import java.util.ArrayList
 
 class EnrollmentRepository(
     private val fieldFactory: FieldViewModelFactory,
@@ -379,7 +379,8 @@ class EnrollmentRepository(
             allowFutureDates,
             true,
             null,
-            ObjectStyle.builder().build()
+            ObjectStyle.builder().build(),
+            true
         )
     }
 
@@ -399,7 +400,8 @@ class EnrollmentRepository(
             allowFutureDates,
             true,
             null,
-            ObjectStyle.builder().build()
+            ObjectStyle.builder().build(),
+            true
         )
     }
 
@@ -412,7 +414,9 @@ class EnrollmentRepository(
             ENROLLMENT_DATA_SECTION_UID,
             editable,
             null,
-            ObjectStyle.builder().build()
+            ObjectStyle.builder().build(),
+            true,
+            ProgramStageSectionRenderingType.LISTING.name
         )
     }
 
@@ -433,7 +437,8 @@ class EnrollmentRepository(
             ENROLLMENT_DATA_SECTION_UID,
             true, null,
             ObjectStyle.builder().build(),
-            featureType
+            featureType,
+            true
         )
     }
 
@@ -452,7 +457,8 @@ class EnrollmentRepository(
             ENROLLMENT_DATA_SECTION_UID,
             true, null,
             ObjectStyle.builder().build(),
-            featureType
+            featureType,
+            true
         )
     }
 

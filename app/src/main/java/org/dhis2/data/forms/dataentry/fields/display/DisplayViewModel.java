@@ -50,4 +50,8 @@ public abstract class DisplayViewModel extends FieldViewModel {
     public int getLayoutId() {
         return R.layout.item_indicator;
     }
+
+    public int colorBG() {
+        return -1;
+    }
 }

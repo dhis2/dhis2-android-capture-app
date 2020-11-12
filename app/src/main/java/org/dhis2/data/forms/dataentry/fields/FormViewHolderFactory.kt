@@ -120,7 +120,7 @@ class FormViewHolderFactory(
     }
 
     private fun provideScanViewHolder(binding: ViewDataBinding): ScanTextHolder {
-        return ScanTextHolder(binding, processor, false, currentFocusUid)
+        return ScanTextHolder(binding, currentFocusUid)
     }
 
     private fun provideSectionViewHolder(binding: ViewDataBinding): SectionHolder {

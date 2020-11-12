@@ -1,9 +1,13 @@
 package org.dhis2.data.forms.dataentry.fields.image;
 
+import android.view.View;
+
 import androidx.annotation.NonNull;
+import androidx.databinding.ObservableField;
 
 import com.google.auto.value.AutoValue;
 
+import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -85,4 +89,64 @@ public abstract class ImageViewModel extends FieldViewModel {
     public int getLayoutId() {
         return R.layout.form_image;
     }
+
+    public void onItemClick(View view) {
+        if (editable()) {
+            String label = optionDisplayName();
+            String code = optionCode();
+
+            /*val value = if (imageSelector.get() == label) {
+                currentSelector.set("")
+                null
+            } else {
+                currentSelector.set(label)
+                code
+            }
+            processor.onNext(RowAction.create(model!!.fieldUid(), value, adapterPosition))*/
+        }
+    }
+
+    public Boolean isCurrentSelector() {
+        //imageSelector is in the DataEntryAdapter
+        /*ObservableField<String> currentSelector = imageSelector;
+
+        Bindings.setObjectStyle(icon, itemView, viewModel.objectStyle());
+        Bindings.setObjectStyle(label, itemView, viewModel.objectStyle());
+
+        if (value() != null) {
+            if (!value().equals(currentSelector.get())) {
+                currentSelector.set(value());
+            }
+        } else if (currentSelector.get() != null) {
+        }
+
+        if (optionDisplayName().equals(currentSelector)) {
+            return true;
+        } else {
+            return false;
+        }*/
+        return true;
+    }
+
+    /*
+     var height: Int? = null
+         val parentHeight: Int = parent.height
+         sectionRendering?.let {
+             when (it) {
+                 ProgramStageSectionRenderingType.SEQUENTIAL.name -> {
+                     height = parentHeight / if (totalFields > 2) 3 else totalFields
+                 }
+                 ProgramStageSectionRenderingType.MATRIX.name -> {
+                     height = parentHeight / (totalFields / 2 + 1)
+                 }
+             }
+         }
+
+         height?.let {
+             val rootView = binding.root
+             val layoutParams = rootView.layoutParams
+             layoutParams.height = it
+             rootView.layoutParams = layoutParams
+         }
+     */
 }

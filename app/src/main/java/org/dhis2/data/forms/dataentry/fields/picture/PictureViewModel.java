@@ -12,6 +12,8 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 @AutoValue
 public abstract class PictureViewModel extends FieldViewModel {
 
+    public boolean isBackgroundTransparent;
+
     public static PictureViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle) {
         return new AutoValue_PictureViewModel(id, label, mandatory, value, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.PICTURE);
     }
