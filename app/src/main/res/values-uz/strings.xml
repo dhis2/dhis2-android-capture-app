@@ -241,7 +241,7 @@
     <string name="hint_year">Йиллар</string>
     <string name="week">Ҳафталар</string>
     <string name="incident_date">Ҳодиса санаси</string>
-    <string name="date_dialog_clear">Аниқ</string>
+    <string name="date_dialog_clear">Тозалаш</string>
     <string name="period">давр</string>
     <string name="tuto_main_1">DHIS2 га Хуш келибсиз</string>
     <string name="next">Кейинги</string>
@@ -277,7 +277,7 @@
     <string name="local_data_accept">Қабул қилинг</string>
     <string name="login_server_info_title">Сервер URLи</string>
     <string name="state_warning">Огоҳлантиришв</string>
-    <string name="action_close">Ёпиқ</string>
+    <string name="action_close">Ёпиш</string>
     <string name="data_set_complete">Бажарилди</string>
     <string name="data_set_open">Очиш</string>
     <string name="unsupported_value_type">Қўллаб қувватланмайдиган қиймат тури</string>
@@ -328,5 +328,5 @@
     <string name="filters_title_event_date">Тадбир санаси</string>
     <string name="dataset_data">Маълумот</string>
     <string name="customactivityoncrash_error_activity_restart_app">Орқага қайтинг</string>
-    <string name="customactivityoncrash_error_activity_error_details_close">Ёпиқ</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">Ёпиш</string>
     </resources>
