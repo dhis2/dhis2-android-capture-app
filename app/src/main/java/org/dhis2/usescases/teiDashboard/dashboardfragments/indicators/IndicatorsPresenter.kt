@@ -4,8 +4,9 @@ import dhis2.org.analytics.charts.Charts
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.BiFunction
+import io.reactivex.functions.Function3
 import org.dhis2.data.analytics.AnalyticsModel
+import org.dhis2.data.analytics.ChartModel
 import org.dhis2.data.analytics.IndicatorModel
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.schedulers.SchedulerProvider
@@ -52,29 +53,32 @@ class IndicatorsPresenter(
     }
 
     fun init() {
-        // TODO: ANDROAPP-3491 This should be changed
-        view.showGraphs(charts?.getCharts(enrollmentUid))
-
         compositeDisposable.add(
             Flowable.zip<List<AnalyticsModel>?,
                     List<AnalyticsModel>?,
+                    List<AnalyticsModel>,
                     List<AnalyticsModel>>(
                 getIndicators(),
                 getRulesIndicators(),
-                BiFunction { indicators, ruleIndicators ->
+                Flowable.just(charts?.getCharts(enrollmentUid)?.map { ChartModel(it) }
+                    ?: emptyList()),
+                Function3 { indicators, ruleIndicators, charts ->
                     val indicatorsMutable = indicators.toMutableList()
                     for (indicator in ruleIndicators) {
                         if (!indicators.contains(indicator)) {
                             indicatorsMutable.add(indicator)
                         }
                     }
-                    return@BiFunction indicatorsMutable.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
+                    val finalList =
+                        indicatorsMutable.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
+                            .toMutableList()
+                    finalList.apply { addAll(charts) }
                 }
             )
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { view.swapIndicators(it) },
+                    { view.swapAnalytics(it) },
                     { Timber.d(it) }
                 )
         )

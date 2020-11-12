@@ -6,10 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import dhis2.org.analytics.charts.data.ChartType
-import dhis2.org.analytics.charts.data.Graph
-import dhis2.org.analytics.charts.data.toChartBuilder
-import dhis2.org.analytics.charts.data.Graph
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.analytics.AnalyticsModel
@@ -68,19 +64,14 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
         super.onPause()
     }
 
-    override fun swapIndicators(indicators: List<AnalyticsModel>) {
-        adapter.setIndicators(indicators as List<IndicatorModel>)
-
+    override fun swapAnalytics(analytics: List<AnalyticsModel>) {
+        adapter.submitList(analytics)
         binding.spinner.visibility = View.GONE
 
-        if (!indicators.isNullOrEmpty()) {
+        if (!analytics.isNullOrEmpty()) {
             binding.emptyIndicators.visibility = View.GONE
         } else {
             binding.emptyIndicators.visibility = View.VISIBLE
         }
-    }
-
-    override fun showGraphs(charts: List<Graph>?) {
-        charts?.let { adapter.setCharts(charts.map { ChartModel(it) }) }
     }
 }
