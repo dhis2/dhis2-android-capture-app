@@ -27,7 +27,7 @@ class IndicatorsRobot : BaseRobot() {
                 allOf(
                     isDisplayed(), isNotEmpty(),
                     atPosition(
-                        1,
+                        2,
                         hasDescendant(
                             allOf(
                                 withText(yellowFeverIndicator),
@@ -49,7 +49,7 @@ class IndicatorsRobot : BaseRobot() {
                 allOf(
                     isDisplayed(), isNotEmpty(),
                     atPosition(
-                        0,
+                        1,
                         hasDescendant(
                             allOf(
                                 withText(weightIndicator),
