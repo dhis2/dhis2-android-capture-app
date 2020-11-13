@@ -74,7 +74,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
         this.processorOptionSet = PublishProcessor.create();
         this.currentFocusUid = new MutableLiveData<>();
         this.formViewHolderFactory = new FormViewHolderFactory(
-                processor,
                 dataEntryArguments.renderType(),
                 currentFocusUid,
                 totalFields,
@@ -99,7 +98,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
         this.processorOptionSet = processorOptSet;
         this.currentFocusUid = new MutableLiveData<>();
         this.formViewHolderFactory = new FormViewHolderFactory(
-                processor,
                 dataEntryArguments.renderType(),
                 currentFocusUid,
                 totalFields,
