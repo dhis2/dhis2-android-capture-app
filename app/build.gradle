@@ -202,7 +202,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation "androidx.multidex:multidex:${libraries.multidex}"
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycle}"
     implementation "androidx.work:work-runtime:2.2.0"
     implementation "androidx.work:work-rxjava2:2.2.0"
