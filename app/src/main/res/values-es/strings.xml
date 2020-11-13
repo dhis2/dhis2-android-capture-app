@@ -449,6 +449,7 @@
     <string name="dashboard_overview">General</string>
     <string name="dashboard_relationships">Relaciones</string>
     <string name="dashboard_indicators">Indicadores</string>
+    <string name="dashboard_analytics">Analíticas</string>
     <string name="empty_indicators">No hay indicadores para este programa.</string>
     <string name="dashboard_notes">Notas</string>
     <string name="unable_to_complete">No se puede completar</string>
@@ -575,6 +576,7 @@
     <string name="syncing">Sincronizando...</string>
     <string name="end_sync_granular">Sincronización completada</string>
     <string name="error_sync">Ocurrió un error en la sincronización</string>
+    <string name="error_sync_check_logs">Se ha producido un error durante la sincronización. Pulse aquí para ver el listado de errores</string>
     <string name="cancel_sync">Cancelar sincronización</string>
 
     <string name="copied_text">Copiado</string>
@@ -682,6 +684,8 @@
     <string name="sync_parameters_not_editable">Los parámetros de sincronización no son editables</string>
     <string name="rv_no_editable">El número de valores reservados a descargar no es editable</string>
     <string name="dialog_layer_satellite">Mostrar vista satélite</string>
+    <string name="dialog_layer_satellite_base_map">Vista satélite</string>
+    <string name="dialog_layer_street_base_map">Vista de calle</string>
     <string name="dialog_layer_event">Mostrar eventos</string>
     <string name="dialog_layer_tei_coordinates">Mostrar coordenadas de la entidad</string>
     <string name="dialog_layer_enrollment_coordinates">Mostrar coordinadas del registro</string>
@@ -748,4 +752,8 @@
     <string name="customactivityoncrash_error_activity_error_details_copy">Copiar al portapapeles</string>
     <string name="customactivityoncrash_error_activity_error_details_copied">Copiado al portapapeles</string>
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Información del error</string>
-    </resources>
+    <string name="enrollment_date_edition_warning">Hay eventos planificados que no serán reprogramados</string>
+    <string name="jira_issue_sent">Incidencia reportada</string>
+    <string name="jira_issue_sent_error">Error al enviar la incidencia</string>
+    <string name="section_charts">Gráficas</string>
+</resources>
