@@ -18,6 +18,7 @@ class DhisBottomNavigationBarAnimations(val view: DhisBottomNavigationBar) {
     private val collapseAnimationDelay = 700L
     private val expandAnimationDuration = 1200L
     private val expandAnimationDelay = 700L
+    private val hideAnimationDuration = 1200L
 
     private val hideTranslation by lazy { (view.width - collapsedWidth) }
 
@@ -40,6 +41,12 @@ class DhisBottomNavigationBarAnimations(val view: DhisBottomNavigationBar) {
         }
     }
 
+    fun hide(animationEndCallback: () -> Unit) {
+        view.apply {
+            animateHideTranslation(animate(), height)
+        }
+    }
+
     private fun animateCollapsedTranslation(animate: ViewPropertyAnimator) {
         animate.translationX(hideTranslation.toFloat())
             .apply {
@@ -51,6 +58,22 @@ class DhisBottomNavigationBarAnimations(val view: DhisBottomNavigationBar) {
         animate.translationX(0f)
             .apply {
                 duration = expandAnimationDuration
+            }.start()
+    }
+
+    private fun animateHideTranslation(animate: ViewPropertyAnimator, barHeight: Int) {
+        animate.translationY(barHeight.toFloat())
+            .alpha(0f)
+            .apply {
+                duration = hideAnimationDuration
+            }.start()
+    }
+
+    private fun animateShowTranslation(animate: ViewPropertyAnimator) {
+        animate.translationY(0f)
+            .alpha(1f)
+            .apply {
+                duration = hideAnimationDuration
             }.start()
     }
 
