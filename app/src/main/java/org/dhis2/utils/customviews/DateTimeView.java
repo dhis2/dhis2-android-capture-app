@@ -29,6 +29,8 @@ import java.util.Date;
 
 import timber.log.Timber;
 
+import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
+
 /**
  * QUADRAM. Created by frodriguez on 1/15/2018.
  */
@@ -47,6 +49,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     private Date date;
     private TextView labelText;
     private View clearButton;
+    private DateTimeViewModel viewModel;
 
     public DateTimeView(Context context) {
         super(context);
@@ -265,6 +268,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     }
 
     public void setViewModel(DateTimeViewModel viewModel) {
+        this.viewModel = viewModel;
         setIsBgTransparent(viewModel.isBackgroundTransparent());
         setLabel(viewModel.getFormattedLabel());
         setDescription(viewModel.description());
@@ -273,7 +277,21 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         setAllowFutureDates(viewModel.allowFutureDate());
         setWarning(viewModel.warning());
         setEditable(viewModel.editable());
-        setDateListener(viewModel::onDateSelected);
-        setActivationListener(viewModel::onActivate);
+        setDateListener(date -> {
+            viewModel.onDateSelected(date);
+            clearBackground(viewModel.isSearchMode());
+        });
+        setActivationListener(() -> {
+            viewModel.onActivate();
+            //TODO does DateTimeView needs keyboard?
+            closeKeyboard(binding.getRoot());
+        });
+    }
+
+    private void clearBackground(boolean isSearchMode) {
+        if (!isSearchMode) {
+            binding.getRoot().setBackgroundResource(R.color.form_field_background);
+            viewModel.onDeactivate();
+        }
     }
 }

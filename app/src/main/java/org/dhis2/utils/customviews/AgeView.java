@@ -56,6 +56,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     private View yearInputLayout;
     private View monthInputLayout;
     private View dayInputLayout;
+    private AgeViewModel viewModel;
 
     public AgeView(Context context) {
         super(context);
@@ -342,22 +343,15 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setViewModel(AgeViewModel viewModel) {
+        this.viewModel = viewModel;
         setIsBgTransparent(viewModel.isBackgroundTransparent());
-        setAgeChangedListener(new OnAgeSet() {
-            @Override
-            public void onAgeSet(Date ageDate) {
-                if (viewModel.value() == null || !Objects.equals(viewModel.value(), ageDate == null ? null : DateUtils.databaseDateFormat().format(ageDate))) {
-//                    processor.onNext(RowAction.create(ageViewModel.uid(), ageDate == null ? null : DateUtils.oldUiDateFormat().format(ageDate), getAdapterPosition()));
-//                    clearBackground(isSearchMode);
-                }
+        setAgeChangedListener(ageDate -> {
+            if (viewModel.value() == null || !Objects.equals(viewModel.value(), ageDate == null ? null : DateUtils.databaseDateFormat().format(ageDate))) {
+                viewModel.onAgeSet(ageDate);
+                clearBackground(viewModel.isSearchMode());
             }
         });
-        setActivationListener(new OnActivation() {
-            @Override
-            public void onActivation() {
-//                setSelectedBackground(isSearchMode);
-            }
-        });
+        setActivationListener(viewModel::onActivate);
 
         setLabel(viewModel.getFormattedLabel(), viewModel.description());
 
@@ -375,5 +369,12 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
             clearErrors();
 
         setEditable(viewModel.editable());
+    }
+
+    private void clearBackground(boolean isSearchMode) {
+        if (!isSearchMode) {
+            binding.getRoot().setBackgroundResource(R.color.form_field_background);
+            viewModel.onDeactivate();
+        }
     }
 }

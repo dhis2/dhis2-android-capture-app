@@ -71,7 +71,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
         switch (type) {
             case AGE:
-                return AgeViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, true);
+                return AgeViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, true, false);
             case TEXT:
             case EMAIL:
             case LETTER:
@@ -95,7 +95,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case TIME:
             case DATE:
             case DATETIME:
-                return DateTimeViewModel.create(id, label, mandatory, type, value, section, allowFutureDates, editable, description, objectStyle, true);
+                return DateTimeViewModel.create(id, label, mandatory, type, value, section, allowFutureDates, editable, description, objectStyle, true, false);
             case COORDINATE:
                 return CoordinateViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, FeatureType.POINT, true, false);
             case BOOLEAN:
