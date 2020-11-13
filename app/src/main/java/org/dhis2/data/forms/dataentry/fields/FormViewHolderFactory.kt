@@ -23,7 +23,6 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerHolder
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedHolder
 
 class FormViewHolderFactory(
-    private val processor: FlowableProcessor<RowAction>,
     private val renderType: String?,
     private val currentFocusUid: MutableLiveData<String>,
     private val totalFields: Int,
@@ -86,13 +85,13 @@ class FormViewHolderFactory(
     }
 
     private fun provideEditTextViewHolder(binding: ViewDataBinding): EditTextCustomHolder {
-        return EditTextCustomHolder(binding, processor, false, currentFocusUid)
+        return EditTextCustomHolder(binding, currentFocusUid)
     }
 
     private fun provideLongTextViewHolder(binding: ViewDataBinding): EditTextCustomHolder {
 //        binding.customEdittext.setLayoutData(true, true)
 //        binding.customEdittext.setRenderType(renderType)
-        return EditTextCustomHolder(binding, processor, false, currentFocusUid)
+        return EditTextCustomHolder(binding, currentFocusUid)
     }
 
     private fun provideFileViewHolder(binding: ViewDataBinding): FileHolder {

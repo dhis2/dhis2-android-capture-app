@@ -42,6 +42,7 @@ import org.hisp.dhis.android.core.maintenance.D2Error;
 import java.util.List;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
 
 public class CoordinatesView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
@@ -63,6 +64,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private FeatureType featureType;
     private Geometry currentGeometry;
     private TextView labelText;
+    private CoordinateViewModel viewModel;
 
     public CoordinatesView(Context context) {
         super(context);
@@ -473,10 +475,20 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     public void setViewModel(CoordinateViewModel viewModel) {
+        this.viewModel = viewModel;
         setIsBgTransparent(viewModel.isBackgroundTransparent());
-        setCurrentLocationListener(viewModel::onCurrentLocationClick);
-//        setMapListener((CoordinatesView.OnMapPositionClick) this);
-        setActivationListener(viewModel::onActivate);
+        setCurrentLocationListener(geometry -> {
+            closeKeyboard(binding.getRoot());
+            viewModel.onCurrentLocationClick(geometry);
+            clearBackground(viewModel.isSearchMode());
+        });
+        /*setMapListener(coordinatesView -> {
+
+        });*/
+        setActivationListener(() -> {
+            binding.getRoot().setActivated(true);
+            viewModel.onActivate();
+        });
 
         setFeatureType(viewModel.featureType());
         setLabel(viewModel.getFormattedLabel());
@@ -486,6 +498,13 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         setWarning(viewModel.warning());
         setError(viewModel.error());
         setEditable(viewModel.editable());
+    }
+
+    private void clearBackground(boolean isSearchMode) {
+        if (!isSearchMode) {
+            binding.getRoot().setBackgroundResource(R.color.form_field_background);
+            viewModel.onDeactivate();
+        }
     }
 }
 

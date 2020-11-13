@@ -438,7 +438,8 @@ class EnrollmentRepository(
             true, null,
             ObjectStyle.builder().build(),
             featureType,
-            true
+            true,
+            false
         )
     }
 
@@ -458,7 +459,8 @@ class EnrollmentRepository(
             true, null,
             ObjectStyle.builder().build(),
             featureType,
-            true
+            true,
+            false
         )
     }
 

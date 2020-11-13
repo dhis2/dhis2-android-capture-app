@@ -60,7 +60,7 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {
         FormEditTextCustomBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_edit_text_custom, viewGroup, false);
         binding.customEdittext.setLayoutData(isBgTransparent,isLongText);
         binding.customEdittext.setRenderType(renderType);
-        return new EditTextCustomHolder(binding, processor, isSearchMode, currentSelection);
+        return new EditTextCustomHolder(binding, currentSelection);
     }
 
     @Override

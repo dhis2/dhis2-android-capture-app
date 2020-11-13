@@ -97,7 +97,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case DATETIME:
                 return DateTimeViewModel.create(id, label, mandatory, type, value, section, allowFutureDates, editable, description, objectStyle, true);
             case COORDINATE:
-                return CoordinateViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, FeatureType.POINT, true);
+                return CoordinateViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, FeatureType.POINT, true, false);
             case BOOLEAN:
             case TRUE_ONLY:
                 return RadioButtonViewModel.fromRawValue(id, label, type, mandatory, value, section, editable, description, objectStyle,
