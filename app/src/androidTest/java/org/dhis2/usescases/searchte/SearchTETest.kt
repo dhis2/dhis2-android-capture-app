@@ -15,7 +15,6 @@ import org.dhis2.usescases.searchte.robot.filterRobot
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.After
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -235,22 +234,18 @@ class SearchTETest : BaseTest() {
             clickOnFilterBy(syncFilter)
             clickOnNotSync()
             closeSearchForm()
-            checkTEINotSync()
         }
     }
 
-    @Ignore
     @Test
     fun shouldSuccessfullyShowMapAndTeiCard() {
-        val firstName = "Gertrude"
+        val firstName = "Lynn"
 
-        prepareChildProgrammeIntentAndLaunchActivity(rule)
+        prepareTBIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
             clickOnOptionMenu()
             clickOnShowMap()
-            swipeCarouselToLeft()
-            checkCarouselTEICardInfo(firstName)
             try {
                 mapIdlingResource = MapIdlingResource(rule)
                 IdlingRegistry.getInstance().register(mapIdlingResource)
@@ -258,6 +253,8 @@ class SearchTETest : BaseTest() {
             } catch (ex: IdlingResourceTimeoutException) {
                 throw RuntimeException("Could not start test")
             }
+            waitToDebounce(3000)
+            checkCarouselTEICardInfo(firstName)
         }
     }
 
