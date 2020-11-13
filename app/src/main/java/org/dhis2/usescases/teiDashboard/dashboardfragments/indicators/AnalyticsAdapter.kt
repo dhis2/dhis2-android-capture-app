@@ -6,8 +6,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.R
 import org.dhis2.data.analytics.AnalyticsModel
+import org.dhis2.data.analytics.ChartModel
+import org.dhis2.data.analytics.IndicatorModel
+import org.dhis2.data.analytics.SectionTitle
 import org.dhis2.databinding.ItemChartBinding
 import org.dhis2.databinding.ItemIndicatorBinding
 import org.dhis2.databinding.ItemSectionTittleBinding
@@ -24,17 +26,15 @@ class AnalyticsAdapter(val context: Context) : ListAdapter<AnalyticsModel, Recyc
         }
     }) {
 
-    private val items: MutableList<AnalyticsModel> = mutableListOf()
-
     enum class AnalyticType {
         INDICATOR, CHART, SECTION_TITLE
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when (items[position]) {
-            is AnalyticsModel.IndicatorModel -> AnalyticType.INDICATOR.ordinal
-            is AnalyticsModel.ChartModel -> AnalyticType.CHART.ordinal
-            is AnalyticsModel.SectionTitle -> AnalyticType.SECTION_TITLE.ordinal
+        return when (getItem(position)) {
+            is IndicatorModel -> AnalyticType.INDICATOR.ordinal
+            is ChartModel -> AnalyticType.CHART.ordinal
+            is SectionTitle -> AnalyticType.SECTION_TITLE.ordinal
         }
     }
 
@@ -54,43 +54,9 @@ class AnalyticsAdapter(val context: Context) : ListAdapter<AnalyticsModel, Recyc
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is IndicatorViewHolder -> holder.bind(items[position] as AnalyticsModel.IndicatorModel)
-            is ChartViewHolder -> holder.bind(items[position] as AnalyticsModel.ChartModel)
-            is SectionTitleViewHolder -> holder.bind(items[position] as AnalyticsModel.SectionTitle)
+            is IndicatorViewHolder -> holder.bind(getItem(position) as IndicatorModel)
+            is ChartViewHolder -> holder.bind(getItem(position) as ChartModel)
+            is SectionTitleViewHolder -> holder.bind(getItem(position) as SectionTitle)
         }
-    }
-
-    override fun getItemCount() = items.size
-
-    fun setIndicators(indicators: List<AnalyticsModel.IndicatorModel>) {
-        val title = context.getString(R.string.dashboard_indicators)
-
-        items.removeAll {
-            it is AnalyticsModel.IndicatorModel ||
-                it is AnalyticsModel.SectionTitle && it.title == title
-        }
-        if (indicators.isNotEmpty()) {
-            items.addAll(0, listOf(AnalyticsModel.SectionTitle(title)) + indicators)
-        }
-
-        notifyDataSetChanged()
-    }
-
-    fun setCharts(charts: List<AnalyticsModel.ChartModel>) {
-        val title = context.getString(R.string.section_charts)
-        items.removeAll {
-            it is AnalyticsModel.ChartModel ||
-                it is AnalyticsModel.SectionTitle && it.title == title
-        }
-        if (charts.isNotEmpty()) {
-            items.addAll(itemCount, listOf(AnalyticsModel.SectionTitle(title)) + charts)
-        }
-        notifyDataSetChanged()
-    }
-
-    fun submitData(data: List<AnalyticsModel>) {
-        items.clear()
-        items.addAll(data)
-        notifyDataSetChanged()
     }
 }

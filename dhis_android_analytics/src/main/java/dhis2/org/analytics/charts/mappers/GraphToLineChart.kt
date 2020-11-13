@@ -22,6 +22,7 @@ class GraphToLineChart {
     fun map(context: Context, graph: Graph): LineChart {
         val lineData = GraphToLineData().map(graph)
         return LineChart(context).apply {
+            description.isEnabled = false
             isDragEnabled = true
             setScaleEnabled(true)
             setPinchZoom(true)

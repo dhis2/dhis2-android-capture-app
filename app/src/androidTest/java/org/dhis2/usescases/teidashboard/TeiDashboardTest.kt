@@ -2,6 +2,7 @@ package org.dhis2.usescases.teidashboard
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import dhis2.org.analytics.charts.data.ChartType
 import org.dhis2.R
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
@@ -9,6 +10,7 @@ import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
+import org.dhis2.usescases.teidashboard.robot.analyticsRobot
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
@@ -28,7 +30,7 @@ class TeiDashboardTest : BaseTest() {
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
-   @Test
+    @Test
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
         setupCredentials()
 
@@ -107,7 +109,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-   @Test
+    @Test
     fun shouldCompleteProgramWhenClickComplete() {
         prepareTeiOpenedForCompleteProgrammeAndLaunchActivity(rule)
 
@@ -288,7 +290,8 @@ class TeiDashboardTest : BaseTest() {
     @Test
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
         val womanProgram = "MNCH / PNC (Adult Woman)"
-        val personAttribute = context.getString(R.string.enrollment_single_section_label).replace("%s","")
+        val personAttribute =
+            context.getString(R.string.enrollment_single_section_label).replace("%s", "")
         val visitPNCEvent = "PNC Visit"
         val deliveryEvent = "Delivery"
         val visitANCEvent = "ANC Visit (2-4+)"
@@ -401,6 +404,25 @@ class TeiDashboardTest : BaseTest() {
 
         searchTeiRobot {
             checkTEIsDelete(teiName, teiLastName)
+        }
+    }
+
+    @Test
+    fun shouldShowAnalytics() {
+        val chartName = "Daily-TB smear microscopy number of specimen"
+        setupCredentials()
+        prepareTeiForAnalyticsAndLaunchActivity(rule)
+
+        teiDashboardRobot {
+            clickOnIndicatorsTab()
+        }
+
+        indicatorsRobot {
+            checkGraphIsRendered(chartName)
+        }
+
+        analyticsRobot {
+            checkGraphType(0, ChartType.LINE_CHART)
         }
     }
 

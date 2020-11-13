@@ -1,5 +1,6 @@
 package dhis2.org.analytics.charts
 
+import java.util.Date
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -8,7 +9,6 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
-import java.util.Date
 
 open class BaseChartRepositoryImpl(private val d2: D2) : BaseRepository {
 
@@ -56,7 +56,7 @@ open class BaseChartRepositoryImpl(private val d2: D2) : BaseRepository {
         enrollmentUid: String,
         stageUid: String,
         dataElementUid: String
-    ): List<Pair<Event,TrackedEntityDataValue>> {
+    ): List<Pair<Event, TrackedEntityDataValue>> {
         return d2.eventModule().events()
             .byEnrollmentUid().eq(enrollmentUid)
             .byProgramStageUid().eq(stageUid)
@@ -68,7 +68,7 @@ open class BaseChartRepositoryImpl(private val d2: D2) : BaseRepository {
             }.map {
                 Pair(
                     it,
-                    geTrackedEntityDataValue(it.uid(),dataElementUid)
+                    geTrackedEntityDataValue(it.uid(), dataElementUid)
                 )
             }
     }
@@ -78,7 +78,10 @@ open class BaseChartRepositoryImpl(private val d2: D2) : BaseRepository {
             .value(eventUid, dataElementUid).blockingExists()
     }
 
-    private fun geTrackedEntityDataValue(eventUid: String, dataElementUid: String): TrackedEntityDataValue {
+    private fun geTrackedEntityDataValue(
+        eventUid: String,
+        dataElementUid: String
+    ): TrackedEntityDataValue {
         return d2.trackedEntityModule().trackedEntityDataValues()
             .value(eventUid, dataElementUid).blockingGet()
     }
