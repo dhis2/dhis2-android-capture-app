@@ -39,8 +39,8 @@
     <string name="sync_error_title">خطأ في المزامنة</string>
     <string name="sync_error_text">حدث خطأ أثناء المزامنة. يرجى اعادة المحاولة.</string>
     <string name="metadata_sync_error">فشل: حدث خطأ في عملية المزامنة. إذا كنت متصلاً بالشبكة يرجى المحاولة مرة أخرى. إذا استمر الخطأ ، فاتصل بالمسؤول.</string>
-    <string name="data_sync_warning">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن يوجد تعارضات في بعض الحقول. قم بعمل مزامنة للإعدادات و التكوين الخاص بك وحاول مرة أخرى. تحقق من حالة المزامنة: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
-    <string name="data_sync_warning_program">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن يوجد تعارضات في بعض الحقول. قم بعمل مزامنة للإعدادات و التكوين الخاص بك وحاول مرة أخرى. إذا استمر التحذير ، فتحقق من حالة المزامنة: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
+    <string name="data_sync_warning">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن يوجد تعارضات في بعض الحقول. قم بعمل مزامنة لإعدادات التكوين الخاص بك وحاول مرة أخرى. تحقق من حالة المزامنة: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
+    <string name="data_sync_warning_program">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن يوجد تعارضات في بعض الحقول. قم بعمل مزامنة لإعدادات التكوين الخاص بك وحاول مرة أخرى. إذا استمر التحذير ، فتحقق من حالة المزامنة: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
     <string name="data_sync_error">خطأ: تعذر مزامنة بعض بياناتك. تحقق من حالة المزامنة: يتم وضع علامة @ على البرامج التي بها أخطاء، و $ على TEI والأحداث التي فيها تعارض\".</string>
     <string name="data_sync_error_program">خطأ: تعذر مزامنة بعض بياناتك. تحقق من حالة المزامنة: يتم وضع علامة $ على الأحداث و TEI التي تحوي على تعارضات\".</string>
 
@@ -56,12 +56,12 @@
     <string name="password_hint">كلمة المرور</string>
     <string name="log_in_button">تسجيل الدخول</string>
     <string name="unlock_button">الغاء القفل عن الجلسة</string>
-    <string name="syncing_configuration">مزامنة الإعدادات والتكوين الخاص بك</string>
+    <string name="syncing_configuration">مزامنة إعدادات التكوين الخاص بك</string>
     <string name="syncing_data_shortly">سيتم مزامنة بياناتك بعد لحظات</string>
     <string name="syncing_data">مزامنة بياناتك</string>
-    <string name="configuration_ready">الإعدادات والتكوين الخاص بك جاهز</string>
+    <string name="configuration_ready">إعدادات التكوين الخاص بك جاهزة</string>
     <string name="data_ready">بياناتك جاهزة</string>
-    <string name="configuration_sync_failed">فشل مزامنة الإعدادات</string>
+    <string name="configuration_sync_failed">فشل مزامنة إعدادات التكوين</string>
     <string name="data_sync_failed">فشل مزامنة البيانات</string>
     <string name="account_recovery">استرداد الحساب</string>
 
@@ -198,7 +198,7 @@
     <string name="every_12_hours">12 ساعة</string>
     <string name="Automatic_Sync_Data">المزامنة التلقائية للبيانات كل:</string>
     <string name="Manual">يدوياً</string>
-    <string name="Automatic_Sync_Metadata">المزامنة التلقائية للإعدادات والتكوين كل:</string>
+    <string name="Automatic_Sync_Metadata">المزامنة التلقائية لإعدادات التكوين كل:</string>
     <string name="a_week">1 أسبوع</string>
     <string name="sync_max_parameters">عوامل المزامنة الحالية:</string>
     <string name="sync_default_parameters">إعادة التعيين إلى الافتراضي</string>
@@ -206,7 +206,7 @@
     <string name="wipe_data_ok">قبول</string>
     <string name="wipe_data_no">إلغاء</string>
     <string name="SYNC_DATA">مزامنة البيانات الآن</string>
-    <string name="SYNC_META">مزامنة الإعدادات و التكوين الآن</string>
+    <string name="SYNC_META">مزامنة إعدادات التكوين الآن</string>
     <string name="SYNC_MANAGER">الإعدادات</string>
     <string name="last_data_sync_date">آخر عملية مزامنة في: %s</string>
     <string name="last_metadata_sync_date">آخر عملية مزامنة في: %s</string>
@@ -238,7 +238,7 @@
 
     <!--region SETTINCS-->
     <string name="settingsSyncData">مزامنة البيانات</string>
-    <string name="settingsSyncMetadata">مزامنة الإعدادات و التكوين</string>
+    <string name="settingsSyncMetadata">مزامنة إعدادات التكوين</string>
     <string name="settingsSyncParameters">مزامنة العوامل</string>
     <string name="settingsReservedValues">القيم المحجوزة</string>
     <string name="settingsReservedValues_descr">هنا يمكنك رؤية عدد القيم المتاحة في وضع عدم الاتصال بالإنترنت وحجز قيم جديدة.</string>
@@ -246,7 +246,7 @@
     <string name="settingsErrorLog_descr">يحتوي هذا السجل على جميع الأخطاء الناتجة عن مزامنة بياناتك والبيانات الوصفية.</string>
     <string name="settingsDeleteLocalData">حذف البيانات المحفوظة محلياً في هذا الجهاز</string>
     <string name="settingsDeleteLocalData_descr">سيتم حذف جميع بيانات التطبيق المخزنة في الجهاز. سيتم فقدان البيانات التي لم يتم مزامنتها مع الخادم.</string>
-    <string name="settingsReset">إعادة تعيين بيانات التطبيق و معلومات الإعدادات والتكوين</string>
+    <string name="settingsReset">إعادة تعيين بيانات التطبيق و معلومات إعدادات التكوين</string>
     <string name="settingsReset_descr">سيتم حذف بيانات الإعدادت والتطبيق المخزنة في الجهاز. سيُطلب منك تسجيل الدخول مرة أخرى وستفقد البيانات التي لم يتم مزامنتها مع الخادم.</string>
     <string name="settingsSms">إعدادات SMS</string>
     <string name="settingsSms_descr">فحص وتعديل العوامل المتعلقة ببوابة sms</string>
@@ -351,7 +351,7 @@
     <string name="limit_by_organisation_unit">ضع حداً حسب الوحدة التنظيمية</string>
     <string name="limit_by_program">ضع حداً حسب البرنامج</string>
     <string name="programs_list">قائمة البرنامج</string>
-    <string name="wipe_data">إعادة تعيين بيانات التطبيق و الإعدادات والتكوين</string>
+    <string name="wipe_data">إعادة تعيين بيانات التطبيق و إعدادات التكوين</string>
     <string name="add_relationship_error">من غير الممكن إضافة هذه العلاقة</string>
     <string name="warning_error_on_complete_title">تحقق من هذا!</string>
     <string name="warning_on_complete_title">تحذير</string>
@@ -414,7 +414,7 @@
     <string name="add_widget">إضافة أداة</string>
     <string name="showHelp">إظهار المساعدة</string>
     <string name="tuto_settings_1">مزامنة بياناتك...</string>
-    <string name="tuto_settings_2">...الإعدادات والتكوين الخاص بك...</string>
+    <string name="tuto_settings_2">...إعدادات التكوين الخاص بك...</string>
     <string name="tuto_settings_3">...تعيين عدد السجلات التي يتم تحميلها من الخادم ...</string>
     <string name="tuto_settings_reserved">التحقق من وإدارة عدد القيم المحجوزة المتبقية</string>
     <string name="tuto_settings_errors">تحقق مما إذا فشل الاتصال بالخادم</string>
@@ -455,6 +455,7 @@
     <string name="dashboard_overview">نظرة عامة</string>
     <string name="dashboard_relationships">العلاقات</string>
     <string name="dashboard_indicators">المؤشرات</string>
+    <string name="dashboard_analytics">التحليلات</string>
     <string name="empty_indicators">لا توجد مؤشرات لهذا البرنامج.</string>
     <string name="dashboard_notes">الملاحظات</string>
     <string name="unable_to_complete">غير قادر على الإكمال</string>
@@ -464,7 +465,7 @@
     <string name="CHECK_SYNC_ERRORS">فتح سجل أخطاء المزامنة</string>
     <string name="error_dialog_title">سجل أخطاء المزامنة</string>
     <string name="share_with">مشاركة مع...</string>
-    <string name="errors_during_sync">فشلت مزامنة الإعدادات و التكوين الخاصة بك. قد يكون هناك أخطاء في الخادم الخاص بك. انقر هنا للمزيد من المعلومات.</string>
+    <string name="errors_during_sync">فشلت مزامنة إعدادات التكوين الخاصة بك. قد يكون هناك أخطاء في الخادم الخاص بك. انقر هنا للمزيد من المعلومات.</string>
     <string name="sectionSelectorPrev">السابق</string>
     <string name="sectionSelectorNext">التالي</string>
     <string name="event_overview">التفاصيل</string>
@@ -504,7 +505,7 @@
     <string name="send_user_name_title">إرسال البيانات</string>
     <string name="send_user_name_mesage">ساعد DHIS2 في تحسين هذا التطبيق من خلال مشاركة سجلات الأخطاء المرتبطة بمعرف المستخدم الخاص بك.</string>
     <string name="check_mandatory_field">تحقق من الحقول</string>
-    <string name="error_no_network_during_sync">فقدان الإتصال بالإنترنت أثناء عملية مزامنة الإعدادات والتكوين. يرجى معاودة المحاولة في وقت لاحق</string>
+    <string name="error_no_network_during_sync">فقدان الإتصال بالإنترنت أثناء عملية مزامنة إعدادات التكوين. يرجى معاودة المحاولة في وقت لاحق</string>
     <string name="action_agree">قبول</string>
     <string name="login_server_info_title">رابط الخادم</string>
     <string name="login_server_info_message">أدخل عنوان URL لخادم DHIS 2 لمؤسستك على النحو الذي حصلت عليه من مسؤول النظام.\n\n أو بدلاً من ذلك ، يمكنك مسح رمز الـ QR الذي يحتوي على عنوان URL لخادمك</string>
@@ -581,6 +582,7 @@
     <string name="syncing">مزامنة...</string>
     <string name="end_sync_granular">اكتمال عملية المزامنة</string>
     <string name="error_sync">حدث خطأ أثناء المزامنة.</string>
+    <string name="error_sync_check_logs">حدث خطأ أثناء المزامنة. انقر هنا للتحقق من سجلات الأخطاء</string>
     <string name="cancel_sync">تزامن ملغي.</string>
 
     <string name="copied_text">تم النسخ</string>
@@ -688,6 +690,8 @@
     <string name="sync_parameters_not_editable">عوامل المزامنة غير قابلة للتعديل</string>
     <string name="rv_no_editable">عدد القيم المحجوزة التي تم تنزيلها غير قابل للتعديل</string>
     <string name="dialog_layer_satellite">إظهار عرض القمر الصناعي</string>
+    <string name="dialog_layer_satellite_base_map">منظر من القمر الصناعي</string>
+    <string name="dialog_layer_street_base_map">منظر الشارع</string>
     <string name="dialog_layer_event">إظهار الأحداث</string>
     <string name="dialog_layer_tei_coordinates">إظهار إحداثيات tei</string>
     <string name="dialog_layer_enrollment_coordinates">عرض إحداثيات التسجيل</string>
@@ -754,4 +758,8 @@
     <string name="customactivityoncrash_error_activity_error_details_copy">نسخ إلى الحافظة</string>
     <string name="customactivityoncrash_error_activity_error_details_copied">تم النسخ إلى الحافظة</string>
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">معلومات الخطأ</string>
-    </resources>
+    <string name="enrollment_date_edition_warning">هناك أحداث مخطط لها لن تتم إعادة جدولتها</string>
+    <string name="jira_issue_sent">تم إرسال المشكلة</string>
+    <string name="jira_issue_sent_error">خطأ في إرسال المشكلة</string>
+    <string name="section_charts">المخططات البيانية</string>
+</resources>
