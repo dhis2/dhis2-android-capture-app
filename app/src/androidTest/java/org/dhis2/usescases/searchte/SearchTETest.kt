@@ -239,6 +239,32 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Test
+    fun shouldSuccessfullySearchAndFilter() {
+        val name = "Anna"
+        val namePosition = 0
+        val enrollmentStatus = context.getString(R.string.filters_title_enrollment_status)
+
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
+
+        searchTeiRobot {
+            typeAttributeAtPosition(name, namePosition)
+        }
+
+        filterRobot {
+            clickOnFilter()
+            clickOnFilterBy(enrollmentStatus)
+            clickOnFilterActiveOption()
+            clickOnSortByField(enrollmentStatus)
+            closeSearchForm()
+            checkTEIsAreOpen()
+        }
+
+        searchTeiRobot {
+            checkListOfSearchTEI(name, "")
+        }
+    }
+
     @Ignore
     @Test
     fun shouldSuccessfullyShowMapAndTeiCard() {
