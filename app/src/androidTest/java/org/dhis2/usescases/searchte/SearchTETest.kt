@@ -244,6 +244,8 @@ class SearchTETest : BaseTest() {
         val name = "Anna"
         val namePosition = 0
         val enrollmentStatus = context.getString(R.string.filters_title_enrollment_status)
+        val totalCount = "2"
+        val totalFilterCount = "1"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
@@ -256,6 +258,8 @@ class SearchTETest : BaseTest() {
             clickOnFilterBy(enrollmentStatus)
             clickOnFilterActiveOption()
             clickOnSortByField(enrollmentStatus)
+            checkFilterCounter(totalCount)
+            checkCountAtFilter(enrollmentStatus, totalFilterCount)
             closeSearchForm()
             checkTEIsAreOpen()
         }
