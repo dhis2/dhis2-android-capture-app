@@ -185,7 +185,7 @@ class SearchTETest : BaseTest() {
         val enrollmentDateTo = createToEnrollmentDate()
         val startDate = "2021-05-01"
         val endDate = "2021-05-31"
-        val totalCount = "2"
+        val totalFilterCount = "2"
         val filterCount = "1"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
@@ -197,7 +197,7 @@ class SearchTETest : BaseTest() {
             chooseDate(enrollmentDateFrom.year, enrollmentDateFrom.month, enrollmentDateFrom.day)
             chooseDate(enrollmentDateTo.year, enrollmentDateTo.month, enrollmentDateTo.day)
             clickOnSortByField(enrollmentDate)
-            checkFilterCounter(totalCount)
+            checkFilterCounter(totalFilterCount)
             checkCountAtFilter(enrollmentDate, filterCount)
             closeSearchForm()
             checkDateIsInRange(startDate, endDate)
