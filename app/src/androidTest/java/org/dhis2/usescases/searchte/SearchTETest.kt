@@ -123,6 +123,8 @@ class SearchTETest : BaseTest() {
     @Test
     fun shouldSuccessfullyFilterByEnrollmentStatusActive() {
         val enrollmentStatusFilter = context.getString(R.string.filters_title_enrollment_status)
+        val totalFilterCount = "2"
+        val filterCount = "1"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
@@ -131,6 +133,8 @@ class SearchTETest : BaseTest() {
             clickOnFilterBy(enrollmentStatusFilter)
             clickOnFilterActiveOption()
             clickOnSortByField(enrollmentStatusFilter)
+            checkFilterCounter(totalFilterCount)
+            checkCountAtFilter(enrollmentStatusFilter, filterCount)
             closeSearchForm()
             checkTEIsAreOpen()
         }
@@ -139,6 +143,7 @@ class SearchTETest : BaseTest() {
     @Test
     fun shouldSuccessfullyFilterByEventStatusOverdue() {
         val eventStatusFilter = context.getString(R.string.filters_title_event_status)
+        val totalCount = "1"
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         filterRobot {
@@ -146,6 +151,8 @@ class SearchTETest : BaseTest() {
             clickOnFilterBy(eventStatusFilter)
             clickOnFilterOverdueOption()
             closeFilterRowAtField(eventStatusFilter)
+            checkFilterCounter(totalCount)
+            checkCountAtFilter(eventStatusFilter, totalCount)
             closeSearchForm()
             checkEventsAreOverdue()
         }
@@ -155,6 +162,8 @@ class SearchTETest : BaseTest() {
     fun shouldSuccessfullyFilterByOrgUnitAndUseSort() {
         val orgUnitFilter = "ORG. UNIT"
         val orgUnitNgelehun = "Ngelehun CHC"
+        val totalCount = "2"
+        val filterCount = "1"
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         filterRobot {
@@ -162,6 +171,8 @@ class SearchTETest : BaseTest() {
             clickOnFilterBy(orgUnitFilter)
             clickOnSortByField(orgUnitFilter)
             typeOrgUnitField(orgUnitNgelehun)
+            checkFilterCounter(totalCount)
+            checkCountAtFilter(orgUnitFilter, filterCount)
             closeSearchForm()
             checkTEIWithOrgUnit(orgUnitNgelehun)
         }
@@ -174,6 +185,8 @@ class SearchTETest : BaseTest() {
         val enrollmentDateTo = createToEnrollmentDate()
         val startDate = "2021-05-01"
         val endDate = "2021-05-31"
+        val totalCount = "2"
+        val filterCount = "1"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
@@ -184,6 +197,8 @@ class SearchTETest : BaseTest() {
             chooseDate(enrollmentDateFrom.year, enrollmentDateFrom.month, enrollmentDateFrom.day)
             chooseDate(enrollmentDateTo.year, enrollmentDateTo.month, enrollmentDateTo.day)
             clickOnSortByField(enrollmentDate)
+            checkFilterCounter(totalCount)
+            checkCountAtFilter(enrollmentDate, filterCount)
             closeSearchForm()
             checkDateIsInRange(startDate, endDate)
         }
@@ -196,6 +211,8 @@ class SearchTETest : BaseTest() {
         val eventDateTo = createToEventDate()
         val startDate = "2020-05-01"
         val endDate = "2020-05-31"
+        val totalCount = "2"
+        val filterCount = "1"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
@@ -206,6 +223,8 @@ class SearchTETest : BaseTest() {
             chooseDate(eventDateFrom.year, eventDateFrom.month, eventDateFrom.day)
             chooseDate(eventDateTo.year, eventDateTo.month, eventDateTo.day)
             clickOnSortByField(eventDate)
+            checkFilterCounter(totalCount)
+            checkCountAtFilter(eventDate, filterCount)
             closeSearchForm()
             checkDateIsInRange(startDate, endDate)
         }
@@ -216,6 +235,7 @@ class SearchTETest : BaseTest() {
         val teiName = "Frank"
         val teiLastName = "Fjordsen"
         val syncFilter = "SYNC"
+        val totalCount = "1"
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
@@ -234,6 +254,8 @@ class SearchTETest : BaseTest() {
             clickOnFilter()
             clickOnFilterBy(syncFilter)
             clickOnNotSync()
+            checkFilterCounter(totalCount)
+            checkCountAtFilter(syncFilter, totalCount)
             closeSearchForm()
             checkTEINotSync()
         }
