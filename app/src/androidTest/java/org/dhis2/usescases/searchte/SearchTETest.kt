@@ -206,7 +206,7 @@ class SearchTETest : BaseTest() {
 
     @Test
     fun shouldSuccessfullyFilterByEventDateAndSort() {
-        val eventDate = "EVENT DATE"
+        val eventDate = context.getString(R.string.filters_title_event_date)
         val eventDateFrom = createFromEventDate()
         val eventDateTo = createToEventDate()
         val startDate = "2020-05-01"
@@ -234,7 +234,7 @@ class SearchTETest : BaseTest() {
     fun shouldSuccessfullyFilterBySync() {
         val teiName = "Frank"
         val teiLastName = "Fjordsen"
-        val syncFilter = "SYNC"
+        val syncFilter = context.getString(R.string.action_sync)
         val totalCount = "1"
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
