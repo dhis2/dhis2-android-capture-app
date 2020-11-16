@@ -142,8 +142,8 @@
                 app:layout_constraintEnd_toStartOf="@id/search_filter_general"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_search"
-                tools:ignore="ContentDescription"
-                app:tint="@color/white" />
+                app:tint="@color/white"
+                tools:ignore="ContentDescription" />
 
             <ImageView
                 android:id="@+id/moreOptions"
@@ -388,14 +388,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:searchOrAdd='@{ needsSearch }' />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <org.dhis2.utils.customviews.DhisBottomNavigationBar
-            style="@style/DhisBottomNavigationView"
-            android:id="@+id/navigationView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            app:menu="@menu/navigation_search_menu" />
 
     </RelativeLayout>
 </layout>

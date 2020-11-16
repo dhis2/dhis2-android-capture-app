@@ -1,172 +1,66 @@
 package org.dhis2.utils.customviews
 
-import android.animation.Animator
-import android.animation.ValueAnimator
-import android.view.View
 import android.view.ViewPropertyAnimator
-import android.widget.ImageView
-import androidx.core.animation.addListener
-import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.android.material.shape.ShapeAppearanceModel
-import org.dhis2.Bindings.dp
-
+import android.view.animation.AnticipateOvershootInterpolator
 
 class DhisBottomNavigationBarAnimations(val view: DhisBottomNavigationBar) {
 
-    private val collapsedWidth = 52.dp
-    private val collapseAnimationDuration = 1200L
-    private val collapseAnimationDelay = 700L
-    private val expandAnimationDuration = 1200L
-    private val expandAnimationDelay = 700L
-    private val hideAnimationDuration = 1200L
-
-    private val hideTranslation by lazy { (view.width - collapsedWidth) }
-
-
-    fun collapse(animationEndCallback: () -> Unit) {
-        view.apply {
-            showExpandButton()
-            animateToCollapsedCorners((background as MaterialShapeDrawable), animationEndCallback)
-            animateCollapsedTranslation(animate())
-
-        }
-    }
-
-    fun expand(animationEndCallback: () -> Unit) {
-        view.apply {
-            hideExpandButton()
-            animateToExpandedCorners((background as MaterialShapeDrawable), animationEndCallback)
-            animateExpandedTranslation(animate())
-
-        }
-    }
+    private val hideAnimationDuration = 700L
+    private val selectionInDuration = 200L
+    private val selectionOutDuration = 200L
 
     fun hide(animationEndCallback: () -> Unit) {
         view.apply {
-            animateHideTranslation(animate(), height)
+            animateHideTranslation(animate(), height, animationEndCallback)
         }
     }
 
-    private fun animateCollapsedTranslation(animate: ViewPropertyAnimator) {
-        animate.translationX(hideTranslation.toFloat())
-            .apply {
-                duration = collapseAnimationDuration
-            }.start()
+    fun show(animationEndCallback: () -> Unit) {
+        view.apply {
+            animateShowTranslation(animate(), animationEndCallback)
+        }
     }
 
-    private fun animateExpandedTranslation(animate: ViewPropertyAnimator) {
-        animate.translationX(0f)
-            .apply {
-                duration = expandAnimationDuration
-            }.start()
-    }
-
-    private fun animateHideTranslation(animate: ViewPropertyAnimator, barHeight: Int) {
+    private fun animateHideTranslation(
+        animate: ViewPropertyAnimator,
+        barHeight: Int,
+        endAction: () -> Unit
+    ) {
         animate.translationY(barHeight.toFloat())
-            .alpha(0f)
+            .withEndAction { endAction() }
             .apply {
                 duration = hideAnimationDuration
             }.start()
     }
 
-    private fun animateShowTranslation(animate: ViewPropertyAnimator) {
+    private fun animateShowTranslation(
+        animate: ViewPropertyAnimator,
+        animationEndCallback: () -> Unit
+    ) {
         animate.translationY(0f)
+            .withEndAction(animationEndCallback)
+            .apply {
+                duration = hideAnimationDuration
+            }.start()
+    }
+
+    fun animateSelectionIn(animate: ViewPropertyAnimator) {
+        animate.scaleY(1f)
+            .scaleX(1f)
             .alpha(1f)
             .apply {
-                duration = hideAnimationDuration
+                duration = selectionInDuration
             }.start()
     }
 
-    private fun animateToCollapsedCorners(
-        shapeDrawable: MaterialShapeDrawable,
-        animationEndCallback: () -> Unit
-    ) {
-        ValueAnimator.ofInt(0, 16.dp)
-            .apply {
-                duration = collapseAnimationDuration
-                startDelay = collapseAnimationDelay
-                addUpdateListener {
-                    val value = (it.animatedValue as Int).toFloat()
-
-                    shapeDrawable.shapeAppearanceModel = ShapeAppearanceModel().toBuilder()
-                        .setBottomLeftCornerSize(value)
-                        .setTopLeftCornerSize(value)
-                        .setTopRightCornerSize(value)
-                        .build()
-                }
-                addListener(onEnd = {
-                    animationEndCallback()
-                })
-            }.start()
-    }
-
-    private fun animateToExpandedCorners(
-        shapeDrawable: MaterialShapeDrawable,
-        animationEndCallback: () -> Unit
-    ) {
-        ValueAnimator.ofInt(16.dp, 0)
-            .apply {
-                duration = expandAnimationDuration
-                startDelay = expandAnimationDelay
-                addUpdateListener {
-                    val value = (it.animatedValue as Int).toFloat()
-                    shapeDrawable.shapeAppearanceModel = ShapeAppearanceModel().toBuilder()
-                        .setBottomLeftCornerSize(value)
-                        .setTopLeftCornerSize(value)
-                        .setTopRightCornerSize(value)
-                        .build()
-                }
-                addListener(onEnd = {
-                    animationEndCallback()
-                })
-            }.start()
-    }
-
-    private fun showExpandButton() {
-        expandButton().animate()
-            .scaleY(1f)
-            .scaleX(1f)
-            .setDuration(collapseAnimationDuration)
-            .setListener(object : Animator.AnimatorListener {
-                override fun onAnimationRepeat(p0: Animator?) {
-                }
-
-                override fun onAnimationEnd(p0: Animator?) {
-                }
-
-                override fun onAnimationCancel(p0: Animator?) {
-                }
-
-                override fun onAnimationStart(p0: Animator?) {
-                    expandButton().visibility = View.VISIBLE
-                }
-            })
-            .start()
-    }
-
-    private fun hideExpandButton() {
-        expandButton().animate()
-            .scaleY(0f)
+    fun animateSelectionOut(animate: ViewPropertyAnimator, endAction: () -> Unit) {
+        animate.scaleY(0f)
             .scaleX(0f)
-            .setDuration(expandAnimationDuration)
-            .setListener(object : Animator.AnimatorListener {
-                override fun onAnimationRepeat(p0: Animator?) {
-                }
-
-                override fun onAnimationEnd(p0: Animator?) {
-                    expandButton().visibility = View.GONE
-                }
-
-                override fun onAnimationCancel(p0: Animator?) {
-                }
-
-                override fun onAnimationStart(p0: Animator?) {
-                }
-            })
-            .start()
-    }
-
-    private fun expandButton(): ImageView {
-        return view.findViewWithTag(EXPAND_BUTTON_TAG)
+            .alpha(0f)
+            .withEndAction { endAction() }
+            .apply {
+                interpolator = AnticipateOvershootInterpolator()
+                duration = selectionOutDuration
+            }.start()
     }
 }

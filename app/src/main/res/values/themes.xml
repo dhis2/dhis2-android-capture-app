@@ -32,6 +32,9 @@
 
     <style name="DhisBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
         <item name="materialThemeOverlay">@style/DhisBottomNavigationViewOverlay</item>
+        <item name="currentItemSelectorSize">40dp</item>
+        <item name="currentItemSelectorColor">?colorPrimary</item>
+        <item name="currentItemSelectorDrawable">@drawable/navigation_item_selector</item>
     </style>
 
     <style name="DhisBottomNavigationViewOverlay" parent="">

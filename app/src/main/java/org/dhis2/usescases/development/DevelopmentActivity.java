@@ -5,10 +5,14 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.MenuItem;
+import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -42,8 +46,7 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         loadAnalyticsDevTools();
         loadLocaleDevTools();
         loadIconsDevTools();
-
-
+        loadNavigationView();
     }
 
     private void loadAnalyticsDevTools() {
@@ -196,5 +199,20 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
             return;
         }
         renderIconForPosition(count);
+    }
+
+    private void loadNavigationView(){
+        binding.navigationView.setOnNavigationItemSelectedListener(item -> true);
+        binding.navigationVisibilityButton.setOnClickListener(view -> {
+            binding.navigationVisibilityButton.setEnabled(false);
+            if(binding.navigationView.isHidden()){
+                binding.navigationView.show();
+                binding.navigationVisibilityButton.setText("Hide navigation bar");
+            }else {
+                binding.navigationView.hide();
+                binding.navigationVisibilityButton.setText("Show navigation bar");
+            }
+            binding.navigationVisibilityButton.setEnabled(true);
+        });
     }
 }
