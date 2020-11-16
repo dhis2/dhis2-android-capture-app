@@ -35,6 +35,8 @@ import java.util.Locale;
 
 import timber.log.Timber;
 
+import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
+
 /**
  * QUADRAM. Created by frodriguez on 1/15/2018.
  */
@@ -54,6 +56,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     private View clearButton;
     private View descriptionLabel;
     private ImageView descriptionIcon;
+    private DateTimeViewModel viewModel;
 
     public TimeView(Context context) {
         super(context);
@@ -250,6 +253,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setViewModel(DateTimeViewModel viewModel) {
+        this.viewModel = viewModel;
         setIsBgTransparent(viewModel.isBackgroundTransparent());
         setLabel(viewModel.getFormattedLabel());
         setDescription(viewModel.description());
@@ -257,7 +261,21 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         setError(viewModel.error());
         setWarning(viewModel.warning());
         setEditable(viewModel.editable());
-        setDateListener(viewModel::onDateSelected);
-        setActivationListener(viewModel::onActivate);
+        setDateListener(date -> {
+            viewModel.onDateSelected(date);
+            clearBackground(viewModel.isSearchMode());
+        });
+        setActivationListener(() -> {
+            viewModel.onActivate();
+            //TODO does TimeView needs keyboard?
+            closeKeyboard(binding.getRoot());
+        });
+    }
+
+    private void clearBackground(boolean isSearchMode) {
+        if (!isSearchMode) {
+            binding.getRoot().setBackgroundResource(R.color.form_field_background);
+            viewModel.onDeactivate();
+        }
     }
 }

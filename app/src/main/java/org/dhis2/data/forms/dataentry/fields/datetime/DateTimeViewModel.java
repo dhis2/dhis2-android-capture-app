@@ -19,47 +19,49 @@ import java.util.Date;
 @AutoValue
 public abstract class DateTimeViewModel extends FieldViewModel {
 
+    public boolean activated = false;
+
     public abstract boolean isBackgroundTransparent();
 
     @NonNull
     public abstract ValueType valueType();
 
-    public static FieldViewModel create(String id, String label, Boolean mandatory, ValueType type, String value, String section, Boolean allowFutureDates, Boolean editable, String description, ObjectStyle objectStyle, boolean isBackgroundTransparent) {
-        return new AutoValue_DateTimeViewModel(id, label, mandatory, value, section, allowFutureDates, editable, null, null, null, description, objectStyle, null, provideDataEntryViewHolderType(type), isBackgroundTransparent, type);
+    public static FieldViewModel create(String id, String label, Boolean mandatory, ValueType type, String value, String section, Boolean allowFutureDates, Boolean editable, String description, ObjectStyle objectStyle, boolean isBackgroundTransparent, boolean isSearchMode) {
+        return new AutoValue_DateTimeViewModel(id, label, mandatory, value, section, allowFutureDates, editable, null, null, null, description, objectStyle, null, provideDataEntryViewHolderType(type), isBackgroundTransparent, type, isSearchMode);
     }
 
     @Override
     public FieldViewModel setMandatory() {
         return new AutoValue_DateTimeViewModel(uid(), label(), true, value(), programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), isBackgroundTransparent(), valueType());
+                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), isBackgroundTransparent(), valueType(), isSearchMode());
     }
 
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
         return new AutoValue_DateTimeViewModel(uid(), label(), mandatory(), value(), programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning(), error, description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), isBackgroundTransparent(), valueType());
+                allowFutureDate(), editable(), optionSet(), warning(), error, description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), isBackgroundTransparent(), valueType(), isSearchMode());
     }
 
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
         return new AutoValue_DateTimeViewModel(uid(), label(), mandatory(), value(), programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), isBackgroundTransparent(), valueType());
+                allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), isBackgroundTransparent(), valueType(), isSearchMode());
     }
 
     @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_DateTimeViewModel(uid(), label(), mandatory(), data, programStageSection(),
-                allowFutureDate(), false, optionSet(), warning(), error(), description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), isBackgroundTransparent(), valueType());
+                allowFutureDate(), false, optionSet(), warning(), error(), description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), isBackgroundTransparent(), valueType(), isSearchMode());
     }
 
     @NonNull
     @Override
     public FieldViewModel withEditMode(boolean isEditable) {
         return new AutoValue_DateTimeViewModel(uid(), label(), mandatory(), value(), programStageSection(),
-                allowFutureDate(), isEditable, optionSet(), warning(), error(), description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), isBackgroundTransparent(), valueType());
+                allowFutureDate(), isEditable, optionSet(), warning(), error(), description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), isBackgroundTransparent(), valueType(), isSearchMode());
     }
 
     private static DataEntryViewHolderTypes provideDataEntryViewHolderType(ValueType type) {
@@ -101,7 +103,6 @@ public abstract class DateTimeViewModel extends FieldViewModel {
             RowAction rowAction = RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null, getAdapterPosition());
             if (processor != null) {
                 processor.onNext(rowAction);
-                clearBackground(isSearchMode);
             }
 
 
@@ -109,9 +110,12 @@ public abstract class DateTimeViewModel extends FieldViewModel {
     }
 
     public void onActivate() {
-        /*
-          setSelectedBackground(isSearchMode);
-          closeKeyboard(binding.getRoot());
-         */
+        activated = true;
     }
+
+    public void onDeactivate() {
+        activated = false;
+    }
+
+    public abstract boolean isSearchMode();
 }

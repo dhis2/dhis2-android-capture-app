@@ -155,10 +155,10 @@ public class FormAdapter extends RecyclerView.Adapter {
             case TIME:
             case DATE:
             case DATETIME:
-                viewModel = DateTimeViewModel.create(attr.uid(), label, false, attr.valueType(), queryData.get(attr.uid()), null, true, true, attr.displayDescription(), ObjectStyle.builder().build(), false);
+                viewModel = DateTimeViewModel.create(attr.uid(), label, false, attr.valueType(), queryData.get(attr.uid()), null, true, true, attr.displayDescription(), ObjectStyle.builder().build(), false, true);
                 break;
             case AGEVIEW:
-                viewModel = AgeViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build(), false);
+                viewModel = AgeViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build(), false, true);
                 break;
             case ORG_UNIT:
                 String value = presenter.nameOUByUid(queryData.get(attr.uid()));

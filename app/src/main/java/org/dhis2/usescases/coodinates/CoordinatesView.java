@@ -485,10 +485,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         /*setMapListener(coordinatesView -> {
 
         });*/
-        setActivationListener(() -> {
-            binding.getRoot().setActivated(true);
-            viewModel.onActivate();
-        });
+        setActivationListener(viewModel::onActivate);
 
         setFeatureType(viewModel.featureType());
         setLabel(viewModel.getFormattedLabel());
