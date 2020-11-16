@@ -489,8 +489,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             case SKIPPED:
                 view.attemptToReschedule();
                 break;
-            case SCHEDULE:
-                break;
             default:
                 break;
         }

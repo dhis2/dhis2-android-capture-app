@@ -7,6 +7,8 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 
@@ -90,23 +92,22 @@ public abstract class DateTimeViewModel extends FieldViewModel {
     }
 
     public void onDateSelected(Date date) {
-        /*
-            DATETIME
-            String dateFormatted = dateFormatted = DateUtils.databaseDateFormat().format(date);
-
-            DATE
-            String dateFormatted = DateUtils.oldUiDateFormat().format(date);
-
-            TIME
-            String dateFormatted = DateUtils.timeFormat().format(date);
-
-            RowAction rowAction = RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null, getAdapterPosition());
-            if (processor != null) {
-                processor.onNext(rowAction);
-            }
-
-
-       */
+        String dateFormatted;
+        switch (valueType()){
+            case DATETIME:
+               dateFormatted = dateFormatted = DateUtils.databaseDateFormat().format(date);
+               break;
+            case DATE:
+               dateFormatted = DateUtils.oldUiDateFormat().format(date);
+               break;
+            case TIME:
+            default:
+               dateFormatted = DateUtils.timeFormat().format(date);
+        }
+        RowAction rowAction = RowAction.create(uid(), date != null ? dateFormatted : null, getAdapterPosition());
+        if (processor() != null) {
+            processor().onNext(rowAction);
+        }
     }
 
     public void onActivate() {

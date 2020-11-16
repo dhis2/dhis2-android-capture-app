@@ -67,11 +67,12 @@ public abstract class CoordinateViewModel extends FieldViewModel {
     }
 
     public void onCurrentLocationClick(Geometry geometry) {
-           processor.onNext(
-                            RowAction.create(uid(),
-                                    geometry == null ? null : geometry.coordinates(),
-                                    getAdapterPosition(),
-                                    featureType().name()));
+        if (processor() == null) return;
+
+        processor().onNext(RowAction.create(uid(),
+                geometry == null ? null : geometry.coordinates(),
+                getAdapterPosition(),
+                featureType().name()));
     }
 
     public void onActivate() {
