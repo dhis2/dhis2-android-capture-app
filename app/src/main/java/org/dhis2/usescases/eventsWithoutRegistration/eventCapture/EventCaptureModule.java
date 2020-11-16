@@ -15,6 +15,7 @@ import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.RulesUtilsProvider;
@@ -23,6 +24,8 @@ import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import dagger.Module;
 import dagger.Provides;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 
 @PerActivity
 @Module
@@ -45,9 +48,10 @@ public class EventCaptureModule {
                                                     SchedulerProvider schedulerProvider,
                                                     PreferenceProvider preferences,
                                                     GetNextVisibleSection getNextVisibleSection,
-                                                    EventFieldMapper fieldMapper) {
+                                                    EventFieldMapper fieldMapper,
+                                                    FlowableProcessor<RowAction> onFieldActionProcessor) {
         return new EventCapturePresenterImpl(view, eventUid, eventCaptureRepository, ruleUtils, valueStore, schedulerProvider,
-                preferences, getNextVisibleSection, fieldMapper);
+                preferences, getNextVisibleSection, fieldMapper,  onFieldActionProcessor);
     }
 
     @Provides
@@ -89,5 +93,11 @@ public class EventCaptureModule {
     @PerActivity
     GetNextVisibleSection getNextVisibleSection() {
         return new GetNextVisibleSection();
+    }
+
+    @Provides
+    @PerActivity
+    FlowableProcessor<RowAction> getProcessor(){
+        return PublishProcessor.create();
     }
 }

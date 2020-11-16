@@ -8,6 +8,7 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -66,13 +67,11 @@ public abstract class CoordinateViewModel extends FieldViewModel {
     }
 
     public void onCurrentLocationClick(Geometry geometry) {
-        /*
            processor.onNext(
-                            RowAction.create(coordinateViewModel.uid(),
+                            RowAction.create(uid(),
                                     geometry == null ? null : geometry.coordinates(),
                                     getAdapterPosition(),
-                                    coordinateViewModel.featureType().name()));
-                    */
+                                    featureType().name()));
     }
 
     public void onActivate() {

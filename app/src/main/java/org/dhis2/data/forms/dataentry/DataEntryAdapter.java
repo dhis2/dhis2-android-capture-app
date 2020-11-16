@@ -37,8 +37,8 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
 
     private final SectionHandler sectionHandler = new SectionHandler();
 
-    @NonNull
-    private final FlowableProcessor<RowAction> processor;
+  //  @NonNull
+  //  private final FlowableProcessor<RowAction> processor;
 
     @NonNull
     private final ObservableField<String> imageSelector;
@@ -67,7 +67,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
                             @NonNull DataEntryArguments dataEntryArguments) {
         super(new DataEntryDiff());
         setHasStableIds(true);
-        processor = PublishProcessor.create();
+    //    processor = PublishProcessor.create();
         sectionProcessor = PublishProcessor.create();
         imageSelector = new ObservableField<>("");
         selectedSection = new ObservableField<>("");
@@ -86,12 +86,11 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
                             @NonNull DataEntryArguments dataEntryArguments,
-                            @NonNull FlowableProcessor<RowAction> processor,
                             @NonNull FlowableProcessor<String> sectionProcessor,
                             @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet) {
         super(new DataEntryDiff());
         setHasStableIds(true);
-        this.processor = processor;
+    //    this.processor = processor;
         this.sectionProcessor = sectionProcessor;
         imageSelector = new ObservableField<>("");
         selectedSection = new ObservableField<>("");
@@ -158,7 +157,8 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
 
     @NonNull
     public FlowableProcessor<RowAction> asFlowable() {
-        return processor;
+        return null;
+        //return processor;
     }
 
     @NonNull

@@ -142,10 +142,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         dataEntryAdapter.swap(updates, () -> dataEntryHeaderHelper.onItemsUpdatedCallback());
     }
 
-    @Override
+/*    @Override
     public FlowableProcessor<RowAction> dataEntryFlowable() {
         return flowableProcessor;
-    }
+    } */
 
     @Override
     public FlowableProcessor<String> sectionSelectorFlowable() {
@@ -157,7 +157,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(activity),
                 activity.getSupportFragmentManager(),
                 DataEntryArguments.forEvent("", ProgramStageSectionRenderingType.LISTING.name()),
-                flowableProcessor,
                 sectionProcessor,
                 flowableOptions);
 

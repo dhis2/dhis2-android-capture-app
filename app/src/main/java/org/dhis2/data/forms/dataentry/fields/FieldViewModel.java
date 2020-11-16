@@ -7,6 +7,8 @@ import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.jetbrains.annotations.NotNull;
 
+import io.reactivex.processors.FlowableProcessor;
+
 public abstract class FieldViewModel implements FieldUiModel {
 
     @NonNull
@@ -63,6 +65,9 @@ public abstract class FieldViewModel implements FieldUiModel {
     public abstract String fieldMask();
 
     public abstract DataEntryViewHolderTypes dataEntryViewType();
+
+    public abstract FlowableProcessor<RowAction> processor();
+
 
     public String getFormattedLabel() {
         if (mandatory()) {

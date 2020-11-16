@@ -30,15 +30,6 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public abstract boolean isSearchMode();
 
     @Nullable
-    public abstract String renderType();
-
-    public abstract boolean isLongText();
-
-    public abstract boolean isBackgroundTransparent();
-
-    public abstract boolean isSearchMode();
-
-    @Nullable
     public abstract ValueTypeDeviceRendering fieldRendering();
 
     @NonNull

@@ -2,8 +2,11 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureF
 
 import dagger.Module
 import dagger.Provides
+import io.reactivex.Flowable
+import io.reactivex.processors.FlowableProcessor
 import org.dhis2.data.dagger.PerFragment
 import org.dhis2.data.forms.dataentry.ValueStore
+import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 import org.hisp.dhis.android.core.D2
@@ -21,8 +24,10 @@ class EventCaptureFormModule(
         d2: D2,
         activityPresenter: EventCaptureContract.Presenter,
         valueStore: ValueStore,
-        schedulerProvider: SchedulerProvider
+        schedulerProvider: SchedulerProvider,
+        onFieldActionProcessor: FlowableProcessor<RowAction>
     ): EventCaptureFormPresenter {
-        return EventCaptureFormPresenter(view, activityPresenter, d2, valueStore, schedulerProvider)
+        return EventCaptureFormPresenter(view, activityPresenter, d2, valueStore, schedulerProvider,
+            onFieldActionProcessor)
     }
 }

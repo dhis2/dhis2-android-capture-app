@@ -8,6 +8,8 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
+import io.reactivex.processors.FlowableProcessor;
+
 public interface FieldViewModelFactory {
 
     @NonNull
@@ -26,4 +28,23 @@ public interface FieldViewModelFactory {
                           @Nullable Integer optionCount,
                           @NonNull ObjectStyle objectStyle,
                           @Nullable String fieldMask);
+
+
+    @NonNull
+    FieldViewModel create(@NonNull String id,
+                          @NonNull String label,
+                          @NonNull ValueType valueType,
+                          @NonNull Boolean mandatory,
+                          @Nullable String optionSet,
+                          @Nullable String value,
+                          @Nullable String programStageSection,
+                          @Nullable Boolean AllowFutureDate,
+                          @NonNull Boolean editable,
+                          @Nullable ProgramStageSectionRenderingType renderingType,
+                          @Nullable String description,
+                          @Nullable ValueTypeDeviceRendering fieldRendering,
+                          @Nullable Integer optionCount,
+                          @NonNull ObjectStyle objectStyle,
+                          @Nullable String fieldMask,
+                          @NonNull FlowableProcessor<RowAction> processor);
 }
