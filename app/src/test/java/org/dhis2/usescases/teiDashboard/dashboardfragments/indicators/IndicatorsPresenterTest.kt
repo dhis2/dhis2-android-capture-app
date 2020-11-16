@@ -170,7 +170,7 @@ class IndicatorsPresenterTest {
 
         presenter.init()
 
-        verify(view).swapIndicators(any())
+        verify(view).swapAnalytics(any())
     }
 
     @Test

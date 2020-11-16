@@ -113,7 +113,7 @@ class MainActivity :
         if (presenter.hasProgramWithAssignment()) {
             adapter.addAssignedToMe()
         }
-        binding.filterLayout.adapter = adapter
+        binding.filterRecycler.adapter = adapter
 
         if (BuildConfig.DEBUG) {
             binding.moreOptions.setOnLongClickListener {
@@ -183,7 +183,7 @@ class MainActivity :
             initSet.connect(
                 R.id.fragment_container,
                 ConstraintSet.TOP,
-                R.id.filterLayout,
+                R.id.filterRecycler,
                 ConstraintSet.BOTTOM,
                 50
             )
@@ -303,12 +303,12 @@ class MainActivity :
             R.id.sync_manager -> {
                 activeFragment = SyncManagerFragment()
                 tag = getString(R.string.SYNC_MANAGER)
-                binding.filter.visibility = View.GONE
+                binding.filterActionButton.visibility = View.GONE
             }
             R.id.qr_scan -> {
                 activeFragment = QrReaderFragment()
                 tag = getString(R.string.QR_SCANNER)
-                binding.filter.visibility = View.GONE
+                binding.filterActionButton.visibility = View.GONE
             }
             R.id.nfc_scan -> {
                 val intentNfc = Intent(this, NfcDataWriteActivity::class.java)
@@ -317,12 +317,12 @@ class MainActivity :
             R.id.menu_jira -> {
                 activeFragment = JiraFragment()
                 tag = getString(R.string.jira_report)
-                binding.filter.visibility = View.GONE
+                binding.filterActionButton.visibility = View.GONE
             }
             R.id.menu_about -> {
                 activeFragment = AboutFragment()
                 tag = getString(R.string.about)
-                binding.filter.visibility = View.GONE
+                binding.filterActionButton.visibility = View.GONE
             }
             R.id.block_button -> {
                 analyticsHelper.setEvent(BLOCK_SESSION, CLICK, BLOCK_SESSION)
@@ -336,13 +336,13 @@ class MainActivity :
                 activeFragment = ProgramFragment()
                 programFragment = activeFragment as ProgramFragment?
                 tag = getString(R.string.done_task)
-                binding.filter.visibility = View.VISIBLE
+                binding.filterActionButton.visibility = View.VISIBLE
             }
             else -> {
                 activeFragment = ProgramFragment()
                 programFragment = activeFragment as ProgramFragment?
                 tag = getString(R.string.done_task)
-                binding.filter.visibility = View.VISIBLE
+                binding.filterActionButton.visibility = View.VISIBLE
             }
         }
 

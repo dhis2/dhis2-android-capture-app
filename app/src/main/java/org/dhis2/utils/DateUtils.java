@@ -873,6 +873,8 @@ public class DateUtils {
             @Override
             public void onDateSet(@NonNull Date fromDate) {
                 DatePickerDialogFragment toCalendar = DatePickerDialogFragment.create(true);
+                if (!FilterManager.getInstance().getPeriodFilters().isEmpty())
+                    toCalendar.setInitialDate(FilterManager.getInstance().getPeriodFilters().get(0).endDate());
                 toCalendar.setOpeningClosingDates(fromDate, null);
                 toCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
                     @Override
