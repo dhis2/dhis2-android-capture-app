@@ -212,7 +212,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return renderingType;
     }
 
-    private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels) {
+    private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels, FlowableProcessor<RowAction> proccesor) {
         ArrayList<FieldViewModel> renderList = new ArrayList<>();
 
         for (FieldViewModel fieldViewModel : fieldViewModels) {
@@ -246,7 +246,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             fieldRendering,
                             options.size(),
                             objectStyle,
-                            fieldViewModel.fieldMask()));
+                            fieldViewModel.fieldMask(),
+                            proccesor));
 
                 }
             } else if (fieldViewModel instanceof OptionSetViewModel) {
@@ -291,7 +292,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         return fieldViewModel;
                     }).toList().toFlowable()
                     .map(fieldViewModels -> sectionFields = fieldViewModels)
-                    .map(this::checkRenderType);
+                    .map(fieldViewModels-> checkRenderType(fieldViewModels, processor));
         } else {
             return Flowable.fromCallable(() -> {
                 List<ProgramStageDataElement> stageDataElements = d2.programModule().programStageDataElements()
@@ -383,7 +384,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 })
                     .toList().toFlowable()
                     .map(data -> sectionFields = data)
-                    .map(this::checkRenderType);
+                    .map(fieldViewModels-> checkRenderType(fieldViewModels, processor));
         }
     }
 
