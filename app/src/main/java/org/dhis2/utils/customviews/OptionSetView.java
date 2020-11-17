@@ -250,20 +250,11 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
 
     public void setViewModel(SpinnerViewModel viewModel) {
         setLayoutData(viewModel.isBackgroundTransparent(), viewModel.renderType());
-        setOnSelectedOptionListener(new OnSelectedOption() {
-            @Override
-            public void onSelectedOption(String optionName, String optionCode) {
-                /*processor.onNext(
-                        RowAction.create(viewModel.uid(), isSearchMode ? optionName + "_os_" + optionCode : optionCode, true, optionCode, optionName, getAdapterPosition())
-                );
-                if (isSearchMode)
-                    viewModel.withValue(optionName);
-                clearBackground(isSearchMode);*/
-            }
+        setOnSelectedOptionListener((optionName, optionCode) -> {
+            viewModel.onOptionSelected(optionName, optionCode);
+            viewModel.onDeactivate();
         });
-        setActivationListener(() -> {
-//                setSelectedBackground(isSearchMode);
-        });
+        setActivationListener(viewModel::onActivate);
         setNumberOfOptions(viewModel.numberOfOptions());
         updateEditable(viewModel.editable());
         setValue(viewModel.value());

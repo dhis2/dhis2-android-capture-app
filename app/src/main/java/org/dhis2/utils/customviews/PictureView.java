@@ -276,21 +276,13 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     public void setViewModel(PictureViewModel viewModel) {
         setIsBgTransparent(viewModel.isBackgroundTransparent);
 //        setFragmentManager(fm);
-        setOnIntentSelected(new OnIntentSelected() {
-            @Override
-            public void intentSelected(String uuid, Intent intent, int request, OnPictureSelected onPictureSelected) {
-                /*
-                processor.onNext(
-                    RowAction.create(uid, file != null ? file.getPath() : null, getAdapterPosition()));
-                 */
-            }
-        });
-        setOnImageListener(new OnPictureSelected() {
-            @Override
-            public void onSelected(File file, String value, String uid) {
+        setOnIntentSelected((uuid, intent, request, onPictureSelected) -> {
 
-            }
         });
+        setOnImageListener((file, value, uid) -> {
+            viewModel.onImageSelected(file);
+        });
+        setActivationListener(viewModel::onActivate);
         setProcessor(viewModel.uid().contains("_") ? viewModel.uid().split("_")[0] : viewModel.uid(),
                 viewModel.uid().contains("_") ? viewModel.uid().split("_")[1] : viewModel.uid());
         setLabel(viewModel.getFormattedLabel());

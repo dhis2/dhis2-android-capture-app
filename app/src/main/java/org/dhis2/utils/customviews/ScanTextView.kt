@@ -212,18 +212,10 @@ class ScanTextView @JvmOverloads constructor(
             optionSet = optionSet()
             setOnScannerListener { value ->
                 setText(value)
-                if (!viewModel.isSearchMode()) {
-//                    clearCurrentSelection()
-                }
-                /*val rowAction = RowAction.create(
-                    uid(), value,
-                    adapterPosition
-                )*/
-//                processor.onNext(rowAction)
+                viewModel.onDeactivate()
+                viewModel.onScanSelected(value)
             }
-            setActivationListener {
-//                setSelectedBackground(isSearchMode)
-            }
+            setActivationListener(viewModel::onActivate)
         }
     }
 }
