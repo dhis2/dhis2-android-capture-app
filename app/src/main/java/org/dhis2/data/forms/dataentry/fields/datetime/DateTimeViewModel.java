@@ -95,7 +95,7 @@ public abstract class DateTimeViewModel extends FieldViewModel {
         String dateFormatted;
         switch (valueType()){
             case DATETIME:
-               dateFormatted = dateFormatted = DateUtils.databaseDateFormat().format(date);
+               dateFormatted = DateUtils.databaseDateFormat().format(date);
                break;
             case DATE:
                dateFormatted = DateUtils.oldUiDateFormat().format(date);
