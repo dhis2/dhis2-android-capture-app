@@ -98,4 +98,6 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
     }
 
     public abstract boolean isBackgroundTransparent();
+
+    public abstract boolean isSearchMode();
 }

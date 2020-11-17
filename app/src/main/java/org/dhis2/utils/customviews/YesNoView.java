@@ -368,32 +368,35 @@ public class YesNoView extends FieldLayout {
             public void onValueChanged(boolean isActive) {
                 /*
                 RowAction rowAction;
-                setSelectedBackground(isSearchMode);
+                setSelectedBackground(isSearchMode);*/
                 if (isActive) {
-                    viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(String.valueOf(true));
-                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(true), getAdapterPosition());
+                    viewModel.withValue(String.valueOf(true));
+                    // rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(true), getAdapterPosition());
                 } else {
-                    viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(String.valueOf(false));
-                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(false), getAdapterPosition());
+                    viewModel.withValue(String.valueOf(false));
+                    // rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(false), getAdapterPosition());
                 }
-                binding.customYesNo.nextFocus(binding.customYesNo);
-                processor.onNext(rowAction);
-                clearBackground(isSearchMode);
-                 */
+                nextFocus(binding.getRoot());
+                // processor.onNext(rowAction);
+                clearBackground(viewModel.isSearchMode());
             }
 
             @Override
             public void onClearValue() {
-                /*
-                setSelectedBackground(isSearchMode);
-                viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(null);
-                RowAction rowAction = RowAction.create(checkBoxViewModel.uid(), null, getAdapterPosition());
-                binding.customYesNo.nextFocus(binding.customYesNo);
-                processor.onNext(rowAction);
-                clearBackground(isSearchMode);
-                 */
+                // setselectedbackground(issearchmode);
+                viewModel.withValue(null);
+                // rowaction rowaction = rowaction.create(checkboxviewmodel.uid(), null, getadapterposition());
+                nextFocus(binding.getRoot());
+                // processor.onnext(rowaction);
+                clearBackground(viewModel.isSearchMode());
             }
         });
 
+    }
+
+    private void clearBackground(boolean isSearchMode) {
+        if (!isSearchMode) {
+            binding.getRoot().setBackgroundResource(R.color.form_field_background);
+        }
     }
 }
