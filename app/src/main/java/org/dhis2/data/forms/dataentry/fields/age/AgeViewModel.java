@@ -16,10 +16,6 @@ import java.util.Date;
 
 import io.reactivex.processors.FlowableProcessor;
 
-/**
- * QUADRAM. Created by frodriguez on 20/03/2018.
- */
-
 @AutoValue
 public abstract class AgeViewModel extends FieldViewModel {
 

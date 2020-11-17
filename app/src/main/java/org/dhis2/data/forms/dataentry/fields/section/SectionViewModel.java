@@ -79,6 +79,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 null,
                 DataEntryViewHolderTypes.SECTION,
                 null,
+                false,
                 0,
                 0,
                 null,

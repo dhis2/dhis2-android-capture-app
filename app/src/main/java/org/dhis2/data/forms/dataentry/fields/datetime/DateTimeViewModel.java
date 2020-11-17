@@ -98,6 +98,8 @@ public abstract class DateTimeViewModel extends FieldViewModel {
     }
 
     public void onDateSelected(Date date) {
+        if (processor() == null) return;
+
         String dateFormatted;
         switch (valueType()){
             case DATETIME:
@@ -111,9 +113,7 @@ public abstract class DateTimeViewModel extends FieldViewModel {
                dateFormatted = DateUtils.timeFormat().format(date);
         }
         RowAction rowAction = RowAction.create(uid(), date != null ? dateFormatted : null, getAdapterPosition());
-        if (processor() != null) {
-            processor().onNext(rowAction);
-        }
+        processor().onNext(rowAction);
     }
 
     public void onActivate() {
