@@ -1,5 +1,7 @@
 package org.dhis2.Bindings
 
+import android.appwidget.AppWidgetProvider
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Rect
 import android.view.ViewGroup
@@ -63,6 +65,9 @@ fun AppCompatActivity.app(): App {
     return applicationContext as App
 }
 
+fun Context.app():App{
+    return applicationContext as App
+}
 val Int.dp: Int
     get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
