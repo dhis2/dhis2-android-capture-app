@@ -2,7 +2,6 @@ package org.dhis2.data.forms.dataentry.fields
 
 import androidx.databinding.ObservableField
 import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
@@ -28,7 +27,6 @@ class FormViewHolderFactory(
     private val totalFields: Int,
     private val imageSelector: ObservableField<String>,
     private val sectionRendering: String?,
-    private val fragmentManager: FragmentManager,
     private val sectionProcessor: FlowableProcessor<String>,
     private val selectedSection: ObservableField<String>
 ) {

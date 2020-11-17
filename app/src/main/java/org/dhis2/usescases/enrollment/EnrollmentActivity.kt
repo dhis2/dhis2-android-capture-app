@@ -6,12 +6,9 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.TextUtils.isEmpty
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -20,14 +17,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
-import java.io.File
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.isKeyboardOpened
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.DataEntryAdapter
 import org.dhis2.data.forms.dataentry.DataEntryArguments
-import org.dhis2.data.forms.dataentry.DataEntryHeaderHelper
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.databinding.EnrollmentActivityBinding
@@ -53,6 +46,8 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import java.io.File
+import javax.inject.Inject
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
@@ -95,9 +90,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         }
     }
 
-    private lateinit var adapter: DataEntryAdapter
-    private lateinit var dataEntryHeaderHelper: DataEntryHeaderHelper
-
     /*region LIFECYCLE*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -123,26 +115,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         mode = EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
 
-        adapter = DataEntryAdapter(
-            LayoutInflater.from(this),
-            supportFragmentManager,
-            DataEntryArguments.forEnrollment(intent.getStringExtra(ENROLLMENT_UID_EXTRA))
+        binding.formView.init(
+            DataEntryArguments.forEnrollment(intent.getStringExtra(ENROLLMENT_UID_EXTRA)),
+            this
         )
-        dataEntryHeaderHelper = DataEntryHeaderHelper(
-            binding.headerContainer, binding.fieldRecycler
-        )
-        dataEntryHeaderHelper.observeHeaderChanges(this)
-        binding.fieldRecycler.addOnScrollListener(object :
-                RecyclerView.OnScrollListener() {
-                override fun onScrolled(
-                    recyclerView: RecyclerView,
-                    dx: Int,
-                    dy: Int
-                ) {
-                    dataEntryHeaderHelper.checkSectionHeader(recyclerView)
-                }
-            })
-        binding.fieldRecycler.adapter = adapter
 
         binding.save.setOnClickListener {
             performSaveClick()
@@ -215,11 +191,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun sectionFlowable(): Flowable<String> {
-        return adapter.sectionFlowable()
+        return binding.formView.sectionFlowable()
     }
 
     override fun setSelectedSection(selectedSection: String) {
-        adapter.setCurrentSection(selectedSection)
+        binding.formView.setCurrentSection(selectedSection)
     }
 
     override fun openEvent(eventUid: String) {
@@ -436,28 +412,14 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*region DATA ENTRY*/
     override fun showFields(fields: List<FieldViewModel>) {
         if (!isEmpty(presenter.getLastFocusItem())) {
-            adapter.setLastFocusItem(presenter.getLastFocusItem())
+            binding.formView.setLastFocusItem(presenter.getLastFocusItem())
         }
 
         fields.filter {
             it !is DisplayViewModel
         }
 
-        val myLayoutManager: LinearLayoutManager =
-            binding.fieldRecycler.layoutManager as LinearLayoutManager
-
-        val myFirstPositionIndex = myLayoutManager.findFirstVisibleItemPosition()
-        val myFirstPositionView = myLayoutManager.findViewByPosition(myFirstPositionIndex)
-
-        var offset = 0
-        myFirstPositionView?.let {
-            offset = it.top
-        }
-
-        adapter.swap(fields) {
-            dataEntryHeaderHelper.onItemsUpdatedCallback()
-        }
-        myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
+        binding.formView.render(fields)
     }
 
     /*endregion*/
