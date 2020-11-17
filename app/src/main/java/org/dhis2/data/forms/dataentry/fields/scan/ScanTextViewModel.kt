@@ -165,7 +165,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             isSearchMode()
         )
 
-
     override fun getLayoutId(): Int {
         return R.layout.form_scan
     }
