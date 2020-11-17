@@ -51,6 +51,7 @@ public class YesNoView extends FieldLayout {
     private CompoundButton.OnCheckedChangeListener checkBoxClickListener;
     private CompoundButton.OnCheckedChangeListener toggleListener;
     private OnValueChanged valueListener;
+    private RadioButtonViewModel viewModel;
 
     public YesNoView(Context context) {
         super(context);
@@ -349,11 +350,13 @@ public class YesNoView extends FieldLayout {
     }
 
     public void setViewModel(RadioButtonViewModel viewModel) {
+        this.viewModel = viewModel;
         setIsBgTransparent(viewModel.isBackgroundTransparent());
         setActivationListener(new OnActivation() {
             @Override
             public void onActivation() {
 //                setSelectedBackground(isSearchMode));
+                viewModel.onActivate();
             }
         });
 
@@ -391,12 +394,12 @@ public class YesNoView extends FieldLayout {
                 clearBackground(viewModel.isSearchMode());
             }
         });
-
     }
 
     private void clearBackground(boolean isSearchMode) {
         if (!isSearchMode) {
             binding.getRoot().setBackgroundResource(R.color.form_field_background);
+            viewModel.onDeactivate();
         }
     }
 }

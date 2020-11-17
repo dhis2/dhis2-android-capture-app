@@ -20,6 +20,8 @@ import java.util.Locale;
 @AutoValue
 public abstract class RadioButtonViewModel extends FieldViewModel {
 
+    public boolean activated = false;
+
     public enum Value {
         CHECKED("true"), CHECKED_NO("false"), UNCHECKED("");
 
@@ -98,6 +100,14 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
     }
 
     public abstract boolean isBackgroundTransparent();
+
+    public void onActivate() {
+        activated = true;
+    }
+
+    public void onDeactivate() {
+        activated = false;
+    }
 
     public abstract boolean isSearchMode();
 }
