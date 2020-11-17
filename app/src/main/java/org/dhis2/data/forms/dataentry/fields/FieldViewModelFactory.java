@@ -27,24 +27,6 @@ public interface FieldViewModelFactory {
                           @Nullable ValueTypeDeviceRendering fieldRendering,
                           @Nullable Integer optionCount,
                           @NonNull ObjectStyle objectStyle,
-                          @Nullable String fieldMask);
-
-
-    @NonNull
-    FieldViewModel create(@NonNull String id,
-                          @NonNull String label,
-                          @NonNull ValueType valueType,
-                          @NonNull Boolean mandatory,
-                          @Nullable String optionSet,
-                          @Nullable String value,
-                          @Nullable String programStageSection,
-                          @Nullable Boolean AllowFutureDate,
-                          @NonNull Boolean editable,
-                          @Nullable ProgramStageSectionRenderingType renderingType,
-                          @Nullable String description,
-                          @Nullable ValueTypeDeviceRendering fieldRendering,
-                          @Nullable Integer optionCount,
-                          @NonNull ObjectStyle objectStyle,
                           @Nullable String fieldMask,
                           @NonNull FlowableProcessor<RowAction> processor);
 }
