@@ -1,6 +1,5 @@
 package org.dhis2.Bindings
 
-import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Rect
@@ -65,7 +64,7 @@ fun AppCompatActivity.app(): App {
     return applicationContext as App
 }
 
-fun Context.app():App{
+fun Context.app(): App {
     return applicationContext as App
 }
 val Int.dp: Int
