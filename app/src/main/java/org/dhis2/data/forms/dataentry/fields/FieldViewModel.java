@@ -68,6 +68,7 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     public abstract FlowableProcessor<RowAction> processor();
 
+    public int adapterPosition = -1;
 
     public String getFormattedLabel() {
         if (mandatory()) {
@@ -119,5 +120,13 @@ public abstract class FieldViewModel implements FieldUiModel {
                     && (this.value() == null ? that.value() == null : this.value().equals(that.value()));
         }
         return false;
+    }
+
+    public void setAdapterPosition(int index){
+        this.adapterPosition = index;
+    }
+
+    public int getAdapterPosition(){
+        return adapterPosition;
     }
 }

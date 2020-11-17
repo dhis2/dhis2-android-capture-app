@@ -473,21 +473,22 @@ class EnrollmentPresenterImpl(
         RulesUtilsProviderImpl(d2)
             .applyRuleEffects(fieldMap, result, this)
 
-        fieldMap.values.forEach {
-            if (it is SpinnerViewModel) {
-                it.setOptionsToHide(
-                    optionsToHide[it.uid()] ?: emptyList(),
-                    optionsGroupsToHide[it.uid()] ?: emptyList()
+        fieldMap.values.forEachIndexed { index, fieldViewModel ->
+            fieldViewModel.setAdapterPosition(index)
+            if (fieldViewModel is SpinnerViewModel) {
+                fieldViewModel.setOptionsToHide(
+                    optionsToHide[fieldViewModel.uid()] ?: emptyList(),
+                    optionsGroupsToHide[fieldViewModel.uid()] ?: emptyList()
                 )
-                if (optionsGroupToShow.keys.contains(it.uid())) {
-                    it.optionGroupsToShow = optionsGroupToShow[it.uid()]
+                if (optionsGroupToShow.keys.contains(fieldViewModel.uid())) {
+                    fieldViewModel.optionGroupsToShow = optionsGroupToShow[fieldViewModel.uid()]
                 }
             }
-            if (it is OptionSetViewModel) {
-                it.optionsToHide = optionsToHide[it.uid()]
-                if (optionsGroupToShow.keys.contains(it.uid())) {
-                    it.optionsToShow = formRepository.getOptionsFromGroups(
-                        optionsGroupToShow[it.uid()] ?: arrayListOf()
+            if (fieldViewModel is OptionSetViewModel) {
+                fieldViewModel.optionsToHide = optionsToHide[fieldViewModel.uid()]
+                if (optionsGroupToShow.keys.contains(fieldViewModel.uid())) {
+                    fieldViewModel.optionsToShow = formRepository.getOptionsFromGroups(
+                        optionsGroupToShow[fieldViewModel.uid()] ?: arrayListOf()
                     )
                 }
             }
