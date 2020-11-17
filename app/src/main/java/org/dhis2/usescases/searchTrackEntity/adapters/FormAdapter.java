@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.crashlytics.android.Crashlytics;
 
 import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -171,6 +172,8 @@ public class FormAdapter extends RecyclerView.Adapter {
                 viewModel = ScanTextViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.optionSet() != null ? attr.optionSet().uid() : null, attr.description(), ObjectStyle.builder().build(), renderingTypes.get(position), hint, false, true, processor);
                 break;
             default:
+                Crashlytics.log("Unsupported viewType " +
+                        "source type: " + holder.getItemViewType());
                 viewModel = EditTextViewModel.create(attr.uid(), "UNSUPORTED", false, null, "UNSUPPORTED", 1, attr.valueType(), null, false, attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask(), null, false, false, true, processor);
                 break;
         }
