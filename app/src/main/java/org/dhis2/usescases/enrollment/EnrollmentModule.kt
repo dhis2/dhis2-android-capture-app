@@ -3,6 +3,8 @@ package org.dhis2.usescases.enrollment
 import android.content.Context
 import dagger.Module
 import dagger.Provides
+import io.reactivex.processors.FlowableProcessor
+import io.reactivex.processors.PublishProcessor
 import org.dhis2.Bindings.valueTypeHintMap
 import org.dhis2.R
 import org.dhis2.data.dagger.PerActivity
@@ -13,6 +15,7 @@ import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
+import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
@@ -57,7 +60,8 @@ class EnrollmentModule(
     fun provideDataEntrytRepository(
         context: Context,
         d2: D2,
-        dhisEnrollmentUtils: DhisEnrollmentUtils
+        dhisEnrollmentUtils: DhisEnrollmentUtils,
+        onRowActionProcessor: FlowableProcessor<RowAction>
     ): EnrollmentRepository {
         val modelFactory = FieldViewModelFactoryImpl(context.valueTypeHintMap())
         val enrollmentDataSectionLabel = context.getString(R.string.enrollment_data_section_label)
@@ -81,7 +85,8 @@ class EnrollmentModule(
             enrollmentCoordinatesLabel,
             reservedValueWarning,
             enrollmentDateDefaultLabel,
-            incidentDateDefaultLabel
+            incidentDateDefaultLabel,
+            onRowActionProcessor
         )
     }
 
@@ -97,7 +102,8 @@ class EnrollmentModule(
         schedulerProvider: SchedulerProvider,
         formRepository: EnrollmentFormRepository,
         valueStore: ValueStore,
-        analyticsHelper: AnalyticsHelper
+        analyticsHelper: AnalyticsHelper,
+        onRowActionProcessor: FlowableProcessor<RowAction>
     ): EnrollmentPresenterImpl {
         return EnrollmentPresenterImpl(
             enrollmentView,
@@ -110,8 +116,15 @@ class EnrollmentModule(
             formRepository,
             valueStore,
             analyticsHelper,
-            context.getString(R.string.field_is_mandatory)
+            context.getString(R.string.field_is_mandatory),
+            onRowActionProcessor
         )
+    }
+
+    @Provides
+    @PerActivity
+    fun provideOnRowActionProcessor(): FlowableProcessor<RowAction>{
+        return PublishProcessor.create()
     }
 
     @Provides

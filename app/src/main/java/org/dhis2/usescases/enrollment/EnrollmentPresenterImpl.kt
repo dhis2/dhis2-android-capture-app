@@ -16,6 +16,7 @@ import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
@@ -57,7 +58,8 @@ class EnrollmentPresenterImpl(
     val formRepository: EnrollmentFormRepository,
     private val valueStore: ValueStore,
     private val analyticsHelper: AnalyticsHelper,
-    private val mandatoryWarning: String
+    private val mandatoryWarning: String,
+    private val onRowActionProcessor: FlowableProcessor<RowAction>
 ) : RulesActionCallbacks {
 
     private val disposable = CompositeDisposable()
@@ -137,7 +139,7 @@ class EnrollmentPresenterImpl(
         )
 
         disposable.add(
-            view.rowActions()
+                onRowActionProcessor
                 .onBackpressureBuffer()
                 .doOnNext { view.showProgress() }
                 .observeOn(schedulerProvider.io())

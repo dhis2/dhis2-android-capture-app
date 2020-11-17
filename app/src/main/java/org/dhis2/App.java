@@ -14,7 +14,6 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
-import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -64,7 +63,6 @@ import java.net.SocketException;
 import javax.inject.Singleton;
 
 import cat.ereza.customactivityoncrash.config.CaocConfig;
-import io.fabric.sdk.android.Fabric;
 import io.reactivex.Scheduler;
 import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -123,8 +121,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
             Stetho.initializeWithDefaults(this);
 
         MapController.Companion.init(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
-
-        Fabric.with(this, new Crashlytics());
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
             upgradeSecurityProviderSync();
