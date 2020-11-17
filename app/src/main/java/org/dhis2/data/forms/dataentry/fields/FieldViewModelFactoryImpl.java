@@ -137,7 +137,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
         switch (type) {
             case AGE:
-                return AgeViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, true, false);
+                return AgeViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, true, false, processor);
             case TEXT:
             case EMAIL:
             case LETTER:
