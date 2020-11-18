@@ -64,7 +64,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         return fragment;
     }
 
-
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
@@ -100,8 +99,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         return binding.getRoot();
     }
 
-
-
     @Override
     public void onResume() {
         super.onResume();
@@ -112,7 +109,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         super.onDestroy();
         presenter.onDetach();
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -143,11 +139,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     }
 
     @Override
-    public FlowableProcessor<RowAction> dataEntryFlowable() {
-        return flowableProcessor;
-    }
-
-    @Override
     public FlowableProcessor<String> sectionSelectorFlowable() {
         return sectionProcessor;
     }
@@ -157,7 +148,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(activity),
                 activity.getSupportFragmentManager(),
                 DataEntryArguments.forEvent("", ProgramStageSectionRenderingType.LISTING.name()),
-                flowableProcessor,
                 sectionProcessor,
                 flowableOptions);
 

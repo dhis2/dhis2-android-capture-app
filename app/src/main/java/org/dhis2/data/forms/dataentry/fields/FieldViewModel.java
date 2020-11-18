@@ -7,6 +7,8 @@ import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.jetbrains.annotations.NotNull;
 
+import io.reactivex.processors.FlowableProcessor;
+
 public abstract class FieldViewModel implements FieldUiModel {
 
     @NonNull
@@ -64,6 +66,11 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     public abstract DataEntryViewHolderTypes dataEntryViewType();
 
+    @Nullable
+    public abstract FlowableProcessor<RowAction> processor();
+
+    public int adapterPosition = -1;
+
     public String getFormattedLabel() {
         if (mandatory()) {
             return label() + " *";
@@ -114,5 +121,13 @@ public abstract class FieldViewModel implements FieldUiModel {
                     && (this.value() == null ? that.value() == null : this.value().equals(that.value()));
         }
         return false;
+    }
+
+    public void setAdapterPosition(int index){
+        this.adapterPosition = index;
+    }
+
+    public int getAdapterPosition(){
+        return adapterPosition;
     }
 }

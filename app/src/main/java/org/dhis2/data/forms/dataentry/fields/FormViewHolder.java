@@ -65,7 +65,6 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
                     itemView.setActivated(false);
                 }
             });
-
         }
     }
 
