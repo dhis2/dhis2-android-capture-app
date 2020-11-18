@@ -8,6 +8,8 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
+import io.reactivex.processors.FlowableProcessor;
+
 public interface FieldViewModelFactory {
 
     @NonNull
@@ -25,5 +27,6 @@ public interface FieldViewModelFactory {
                           @Nullable ValueTypeDeviceRendering fieldRendering,
                           @Nullable Integer optionCount,
                           @NonNull ObjectStyle objectStyle,
-                          @Nullable String fieldMask);
+                          @Nullable String fieldMask,
+                          FlowableProcessor<RowAction> processor);
 }

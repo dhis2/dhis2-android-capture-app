@@ -44,7 +44,11 @@ class FormBottomDialogPresenterTest {
                     null,
                     null,
                     ObjectStyle.builder().build(),
-                    null
+                    null,
+                    "any",
+                    false,
+                    false,
+                    false
                 )
             ),
             Pair(

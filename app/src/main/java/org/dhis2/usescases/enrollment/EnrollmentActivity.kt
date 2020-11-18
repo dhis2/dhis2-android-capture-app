@@ -29,7 +29,6 @@ import org.dhis2.data.forms.dataentry.DataEntryAdapter
 import org.dhis2.data.forms.dataentry.DataEntryArguments
 import org.dhis2.data.forms.dataentry.DataEntryHeaderHelper
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
-import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.uicomponents.map.views.MapSelectorActivity
@@ -270,10 +269,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             bundle.putString(ENROLLMENT_UID, enrollmentUid)
             startActivity(TeiDashboardMobileActivity::class.java, bundle, true, false, null)
         }
-    }
-
-    override fun rowActions(): Flowable<RowAction> {
-        return adapter.asFlowable()
     }
 
     override fun showMissingMandatoryFieldsMessage(

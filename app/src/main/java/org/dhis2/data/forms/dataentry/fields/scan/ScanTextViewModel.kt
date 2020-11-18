@@ -1,9 +1,11 @@
 package org.dhis2.data.forms.dataentry.fields.scan
 
 import com.google.auto.value.AutoValue
+import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
 
@@ -46,6 +48,46 @@ abstract class ScanTextViewModel : FieldViewModel() {
                 objectStyle,
                 null,
                 DataEntryViewHolderTypes.SCAN_CODE,
+                null,
+                fieldRendering,
+                hint,
+                isBackgroundTransparent,
+                isSearchMode
+            )
+
+        @JvmStatic
+        fun create(
+            id: String,
+            label: String?,
+            mandatory: Boolean?,
+            value: String?,
+            section: String?,
+            editable: Boolean?,
+            optionSet: String?,
+            description: String?,
+            objectStyle: ObjectStyle?,
+            fieldRendering: ValueTypeDeviceRendering?,
+            hint: String?,
+            isBackgroundTransparent: Boolean,
+            isSearchMode: Boolean,
+            processor: FlowableProcessor<RowAction>
+        ): FieldViewModel =
+            AutoValue_ScanTextViewModel(
+                id,
+                label,
+                mandatory,
+                value,
+                section,
+                null,
+                editable,
+                optionSet,
+                null,
+                null,
+                description,
+                objectStyle,
+                null,
+                DataEntryViewHolderTypes.SCAN_CODE,
+                processor,
                 fieldRendering,
                 hint,
                 isBackgroundTransparent,
@@ -69,6 +111,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
+            processor(),
             fieldRendering,
             hint,
             isBackgroundTransparent(),
@@ -91,6 +134,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
+            processor(),
             fieldRendering,
             hint,
             isBackgroundTransparent(),
@@ -113,6 +157,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
+            processor(),
             fieldRendering,
             hint,
             isBackgroundTransparent(),
@@ -135,6 +180,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
+            processor(),
             fieldRendering,
             hint,
             isBackgroundTransparent(),
@@ -157,12 +203,12 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
+            processor(),
             fieldRendering,
             hint,
             isBackgroundTransparent(),
             isSearchMode()
         )
-
 
     override fun getLayoutId(): Int {
         return R.layout.form_scan

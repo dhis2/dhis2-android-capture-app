@@ -123,7 +123,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
             Stetho.initializeWithDefaults(this);
 
         MapController.Companion.init(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
-
         Fabric.with(this, new Crashlytics());
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)

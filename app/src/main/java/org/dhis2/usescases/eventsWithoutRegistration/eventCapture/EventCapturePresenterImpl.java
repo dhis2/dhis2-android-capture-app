@@ -14,6 +14,7 @@ import org.dhis2.data.forms.dataentry.StoreResult;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
@@ -96,6 +97,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private PreferenceProvider preferences;
     private GetNextVisibleSection getNextVisibleSection;
     private Pair<Boolean, Boolean> showErrors;
+    private FlowableProcessor<RowAction> onFieldActionProcessor;
 
 
     public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
@@ -104,7 +106,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                      ValueStore valueStore, SchedulerProvider schedulerProvider,
                                      PreferenceProvider preferences,
                                      GetNextVisibleSection getNextVisibleSection,
-                                     EventFieldMapper fieldMapper) {
+                                     EventFieldMapper fieldMapper,
+                                     FlowableProcessor<RowAction> onFieldActionProcessor) {
         this.view = view;
         this.eventUid = eventUid;
         this.eventCaptureRepository = eventCaptureRepository;
@@ -123,6 +126,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.getNextVisibleSection = getNextVisibleSection;
         this.showErrors = new Pair<>(false, false);
         this.fieldMapper = fieldMapper;
+        this.onFieldActionProcessor = onFieldActionProcessor;
 
         currentSectionPosition = PublishProcessor.create();
         sectionProcessor = PublishProcessor.create();
@@ -132,7 +136,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         formAdjustProcessor = PublishProcessor.create();
         notesCounterProcessor = PublishProcessor.create();
         formFieldsProcessor = BehaviorSubject.createDefault(new ArrayList<>());
-
     }
 
     @Override
@@ -315,13 +318,14 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 .filter(newCalculation -> newCalculation)
                 .observeOn(schedulerProvider.io())
                 .switchMap(newCalculation -> Flowable.zip(
-                        eventCaptureRepository.list(),
+                        eventCaptureRepository.list(onFieldActionProcessor),
                         eventCaptureRepository.calculate(),
                         this::applyEffects)
                 ).map(fields ->
                         {
                             emptyMandatoryFields = new HashMap<>();
                             for (FieldViewModel fieldViewModel : fields) {
+                                fieldViewModel.setAdapterPosition(fields.indexOf(fieldViewModel));
                                 if (fieldViewModel.mandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection())) {
                                     if(fieldViewModel instanceof ImageViewModel && !emptyMandatoryFields.containsKey(((ImageViewModel) fieldViewModel).fieldUid())){
                                         emptyMandatoryFields.put(((ImageViewModel) fieldViewModel).fieldUid(), fieldViewModel);
@@ -485,8 +489,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 break;
             case SKIPPED:
                 view.attemptToReschedule();
-                break;
-            case SCHEDULE:
                 break;
             default:
                 break;
