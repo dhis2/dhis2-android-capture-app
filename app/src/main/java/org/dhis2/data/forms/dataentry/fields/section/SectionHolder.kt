@@ -43,7 +43,6 @@ class SectionHolder(
         }
     }
 
-
     public override fun update(viewModel: FieldViewModel) {
         this.viewModel = viewModel as SectionViewModel
 

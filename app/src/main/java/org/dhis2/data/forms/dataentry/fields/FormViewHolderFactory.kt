@@ -59,7 +59,6 @@ class FormViewHolderFactory(
         }
     }
 
-
     private fun provideAgeViewHolder(binding: ViewDataBinding): AgeHolder {
         return AgeHolder(binding, currentFocusUid)
     }
