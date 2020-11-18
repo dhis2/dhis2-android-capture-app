@@ -72,8 +72,6 @@ public abstract class PictureViewModel extends FieldViewModel {
     }
 
     public void onImageSelected(File file) {
-               /* processor.onNext(
-                    RowAction.create(uid(), file != null ? file.getPath() : null, getAdapterPosition()));
-                    */
+        processor().onNext(RowAction.create(uid(), file != null ? file.getPath() : null, getAdapterPosition()));
     }
 }

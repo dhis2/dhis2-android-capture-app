@@ -228,10 +228,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
     }
 
     fun onScanSelected(value: String?) {
-        /*val rowAction = RowAction.create(
-                    uid(), value,
-                    adapterPosition
-                )*/
-//                processor.onNext(rowAction)
+        processor()?.onNext(RowAction.create(uid(), value, adapterPosition))
     }
 }

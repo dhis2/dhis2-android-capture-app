@@ -117,11 +117,6 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     }
 
     public void onOptionSelected(String optionName, String optionCode) {
-        /*processor.onNext(
-                        RowAction.create(uid(), isSearchMode ? optionName + "_os_" + optionCode : optionCode, true, optionCode, optionName, getAdapterPosition())
-                );
-                 if (isSearchMode)
-                    viewModel.withValue(optionName);
-                */
+        processor().onNext(RowAction.create(uid(), !isBackgroundTransparent() ? optionName + "_os_" + optionCode : optionCode, true, optionCode, optionName, getAdapterPosition()));
     }
 }

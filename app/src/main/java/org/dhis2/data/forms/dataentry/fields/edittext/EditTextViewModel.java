@@ -118,6 +118,6 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     }
 
     public void onTextFilled(String value) {
-        //            processor.onNext(RowAction.create(uid(), value, getAdapterPosition()));
+        processor().onNext(RowAction.create(uid(), value, getAdapterPosition()));
     }
 }
