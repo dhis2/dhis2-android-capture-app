@@ -25,6 +25,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     private List<String> optionsToHide;
     private List<String> optionGroupsToHide;
     private List<String> optionGroupsToShow = new ArrayList<>();
+    public boolean activated = false;
 
     @NonNull
     public abstract String hint();
@@ -106,4 +107,16 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     public abstract boolean isBackgroundTransparent();
 
     public abstract String renderType();
+
+    public void onActivate() {
+        activated = true;
+    }
+
+    public void onDeactivate() {
+        activated = false;
+    }
+
+    public void onOptionSelected(String optionName, String optionCode) {
+        processor().onNext(RowAction.create(uid(), !isBackgroundTransparent() ? optionName + "_os_" + optionCode : optionCode, true, optionCode, optionName, getAdapterPosition()));
+    }
 }

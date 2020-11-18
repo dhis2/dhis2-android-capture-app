@@ -18,6 +18,8 @@ import io.reactivex.processors.FlowableProcessor;
 @AutoValue
 public abstract class OrgUnitViewModel extends FieldViewModel {
 
+    public boolean activated = false;
+
     public abstract boolean isBackgroundTransparent();
 
     public abstract String renderType();
@@ -70,11 +72,15 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
     }
 
     public void onDataChange(String data) {
-
+        processor().onNext(RowAction.create(uid(), data, getAdapterPosition()));
     }
 
 
     public void onActivate() {
+        activated = true;
+    }
 
+    public void onDeactivate() {
+        activated = false;
     }
 }

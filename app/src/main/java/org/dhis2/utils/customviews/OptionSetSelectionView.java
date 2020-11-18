@@ -250,14 +250,15 @@ public class OptionSetSelectionView extends FieldLayout {
         setOnSelectedOptionListener(new OnSelectedOption() {
             @Override
             public void onSelectedOption(String optionName, String optionCode) {
-//                processor.onNext(RowAction.create(viewModel.uid(), optionCode))
+                viewModel.onOptionSelected(optionCode);
             }
 
             @Override
             public void onOptionsClear() {
-//                processor.onNext(RowAction.create(viewModel.uid(), null))
+                viewModel.onOptionSelected(null);
             }
         });
+        setActivationListener(viewModel::onActivate);
         setOptionsToShow(
                 viewModel.getOptionsToHide(), viewModel.getOptionsToShow()
         );

@@ -23,6 +23,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
 
     private List<String> optionsToHide = new ArrayList<>();
     private List<String> optionsToShow = new ArrayList<>();
+    public boolean activated = false;
 
     public abstract boolean isBackgroundTransparent();
 
@@ -283,5 +284,17 @@ public abstract class OptionSetViewModel extends FieldViewModel {
     @Override
     public int getLayoutId() {
         return R.layout.form_option_set_selector;
+    }
+
+    public void onActivate() {
+        activated = true;
+    }
+
+    public void onDeactivate() {
+        activated = false;
+    }
+
+    public void onOptionSelected(String optionCode) {
+        processor().onNext(RowAction.create(uid(), optionCode));
     }
 }

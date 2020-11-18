@@ -24,6 +24,8 @@ import io.reactivex.processors.FlowableProcessor;
 @AutoValue
 public abstract class EditTextViewModel extends EditTextModel<String> {
 
+    public boolean activated = false;
+
     public abstract String renderType();
 
     public abstract boolean isLongText();
@@ -105,5 +107,17 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     @Override
     public int getLayoutId() {
         return R.layout.form_edit_text_custom;
+    }
+
+    public void onActivate() {
+        activated = true;
+    }
+
+    public void onDeactivate() {
+        activated = false;
+    }
+
+    public void onTextFilled(String value) {
+        processor().onNext(RowAction.create(uid(), value, getAdapterPosition()));
     }
 }

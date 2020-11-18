@@ -17,6 +17,8 @@ public abstract class PictureViewModel extends FieldViewModel {
 
     public boolean isBackgroundTransparent;
 
+    public boolean activated = false;
+
     public static PictureViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle) {
         return new AutoValue_PictureViewModel(id, label, mandatory, value, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.PICTURE, null);
     }
@@ -59,8 +61,15 @@ public abstract class PictureViewModel extends FieldViewModel {
         return R.layout.custom_form_picture;
     }
 
+    public void onActivate() {
+        activated = true;
+    }
+
+    public void onDeactivate() {
+        activated = false;
+    }
+
     public void onClearValue() {
-        /*processor.onNext(
-                RowAction.create(uid, file != null ? file.getPath() : null, getAdapterPosition()));*/
+        processor().onNext(RowAction.create(uid(), null, getAdapterPosition()));
     }
 }
