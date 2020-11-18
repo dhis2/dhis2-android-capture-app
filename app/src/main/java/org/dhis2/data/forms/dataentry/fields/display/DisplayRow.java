@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
+import org.dhis2.databinding.CustomFormDisplayBinding;
 import org.dhis2.databinding.ItemIndicatorBinding;
 
 public class DisplayRow implements Row<DisplayHolder, DisplayViewModel> {
@@ -22,7 +23,8 @@ public class DisplayRow implements Row<DisplayHolder, DisplayViewModel> {
     @NonNull
     @Override
     public DisplayHolder onCreate(@NonNull ViewGroup parent) {
-        ItemIndicatorBinding binding = DataBindingUtil.inflate(inflater, R.layout.item_indicator, parent, false);
+        CustomFormDisplayBinding binding = DataBindingUtil.inflate(inflater, R.layout.custom_form_display, parent, false);
+        binding.formDisplayView.setLayout();
         return new DisplayHolder(binding);
     }
 
