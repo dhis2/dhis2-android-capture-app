@@ -45,6 +45,7 @@ class ScanTextView @JvmOverloads constructor(
     private lateinit var labelText: TextView
     var optionSet: String? = null
     private var renderingType: ValueTypeRenderingType? = null
+    private lateinit var viewModel: ScanTextViewModel
 
     init {
         init(context)
@@ -200,6 +201,7 @@ class ScanTextView @JvmOverloads constructor(
     }
 
     fun setViewModel(viewModel: ScanTextViewModel) {
+        this.viewModel = viewModel
         setLayoutData(viewModel.isBackgroundTransparent())
         viewModel.apply {
             setText(value())
@@ -212,10 +214,17 @@ class ScanTextView @JvmOverloads constructor(
             optionSet = optionSet()
             setOnScannerListener { value ->
                 setText(value)
-                viewModel.onDeactivate()
+                clearBackground(viewModel.isSearchMode())
                 viewModel.onScanSelected(value)
             }
             setActivationListener(viewModel::onActivate)
+        }
+    }
+
+    private fun clearBackground(isSearchMode: Boolean) {
+        if (!isSearchMode) {
+            binding.root.setBackgroundResource(R.color.form_field_background)
+            viewModel.onDeactivate()
         }
     }
 }

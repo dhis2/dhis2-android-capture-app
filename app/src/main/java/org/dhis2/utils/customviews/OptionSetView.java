@@ -47,6 +47,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
     private OnSelectedOption listener;
     private int numberOfOptions = 0;
     private TextView labelText;
+    private SpinnerViewModel viewModel;
 
     public OptionSetView(Context context) {
         super(context);
@@ -249,10 +250,11 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
     }
 
     public void setViewModel(SpinnerViewModel viewModel) {
+        this.viewModel = viewModel;
         setLayoutData(viewModel.isBackgroundTransparent(), viewModel.renderType());
         setOnSelectedOptionListener((optionName, optionCode) -> {
             viewModel.onOptionSelected(optionName, optionCode);
-            viewModel.onDeactivate();
+            clearBackground(!viewModel.isBackgroundTransparent());
         });
         setActivationListener(viewModel::onActivate);
         setNumberOfOptions(viewModel.numberOfOptions());
@@ -262,5 +264,12 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         setLabel(viewModel.label(), viewModel.mandatory());
         setDescription(viewModel.description());
         setOnClickListener(this);
+    }
+
+    private void clearBackground(boolean isSearchMode) {
+        if (!isSearchMode) {
+            binding.getRoot().setBackgroundResource(R.color.form_field_background);
+            viewModel.onDeactivate();
+        }
     }
 }
