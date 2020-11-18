@@ -131,12 +131,12 @@ public class FormAdapter extends RecyclerView.Adapter {
             case EDITTEXT:
                 viewModel = EditTextViewModel.create(attr.uid(), label, false,
                         queryData.get(attr.uid()), hint, 1, attr.valueType(), null, true,
-                        attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask(), null, false, false, true, processor);
+                        attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask(), ValueTypeRenderingType.DEFAULT.toString(), false, false, true, processor);
                 break;
             case LONG_TEXT:
                 viewModel = EditTextViewModel.create(attr.uid(), label, false,
                         queryData.get(attr.uid()), hint, 1, attr.valueType(), null, true,
-                        attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask(), null, true, false, true, processor);
+                        attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask(), ValueTypeRenderingType.DEFAULT.toString(), true, false, true, processor);
                 break;
             case BUTTON:
                 viewModel = FileViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, attr.displayDescription(), ObjectStyle.builder().build(), processor);
