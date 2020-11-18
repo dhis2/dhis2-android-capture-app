@@ -1,6 +1,7 @@
 package org.dhis2.utils.customviews
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
@@ -11,6 +12,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.ViewDataBinding
+import androidx.fragment.app.FragmentActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.scan_text_view.view.delete
@@ -23,8 +25,12 @@ import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.databinding.ScanTextViewAccentBinding
 import org.dhis2.databinding.ScanTextViewBinding
 import org.dhis2.usescases.qrScanner.ScanActivity
+import org.dhis2.utils.ActivityResultObservable
+import org.dhis2.utils.ActivityResultObserver
 import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.Constants
+import org.dhis2.utils.Constants.EXTRA_DATA
+import org.dhis2.utils.Constants.RQ_QR_SCANNER
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
@@ -32,14 +38,13 @@ class ScanTextView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
-) : FieldLayout(context, attrs, defStyle) {
+) : FieldLayout(context, attrs, defStyle), ActivityResultObserver {
 
     private lateinit var iconView: ImageView
     private lateinit var editText: TextInputEditText
     private lateinit var inputLayout: TextInputLayout
     private lateinit var descriptionLabel: ImageView
     private lateinit var binding: ViewDataBinding
-    private lateinit var onScanClick: OnScanClick
     private lateinit var onScanResult: (String?) -> Unit
     private lateinit var qrIcon: ImageView
     private lateinit var labelText: TextView
@@ -76,7 +81,6 @@ class ScanTextView @JvmOverloads constructor(
                 activationListener.onActivation()
             }
         }
-        onScanClick = context as OnScanClick
     }
 
     private fun checkCameraPermission() {
@@ -85,10 +89,11 @@ class ScanTextView @JvmOverloads constructor(
             Manifest.permission.CAMERA
         ) == PERMISSION_GRANTED
         ) {
+            subscribe()
             val intent = Intent(context, ScanActivity::class.java)
             intent.putExtra(Constants.OPTION_SET, optionSet)
             intent.putExtra(Constants.SCAN_RENDERING_TYPE, renderingType)
-            this.onScanClick.onsScanClicked(intent, this)
+            (context as FragmentActivity).startActivityForResult(intent, RQ_QR_SCANNER)
         }
     }
 
@@ -196,10 +201,6 @@ class ScanTextView @JvmOverloads constructor(
         )
     }
 
-    interface OnScanClick {
-        fun onsScanClicked(intent: Intent, scanTextView: ScanTextView)
-    }
-
     fun setViewModel(viewModel: ScanTextViewModel) {
         this.viewModel = viewModel
         setLayoutData(viewModel.isBackgroundTransparent())
@@ -226,5 +227,15 @@ class ScanTextView @JvmOverloads constructor(
             binding.root.setBackgroundResource(R.color.form_field_background)
             viewModel.onDeactivate()
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK && requestCode == RQ_QR_SCANNER) {
+            updateScanResult(data!!.getStringExtra(EXTRA_DATA))
+        }
+    }
+
+    private fun subscribe() {
+        (context as ActivityResultObservable).subscribe(this)
     }
 }

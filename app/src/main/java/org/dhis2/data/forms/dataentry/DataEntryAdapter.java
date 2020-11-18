@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ViewDataBinding;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.ListAdapter;
 
@@ -59,9 +58,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
 
     private final FormViewHolderFactory formViewHolderFactory;
 
-    public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
-                            @NonNull FragmentManager fragmentManager,
-                            @NonNull DataEntryArguments dataEntryArguments) {
+    public DataEntryAdapter(@NonNull DataEntryArguments dataEntryArguments) {
         super(new DataEntryDiff());
         setHasStableIds(true);
         sectionProcessor = PublishProcessor.create();
@@ -75,13 +72,10 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
                 totalFields,
                 imageSelector,
                 rendering,
-                fragmentManager,
                 sectionProcessor, selectedSection);
     }
 
-    public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
-                            @NonNull FragmentManager fragmentManager,
-                            @NonNull DataEntryArguments dataEntryArguments,
+    public DataEntryAdapter(@NonNull DataEntryArguments dataEntryArguments,
                             @NonNull FlowableProcessor<String> sectionProcessor,
                             @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet) {
         super(new DataEntryDiff());
@@ -97,7 +91,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
                 totalFields,
                 imageSelector,
                 rendering,
-                fragmentManager,
                 sectionProcessor,
                 selectedSection);
     }
