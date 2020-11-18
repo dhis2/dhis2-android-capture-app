@@ -501,9 +501,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             this.newGeometry = geometry;
             presenter.setChangingCoordinates(true);
         });
-        binding.geometry.setMapListener(
-                (CoordinatesView.OnMapPositionClick) binding.geometry.getContext()
-        );
 
         if (periodType == null)
             periodType = programStage.periodType();

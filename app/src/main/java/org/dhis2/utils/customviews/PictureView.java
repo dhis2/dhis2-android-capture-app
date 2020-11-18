@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
@@ -31,17 +32,14 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.FileExtensionsKt;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.databinding.FormPictureAccentBinding;
 import org.dhis2.databinding.FormPictureBinding;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
 
 import java.io.File;
 
-import io.reactivex.processors.FlowableProcessor;
 import kotlin.Pair;
 
 import static android.text.TextUtils.isEmpty;
@@ -53,14 +51,13 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     private TextView errorView;
     private ImageView image;
     private MaterialButton addImageBtn;
-    private OnIntentSelected onIntentSelected;
     private String primaryUid;
-    private OnPictureSelected imageListener;
     private Boolean isEditable;
     private ImageButton clearButton;
     private String currentValue;
-    private FragmentManager fm;
     private CardView imageCard;
+    private final FragmentManager supportFragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
+    private PictureViewModel viewModel;
 
     public PictureView(Context context) {
         super(context);
@@ -107,7 +104,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
                         addImageBtn.setVisibility(VISIBLE);
                         imageCard.setVisibility(View.GONE);
                         Glide.with(this).clear(image);
-                        imageListener.onSelected(null, null, uid);
+                        viewModel.onClearValue();
                     }
                 }
         );
@@ -206,24 +203,13 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
                                 new File(FileResourceDirectoryHelper.getFileResourceDirectory(getContext()), "tempFile.png"));
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        PictureView.this.onIntentSelected.intentSelected(this.uid, intent, Constants.CAMERA_REQUEST, (file, value, uuid) -> {
-                            if (value != null) {
-                                imageListener.onSelected(file, primaryUid.concat("_").concat(uid), uid);
-                            } else {
-                                File file2 = new File(FileResourcesUtil.getUploadDirectory(getContext()), FileResourcesUtil.generateFileName(primaryUid, uid));
-                                if (file2.exists())
-                                    imageListener.onSelected(file2, primaryUid.concat("_").concat(uid), uid);
-                            }
-                        });
+                        ((FragmentActivity) getContext()).startActivityForResult(intent, Constants.CAMERA_REQUEST);
                     } else if (options[item].equals("Choose From Gallery")) {
                         dialog.dismiss();
                         Intent pickPhoto = new Intent(Intent.ACTION_PICK);
                         pickPhoto.putExtra("filename", primaryUid.concat("_").concat(uid));
                         pickPhoto.setType("image/*");
-                        PictureView.this.onIntentSelected.intentSelected(this.uid, pickPhoto, Constants.GALLERY_REQUEST, (file, value, uuid) -> {
-                            FileResourcesUtil.saveImageToUpload(file, new File(FileResourcesUtil.getUploadDirectory(getContext()), FileResourcesUtil.generateFileName(primaryUid, uid)));
-                            imageListener.onSelected(file, primaryUid.concat("_").concat(uid), uid);
-                        });
+                        ((FragmentActivity) getContext()).startActivityForResult(pickPhoto, Constants.GALLERY_REQUEST);
                     } else if (options[item].equals("Cancel")) {
                         dialog.dismiss();
                     }
@@ -239,11 +225,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     private void showFullPicture() {
         new ImageDetailBottomDialog(label, new File(currentValue))
-                .show(fm, ImageDetailBottomDialog.TAG);
-    }
-
-    public void setOnImageListener(OnPictureSelected onImageListener) {
-        this.imageListener = onImageListener;
+                .show(supportFragmentManager, ImageDetailBottomDialog.TAG);
     }
 
     public void setEditable(Boolean editable) {
@@ -257,40 +239,9 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
         );
     }
 
-    public void setFragmentManager(FragmentManager fm) {
-        this.fm = fm;
-    }
-
-    public interface OnPictureSelected {
-        void onSelected(File file, String value, String uid);
-    }
-
-    public interface OnIntentSelected {
-        void intentSelected(String uuid, Intent intent, int request, OnPictureSelected onPictureSelected);
-    }
-
-    public void setOnIntentSelected(OnIntentSelected onIntentSelected) {
-        this.onIntentSelected = onIntentSelected;
-    }
-
     public void setViewModel(PictureViewModel viewModel) {
+        this.viewModel = viewModel;
         setIsBgTransparent(viewModel.isBackgroundTransparent);
-//        setFragmentManager(fm);
-        setOnIntentSelected(new OnIntentSelected() {
-            @Override
-            public void intentSelected(String uuid, Intent intent, int request, OnPictureSelected onPictureSelected) {
-                /*
-                processor.onNext(
-                    RowAction.create(uid, file != null ? file.getPath() : null, getAdapterPosition()));
-                 */
-            }
-        });
-        setOnImageListener(new OnPictureSelected() {
-            @Override
-            public void onSelected(File file, String value, String uid) {
-
-            }
-        });
         setProcessor(viewModel.uid().contains("_") ? viewModel.uid().split("_")[0] : viewModel.uid(),
                 viewModel.uid().contains("_") ? viewModel.uid().split("_")[1] : viewModel.uid());
         setLabel(viewModel.getFormattedLabel());

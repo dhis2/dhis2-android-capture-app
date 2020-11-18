@@ -26,7 +26,7 @@ fun enrollmentFormRobot(enrollmentFormRobot: EnrollmentFormRobot.() -> Unit) {
 class EnrollmentFormRobot : BaseRobot() {
 
     fun clickOnDateOfBirth() {
-        onView(withId(R.id.fieldRecycler))
+        onView(withId(R.id.formView))
             .perform(
                 RecyclerViewActions.actionOnItem<DashboardProgramViewHolder>(
                     ViewMatchers.hasDescendant(ViewMatchers.withText(EnrollmentRobot.DATE_OF_BIRTH)),
