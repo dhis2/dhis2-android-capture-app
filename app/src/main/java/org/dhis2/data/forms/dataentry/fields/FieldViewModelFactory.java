@@ -28,5 +28,5 @@ public interface FieldViewModelFactory {
                           @Nullable Integer optionCount,
                           @NonNull ObjectStyle objectStyle,
                           @Nullable String fieldMask,
-                          @NonNull FlowableProcessor<RowAction> processor);
+                          FlowableProcessor<RowAction> processor);
 }

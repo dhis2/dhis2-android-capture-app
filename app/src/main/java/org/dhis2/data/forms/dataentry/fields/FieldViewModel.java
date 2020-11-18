@@ -66,6 +66,7 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     public abstract DataEntryViewHolderTypes dataEntryViewType();
 
+    @Nullable
     public abstract FlowableProcessor<RowAction> processor();
 
     public int adapterPosition = -1;
