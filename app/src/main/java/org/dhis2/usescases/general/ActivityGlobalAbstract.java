@@ -22,7 +22,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.dhis2.Bindings.ExtensionsKt;
@@ -40,6 +39,7 @@ import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
+import org.dhis2.utils.reporting.CrashReportController;
 import org.dhis2.utils.session.PinDialog;
 import org.jetbrains.annotations.NotNull;
 
@@ -68,6 +68,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     public String uuid;
     @Inject
     public AnalyticsHelper analyticsHelper;
+    @Inject
+    public CrashReportController crashReportController;
     private PinDialog pinDialog;
     private boolean comesFromImageSource = false;
 
@@ -80,7 +82,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
 
     public void setScreenName(String name) {
-        Crashlytics.setString(Constants.SCREEN_NAME, name);
+        crashReportController.trackScreenName(name);
     }
 
     @Override
@@ -100,11 +102,15 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         if (!(this instanceof SplashActivity) && !(this instanceof LoginActivity))
             setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
 
-        Crashlytics.setString(Constants.SERVER, prefs.getString(Constants.SERVER, null));
+        final String server = prefs.getString(Constants.SERVER, null);
+        if (server != null) {
+            crashReportController.trackServer(server);
+            mFirebaseAnalytics.setUserId(prefs.getString(Constants.SERVER, null));
+        }
+
         String userName = prefs.getString(Constants.USER, null);
         if (userName != null)
-            Crashlytics.setString(Constants.USER, userName);
-        mFirebaseAnalytics.setUserId(prefs.getString(Constants.SERVER, null));
+            crashReportController.trackUser(userName);
 
         super.onCreate(savedInstanceState);
     }

@@ -724,20 +724,21 @@ class DataValuePresenter(
         listCategories: List<List<Pair<CategoryOption, Category>>>,
         rowPosition: Int,
         catComboUidList: MutableList<List<String>>,
-        currentCatComboIds: MutableList<String>?
+        catComboIds: MutableList<String>?
     ): List<List<String>> {
-        var currentCatComboIds = currentCatComboIds
+        var currentCatComboIds = catComboIds
         if (rowPosition == listCategories.size) {
-            val resultHelp = ArrayList(currentCatComboIds!!)
-            catComboUidList.add(resultHelp)
+            currentCatComboIds?.toList()?.let { catComboUidList.add(it) }
             return catComboUidList
         }
-        for (element in listCategories[rowPosition]) {
+        listCategories[rowPosition].forEach { element ->
             if (rowPosition == 0) {
-                currentCatComboIds = ArrayList()
+                currentCatComboIds = mutableListOf()
             }
-            removeCategoryOptionsBelowRowPosition(currentCatComboIds!!, rowPosition)
-            currentCatComboIds.add(element.val0().uid())
+            currentCatComboIds?.let {
+                removeCategoryOptionsBelowRowPosition(it, rowPosition)
+                it.add(element.val0().uid())
+            }
             getCatOptionCombos(listCategories, rowPosition + 1, catComboUidList, currentCatComboIds)
         }
 

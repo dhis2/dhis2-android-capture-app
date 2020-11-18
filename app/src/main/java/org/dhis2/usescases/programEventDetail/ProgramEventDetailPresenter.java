@@ -158,6 +158,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .switchMap(unit ->
                                 filterManager.asFlowable()
                                         .startWith(FilterManager.getInstance())
+                                        .filter(data->view.isMapVisible())
                                         .flatMap(filterManager -> eventRepository.filteredEventsForMap(
                                                 filterManager.getPeriodFilters(),
                                                 filterManager.getOrgUnitUidsFilters(),

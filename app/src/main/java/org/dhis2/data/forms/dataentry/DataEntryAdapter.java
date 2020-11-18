@@ -273,6 +273,10 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
     }
 
     public boolean isSection(int position) {
-        return getItemViewType(position) == DataEntryViewHolderTypes.SECTION.ordinal();
+        if (position <= getItemCount()) {
+            return getItemViewType(position) == DataEntryViewHolderTypes.SECTION.ordinal();
+        } else {
+            return false;
+        }
     }
 }

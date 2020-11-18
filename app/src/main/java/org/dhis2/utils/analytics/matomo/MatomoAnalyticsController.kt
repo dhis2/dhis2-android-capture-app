@@ -35,4 +35,13 @@ interface MatomoAnalyticsController {
 
     fun trackException(exception: Throwable, description: String)
     fun setUserId(identification: String?)
+
+    fun updateDefaultTracker()
+    fun updateDhisImplementationTracker(
+        matomoUrl: String,
+        siteId: Int,
+        trackerName: String
+    )
+
+    fun trackDownload()
 }

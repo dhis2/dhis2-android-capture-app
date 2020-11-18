@@ -1,15 +1,15 @@
-package org.dhis2.uicomponents.map.geometry
+package org.dhis2.uicomponents.map.geometry.mapper.featurecollection
 
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.doReturnConsecutively
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.data.dhislogic.CoordinateDataElementInfo
-import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
-import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeatureCollection
+import org.dhis2.uicomponents.map.geometry.MapEventToFeatureCollectionTest
+import org.dhis2.uicomponents.map.geometry.mapper.feature.MapCoordinateFieldToFeature
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -20,27 +20,41 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-class MapDataElementToFeatureCollectionTest {
-
-    private lateinit var mapper: MapDataElementToFeatureCollection
-    private val mapGeometryToFeature: MapGeometryToFeature = mock()
-    private val bounds: BoundsGeometry = mock()
+class MapDataElementToFeatureTest {
+    private val mapCoordinateFieldToFeature: MapCoordinateFieldToFeature = mock()
+    private lateinit var dataElementMapper: MapDataElementToFeature
 
     @Before
     fun setUp() {
-        mapper = MapDataElementToFeatureCollection(mapGeometryToFeature, bounds)
+        dataElementMapper = MapDataElementToFeature(mapCoordinateFieldToFeature)
     }
 
     @Test
-    fun `Should map list to feature collection map`() {
-        whenever(
-            mapGeometryToFeature.map(any(), any(), any())
-        ) doReturnConsecutively mockedFeatures()
+    fun `Should return empty map`() {
+        val result = dataElementMapper.mapDataElement(emptyList())
+        assertTrue(result.isEmpty())
+    }
 
-        mapper.map(mockedDataElementInfoList()).apply {
-            assertTrue(size == 2)
-            assertTrue(keys.containsAll(arrayListOf("deName", "de2Name")))
-        }
+    @Test
+    fun `Should return map of feature collections`() {
+        whenever(
+            mapCoordinateFieldToFeature.map(
+                any<CoordinateDataElementInfo>()
+            )
+        ) doReturnConsecutively mockedFeatures()
+        val result = dataElementMapper.mapDataElement(mockedDataElementInfoList())
+        assertTrue(result.isNotEmpty())
+        assertTrue(result.containsKey("deName"))
+        assertTrue(result.containsKey("de2Name"))
+        assertTrue(result["deName"] != null)
+        assertTrue(result["de2Name"] != null)
+    }
+
+    @Test
+    fun `Should return empty map if features are null`() {
+        whenever(mapCoordinateFieldToFeature.map(any<CoordinateDataElementInfo>())) doReturn null
+        val result = dataElementMapper.mapDataElement(mockedDataElementInfoList())
+        assertTrue(result.isEmpty())
     }
 
     private fun mockedDataElementInfoList(): List<CoordinateDataElementInfo> {

@@ -12,7 +12,6 @@ import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.crashlytics.android.Crashlytics
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -174,7 +173,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                         presenter.saveFile(uuid, if (file.exists()) file.path else null)
                         presenter.updateFields()
                     } catch (e: Exception) {
-                        Crashlytics.logException(e)
+                        crashReportController.logException(e)
                         Toast.makeText(
                             this, getString(R.string.something_wrong), Toast.LENGTH_LONG
                         ).show()

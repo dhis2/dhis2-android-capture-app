@@ -7,9 +7,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.crashlytics.android.Crashlytics;
 
 import org.dhis2.Bindings.ValueTypeExtensionsKt;
+import org.dhis2.Components;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -35,11 +35,13 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
+import org.dhis2.utils.reporting.CrashReportController;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -82,6 +84,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     @NonNull
     private final List<Row> rows;
     private SearchTEContractsModule.Presenter presenter;
+    public CrashReportController crashReportController;
 
     private Context context;
     private HashMap<String, String> queryData;
@@ -97,6 +100,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         attributeList = new ArrayList<>();
         rows = new ArrayList<>();
+        crashReportController = ((Components) context.getApplicationContext()).appComponent().injectCrashReportController();
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, false, false));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, false));
@@ -172,9 +176,11 @@ public class FormAdapter extends RecyclerView.Adapter {
                 viewModel = ScanTextViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.optionSet() != null ? attr.optionSet().uid() : null, attr.description(), ObjectStyle.builder().build(), renderingTypes.get(position), hint, false, true, processor);
                 break;
             default:
-                Crashlytics.log("Unsupported viewType " +
-                        "source type: " + holder.getItemViewType());
-                viewModel = EditTextViewModel.create(attr.uid(), "UNSUPORTED", false, null, "UNSUPPORTED", 1, attr.valueType(), null, false, attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask(), null, false, false, true, processor);
+                D2Error error = D2Error.builder()
+                        .errorDescription("Unsupported viewType source type: " + holder.getItemViewType())
+                        .build();
+                crashReportController.logException(error);
+                viewModel = EditTextViewModel.create(attr.uid(), "UNSUPPORTED", false, null, "UNSUPPORTED", 1, attr.valueType(), null, false, attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask(), null, false, false, true, processor);
                 break;
         }
         rows.get(holder.getItemViewType()).onBind(holder, viewModel);
