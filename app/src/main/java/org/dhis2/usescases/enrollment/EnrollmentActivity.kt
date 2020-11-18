@@ -133,15 +133,15 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         )
         dataEntryHeaderHelper.observeHeaderChanges(this)
         binding.fieldRecycler.addOnScrollListener(object :
-            RecyclerView.OnScrollListener() {
-            override fun onScrolled(
-                recyclerView: RecyclerView,
-                dx: Int,
-                dy: Int
-            ) {
-                dataEntryHeaderHelper.checkSectionHeader(recyclerView)
-            }
-        })
+                RecyclerView.OnScrollListener() {
+                override fun onScrolled(
+                    recyclerView: RecyclerView,
+                    dx: Int,
+                    dy: Int
+                ) {
+                    dataEntryHeaderHelper.checkSectionHeader(recyclerView)
+                }
+            })
         binding.fieldRecycler.adapter = adapter
 
         binding.save.setOnClickListener {

@@ -56,7 +56,7 @@ class EventCaptureFormPresenterTest {
         presenter.init()
 
         assert(
-                onRowActionProcessor
+            onRowActionProcessor
                 .onBackpressureBuffer()
                 .distinctUntilChanged()
                 .test()
@@ -83,7 +83,7 @@ class EventCaptureFormPresenterTest {
     fun `Should ask for new calculation if value saved changed`() {
         whenever(onRowActionProcessor.onBackpressureBuffer()) doReturn mock()
         whenever(
-           onRowActionProcessor.onBackpressureBuffer().distinctUntilChanged()
+            onRowActionProcessor.onBackpressureBuffer().distinctUntilChanged()
         ) doReturn Flowable.just(RowAction.create("testUid", "testValue"))
         whenever(view.sectionSelectorFlowable()) doReturn processor
         whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
