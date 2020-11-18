@@ -58,4 +58,9 @@ public abstract class PictureViewModel extends FieldViewModel {
     public int getLayoutId() {
         return R.layout.custom_form_picture;
     }
+
+    public void onClearValue() {
+        /*processor.onNext(
+                RowAction.create(uid, file != null ? file.getPath() : null, getAdapterPosition()));*/
+    }
 }

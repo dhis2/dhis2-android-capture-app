@@ -382,11 +382,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     updateFilters(FilterManager.getInstance().getTotalFilters());
                 }
                 break;
-            case Constants.RQ_QR_SCANNER:
-                if (resultCode == RESULT_OK) {
-                    scanTextView.updateScanResult(data.getStringExtra(Constants.EXTRA_DATA));
-                }
-                break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -397,12 +392,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (requestCode == ACCESS_LOCATION_PERMISSION_REQUEST) {
             initSearchNeeded = false;
         }
-    }
-
-    @Override
-    public void onsScanClicked(Intent intent, @NotNull ScanTextView scanTextView) {
-        initSearchNeeded = false;
-        super.onsScanClicked(intent, scanTextView);
     }
 
     @Override

@@ -66,7 +66,7 @@ class FormView @JvmOverloads constructor(
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
 
-    //TODO methods to remove
+    // TODO methods to remove
 
     fun sectionFlowable(): Flowable<String> {
         return adapter.sectionFlowable()

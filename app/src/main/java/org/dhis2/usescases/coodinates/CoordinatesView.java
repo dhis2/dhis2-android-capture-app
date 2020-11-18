@@ -46,12 +46,14 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.text.TextUtils.isEmpty;
 import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
@@ -310,9 +312,12 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     public void getLocation() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (this.getContext() instanceof ActivityGlobalAbstract) {
-                ((ActivityGlobalAbstract) this.getContext()).requestLocationPermission(this);
-            }
+            subscribe();
+            ActivityCompat.requestPermissions(
+                    (FragmentActivity) getContext(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    ACCESS_LOCATION_PERMISSION_REQUEST
+            );
         } else {
 
             mFusedLocationClient.getLastLocation().
@@ -382,18 +387,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        ((ActivityResultObservable) getContext()).subscribe(this);
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        ((ActivityResultObservable) getContext()).unsubscribe();
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK && requestCode == Constants.RQ_MAP_LOCATION_VIEW) {
             if (data.getExtras() != null) {
@@ -419,11 +412,21 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     public void onMapPositionClick() {
+        subscribe();
         ((FragmentActivity) getContext()).startActivityForResult(MapSelectorActivity.Companion.create(
                 (FragmentActivity) getContext(),
                 getFeatureType(),
                 currentCoordinates()),
                 RQ_MAP_LOCATION_VIEW);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
+        if (requestCode == ACCESS_LOCATION_PERMISSION_REQUEST) {
+            if (grantResults[0] == PERMISSION_GRANTED) {
+                getLocation();
+            }
+        }
     }
 
     public interface OnCurrentLocationClick {
@@ -543,6 +546,10 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             binding.getRoot().setBackgroundResource(R.color.form_field_background);
             viewModel.onDeactivate();
         }
+    }
+
+    private void subscribe() {
+        ((ActivityResultObservable) getContext()).subscribe(this);
     }
 }
 
