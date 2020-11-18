@@ -93,7 +93,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
                 isBackgroundTransparent,
                 isSearchMode
             )
-
     }
 
     override fun setMandatory(): FieldViewModel =
@@ -210,7 +209,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             isBackgroundTransparent(),
             isSearchMode()
         )
-
 
     override fun getLayoutId(): Int {
         return R.layout.form_scan

@@ -24,7 +24,7 @@ class EventCaptureFormPresenter(
 
     fun init() {
         disposable.add(
-                onFieldActionProcessor
+            onFieldActionProcessor
                 .onBackpressureBuffer()
                 .distinctUntilChanged()
                 .doOnNext { activityPresenter.showProgress() }

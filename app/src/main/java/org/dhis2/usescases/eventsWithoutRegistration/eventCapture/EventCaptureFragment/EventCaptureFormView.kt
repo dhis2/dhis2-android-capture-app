@@ -2,7 +2,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureF
 
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
-import org.dhis2.data.forms.dataentry.fields.RowAction
 
 interface EventCaptureFormView {
     fun sectionSelectorFlowable(): FlowableProcessor<String>

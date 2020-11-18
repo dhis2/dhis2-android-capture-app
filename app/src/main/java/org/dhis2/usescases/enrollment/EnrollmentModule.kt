@@ -123,7 +123,7 @@ class EnrollmentModule(
 
     @Provides
     @PerActivity
-    fun provideOnRowActionProcessor(): FlowableProcessor<RowAction>{
+    fun provideOnRowActionProcessor(): FlowableProcessor<RowAction> {
         return PublishProcessor.create()
     }
 

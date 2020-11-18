@@ -139,7 +139,7 @@ class EnrollmentPresenterImpl(
         )
 
         disposable.add(
-                onRowActionProcessor
+            onRowActionProcessor
                 .onBackpressureBuffer()
                 .doOnNext { view.showProgress() }
                 .observeOn(schedulerProvider.io())
