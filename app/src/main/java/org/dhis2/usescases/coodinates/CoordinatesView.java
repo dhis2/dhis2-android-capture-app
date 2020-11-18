@@ -3,6 +3,7 @@ package org.dhis2.usescases.coodinates;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -23,6 +25,8 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.Bindings.DoubleExtensionsKt;
 import org.dhis2.Bindings.StringExtensionsKt;
@@ -31,21 +35,29 @@ import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.databinding.FormCoordinatesAccentBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
 import org.dhis2.uicomponents.map.geometry.LngLatValidatorKt;
+import org.dhis2.uicomponents.map.views.MapSelectorActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.ActivityResultObservable;
+import org.dhis2.utils.ActivityResultObserver;
 import org.dhis2.utils.ColorUtils;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
 import static android.text.TextUtils.isEmpty;
 import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
+import static org.dhis2.utils.Constants.RQ_MAP_LOCATION_VIEW;
 
-public class CoordinatesView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
+public class CoordinatesView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener, ActivityResultObserver {
 
     private ViewDataBinding binding;
     private TextInputEditText latitude;
@@ -55,7 +67,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationCallback locationCallback;
     private ImageButton location1;
-    private OnMapPositionClick mapLocationListener;
     private OnCurrentLocationClick currentLocationListener;
     private TextView errorView;
     private View clearButton;
@@ -215,10 +226,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                 (isEmpty(latitude.getText()) && isEmpty(longitude.getText()));
     }
 
-    public void setMapListener(OnMapPositionClick mapLocationListener) {
-        this.mapLocationListener = mapLocationListener;
-    }
-
     public void setCurrentLocationListener(OnCurrentLocationClick currentLocationListener) {
         this.currentLocationListener = currentLocationListener;
     }
@@ -289,10 +296,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                 getLocation();
                 break;
             case R.id.location2:
-                if (mapLocationListener != null)
-                    mapLocationListener.onMapPositionClick(this);
-                else
-                    ((OnMapPositionClick) getContext()).onMapPositionClick(this);
+                onMapPositionClick();
                 break;
             case R.id.clearButton:
                 clearValueData();
@@ -377,9 +381,49 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         }
     }
 
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        ((ActivityResultObservable) getContext()).subscribe(this);
+    }
 
-    public interface OnMapPositionClick {
-        void onMapPositionClick(CoordinatesView coordinatesView);
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        ((ActivityResultObservable) getContext()).unsubscribe();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode == RESULT_OK && requestCode == Constants.RQ_MAP_LOCATION_VIEW) {
+            if (data.getExtras() != null) {
+                FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA));
+                String dataExtra = data.getStringExtra(MapSelectorActivity.DATA_EXTRA);
+                Geometry geometry;
+                if (locationType == FeatureType.POINT) {
+                    Type type = new TypeToken<List<Double>>() {
+                    }.getType();
+                    geometry = GeometryHelper.createPointGeometry(new Gson().fromJson(dataExtra, type));
+                } else if (locationType == FeatureType.POLYGON) {
+                    Type type = new TypeToken<List<List<List<Double>>>>() {
+                    }.getType();
+                    geometry = GeometryHelper.createPolygonGeometry(new Gson().fromJson(dataExtra, type));
+                } else {
+                    Type type = new TypeToken<List<List<List<List<Double>>>>>() {
+                    }.getType();
+                    geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
+                }
+                updateLocation(geometry);
+            }
+        }
+    }
+
+    public void onMapPositionClick() {
+        ((FragmentActivity) getContext()).startActivityForResult(MapSelectorActivity.Companion.create(
+                (FragmentActivity) getContext(),
+                getFeatureType(),
+                currentCoordinates()),
+                RQ_MAP_LOCATION_VIEW);
     }
 
     public interface OnCurrentLocationClick {
@@ -482,9 +526,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             viewModel.onCurrentLocationClick(geometry);
             clearBackground(viewModel.isSearchMode());
         });
-        /*setMapListener(coordinatesView -> {
-
-        });*/
         setActivationListener(viewModel::onActivate);
 
         setFeatureType(viewModel.featureType());

@@ -7,10 +7,6 @@
         <import type="android.view.View" />
 
         <variable
-            name="mapListener"
-            type="org.dhis2.usescases.coodinates.CoordinatesView.OnMapPositionClick" />
-
-        <variable
             name="item"
             type="org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel" />
 
@@ -41,7 +37,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:mapListener="@{mapListener}"
             app:viewModel="@{item}" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
