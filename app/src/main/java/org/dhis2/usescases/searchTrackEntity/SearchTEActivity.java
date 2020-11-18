@@ -62,7 +62,6 @@ import org.dhis2.uicomponents.map.managers.TeiMapManager;
 import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.uicomponents.map.model.CarouselItemModel;
 import org.dhis2.uicomponents.map.model.MapStyle;
-import org.dhis2.usescases.coodinates.CoordinatesView;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.orgunitselector.OUTreeActivity;
@@ -398,12 +397,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (requestCode == ACCESS_LOCATION_PERMISSION_REQUEST) {
             initSearchNeeded = false;
         }
-    }
-
-    @Override
-    public void onMapPositionClick(CoordinatesView coordinatesView) {
-        initSearchNeeded = false;
-        super.onMapPositionClick(coordinatesView);
     }
 
     @Override

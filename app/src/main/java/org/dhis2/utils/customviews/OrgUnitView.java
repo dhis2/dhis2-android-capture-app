@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -18,7 +19,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.dhis2.BR;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.databinding.CustomTextViewAccentBinding;
 import org.dhis2.databinding.CustomTextViewBinding;
@@ -38,8 +38,8 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
     private View descriptionLabel;
     private OnDataChanged listener;
     private String value;
-    private FragmentManager fm;
     private TextView labelText;
+    private final FragmentManager supportFragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
 
     public OrgUnitView(Context context) {
         super(context);
@@ -101,7 +101,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
                 editText.setText(null);
                 editText.setEnabled(true);
             }
-        }, OrgUnitCascadeDialog.OUSelectionType.SEARCH).show(fm, label));
+        }, OrgUnitCascadeDialog.OUSelectionType.SEARCH).show(supportFragmentManager, label));
     }
 
     @Override
@@ -158,7 +158,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
             binding.setVariable(BR.label, this.label);
         }
 
-        binding.setVariable(BR.fieldHint,getContext().getString(R.string.choose_ou));
+        binding.setVariable(BR.fieldHint, getContext().getString(R.string.choose_ou));
     }
 
     public void setDescription(String description) {
@@ -195,17 +195,12 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
         this.listener = listener;
     }
 
-    public void setFragmentManager(FragmentManager fm) {
-        this.fm = fm;
-    }
-
     public interface OnDataChanged {
         void onDataChanged(String orgUnitUid);
     }
 
     public void setViewModel(OrgUnitViewModel viewModel) {
         setLayoutData(viewModel.isBackgroundTransparent(), viewModel.renderType());
-//        setFragmentManager(binding.getRoot());
         setLabel(viewModel.label(), viewModel.mandatory());
         setDescription(viewModel.description());
         setWarning(viewModel.warning(), viewModel.error());
@@ -219,7 +214,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
         }
         setValue(ouUid, ouName);
         getEditText().setText(ouName);
-        
+
         updateEditable(viewModel.editable());
         setListener(viewModel::onDataChange);
         setActivationListener(viewModel::onActivate);

@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
@@ -31,7 +32,6 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.FileExtensionsKt;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.databinding.FormPictureAccentBinding;
 import org.dhis2.databinding.FormPictureBinding;
@@ -41,7 +41,6 @@ import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
 
 import java.io.File;
 
-import io.reactivex.processors.FlowableProcessor;
 import kotlin.Pair;
 
 import static android.text.TextUtils.isEmpty;
@@ -59,8 +58,8 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     private Boolean isEditable;
     private ImageButton clearButton;
     private String currentValue;
-    private FragmentManager fm;
     private CardView imageCard;
+    private final FragmentManager supportFragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
 
     public PictureView(Context context) {
         super(context);
@@ -239,7 +238,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     private void showFullPicture() {
         new ImageDetailBottomDialog(label, new File(currentValue))
-                .show(fm, ImageDetailBottomDialog.TAG);
+                .show(supportFragmentManager, ImageDetailBottomDialog.TAG);
     }
 
     public void setOnImageListener(OnPictureSelected onImageListener) {
@@ -257,10 +256,6 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
         );
     }
 
-    public void setFragmentManager(FragmentManager fm) {
-        this.fm = fm;
-    }
-
     public interface OnPictureSelected {
         void onSelected(File file, String value, String uid);
     }
@@ -275,7 +270,6 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     public void setViewModel(PictureViewModel viewModel) {
         setIsBgTransparent(viewModel.isBackgroundTransparent);
-//        setFragmentManager(fm);
         setOnIntentSelected(new OnIntentSelected() {
             @Override
             public void intentSelected(String uuid, Intent intent, int request, OnPictureSelected onPictureSelected) {

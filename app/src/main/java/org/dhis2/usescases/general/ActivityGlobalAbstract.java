@@ -26,18 +26,17 @@ import androidx.core.content.ContextCompat;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
-import org.dhis2.uicomponents.map.views.MapSelectorActivity;
 import org.dhis2.usescases.coodinates.CoordinatesView;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.splash.SplashActivity;
+import org.dhis2.utils.ActivityResultObservable;
+import org.dhis2.utils.ActivityResultObserver;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
@@ -48,15 +47,10 @@ import org.dhis2.utils.customviews.PictureView;
 import org.dhis2.utils.customviews.ScanTextView;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.session.PinDialog;
-import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
-import org.hisp.dhis.android.core.common.FeatureType;
-import org.hisp.dhis.android.core.common.Geometry;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -68,15 +62,13 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
 import static org.dhis2.utils.Constants.CAMERA_REQUEST;
 import static org.dhis2.utils.Constants.GALLERY_REQUEST;
-import static org.dhis2.utils.Constants.RQ_MAP_LOCATION_VIEW;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 import static org.dhis2.utils.session.PinDialogKt.PIN_DIALOG_TAG;
 
 
 public abstract class ActivityGlobalAbstract extends AppCompatActivity
-        implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick,
-        PictureView.OnIntentSelected, ScanTextView.OnScanClick {
+        implements AbstractActivityContracts.View, PictureView.OnIntentSelected, ScanTextView.OnScanClick, ActivityResultObservable {
 
     private static final String FRAGMENT_TAG = "SYNC";
 
@@ -88,6 +80,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     public ScanTextView scanTextView;
     private PinDialog pinDialog;
     private boolean comesFromImageSource = false;
+
+    private ActivityResultObserver activityResultObserver;
 
     public void requestLocationPermission(CoordinatesView coordinatesView) {
         this.coordinatesView = coordinatesView;
@@ -403,38 +397,17 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     }
 
     @Override
-    public void onMapPositionClick(CoordinatesView coordinatesView) {
-        this.coordinatesView = coordinatesView;
-        startActivityForResult(MapSelectorActivity.Companion.create(this,
-                coordinatesView.getFeatureType(),
-                coordinatesView.currentCoordinates()),
-                RQ_MAP_LOCATION_VIEW);
+    public void subscribe(@NotNull ActivityResultObserver activityResultObserver) {
+        this.activityResultObserver = activityResultObserver;
+    }
+
+    @Override
+    public void unsubscribe() {
+        this.activityResultObserver = null;
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && requestCode == Constants.RQ_MAP_LOCATION_VIEW) {
-            if (coordinatesView != null && data.getExtras() != null) {
-                FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA));
-                String dataExtra = data.getStringExtra(MapSelectorActivity.DATA_EXTRA);
-                Geometry geometry;
-                if (locationType == FeatureType.POINT) {
-                    Type type = new TypeToken<List<Double>>() {
-                    }.getType();
-                    geometry = GeometryHelper.createPointGeometry(new Gson().fromJson(dataExtra, type));
-                } else if (locationType == FeatureType.POLYGON) {
-                    Type type = new TypeToken<List<List<List<Double>>>>() {
-                    }.getType();
-                    geometry = GeometryHelper.createPolygonGeometry(new Gson().fromJson(dataExtra, type));
-                } else {
-                    Type type = new TypeToken<List<List<List<List<Double>>>>>() {
-                    }.getType();
-                    geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
-                }
-                coordinatesView.updateLocation(geometry);
-            }
-            this.coordinatesView = null;
-        }
 
         switch (requestCode) {
             case GALLERY_REQUEST:
@@ -442,6 +415,12 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
                 comesFromImageSource = true;
                 break;
         }
+
+        if (activityResultObserver != null) {
+            activityResultObserver.onActivityResult(requestCode, resultCode, data);
+            activityResultObserver = null;
+        }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 
