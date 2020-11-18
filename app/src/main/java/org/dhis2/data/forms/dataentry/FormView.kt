@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.Flowable
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
-import org.dhis2.data.forms.dataentry.fields.RowAction
 
 class FormView @JvmOverloads constructor(
     context: Context,
@@ -74,10 +73,6 @@ class FormView @JvmOverloads constructor(
 
     fun setCurrentSection(selectedSection: String) {
         adapter.setCurrentSection(selectedSection)
-    }
-
-    fun asFlowable(): Flowable<RowAction> {
-        return adapter.asFlowable()
     }
 
     fun setLastFocusItem(lastFocusItem: String?) {
