@@ -1,7 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.age;
 
 import androidx.databinding.ViewDataBinding;
-import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -12,9 +11,8 @@ import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 
 public class AgeHolder extends FormViewHolder {
 
-    public AgeHolder(ViewDataBinding binding, MutableLiveData<String> currentSelection) {
+    public AgeHolder(ViewDataBinding binding) {
         super(binding);
-        this.currentUid = currentSelection;
     }
 
     @Override

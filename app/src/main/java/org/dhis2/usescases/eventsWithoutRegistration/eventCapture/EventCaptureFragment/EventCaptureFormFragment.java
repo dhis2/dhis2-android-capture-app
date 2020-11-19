@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryAdapter;
-import org.dhis2.data.forms.dataentry.DataEntryArguments;
 import org.dhis2.data.forms.dataentry.DataEntryHeaderHelper;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -28,7 +27,6 @@ import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -142,10 +140,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
     private void createDataEntry() {
 
-        dataEntryAdapter = new DataEntryAdapter(
-                DataEntryArguments.forEvent("", ProgramStageSectionRenderingType.LISTING.name()),
-                sectionProcessor,
-                flowableOptions);
+        dataEntryAdapter = new DataEntryAdapter(sectionProcessor);
 
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {

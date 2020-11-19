@@ -16,11 +16,9 @@ import org.dhis2.data.forms.dataentry.fields.FieldUiModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolderFactory;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.section.SectionHolder;
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
-import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.ArrayList;
@@ -35,11 +33,6 @@ import io.reactivex.processors.PublishProcessor;
 public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHolder> {
 
     private final SectionHandler sectionHandler = new SectionHandler();
-
-    @NonNull
-    private final ObservableField<String> imageSelector;
-
-    private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
     private final ObservableField<String> selectedSection;
     private final FlowableProcessor<String> sectionProcessor;
 
@@ -58,39 +51,24 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
 
     private final FormViewHolderFactory formViewHolderFactory;
 
-    public DataEntryAdapter(@NonNull DataEntryArguments dataEntryArguments) {
+    public DataEntryAdapter() {
         super(new DataEntryDiff());
         setHasStableIds(true);
         sectionProcessor = PublishProcessor.create();
-        imageSelector = new ObservableField<>("");
         selectedSection = new ObservableField<>("");
-        this.processorOptionSet = PublishProcessor.create();
         this.currentFocusUid = new MutableLiveData<>();
         this.formViewHolderFactory = new FormViewHolderFactory(
-                dataEntryArguments.renderType(),
-                currentFocusUid,
-                totalFields,
-                imageSelector,
-                rendering,
-                sectionProcessor, selectedSection);
+                sectionProcessor,
+                selectedSection);
     }
 
-    public DataEntryAdapter(@NonNull DataEntryArguments dataEntryArguments,
-                            @NonNull FlowableProcessor<String> sectionProcessor,
-                            @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet) {
+    public DataEntryAdapter(@NonNull FlowableProcessor<String> sectionProcessor) {
         super(new DataEntryDiff());
         setHasStableIds(true);
         this.sectionProcessor = sectionProcessor;
-        imageSelector = new ObservableField<>("");
         selectedSection = new ObservableField<>("");
-        this.processorOptionSet = processorOptSet;
         this.currentFocusUid = new MutableLiveData<>();
         this.formViewHolderFactory = new FormViewHolderFactory(
-                dataEntryArguments.renderType(),
-                currentFocusUid,
-                totalFields,
-                imageSelector,
-                rendering,
                 sectionProcessor,
                 selectedSection);
     }

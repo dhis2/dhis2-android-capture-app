@@ -40,12 +40,9 @@ class FormView @JvmOverloads constructor(
         })
     }
 
-    fun init(
-        dataEntryArguments: DataEntryArguments,
-        owner: LifecycleOwner
-    ) {
+    fun init(owner: LifecycleOwner) {
         dataEntryHeaderHelper.observeHeaderChanges(owner)
-        adapter = DataEntryAdapter(dataEntryArguments)
+        adapter = DataEntryAdapter()
         recyclerView.adapter = adapter
     }
 
