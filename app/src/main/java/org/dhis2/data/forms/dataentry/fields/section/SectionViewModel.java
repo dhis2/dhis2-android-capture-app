@@ -2,6 +2,7 @@ package org.dhis2.data.forms.dataentry.fields.section;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.ObservableField;
 
 import com.google.auto.value.AutoValue;
 
@@ -17,6 +18,8 @@ import java.util.Objects;
 public abstract class SectionViewModel extends FieldViewModel {
 
     public static final String CLOSING_SECTION_UID = "closing_section";
+    private boolean showBottomShadow;
+    private boolean lastPositionShouldChangeHeight;
 
     @NonNull
     public abstract boolean isOpen();
@@ -35,6 +38,9 @@ public abstract class SectionViewModel extends FieldViewModel {
 
     @NonNull
     public abstract String rendering();
+
+    private int sectionNumber;
+    private ObservableField<String> selectedField;
 
     public static SectionViewModel create(String sectionUid, String sectionName, String description, boolean isOpen, Integer totalFields, Integer completedFields, String rendering) {
         return new AutoValue_SectionViewModel(
@@ -303,5 +309,42 @@ public abstract class SectionViewModel extends FieldViewModel {
 
     public boolean areAllFieldsCompleted() {
         return completedFields().equals(totalFields());
+    }
+
+    public void setSelected() {
+
+    }
+
+    public void setSectionNumber(int sectionNumber){
+        this.sectionNumber = sectionNumber;
+    }
+
+    public int getSectionNumber() {
+        return sectionNumber;
+    }
+
+    public void setSelectedField(ObservableField<String> selectedObservableField){
+        this.selectedField = selectedObservableField;
+    }
+    public ObservableField<String> observeSelectedSection() {
+        return selectedField==null?new ObservableField<>(""):selectedField;
+    }
+
+    public boolean isSelected() {
+        return Objects.equals(selectedField.get(), uid());
+    }
+
+    public void setShowBottomShadow(boolean showBottomShadow){
+        this.showBottomShadow = showBottomShadow;
+    }
+    public boolean showBottomShadow(){
+        return showBottomShadow;
+    }
+    public void setLastSectionHeight(boolean lastPositionShouldChangeHeight){
+        this.lastPositionShouldChangeHeight = lastPositionShouldChangeHeight;
+    }
+
+    public boolean lastPositionShouldChangeHeight(){
+        return lastPositionShouldChangeHeight;
     }
 }

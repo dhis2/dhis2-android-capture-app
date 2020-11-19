@@ -22,13 +22,13 @@ class SectionHolder(
     binding: @NotNull ViewDataBinding,
     private val selectedSection: @NotNull ObservableField<String>,
     private val sectionProcessor: @NotNull FlowableProcessor<String>
-) : FormViewHolder(binding), View.OnClickListener {
+) : FormViewHolder(binding)/*, View.OnClickListener */{
 
     private lateinit var viewModel: SectionViewModel
     private val formBinding: FormSectionBinding = binding as FormSectionBinding
 
     init {
-        selectedSection.addOnPropertyChangedCallback(object : OnPropertyChangedCallback() {
+        /*selectedSection.addOnPropertyChangedCallback(object : OnPropertyChangedCallback() {
             override fun onPropertyChanged(
                 sender: Observable,
                 propertyId: Int
@@ -40,12 +40,13 @@ class SectionHolder(
         formBinding.root.setOnClickListener(this)
         formBinding.descriptionIcon.setOnClickListener {
             showDescription()
-        }
+        }*/
     }
 
 
     public override fun update(viewModel: FieldViewModel) {
-        this.viewModel = viewModel as SectionViewModel
+        formBinding.sectionView.setViewModel(viewModel as SectionViewModel)
+        /*this.viewModel = viewModel as SectionViewModel
 
         formBinding.descriptionIcon.visibility = GONE
         formBinding.sectionName.viewTreeObserver.addOnGlobalLayoutListener {
@@ -57,16 +58,16 @@ class SectionHolder(
             }
         }
 
-        setShadows()
+        setShadows()*/
     }
 
-    override fun onClick(v: View) {
+    /*override fun onClick(v: View) {
         if (viewModel.uid() != SectionViewModel.CLOSING_SECTION_UID) {
             sectionProcessor.onNext(viewModel.uid())
         }
-    }
+    }*/
 
-    private fun setShadows() {
+    /*private fun setShadows() {
         val isSelected = viewModel.isOpen
         if (isSelected) {
             formBinding.shadowTop.visibility = VISIBLE
@@ -84,13 +85,13 @@ class SectionHolder(
             .scaleY(if (isSelected) 1f else -1f)
             .setDuration(200)
             .start()
-    }
+    }*/
 
-    fun setBottomShadow(showShadow: Boolean) {
+    /*fun setBottomShadow(showShadow: Boolean) {
         formBinding.shadowBottom.visibility = if (showShadow) VISIBLE else GONE
-    }
+    }*/
 
-    fun setLastSectionHeight(previousSectionIsOpened: Boolean) {
+    /*fun setLastSectionHeight(previousSectionIsOpened: Boolean) {
         val params = formBinding.lastSectionDetails.layoutParams
         val finalHeight = if (previousSectionIsOpened) {
             48.dp
@@ -105,7 +106,7 @@ class SectionHolder(
             }
             start()
         }
-    }
+    }*/
 
     private fun showDescription() {
         CustomDialog(
@@ -119,23 +120,27 @@ class SectionHolder(
         ).show()
     }
 
-    fun handleHeaderClick(x: Float) {
-        val hasDescription = formBinding.descriptionIcon.visibility == VISIBLE
-        val descriptionClicked =
-            formBinding.descriptionIcon.x <= x &&
-                formBinding.descriptionIcon.x + formBinding.descriptionIcon.width >= x
-        if (hasDescription && descriptionClicked) {
-            showDescription()
-        } else {
-            onClick(itemView)
-        }
+    fun getSectionView(): SectionView {
+        return formBinding.sectionView
     }
 
-    fun setSectionNumber(sectionNumber: Int) {
-        formBinding.sectionNumber.apply {
-            text = sectionNumber.toString()
-            background =
-                ContextCompat.getDrawable(itemView.context, R.drawable.ic_circle)
-        }
-    }
+    /* fun handleHeaderClick(x: Float) {
+         val hasDescription = formBinding.descriptionIcon.visibility == VISIBLE
+         val descriptionClicked =
+             formBinding.descriptionIcon.x <= x &&
+                 formBinding.descriptionIcon.x + formBinding.descriptionIcon.width >= x
+         if (hasDescription && descriptionClicked) {
+             showDescription()
+         } else {
+             onClick(itemView)
+         }
+     }
+
+     fun setSectionNumber(sectionNumber: Int) {
+         formBinding.sectionNumber.apply {
+             text = sectionNumber.toString()
+             background =
+                 ContextCompat.getDrawable(itemView.context, R.drawable.ic_circle)
+         }
+     }*/
 }

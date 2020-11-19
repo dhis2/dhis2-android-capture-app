@@ -119,27 +119,32 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
 
     @Override
     public void onBindViewHolder(@NonNull FormViewHolder holder, int position) {
-        holder.bind(getItem(position));
 
         if (holder instanceof SectionHolder) {
             updateSectionData((SectionHolder) holder, position, false);
         }
+
+        holder.bind(getItem(position));
+
     }
 
 
     public void updateSectionData(SectionHolder holder, int position, boolean isHeader) {
-        holder.setBottomShadow(!isHeader && position > 0 && getItemViewType(position - 1) != DataEntryViewHolderTypes.SECTION.ordinal());
-        if (position > 0) {
+        ((SectionViewModel)getItem(position)).setShowBottomShadow(!isHeader && position > 0 && !(getItem(position-1) instanceof SectionViewModel));
+        ((SectionViewModel)getItem(position)).setSectionNumber(getSectionNumber(position));
+        ((SectionViewModel)getItem(position)).setLastSectionHeight(position>0 && position == getItemCount() -1 && !(getItem(position-1) instanceof SectionViewModel));
+//        holder.setBottomShadow(!isHeader && position > 0 && getItemViewType(position - 1) != DataEntryViewHolderTypes.SECTION.ordinal());
+        /*if (position > 0) {
             holder.setLastSectionHeight(
                     position == getItemCount() - 1 && getItemViewType(position - 1) != DataEntryViewHolderTypes.SECTION.ordinal());
-        }
-        holder.setSectionNumber(getSectionNumber(position));
+        }*/
+//        holder.setSectionNumber(getSectionNumber(position));
     }
 
     private int getSectionNumber(int sectionPosition) {
         int sectionNumber = 1;
         for (int i = 0; i < sectionPosition; i++) {
-            if (getItemViewType(i) == DataEntryViewHolderTypes.SECTION.ordinal()) {
+            if (getItem(i) instanceof SectionViewModel) {
                 sectionNumber++;
             }
         }
@@ -230,7 +235,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
     public int getItemSpan(int position) {
 
         if (position >= getItemCount() ||
-                getItemViewType(position) == DataEntryViewHolderTypes.SECTION.ordinal() ||
+                getItem(position) instanceof SectionViewModel ||
                 getItemViewType(position) == DataEntryViewHolderTypes.DISPLAY.ordinal() ||
                 rendering == null
         ) {
