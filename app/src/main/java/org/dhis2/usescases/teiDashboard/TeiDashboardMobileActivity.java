@@ -285,7 +285,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                             String pageTitle;
                             switch (position) {
                                 case INDICATORS_LANDSCAPE_POS:
-                                    pageTitle = getString(R.string.dashboard_indicators);
+                                    pageTitle = getString(R.string.dashboard_analytics);
                                     binding.relationshipMapIcon.setVisibility(View.GONE);
                                     break;
                                 case RELATIONSHIPS_LANDSCAPE_POS:
@@ -341,7 +341,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 tab.setText(getString(R.string.dashboard_overview));
                 break;
             case INDICATORS_POS:
-                tab.setText(getString(R.string.dashboard_indicators));
+                tab.setText(getString(R.string.dashboard_analytics));
                 break;
             case RELATIONSHIPS_POS:
                 tab.setText(getString(R.string.dashboard_relationships));
@@ -358,7 +358,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         if (programUid != null) {
             switch (position) {
                 case INDICATORS_LANDSCAPE_POS:
-                    tab.setText(getString(R.string.dashboard_indicators));
+                    tab.setText(getString(R.string.dashboard_analytics));
                     break;
                 case RELATIONSHIPS_LANDSCAPE_POS:
                     tab.setText(getString(R.string.dashboard_relationships));

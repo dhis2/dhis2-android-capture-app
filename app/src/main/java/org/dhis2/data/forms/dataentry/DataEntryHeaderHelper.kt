@@ -48,8 +48,8 @@ class DataEntryHeaderHelper(
         if (visiblePos != NO_POSITION && dataEntryAdapter.sectionSize > 1) {
             dataEntryAdapter.getSectionForPosition(visiblePos)?.let { headerSection ->
                 if (headerSection.isOpen && !dataEntryAdapter.isSection(visiblePos + 1)) {
-                    if (currentSection.value == null || currentSection.value!!
-                            .uid() != headerSection.uid()
+                    if (currentSection.value == null ||
+                        currentSection.value!!.uid() != headerSection.uid()
                     ) {
                         currentSection.value = headerSection
                     }

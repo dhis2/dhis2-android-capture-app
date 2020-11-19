@@ -43,7 +43,6 @@ class SectionHolder(
         }*/
     }
 
-
     public override fun update(viewModel: FieldViewModel) {
         formBinding.sectionView.setViewModel(viewModel as SectionViewModel)
         /*this.viewModel = viewModel as SectionViewModel

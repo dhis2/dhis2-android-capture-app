@@ -7,6 +7,7 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.option.Option;
@@ -14,11 +15,15 @@ import org.hisp.dhis.android.core.option.Option;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Flowable;
+import io.reactivex.processors.FlowableProcessor;
+
 @AutoValue
 public abstract class OptionSetViewModel extends FieldViewModel {
 
     private List<String> optionsToHide = new ArrayList<>();
     private List<String> optionsToShow = new ArrayList<>();
+    public boolean activated = false;
 
     public abstract boolean isBackgroundTransparent();
 
@@ -56,6 +61,44 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle,
                 null,
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                null,
+                isBackgroundTransparent,
+                renderType,
+                fieldRendering,
+                new ArrayList<>()
+        );
+    }
+
+    public static OptionSetViewModel create(String id,
+                                            String label,
+                                            Boolean mandatory,
+                                            String optionSet,
+                                            String value,
+                                            String section,
+                                            Boolean editable,
+                                            String description,
+                                            ObjectStyle objectStyle,
+                                            boolean isBackgroundTransparent,
+                                            String renderType,
+                                            ValueTypeDeviceRendering fieldRendering,
+                                            FlowableProcessor<RowAction> processor) {
+
+        return new AutoValue_OptionSetViewModel(
+                id,
+                label,
+                mandatory,
+                value,
+                section,
+                false,
+                editable,
+                optionSet,
+                null,
+                null,
+                description,
+                objectStyle,
+                null,
+                DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                processor,
                 isBackgroundTransparent,
                 renderType,
                 fieldRendering,
@@ -80,6 +123,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle(),
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                processor(),
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),
@@ -105,6 +149,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle(),
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                processor(),
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),
@@ -130,6 +175,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle(),
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                processor(),
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),
@@ -155,6 +201,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle(),
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                processor(),
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),
@@ -179,6 +226,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle(),
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                processor(),
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),
@@ -204,6 +252,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 objectStyle(),
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                processor(),
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),
@@ -235,5 +284,17 @@ public abstract class OptionSetViewModel extends FieldViewModel {
     @Override
     public int getLayoutId() {
         return R.layout.form_option_set_selector;
+    }
+
+    public void onActivate() {
+        activated = true;
+    }
+
+    public void onDeactivate() {
+        activated = false;
+    }
+
+    public void onOptionSelected(String optionCode) {
+        processor().onNext(RowAction.create(uid(), optionCode));
     }
 }

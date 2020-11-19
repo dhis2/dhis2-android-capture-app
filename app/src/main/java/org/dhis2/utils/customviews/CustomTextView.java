@@ -60,6 +60,8 @@ import static android.content.Context.MODE_PRIVATE;
 import static android.text.TextUtils.isEmpty;
 import static java.lang.String.valueOf;
 import static org.dhis2.Bindings.ValueExtensionsKt.withValueTypeCheck;
+import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
+import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
 
 /**
  * QUADRAM. Created by frodriguez on 1/17/2018.
@@ -506,7 +508,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (!hasFocus) {
-//            clearBackground(viewModel.isSearchMode());
+            clearBackground(viewModel.isSearchMode());
         }
 
         if (viewModel.isSearchMode() || (!hasFocus && viewModel.editable())) {
@@ -522,13 +524,11 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
             checkAutocompleteRendering();
             viewModel.withValue(getEditText().getText().toString());
             String value = ValidationUtils.validate(viewModel.valueType(), getEditText().getText().toString());
-//            processor.onNext(RowAction.create(viewModel.uid(), value, getAdapterPosition()));
-
+            viewModel.onTextFilled(value);
         } else {
-//            processor.onNext(RowAction.create(viewModel.uid(), null, getAdapterPosition()));
+            viewModel.onTextFilled(null);
         }
-
-//        clearBackground(isSearchMode);
+        clearBackground(viewModel.isSearchMode());
     }
 
     private void checkAutocompleteRendering() {
@@ -563,9 +563,8 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (viewModel.valueType() != ValueType.LONG_TEXT) {
-//            selectedFieldUid = null;
             getEditText().clearFocus();
-//            closeKeyboard(getEditText());
+            closeKeyboard(getEditText());
             return true;
         } else {
             return false;
@@ -574,13 +573,20 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     @Override
     public void onActivation() {
-//        setSelectedBackground(isSearchMode);
+        viewModel.onActivate();
         getEditText().setFocusable(true);
         getEditText().setFocusableInTouchMode(true);
         getEditText().requestFocus();
-        /*openKeyboard(this.binding.customEdittext.getEditText());
-        if (isSearchMode) {
+        openKeyboard(getEditText());
+        if (viewModel.isSearchMode()) {
             sendAction();
-        }*/
+        }
+    }
+
+    private void clearBackground(boolean isSearchMode) {
+        if (!isSearchMode) {
+            binding.getRoot().setBackgroundResource(R.color.form_field_background);
+            viewModel.onDeactivate();
+        }
     }
 }

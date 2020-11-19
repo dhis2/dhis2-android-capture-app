@@ -4,10 +4,13 @@ import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.processors.FlowableProcessor
+import java.util.ArrayList
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
+import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
@@ -29,7 +32,6 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import timber.log.Timber
-import java.util.ArrayList
 
 class EnrollmentRepository(
     private val fieldFactory: FieldViewModelFactory,
@@ -44,7 +46,8 @@ class EnrollmentRepository(
     private val enrollmentCoordinatesLabel: String,
     private val reservedValuesWarning: String,
     private val enrollmentDateDefaultLabel: String,
-    private val incidentDateDefaultLabel: String
+    private val incidentDateDefaultLabel: String,
+    private val onRowActionProccesor: FlowableProcessor<RowAction>
 ) : DataEntryRepository {
 
     private val enrollmentRepository: EnrollmentObjectRepository =
@@ -242,7 +245,8 @@ class EnrollmentRepository(
             programTrackedEntityAttribute.renderType()?.mobile(),
             optionCount,
             attribute.style(),
-            attribute.fieldMask()
+            attribute.fieldMask(),
+            onRowActionProccesor
         )
 
         return if (!error.isNullOrEmpty()) {
