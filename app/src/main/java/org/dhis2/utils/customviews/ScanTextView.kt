@@ -84,10 +84,9 @@ class ScanTextView @JvmOverloads constructor(
     }
 
     private fun checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.CAMERA
-        ) == PERMISSION_GRANTED
+        if (
+            ContextCompat
+                .checkSelfPermission(context, Manifest.permission.CAMERA) == PERMISSION_GRANTED
         ) {
             subscribe()
             val intent = Intent(context, ScanActivity::class.java)
