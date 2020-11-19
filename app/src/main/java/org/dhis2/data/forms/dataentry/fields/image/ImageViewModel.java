@@ -3,11 +3,9 @@ package org.dhis2.data.forms.dataentry.fields.image;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.databinding.ObservableField;
 
 import com.google.auto.value.AutoValue;
 
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -18,6 +16,8 @@ import io.reactivex.processors.FlowableProcessor;
 
 @AutoValue
 public abstract class ImageViewModel extends FieldViewModel {
+
+    public static boolean activated = false;
 
     public static final String NAME_CODE_DELIMITATOR = "_op_";
 
@@ -97,7 +97,18 @@ public abstract class ImageViewModel extends FieldViewModel {
         return R.layout.form_image;
     }
 
+
+    public void onActivated() {
+        activated = true;
+    }
+
+    public void onDeactivated() {
+        activated = false;
+    }
+
     public void onItemClick(View view) {
+        if (processor() == null) return;
+
         if (editable()) {
             String label = optionDisplayName();
             String code = optionCode();
@@ -108,12 +119,13 @@ public abstract class ImageViewModel extends FieldViewModel {
             } else {
                 currentSelector.set(label)
                 code
-            }
-            processor.onNext(RowAction.create(model!!.fieldUid(), value, adapterPosition))*/
+            }=*/
+
+            processor().onNext(RowAction.create(fieldUid(), value(), getAdapterPosition()));
         }
     }
 
-    public Boolean isCurrentSelector() {
+    /*public Boolean isCurrentSelector() {
         //imageSelector is in the DataEntryAdapter
         /*ObservableField<String> currentSelector = imageSelector;
 
@@ -131,9 +143,9 @@ public abstract class ImageViewModel extends FieldViewModel {
             return true;
         } else {
             return false;
-        }*/
+        }
         return true;
-    }
+    }*/
 
     /*
      var height: Int? = null
