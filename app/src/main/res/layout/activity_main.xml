@@ -79,7 +79,7 @@
                         android:textColor="@android:color/white"
                         android:textSize="20sp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/filter"
+                        app:layout_constraintEnd_toStartOf="@id/filterActionButton"
                         app:layout_constraintStart_toEndOf="@id/menu"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -100,8 +100,8 @@
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="24dp"
                         android:padding="2dp"
-                        app:layout_constraintTop_toTopOf="@id/filter"
-                        app:layout_constraintStart_toStartOf="@id/filter">
+                        app:layout_constraintTop_toTopOf="@id/filterActionButton"
+                        app:layout_constraintStart_toStartOf="@id/filterActionButton">
 
                         <TextView
                             android:layout_width="match_parent"
