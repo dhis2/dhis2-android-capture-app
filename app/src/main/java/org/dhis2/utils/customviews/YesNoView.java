@@ -51,6 +51,7 @@ public class YesNoView extends FieldLayout {
     private CompoundButton.OnCheckedChangeListener checkBoxClickListener;
     private CompoundButton.OnCheckedChangeListener toggleListener;
     private OnValueChanged valueListener;
+    private RadioButtonViewModel viewModel;
 
     public YesNoView(Context context) {
         super(context);
@@ -349,13 +350,9 @@ public class YesNoView extends FieldLayout {
     }
 
     public void setViewModel(RadioButtonViewModel viewModel) {
+        this.viewModel = viewModel;
         setIsBgTransparent(viewModel.isBackgroundTransparent());
-        setActivationListener(new OnActivation() {
-            @Override
-            public void onActivation() {
-//                setSelectedBackground(isSearchMode));
-            }
-        });
+        setActivationListener(() -> viewModel.onActivate());
 
         setLabel(viewModel.getFormattedLabel());
         setDescription(viewModel.description());
@@ -366,34 +363,30 @@ public class YesNoView extends FieldLayout {
         setValueListener(new OnValueChanged() {
             @Override
             public void onValueChanged(boolean isActive) {
-                /*
-                RowAction rowAction;
-                setSelectedBackground(isSearchMode);
                 if (isActive) {
-                    viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(String.valueOf(true));
-                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(true), getAdapterPosition());
+                    viewModel.withValue(String.valueOf(true));
                 } else {
-                    viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(String.valueOf(false));
-                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(false), getAdapterPosition());
+                    viewModel.withValue(String.valueOf(false));
                 }
-                binding.customYesNo.nextFocus(binding.customYesNo);
-                processor.onNext(rowAction);
-                clearBackground(isSearchMode);
-                 */
+                nextFocus(binding.getRoot());
+                viewModel.onValueChanged();
+                clearBackground(viewModel.isSearchMode());
             }
 
             @Override
             public void onClearValue() {
-                /*
-                setSelectedBackground(isSearchMode);
-                viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(null);
-                RowAction rowAction = RowAction.create(checkBoxViewModel.uid(), null, getAdapterPosition());
-                binding.customYesNo.nextFocus(binding.customYesNo);
-                processor.onNext(rowAction);
-                clearBackground(isSearchMode);
-                 */
+                viewModel.withValue(null);
+                nextFocus(binding.getRoot());
+                viewModel.onValueChanged();
+                clearBackground(viewModel.isSearchMode());
             }
         });
+    }
 
+    private void clearBackground(boolean isSearchMode) {
+        if (!isSearchMode) {
+            binding.getRoot().setBackgroundResource(R.color.form_field_background);
+            viewModel.onDeactivate();
+        }
     }
 }
