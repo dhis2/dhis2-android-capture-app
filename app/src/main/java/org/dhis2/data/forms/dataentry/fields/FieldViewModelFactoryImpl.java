@@ -99,7 +99,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case BOOLEAN:
             case TRUE_ONLY:
                 return RadioButtonViewModel.fromRawValue(id, label, type, mandatory, value, section, editable, description, objectStyle,
-                        fieldRendering != null ? fieldRendering.type() : ValueTypeRenderingType.DEFAULT, true, processor);
+                        fieldRendering != null ? fieldRendering.type() : ValueTypeRenderingType.DEFAULT, true, processor, false);
             case ORGANISATION_UNIT:
                 return OrgUnitViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, true, ProgramStageSectionRenderingType.LISTING.toString(), processor);
             case FILE_RESOURCE:
