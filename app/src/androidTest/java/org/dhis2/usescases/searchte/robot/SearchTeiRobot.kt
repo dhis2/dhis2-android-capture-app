@@ -1,4 +1,4 @@
-package org.dhis2.usescases.searchte
+package org.dhis2.usescases.searchte.robot
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
@@ -16,6 +16,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
+import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.allElementsHave
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.openSpinnerPopup
@@ -56,13 +57,7 @@ class SearchTeiRobot : BaseRobot() {
             .perform(
                 actionOnItemAtPosition<SearchTEViewHolder>(position, typeChildViewWithId(searchWord, R.id.input_editText))
             )
-    }
-
-    fun typeAttribute(searchWord: String, field: String) {
-        onView(withId(R.id.form_recycler))
-            .perform(
-                actionOnItem<SearchTEViewHolder>(hasDescendant(withText(field)), typeChildViewWithId(searchWord, R.id.input_editText))
-            )
+        closeKeyboard()
     }
 
     fun clickOnDateField() {
@@ -86,9 +81,10 @@ class SearchTeiRobot : BaseRobot() {
 
     fun checkListOfSearchTEI(firstSearchWord: String, secondSearchWord: String) {
         onView(withId(R.id.scrollView))
-            .check(matches(hasItem(allOf(
+            .check(matches(allElementsHave(allOf(
                 hasDescendant(withText(firstSearchWord)),
-                hasDescendant(withText(secondSearchWord))))))
+                hasDescendant(withText(secondSearchWord))
+            ))))
     }
 
     fun checkFilterCount(filterCount: String) {
@@ -98,7 +94,7 @@ class SearchTeiRobot : BaseRobot() {
 
     fun checkNoSearchResult(searchWord: String, message: String) {
         onView(withId(R.id.scrollView))
-            .check(matches(not(hasItem(hasDescendant(withText(searchWord))))))
+            .check(matches(not(allElementsHave(hasDescendant(withText(searchWord))))))
 
         onView(withId(R.id.message))
             .check(matches(withText(message)))

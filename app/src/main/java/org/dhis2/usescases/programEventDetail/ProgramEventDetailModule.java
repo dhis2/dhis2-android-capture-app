@@ -9,14 +9,17 @@ import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
+import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
 import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature;
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeatureCollection;
+import org.dhis2.uicomponents.map.geometry.mapper.feature.MapCoordinateFieldToFeature;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapAttributeToFeature;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeature;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
-import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -59,23 +62,28 @@ public class ProgramEventDetailModule {
     @PerActivity
     MapEventToFeatureCollection provideMapEventToFeatureCollection(MapGeometryToFeature mapGeometryToFeature) {
         return new MapEventToFeatureCollection(mapGeometryToFeature,
-                new BoundsGeometry(0.0, 0.0, 0.0, 0.0));
+                new GetBoundingBox());
     }
 
     @Provides
     @PerActivity
-    MapDataElementToFeatureCollection provideMapDataElementToFeatureCollection(MapGeometryToFeature mapGeometryToFeature) {
-        return new MapDataElementToFeatureCollection(mapGeometryToFeature,
-                new BoundsGeometry(0.0, 0.0, 0.0, 0.0));
+    MapCoordinateFieldToFeatureCollection provideMapDataElementToFeatureCollection(MapAttributeToFeature attributeToFeatureMapper, MapDataElementToFeature dataElementToFeatureMapper) {
+        return new MapCoordinateFieldToFeatureCollection(dataElementToFeatureMapper, attributeToFeatureMapper);
+    }
+
+    @Provides
+    @PerActivity
+    MapCoordinateFieldToFeature provideMapCoordinateFieldToFeature(MapGeometryToFeature mapGeometryToFeature){
+        return new MapCoordinateFieldToFeature(mapGeometryToFeature);
     }
 
     @Provides
     @PerActivity
     ProgramEventDetailRepository eventDetailRepository(D2 d2, ProgramEventMapper mapper,
                                                        MapEventToFeatureCollection mapEventToFeatureCollection,
-                                                       MapDataElementToFeatureCollection mapDataElementToFeatureCollection,
+                                                       MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
                                                        DhisMapUtils dhisMapUtils) {
-        return new ProgramEventDetailRepositoryImpl(programUid, d2, mapper, mapEventToFeatureCollection, mapDataElementToFeatureCollection,dhisMapUtils);
+        return new ProgramEventDetailRepositoryImpl(programUid, d2, mapper, mapEventToFeatureCollection, mapCoordinateFieldToFeatureCollection,dhisMapUtils);
     }
 
     @Provides

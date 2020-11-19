@@ -67,6 +67,8 @@ public class CellRecyclerViewItemClickListener extends AbstractItemClickListener
                 getTableViewListener().onCellClicked(holder, column, row);
             }
 
+            holder.handleClickIfNeeded();
+
             return true;
         }
         return false;

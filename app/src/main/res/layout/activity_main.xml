@@ -84,7 +84,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageView
-                        android:id="@+id/filter"
+                        android:id="@+id/filterActionButton"
                         style="@style/ActionIcon"
                         android:onClick="@{()->presenter.showFilter()}"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -130,7 +130,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/filterLayout"
+                    android:id="@+id/filterRecycler"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"

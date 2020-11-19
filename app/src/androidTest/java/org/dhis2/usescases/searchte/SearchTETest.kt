@@ -1,6 +1,5 @@
 package org.dhis2.usescases.searchte
 
-import android.content.Intent
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResourceTimeoutException
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -12,12 +11,14 @@ import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
+import org.dhis2.usescases.searchte.robot.filterRobot
+import org.dhis2.usescases.searchte.robot.searchTeiRobot
+import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.After
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
 
 @RunWith(AndroidJUnit4::class)
 class SearchTETest : BaseTest() {
@@ -34,8 +35,8 @@ class SearchTETest : BaseTest() {
         val firstNamePosition = 0
         val filterCount = "1"
 
-        prepareChildProgrammeIntentAndLaunchActivity()
-        
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
+
         searchTeiRobot {
             typeAttributeAtPosition(firstName, firstNamePosition)
             clickOnFab()
@@ -52,7 +53,7 @@ class SearchTETest : BaseTest() {
         val filterCount = "1"
         val noResultMessage = context.getString(R.string.search_criteria_not_met).replace("%s","Person")
 
-        prepareTestProgramRulesProgrammeIntentAndLaunchActivity()
+        prepareTestProgramRulesProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
             typeAttributeAtPosition(firstName, firstNamePosition)
@@ -71,7 +72,7 @@ class SearchTETest : BaseTest() {
         val lastNamePosition = 1
         val filterCount = "2"
 
-        prepareChildProgrammeIntentAndLaunchActivity()
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
             typeAttributeAtPosition(firstName, firstNamePosition)
@@ -87,7 +88,7 @@ class SearchTETest : BaseTest() {
     fun shouldSuccessfullyChangeBetweenPrograms() {
         val tbProgram = "TB program"
 
-        prepareChildProgrammeIntentAndLaunchActivity()
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
             clickOnProgramSpinner()
@@ -104,7 +105,7 @@ class SearchTETest : BaseTest() {
         val lastNamePosition = 1
         val filterCount = "3"
 
-        prepareTestAdultWomanProgrammeIntentAndLaunchActivity()
+        prepareTestAdultWomanProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
             typeAttributeAtPosition(displayInListData.name, namePosition)
@@ -119,17 +120,174 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Test
+    fun shouldSuccessfullyFilterByEnrollmentStatusActive() {
+        val enrollmentStatusFilter = context.getString(R.string.filters_title_enrollment_status)
+        val totalFilterCount = "2"
+        val filterCount = "1"
 
-    @Ignore("WIP")
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
+
+        filterRobot {
+            clickOnFilter()
+            clickOnFilterBy(enrollmentStatusFilter)
+            clickOnFilterActiveOption()
+            clickOnSortByField(enrollmentStatusFilter)
+            checkFilterCounter(totalFilterCount)
+            checkCountAtFilter(enrollmentStatusFilter, filterCount)
+            closeSearchForm()
+            checkTEIsAreOpen()
+        }
+    }
+
+    @Test
+    fun shouldSuccessfullyFilterByEventStatusOverdue() {
+        val eventStatusFilter = context.getString(R.string.filters_title_event_status)
+        val totalCount = "1"
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
+
+        filterRobot {
+            clickOnFilter()
+            clickOnFilterBy(eventStatusFilter)
+            clickOnFilterOverdueOption()
+            closeFilterRowAtField(eventStatusFilter)
+            checkFilterCounter(totalCount)
+            checkCountAtFilter(eventStatusFilter, totalCount)
+            closeSearchForm()
+            checkEventsAreOverdue()
+        }
+    }
+
+    @Test
+    fun shouldSuccessfullyFilterByOrgUnitAndUseSort() {
+        val orgUnitFilter = "ORG. UNIT"
+        val orgUnitNgelehun = "Ngelehun CHC"
+        val totalCount = "2"
+        val filterCount = "1"
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
+
+        filterRobot {
+            clickOnFilter()
+            clickOnFilterBy(orgUnitFilter)
+            clickOnSortByField(orgUnitFilter)
+            typeOrgUnitField(orgUnitNgelehun)
+            checkFilterCounter(totalCount)
+            checkCountAtFilter(orgUnitFilter, filterCount)
+            closeSearchForm()
+            checkTEIWithOrgUnit(orgUnitNgelehun)
+        }
+    }
+
+    @Test
+    fun shouldSuccessfullyFilterByEnrollmentDateAndSort() {
+        val enrollmentDate = "DATE OF ENROLLMENT"
+        val enrollmentDateFrom = createFromEnrollmentDate()
+        val enrollmentDateTo = createToEnrollmentDate()
+        val startDate = "2021-05-01"
+        val endDate = "2021-05-31"
+        val totalFilterCount = "2"
+        val filterCount = "1"
+
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
+
+        filterRobot {
+            clickOnFilter()
+            clickOnFilterBy(enrollmentDate)
+            clickOnFromToDate()
+            chooseDate(enrollmentDateFrom.year, enrollmentDateFrom.month, enrollmentDateFrom.day)
+            chooseDate(enrollmentDateTo.year, enrollmentDateTo.month, enrollmentDateTo.day)
+            clickOnSortByField(enrollmentDate)
+            checkFilterCounter(totalFilterCount)
+            checkCountAtFilter(enrollmentDate, filterCount)
+            closeSearchForm()
+            checkDateIsInRange(startDate, endDate)
+        }
+    }
+
+    @Test
+    fun shouldSuccessfullyFilterByEventDateAndSort() {
+        val eventDate = context.getString(R.string.filters_title_event_date)
+        val eventDateFrom = createFromEventDate()
+        val eventDateTo = createToEventDate()
+        val startDate = "2020-05-01"
+        val endDate = "2020-05-31"
+        val totalCount = "2"
+        val filterCount = "1"
+
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
+
+        filterRobot {
+            clickOnFilter()
+            clickOnFilterBy(eventDate)
+            clickOnFromToDate()
+            chooseDate(eventDateFrom.year, eventDateFrom.month, eventDateFrom.day)
+            chooseDate(eventDateTo.year, eventDateTo.month, eventDateTo.day)
+            clickOnSortByField(eventDate)
+            checkFilterCounter(totalCount)
+            checkCountAtFilter(eventDate, filterCount)
+            closeSearchForm()
+            checkDateIsInRange(startDate, endDate)
+        }
+    }
+
     @Test
     fun shouldSuccessfullyFilterBySync() {
-        prepareChildProgrammeIntentAndLaunchActivity()
+        val teiName = "Frank"
+        val teiLastName = "Fjordsen"
+        val syncFilter = context.getString(R.string.action_sync)
+        val totalCount = "1"
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
-            /*clickOnSearchFilter()
-            clickOnFilterByName("SYNC")*/
-            //clickOnFilterByName("Synced")
             closeSearchForm()
+            clickOnTEI(teiName, teiLastName)
+        }
+
+        teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnMenuReOpen()
+            checkUnlockIconIsDisplay()
+            pressBack()
+        }
+
+        filterRobot {
+            clickOnFilter()
+            clickOnFilterBy(syncFilter)
+            clickOnNotSync()
+            checkFilterCounter(totalCount)
+            checkCountAtFilter(syncFilter, totalCount)
+            closeSearchForm()
+            checkTEINotSync()
+        }
+    }
+
+    @Test
+    fun shouldSuccessfullySearchAndFilter() {
+        val name = "Anna"
+        val namePosition = 0
+        val enrollmentStatus = context.getString(R.string.filters_title_enrollment_status)
+        val totalCount = "2"
+        val totalFilterCount = "1"
+
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
+
+        searchTeiRobot {
+            typeAttributeAtPosition(name, namePosition)
+        }
+
+        filterRobot {
+            clickOnFilter()
+            clickOnFilterBy(enrollmentStatus)
+            clickOnFilterActiveOption()
+            clickOnSortByField(enrollmentStatus)
+            checkFilterCounter(totalCount)
+            checkCountAtFilter(enrollmentStatus, totalFilterCount)
+            closeSearchForm()
+            checkTEIsAreOpen()
+        }
+
+        searchTeiRobot {
+            checkListOfSearchTEI(name, "")
         }
     }
 
@@ -138,7 +296,7 @@ class SearchTETest : BaseTest() {
     fun shouldSuccessfullyShowMapAndTeiCard() {
         val firstName = "Gertrude"
 
-        prepareChildProgrammeIntentAndLaunchActivity()
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
             clickOnOptionMenu()
@@ -178,37 +336,35 @@ class SearchTETest : BaseTest() {
         "167"
     )
 
-    private fun prepareChildProgrammeIntentAndLaunchActivity() {
-        Intent().apply {
-            putExtra(PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
-            putExtra(CHILD_TE_TYPE, CHILD_TE_TYPE_VALUE)
-        }.also { rule.launchActivity(it) }
-    }
+    private fun createFromEnrollmentDate() = DateRegistrationUIModel(
+        2021,
+        5,
+        1
+    )
 
-    private fun prepareTestProgramRulesProgrammeIntentAndLaunchActivity() {
-        Intent().apply {
-            putExtra(PROGRAM_UID, XX_TEST_PROGRAM_RULES_UID_VALUE)
-            putExtra(CHILD_TE_TYPE, PROGRAM_RULES_TE_TYPE_VALUE)
-        }.also { rule.launchActivity(it) }
-    }
+    private fun createToEnrollmentDate() = DateRegistrationUIModel(
+        2021,
+        5,
+        31
+    )
 
-    private fun prepareTestAdultWomanProgrammeIntentAndLaunchActivity() {
-        Intent().apply {
-            putExtra(PROGRAM_UID, ADULT_WOMAN_PROGRAM_UID_VALUE)
-            putExtra(CHILD_TE_TYPE, ADULT_WOMAN_TE_TYPE_VALUE)
-        }.also { rule.launchActivity(it) }
-    }
+    private fun createFromEventDate() = DateRegistrationUIModel(
+        2020,
+        5,
+        1
+    )
+
+    private fun createToEventDate() = DateRegistrationUIModel(
+        2020,
+        5,
+        31
+    )
 
     companion object {
         const val PROGRAM_UID = "PROGRAM_UID"
         const val CHILD_PROGRAM_UID_VALUE = "IpHINAT79UW"
-        const val XX_TEST_PROGRAM_RULES_UID_VALUE = "jIT6KcSZiAN"
-        const val ADULT_WOMAN_PROGRAM_UID_VALUE = "uy2gU8kT1jF"
-
 
         const val CHILD_TE_TYPE_VALUE = "nEenWmSyUEp"
-        const val PROGRAM_RULES_TE_TYPE_VALUE = "nEenWmSyUEp"
-        const val ADULT_WOMAN_TE_TYPE_VALUE = "nEenWmSyUEp"
         const val CHILD_TE_TYPE = "TRACKED_ENTITY_UID"
     }
 }
