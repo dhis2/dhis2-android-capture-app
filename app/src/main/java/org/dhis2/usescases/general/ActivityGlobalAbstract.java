@@ -98,6 +98,10 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
                 ACCESS_LOCATION_PERMISSION_REQUEST);
     }
 
+    public void requestEnableLocation(){
+        displayMessage(getString(R.string.enable_location_message));
+    }
+
     public enum Status {
         ON_PAUSE,
         ON_RESUME

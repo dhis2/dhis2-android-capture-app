@@ -766,4 +766,5 @@
     <string name="jira_issue_sent">Issue Sent</string>
     <string name="jira_issue_sent_error">Error sending issue</string>
     <string name="section_charts">Charts</string>
+    <string name="enable_location_message">Your device location is disconnected. Please enable it to capture coordinates</string>
 </resources>
