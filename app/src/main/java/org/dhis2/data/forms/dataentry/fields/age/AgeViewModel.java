@@ -19,8 +19,6 @@ import io.reactivex.processors.FlowableProcessor;
 @AutoValue
 public abstract class AgeViewModel extends FieldViewModel {
 
-    public boolean activated = false;
-
     @NonNull
     public abstract Boolean mandatory();
 
@@ -74,14 +72,6 @@ public abstract class AgeViewModel extends FieldViewModel {
     public void onAgeSet(Date ageDate) {
         if (processor() == null) return;
         processor().onNext(RowAction.create(uid(), ageDate == null ? null : DateUtils.oldUiDateFormat().format(ageDate), getAdapterPosition()));
-    }
-
-    public void onActivate() {
-        activated = true;
-    }
-
-    public void onDeactivate() {
-        activated = false;
     }
 
     public abstract boolean isSearchMode();

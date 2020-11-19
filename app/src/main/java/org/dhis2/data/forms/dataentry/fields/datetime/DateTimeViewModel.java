@@ -23,8 +23,6 @@ import io.reactivex.processors.FlowableProcessor;
 @AutoValue
 public abstract class DateTimeViewModel extends FieldViewModel {
 
-    public boolean activated = false;
-
     public abstract boolean isBackgroundTransparent();
 
     @NonNull
@@ -114,14 +112,6 @@ public abstract class DateTimeViewModel extends FieldViewModel {
         }
         RowAction rowAction = RowAction.create(uid(), date != null ? dateFormatted : null, getAdapterPosition());
         processor().onNext(rowAction);
-    }
-
-    public void onActivate() {
-        activated = true;
-    }
-
-    public void onDeactivate() {
-        activated = false;
     }
 
     public abstract boolean isSearchMode();

@@ -334,10 +334,6 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         year.setText(null);
     }
 
-    public OnClickListener getClickListener() {
-        return this;
-    }
-
     public interface OnAgeSet {
         void onAgeSet(Date ageDate);
     }
@@ -349,6 +345,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
             if (viewModel.value() == null || !Objects.equals(viewModel.value(), ageDate == null ? null : DateUtils.databaseDateFormat().format(ageDate))) {
                 viewModel.onAgeSet(ageDate);
                 clearBackground(viewModel.isSearchMode());
+                viewModel.onDeactivate();
             }
         });
         setActivationListener(viewModel::onActivate);
@@ -374,7 +371,6 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     private void clearBackground(boolean isSearchMode) {
         if (!isSearchMode) {
             binding.getRoot().setBackgroundResource(R.color.form_field_background);
-            viewModel.onDeactivate();
         }
     }
 }

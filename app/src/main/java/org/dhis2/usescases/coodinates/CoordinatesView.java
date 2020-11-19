@@ -528,6 +528,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             closeKeyboard(binding.getRoot());
             viewModel.onCurrentLocationClick(geometry);
             clearBackground(viewModel.isSearchMode());
+            viewModel.onDeactivate();
         });
         setActivationListener(viewModel::onActivate);
 
@@ -544,7 +545,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private void clearBackground(boolean isSearchMode) {
         if (!isSearchMode) {
             binding.getRoot().setBackgroundResource(R.color.form_field_background);
-            viewModel.onDeactivate();
         }
     }
 

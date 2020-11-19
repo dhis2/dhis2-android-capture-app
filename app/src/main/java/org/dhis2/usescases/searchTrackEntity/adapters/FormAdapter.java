@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.Components;
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolderFactory;
@@ -62,7 +61,7 @@ import static org.dhis2.R.layout.form_yes_no;
  * QUADRAM. Created by ppajuelo on 06/11/2017.
  */
 
-public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
+public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> implements FormViewHolder.FieldItemCallback {
 
     private List<TrackedEntityAttribute> attributeList;
     private Program program;
@@ -114,7 +113,7 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
                 viewModel = FileViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, attr.displayDescription(), ObjectStyle.builder().build(), processor);
                 break;
             case form_yes_no:
-                viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), label, attr.valueType(), false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build(), ValueTypeRenderingType.DEFAULT, false, processor);
+                viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), label, attr.valueType(), false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build(), ValueTypeRenderingType.DEFAULT, false, processor, true);
                 break;
             case form_option_set:
                 viewModel = SpinnerViewModel.create(attr.uid(), label, "", false, attr.optionSet().uid(), queryData.get(attr.uid()), null, true, attr.displayDescription(), 20, ObjectStyle.builder().build(), false, ValueTypeRenderingType.DEFAULT.toString(), processor);
@@ -150,7 +149,7 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
                 viewModel = EditTextViewModel.create(attr.uid(), "UNSUPPORTED", false, null, "UNSUPPORTED", 1, attr.valueType(), null, false, attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask(), null, false, false, true, processor);
                 break;
         }
-        holder.bind(viewModel);
+        holder.bind(viewModel, position, this);
 
     }
 
@@ -236,5 +235,13 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
     @NonNull
     public FlowableProcessor<RowAction> asFlowableRA() {
         return processor;
+    }
+
+    @Override
+    public void onNext(int position) {
+        if (position < getItemCount()) {
+            //TODO needs to get the view model instead of the attribute list
+            //getItem(position+1).onActive();
+        }
     }
 }

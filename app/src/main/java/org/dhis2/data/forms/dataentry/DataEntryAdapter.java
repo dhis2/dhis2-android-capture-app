@@ -30,7 +30,7 @@ import java.util.Objects;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
-public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHolder> {
+public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHolder> implements FormViewHolder.FieldItemCallback {
 
     private final SectionHandler sectionHandler = new SectionHandler();
     private final ObservableField<String> selectedSection;
@@ -84,7 +84,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
 
     @Override
     public void onBindViewHolder(@NonNull FormViewHolder holder, int position) {
-        holder.bind(getItem(position));
+        holder.bind(getItem(position), position, this);
 
         if (holder instanceof SectionHolder) {
             updateSectionData((SectionHolder) holder, position, false);
@@ -255,6 +255,13 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
             return getItemViewType(position) == DataEntryViewHolderTypes.SECTION.ordinal();
         } else {
             return false;
+        }
+    }
+
+    @Override
+    public void onNext(int position) {
+        if (position < getItemCount()) {
+            getItem(position + 1).onActivate();
         }
     }
 }
