@@ -352,13 +352,7 @@ public class YesNoView extends FieldLayout {
     public void setViewModel(RadioButtonViewModel viewModel) {
         this.viewModel = viewModel;
         setIsBgTransparent(viewModel.isBackgroundTransparent());
-        setActivationListener(new OnActivation() {
-            @Override
-            public void onActivation() {
-//                setSelectedBackground(isSearchMode));
-                viewModel.onActivate();
-            }
-        });
+        setActivationListener(() -> viewModel.onActivate());
 
         setLabel(viewModel.getFormattedLabel());
         setDescription(viewModel.description());
@@ -369,28 +363,21 @@ public class YesNoView extends FieldLayout {
         setValueListener(new OnValueChanged() {
             @Override
             public void onValueChanged(boolean isActive) {
-                /*
-                RowAction rowAction;
-                setSelectedBackground(isSearchMode);*/
                 if (isActive) {
                     viewModel.withValue(String.valueOf(true));
-                    // rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(true), getAdapterPosition());
                 } else {
                     viewModel.withValue(String.valueOf(false));
-                    // rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(false), getAdapterPosition());
                 }
                 nextFocus(binding.getRoot());
-                // processor.onNext(rowAction);
+                viewModel.onValueChanged();
                 clearBackground(viewModel.isSearchMode());
             }
 
             @Override
             public void onClearValue() {
-                // setselectedbackground(issearchmode);
                 viewModel.withValue(null);
-                // rowaction rowaction = rowaction.create(checkboxviewmodel.uid(), null, getadapterposition());
                 nextFocus(binding.getRoot());
-                // processor.onnext(rowaction);
+                viewModel.onValueChanged();
                 clearBackground(viewModel.isSearchMode());
             }
         });

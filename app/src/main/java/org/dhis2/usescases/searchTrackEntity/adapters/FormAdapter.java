@@ -147,7 +147,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                 break;
             case CHECKBOX:
             case YES_NO:
-                viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), label, attr.valueType(), false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build(), ValueTypeRenderingType.DEFAULT, false, processor);
+                viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), label, attr.valueType(), false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build(), ValueTypeRenderingType.DEFAULT, false, processor, true);
                 break;
             case SPINNER:
                 viewModel = SpinnerViewModel.create(attr.uid(), label, "", false, attr.optionSet().uid(), queryData.get(attr.uid()), null, true, attr.displayDescription(), 20, ObjectStyle.builder().build(), false, ValueTypeRenderingType.DEFAULT.toString(), processor);
