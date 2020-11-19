@@ -119,6 +119,12 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
         return R.layout.form_yes_no;
     }
 
+    public void onValueChanged() {
+        if (processor() == null) return;
+
+        processor().onNext(RowAction.create(uid(), value(), getAdapterPosition()));
+    }
+
     public abstract boolean isBackgroundTransparent();
 
     public void onActivate() {
