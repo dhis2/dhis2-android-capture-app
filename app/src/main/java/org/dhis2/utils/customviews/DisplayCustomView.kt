@@ -39,7 +39,5 @@ class DisplayCustomView @JvmOverloads constructor(
     fun setViewModel(viewModel: DisplayViewModel) {
         this.viewModel = viewModel
         setLabel(viewModel.formattedLabel)
-
-        // setFormFieldBackground()
     }
 }
