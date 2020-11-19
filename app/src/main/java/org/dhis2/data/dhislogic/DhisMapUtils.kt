@@ -9,6 +9,8 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
 class DhisMapUtils @Inject constructor(val d2: D2) {
 
@@ -42,7 +44,33 @@ class DhisMapUtils @Inject constructor(val d2: D2) {
                 )
             }
     }
+
+    fun getCoordinateAttributeInfo(teiUidList: List<String>): List<CoordinateAttributeInfo> {
+        return d2.trackedEntityModule().trackedEntityAttributeValues()
+            .byTrackedEntityInstance().`in`(teiUidList)
+            .blockingGet().filter { trackedEntityAttributeValue ->
+                d2.trackedEntityModule().trackedEntityAttributes()
+                    .uid(trackedEntityAttributeValue.trackedEntityAttribute()).blockingGet()
+                    .valueType() == ValueType.COORDINATE
+            }.map {
+                val tei = d2.trackedEntityModule().trackedEntityInstances()
+                    .uid(it.trackedEntityInstance()).blockingGet()
+                val attribute = d2.trackedEntityModule().trackedEntityAttributes()
+                    .uid(it.trackedEntityAttribute()).blockingGet()
+                val geometry = Geometry.builder()
+                    .coordinates(it.value())
+                    .type(FeatureType.POINT)
+                    .build()
+                CoordinateAttributeInfo(
+                    tei,
+                    attribute,
+                    geometry
+                )
+            }
+    }
 }
+
+sealed class CoordinateFieldInfo
 
 data class CoordinateDataElementInfo(
     val event: Event,
@@ -50,4 +78,10 @@ data class CoordinateDataElementInfo(
     val dataElement: DataElement,
     val enrollment: Enrollment?,
     val geometry: Geometry
-)
+) : CoordinateFieldInfo()
+
+data class CoordinateAttributeInfo(
+    val tei: TrackedEntityInstance,
+    val attribute: TrackedEntityAttribute,
+    val geometry: Geometry
+) : CoordinateFieldInfo()

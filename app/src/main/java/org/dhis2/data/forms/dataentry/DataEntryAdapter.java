@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ViewDataBinding;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.ListAdapter;
 
@@ -38,9 +37,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
     private final SectionHandler sectionHandler = new SectionHandler();
 
     @NonNull
-    private final FlowableProcessor<RowAction> processor;
-
-    @NonNull
     private final ObservableField<String> imageSelector;
 
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
@@ -62,12 +58,9 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
 
     private final FormViewHolderFactory formViewHolderFactory;
 
-    public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
-                            @NonNull FragmentManager fragmentManager,
-                            @NonNull DataEntryArguments dataEntryArguments) {
+    public DataEntryAdapter(@NonNull DataEntryArguments dataEntryArguments) {
         super(new DataEntryDiff());
         setHasStableIds(true);
-        processor = PublishProcessor.create();
         sectionProcessor = PublishProcessor.create();
         imageSelector = new ObservableField<>("");
         selectedSection = new ObservableField<>("");
@@ -79,19 +72,14 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
                 totalFields,
                 imageSelector,
                 rendering,
-                fragmentManager,
                 sectionProcessor, selectedSection);
     }
 
-    public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
-                            @NonNull FragmentManager fragmentManager,
-                            @NonNull DataEntryArguments dataEntryArguments,
-                            @NonNull FlowableProcessor<RowAction> processor,
+    public DataEntryAdapter(@NonNull DataEntryArguments dataEntryArguments,
                             @NonNull FlowableProcessor<String> sectionProcessor,
                             @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet) {
         super(new DataEntryDiff());
         setHasStableIds(true);
-        this.processor = processor;
         this.sectionProcessor = sectionProcessor;
         imageSelector = new ObservableField<>("");
         selectedSection = new ObservableField<>("");
@@ -103,7 +91,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
                 totalFields,
                 imageSelector,
                 rendering,
-                fragmentManager,
                 sectionProcessor,
                 selectedSection);
     }
@@ -154,11 +141,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
     @Override
     public long getItemId(int position) {
         return getItem(position).getUid().hashCode();
-    }
-
-    @NonNull
-    public FlowableProcessor<RowAction> asFlowable() {
-        return processor;
     }
 
     @NonNull
@@ -291,6 +273,10 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
     }
 
     public boolean isSection(int position) {
-        return getItemViewType(position) == DataEntryViewHolderTypes.SECTION.ordinal();
+        if (position <= getItemCount()) {
+            return getItemViewType(position) == DataEntryViewHolderTypes.SECTION.ordinal();
+        } else {
+            return false;
+        }
     }
 }

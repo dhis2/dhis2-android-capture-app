@@ -1,10 +1,10 @@
 package org.dhis2.utils.timber;
 
 import androidx.annotation.NonNull;
+
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
-
+import org.dhis2.utils.reporting.CrashReportController;
 import org.jetbrains.annotations.Nullable;
 
 import timber.log.Timber;
@@ -15,6 +15,12 @@ import timber.log.Timber;
 
 public class ReleaseTree extends Timber.Tree {
 
+    public CrashReportController crashReportController;
+
+    public ReleaseTree(CrashReportController crashReportController) {
+        this.crashReportController = crashReportController;
+    }
+
     @Override
     protected boolean isLoggable(@Nullable String tag, int priority) {
         // Don't log VERBOSE, DEBUG and INFO only ERROR, WARN and WTF
@@ -24,6 +30,6 @@ public class ReleaseTree extends Timber.Tree {
     @Override
     protected void log(int priority, String tag, @NonNull final String message, final Throwable t) {
         if (isLoggable(tag, priority))
-            Crashlytics.log(priority, tag, message);
+            crashReportController.logException(new Exception(t));
     }
 }

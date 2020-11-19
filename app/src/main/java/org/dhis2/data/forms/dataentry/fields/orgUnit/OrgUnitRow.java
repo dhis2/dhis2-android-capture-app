@@ -24,28 +24,25 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     private final boolean isBgTransparent;
     private final FlowableProcessor<RowAction> processor;
     private final LayoutInflater inflater;
-    private final FragmentManager fm;
     private final String renderType;
     private final MutableLiveData<String> currentSelection;
     private boolean isSearchMode = false;
 
-    public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
+    public OrgUnitRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
                       boolean isBgTransparent) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
-        this.fm = fm;
         this.renderType = null;
         this.isSearchMode = true;
         this.currentSelection = null;
     }
 
-    public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
+    public OrgUnitRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
                       boolean isBgTransparent, String renderType, MutableLiveData<String> currentSelection) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
-        this.fm = fm;
         this.renderType = renderType;
         this.currentSelection = currentSelection;
     }
@@ -55,7 +52,6 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     public OrgUnitHolder onCreate(@NonNull ViewGroup parent) {
         FormOrgUnitBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_org_unit, parent, false);
         binding.orgUnitView.setLayoutData(isBgTransparent, renderType);
-        binding.orgUnitView.setFragmentManager(fm);
         return new OrgUnitHolder(binding, currentSelection);
     }
 

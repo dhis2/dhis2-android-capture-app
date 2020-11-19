@@ -52,7 +52,6 @@ public class Constants {
 
     //EVENT_CREATION
     public static final String PREVIOUS_DASHBOARD_PROGRAM = "previous_dashboard_program";
-    public static final String SCREEN_NAME = "SCREEN_NAME";
     public static final String PROGRAM_THEME = "PROGRAM_THEME";
     public static final String SERVER = "SERVER";
     public static final String THEME = "THEME";

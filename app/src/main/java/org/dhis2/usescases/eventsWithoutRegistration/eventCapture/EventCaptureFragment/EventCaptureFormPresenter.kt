@@ -1,8 +1,10 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment
 
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.processors.FlowableProcessor
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 import org.hisp.dhis.android.core.D2
@@ -13,7 +15,8 @@ class EventCaptureFormPresenter(
     private val activityPresenter: EventCaptureContract.Presenter,
     val d2: D2,
     val valueStore: ValueStore,
-    val schedulerProvider: SchedulerProvider
+    val schedulerProvider: SchedulerProvider,
+    val onFieldActionProcessor: FlowableProcessor<RowAction>
 ) {
     private var lastFocusItem: String = ""
     private var selectedSection: String? = null
@@ -21,7 +24,7 @@ class EventCaptureFormPresenter(
 
     fun init() {
         disposable.add(
-            view.dataEntryFlowable()
+            onFieldActionProcessor
                 .onBackpressureBuffer()
                 .distinctUntilChanged()
                 .doOnNext { activityPresenter.showProgress() }

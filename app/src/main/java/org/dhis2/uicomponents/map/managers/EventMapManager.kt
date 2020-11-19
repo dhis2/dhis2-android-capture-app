@@ -9,7 +9,7 @@ import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.R
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeatureCollection.Companion.DE_NAME
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection.Companion.FIELD_NAME
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
@@ -92,7 +92,7 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
     private fun addDynamicLayers() {
         mapLayerManager
             .updateLayers(
-                LayerType.DE_COORDINATE_LAYER,
+                LayerType.FIELD_COORDINATE_LAYER,
                 deFeatureCollection.keys.toList()
             )
     }
@@ -122,10 +122,10 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
             }?.let { addAll(it) }
             deFeatureCollection.values.map { collection ->
                 collection.features()?.filter {
-                    mapLayerManager.getLayer(it.getStringProperty(DE_NAME))?.visible == true &&
+                    mapLayerManager.getLayer(it.getStringProperty(FIELD_NAME))?.visible == true &&
                         it.getStringProperty(propertyName) == propertyValue
                 }?.map {
-                    mapLayerManager.getLayer(it.getStringProperty(DE_NAME))?.setSelectedItem(it)
+                    mapLayerManager.getLayer(it.getStringProperty(FIELD_NAME))?.setSelectedItem(it)
                     it
                 }?.let { addAll(it) }
             }

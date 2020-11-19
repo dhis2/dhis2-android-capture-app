@@ -13,7 +13,6 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,8 +23,6 @@ import org.dhis2.data.forms.dataentry.DataEntryArguments;
 import org.dhis2.data.forms.dataentry.DataEntryHeaderHelper;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.data.forms.dataentry.fields.section.SectionHolder;
-import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -64,7 +61,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         return fragment;
     }
 
-
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
@@ -100,8 +96,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         return binding.getRoot();
     }
 
-
-
     @Override
     public void onResume() {
         super.onResume();
@@ -112,7 +106,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         super.onDestroy();
         presenter.onDetach();
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -143,21 +136,14 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     }
 
     @Override
-    public FlowableProcessor<RowAction> dataEntryFlowable() {
-        return flowableProcessor;
-    }
-
-    @Override
     public FlowableProcessor<String> sectionSelectorFlowable() {
         return sectionProcessor;
     }
 
     private void createDataEntry() {
 
-        dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(activity),
-                activity.getSupportFragmentManager(),
+        dataEntryAdapter = new DataEntryAdapter(
                 DataEntryArguments.forEvent("", ProgramStageSectionRenderingType.LISTING.name()),
-                flowableProcessor,
                 sectionProcessor,
                 flowableOptions);
 

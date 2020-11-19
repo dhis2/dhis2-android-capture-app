@@ -65,7 +65,6 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
                     itemView.setActivated(false);
                 }
             });
-
         }
     }
 
@@ -116,7 +115,7 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
         binding.setVariable(BR.item, viewModel);
         update(viewModel);
         initFieldFocus();
-        setFormFieldBackground();
+//        setFormFieldBackground();
 
         binding.executePendingBindings();
     }

@@ -11,7 +11,8 @@ import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeatureCollection;
+import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
 import org.dhis2.uicomponents.map.managers.EventMapManager;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
@@ -46,16 +47,16 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     private D2 d2;
     private ProgramEventMapper mapper;
     private MapEventToFeatureCollection mapEventToFeatureCollection;
-    private MapDataElementToFeatureCollection mapDataElementToFeatureCollection;
+    private MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection;
     private DhisMapUtils mapUtils;
 
-    ProgramEventDetailRepositoryImpl(String programUid, D2 d2, ProgramEventMapper mapper, MapEventToFeatureCollection mapEventToFeatureCollection, MapDataElementToFeatureCollection mapDataElementToFeatureCollection,
+    ProgramEventDetailRepositoryImpl(String programUid, D2 d2, ProgramEventMapper mapper, MapEventToFeatureCollection mapEventToFeatureCollection, MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
                                      DhisMapUtils mapUtils) {
         this.programUid = programUid;
         this.d2 = d2;
         this.mapper = mapper;
         this.mapEventToFeatureCollection = mapEventToFeatureCollection;
-        this.mapDataElementToFeatureCollection = mapDataElementToFeatureCollection;
+        this.mapCoordinateFieldToFeatureCollection = mapCoordinateFieldToFeatureCollection;
         this.mapUtils = mapUtils;
     }
 
@@ -127,9 +128,8 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
                     HashMap<String, FeatureCollection> programEventFeatures = new HashMap<>();
                     programEventFeatures.put(EventMapManager.EVENTS, eventFeatureCollection.getFirst());
-                    Map<String, FeatureCollection> deFeatureCollection = mapDataElementToFeatureCollection.map(mapUtils.getCoordinateDataElementInfo(UidsHelper.getUidsList(listEvents)));
+                    Map<String, FeatureCollection> deFeatureCollection = mapCoordinateFieldToFeatureCollection.map(mapUtils.getCoordinateDataElementInfo(UidsHelper.getUidsList(listEvents)));
                     programEventFeatures.putAll(deFeatureCollection);
-
                     return new ProgramEventMapData(
                             mapper.eventsToProgramEvents(listEvents),
                             programEventFeatures,

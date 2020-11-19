@@ -16,6 +16,7 @@ import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
@@ -57,7 +58,8 @@ class EnrollmentPresenterImpl(
     val formRepository: EnrollmentFormRepository,
     private val valueStore: ValueStore,
     private val analyticsHelper: AnalyticsHelper,
-    private val mandatoryWarning: String
+    private val mandatoryWarning: String,
+    private val onRowActionProcessor: FlowableProcessor<RowAction>
 ) : RulesActionCallbacks {
 
     private val disposable = CompositeDisposable()
@@ -137,7 +139,7 @@ class EnrollmentPresenterImpl(
         )
 
         disposable.add(
-            view.rowActions()
+            onRowActionProcessor
                 .onBackpressureBuffer()
                 .doOnNext { view.showProgress() }
                 .observeOn(schedulerProvider.io())
@@ -473,21 +475,22 @@ class EnrollmentPresenterImpl(
         RulesUtilsProviderImpl(d2)
             .applyRuleEffects(fieldMap, result, this)
 
-        fieldMap.values.forEach {
-            if (it is SpinnerViewModel) {
-                it.setOptionsToHide(
-                    optionsToHide[it.uid()] ?: emptyList(),
-                    optionsGroupsToHide[it.uid()] ?: emptyList()
+        fieldMap.values.forEachIndexed { index, fieldViewModel ->
+            fieldViewModel.setAdapterPosition(index)
+            if (fieldViewModel is SpinnerViewModel) {
+                fieldViewModel.setOptionsToHide(
+                    optionsToHide[fieldViewModel.uid()] ?: emptyList(),
+                    optionsGroupsToHide[fieldViewModel.uid()] ?: emptyList()
                 )
-                if (optionsGroupToShow.keys.contains(it.uid())) {
-                    it.optionGroupsToShow = optionsGroupToShow[it.uid()]
+                if (optionsGroupToShow.keys.contains(fieldViewModel.uid())) {
+                    fieldViewModel.optionGroupsToShow = optionsGroupToShow[fieldViewModel.uid()]
                 }
             }
-            if (it is OptionSetViewModel) {
-                it.optionsToHide = optionsToHide[it.uid()]
-                if (optionsGroupToShow.keys.contains(it.uid())) {
-                    it.optionsToShow = formRepository.getOptionsFromGroups(
-                        optionsGroupToShow[it.uid()] ?: arrayListOf()
+            if (fieldViewModel is OptionSetViewModel) {
+                fieldViewModel.optionsToHide = optionsToHide[fieldViewModel.uid()]
+                if (optionsGroupToShow.keys.contains(fieldViewModel.uid())) {
+                    fieldViewModel.optionsToShow = formRepository.getOptionsFromGroups(
+                        optionsGroupToShow[fieldViewModel.uid()] ?: arrayListOf()
                     )
                 }
             }
