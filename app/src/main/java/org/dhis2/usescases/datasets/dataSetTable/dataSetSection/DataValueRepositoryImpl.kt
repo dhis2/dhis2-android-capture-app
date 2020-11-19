@@ -366,7 +366,7 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
         attributeOptionCombo: String
     ): Flowable<Boolean> {
         return dataSet.flatMap { dataSet ->
-            dataSet.workflow()?.let {workflow->
+            dataSet.workflow()?.let { workflow ->
                 Flowable.fromCallable {
                     val dataApproval = d2.dataSetModule().dataApprovals()
                         .byOrganisationUnitUid().eq(orgUnit)
@@ -383,7 +383,7 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
                     )
                     dataApproval != null && approvalStates.contains(dataApproval.state())
                 }
-            }?:Flowable.just(false)
+            } ?: Flowable.just(false)
         }
     }
 
