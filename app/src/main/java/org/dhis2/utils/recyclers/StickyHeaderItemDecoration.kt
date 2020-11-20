@@ -35,9 +35,10 @@ class StickyHeaderItemDecoration(
 
                     override fun onSingleTapUp(e: MotionEvent?): Boolean {
                         if (e!!.y <= currentHeader?.second?.itemView?.height ?: -1) {
-                            (currentHeader?.second as FormViewHolder).itemView.findViewById<SectionView>(
-                                R.id.sectionView
-                            ).handleHeaderClick(e.x)
+                            (currentHeader?.second as FormViewHolder)
+                                .itemView.findViewById<SectionView>(
+                                    R.id.sectionView
+                                ).handleHeaderClick(e.x)
                             return true
                         }
                         return false
