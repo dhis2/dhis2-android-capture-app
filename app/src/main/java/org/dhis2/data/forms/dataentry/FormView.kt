@@ -9,7 +9,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.Flowable
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 
@@ -63,14 +62,6 @@ class FormView @JvmOverloads constructor(
     }
 
     // TODO methods to remove
-
-    fun sectionFlowable(): Flowable<String> {
-        return adapter.sectionFlowable()
-    }
-
-    fun setCurrentSection(selectedSection: String) {
-        adapter.setCurrentSection(selectedSection)
-    }
 
     fun setLastFocusItem(lastFocusItem: String?) {
         adapter.setLastFocusItem(lastFocusItem)

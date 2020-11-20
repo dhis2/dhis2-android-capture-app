@@ -3,7 +3,6 @@ package org.dhis2.data.forms.dataentry
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.ObservableField
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
@@ -11,8 +10,8 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.processors.PublishProcessor
-import org.dhis2.data.forms.dataentry.fields.section.SectionHolder
+import org.dhis2.BR
+import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 
 const val NO_POSITION = -1
@@ -71,13 +70,12 @@ class DataEntryHeaderHelper(
                     headerContainer,
                     false
                 )
-            val sectionHolder: SectionHolder =
-                SectionHolder(binding, ObservableField(String()), PublishProcessor.create())
+            val sectionHolder = FormViewHolder(binding)
             val sectionPosition: Int = dataEntryAdapter.getSectionPosition(section.uid())
-            dataEntryAdapter.updateSectionData(sectionHolder, sectionPosition, true)
+            dataEntryAdapter.updateSectionData(sectionPosition, true)
             headerContainer.removeAllViews()
             headerContainer.addView(sectionHolder.itemView)
-            sectionHolder.update(section)
+            binding.setVariable(BR.item, section)
         } else {
             headerContainer.removeAllViews()
         }

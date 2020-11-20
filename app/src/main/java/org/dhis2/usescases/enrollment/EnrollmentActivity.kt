@@ -15,7 +15,6 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import io.reactivex.Flowable
 import java.io.File
 import javax.inject.Inject
 import org.dhis2.App
@@ -179,14 +178,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
-    }
-
-    override fun sectionFlowable(): Flowable<String> {
-        return binding.formView.sectionFlowable()
-    }
-
-    override fun setSelectedSection(selectedSection: String) {
-        binding.formView.setCurrentSection(selectedSection)
     }
 
     override fun openEvent(eventUid: String) {

@@ -11,7 +11,7 @@ import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 
 
-public abstract class FormViewHolder extends RecyclerView.ViewHolder {
+public class FormViewHolder extends RecyclerView.ViewHolder {
 
     protected ViewDataBinding binding;
     protected ImageView fieldSelected;
@@ -27,14 +27,12 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
 
     public void bind(FieldUiModel uiModel, int position, FieldItemCallback callback) {
         FieldViewModel viewModel = (FieldViewModel) uiModel;
+        //TODO
         viewModel.setAdapterPosition(position);
         viewModel.setCallback(() -> callback.onNext(position));
         binding.setVariable(BR.item, viewModel);
-        update(viewModel);
         binding.executePendingBindings();
     }
-
-    protected abstract void update(FieldViewModel viewModel);
 
     public interface FieldItemCallback {
         void onNext(int position);

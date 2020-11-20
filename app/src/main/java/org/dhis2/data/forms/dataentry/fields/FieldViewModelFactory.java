@@ -8,6 +8,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
+import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 
 public interface FieldViewModelFactory {
@@ -29,4 +30,17 @@ public interface FieldViewModelFactory {
                           @NonNull ObjectStyle objectStyle,
                           @Nullable String fieldMask,
                           FlowableProcessor<RowAction> processor);
+
+    @NonNull
+    FieldViewModel createSingleSection(String singleSectionName);
+
+    @NonNull
+    FieldViewModel createSection(String sectionUid, String sectionName, String description,
+                                 boolean isOpen, int totalFields, int completedFields, String rendering);
+
+    @NonNull
+    FieldViewModel createClosingSection();
+
+    @NonNull
+    Flowable<String> sectionProcessor();
 }
