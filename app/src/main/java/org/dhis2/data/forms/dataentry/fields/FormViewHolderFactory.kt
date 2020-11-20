@@ -1,9 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields
 
-import androidx.databinding.ObservableField
 import androidx.databinding.ViewDataBinding
-import io.reactivex.processors.FlowableProcessor
-import androidx.lifecycle.MutableLiveData
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.age.AgeHolder
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateHolder
@@ -21,8 +18,7 @@ import org.dhis2.data.forms.dataentry.fields.section.SectionHolder
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerHolder
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedHolder
 
-class FormViewHolderFactory(
-) {
+class FormViewHolderFactory() {
 
     fun provideHolder(
         binding: ViewDataBinding,

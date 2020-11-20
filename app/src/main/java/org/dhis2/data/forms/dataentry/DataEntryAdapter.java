@@ -79,7 +79,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
             updateSectionData(position, false);
         }
 
-        holder.bind(getItem(position));
+        holder.bind(getItem(position),position,this);
 
     }
 

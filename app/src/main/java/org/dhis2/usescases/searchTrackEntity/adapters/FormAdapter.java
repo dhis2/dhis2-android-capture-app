@@ -86,7 +86,7 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> implements
         attributeList = new ArrayList<>();
         crashReportController = ((Components) context.getApplicationContext()).appComponent().injectCrashReportController();
 
-        this.formViewHolderFactory = new FormViewHolderFactory(null, null);
+        this.formViewHolderFactory = new FormViewHolderFactory();
     }
 
     @NonNull
@@ -107,7 +107,7 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> implements
             case form_edit_text_custom:
                 viewModel = EditTextViewModel.create(attr.uid(), label, false,
                         queryData.get(attr.uid()), hint, 1, attr.valueType(), null, true,
-                        attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask(), ValueTypeRenderingType.DEFAULT.toString(), attr.valueType() == ValueType.LONG_TEXT, false, true, processor);
+                        attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask(), ValueTypeRenderingType.DEFAULT.toString(), attr.valueType() == ValueType.LONG_TEXT, true, processor);
                 break;
             case form_button:
                 viewModel = FileViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, attr.displayDescription(), ObjectStyle.builder().build(), processor);
