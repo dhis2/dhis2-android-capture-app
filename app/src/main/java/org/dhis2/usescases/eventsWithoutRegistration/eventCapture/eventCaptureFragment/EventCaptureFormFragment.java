@@ -1,4 +1,4 @@
-package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment;
+package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment;
 
 import android.app.Activity;
 import android.content.Context;
@@ -106,11 +106,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public void saveOpenedSection(@Nullable String sectionUid) {
-        dataEntryAdapter.saveOpenedSection(sectionUid);
     }
 
     @Override

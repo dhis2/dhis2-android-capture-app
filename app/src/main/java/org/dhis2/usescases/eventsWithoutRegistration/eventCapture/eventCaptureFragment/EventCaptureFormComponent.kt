@@ -1,4 +1,4 @@
-package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment
+package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment
 
 import dagger.Subcomponent
 import org.dhis2.data.dagger.PerFragment

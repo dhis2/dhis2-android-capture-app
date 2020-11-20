@@ -15,8 +15,8 @@ import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormPresenter
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormView
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormPresenter
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormView
 import org.hisp.dhis.android.core.D2
 import org.junit.Before
 import org.junit.Test

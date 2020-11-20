@@ -1,6 +1,5 @@
 package org.dhis2.data.forms.dataentry;
 
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -14,7 +13,6 @@ import androidx.recyclerview.widget.ListAdapter;
 import org.dhis2.data.forms.dataentry.fields.FieldUiModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
-import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
@@ -33,11 +31,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
 
     Map<String, Integer> sectionPositions = new LinkedHashMap<>();
     private String rendering = ProgramStageSectionRenderingType.LISTING.name();
-    private Integer totalFields = 0;
-    private int openSectionPos = 0;
-    private String lastOpenedSectionUid = "";
 
-    private String openSection;
 
     public DataEntryAdapter() {
         super(new DataEntryDiff());
@@ -87,26 +81,16 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
     public void swap(@NonNull List<FieldViewModel> updates, Runnable commitCallback) {
         sectionPositions = new LinkedHashMap<>();
         rendering = null;
-        int imageFields = 0;
         List<FieldUiModel> items = new ArrayList<>();
         for (FieldViewModel fieldViewModel : updates) {
             if (fieldViewModel instanceof SectionViewModel) {
                 sectionPositions.put(fieldViewModel.getUid(), updates.indexOf(fieldViewModel));
                 if (((SectionViewModel) fieldViewModel).isOpen()) {
                     rendering = ((SectionViewModel) fieldViewModel).rendering();
-                    totalFields = ((SectionViewModel) fieldViewModel).totalFields();
-                    setOpenSectionPos(updates.indexOf(fieldViewModel), fieldViewModel.getUid());
-                } else if (fieldViewModel.getUid().equals(lastOpenedSectionUid)) {
-                    openSectionPos = -1;
                 }
-            } else if (fieldViewModel instanceof ImageViewModel) {
-                imageFields++;
             }
-
             items.add(fieldViewModel);
         }
-
-        totalFields = imageFields;
 
         submitList(items, () -> {
             int currentFocusPosition = -1;
@@ -162,23 +146,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
                 default:
                     return 2;
             }
-        }
-    }
-
-    public void saveOpenedSection(String openSectionUid) {
-        this.openSection = openSectionUid;
-    }
-
-    private void setOpenSectionPos(int sectionOpened, String openSectionUid) {
-        lastOpenedSectionUid = openSectionUid;
-        openSectionPos = sectionOpened;
-    }
-
-    public int getSavedPosition() {
-        if (TextUtils.isEmpty(openSection))
-            return -1;
-        else {
-            return sectionPositions.get(openSection);
         }
     }
 
