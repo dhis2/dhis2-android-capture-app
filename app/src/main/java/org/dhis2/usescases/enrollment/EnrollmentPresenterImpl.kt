@@ -59,7 +59,8 @@ class EnrollmentPresenterImpl(
     private val valueStore: ValueStore,
     private val analyticsHelper: AnalyticsHelper,
     private val mandatoryWarning: String,
-    private val onRowActionProcessor: FlowableProcessor<RowAction>
+    private val onRowActionProcessor: FlowableProcessor<RowAction>,
+    private val sectionProcessor: Flowable<String>
 ) : RulesActionCallbacks {
 
     private val disposable = CompositeDisposable()
@@ -240,7 +241,7 @@ class EnrollmentPresenterImpl(
         disposable.add(
             dataEntryRepository.enrollmentSectionUids()
                 .flatMap { sectionList ->
-                    view.sectionFlowable().startWith(sectionList[0])
+                    sectionProcessor.startWith(sectionList[0])
                         .map { setCurrentSection(it) }
                         .doOnNext { view.showProgress() }
                         .switchMap { section ->
@@ -255,14 +256,13 @@ class EnrollmentPresenterImpl(
                     view.showFields(it)
                     view.setSaveButtonVisible(true)
                     view.hideProgress()
-                    view.setSelectedSection(selectedSection)
                 }) {
                     Timber.tag(TAG).e(it)
                 }
         )
 
         disposable.add(
-            view.sectionFlowable()
+            sectionProcessor
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.io())
                 .subscribe(

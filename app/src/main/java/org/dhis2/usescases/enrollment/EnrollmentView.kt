@@ -1,6 +1,5 @@
 package org.dhis2.usescases.enrollment
 
-import io.reactivex.Flowable
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.usescases.general.AbstractActivityContracts
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -22,8 +21,6 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun goBack()
     fun showMissingMandatoryFieldsMessage(emptyMandatoryFields: MutableMap<String, String>)
     fun showErrorFieldsMessage(errorFields: List<String>)
-    fun sectionFlowable(): Flowable<String>
-    fun setSelectedSection(selectedSection: String)
     fun setResultAndFinish()
     fun requestFocus()
     fun performSaveClick()

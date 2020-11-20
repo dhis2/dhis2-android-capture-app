@@ -56,17 +56,22 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    EventFieldMapper provideFieldMapper(Context context){
-        return new EventFieldMapper(context.getString(R.string.field_is_mandatory));
+    EventFieldMapper provideFieldMapper(Context context, FieldViewModelFactory fieldFactory){
+        return new EventFieldMapper(fieldFactory, context.getString(R.string.field_is_mandatory));
     }
 
     @Provides
     @PerActivity
-    EventCaptureContract.EventCaptureRepository provideRepository(Context context,
+    EventCaptureContract.EventCaptureRepository provideRepository(FieldViewModelFactory fieldFactory,
                                                                   FormRepository formRepository,
                                                                   D2 d2) {
-        FieldViewModelFactory fieldFactory = new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context));
         return new EventCaptureRepositoryImpl(fieldFactory, formRepository, eventUid, d2);
+    }
+
+    @Provides
+    @PerActivity
+    FieldViewModelFactory fieldFactory(Context context){
+        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context));
     }
 
     @Provides
