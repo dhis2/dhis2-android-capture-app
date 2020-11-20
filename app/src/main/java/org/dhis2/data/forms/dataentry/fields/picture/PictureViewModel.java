@@ -17,8 +17,6 @@ public abstract class PictureViewModel extends FieldViewModel {
 
     public abstract boolean isBackgroundTransparent();
 
-    public boolean activated = false;
-
     public static PictureViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle, boolean isBackgroundTransparent) {
         return new AutoValue_PictureViewModel(id, label, mandatory, value, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.PICTURE, null, isBackgroundTransparent);
     }
@@ -59,14 +57,6 @@ public abstract class PictureViewModel extends FieldViewModel {
     @Override
     public int getLayoutId() {
         return R.layout.custom_form_picture;
-    }
-
-    public void onActivate() {
-        activated = true;
-    }
-
-    public void onDeactivate() {
-        activated = false;
     }
 
     public void onClearValue() {

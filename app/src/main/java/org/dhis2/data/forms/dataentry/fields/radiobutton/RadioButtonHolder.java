@@ -1,7 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.radiobutton;
 
 import androidx.databinding.ViewDataBinding;
-import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -13,9 +12,8 @@ import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 
 public class RadioButtonHolder extends FormViewHolder {
 
-    public RadioButtonHolder(ViewDataBinding binding, MutableLiveData<String> currentSelection) {
+    public RadioButtonHolder(ViewDataBinding binding) {
         super(binding);
-        currentUid = currentSelection;
     }
 
     @Override

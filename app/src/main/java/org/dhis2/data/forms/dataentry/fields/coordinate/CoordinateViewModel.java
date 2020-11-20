@@ -22,8 +22,6 @@ import io.reactivex.processors.FlowableProcessor;
 @AutoValue
 public abstract class CoordinateViewModel extends FieldViewModel {
 
-    public boolean activated = false;
-
     @Nullable
     public abstract FeatureType featureType();
 
@@ -78,14 +76,6 @@ public abstract class CoordinateViewModel extends FieldViewModel {
                 geometry == null ? null : geometry.coordinates(),
                 getAdapterPosition(),
                 featureType().name()));
-    }
-
-    public void onActivate() {
-        activated = true;
-    }
-
-    public void onDeactivate() {
-        activated = false;
     }
 
     public abstract boolean isSearchMode();

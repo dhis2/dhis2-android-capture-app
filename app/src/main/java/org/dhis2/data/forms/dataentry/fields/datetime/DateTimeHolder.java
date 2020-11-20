@@ -1,9 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.datetime;
 
 import androidx.databinding.ViewDataBinding;
-import androidx.lifecycle.MutableLiveData;
 
-import org.dhis2.BR;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 
@@ -14,9 +12,8 @@ import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 
 public class DateTimeHolder extends FormViewHolder {
 
-    public DateTimeHolder(ViewDataBinding binding, MutableLiveData<String> currentSelection) {
+    public DateTimeHolder(ViewDataBinding binding) {
         super(binding);
-        this.currentUid = currentSelection;
     }
 
     @Override
