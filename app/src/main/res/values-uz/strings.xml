@@ -168,7 +168,7 @@
     <string name="follow_up">Кузатиб бориш</string>
     <string name="follow_up_enabled">Кузатув ёқилган</string>
     <string name="follow_up_disabled">Кузатув ўчирилган</string>
-    <string name="deactivate">Ўчириш</string>
+    <string name="deactivate">Фаолсизлантириш</string>
     <string name="program_not_allow_events">Ушбу дастур яна кўпроқ тадбирларни қабул қилмайди</string>
 
     <!--DONE TASKS-->
