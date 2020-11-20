@@ -140,7 +140,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
     private void createDataEntry() {
 
-        dataEntryAdapter = new DataEntryAdapter(sectionProcessor);
+        dataEntryAdapter = new DataEntryAdapter();
 
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {

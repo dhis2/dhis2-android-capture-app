@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableField;
 import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.ListAdapter;
@@ -15,9 +14,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import org.dhis2.data.forms.dataentry.fields.FieldUiModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
-import org.dhis2.data.forms.dataentry.fields.FormViewHolderFactory;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
-import org.dhis2.data.forms.dataentry.fields.section.SectionHolder;
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
@@ -25,10 +22,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-
-import io.reactivex.processors.FlowableProcessor;
-import io.reactivex.processors.PublishProcessor;
 
 public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHolder> implements FormViewHolder.FieldItemCallback {
 
@@ -46,41 +39,28 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
 
     private String openSection;
 
-    private final FormViewHolderFactory formViewHolderFactory;
-
     public DataEntryAdapter() {
         super(new DataEntryDiff());
         setHasStableIds(true);
         this.currentFocusUid = new MutableLiveData<>();
-        this.formViewHolderFactory = new FormViewHolderFactory();
-    }
-
-    public DataEntryAdapter(@NonNull FlowableProcessor<String> sectionProcessor) {
-        super(new DataEntryDiff());
-        setHasStableIds(true);
-        this.currentFocusUid = new MutableLiveData<>();
-        this.formViewHolderFactory = new FormViewHolderFactory(
-                );
     }
 
     @NonNull
     @Override
     public FormViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         ViewDataBinding binding = DataBindingUtil.inflate(layoutInflater, viewType, parent, false);
-        return Objects.requireNonNull(formViewHolderFactory.provideHolder(binding, viewType));
+        return new FormViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull FormViewHolder holder, int position) {
 
-        if (holder instanceof SectionHolder) {
+        if (getItem(position) instanceof SectionViewModel) {
             updateSectionData(position, false);
         }
 
-        holder.bind(getItem(position),position,this);
-
+        holder.bind(getItem(position), position, this);
     }
 
 

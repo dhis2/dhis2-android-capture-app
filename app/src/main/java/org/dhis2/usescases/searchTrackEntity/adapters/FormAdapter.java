@@ -13,7 +13,6 @@ import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.Components;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
-import org.dhis2.data.forms.dataentry.fields.FormViewHolderFactory;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.age.AgeViewModel;
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
@@ -40,7 +39,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
@@ -74,7 +72,6 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> implements
     private Context context;
     private HashMap<String, String> queryData;
     private List<ValueTypeDeviceRendering> renderingTypes;
-    private final FormViewHolderFactory formViewHolderFactory;
 
     public FormAdapter(Context context, SearchTEContractsModule.Presenter presenter) {
         setHasStableIds(true);
@@ -85,8 +82,6 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> implements
 
         attributeList = new ArrayList<>();
         crashReportController = ((Components) context.getApplicationContext()).appComponent().injectCrashReportController();
-
-        this.formViewHolderFactory = new FormViewHolderFactory();
     }
 
     @NonNull
@@ -94,7 +89,7 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> implements
     public FormViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         ViewDataBinding binding = DataBindingUtil.inflate(layoutInflater, viewType, parent, false);
-        return Objects.requireNonNull(formViewHolderFactory.provideHolder(binding, viewType));
+        return new FormViewHolder(binding);
     }
 
     @Override
