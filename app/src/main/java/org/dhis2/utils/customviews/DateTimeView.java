@@ -19,6 +19,7 @@ import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
 import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import org.dhis2.databinding.DateTimeViewBinding;
 import org.dhis2.utils.ColorUtils;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
 
@@ -73,6 +74,16 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     public void setDescription(String description) {
         binding.setDescription(description);
         binding.descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
+        binding.descriptionLabel.setOnClickListener(v ->
+                new CustomDialog(
+                        getContext(),
+                        label,
+                        description != null ? description : getContext().getString(R.string.empty_description),
+                        getContext().getString(R.string.action_close),
+                        null,
+                        Constants.DESCRIPTION_DIALOG,
+                        null
+                ).show());
     }
 
     public void initData(String data) {

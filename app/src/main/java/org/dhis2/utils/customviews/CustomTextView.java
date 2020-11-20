@@ -168,6 +168,16 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     public void setDescription(String description) {
         descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
+        descriptionLabel.setOnClickListener(v ->
+                new CustomDialog(
+                        getContext(),
+                        label,
+                        description != null ? description : getContext().getString(R.string.empty_description),
+                        getContext().getString(R.string.action_close),
+                        null,
+                        Constants.DESCRIPTION_DIALOG,
+                        null
+                ).show());
     }
 
     private void configureViews() {
