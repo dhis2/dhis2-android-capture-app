@@ -48,7 +48,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     private DataEntryAdapter dataEntryAdapter;
     private DataEntryHeaderHelper dataEntryHeaderHelper;
     private FlowableProcessor<RowAction> flowableProcessor;
-    private FlowableProcessor<String> sectionProcessor;
     private FlowableProcessor<Trio<String, String, Integer>> flowableOptions;
 
     public static EventCaptureFormFragment newInstance(String eventUid) {
@@ -77,7 +76,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         binding = DataBindingUtil.inflate(inflater, R.layout.section_selector_fragment, container, false);
         binding.setPresenter(activity.getPresenter());
         this.flowableProcessor = PublishProcessor.create();
-        this.sectionProcessor = PublishProcessor.create();
         this.flowableOptions = PublishProcessor.create();
 
         binding.actionButton.setOnClickListener(view -> {
@@ -131,11 +129,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         }
 
         dataEntryAdapter.swap(updates, () -> dataEntryHeaderHelper.onItemsUpdatedCallback());
-    }
-
-    @Override
-    public FlowableProcessor<String> sectionSelectorFlowable() {
-        return sectionProcessor;
     }
 
     private void createDataEntry() {

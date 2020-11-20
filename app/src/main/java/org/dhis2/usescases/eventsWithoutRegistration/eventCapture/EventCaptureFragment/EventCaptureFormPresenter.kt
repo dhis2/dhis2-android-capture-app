@@ -48,7 +48,7 @@ class EventCaptureFormPresenter(
                 )
         )
 
-        disposable.add(
+        /*disposable.add(
             view.sectionSelectorFlowable()
                 .map { setCurrentSection(it) }
                 .distinctUntilChanged()
@@ -61,7 +61,7 @@ class EventCaptureFormPresenter(
                     },
                     Timber::e
                 )
-        )
+        )*/
 
         disposable.add(
             activityPresenter.formFieldsFlowable()

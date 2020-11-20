@@ -45,7 +45,8 @@ class EventCapturePresenterTest {
             preferences,
             getNextVisibleSection,
             eventFieldMapper,
-            onRowActionProcessor
+            onRowActionProcessor,
+            fieldFactory.sectionProcessor()
         )
     }
 

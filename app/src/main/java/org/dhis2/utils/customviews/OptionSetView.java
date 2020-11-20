@@ -220,8 +220,8 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         requestFocus();
         closeKeyboard(v);
 //        setSelectedBackground(isSearchMode);
-        /*OptionSetDialog dialog = new OptionSetDialog();
-        dialog.create(itemView.getContext());
+        OptionSetDialog dialog = new OptionSetDialog();
+        dialog.create(getContext());
         dialog.setOptionSet(viewModel);
 
         if (dialog.showDialog()) {
@@ -230,9 +230,9 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
             dialog.show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), OptionSetDialog.Companion.getTAG());
         } else {
             dialog.dismiss();
-            new OptionSetPopUp(itemView.getContext(), v, viewModel,
+            new OptionSetPopUp(getContext(), v, viewModel,
                     this);
-        }*/
+        }
     }
 
     public interface OnSelectedOption {

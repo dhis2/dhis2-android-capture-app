@@ -41,7 +41,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
 
     public DataEntryAdapter() {
         super(new DataEntryDiff());
-        setHasStableIds(true);
         this.currentFocusUid = new MutableLiveData<>();
     }
 
@@ -83,11 +82,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
     @Override
     public int getItemViewType(int position) {
         return getItem(position).getLayoutId();
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return getItem(position).getUid().hashCode();
     }
 
     public void swap(@NonNull List<FieldViewModel> updates, Runnable commitCallback) {

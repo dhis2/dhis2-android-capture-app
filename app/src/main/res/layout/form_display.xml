@@ -45,7 +45,7 @@
                 android:gravity="center|start"
                 android:maxLines="2"
                 android:padding="5dp"
-                android:text='@{item.label()}'
+                android:text='@{item.formattedLabel}'
                 android:textColor="#787878"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"

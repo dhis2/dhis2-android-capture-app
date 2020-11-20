@@ -49,9 +49,10 @@ public class EventCaptureModule {
                                                     PreferenceProvider preferences,
                                                     GetNextVisibleSection getNextVisibleSection,
                                                     EventFieldMapper fieldMapper,
-                                                    FlowableProcessor<RowAction> onFieldActionProcessor) {
+                                                    FlowableProcessor<RowAction> onFieldActionProcessor,
+                                                    FieldViewModelFactory fieldFactory) {
         return new EventCapturePresenterImpl(view, eventUid, eventCaptureRepository, ruleUtils, valueStore, schedulerProvider,
-                preferences, getNextVisibleSection, fieldMapper,  onFieldActionProcessor);
+                preferences, getNextVisibleSection, fieldMapper,  onFieldActionProcessor, fieldFactory.sectionProcessor());
     }
 
     @Provides
