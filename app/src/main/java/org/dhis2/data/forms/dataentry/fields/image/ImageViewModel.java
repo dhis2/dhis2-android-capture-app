@@ -1,13 +1,9 @@
 package org.dhis2.data.forms.dataentry.fields.image;
 
-import android.view.View;
-
 import androidx.annotation.NonNull;
-import androidx.databinding.ObservableField;
 
 import com.google.auto.value.AutoValue;
 
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -83,6 +79,10 @@ public abstract class ImageViewModel extends FieldViewModel {
         return label().split(NAME_CODE_DELIMITATOR)[2];
     }
 
+    public String getRenderingType() {
+        return "";
+    }
+
     @Override
     public String getFormattedLabel() {
         if (mandatory()) {
@@ -94,10 +94,12 @@ public abstract class ImageViewModel extends FieldViewModel {
 
     @Override
     public int getLayoutId() {
-        return R.layout.form_image;
+        return R.layout.custom_form_image;
     }
 
-    public void onItemClick(View view) {
+    public void onItemClick() {
+        if (processor() == null) return;
+
         if (editable()) {
             String label = optionDisplayName();
             String code = optionCode();
@@ -108,8 +110,9 @@ public abstract class ImageViewModel extends FieldViewModel {
             } else {
                 currentSelector.set(label)
                 code
-            }
-            processor.onNext(RowAction.create(model!!.fieldUid(), value, adapterPosition))*/
+            }=*/
+
+            processor().onNext(RowAction.create(fieldUid(), value(), getAdapterPosition()));
         }
     }
 
@@ -131,7 +134,7 @@ public abstract class ImageViewModel extends FieldViewModel {
             return true;
         } else {
             return false;
-        }*/
+        } */
         return true;
     }
 

@@ -55,7 +55,7 @@ public abstract class DisplayViewModel extends FieldViewModel {
 
     @Override
     public int getLayoutId() {
-        return R.layout.item_indicator;
+        return R.layout.custom_form_display;
     }
 
     public int colorBG() {
