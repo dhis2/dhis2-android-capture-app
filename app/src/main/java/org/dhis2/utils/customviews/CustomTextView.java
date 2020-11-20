@@ -479,7 +479,11 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                 }
             }
         });
-        setLayoutData(viewModel.isBackgroundTransparent(), viewModel.isLongText());
+
+        if (binding == null) {
+            setLayoutData(viewModel.isBackgroundTransparent(), viewModel.isLongText());
+        }
+
         setRenderType(viewModel.renderType());
         setFocusChangedListener(this);
         setOnEditorActionListener(this);

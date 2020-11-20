@@ -265,7 +265,11 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
 
     public void setViewModel(DateTimeViewModel viewModel) {
         this.viewModel = viewModel;
-        setIsBgTransparent(viewModel.isBackgroundTransparent());
+
+        if (binding == null) {
+            setIsBgTransparent(viewModel.isBackgroundTransparent());
+        }
+
         setLabel(viewModel.getFormattedLabel());
         setDescription(viewModel.description());
         initData(viewModel.value());

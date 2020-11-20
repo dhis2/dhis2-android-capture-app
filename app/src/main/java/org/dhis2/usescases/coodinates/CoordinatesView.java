@@ -537,7 +537,11 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     public void setViewModel(CoordinateViewModel viewModel) {
         this.viewModel = viewModel;
-        setIsBgTransparent(viewModel.isBackgroundTransparent());
+
+        if (binding == null) {
+            setIsBgTransparent(viewModel.isBackgroundTransparent());
+        }
+
         setCurrentLocationListener(geometry -> {
             closeKeyboard(binding.getRoot());
             viewModel.onCurrentLocationClick(geometry);
