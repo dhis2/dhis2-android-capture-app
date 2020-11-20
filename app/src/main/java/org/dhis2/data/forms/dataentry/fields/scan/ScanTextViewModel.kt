@@ -12,8 +12,6 @@ import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
 @AutoValue
 abstract class ScanTextViewModel : FieldViewModel() {
 
-    var activated: Boolean = false
-
     abstract val fieldRendering: ValueTypeDeviceRendering?
 
     abstract val hint: String?
@@ -217,15 +215,8 @@ abstract class ScanTextViewModel : FieldViewModel() {
     }
 
     abstract fun isBackgroundTransparent(): Boolean
+
     abstract fun isSearchMode(): Boolean
-
-    fun onActivate() {
-        activated = true
-    }
-
-    fun onDeactivate() {
-        activated = false
-    }
 
     fun onScanSelected(value: String?) {
         processor()?.onNext(RowAction.create(uid(), value, adapterPosition))

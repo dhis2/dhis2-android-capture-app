@@ -21,7 +21,6 @@ import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.isKeyboardOpened
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.DataEntryArguments
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.databinding.EnrollmentActivityBinding
@@ -113,10 +112,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         mode = EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
 
-        binding.formView.init(
-            DataEntryArguments.forEnrollment(intent.getStringExtra(ENROLLMENT_UID_EXTRA)),
-            this
-        )
+        binding.formView.init(this)
 
         binding.save.setOnClickListener {
             performSaveClick()

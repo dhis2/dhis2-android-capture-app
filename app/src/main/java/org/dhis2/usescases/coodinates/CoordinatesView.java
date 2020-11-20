@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
@@ -41,6 +42,7 @@ import org.dhis2.utils.ActivityResultObservable;
 import org.dhis2.utils.ActivityResultObserver;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -245,6 +247,18 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             ((FormCoordinatesBinding) binding).setDescription(description);
         else
             ((FormCoordinatesAccentBinding) binding).setDescription(description);
+
+        ImageView descriptionIcon = findViewById(R.id.descriptionLabel);
+        descriptionIcon.setOnClickListener(v ->
+                new CustomDialog(
+                        getContext(),
+                        label,
+                        description != null ? description : getContext().getString(R.string.empty_description),
+                        getContext().getString(R.string.action_close),
+                        null,
+                        Constants.DESCRIPTION_DIALOG,
+                        null
+                ).show());
     }
 
     public void setFeatureType(FeatureType featureType) {
@@ -528,6 +542,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             closeKeyboard(binding.getRoot());
             viewModel.onCurrentLocationClick(geometry);
             clearBackground(viewModel.isSearchMode());
+            viewModel.onDeactivate();
         });
         setActivationListener(viewModel::onActivate);
 
@@ -544,7 +559,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private void clearBackground(boolean isSearchMode) {
         if (!isSearchMode) {
             binding.getRoot().setBackgroundResource(R.color.form_field_background);
-            viewModel.onDeactivate();
         }
     }
 

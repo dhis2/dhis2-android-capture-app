@@ -1,7 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.file;
 
 import androidx.databinding.ViewDataBinding;
-import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -12,9 +11,8 @@ import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 
 public class FileHolder extends FormViewHolder {
 
-    public FileHolder(ViewDataBinding binding, MutableLiveData<String> currentSelection) {
+    public FileHolder(ViewDataBinding binding) {
         super(binding);
-        currentUid = currentSelection;
     }
 
     @Override

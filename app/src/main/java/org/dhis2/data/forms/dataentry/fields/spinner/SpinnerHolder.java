@@ -1,7 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.spinner;
 
 import androidx.databinding.ViewDataBinding;
-import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -12,9 +11,8 @@ import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 
 public class SpinnerHolder extends FormViewHolder {
 
-    public SpinnerHolder(ViewDataBinding binding, MutableLiveData<String> currentSelection) {
+    public SpinnerHolder(ViewDataBinding binding) {
         super(binding);
-        this.currentUid = currentSelection;
     }
 
     @Override

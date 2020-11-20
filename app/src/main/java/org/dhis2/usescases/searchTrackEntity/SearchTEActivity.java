@@ -198,7 +198,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.scrollView.setAdapter(liveAdapter);
         }
 
-        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), this, presenter));
+        binding.formRecycler.setAdapter(new FormAdapter(this, presenter));
         binding.enrollmentButton.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 v.requestFocus();

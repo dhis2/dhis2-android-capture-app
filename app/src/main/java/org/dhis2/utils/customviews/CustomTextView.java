@@ -27,6 +27,7 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.Observable;
 import androidx.databinding.ViewDataBinding;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -137,8 +138,10 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
+                viewModel.onActivate();
                 activate();
             } else if (focusListener != null && validate()) {
+                viewModel.onDeactivate();
                 focusListener.onFocusChange(v, hasFocus);
             }
         });
@@ -165,6 +168,16 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     public void setDescription(String description) {
         descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
+        descriptionLabel.setOnClickListener(v ->
+                new CustomDialog(
+                        getContext(),
+                        label,
+                        description != null ? description : getContext().getString(R.string.empty_description),
+                        getContext().getString(R.string.action_close),
+                        null,
+                        Constants.DESCRIPTION_DIALOG,
+                        null
+                ).show());
     }
 
     private void configureViews() {
@@ -454,6 +467,18 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     public void setViewModel(EditTextViewModel viewModel) {
         this.viewModel = viewModel;
+        viewModel.activated.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                if (viewModel.activated.get()) {
+                    if (viewModel.editable()) {
+                        getEditText().requestFocus();
+                    } else {
+                        viewModel.callback.onNext();
+                    }
+                }
+            }
+        });
         setLayoutData(viewModel.isBackgroundTransparent(), viewModel.isLongText());
         setRenderType(viewModel.renderType());
         setFocusChangedListener(this);
@@ -565,6 +590,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         if (viewModel.valueType() != ValueType.LONG_TEXT) {
             getEditText().clearFocus();
             closeKeyboard(getEditText());
+            viewModel.callback.onNext();
             return true;
         } else {
             return false;
@@ -573,7 +599,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     @Override
     public void onActivation() {
-        viewModel.onActivate();
         getEditText().setFocusable(true);
         getEditText().setFocusableInTouchMode(true);
         getEditText().requestFocus();
@@ -586,7 +611,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     private void clearBackground(boolean isSearchMode) {
         if (!isSearchMode) {
             binding.getRoot().setBackgroundResource(R.color.form_field_background);
-            viewModel.onDeactivate();
         }
     }
 }

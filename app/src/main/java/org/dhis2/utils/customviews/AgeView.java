@@ -22,6 +22,7 @@ import org.dhis2.data.forms.dataentry.fields.age.AgeViewModel;
 import org.dhis2.databinding.AgeCustomViewAccentBinding;
 import org.dhis2.databinding.AgeCustomViewBinding;
 import org.dhis2.utils.ColorUtils;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
 
@@ -76,6 +77,16 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     public void setLabel(String label, String description) {
         this.label = label;
         descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
+        descriptionLabel.setOnClickListener(v ->
+                new CustomDialog(
+                        getContext(),
+                        label,
+                        description != null ? description : getContext().getString(R.string.empty_description),
+                        getContext().getString(R.string.action_close),
+                        null,
+                        Constants.DESCRIPTION_DIALOG,
+                        null
+                ).show());
         if (binding instanceof AgeCustomViewAccentBinding) {
             ((AgeCustomViewAccentBinding) binding).setLabel(label);
             ((AgeCustomViewAccentBinding) binding).setDescription(description);
@@ -334,10 +345,6 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         year.setText(null);
     }
 
-    public OnClickListener getClickListener() {
-        return this;
-    }
-
     public interface OnAgeSet {
         void onAgeSet(Date ageDate);
     }
@@ -349,6 +356,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
             if (viewModel.value() == null || !Objects.equals(viewModel.value(), ageDate == null ? null : DateUtils.databaseDateFormat().format(ageDate))) {
                 viewModel.onAgeSet(ageDate);
                 clearBackground(viewModel.isSearchMode());
+                viewModel.onDeactivate();
             }
         });
         setActivationListener(viewModel::onActivate);
@@ -374,7 +382,6 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     private void clearBackground(boolean isSearchMode) {
         if (!isSearchMode) {
             binding.getRoot().setBackgroundResource(R.color.form_field_background);
-            viewModel.onDeactivate();
         }
     }
 }

@@ -2,6 +2,7 @@ package org.dhis2.data.forms.dataentry.fields;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.ObservableField;
 
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -71,6 +72,10 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     public int adapterPosition = -1;
 
+    public Callback callback;
+
+    public ObservableField<Boolean> activated = new ObservableField<>(false);
+
     public String getFormattedLabel() {
         if (mandatory()) {
             return label() + " *";
@@ -123,11 +128,26 @@ public abstract class FieldViewModel implements FieldUiModel {
         return false;
     }
 
-    public void setAdapterPosition(int index){
+    @Override
+    public void setCallback(@NotNull Callback callback) {
+        this.callback = callback;
+    }
+
+    @Override
+    public void onActivate() {
+        activated.set(true);
+    }
+
+    @Override
+    public void onDeactivate() {
+        activated.set(false);
+    }
+
+    public void setAdapterPosition(int index) {
         this.adapterPosition = index;
     }
 
-    public int getAdapterPosition(){
+    public int getAdapterPosition() {
         return adapterPosition;
     }
 }
