@@ -217,6 +217,13 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (isMapVisible() && eventMapManager.getPermissionsManager() != null) {
+            eventMapManager.getPermissionsManager().onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    @Override
     public void setProgram(Program program) {
         binding.setName(program.displayName());
     }
@@ -539,6 +546,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             binding.toolbarProgress.show();
             eventMapManager.init(() -> {
                 presenter.getMapData();
+                return Unit.INSTANCE;
+            }, (permissionManager) -> {
+                permissionManager.requestLocationPermissions(this);
                 return Unit.INSTANCE;
             });
         } else {
