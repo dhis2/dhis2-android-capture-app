@@ -351,7 +351,9 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
 
     public void setViewModel(AgeViewModel viewModel) {
         this.viewModel = viewModel;
-        setIsBgTransparent(viewModel.isBackgroundTransparent());
+        if (binding == null) {
+            setIsBgTransparent(viewModel.isBackgroundTransparent());
+        }
         setAgeChangedListener(ageDate -> {
             if (viewModel.value() == null || !Objects.equals(viewModel.value(), ageDate == null ? null : DateUtils.databaseDateFormat().format(ageDate))) {
                 viewModel.onAgeSet(ageDate);

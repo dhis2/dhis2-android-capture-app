@@ -15,7 +15,7 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
 import org.dhis2.common.viewactions.typeChildViewWithId
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextCustomHolder
+import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
@@ -57,25 +57,25 @@ class EnrollmentRobot : BaseRobot() {
     }
 
     fun clickOnPersonAttributes(attribute: String) {
-        onView(withId(R.id.fieldRecycler))
-            .perform(actionOnItem<EditTextCustomHolder>(
+        onView(withId(R.id.recyclerView))
+            .perform(actionOnItem<FormViewHolder>(
                 hasDescendant(withText(containsString(attribute))), click()))
     }
 
     fun typeOnRequiredTextField(text: String, position: Int) {
-        onView(withId(R.id.fieldRecycler))
+        onView(withId(R.id.recyclerView))
             .perform(
-                actionOnItemAtPosition<EditTextCustomHolder>(
+                actionOnItemAtPosition<FormViewHolder>(
                     position, typeChildViewWithId(text, R.id.input_editText))
             )
     }
 
     fun scrollToBottomProgramForm() {
-        onView(withId(R.id.fieldRecycler)).perform(scrollToBottomRecyclerView())
+        onView(withId(R.id.recyclerView)).perform(scrollToBottomRecyclerView())
     }
 
     fun clickOnCalendarItem() {
-        onView(withId(R.id.fieldRecycler))
+        onView(withId(R.id.recyclerView))
             .perform(actionOnItem<DashboardProgramViewHolder>(
                 hasDescendant(withText(DATE_OF_BIRTH)), clickChildViewWithId(R.id.inputEditText)))
     }

@@ -280,7 +280,11 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     public void setViewModel(DateTimeViewModel viewModel) {
         this.viewModel = viewModel;
-        setIsBgTransparent(viewModel.isBackgroundTransparent());
+
+        if (binding == null) {
+            setIsBgTransparent(viewModel.isBackgroundTransparent());
+        }
+
         setLabel(viewModel.getFormattedLabel());
         setDescription(viewModel.description());
         initData(viewModel.value());

@@ -2,7 +2,6 @@ package org.dhis2.usescases.teidashboard.robot
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -14,7 +13,7 @@ import org.dhis2.common.matchers.clickOnTab
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
 import org.dhis2.common.viewactions.typeChildViewWithId
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextCustomHolder
+import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.hamcrest.Matchers
 
@@ -79,7 +78,7 @@ class EventRobot : BaseRobot() {
     fun typeOnRequiredEventForm(text: String, position: Int) {
         onView(withId(R.id.formRecycler))
             .perform(
-                actionOnItemAtPosition<EditTextCustomHolder>( //EditTextCustomHolder
+                actionOnItemAtPosition<FormViewHolder>( //EditTextCustomHolder
                     position, typeChildViewWithId(text, R.id.input_editText)
                 )
             )
