@@ -7,15 +7,20 @@
 
         <import type="android.view.View" />
 
-        <variable
-            name="item"
-            type="org.dhis2.data.forms.dataentry.fields.section.SectionViewModel" />
 
     </data>
 
-    <org.dhis2.data.forms.dataentry.fields.section.SectionView
-        android:id="@+id/sectionView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
+        <org.dhis2.data.forms.dataentry.fields.section.SectionView
+            android:id="@+id/sectionView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

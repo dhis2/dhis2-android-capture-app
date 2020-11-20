@@ -3,7 +3,6 @@ package org.dhis2.data.forms.dataentry
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.ObservableField
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
@@ -11,7 +10,6 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.processors.PublishProcessor
 import org.dhis2.data.forms.dataentry.fields.section.SectionHolder
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 
@@ -71,10 +69,9 @@ class DataEntryHeaderHelper(
                     headerContainer,
                     false
                 )
-            val sectionHolder: SectionHolder =
-                SectionHolder(binding, ObservableField(String()), PublishProcessor.create())
+            val sectionHolder = SectionHolder(binding)
             val sectionPosition: Int = dataEntryAdapter.getSectionPosition(section.uid())
-            dataEntryAdapter.updateSectionData(sectionHolder, sectionPosition, true)
+            dataEntryAdapter.updateSectionData(sectionPosition, true)
             headerContainer.removeAllViews()
             headerContainer.addView(sectionHolder.itemView)
             sectionHolder.update(section)

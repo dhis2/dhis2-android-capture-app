@@ -1,5 +1,6 @@
 package org.dhis2.utils.customviews
 
+import io.reactivex.processors.PublishProcessor
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel
@@ -48,7 +49,7 @@ class FormBottomDialogPresenterTest {
                     "any",
                     false,
                     false,
-                    false
+                    PublishProcessor.create()
                 )
             ),
             Pair(

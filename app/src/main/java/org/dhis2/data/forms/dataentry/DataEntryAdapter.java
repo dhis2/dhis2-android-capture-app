@@ -40,8 +40,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
     private final ObservableField<String> imageSelector;
 
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
-    private final ObservableField<String> selectedSection;
-    private final FlowableProcessor<String> sectionProcessor;
 
     private final MutableLiveData<String> currentFocusUid;
 
@@ -61,9 +59,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
     public DataEntryAdapter(@NonNull DataEntryArguments dataEntryArguments) {
         super(new DataEntryDiff());
         setHasStableIds(true);
-        sectionProcessor = PublishProcessor.create();
         imageSelector = new ObservableField<>("");
-        selectedSection = new ObservableField<>("");
         this.processorOptionSet = PublishProcessor.create();
         this.currentFocusUid = new MutableLiveData<>();
         this.formViewHolderFactory = new FormViewHolderFactory(
@@ -71,8 +67,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
                 currentFocusUid,
                 totalFields,
                 imageSelector,
-                rendering,
-                sectionProcessor, selectedSection);
+                rendering);
     }
 
     public DataEntryAdapter(@NonNull DataEntryArguments dataEntryArguments,
@@ -80,9 +75,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
                             @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet) {
         super(new DataEntryDiff());
         setHasStableIds(true);
-        this.sectionProcessor = sectionProcessor;
         imageSelector = new ObservableField<>("");
-        selectedSection = new ObservableField<>("");
         this.processorOptionSet = processorOptSet;
         this.currentFocusUid = new MutableLiveData<>();
         this.formViewHolderFactory = new FormViewHolderFactory(
@@ -90,9 +83,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
                 currentFocusUid,
                 totalFields,
                 imageSelector,
-                rendering,
-                sectionProcessor,
-                selectedSection);
+                rendering);
     }
 
     @NonNull
@@ -108,7 +99,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
     public void onBindViewHolder(@NonNull FormViewHolder holder, int position) {
 
         if (holder instanceof SectionHolder) {
-            updateSectionData((SectionHolder) holder, position, false);
+            updateSectionData(position, false);
         }
 
         holder.bind(getItem(position));
@@ -116,16 +107,10 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
     }
 
 
-    public void updateSectionData(SectionHolder holder, int position, boolean isHeader) {
-        ((SectionViewModel)getItem(position)).setShowBottomShadow(!isHeader && position > 0 && !(getItem(position-1) instanceof SectionViewModel));
-        ((SectionViewModel)getItem(position)).setSectionNumber(getSectionNumber(position));
-        ((SectionViewModel)getItem(position)).setLastSectionHeight(position>0 && position == getItemCount() -1 && !(getItem(position-1) instanceof SectionViewModel));
-//        holder.setBottomShadow(!isHeader && position > 0 && getItemViewType(position - 1) != DataEntryViewHolderTypes.SECTION.ordinal());
-        /*if (position > 0) {
-            holder.setLastSectionHeight(
-                    position == getItemCount() - 1 && getItemViewType(position - 1) != DataEntryViewHolderTypes.SECTION.ordinal());
-        }*/
-//        holder.setSectionNumber(getSectionNumber(position));
+    public void updateSectionData(int position, boolean isHeader) {
+        ((SectionViewModel) getItem(position)).setShowBottomShadow(!isHeader && position > 0 && !(getItem(position - 1) instanceof SectionViewModel));
+        ((SectionViewModel) getItem(position)).setSectionNumber(getSectionNumber(position));
+        ((SectionViewModel) getItem(position)).setLastSectionHeight(position > 0 && position == getItemCount() - 1 && !(getItem(position - 1) instanceof SectionViewModel));
     }
 
     private int getSectionNumber(int sectionPosition) {
@@ -146,11 +131,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
     @Override
     public long getItemId(int position) {
         return getItem(position).getUid().hashCode();
-    }
-
-    @NonNull
-    public FlowableProcessor<String> sectionFlowable() {
-        return sectionProcessor;
     }
 
     public void swap(@NonNull List<FieldViewModel> updates, Runnable commitCallback) {
@@ -232,11 +212,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
                     return 2;
             }
         }
-    }
-
-    public String setCurrentSection(String currentSection) {
-        selectedSection.set(currentSection);
-        return selectedSection.get();
     }
 
     public void saveOpenedSection(String openSectionUid) {

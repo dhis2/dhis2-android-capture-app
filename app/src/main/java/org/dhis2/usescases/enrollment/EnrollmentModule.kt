@@ -14,6 +14,7 @@ import org.dhis2.data.forms.dataentry.DataEntryStore
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.schedulers.SchedulerProvider
@@ -61,9 +62,9 @@ class EnrollmentModule(
         context: Context,
         d2: D2,
         dhisEnrollmentUtils: DhisEnrollmentUtils,
-        onRowActionProcessor: FlowableProcessor<RowAction>
+        onRowActionProcessor: FlowableProcessor<RowAction>,
+        modelFactory: FieldViewModelFactory
     ): EnrollmentRepository {
-        val modelFactory = FieldViewModelFactoryImpl(context.valueTypeHintMap())
         val enrollmentDataSectionLabel = context.getString(R.string.enrollment_data_section_label)
         val singleSectionLabel = context.getString(R.string.enrollment_single_section_label)
         val enrollmentOrgUnitLabel = context.getString(R.string.enrolling_ou)
@@ -92,6 +93,12 @@ class EnrollmentModule(
 
     @Provides
     @PerActivity
+    fun fieldFactory(context: Context): FieldViewModelFactory {
+        return FieldViewModelFactoryImpl(context.valueTypeHintMap())
+    }
+
+    @Provides
+    @PerActivity
     fun providePresenter(
         context: Context,
         d2: D2,
@@ -103,7 +110,8 @@ class EnrollmentModule(
         formRepository: EnrollmentFormRepository,
         valueStore: ValueStore,
         analyticsHelper: AnalyticsHelper,
-        onRowActionProcessor: FlowableProcessor<RowAction>
+        onRowActionProcessor: FlowableProcessor<RowAction>,
+        fieldViewModelFactory: FieldViewModelFactory
     ): EnrollmentPresenterImpl {
         return EnrollmentPresenterImpl(
             enrollmentView,
@@ -117,7 +125,8 @@ class EnrollmentModule(
             valueStore,
             analyticsHelper,
             context.getString(R.string.field_is_mandatory),
-            onRowActionProcessor
+            onRowActionProcessor,
+            fieldViewModelFactory.sectionProcessor()
         )
     }
 

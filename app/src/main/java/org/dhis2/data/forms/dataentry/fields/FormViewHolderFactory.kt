@@ -3,7 +3,6 @@ package org.dhis2.data.forms.dataentry.fields
 import androidx.databinding.ObservableField
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.age.AgeHolder
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateHolder
@@ -26,9 +25,7 @@ class FormViewHolderFactory(
     private val currentFocusUid: MutableLiveData<String>,
     private val totalFields: Int,
     private val imageSelector: ObservableField<String>,
-    private val sectionRendering: String?,
-    private val sectionProcessor: FlowableProcessor<String>,
-    private val selectedSection: ObservableField<String>
+    private val sectionRendering: String?
 ) {
 
     fun provideHolder(
@@ -120,7 +117,7 @@ class FormViewHolderFactory(
     }
 
     private fun provideSectionViewHolder(binding: ViewDataBinding): SectionHolder {
-        return SectionHolder(binding, selectedSection, sectionProcessor)
+        return SectionHolder(binding)
     }
 
     private fun provideSpinnerViewHolder(binding: ViewDataBinding): SpinnerHolder {

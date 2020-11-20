@@ -19,17 +19,21 @@ class SectionView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : FieldLayout(context, attrs, defStyleAttr) {
 
-    val binding: SectionViewBinding by lazy {
-        SectionViewBinding.inflate(LayoutInflater.from(context), this, false)
-    }
-
     private lateinit var sectionViewModel: SectionViewModel
+    private lateinit var binding: SectionViewBinding
+
+    private fun initLayout() {
+        if (!::binding.isInitialized) {
+            binding = SectionViewBinding.inflate(LayoutInflater.from(context), this, true)
+        }
+    }
 
     fun setViewModel(sectionViewModel: SectionViewModel) {
         this.sectionViewModel = sectionViewModel
+        initLayout()
 
-        sectionViewModel.observeSelectedSection()
-            .addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
+        sectionViewModel.selectedField()
+            ?.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
                 override fun onPropertyChanged(
                     sender: Observable,
                     propertyId: Int
@@ -39,6 +43,7 @@ class SectionView @JvmOverloads constructor(
                 }
             })
         binding.apply {
+            item = sectionViewModel
             descriptionIcon.visibility = View.GONE
             sectionName.viewTreeObserver.addOnGlobalLayoutListener {
                 sectionName.takeIf { it.text == sectionViewModel.label() }?.layout?.let {
@@ -64,6 +69,7 @@ class SectionView @JvmOverloads constructor(
 
         setLastSectionHeight(sectionViewModel.lastPositionShouldChangeHeight())
         setBottomShadow(sectionViewModel.showBottomShadow())
+        binding.executePendingBindings()
     }
 
     private fun setShadow(open: Boolean) {
@@ -100,7 +106,7 @@ class SectionView @JvmOverloads constructor(
         val hasDescription = binding.descriptionIcon.visibility == View.VISIBLE
         val descriptionClicked =
             binding.descriptionIcon.x <= x &&
-                    binding.descriptionIcon.x + binding.descriptionIcon.width >= x
+                binding.descriptionIcon.x + binding.descriptionIcon.width >= x
         if (hasDescription && descriptionClicked) {
             showDescription()
         } else {
