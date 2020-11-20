@@ -6,6 +6,7 @@ import android.view.View
 import org.dhis2.Bindings.Bindings
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel
 import org.dhis2.databinding.FormImageBinding
+import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 
 class ImageCustomView @JvmOverloads constructor(
     context: Context,
@@ -28,8 +29,30 @@ class ImageCustomView @JvmOverloads constructor(
                 visibility = if (viewModel.shouldShowError()) View.VISIBLE else View.GONE
                 text = viewModel.errorMessage
             }
-            Bindings.setObjectStyle(icon, this@ImageCustomView, viewModel.objectStyle())
-            Bindings.setObjectStyle(label, this@ImageCustomView, viewModel.objectStyle())
+        }
+
+        var height: Int?
+        val parentHeight: Int = this.height
+
+        viewModel.renderingType.let {
+            height = when (it) {
+                ProgramStageSectionRenderingType.SEQUENTIAL.name -> {
+                    150
+                    // height = parentHeight / if (totalFields > 2) 3 else totalFields
+                }
+                ProgramStageSectionRenderingType.MATRIX.name -> {
+                    150
+                    // height = parentHeight / (totalFields / 2 + 1)
+                }
+                else -> -1
+            }
+        }
+
+        height?.let {
+            val rootView = binding.root
+            val layoutParams = rootView.layoutParams
+            layoutParams.height = it
+            rootView.layoutParams = layoutParams
         }
     }
 
