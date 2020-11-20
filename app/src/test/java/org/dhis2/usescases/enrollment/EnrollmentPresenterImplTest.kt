@@ -54,6 +54,7 @@ class EnrollmentPresenterImplTest {
     private val valueStore: ValueStore = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
     private val onRowActionProcessor: FlowableProcessor<RowAction> = mock()
+    private val sectionProcessor: FlowableProcessor<String> = mock()
 
     @Before
     fun setUp() {
@@ -69,7 +70,8 @@ class EnrollmentPresenterImplTest {
             valueStore,
             analyticsHelper,
             "This field is mandatory",
-            onRowActionProcessor
+            onRowActionProcessor,
+            sectionProcessor
         )
     }
 
@@ -375,7 +377,6 @@ class EnrollmentPresenterImplTest {
             ObjectStyle.builder().build(),
             null,
             "any",
-            false,
             false,
             false,
             null

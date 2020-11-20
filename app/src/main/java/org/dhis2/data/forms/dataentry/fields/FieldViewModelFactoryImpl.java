@@ -2,6 +2,7 @@ package org.dhis2.data.forms.dataentry.fields;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.ObservableField;
 
 import org.dhis2.data.forms.dataentry.fields.age.AgeViewModel;
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
@@ -13,6 +14,7 @@ import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel;
+import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.utils.DhisTextUtils;
@@ -27,14 +29,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 
+import static org.dhis2.data.forms.dataentry.EnrollmentRepository.SINGLE_SECTION_UID;
 import static org.dhis2.utils.Preconditions.isNull;
 
 public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
     @NonNull
     private final Map<ValueType, String> valueTypeHintMap;
+
+    private final FlowableProcessor<String> sectionProcessor = PublishProcessor.create();
+    private final ObservableField<String> currentSection = new ObservableField<String>("");
 
     private final List<ValueTypeRenderingType> optionSetTextRenderings = Arrays.asList(
             ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
@@ -86,10 +94,10 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 if (fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
                     return ScanTextViewModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, fieldRendering, valueTypeHintMap.get(type), true, false, processor);
                 } else {
-                    return EditTextViewModel.create(id, label, mandatory, value, valueTypeHintMap.get(type), 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask, ProgramStageSectionRenderingType.LISTING.toString(), false, true, false, processor);
+                    return EditTextViewModel.create(id, label, mandatory, value, valueTypeHintMap.get(type), 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask, ProgramStageSectionRenderingType.LISTING.toString(), true, false, processor);
                 }
             case IMAGE:
-                return PictureViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, processor);
+                return PictureViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, processor, true);
             case TIME:
             case DATE:
             case DATETIME:
@@ -107,7 +115,52 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case USERNAME:
                 return UnsupportedViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, processor);
             default:
-                return EditTextViewModel.create(id, label, mandatory, value, valueTypeHintMap.get(type), 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask, ProgramStageSectionRenderingType.LISTING.toString(), false, true, false, processor);
+                return EditTextViewModel.create(id, label, mandatory, value, valueTypeHintMap.get(type), 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask, ProgramStageSectionRenderingType.LISTING.toString(), true, false, processor);
         }
+    }
+
+    @NonNull
+    @Override
+    public FieldViewModel createSingleSection(String singleSectionName) {
+        return SectionViewModel.create(
+                SINGLE_SECTION_UID,
+                singleSectionName,
+                null,
+                false,
+                0,
+                0,
+                ProgramStageSectionRenderingType.LISTING.name(),
+                sectionProcessor,
+                currentSection
+        );
+    }
+
+    @NonNull
+    @Override
+    public FieldViewModel createSection(String sectionUid, String sectionName, String description,
+                                        boolean isOpen, int totalFields, int completedFields, String rendering) {
+        return SectionViewModel.create(
+                sectionUid,
+                sectionName,
+                description,
+                isOpen,
+                totalFields,
+                completedFields,
+                rendering,
+                sectionProcessor,
+                currentSection
+        );
+    }
+
+    @NonNull
+    @Override
+    public FieldViewModel createClosingSection() {
+        return SectionViewModel.createClosingSection();
+    }
+
+    @NonNull
+    @Override
+    public Flowable<String> sectionProcessor() {
+        return sectionProcessor;
     }
 }

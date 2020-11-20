@@ -4,6 +4,7 @@ import java.util.ArrayList
 import java.util.HashMap
 import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
@@ -13,6 +14,7 @@ import org.dhis2.utils.DhisTextUtils.Companion.isEmpty
 const val DISPLAY_FIELD_KEY = "DISPLAY_FIELD_KEY"
 
 class EventFieldMapper(
+    private val fieldFactory: FieldViewModelFactory,
     private val mandatoryFieldWarning: String
 ) {
 
@@ -201,8 +203,8 @@ class EventFieldMapper(
         )
         val isOpen = sectionModel.sectionUid() == section
         finalFieldList.add(
-            SectionViewModel.create(
-                sectionModel.sectionUid(),
+            fieldFactory.createSection(
+                sectionModel.uid(),
                 sectionModel.label(),
                 "",
                 isOpen,

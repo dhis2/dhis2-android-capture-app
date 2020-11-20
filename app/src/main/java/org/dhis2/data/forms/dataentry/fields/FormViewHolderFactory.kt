@@ -1,8 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields
 
-import androidx.databinding.ObservableField
 import androidx.databinding.ViewDataBinding
-import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.age.AgeHolder
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateHolder
@@ -20,10 +18,7 @@ import org.dhis2.data.forms.dataentry.fields.section.SectionHolder
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerHolder
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedHolder
 
-class FormViewHolderFactory(
-    private val sectionProcessor: FlowableProcessor<String>?,
-    private val selectedSection: ObservableField<String>?
-) {
+class FormViewHolderFactory() {
 
     fun provideHolder(
         binding: ViewDataBinding,
@@ -107,7 +102,7 @@ class FormViewHolderFactory(
     }
 
     private fun provideSectionViewHolder(binding: ViewDataBinding): SectionHolder {
-        return SectionHolder(binding, selectedSection!!, sectionProcessor!!)
+        return SectionHolder(binding)
     }
 
     private fun provideSpinnerViewHolder(binding: ViewDataBinding): SpinnerHolder {

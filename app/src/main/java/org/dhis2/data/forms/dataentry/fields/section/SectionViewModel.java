@@ -2,6 +2,7 @@ package org.dhis2.data.forms.dataentry.fields.section;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.ObservableField;
 
 import com.google.auto.value.AutoValue;
 
@@ -13,10 +14,14 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.Objects;
 
+import io.reactivex.processors.FlowableProcessor;
+
 @AutoValue
 public abstract class SectionViewModel extends FieldViewModel {
 
     public static final String CLOSING_SECTION_UID = "closing_section";
+    private boolean showBottomShadow;
+    private boolean lastPositionShouldChangeHeight;
 
     @NonNull
     public abstract boolean isOpen();
@@ -36,7 +41,16 @@ public abstract class SectionViewModel extends FieldViewModel {
     @NonNull
     public abstract String rendering();
 
-    public static SectionViewModel create(String sectionUid, String sectionName, String description, boolean isOpen, Integer totalFields, Integer completedFields, String rendering) {
+    @Nullable
+    public abstract FlowableProcessor<String> sectionProcessor();
+
+    @Nullable
+    public abstract ObservableField<String> selectedField();
+
+
+    private int sectionNumber;
+
+    public static SectionViewModel create(String sectionUid, String sectionName, String description, boolean isOpen, Integer totalFields, Integer completedFields, String rendering, FlowableProcessor<String> sectionProcessor, ObservableField<String> currentSection) {
         return new AutoValue_SectionViewModel(
                 sectionUid,
                 sectionName,
@@ -58,7 +72,9 @@ public abstract class SectionViewModel extends FieldViewModel {
                 completedFields,
                 null,
                 null,
-                rendering != null ? rendering : ProgramStageSectionRenderingType.LISTING.name()
+                rendering != null ? rendering : ProgramStageSectionRenderingType.LISTING.name(),
+                sectionProcessor,
+                currentSection
         );
     }
 
@@ -84,7 +100,9 @@ public abstract class SectionViewModel extends FieldViewModel {
                 0,
                 null,
                 null,
-                ProgramStageSectionRenderingType.LISTING.name()
+                ProgramStageSectionRenderingType.LISTING.name(),
+                null,
+                null
         );
     }
 
@@ -116,8 +134,9 @@ public abstract class SectionViewModel extends FieldViewModel {
                 completedFields(),
                 errors,
                 warnings(),
-                rendering()
-
+                rendering(),
+                sectionProcessor(),
+                selectedField()
         );
     }
 
@@ -144,8 +163,9 @@ public abstract class SectionViewModel extends FieldViewModel {
                 completedFields(),
                 errors,
                 warnings,
-                rendering()
-
+                rendering(),
+                sectionProcessor(),
+                selectedField()
         );
     }
 
@@ -172,8 +192,9 @@ public abstract class SectionViewModel extends FieldViewModel {
                 completedFields(),
                 errors(),
                 warnings,
-                rendering()
-
+                rendering(),
+                sectionProcessor(),
+                selectedField()
         );
     }
 
@@ -223,7 +244,9 @@ public abstract class SectionViewModel extends FieldViewModel {
                 completedFields(),
                 errors(),
                 warnings(),
-                rendering()
+                rendering(),
+                sectionProcessor(),
+                selectedField()
         );
     }
 
@@ -249,7 +272,9 @@ public abstract class SectionViewModel extends FieldViewModel {
                 completedFields(),
                 errors(),
                 warnings(),
-                rendering()
+                rendering(),
+                sectionProcessor(),
+                selectedField()
         );
     }
 
@@ -275,7 +300,9 @@ public abstract class SectionViewModel extends FieldViewModel {
                 completedFields,
                 errors(),
                 warnings(),
-                rendering()
+                rendering(),
+                sectionProcessor(),
+                selectedField()
         );
     }
 
@@ -311,5 +338,44 @@ public abstract class SectionViewModel extends FieldViewModel {
 
     public boolean areAllFieldsCompleted() {
         return completedFields().equals(totalFields());
+    }
+
+    public void setSelected() {
+        if (selectedField() != null)
+            selectedField().set(uid());
+        if (sectionProcessor() != null)
+            sectionProcessor().onNext(uid());
+    }
+
+    public void setSectionNumber(int sectionNumber) {
+        this.sectionNumber = sectionNumber;
+    }
+
+    public int getSectionNumber() {
+        return sectionNumber;
+    }
+
+    public boolean isSelected() {
+        if (selectedField() == null) {
+            return false;
+        } else {
+            return Objects.equals(selectedField().get(), uid());
+        }
+    }
+
+    public void setShowBottomShadow(boolean showBottomShadow) {
+        this.showBottomShadow = showBottomShadow;
+    }
+
+    public boolean showBottomShadow() {
+        return showBottomShadow;
+    }
+
+    public void setLastSectionHeight(boolean lastPositionShouldChangeHeight) {
+        this.lastPositionShouldChangeHeight = lastPositionShouldChangeHeight;
+    }
+
+    public boolean lastPositionShouldChangeHeight() {
+        return lastPositionShouldChangeHeight;
     }
 }

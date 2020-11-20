@@ -15,7 +15,6 @@ import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel
-import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.DhisTextUtils
@@ -108,7 +107,7 @@ class EnrollmentRepository(
                     }.map { list ->
                         val fields = getEnrollmentData(program)
                         fields.addAll(list)
-                        fields.add(SectionViewModel.createClosingSection())
+                        fields.add(fieldFactory.createClosingSection())
                         fields
                     }
             }.toFlowable()
@@ -298,14 +297,11 @@ class EnrollmentRepository(
         val teiType = d2.trackedEntityModule().trackedEntityTypes()
             .uid(tei.trackedEntityType()).blockingGet()
         return mutableListOf(
-            SectionViewModel.create(
-                SINGLE_SECTION_UID,
-                String.format(singleSectionLabel, teiType.displayName()),
-                null,
-                false,
-                0,
-                0,
-                ProgramStageSectionRenderingType.LISTING.name
+            fieldFactory.createSingleSection(
+                String.format(
+                    singleSectionLabel,
+                    teiType.displayName()
+                )
             )
         )
     }
@@ -355,7 +351,7 @@ class EnrollmentRepository(
     }
 
     private fun getEnrollmentDataSection(description: String?): FieldViewModel {
-        return SectionViewModel.create(
+        return fieldFactory.createSection(
             ENROLLMENT_DATA_SECTION_UID,
             enrollmentDataSectionLabel,
             description,
@@ -471,7 +467,7 @@ class EnrollmentRepository(
     }
 
     private fun transformSection(programSection: ProgramSection): FieldViewModel {
-        return SectionViewModel.create(
+        return fieldFactory.createSection(
             programSection.uid(),
             programSection.displayName(),
             programSection.description(),
