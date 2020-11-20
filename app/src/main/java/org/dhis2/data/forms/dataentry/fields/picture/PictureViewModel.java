@@ -15,45 +15,45 @@ import io.reactivex.processors.FlowableProcessor;
 @AutoValue
 public abstract class PictureViewModel extends FieldViewModel {
 
-    public boolean isBackgroundTransparent;
+    public abstract boolean isBackgroundTransparent();
 
     public boolean activated = false;
 
-    public static PictureViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle) {
-        return new AutoValue_PictureViewModel(id, label, mandatory, value, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.PICTURE, null);
+    public static PictureViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle, boolean isBackgroundTransparent) {
+        return new AutoValue_PictureViewModel(id, label, mandatory, value, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.PICTURE, null, isBackgroundTransparent);
     }
 
-    public static PictureViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle, FlowableProcessor<RowAction> processor) {
-        return new AutoValue_PictureViewModel(id, label, mandatory, value, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.PICTURE, processor);
+    public static PictureViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle, FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent) {
+        return new AutoValue_PictureViewModel(id, label, mandatory, value, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.PICTURE, processor, isBackgroundTransparent);
     }
 
     @Override
     public PictureViewModel setMandatory() {
-        return new AutoValue_PictureViewModel(uid(), label(), true, value(), programStageSection(), null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.PICTURE, processor());
+        return new AutoValue_PictureViewModel(uid(), label(), true, value(), programStageSection(), null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.PICTURE, processor(), isBackgroundTransparent());
     }
 
     @NonNull
     @Override
     public PictureViewModel withWarning(@NonNull String warning) {
-        return new AutoValue_PictureViewModel(uid(), label(), mandatory(), value(), programStageSection(), null, editable(), null, warning, error(), description(), objectStyle(), null, DataEntryViewHolderTypes.PICTURE, processor());
+        return new AutoValue_PictureViewModel(uid(), label(), mandatory(), value(), programStageSection(), null, editable(), null, warning, error(), description(), objectStyle(), null, DataEntryViewHolderTypes.PICTURE, processor(), isBackgroundTransparent());
     }
 
     @NonNull
     @Override
     public PictureViewModel withError(@NonNull String error) {
-        return new AutoValue_PictureViewModel(uid(), label(), mandatory(), value(), programStageSection(), null, editable(), null, warning(), error, description(), objectStyle(), null, DataEntryViewHolderTypes.PICTURE, processor());
+        return new AutoValue_PictureViewModel(uid(), label(), mandatory(), value(), programStageSection(), null, editable(), null, warning(), error, description(), objectStyle(), null, DataEntryViewHolderTypes.PICTURE, processor(), isBackgroundTransparent());
     }
 
     @NonNull
     @Override
     public PictureViewModel withValue(String data) {
-        return new AutoValue_PictureViewModel(uid(), label(), mandatory(), data, programStageSection(), null, false, null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.PICTURE, processor());
+        return new AutoValue_PictureViewModel(uid(), label(), mandatory(), data, programStageSection(), null, false, null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.PICTURE, processor(), isBackgroundTransparent());
     }
 
     @NonNull
     @Override
     public PictureViewModel withEditMode(boolean isEditable) {
-        return new AutoValue_PictureViewModel(uid(), label(), mandatory(), value(), programStageSection(), null, isEditable, null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.PICTURE, processor());
+        return new AutoValue_PictureViewModel(uid(), label(), mandatory(), value(), programStageSection(), null, isEditable, null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.PICTURE, processor(), isBackgroundTransparent());
     }
 
     @Override

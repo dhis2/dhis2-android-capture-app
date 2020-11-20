@@ -97,7 +97,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                     return EditTextViewModel.create(id, label, mandatory, value, valueTypeHintMap.get(type), 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask, ProgramStageSectionRenderingType.LISTING.toString(), true, false, processor);
                 }
             case IMAGE:
-                return PictureViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, processor);
+                return PictureViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, processor, true);
             case TIME:
             case DATE:
             case DATETIME:

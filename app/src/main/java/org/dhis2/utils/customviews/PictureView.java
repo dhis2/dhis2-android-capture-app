@@ -241,7 +241,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     public void setViewModel(PictureViewModel viewModel) {
         this.viewModel = viewModel;
-        setIsBgTransparent(viewModel.isBackgroundTransparent);
+        setIsBgTransparent(viewModel.isBackgroundTransparent());
         setActivationListener(viewModel::onActivate);
         setProcessor(viewModel.uid().contains("_") ? viewModel.uid().split("_")[0] : viewModel.uid(),
                 viewModel.uid().contains("_") ? viewModel.uid().split("_")[1] : viewModel.uid());
