@@ -135,17 +135,14 @@ abstract class MapManager(val mapView: MapView) {
                 )
                 isLocationComponentEnabled = true
             } else {
-                permissionsManager = PermissionsManager(object : PermissionsListener{
-                    override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
-
-                    }
+                permissionsManager = PermissionsManager(object : PermissionsListener {
+                    override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {}
 
                     override fun onPermissionResult(granted: Boolean) {
                         if (granted) {
                             enableLocationComponent(style, onMissingPermission)
                         }
                     }
-
                 })
                 onMissingPermission(permissionsManager)
             }
