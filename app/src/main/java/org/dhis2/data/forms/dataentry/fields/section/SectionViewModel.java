@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import java.util.Objects;
 
 import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 
 @AutoValue
 public abstract class SectionViewModel extends FieldViewModel {
@@ -101,8 +102,8 @@ public abstract class SectionViewModel extends FieldViewModel {
                 null,
                 null,
                 ProgramStageSectionRenderingType.LISTING.name(),
-                null,
-                null
+                PublishProcessor.create(),
+                new ObservableField("")
         );
     }
 
@@ -341,10 +342,11 @@ public abstract class SectionViewModel extends FieldViewModel {
     }
 
     public void setSelected() {
-        if (selectedField() != null)
-            selectedField().set(uid());
-        if (sectionProcessor() != null)
-            sectionProcessor().onNext(uid());
+        if (selectedField() != null && sectionProcessor() != null) {
+            String sectionToOpen = Objects.equals(selectedField().get(), uid()) ? "" : uid();
+            selectedField().set(sectionToOpen);
+            sectionProcessor().onNext(sectionToOpen);
+        }
     }
 
     public void setSectionNumber(int sectionNumber) {

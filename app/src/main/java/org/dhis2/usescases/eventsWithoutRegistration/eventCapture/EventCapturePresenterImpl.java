@@ -85,7 +85,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private Map<String, String> errors;
     private EventStatus eventStatus;
     private boolean hasExpired;
-    private final FlowableProcessor<String> sectionProcessor;
+//    private final FlowableProcessor<String> sectionProcessor;
+    private final Flowable<String> sectionProcessor;
     private int unsupportedFields;
     private int totalFields;
     private ConnectableFlowable<List<FieldViewModel>> fieldFlowable;
@@ -107,7 +108,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                      PreferenceProvider preferences,
                                      GetNextVisibleSection getNextVisibleSection,
                                      EventFieldMapper fieldMapper,
-                                     FlowableProcessor<RowAction> onFieldActionProcessor) {
+                                     FlowableProcessor<RowAction> onFieldActionProcessor, Flowable<String> sectionProcessor) {
         this.view = view;
         this.eventUid = eventUid;
         this.eventCaptureRepository = eventCaptureRepository;
@@ -129,7 +130,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.onFieldActionProcessor = onFieldActionProcessor;
 
         currentSectionPosition = PublishProcessor.create();
-        sectionProcessor = PublishProcessor.create();
+        this.sectionProcessor = sectionProcessor;
         showCalculationProcessor = PublishProcessor.create();
         progressProcessor = PublishProcessor.create();
         sectionAdjustProcessor = PublishProcessor.create();
@@ -517,7 +518,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void goToSection(String sectionUid) {
-        sectionProcessor.onNext(sectionUid);
+//        sectionProcessor.onNext(sectionUid);
     }
 
     @Override

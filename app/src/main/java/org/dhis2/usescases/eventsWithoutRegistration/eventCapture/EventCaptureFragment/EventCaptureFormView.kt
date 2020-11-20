@@ -4,7 +4,6 @@ import io.reactivex.processors.FlowableProcessor
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 
 interface EventCaptureFormView {
-    fun sectionSelectorFlowable(): FlowableProcessor<String>
     fun showFields(
         fields: MutableList<FieldViewModel>,
         lastFocusItem: String

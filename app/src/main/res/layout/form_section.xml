@@ -6,7 +6,9 @@
     <data>
 
         <import type="android.view.View" />
-
+        <variable
+            name="item"
+            type="org.dhis2.data.forms.dataentry.fields.section.SectionViewModel" />
 
     </data>
 
@@ -21,6 +23,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:viewModel="@{item}"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

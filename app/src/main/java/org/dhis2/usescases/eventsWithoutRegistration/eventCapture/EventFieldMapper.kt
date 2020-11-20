@@ -204,7 +204,7 @@ class EventFieldMapper(
         val isOpen = sectionModel.sectionUid() == section
         finalFieldList.add(
             fieldFactory.createSection(
-                sectionModel.uid(),
+                sectionModel.sectionUid(),
                 sectionModel.label(),
                 "",
                 isOpen,

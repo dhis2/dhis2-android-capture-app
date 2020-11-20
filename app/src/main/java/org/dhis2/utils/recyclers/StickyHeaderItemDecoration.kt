@@ -9,7 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.GestureDetectorCompat
 import androidx.recyclerview.widget.RecyclerView
+import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.section.SectionHolder
+import org.dhis2.data.forms.dataentry.fields.section.SectionView
 
 class StickyHeaderItemDecoration(
     parent: RecyclerView,
@@ -33,8 +35,7 @@ class StickyHeaderItemDecoration(
 
                     override fun onSingleTapUp(e: MotionEvent?): Boolean {
                         if (e!!.y <= currentHeader?.second?.itemView?.height ?: -1) {
-                            (currentHeader?.second as SectionHolder)
-                                .getSectionView().handleHeaderClick(e.x)
+                            (currentHeader?.second as SectionHolder).itemView.findViewById<SectionView>(R.id.sectionView).handleHeaderClick(e.x)
                             return true
                         }
                         return false

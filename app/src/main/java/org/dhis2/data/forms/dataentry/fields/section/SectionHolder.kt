@@ -17,8 +17,4 @@ class SectionHolder(
             formBinding.sectionView.setViewModel(this)
         }
     }
-
-    fun getSectionView(): SectionView {
-        return formBinding.sectionView
-    }
 }
