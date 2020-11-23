@@ -40,9 +40,12 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
         onPermissionNeeded: () -> Unit,
         onLocationDisabled: () -> Unit
     ) {
-        val hasPermission = hasPermission()
-        val isLocationEnabled = hasLocationEnabled()
-        if (hasPermission && isLocationEnabled) {
+        if(!hasPermission()){
+            onPermissionNeeded()
+        }else if (!hasLocationEnabled()){
+            onLocationDisabled()
+            requestLocationUpdates(onNewLocation)
+        }else{
             locationManager.getLastKnownLocation(locationProvider).apply {
                 if (this != null && latitude != 0.0 && longitude != 0.0) {
                     onNewLocation(this)
@@ -50,11 +53,6 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
                     requestLocationUpdates(onNewLocation)
                 }
             }
-        } else if (!hasPermission) {
-            onPermissionNeeded()
-        } else if (!isLocationEnabled) {
-            onLocationDisabled()
-            requestLocationUpdates(onNewLocation)
         }
     }
 
