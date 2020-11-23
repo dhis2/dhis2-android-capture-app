@@ -49,7 +49,7 @@ import static org.dhis2.R.layout.form_button;
 import static org.dhis2.R.layout.form_date_text;
 import static org.dhis2.R.layout.form_date_time_text;
 import static org.dhis2.R.layout.form_edit_text_custom;
-import static org.dhis2.R.layout.form_option_set;
+import static org.dhis2.R.layout.form_option_set_spinner;
 import static org.dhis2.R.layout.form_org_unit;
 import static org.dhis2.R.layout.form_scan;
 import static org.dhis2.R.layout.form_time_text;
@@ -110,7 +110,7 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> implements
             case form_yes_no:
                 viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), label, attr.valueType(), false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build(), ValueTypeRenderingType.DEFAULT, false, processor, true);
                 break;
-            case form_option_set:
+            case form_option_set_spinner:
                 viewModel = SpinnerViewModel.create(attr.uid(), label, "", false, attr.optionSet().uid(), queryData.get(attr.uid()), null, true, attr.displayDescription(), 20, ObjectStyle.builder().build(), false, ValueTypeRenderingType.DEFAULT.toString(), processor);
                 break;
             case custom_form_coordinate:
@@ -166,7 +166,7 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> implements
                             (renderingTypes.get(position).type() == ValueTypeRenderingType.QR_CODE))) {
                 return form_scan;
             } else {
-                return form_option_set;
+                return form_option_set_spinner;
             }
         else {
             ValueType valueType = attributeList.get(position).valueType();

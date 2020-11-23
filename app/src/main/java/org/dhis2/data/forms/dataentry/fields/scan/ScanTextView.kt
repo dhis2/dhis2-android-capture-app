@@ -215,9 +215,8 @@ class ScanTextView @JvmOverloads constructor(
     fun setViewModel(viewModel: ScanTextViewModel) {
         this.viewModel = viewModel
 
-        if (binding == null) {
-            setLayoutData(viewModel.isBackgroundTransparent())
-        }
+        setLayoutData(viewModel.isBackgroundTransparent())
+
         viewModel.apply {
             setText(value())
             setRenderingType(fieldRendering?.type())
