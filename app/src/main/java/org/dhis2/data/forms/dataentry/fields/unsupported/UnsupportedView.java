@@ -1,10 +1,10 @@
-package org.dhis2.utils.customviews;
+package org.dhis2.data.forms.dataentry.fields.unsupported;
 
 import android.content.Context;
 import android.util.AttributeSet;
 
-import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.databinding.FormUnsupportedBinding;
+import org.dhis2.utils.customviews.FieldLayout;
 
 public class UnsupportedView extends FieldLayout {
 
@@ -38,7 +38,5 @@ public class UnsupportedView extends FieldLayout {
 
     public void setViewModel(UnsupportedViewModel viewModel) {
         setLabel(viewModel.label());
-
     }
-
 }

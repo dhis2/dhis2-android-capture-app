@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews;
+package org.dhis2.data.forms.dataentry.fields.optionset;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -13,11 +13,13 @@ import androidx.databinding.ViewDataBinding;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
 import org.dhis2.databinding.FormSpinnerSelectionAccentBinding;
 import org.dhis2.databinding.FormSpinnerSelectionBinding;
 import org.dhis2.databinding.OptionSetSelectCheckItemBinding;
 import org.dhis2.databinding.OptionSetSelectItemBinding;
+import org.dhis2.utils.Constants;
+import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.utils.customviews.FieldLayout;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.option.Option;
@@ -237,6 +239,16 @@ public class OptionSetSelectionView extends FieldLayout {
 
     public void setDescription(String description) {
         descriptionLabel.setVisibility(label.length() > DEFAULT_MAX_CHAR_LENGHT || description != null ? View.VISIBLE : View.GONE);
+        descriptionLabel.setOnClickListener(v ->
+                new CustomDialog(
+                        getContext(),
+                        label,
+                        description != null ? description : getContext().getString(R.string.empty_description),
+                        getContext().getString(R.string.action_close),
+                        null,
+                        Constants.DESCRIPTION_DIALOG,
+                        null
+                ).show());
     }
 
     public interface OnSelectedOption {
@@ -246,7 +258,9 @@ public class OptionSetSelectionView extends FieldLayout {
     }
 
     public void setViewModel(OptionSetViewModel viewModel) {
-        setLayoutData(viewModel.isBackgroundTransparent(), viewModel.renderType());
+        if (binding == null) {
+            setLayoutData(viewModel.isBackgroundTransparent(), viewModel.renderType());
+        }
         setOnSelectedOptionListener(new OnSelectedOption() {
             @Override
             public void onSelectedOption(String optionName, String optionCode) {

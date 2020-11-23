@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews;
+package org.dhis2.data.forms.dataentry.fields.picture;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -32,10 +32,12 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.FileExtensionsKt;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.databinding.FormPictureAccentBinding;
 import org.dhis2.databinding.FormPictureBinding;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.utils.customviews.FieldLayout;
+import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
 
 import java.io.File;
@@ -127,6 +129,17 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
             ((FormPictureBinding) binding).setDescription(description);
         else
             ((FormPictureAccentBinding) binding).setDescription(description);
+
+        findViewById(R.id.descriptionLabel).setOnClickListener(v ->
+                new CustomDialog(
+                        getContext(),
+                        label,
+                        description != null ? description : getContext().getString(R.string.empty_description),
+                        getContext().getString(R.string.action_close),
+                        null,
+                        Constants.DESCRIPTION_DIALOG,
+                        null
+                ).show());
     }
 
     public void setWarning(String msg) {
@@ -241,7 +254,10 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     public void setViewModel(PictureViewModel viewModel) {
         this.viewModel = viewModel;
-        setIsBgTransparent(viewModel.isBackgroundTransparent());
+
+        if (binding == null) {
+            setIsBgTransparent(viewModel.isBackgroundTransparent());
+        }
         setActivationListener(viewModel::onActivate);
         setProcessor(viewModel.uid().contains("_") ? viewModel.uid().split("_")[0] : viewModel.uid(),
                 viewModel.uid().contains("_") ? viewModel.uid().split("_")[1] : viewModel.uid());

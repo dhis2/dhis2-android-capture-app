@@ -29,7 +29,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
-        <org.dhis2.utils.customviews.DateView
+        <org.dhis2.data.forms.dataentry.fields.datetime.DateView
             android:id="@+id/dateView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

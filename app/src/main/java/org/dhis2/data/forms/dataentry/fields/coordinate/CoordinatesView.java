@@ -1,4 +1,4 @@
-package org.dhis2.usescases.coodinates;
+package org.dhis2.data.forms.dataentry.fields.coordinate;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -32,7 +32,6 @@ import com.google.gson.reflect.TypeToken;
 import org.dhis2.Bindings.DoubleExtensionsKt;
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.databinding.FormCoordinatesAccentBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
 import org.dhis2.uicomponents.map.geometry.LngLatValidatorKt;
