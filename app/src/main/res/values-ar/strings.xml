@@ -762,4 +762,4 @@
     <string name="jira_issue_sent">تم إرسال المشكلة</string>
     <string name="jira_issue_sent_error">خطأ في إرسال المشكلة</string>
     <string name="section_charts">المخططات البيانية</string>
-</resources>
+    </resources>

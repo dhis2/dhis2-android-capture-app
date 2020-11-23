@@ -756,4 +756,4 @@
     <string name="jira_issue_sent">Incidencia reportada</string>
     <string name="jira_issue_sent_error">Error al enviar la incidencia</string>
     <string name="section_charts">Gráficas</string>
-</resources>
+    </resources>
