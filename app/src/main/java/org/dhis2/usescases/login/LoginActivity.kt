@@ -366,6 +366,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == RQ_QR_SCANNER && resultCode == Activity.RESULT_OK) {
             qrUrl = data?.getStringExtra(Constants.EXTRA_DATA)
+            qrUrl?.let { setUrl(it) }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
