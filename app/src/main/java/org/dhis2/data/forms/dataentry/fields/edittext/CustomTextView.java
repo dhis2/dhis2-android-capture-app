@@ -91,6 +91,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     private View descriptionLabel;
     private View dummy;
     private TextView labelText;
+    private ImageView clearButton;
     private Map<ValueType, Validator> validators;
     private Validator validator;
 
@@ -124,7 +125,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view, this, true);
         else if (!isBgTransparent && !isLongText)
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view_accent, this, true);
-        else if (isBgTransparent && isLongText)
+        else if (isBgTransparent)
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_long_text_view, this, true);
         else
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_long_text_view_accent, this, true);
@@ -165,6 +166,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
                 }
             });
+            clearButton = findViewById(R.id.clear_button);
         }
     }
 
@@ -213,7 +215,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     editText.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
                     editText.setSingleLine(false);
                     editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
-                    findViewById(R.id.clear_button).setOnClickListener(v -> {
+                    clearButton.setOnClickListener(v -> {
                         editText.getText().clear();
                         updateDeleteVisibility(findViewById(R.id.clear_button));
                     });
