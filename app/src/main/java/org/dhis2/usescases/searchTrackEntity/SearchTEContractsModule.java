@@ -10,6 +10,7 @@ import androidx.paging.PagedList;
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage;
@@ -42,18 +43,12 @@ import kotlin.Pair;
 public class SearchTEContractsModule {
 
     public interface View extends AbstractActivityContracts.View {
-        void setForm(List<TrackedEntityAttribute> trackedEntityAttributes,
-                     @Nullable Program program,
-                     HashMap<String, String> queryData,
-                     List<ValueTypeDeviceRendering> renderingTypes);
 
         void setPrograms(List<Program> programModels);
 
         void setFiltersVisibility(boolean showFilters);
 
         void clearList(String uid);
-
-        Flowable<RowAction> rowActionss();
 
         void clearData();
 
@@ -104,6 +99,8 @@ public class SearchTEContractsModule {
         void onBackClicked();
 
         void couldNotDownload(String typeName);
+
+        void setFormData(List<FieldViewModel> data);
     }
 
     public interface Presenter {

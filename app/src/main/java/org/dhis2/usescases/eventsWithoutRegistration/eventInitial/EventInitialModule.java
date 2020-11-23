@@ -58,7 +58,8 @@ public class EventInitialModule {
     EventSummaryRepository eventSummaryRepository(@NonNull Context context,
                                                   @NonNull FormRepository formRepository, D2 d2) {
         FieldViewModelFactory fieldViewModelFactory = new FieldViewModelFactoryImpl(
-                ValueTypeExtensionsKt.valueTypeHintMap(context)
+                ValueTypeExtensionsKt.valueTypeHintMap(context),
+                false
         );
         return new EventSummaryRepositoryImpl(fieldViewModelFactory, formRepository, eventUid, d2);
     }

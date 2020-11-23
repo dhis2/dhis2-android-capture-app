@@ -72,7 +72,7 @@ public class EventCaptureModule {
     @Provides
     @PerActivity
     FieldViewModelFactory fieldFactory(Context context){
-        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context));
+        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context),false);
     }
 
     @Provides

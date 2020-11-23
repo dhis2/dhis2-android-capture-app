@@ -213,7 +213,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
 
     @Override
     public void onNext(int position) {
-        if (position < getItemCount()) {
+        if (position < getItemCount()-1) {
             getItem(position + 1).onActivate();
         }
     }
