@@ -10,6 +10,7 @@ import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
@@ -32,6 +33,7 @@ class EventCapturePresenterTest {
     private val getNextVisibleSection: GetNextVisibleSection = GetNextVisibleSection()
     private val eventFieldMapper: EventFieldMapper = mock()
     private val onRowActionProcessor: FlowableProcessor<RowAction> = mock()
+    private val fieldFactory: FieldViewModelFactory = mock()
 
     @Before
     fun setUp() {

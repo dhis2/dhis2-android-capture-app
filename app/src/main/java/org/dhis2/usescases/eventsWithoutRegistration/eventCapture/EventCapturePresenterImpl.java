@@ -85,7 +85,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private Map<String, String> errors;
     private EventStatus eventStatus;
     private boolean hasExpired;
-//    private final FlowableProcessor<String> sectionProcessor;
+    //    private final FlowableProcessor<String> sectionProcessor;
     private final Flowable<String> sectionProcessor;
     private int unsupportedFields;
     private int totalFields;
@@ -328,9 +328,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                             for (FieldViewModel fieldViewModel : fields) {
                                 fieldViewModel.setAdapterPosition(fields.indexOf(fieldViewModel));
                                 if (fieldViewModel.mandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection())) {
-                                    if(fieldViewModel instanceof ImageViewModel && !emptyMandatoryFields.containsKey(((ImageViewModel) fieldViewModel).fieldUid())){
+                                    if (fieldViewModel instanceof ImageViewModel && !emptyMandatoryFields.containsKey(((ImageViewModel) fieldViewModel).fieldUid())) {
                                         emptyMandatoryFields.put(((ImageViewModel) fieldViewModel).fieldUid(), fieldViewModel);
-                                    }else if(!(fieldViewModel instanceof  ImageViewModel)){
+                                    } else if (!(fieldViewModel instanceof ImageViewModel)) {
                                         emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
                                     }
                                 }
@@ -517,11 +517,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void goToSection(String sectionUid) {
-//        sectionProcessor.onNext(sectionUid);
-    }
-
-    @Override
     public void goToSection() {
         String sectionUid = errors.entrySet().iterator().next().getKey();
         for (FormSectionViewModel sectionModel : getFinalSections())
@@ -566,7 +561,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                             currentSectionPosition.onNext(0);
                                             view.showSnackBar(R.string.event_reopened);
                                             eventStatus = EventStatus.ACTIVE;
-                                            goToSection(currentSection.get());
                                         }
                                     }
                                 },
