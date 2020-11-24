@@ -379,21 +379,19 @@ public class YesNoView extends FieldLayout {
             @Override
             public void onValueChanged(boolean isActive) {
                 if (isActive) {
-                    viewModel.withValue(String.valueOf(true));
+                    viewModel.onValueChanged(String.valueOf(true));
                 } else {
-                    viewModel.withValue(String.valueOf(false));
+                    viewModel.onValueChanged(String.valueOf(false));
                 }
-                nextFocus(binding.getRoot());
-                viewModel.onValueChanged();
                 clearBackground(viewModel.isSearchMode());
+                nextFocus(binding.getRoot());
             }
 
             @Override
             public void onClearValue() {
-                viewModel.withValue(null);
-                nextFocus(binding.getRoot());
-                viewModel.onValueChanged();
+                viewModel.onValueChanged(null);
                 clearBackground(viewModel.isSearchMode());
+                nextFocus(binding.getRoot());
             }
         });
     }
