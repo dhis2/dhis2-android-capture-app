@@ -39,7 +39,7 @@ class DisplayCustomView @JvmOverloads constructor(
     fun setViewModel(viewModel: DisplayViewModel) {
         this.viewModel = viewModel
         binding.item = viewModel
-        binding.colorBg = -1
+        binding.colorBg = viewModel.colorBG()
         setLabel()
     }
 
