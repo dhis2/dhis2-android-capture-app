@@ -112,9 +112,12 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         inputLayout.setError(null);
     }
 
-    private void onFocusChanged(View view, boolean b) {
-        if (b)
+    private void onFocusChanged(View view, boolean hasFocus) {
+        if (hasFocus) {
             onClick(view);
+        } else {
+            viewModel.onDeactivate();
+        }
     }
 
     @Override
@@ -360,6 +363,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
                 viewModel.onAgeSet(ageDate);
                 clearBackground(viewModel.isSearchMode());
                 viewModel.onDeactivate();
+                viewModel.callback.onNext();
             }
         });
         setActivationListener(viewModel::onActivate);

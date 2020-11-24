@@ -386,6 +386,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         if (hasFocus) {
             activate();
             latitude.performClick();
+        } else {
+            viewModel.onDeactivate();
         }
     }
 
