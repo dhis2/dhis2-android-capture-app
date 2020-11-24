@@ -289,9 +289,10 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
     ): List<Feature>? {
         return mutableListOf<Feature>().apply {
             teiFeatureCollections?.filterKeys { it != ENROLLMENT_SOURCE_ID }
-                ?.values?.map { collection ->
+                ?.map { (key, collection) ->
                 collection.features()?.filter {
-                    it.getStringProperty(propertyName) == propertyValue
+                    mapLayerManager.getLayer(key)?.visible == true &&
+                            it.getStringProperty(propertyName) == propertyValue
                 }?.map {
                     mapLayerManager.getLayer(TEIS_SOURCE_ID)?.setSelectedItem(it)
                     it
