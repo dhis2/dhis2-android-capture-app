@@ -15,8 +15,6 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.io.File
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.isKeyboardOpened
 import org.dhis2.R
@@ -44,6 +42,8 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import java.io.File
+import javax.inject.Inject
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
@@ -394,7 +394,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*region DATA ENTRY*/
     override fun showFields(fields: List<FieldViewModel>) {
         if (!isEmpty(presenter.getLastFocusItem())) {
-            binding.formView.setLastFocusItem(presenter.getLastFocusItem())
+            binding.formView.setLastFocusItem(presenter.getLastFocusItem()!!)
         }
 
         fields.filter {
