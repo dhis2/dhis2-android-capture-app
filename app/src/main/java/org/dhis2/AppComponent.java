@@ -1,6 +1,8 @@
 package org.dhis2;
 
 import org.dhis2.data.forms.dataentry.validation.ValidatorModule;
+import org.dhis2.data.location.LocationModule;
+import org.dhis2.data.location.LocationProvider;
 import org.dhis2.data.prefs.PreferenceModule;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerModule;
@@ -39,7 +41,8 @@ import dagger.Component;
         WorkManagerModule.class,
         MatomoAnalyticsModule.class,
         ValidatorModule.class,
-        CrashReportModule.class
+        CrashReportModule.class,
+        LocationModule.class
 })
 public interface AppComponent {
 
@@ -67,6 +70,8 @@ public interface AppComponent {
     PreferenceProvider preferenceProvider();
 
     MatomoAnalyticsController matomoController();
+
+    LocationProvider locationProvider();
 
     //injection targets
     void inject(App app);
