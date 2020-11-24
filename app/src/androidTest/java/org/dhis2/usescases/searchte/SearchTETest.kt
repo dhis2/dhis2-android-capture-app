@@ -140,6 +140,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Date dependant. We have to find a way to mock dates")
     @Test
     fun shouldSuccessfullyFilterByEventStatusOverdue() {
         val eventStatusFilter = context.getString(R.string.filters_title_event_status)
