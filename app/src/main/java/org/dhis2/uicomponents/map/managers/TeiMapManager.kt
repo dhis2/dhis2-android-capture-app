@@ -290,14 +290,14 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         return mutableListOf<Feature>().apply {
             teiFeatureCollections?.filterKeys { it != ENROLLMENT_SOURCE_ID }
                 ?.map { (key, collection) ->
-                collection.features()?.filter {
-                    mapLayerManager.getLayer(key)?.visible == true &&
+                    collection.features()?.filter {
+                        mapLayerManager.getLayer(key)?.visible == true &&
                             it.getStringProperty(propertyName) == propertyValue
-                }?.map {
-                    mapLayerManager.getLayer(TEIS_SOURCE_ID)?.setSelectedItem(it)
-                    it
-                }?.let { addAll(it) }
-            }
+                    }?.map {
+                        mapLayerManager.getLayer(TEIS_SOURCE_ID)?.setSelectedItem(it)
+                        it
+                    }?.let { addAll(it) }
+                }
 
             fieldFeatureCollections.values.map { collection ->
                 collection.features()?.filter {
