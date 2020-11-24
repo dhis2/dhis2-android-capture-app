@@ -34,6 +34,7 @@ import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.databinding.FormPictureAccentBinding;
 import org.dhis2.databinding.FormPictureBinding;
+import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.FieldLayout;
@@ -216,12 +217,14 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
                                 new File(FileResourceDirectoryHelper.getFileResourceDirectory(getContext()), "tempFile.png"));
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        ((ActivityGlobalAbstract) getContext()).uuid = uid;
                         ((FragmentActivity) getContext()).startActivityForResult(intent, Constants.CAMERA_REQUEST);
                     } else if (options[item].equals("Choose From Gallery")) {
                         dialog.dismiss();
                         Intent pickPhoto = new Intent(Intent.ACTION_PICK);
                         pickPhoto.putExtra("filename", primaryUid.concat("_").concat(uid));
                         pickPhoto.setType("image/*");
+                        ((ActivityGlobalAbstract) getContext()).uuid = uid;
                         ((FragmentActivity) getContext()).startActivityForResult(pickPhoto, Constants.GALLERY_REQUEST);
                     } else if (options[item].equals("Cancel")) {
                         dialog.dismiss();
