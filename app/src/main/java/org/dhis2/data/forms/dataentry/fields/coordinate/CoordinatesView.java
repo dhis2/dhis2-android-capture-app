@@ -1,6 +1,5 @@
 package org.dhis2.data.forms.dataentry.fields.coordinate;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -12,23 +11,18 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentActivity;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.dhis2.App;
 import org.dhis2.Bindings.DoubleExtensionsKt;
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
@@ -53,6 +47,8 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import kotlin.Unit;
+
 import static android.app.Activity.RESULT_OK;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.text.TextUtils.isEmpty;
@@ -67,8 +63,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private TextInputEditText longitude;
     private TextInputLayout latitudeInputLayout;
     private TextInputLayout longitudeInputLayout;
-    private FusedLocationProviderClient mFusedLocationClient;
-    private LocationCallback locationCallback;
     private ImageButton location1;
     private OnCurrentLocationClick currentLocationListener;
     private TextView errorView;
@@ -110,7 +104,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     public void init(Context context) {
         super.init(context);
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
     }
 
     private void setLayout() {
@@ -324,26 +317,22 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     public void getLocation() {
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            subscribe();
-            ActivityCompat.requestPermissions(
-                    (FragmentActivity) getContext(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    ACCESS_LOCATION_PERMISSION_REQUEST
-            );
-        } else {
-
-            mFusedLocationClient.getLastLocation().
-                    addOnSuccessListener(location -> {
-                        if (location != null) {
-                            double longitude = DoubleExtensionsKt.truncate(location.getLongitude());
-                            double latitude = DoubleExtensionsKt.truncate(location.getLatitude());
-                            updateLocation(GeometryHelper.createPointGeometry(longitude, latitude));
-                        } else {
-                            startRequestingLocation();
-                        }
-                    });
-        }
+        ((App) getContext().getApplicationContext()).appComponent()
+                .locationProvider().getLastKnownLocation(
+                location -> {
+                    double longitude = DoubleExtensionsKt.truncate(location.getLongitude());
+                    double latitude = DoubleExtensionsKt.truncate(location.getLatitude());
+                    updateLocation(GeometryHelper.createPointGeometry(longitude, latitude));
+                    return Unit.INSTANCE;
+                },
+                () -> {
+                    ((ActivityGlobalAbstract) this.getContext()).requestLocationPermission(this);
+                    return Unit.INSTANCE;
+                },
+                () -> {
+                    ((ActivityGlobalAbstract) this.getContext()).requestEnableLocation();
+                    return Unit.INSTANCE;
+                });
     }
 
     public void setIsBgTransparent(boolean isBgTransparent) {
@@ -477,33 +466,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             }
         }
         updateDeleteVisibility(clearButton);
-    }
-
-    private void startRequestingLocation() {
-        LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(5000);
-        locationRequest.setFastestInterval(1000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult != null) {
-                    Double latitude = DoubleExtensionsKt.truncate(locationResult.getLocations().get(0).getLatitude());
-                    Double longitude = DoubleExtensionsKt.truncate(locationResult.getLocations().get(0).getLongitude());
-                    updateLocation(GeometryHelper.createPointGeometry(longitude, latitude));
-                    mFusedLocationClient.removeLocationUpdates(locationCallback);
-                }
-            }
-        };
-
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions((ActivityGlobalAbstract) getContext(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    ACCESS_LOCATION_PERMISSION_REQUEST);
-        } else
-            mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
-
     }
 
     public void clearValueData() {
