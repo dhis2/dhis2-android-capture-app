@@ -3,7 +3,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 import android.content.Context;
 
 import org.dhis2.R;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment;
 import org.dhis2.usescases.notes.NotesFragment;
 
 import androidx.fragment.app.Fragment;

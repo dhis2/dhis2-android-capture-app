@@ -1,4 +1,4 @@
-package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment;
+package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment;
 
 import android.app.Activity;
 import android.content.Context;

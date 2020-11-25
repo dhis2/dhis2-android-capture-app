@@ -1,4 +1,4 @@
-package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment
+package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment
 
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
