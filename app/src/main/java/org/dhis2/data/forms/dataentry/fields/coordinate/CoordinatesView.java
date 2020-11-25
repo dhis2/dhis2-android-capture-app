@@ -1,9 +1,9 @@
 package org.dhis2.data.forms.dataentry.fields.coordinate;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
@@ -326,7 +327,9 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                     return Unit.INSTANCE;
                 },
                 () -> {
-                    ((ActivityGlobalAbstract) this.getContext()).requestLocationPermission(this);
+                    ActivityCompat.requestPermissions((ActivityGlobalAbstract) getContext(),
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            ACCESS_LOCATION_PERMISSION_REQUEST);
                     return Unit.INSTANCE;
                 },
                 () -> {
