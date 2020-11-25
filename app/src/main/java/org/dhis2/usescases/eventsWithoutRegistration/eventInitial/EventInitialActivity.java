@@ -30,7 +30,6 @@ import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
-import org.dhis2.usescases.coodinates.CoordinatesView;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;

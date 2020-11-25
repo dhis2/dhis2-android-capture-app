@@ -238,7 +238,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical" />
 
-                        <org.dhis2.usescases.coodinates.CoordinatesView
+                        <org.dhis2.data.forms.dataentry.fields.coordinate.CoordinatesView
                             android:id="@+id/geometry"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

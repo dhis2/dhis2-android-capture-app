@@ -55,15 +55,18 @@ class FormView @JvmOverloads constructor(
             offset = it.top
         }
 
-        adapter.swap(items) {
-            dataEntryHeaderHelper.onItemsUpdatedCallback()
-        }
+        adapter.swap(
+            items,
+            Runnable {
+                dataEntryHeaderHelper.onItemsUpdatedCallback()
+            }
+        )
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
 
     // TODO methods to remove
 
-    fun setLastFocusItem(lastFocusItem: String?) {
+    fun setLastFocusItem(lastFocusItem: String) {
         adapter.setLastFocusItem(lastFocusItem)
     }
 }

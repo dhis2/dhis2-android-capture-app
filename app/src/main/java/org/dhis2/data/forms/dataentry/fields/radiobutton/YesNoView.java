@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews;
+package org.dhis2.data.forms.dataentry.fields.radiobutton;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -21,8 +21,10 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import org.dhis2.BR;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.utils.ColorUtils;
+import org.dhis2.utils.Constants;
+import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.utils.customviews.FieldLayout;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
@@ -171,6 +173,16 @@ public class YesNoView extends FieldLayout {
     public void setDescription(String description) {
         binding.setVariable(BR.description, description);
         binding.executePendingBindings();
+        findViewById(R.id.descriptionLabel).setOnClickListener(v ->
+                new CustomDialog(
+                        getContext(),
+                        label,
+                        description != null ? description : getContext().getString(R.string.empty_description),
+                        getContext().getString(R.string.action_close),
+                        null,
+                        Constants.DESCRIPTION_DIALOG,
+                        null
+                ).show());
     }
 
     public void setIsBgTransparent(boolean isBgTransparent) {
@@ -351,7 +363,10 @@ public class YesNoView extends FieldLayout {
 
     public void setViewModel(RadioButtonViewModel viewModel) {
         this.viewModel = viewModel;
-        setIsBgTransparent(viewModel.isBackgroundTransparent());
+
+        if (binding == null) {
+            setIsBgTransparent(viewModel.isBackgroundTransparent());
+        }
         setActivationListener(() -> viewModel.onActivate());
 
         setLabel(viewModel.getFormattedLabel());
@@ -364,21 +379,19 @@ public class YesNoView extends FieldLayout {
             @Override
             public void onValueChanged(boolean isActive) {
                 if (isActive) {
-                    viewModel.withValue(String.valueOf(true));
+                    viewModel.onValueChanged(String.valueOf(true));
                 } else {
-                    viewModel.withValue(String.valueOf(false));
+                    viewModel.onValueChanged(String.valueOf(false));
                 }
-                nextFocus(binding.getRoot());
-                viewModel.onValueChanged();
                 clearBackground(viewModel.isSearchMode());
+                nextFocus(binding.getRoot());
             }
 
             @Override
             public void onClearValue() {
-                viewModel.withValue(null);
-                nextFocus(binding.getRoot());
-                viewModel.onValueChanged();
+                viewModel.onValueChanged(null);
                 clearBackground(viewModel.isSearchMode());
+                nextFocus(binding.getRoot());
             }
         });
     }

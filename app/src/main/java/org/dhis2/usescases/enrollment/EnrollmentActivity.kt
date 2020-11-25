@@ -394,7 +394,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*region DATA ENTRY*/
     override fun showFields(fields: List<FieldViewModel>) {
         if (!isEmpty(presenter.getLastFocusItem())) {
-            binding.formView.setLastFocusItem(presenter.getLastFocusItem())
+            binding.formView.setLastFocusItem(presenter.getLastFocusItem()!!)
         }
 
         fields.filter {

@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews;
+package org.dhis2.data.forms.dataentry.fields.age;
 
 import android.content.Context;
 import android.text.InputFilter;
@@ -18,13 +18,14 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.age.AgeViewModel;
 import org.dhis2.databinding.AgeCustomViewAccentBinding;
 import org.dhis2.databinding.AgeCustomViewBinding;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.utils.customviews.FieldLayout;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -111,9 +112,12 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         inputLayout.setError(null);
     }
 
-    private void onFocusChanged(View view, boolean b) {
-        if (b)
+    private void onFocusChanged(View view, boolean hasFocus) {
+        if (hasFocus) {
             onClick(view);
+        } else {
+            viewModel.onDeactivate();
+        }
     }
 
     @Override
@@ -359,6 +363,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
                 viewModel.onAgeSet(ageDate);
                 clearBackground(viewModel.isSearchMode());
                 viewModel.onDeactivate();
+                viewModel.callback.onNext();
             }
         });
         setActivationListener(viewModel::onActivate);

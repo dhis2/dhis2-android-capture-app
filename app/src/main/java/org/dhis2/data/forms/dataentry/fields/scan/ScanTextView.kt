@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews
+package org.dhis2.data.forms.dataentry.fields.scan
 
 import android.Manifest
 import android.app.Activity
@@ -21,7 +21,6 @@ import org.dhis2.BR
 import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.databinding.ScanTextViewAccentBinding
 import org.dhis2.databinding.ScanTextViewBinding
 import org.dhis2.usescases.qrScanner.ScanActivity
@@ -31,6 +30,8 @@ import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.EXTRA_DATA
 import org.dhis2.utils.Constants.RQ_QR_SCANNER
+import org.dhis2.utils.customviews.CustomDialog
+import org.dhis2.utils.customviews.FieldLayout
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
@@ -167,6 +168,17 @@ class ScanTextView @JvmOverloads constructor(
                 description != null -> View.VISIBLE
                 else -> View.GONE
             }
+        descriptionLabel.setOnClickListener { view ->
+            CustomDialog(
+                context,
+                label,
+                description ?: context.getString(R.string.empty_description),
+                context.getString(R.string.action_close),
+                null,
+                Constants.DESCRIPTION_DIALOG,
+                null
+            ).show()
+        }
     }
 
     fun setRenderingType(type: ValueTypeRenderingType?) {
@@ -202,7 +214,9 @@ class ScanTextView @JvmOverloads constructor(
 
     fun setViewModel(viewModel: ScanTextViewModel) {
         this.viewModel = viewModel
+
         setLayoutData(viewModel.isBackgroundTransparent())
+
         viewModel.apply {
             setText(value())
             setRenderingType(fieldRendering?.type())

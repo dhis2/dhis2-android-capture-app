@@ -34,7 +34,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
-        <org.dhis2.utils.customviews.AgeView
+        <org.dhis2.data.forms.dataentry.fields.age.AgeView
             android:id="@+id/custom_ageview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

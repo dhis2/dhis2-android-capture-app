@@ -1,5 +1,6 @@
-package org.dhis2.utils.customviews;
+package org.dhis2.data.forms.dataentry.fields.datetime;
 
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -9,24 +10,20 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableField;
-import androidx.databinding.ViewDataBinding;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import org.dhis2.BR;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
-import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
-import org.dhis2.databinding.CustomCellViewBinding;
-import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
+import org.dhis2.databinding.DateTimeViewBinding;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.utils.customviews.FieldLayout;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -39,99 +36,45 @@ import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
  * QUADRAM. Created by frodriguez on 1/15/2018.
  */
 
-public class DateView extends FieldLayout implements View.OnClickListener {
+public class DateTimeView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
 
     private TextInputEditText editText;
-    private ViewDataBinding binding;
+    private TextInputLayout inputLayout;
+    private DateTimeViewBinding binding;
+    private ImageView icon;
 
     private Calendar selectedCalendar;
-
+    private DateFormat dateFormat;
     private OnDateSelected listener;
-
-    private String label;
     private boolean allowFutureDates;
-    private String description;
     private Date date;
-    private TextInputLayout inputLayout;
-    private ImageView clearButton;
     private TextView labelText;
-    private View descriptionLabel;
-    private ImageView descriptionIcon;
+    private View clearButton;
     private DateTimeViewModel viewModel;
 
-    public DateView(Context context) {
+    public DateTimeView(Context context) {
         super(context);
         init(context);
     }
 
-    public DateView(Context context, AttributeSet attrs) {
+    public DateTimeView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public DateView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DateTimeView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
 
-    public void init(Context context) {
-        super.init(context);
-    }
-
-    private void setLayout() {
-        if (isBgTransparent)
-            binding = DataBindingUtil.inflate(inflater, R.layout.date_time_view, this, true);
-        else
-            binding = DataBindingUtil.inflate(inflater, R.layout.date_time_view_accent, this, true);
-
-        inputLayout = findViewById(R.id.inputLayout);
-        editText = findViewById(R.id.inputEditText);
-        clearButton = findViewById(R.id.clear_button);
-        labelText = findViewById(R.id.label);
-        descriptionIcon = findViewById(R.id.descIcon);
-        descriptionLabel = findViewById(R.id.descriptionLabel);
-        inputLayout.setHint(getContext().getString(R.string.choose_date));
-        descriptionIcon.setImageResource(R.drawable.ic_form_date);
-        selectedCalendar = Calendar.getInstance();
-        editText.setFocusable(false); //Makes editText not editable
-        editText.setClickable(true);//  but clickable
-        editText.setOnFocusChangeListener(this::onFocusChanged);
-        editText.setOnClickListener(this);
-        clearButton.setOnClickListener(v -> clearDate());
-        descriptionIcon.setOnClickListener(this);
-    }
-
-    public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.custom_cell_view, this, true);
-        ((CustomCellViewBinding) binding).setTableScale(tableScale);
-        editText = findViewById(R.id.inputEditText);
-        selectedCalendar = Calendar.getInstance();
-        editText.setFocusable(false); //Makes editText not editable
-        editText.setClickable(true);//  but clickable
-        editText.setOnFocusChangeListener(this::onFocusChanged);
-        editText.setOnClickListener(this);
-    }
-
-    public void setIsBgTransparent(boolean isBgTransparent) {
-        this.isBgTransparent = isBgTransparent;
-        setLayout();
-    }
-
     public void setLabel(String label) {
-        this.label = label;
-        binding.setVariable(BR.label, label);
-        binding.executePendingBindings();
-    }
-
-    public void setMandatory() {
-        ImageView mandatory = binding.getRoot().findViewById(R.id.ic_mandatory);
-        mandatory.setVisibility(View.VISIBLE);
+        binding.setLabel(label);
     }
 
     public void setDescription(String description) {
-        this.description = description;
-        descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
-        descriptionLabel.setOnClickListener(v ->
+        binding.setDescription(description);
+        binding.descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
+        binding.descriptionLabel.setOnClickListener(v ->
                 new CustomDialog(
                         getContext(),
                         label,
@@ -141,40 +84,38 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                         Constants.DESCRIPTION_DIALOG,
                         null
                 ).show());
-        binding.setVariable(BR.description, description);
-        binding.executePendingBindings();
-    }
-
-    public void setAllowFutureDates(boolean allowFutureDates) {
-        this.allowFutureDates = allowFutureDates;
     }
 
     public void initData(String data) {
         if (data != null) {
             date = null;
-            data = data.replace("'", ""); //TODO: Check why it is happening
             try {
-                date = DateUtils.oldUiDateFormat().parse(data);
-                data = DateUtils.uiDateFormat().format(date);
+                date = DateUtils.databaseDateFormat().parse(data);
             } catch (ParseException e) {
-                Timber.e(e);
+                Timber.w(e);
             }
+
             if (date == null) {
                 try {
-                    date = DateUtils.databaseDateFormat().parse(data);
-                    data = DateUtils.uiDateFormat().format(date);
+                    if (DateUtils.dateHasNoSeconds(data))
+                        date = DateUtils.databaseDateFormatNoSeconds().parse(data);
+                    else
+                        date = DateUtils.databaseDateFormatNoMillis().parse(data);
                 } catch (ParseException e) {
                     Timber.e(e);
                 }
             }
+
             if (date == null) {
                 try {
-                    date = DateUtils.uiDateFormat().parse(data);
-                    data = DateUtils.uiDateFormat().format(date);
+                    date = DateUtils.dateTimeFormat().parse(data);
+                    data = DateUtils.dateTimeFormat().format(date);
                 } catch (ParseException e) {
                     Timber.e(e);
                 }
             }
+
+            data = date != null ? DateUtils.dateTimeFormat().format(date) : data;
         } else {
             editText.setText("");
         }
@@ -195,20 +136,49 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         editText.requestFocus();
     }
 
-    public void setDateListener(OnDateSelected listener) {
-        this.listener = listener;
+    public void setIsBgTransparent(boolean isBgTransparent) {
+        this.isBgTransparent = isBgTransparent;
+        setLayout();
     }
 
-    private void onFocusChanged(View view, boolean b) {
-        if (b)
+    public void setAllowFutureDates(boolean allowFutureDates) {
+        this.allowFutureDates = allowFutureDates;
+    }
+
+    private void setLayout() {
+        binding = DateTimeViewBinding.inflate(inflater, this, true);
+        inputLayout = findViewById(R.id.inputLayout);
+        icon = findViewById(R.id.descIcon);
+        editText = findViewById(R.id.inputEditText);
+        clearButton = findViewById(R.id.clear_button);
+        labelText = findViewById(R.id.label);
+        inputLayout.setHint(getContext().getString(R.string.choose_date));
+        icon.setImageResource(R.drawable.ic_form_date_time);
+        icon.setOnClickListener(this);
+        selectedCalendar = Calendar.getInstance();
+        dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        editText.setFocusable(false); //Makes editText not editable
+        editText.setClickable(true);//  but clickable
+        editText.setOnFocusChangeListener(this);
+        editText.setOnClickListener(this);
+        clearButton.setOnClickListener(v -> clearDate());
+    }
+
+    @Override
+    public void onFocusChange(View view, boolean hasFocus) {
+        if (hasFocus)
             onClick(view);
+    }
+
+    public void setDateListener(OnDateSelected listener) {
+        this.listener = listener;
     }
 
     @Override
     public void onClick(View view) {
         requestFocus();
         activate();
-        showCustomCalendar();
+        showCustomCalendar(view);
     }
 
     @Override
@@ -221,7 +191,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         }
     }
 
-    private void showCustomCalendar() {
+    private void showCustomCalendar(View view) {
 
         DatePickerUtils.getDatePickerDialog(getContext(), label, date, allowFutureDates,
                 new DatePickerUtils.OnDatePickerClickListener() {
@@ -235,24 +205,37 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                         selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
                         selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
                         selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-                        selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
-                        selectedCalendar.set(Calendar.MINUTE, 0);
-                        Date selectedDate = selectedCalendar.getTime();
-                        String result = DateUtils.uiDateFormat().format(selectedDate);
-                        editText.setText(result);
-                        listener.onDateSelected(selectedDate);
-                        nextFocus(DateView.this);
-                        date = null;
-                        updateDeleteVisibility(clearButton);
+                        showTimePicker(view);
                     }
                 }).show();
     }
 
-    private void clearDate() {
-        editText.setText(null);
-        listener.onDateSelected(null);
-        date = null;
-        updateDeleteVisibility(clearButton);
+    private void showTimePicker(View view) {
+        final Calendar c = Calendar.getInstance();
+        if (date != null) {
+            c.setTime(date);
+        }
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        int minute = c.get(Calendar.MINUTE);
+        boolean is24HourFormat = android.text.format.DateFormat.is24HourFormat(getContext());
+
+        TimePickerDialog dialog = new TimePickerDialog(getContext(), (
+                timePicker, hourOfDay, minutes) -> {
+            selectedCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            selectedCalendar.set(Calendar.MINUTE, minutes);
+            Date selectedDate = selectedCalendar.getTime();
+            String result = dateFormat.format(selectedDate);
+            editText.setText(result);
+            listener.onDateSelected(selectedDate);
+            nextFocus(view);
+            date = null;
+            updateDeleteVisibility(clearButton);
+        },
+                hour,
+                minute,
+                is24HourFormat);
+        dialog.setTitle(binding.getLabel());
+        dialog.show();
     }
 
     public TextInputEditText getEditText() {
@@ -262,7 +245,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     public void setEditable(Boolean editable) {
         editText.setEnabled(editable);
         clearButton.setEnabled(editable);
-        descriptionIcon.setEnabled(editable);
+        icon.setEnabled(editable);
         editText.setTextColor(
                 !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
                         ContextCompat.getColor(getContext(), R.color.textPrimary)
@@ -272,10 +255,16 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                 labelText,
                 inputLayout,
                 findViewById(R.id.descIcon),
-                descriptionLabel,
+                findViewById(R.id.descriptionLabel),
                 clearButton
         );
+        updateDeleteVisibility(clearButton);
+    }
 
+    private void clearDate() {
+        editText.setText(null);
+        listener.onDateSelected(null);
+        date = null;
         updateDeleteVisibility(clearButton);
     }
 
@@ -309,7 +298,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         });
         setActivationListener(() -> {
             viewModel.onActivate();
-            //TODO does DateView needs keyboard?
+            //TODO does DateTimeView needs keyboard?
             closeKeyboard(binding.getRoot());
         });
     }

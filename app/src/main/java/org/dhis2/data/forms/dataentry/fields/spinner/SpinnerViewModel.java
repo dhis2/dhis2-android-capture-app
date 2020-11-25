@@ -37,12 +37,12 @@ public abstract class SpinnerViewModel extends FieldViewModel {
 
     public static SpinnerViewModel create(String id, String label, String hintFilterOptions, Boolean mandatory,
                                           String optionSet, String value, String section, Boolean editable, String description, Integer numberOfOptions, ObjectStyle objectStyle, boolean isBackgroundTransparent, String renderType) {
-        return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, editable, null, null, description, objectStyle, null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, null,hintFilterOptions, optionSet, numberOfOptions == null ? 0 : numberOfOptions, isBackgroundTransparent, renderType);
+        return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, editable, null, null, description, objectStyle, null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, null, hintFilterOptions, optionSet, numberOfOptions == null ? 0 : numberOfOptions, isBackgroundTransparent, renderType);
     }
 
     public static SpinnerViewModel create(String id, String label, String hintFilterOptions, Boolean mandatory,
                                           String optionSet, String value, String section, Boolean editable, String description, Integer numberOfOptions, ObjectStyle objectStyle, boolean isBackgroundTransparent, String renderType, FlowableProcessor<RowAction> processor) {
-        return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, editable, null, null, description, objectStyle, null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor,hintFilterOptions, optionSet, numberOfOptions == null ? 0 : numberOfOptions, isBackgroundTransparent, renderType);
+        return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, editable, null, null, description, objectStyle, null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor, hintFilterOptions, optionSet, numberOfOptions == null ? 0 : numberOfOptions, isBackgroundTransparent, renderType);
     }
 
 
@@ -66,13 +66,13 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     @NonNull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), data, programStageSection(), allowFutureDate(), false, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(),hint(), optionSet(), numberOfOptions(), isBackgroundTransparent(), renderType());
+        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), data, programStageSection(), allowFutureDate(), false, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(), hint(), optionSet(), numberOfOptions(), isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withEditMode(boolean isEditable) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), isEditable, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(),hint(), optionSet(), numberOfOptions(), isBackgroundTransparent(), renderType());
+        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), isEditable, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(), hint(), optionSet(), numberOfOptions(), isBackgroundTransparent(), renderType());
     }
 
     public void setOptionsToHide(List<String> optionsToHide, List<String> optionsGroupsToHide) {
@@ -100,7 +100,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
 
     @Override
     public int getLayoutId() {
-        return R.layout.form_option_set;
+        return R.layout.form_option_set_spinner;
     }
 
     public abstract boolean isBackgroundTransparent();

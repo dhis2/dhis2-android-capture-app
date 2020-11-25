@@ -27,8 +27,6 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
 
     public void bind(FieldUiModel uiModel, int position, FieldItemCallback callback) {
         FieldViewModel viewModel = (FieldViewModel) uiModel;
-        //TODO
-        viewModel.setAdapterPosition(position);
         viewModel.setCallback(() -> callback.onNext(position));
         binding.setVariable(BR.item, viewModel);
         binding.executePendingBindings();

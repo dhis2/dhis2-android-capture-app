@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews;
+package org.dhis2.data.forms.dataentry.fields.spinner;
 
 import android.content.Context;
 import android.text.InputType;
@@ -20,14 +20,16 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.databinding.FormSpinnerAccentBinding;
 import org.dhis2.databinding.FormSpinnerBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.utils.customviews.FieldLayout;
+import org.dhis2.utils.customviews.OptionSetOnClickListener;
+import org.dhis2.utils.customviews.OptionSetPopUp;
 import org.dhis2.utils.optionset.OptionSetDialog;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.option.Option;
@@ -209,6 +211,16 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
 
     public void setDescription(String description) {
         descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
+        descriptionLabel.setOnClickListener(v ->
+                new CustomDialog(
+                        getContext(),
+                        label,
+                        description != null ? description : getContext().getString(R.string.empty_description),
+                        getContext().getString(R.string.action_close),
+                        null,
+                        Constants.DESCRIPTION_DIALOG,
+                        null
+                ).show());
     }
 
     public boolean openOptionDialog() {
@@ -251,7 +263,9 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
 
     public void setViewModel(SpinnerViewModel viewModel) {
         this.viewModel = viewModel;
-        setLayoutData(viewModel.isBackgroundTransparent(), viewModel.renderType());
+        if (binding == null) {
+            setLayoutData(viewModel.isBackgroundTransparent(), viewModel.renderType());
+        }
         setOnSelectedOptionListener((optionName, optionCode) -> {
             viewModel.onOptionSelected(optionName, optionCode);
             clearBackground(!viewModel.isBackgroundTransparent());

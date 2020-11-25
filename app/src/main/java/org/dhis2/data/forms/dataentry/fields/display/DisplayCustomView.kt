@@ -1,12 +1,12 @@
-package org.dhis2.utils.customviews
+package org.dhis2.data.forms.dataentry.fields.display
 
 import android.content.Context
 import android.util.AttributeSet
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.databinding.FormDisplayBinding
+import org.dhis2.utils.customviews.FieldLayout
 
 class DisplayCustomView @JvmOverloads constructor(
     context: Context,
@@ -39,7 +39,7 @@ class DisplayCustomView @JvmOverloads constructor(
     fun setViewModel(viewModel: DisplayViewModel) {
         this.viewModel = viewModel
         binding.item = viewModel
-        binding.colorBg = -1
+        binding.colorBg = viewModel.colorBG()
         setLabel()
     }
 

@@ -30,7 +30,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
-        <org.dhis2.utils.customviews.OptionSetSelectionView
+        <org.dhis2.data.forms.dataentry.fields.optionset.OptionSetSelectionView
             android:id="@+id/optionSetSelectionView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

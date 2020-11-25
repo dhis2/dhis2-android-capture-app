@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews;
+package org.dhis2.data.forms.dataentry.fields.orgUnit;
 
 import android.content.Context;
 import android.os.Handler;
@@ -19,10 +19,13 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.dhis2.BR;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.databinding.CustomTextViewAccentBinding;
 import org.dhis2.databinding.CustomTextViewBinding;
 import org.dhis2.utils.ColorUtils;
+import org.dhis2.utils.Constants;
+import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.utils.customviews.FieldLayout;
+import org.dhis2.utils.customviews.TextInputAutoCompleteTextView;
 import org.dhis2.utils.customviews.orgUnitCascade.OrgUnitCascadeDialog;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
@@ -163,6 +166,16 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
 
     public void setDescription(String description) {
         descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
+        descriptionLabel.setOnClickListener(v ->
+                new CustomDialog(
+                        getContext(),
+                        label,
+                        description != null ? description : getContext().getString(R.string.empty_description),
+                        getContext().getString(R.string.action_close),
+                        null,
+                        Constants.DESCRIPTION_DIALOG,
+                        null
+                ).show());
     }
 
     @Override
@@ -200,7 +213,9 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
     }
 
     public void setViewModel(OrgUnitViewModel viewModel) {
-        setLayoutData(viewModel.isBackgroundTransparent(), viewModel.renderType());
+        if (binding == null) {
+            setLayoutData(viewModel.isBackgroundTransparent(), viewModel.renderType());
+        }
         setLabel(viewModel.label(), viewModel.mandatory());
         setDescription(viewModel.description());
         setWarning(viewModel.warning(), viewModel.error());

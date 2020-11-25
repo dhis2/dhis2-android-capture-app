@@ -158,7 +158,7 @@ public abstract class FieldViewModel implements FieldUiModel {
         this.adapterPosition = index;
     }
 
-    public int getAdapterPosition() {
+    protected int getAdapterPosition() {
         return adapterPosition;
     }
 }
