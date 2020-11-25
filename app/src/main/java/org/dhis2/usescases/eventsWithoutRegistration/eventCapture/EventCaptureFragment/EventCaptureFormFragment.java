@@ -139,7 +139,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                return dataEntryAdapter.getItemSpan(position);
+                return 2;
             }
         });
 

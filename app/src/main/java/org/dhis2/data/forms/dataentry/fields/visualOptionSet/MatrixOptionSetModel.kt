@@ -9,6 +9,8 @@ import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.option.Option
 
+const val labelTag = "tag"
+
 @AutoValue
 abstract class MatrixOptionSetModel : FieldViewModel() {
 
@@ -168,16 +170,20 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
         )
     }
 
-    fun isSelected(option:Option):Boolean{
+    fun isSelected(option: Option): Boolean {
         return value() == option.displayName()
     }
 
     fun selectOption(selectedOption: Option) {
-        val nextValue = if (value() == selectedOption.code()) {
+        val nextValue = if (value() == selectedOption.displayName()) {
             null
         } else {
             selectedOption.code()
         }
         processor()?.onNext(RowAction.create(uid(), nextValue))
     }
+
+    fun labelTag(): String = "${labelTag}_${uid()}"
+    fun optionTag(option: Option): String = "${labelTag}_${option.uid()}"
 }
+

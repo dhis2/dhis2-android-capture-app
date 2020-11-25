@@ -210,57 +210,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return renderingType;
     }
 
-    private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels, FlowableProcessor<RowAction> proccesor) {
-        return fieldViewModels;
-       /* ArrayList<FieldViewModel> renderList = new ArrayList<>();
-
-        for (FieldViewModel fieldViewModel : fieldViewModels) {
-
-            ProgramStageSectionRenderingType renderingType = renderingType(fieldViewModel.programStageSection());
-            if (fieldViewModel instanceof ImageViewModel && !isEmpty(fieldViewModel.optionSet()) && renderingType != ProgramStageSectionRenderingType.LISTING) {
-                List<Option> options = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())
-                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                        .blockingGet();
-                for (Option option : options) {
-                    ValueTypeDeviceRendering fieldRendering = null;
-
-                    if (stageDataElementsMap.containsKey(fieldViewModel.uid())) {
-                        ProgramStageDataElement psDE = stageDataElementsMap.get(fieldViewModel.uid());
-                        fieldRendering = psDE.renderType() != null && psDE.renderType().mobile() != null ? psDE.renderType().mobile() : null;
-                    }
-
-                    ObjectStyle objectStyle = option.style();
-
-                    renderList.add(fieldFactory.create(
-                            fieldViewModel.uid() + "." + option.uid(),
-                            fieldViewModel.label() + ImageViewModel.NAME_CODE_DELIMITATOR + option.displayName() + ImageViewModel.NAME_CODE_DELIMITATOR + option.code(),
-                            ValueType.TEXT,
-                            fieldViewModel.mandatory(),
-                            fieldViewModel.optionSet(),
-                            fieldViewModel.value(),
-                            fieldViewModel.programStageSection(),
-                            fieldViewModel.allowFutureDate(),
-                            fieldViewModel.editable() == null ? false : fieldViewModel.editable(),
-                            renderingType, fieldViewModel.description(),
-                            fieldRendering,
-                            options.size(),
-                            objectStyle,
-                            fieldViewModel.fieldMask(),
-                            proccesor,
-                            options));
-
-                }
-            } else if (fieldViewModel instanceof OptionSetViewModel) {
-                List<Option> options = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())
-                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                        .blockingGet();
-                renderList.add(((OptionSetViewModel) fieldViewModel).withOptions(options));
-            } else
-                renderList.add(fieldViewModel);
-        }
-        return renderList;*/
-    }
-
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list(FlowableProcessor<RowAction> processor) {
@@ -291,8 +240,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                         return fieldViewModel;
                     }).toList().toFlowable()
-                    .map(fieldViewModels -> sectionFields = fieldViewModels)
-                    .map(fieldViewModels -> checkRenderType(fieldViewModels, processor));
+                    .map(fieldViewModels -> sectionFields = fieldViewModels);
         } else {
             return Flowable.fromCallable(() -> {
                 List<ProgramStageDataElement> stageDataElements = d2.programModule().programStageDataElements()
@@ -387,8 +335,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                     })
                     .toList().toFlowable()
-                    .map(data -> sectionFields = data)
-                    .map(fieldViewModels -> checkRenderType(fieldViewModels, processor));
+                    .map(data -> sectionFields = data);
         }
     }
 

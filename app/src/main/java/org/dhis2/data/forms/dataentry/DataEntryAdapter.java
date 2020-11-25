@@ -142,26 +142,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
         this.lastFocusItem = lastFocusItem;
     }
 
-    public int getItemSpan(int position) {
-
-        if (position >= getItemCount() ||
-                getItem(position) instanceof SectionViewModel ||
-                getItemViewType(position) == DataEntryViewHolderTypes.DISPLAY.ordinal() ||
-                rendering == null
-        ) {
-            return 2;
-        } else {
-            switch (ProgramStageSectionRenderingType.valueOf(rendering)) {
-                case MATRIX:
-                    return 2;
-                case LISTING:
-                case SEQUENTIAL:
-                default:
-                    return 2;
-            }
-        }
-    }
-
     public void saveOpenedSection(String openSectionUid) {
         this.openSection = openSectionUid;
     }

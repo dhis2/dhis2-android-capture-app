@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
 
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.jetbrains.annotations.NotNull;
@@ -95,6 +96,16 @@ public abstract class FieldViewModel implements FieldUiModel {
             return warning();
         } else {
             return null;
+        }
+    }
+
+    public int getErrorAppearance(){
+        if (error() != null) {
+            return R.style.error_appearance;
+        } else if (warning() != null) {
+            return R.style.warning_appearance;
+        } else {
+            return -1;
         }
     }
 
