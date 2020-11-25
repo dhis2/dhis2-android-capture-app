@@ -29,6 +29,7 @@ class FormView @JvmOverloads constructor(
         layoutParams = params
         val view = inflater.inflate(R.layout.view_form, this, true)
         recyclerView = view.findViewById(R.id.recyclerView)
+        recyclerView.recycledViewPool.setMaxRecycledViews(R.layout.form_edit_text_custom, 0);
         headerContainer = view.findViewById(R.id.headerContainer)
         dataEntryHeaderHelper = DataEntryHeaderHelper(headerContainer, recyclerView)
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
