@@ -45,10 +45,10 @@ public abstract class FieldViewModel implements FieldUiModel {
     public abstract FieldViewModel setMandatory();
 
     @NonNull
-    public abstract FieldViewModel withWarning(@NonNull String warning);
+    public abstract FieldViewModel withWarning(String warning);
 
     @NonNull
-    public abstract FieldViewModel withError(@NonNull String error);
+    public abstract FieldViewModel withError(String error);
 
     @Nullable
     public abstract String description();

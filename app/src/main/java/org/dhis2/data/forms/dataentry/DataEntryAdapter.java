@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.ListAdapter;
 import org.dhis2.data.forms.dataentry.fields.FieldUiModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
-import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
@@ -99,8 +98,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
                 } else if (fieldViewModel.getUid().equals(lastOpenedSectionUid)) {
                     openSectionPos = -1;
                 }
-            } else if (fieldViewModel instanceof ImageViewModel) {
-                imageFields++;
             }
 
             items.add(fieldViewModel);
@@ -156,7 +153,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
         } else {
             switch (ProgramStageSectionRenderingType.valueOf(rendering)) {
                 case MATRIX:
-                    return 1;
+                    return 2;
                 case LISTING:
                 case SEQUENTIAL:
                 default:
@@ -204,7 +201,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldUiModel, FormViewHo
     }
 
     public boolean isSection(int position) {
-        if (position <= getItemCount()) {
+        if (position < getItemCount()) {
             return getItemViewType(position) == DataEntryViewHolderTypes.SECTION.ordinal();
         } else {
             return false;
