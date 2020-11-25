@@ -90,11 +90,18 @@ class DataEntryAdapter :
                     if (item.getUid() == currentFocusUid.value) currentFocusPosition = i
                 }
             }
-            if (nextFocusPosition != -1 && currentFocusPosition == lastFocusPosition && nextFocusPosition < items.size) currentFocusUid.setValue(
-                getItem(nextFocusPosition)!!.getUid()
-            ) else if (currentFocusPosition != -1 && currentFocusPosition < items.size) currentFocusUid.setValue(
-                getItem(currentFocusPosition)!!.getUid()
-            )
+            if (nextFocusPosition != -1 &&
+                currentFocusPosition == lastFocusPosition &&
+                nextFocusPosition < items.size
+            ) {
+                currentFocusUid.setValue(
+                    getItem(nextFocusPosition)!!.getUid()
+                )
+            } else if (currentFocusPosition != -1 &&
+                currentFocusPosition < items.size
+            ) {
+                currentFocusUid.value = getItem(currentFocusPosition)!!.getUid()
+            }
             commitCallback.run()
         }
     }
