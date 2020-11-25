@@ -189,40 +189,40 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun checkFullDetails(enrollmentUIModel: EnrollmentUIModel) {
-        onView(withId(R.id.fieldRecycler))
+        onView(withId(R.id.recyclerView))
             .check(matches(allOf(isDisplayed(), isNotEmpty(),
                     atPosition(1, hasDescendant(withText(enrollmentUIModel.enrollmentDate))))))
 
-        onView(withId(R.id.fieldRecycler)).check(
+        onView(withId(R.id.recyclerView)).check(
             matches(allOf(
                     isDisplayed(), isNotEmpty(),
                     atPosition(2, hasDescendant(withText(enrollmentUIModel.birthday))))))
 
-        onView(withId(R.id.fieldRecycler)).check(
+        onView(withId(R.id.recyclerView)).check(
             matches(
                 allOf(isDisplayed(), isNotEmpty(),
                     atPosition(3, hasDescendant(withText(enrollmentUIModel.orgUnit))))))
 
-        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
+        onView(withId(R.id.recyclerView)).check(matches(allOf(isDisplayed(), isNotEmpty(),
             atPosition(4, hasDescendant(allOf(withId(R.id.latitude),
                 withText(enrollmentUIModel.latitude)))))))
 
-        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
+        onView(withId(R.id.recyclerView)).check(matches(allOf(isDisplayed(), isNotEmpty(),
                     atPosition(4, hasDescendant(allOf(
                         withId(R.id.longitude), withText(enrollmentUIModel.longitude)))))))
 
-        onView(withId(R.id.fieldRecycler))
+        onView(withId(R.id.recyclerView))
             .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(6, click()))
 
-        onView(withId(R.id.fieldRecycler)).check(
+        onView(withId(R.id.recyclerView)).check(
             matches(allOf(isDisplayed(), isNotEmpty(),
                 atPosition(2, hasDescendant(withText(enrollmentUIModel.name))))))
 
-        onView(withId(R.id.fieldRecycler)).check(
+        onView(withId(R.id.recyclerView)).check(
             matches(allOf(isDisplayed(), isNotEmpty(),
                 atPosition(3, hasDescendant(withText(enrollmentUIModel.lastName))))))
 
-        onView(withId(R.id.fieldRecycler)).check(
+        onView(withId(R.id.recyclerView)).check(
             matches(allOf(isDisplayed(), isNotEmpty(),
                     atPosition(4, hasDescendant(withText(enrollmentUIModel.sex))))))
     }

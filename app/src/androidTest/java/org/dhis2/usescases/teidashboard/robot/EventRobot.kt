@@ -26,7 +26,7 @@ fun eventRobot(eventRobot: EventRobot.() -> Unit) {
 class EventRobot : BaseRobot() {
 
     fun scrollToBottomForm() {
-        onView(withId(R.id.formRecycler)).perform(scrollToBottomRecyclerView())
+        onView(withId(R.id.recyclerView)).perform(scrollToBottomRecyclerView())
     }
 
     fun clickOnFormFabButton() {
@@ -48,7 +48,7 @@ class EventRobot : BaseRobot() {
         var formLength = 0
 
         while (formLength < numberFields) {
-            onView(withId(R.id.formRecycler))
+            onView(withId(R.id.recyclerView))
                 .perform(
                     actionOnItemAtPosition<DashboardProgramViewHolder>(
                         formLength,
@@ -76,7 +76,7 @@ class EventRobot : BaseRobot() {
     }
 
     fun typeOnRequiredEventForm(text: String, position: Int) {
-        onView(withId(R.id.formRecycler))
+        onView(withId(R.id.recyclerView))
             .perform(
                 actionOnItemAtPosition<FormViewHolder>( //EditTextCustomHolder
                     position, typeChildViewWithId(text, R.id.input_editText)
