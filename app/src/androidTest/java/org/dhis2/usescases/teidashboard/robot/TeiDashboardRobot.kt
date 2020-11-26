@@ -40,21 +40,18 @@ fun teiDashboardRobot(teiDashboardRobot: TeiDashboardRobot.() -> Unit) {
 
 class TeiDashboardRobot : BaseRobot() {
 
-    fun clickOnNotesTab() {
-        onView(clickOnTab(3)).perform(click())
-        // onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
+    fun goToNotes() {
+        onView(withId(R.id.navigation_notes)).perform(click())
         Thread.sleep(500)
     }
 
-    fun clickOnRelationshipTab() {
-        onView(clickOnTab(2)).perform(click())
-        // onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
+    fun goToRelationships() {
+        onView(withId(R.id.navigation_relationships)).perform(click())
         Thread.sleep(500)
     }
 
-    fun clickOnIndicatorsTab() {
-        onView(clickOnTab(1)).perform(click())
-        // onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
+    fun goToAnalytics() {
+        onView(withId(R.id.navigation_analytics)).perform(click())
         Thread.sleep(500)
     }
 
