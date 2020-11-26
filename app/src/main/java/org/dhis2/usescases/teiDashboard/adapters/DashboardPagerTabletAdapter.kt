@@ -24,11 +24,12 @@ class DashboardPagerTabletAdapter(
         }
     }
 
-    override fun getItemCount() = if (currentProgram != null) {
-        MOBILE_DASHBOARD_SIZE
-    } else {
-        NO_FRAGMENT_DUE_TO_NO_PROGRAM_SELECTED
-    }
+    override fun getItemCount() =
+        if (currentProgram != null) {
+            MOBILE_DASHBOARD_SIZE
+        } else {
+            NO_FRAGMENT_DUE_TO_NO_PROGRAM_SELECTED
+        }
 
     companion object {
         const val MOBILE_DASHBOARD_SIZE = 3
