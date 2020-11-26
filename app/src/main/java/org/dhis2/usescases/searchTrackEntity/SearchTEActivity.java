@@ -13,6 +13,7 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -57,6 +58,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
+import org.dhis2.uicomponents.map.geometry.FeatureExtensionsKt;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.TeiMapManager;
 import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
@@ -107,6 +109,7 @@ import kotlin.Unit;
 import timber.log.Timber;
 
 import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.RELATIONSHIP_UID;
+import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.TEI;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CHANGE_PROGRAM;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
@@ -116,7 +119,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
         @BindingMethod(type = FloatingActionButton.class, attribute = "app:srcCompat", method = "setImageDrawable")
 })
 public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View,
-        MapboxMap.OnMapClickListener {
+        MapboxMap.OnMapClickListener, MapboxMap.OnMapLongClickListener {
 
     ActivitySearchBinding binding;
     @Inject
@@ -295,6 +298,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         teiMapManager.setEnrollmentFeatureType(presenter.getProgram() != null ? presenter.getProgram().featureType() : null);
         teiMapManager.setCarouselAdapter(carouselAdapter);
         teiMapManager.setOnMapClickListener(this);
+        teiMapManager.setOnMapLongClickListener(this);
 
         binding.mapCarousel.attachToMapManager(teiMapManager, () -> true);
     }
@@ -982,6 +986,49 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         Pair<List<String>, List<String[]>> sourcesAndLayer = teiMapManager.getSourcesAndLayersForSearch();
         return findFeature(rectF, sourcesAndLayer.component1(), sourcesAndLayer.component2(), 0);
+    }
+
+    @Override
+    public boolean onMapLongClick(@NonNull LatLng point) {
+        PointF pointf = teiMapManager.getMap().getProjection().toScreenLocation(point);
+        RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
+
+        Pair<List<String>, List<String[]>> sourcesAndLayer = teiMapManager.getSourcesAndLayersForSearch();
+        String source = sourcesAndLayer.component1().get(0);
+        boolean featureFound = false;
+        if (source.contains(TEI)) {
+            featureFound = findFeature(rectF, sourcesAndLayer.component1(), sourcesAndLayer.component2(), 0);
+        }
+        if (featureFound) {
+            Feature feature = getFeature(rectF, TEI, "TEI_POINT_LAYER_ID");
+            if (feature != null) {
+                navigateToMap(feature);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void navigateToMap(Feature feature) {
+        LatLng point = FeatureExtensionsKt.getPointLatLng(feature);
+        String longitude = String.valueOf(point.getLongitude());
+        String latitude = String.valueOf(point.getLatitude());
+        String location = "geo:0,0?z=11&q=" + latitude + "," + longitude + "";
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(location));
+        startActivity(intent);
+    }
+
+    private Feature getFeature(RectF rectF, String source, String layer) {
+        List<Feature> features = teiMapManager.getMap().queryRenderedFeatures(rectF, layer);
+        Feature feature = null;
+        if (!features.isEmpty()) {
+            if (source.contains(TEI)) {
+                feature = features.get(0);
+            }
+        }
+        return feature;
     }
 
     private boolean findFeature(RectF rectF, List<String> sources, List<String[]> layers, int count) {

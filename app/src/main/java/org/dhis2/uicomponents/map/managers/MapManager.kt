@@ -23,6 +23,7 @@ abstract class MapManager(val mapView: MapView) {
     var markerViewManager: MarkerViewManager? = null
     var symbolManager: SymbolManager? = null
     var onMapClickListener: MapboxMap.OnMapClickListener? = null
+    var onMapLongClickListener: MapboxMap.OnMapLongClickListener? = null
     var carouselAdapter: CarouselAdapter? = null
     var style: Style? = null
 
@@ -42,6 +43,9 @@ abstract class MapManager(val mapView: MapView) {
                     }
                     onMapClickListener?.let { mapClickListener ->
                         map.addOnMapClickListener(mapClickListener)
+                    }
+                    onMapLongClickListener?.let {
+                        map.addOnMapLongClickListener(it)
                     }
                     markerViewManager = MarkerViewManager(mapView, map)
                     loadDataForStyle()
