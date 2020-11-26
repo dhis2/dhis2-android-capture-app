@@ -63,7 +63,7 @@ class CategoryOptionExtensionsKtTest {
     fun `Should return true if orgUnitUid is null`() {
         assertTrue(
             catOption(null).inOrgUnit(null) &&
-                    catOption(listOf()).inOrgUnit(null)
+                catOption(listOf()).inOrgUnit(null)
         )
     }
 
@@ -72,7 +72,7 @@ class CategoryOptionExtensionsKtTest {
         val orgUnitUid = "orgUnitUid"
         assertTrue(
             catOption(null).inOrgUnit(orgUnitUid) &&
-                    catOption(listOf()).inOrgUnit(orgUnitUid)
+                catOption(listOf()).inOrgUnit(orgUnitUid)
         )
     }
 

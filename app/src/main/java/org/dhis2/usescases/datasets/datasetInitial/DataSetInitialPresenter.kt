@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets.datasetInitial
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
+import java.util.ArrayList
 import org.dhis2.Bindings.inDateRange
 import org.dhis2.Bindings.inOrgUnit
 import org.dhis2.data.schedulers.SchedulerProvider
@@ -11,7 +12,6 @@ import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
 import timber.log.Timber
-import java.util.ArrayList
 
 class DataSetInitialPresenter(
     private val view: DataSetInitialContract.View,
@@ -90,8 +90,8 @@ class DataSetInitialPresenter(
                             catOptionUid,
                             data.filter {
                                 it.access().data().write() &&
-                                        it.inDateRange(view.selectedPeriod) &&
-                                        it.inOrgUnit(view.selectedOrgUnit?.uid())
+                                    it.inDateRange(view.selectedPeriod) &&
+                                    it.inOrgUnit(view.selectedOrgUnit?.uid())
                             }
                         )
                     },
@@ -140,5 +140,4 @@ class DataSetInitialPresenter(
     override fun displayMessage(message: String) {
         view.displayMessage(message)
     }
-
 }
