@@ -85,6 +85,7 @@ class RulesUtilsProviderImplTest {
             null,
             ObjectStyle.builder().build(),
             "",
+            null,
             null
         )
     }
