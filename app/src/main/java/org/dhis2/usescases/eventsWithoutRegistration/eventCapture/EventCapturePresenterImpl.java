@@ -399,13 +399,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 optionsGroupToShow.get(field.uid()) != null ? optionsGroupToShow.get(field.uid()) : new ArrayList<>()
                         )
                 );
-               /* ImageViewModel imageField = (ImageViewModel) field;
-                if (optionsToHide.containsKey(imageField.fieldUid()) && optionsToHide.get(imageField.fieldUid()).contains(imageField.optionUid())) {
-                    fieldIterator.remove();
-                } else if (optionsGroupToShow.containsKey(imageField.fieldUid()) &&
-                        !eventCaptureRepository.getOptionsFromGroups(optionsGroupToShow.get(imageField.fieldUid())).contains(imageField.optionUid())) {
-                    fieldIterator.remove();
-                }*/
             } else if (field instanceof SpinnerViewModel) {
                 ((SpinnerViewModel) field).setOptionsToHide(
                         optionsToHide.get(field.uid()) != null ? optionsToHide.get(field.uid()) : new ArrayList<>(),
