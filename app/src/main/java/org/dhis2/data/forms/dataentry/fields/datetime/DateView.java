@@ -311,7 +311,6 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         });
         setActivationListener(() -> {
             viewModel.onActivate();
-            //TODO does DateView needs keyboard?
             closeKeyboard(binding.getRoot());
         });
     }
