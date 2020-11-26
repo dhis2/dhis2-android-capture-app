@@ -68,7 +68,7 @@ public class ImageHolder extends FormViewHolder {
         if (viewModel.mandatory())
             label.append("*");
 
-        if (viewModel.warning() != null) {
+        /*if (viewModel.warning() != null) {
             binding.errorMessage.setVisibility(View.VISIBLE);
             binding.errorMessage.setText(viewModel.warning());
         } else if (viewModel.error() != null) {
@@ -77,7 +77,7 @@ public class ImageHolder extends FormViewHolder {
         } else {
             binding.errorMessage.setVisibility(View.GONE);
             binding.errorMessage.setText(null);
-        }
+        }*/
     }
 
     public void dispose() {
