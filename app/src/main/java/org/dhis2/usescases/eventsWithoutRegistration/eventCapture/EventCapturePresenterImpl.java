@@ -390,6 +390,15 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         while (fieldIterator.hasNext()) {
             FieldViewModel field = fieldIterator.next();
             if (field instanceof MatrixOptionSetModel) {
+                ((MatrixOptionSetModel) field).setOptionsToHide(
+                        optionsToHide.get(field.uid()) != null ? optionsToHide.get(field.uid()) : new ArrayList<>(),
+                        eventCaptureRepository.getOptionsFromGroups(
+                                optionsGroupsToHide.get(field.uid()) != null ? optionsGroupsToHide.get(field.uid()) : new ArrayList<>()
+                        ),
+                        eventCaptureRepository.getOptionsFromGroups(
+                                optionsGroupToShow.get(field.uid()) != null ? optionsGroupToShow.get(field.uid()) : new ArrayList<>()
+                        )
+                );
                /* ImageViewModel imageField = (ImageViewModel) field;
                 if (optionsToHide.containsKey(imageField.fieldUid()) && optionsToHide.get(imageField.fieldUid()).contains(imageField.optionUid())) {
                     fieldIterator.remove();

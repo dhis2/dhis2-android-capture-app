@@ -8,7 +8,6 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.updatePadding
 import org.dhis2.Bindings.dp
-import org.dhis2.R
 import org.dhis2.utils.customviews.FieldLayout
 import org.dhis2.utils.customviews.ImageCustomView
 import org.hisp.dhis.android.core.option.Option
@@ -64,7 +63,7 @@ class VisualOptionSetView @JvmOverloads constructor(
         )
     }
 
-    private fun createWarningErrorMessage(){
+    private fun createWarningErrorMessage() {
         viewModel?.takeIf {
             it.warning() != null || it.error() != null
         }?.let {
@@ -79,7 +78,7 @@ class VisualOptionSetView @JvmOverloads constructor(
 
     private fun addOptionImages(frameLayout: FrameLayout) {
         viewModel?.let {
-            it.options().forEachIndexed { index, option ->
+            it.optionsToShow().forEachIndexed { index, option ->
                 frameLayout.addView(
                     createOptionImage(index, option, it.numberOfColumns())
                 )

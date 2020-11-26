@@ -14,6 +14,8 @@ const val labelTag = "tag"
 @AutoValue
 abstract class MatrixOptionSetModel : FieldViewModel() {
 
+    private val optionsToHide: MutableList<String> = mutableListOf()
+
     override fun getLayoutId(): Int {
         return R.layout.matrix_option_set
     }
@@ -185,5 +187,25 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
 
     fun labelTag(): String = "${labelTag}_${uid()}"
     fun optionTag(option: Option): String = "${labelTag}_${option.uid()}"
-}
+    fun setOptionsToHide(
+        optionsToHide: List<String>,
+        optionsInGroupsToHide: List<String>,
+        optionsInGroupsToShow: List<String>
+    ) {
+        this.optionsToHide.apply {
+            clear()
+            addAll(
+                optionsToHide.union(optionsInGroupsToHide)
+                    .filter { optionUidToHide ->
+                        !optionsInGroupsToShow.contains(optionUidToHide)
+                    }
+            )
+        }
+    }
 
+    fun optionsToShow(): List<Option> {
+        return options().filter { option ->
+            !optionsToHide.contains(option.uid())
+        }
+    }
+}

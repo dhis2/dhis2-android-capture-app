@@ -29,7 +29,7 @@ class ImageCustomView @JvmOverloads constructor(
         }
     }
 
-    fun setViewModel(viewModel: MatrixOptionSetModel, option: Option){
+    fun setViewModel(viewModel: MatrixOptionSetModel, option: Option) {
         setLayout(viewModel, option)
         option.apply {
             Bindings.setObjectStyle(binding.icon, this@ImageCustomView, style())
