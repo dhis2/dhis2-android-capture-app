@@ -156,7 +156,7 @@
     <string name="enrollment_list">Қайд журнали</string>
     <string name="active_programs">Фаол дастурлар</string>
     <string name="to_enroll_programs">Рўйхатга олиш дастурлари</string>
-    <string name="enroll">Рўйхатдан ўтиш</string>
+    <string name="enroll">Рўйхатга киритиш</string>
     <string name="last_visit">Охирги ташриф</string>
     <string name="apply">Мурожаат қилиш</string>
 
@@ -276,7 +276,7 @@
     <string name="table">Жадвал</string>
     <string name="local_data_accept">Қабул қилинг</string>
     <string name="login_server_info_title">Сервер URLи</string>
-    <string name="state_warning">Огоҳлантиришв</string>
+    <string name="state_warning">Огоҳлантириш</string>
     <string name="action_close">Ёпиш</string>
     <string name="data_set_complete">Бажарилди</string>
     <string name="data_set_open">Очиш</string>
