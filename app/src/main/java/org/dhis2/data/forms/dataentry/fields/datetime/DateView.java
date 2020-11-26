@@ -189,10 +189,12 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setError(String msg) {
-        inputLayout.setErrorTextAppearance(R.style.error_appearance);
-        inputLayout.setError(msg);
-        editText.setText(null);
-        editText.requestFocus();
+        if (msg != null){
+            inputLayout.setErrorTextAppearance(R.style.error_appearance);
+            inputLayout.setError(msg);
+            editText.setText(null);
+            editText.requestFocus();
+        }
     }
 
     public void setDateListener(OnDateSelected listener) {
