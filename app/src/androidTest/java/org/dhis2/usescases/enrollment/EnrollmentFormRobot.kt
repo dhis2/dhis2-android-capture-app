@@ -14,6 +14,7 @@ import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teidashboard.robot.EnrollmentRobot
+import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.equalTo
 
 
@@ -26,10 +27,10 @@ fun enrollmentFormRobot(enrollmentFormRobot: EnrollmentFormRobot.() -> Unit) {
 class EnrollmentFormRobot : BaseRobot() {
 
     fun clickOnDateOfBirth() {
-        onView(withId(R.id.formView))
+        onView(withId(R.id.recyclerView))
             .perform(
                 RecyclerViewActions.actionOnItem<DashboardProgramViewHolder>(
-                    ViewMatchers.hasDescendant(ViewMatchers.withText(EnrollmentRobot.DATE_OF_BIRTH)),
+                    ViewMatchers.hasDescendant(withText(containsString(EnrollmentRobot.DATE_OF_BIRTH))),
                     clickChildViewWithId(R.id.inputEditText)
                 )
             )

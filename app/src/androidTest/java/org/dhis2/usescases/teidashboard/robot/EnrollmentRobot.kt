@@ -77,7 +77,7 @@ class EnrollmentRobot : BaseRobot() {
     fun clickOnCalendarItem() {
         onView(withId(R.id.recyclerView))
             .perform(actionOnItem<DashboardProgramViewHolder>(
-                hasDescendant(withText(DATE_OF_BIRTH)), clickChildViewWithId(R.id.inputEditText)))
+                hasDescendant(withText(containsString(DATE_OF_BIRTH))), clickChildViewWithId(R.id.inputEditText)))
     }
 
     fun checkActiveAndPastEnrollmentDetails(enrollmentListUIModel: EnrollmentListUIModel) {
@@ -105,6 +105,6 @@ class EnrollmentRobot : BaseRobot() {
         const val ACTIVE_PROGRAMS = "Active programs"
         const val PAST_PROGRAMS = "Past programs"
         const val ENROLL = "ENROLL"
-        const val DATE_OF_BIRTH = "Date of birth*"
+        const val DATE_OF_BIRTH = "Date of birth"
     }
 }
