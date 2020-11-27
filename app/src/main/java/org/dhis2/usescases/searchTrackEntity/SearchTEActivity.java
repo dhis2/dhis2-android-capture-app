@@ -213,6 +213,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         filtersAdapter.addEnrollmentStatus();
         filtersAdapter.addEventStatus();
+        filtersAdapter.addWorkingLists(presenter.workingLists());
         try {
             binding.filterRecyclerLayout.setAdapter(filtersAdapter);
 
@@ -653,6 +654,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     presenter.setProgram(null);
                     filtersAdapter.removeEnrollmentDate();
                 }
+                filtersAdapter.addWorkingLists(presenter.workingLists());
             }
 
             @Override

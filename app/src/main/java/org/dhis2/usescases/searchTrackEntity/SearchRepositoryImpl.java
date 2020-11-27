@@ -59,6 +59,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceCreateProjection;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository;
@@ -759,5 +760,16 @@ public class SearchRepositoryImpl implements SearchRepository {
     private boolean attrIsProfileImage(String attrUid) {
         return d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingExists() &&
                 d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingGet().valueType() == ValueType.IMAGE;
+    }
+
+    @Override
+    public Single<List<TrackedEntityInstanceFilter>> workingLists(String programUid) {
+        if(programUid == null){
+            return Single.just(new ArrayList<>());
+        }
+        return d2.trackedEntityModule().trackedEntityInstanceFilters()
+                .withTrackedEntityInstanceEventFilters()
+                .byProgram().eq(programUid)
+                .get();
     }
 }

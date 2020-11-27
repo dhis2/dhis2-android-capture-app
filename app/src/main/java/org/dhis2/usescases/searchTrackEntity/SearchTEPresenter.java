@@ -45,6 +45,7 @@ import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.workingLists.WorkingListItem;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
 import org.hisp.dhis.android.core.D2;
@@ -1024,5 +1025,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 searchRepository.getEventInfo(eventUid),
                 searchRepository.getTrackedEntityInfo(teiUid, selectedProgram, FilterManager.getInstance().getSortingItem())
         );
+    }
+
+    @Override
+    public List<WorkingListItem> workingLists() {
+        return searchRepository.workingLists(selectedProgram != null ? selectedProgram.uid() : null).toFlowable()
+                .flatMapIterable(data -> data)
+                .map(teiFilter -> new WorkingListItem(teiFilter.uid(), teiFilter.displayName(), teiFilter.enrollmentStatus()))
+                .toList().blockingGet();
     }
 }

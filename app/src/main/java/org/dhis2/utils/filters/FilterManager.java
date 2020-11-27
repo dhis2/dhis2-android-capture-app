@@ -1,10 +1,12 @@
 package org.dhis2.utils.filters;
 
+import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
 
-import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.filters.cat_opt_comb.CatOptCombFilterAdapter;
+import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.filters.sorting.SortingStatus;
+import org.dhis2.utils.filters.workingLists.WorkingListItem;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
@@ -27,6 +29,7 @@ import kotlin.Pair;
 public class FilterManager implements Serializable {
 
     public static final int OU_TREE = 1986;
+    private WorkingListItem currentWorkingList;
 
     public void publishData() {
         filterProcessor.onNext(this);
@@ -173,17 +176,17 @@ public class FilterManager implements Serializable {
                 stateFilters.contains(State.UPLOADING);
         boolean hasErrorState = stateFilters.contains(State.ERROR) &&
                 stateFilters.contains(State.WARNING);
-        boolean hasSmsState =  stateFilters.contains(State.SENT_VIA_SMS) &&
+        boolean hasSmsState = stateFilters.contains(State.SENT_VIA_SMS) &&
                 stateFilters.contains(State.SYNCED_VIA_SMS);
         int stateFiltersCount = stateFilters.size();
-        if(hasNotSyncedState){
-            stateFiltersCount = stateFiltersCount -2;
+        if (hasNotSyncedState) {
+            stateFiltersCount = stateFiltersCount - 2;
         }
-        if(hasErrorState){
-            stateFiltersCount = stateFiltersCount -1;
+        if (hasErrorState) {
+            stateFiltersCount = stateFiltersCount - 1;
         }
-        if(hasSmsState){
-            stateFiltersCount = stateFiltersCount -1;
+        if (hasSmsState) {
+            stateFiltersCount = stateFiltersCount - 1;
         }
 
         stateFiltersApplied.set(stateFiltersCount);
@@ -215,7 +218,8 @@ public class FilterManager implements Serializable {
             enrollmentStatusFilters.add(enrollmentStatus);
         }
         enrollmentStatusFiltersApplied.set(enrollmentStatusFilters.size());
-        filterProcessor.onNext(this);
+        if (!workingListActive())
+            filterProcessor.onNext(this);
     }
 
     public void addPeriod(List<DatePeriod> datePeriod) {
@@ -304,7 +308,7 @@ public class FilterManager implements Serializable {
         this.unsupportedFilters.addAll(Arrays.asList(unsupported));
     }
 
-    public void clearUnsupportedFilters(){
+    public void clearUnsupportedFilters() {
         this.unsupportedFilters.clear();
     }
 
@@ -408,7 +412,7 @@ public class FilterManager implements Serializable {
     }
 
     public void clearAssignToMe() {
-        if(assignedFilter) {
+        if (assignedFilter) {
             assignedFilter = false;
             assignedToMeApplied.set(0);
             filterProcessor.onNext(this);
@@ -450,7 +454,8 @@ public class FilterManager implements Serializable {
         periodFiltersApplied.set(0);
         assignedToMeApplied.set(0);
 
-        filterProcessor.onNext(this);
+        if (!workingListActive())
+            filterProcessor.onNext(this);
     }
 
     public int getTotalSearchTeiFilter() {
@@ -482,5 +487,42 @@ public class FilterManager implements Serializable {
 
     public SortingItem getSortingItem() {
         return sortingItem;
+    }
+
+    public void currentWorkingList(WorkingListItem workingListItem) {
+        if (workingListItem != null) {
+            this.currentWorkingList = workingListItem;
+            applyWorkingListFilters();
+        } else {
+            clearAllFilters();
+            this.currentWorkingList = null;
+        }
+        filterProcessor.onNext(this);
+    }
+
+    @Nullable
+    public WorkingListItem currentWorkingList() {
+        return currentWorkingList;
+    }
+
+    public boolean workingListActive() {
+        return currentWorkingList != null;
+    }
+
+    private void applyWorkingListFilters() {
+        if (currentWorkingList.getEnrollentStatus() != null) {
+            addEnrollmentStatus(false, currentWorkingList.getEnrollentStatus());
+        } else {
+            clearEnrollmentStatus();
+        }
+    }
+
+    public boolean isFilterActiveForWorkingList(Filters filterType) {
+        switch (filterType) {
+            case ENROLLMENT_STATUS:
+                return currentWorkingList() != null && currentWorkingList().getEnrollentStatus() != null;
+            default:
+                return false;
+        }
     }
 }

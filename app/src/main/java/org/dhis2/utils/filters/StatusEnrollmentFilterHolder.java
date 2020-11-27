@@ -23,7 +23,10 @@ public class StatusEnrollmentFilterHolder extends FilterHolder {
         filterTitle.setText(R.string.filters_title_enrollment_status);
         filterIcon.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_enrollment_status_filter));
 
+
         ItemFilterEnrollmentStatusBinding localBinding = (ItemFilterEnrollmentStatusBinding) binding;
+
+        localBinding.filterLayout.getRoot().setAlpha(FilterManager.getInstance().isFilterActiveForWorkingList(filterType) ? 0.65f : 1f);
 
         localBinding.filterEnrollmentStatus.stateActive.setChecked(FilterManager.getInstance().getEnrollmentStatusFilters().contains(EnrollmentStatus.ACTIVE));
         localBinding.filterEnrollmentStatus.stateCancelled.setChecked(FilterManager.getInstance().getEnrollmentStatusFilters().contains(EnrollmentStatus.CANCELLED));

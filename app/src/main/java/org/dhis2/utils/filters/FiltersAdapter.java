@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.databinding.ObservableField;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.dhis2.R;
 import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemFilterAssignedBinding;
@@ -16,13 +17,19 @@ import org.dhis2.databinding.ItemFilterOrgUnitBinding;
 import org.dhis2.databinding.ItemFilterPeriodBinding;
 import org.dhis2.databinding.ItemFilterStateBinding;
 import org.dhis2.databinding.ItemFilterStatusBinding;
+import org.dhis2.databinding.ItemFilterWorkingListBinding;
 import org.dhis2.utils.filters.sorting.SortingItem;
+import org.dhis2.utils.filters.workingLists.WorkingListItem;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
 
@@ -36,6 +43,7 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
     private ObservableField<Filters> openedFilter;
     private ObservableField<SortingItem> sortingItem;
     private Pair<CategoryCombo, List<CategoryOptionCombo>> catCombData;
+    private List<WorkingListItem> workingLists;
 
     public FiltersAdapter(ProgramType programType, FilterPresenter filterPresenter) {
         this.filtersList = new ArrayList<>();
@@ -69,6 +77,11 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
                 return new AssignToMeFilterHolder(ItemFilterAssignedBinding.inflate(inflater, parent, false), openedFilter, programType);
             case ENROLLMENT_STATUS:
                 return new StatusEnrollmentFilterHolder(ItemFilterEnrollmentStatusBinding.inflate(inflater, parent, false), openedFilter, sortingItem, programType);
+            case WORKING_LIST:
+                return new WorkingListFilterHolder(ItemFilterWorkingListBinding.inflate(inflater, parent, false), openedFilter, programType, workingLists, () -> {
+                    notifyDataSetChanged();
+                    return Unit.INSTANCE;
+                });
             default:
                 throw new IllegalArgumentException("Unsupported filter value");
         }
@@ -76,8 +89,8 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull FilterHolder holder, int position) {
-        if (holder instanceof EnrollmentDateFilterHolder){
-            ((EnrollmentDateFilterHolder)holder).updateLabel(enrollmentDateLabel).bind();
+        if (holder instanceof EnrollmentDateFilterHolder) {
+            ((EnrollmentDateFilterHolder) holder).updateLabel(enrollmentDateLabel).bind();
         } else {
             holder.bind();
         }
@@ -108,6 +121,14 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
         }
     }
 
+    public void addWorkingLists(List<WorkingListItem> workingLists) {
+        if (!filtersList.contains(Filters.WORKING_LIST) && !workingLists.isEmpty()) {
+            this.workingLists = workingLists;
+            filtersList.add(0, Filters.WORKING_LIST);
+            notifyDataSetChanged();
+        }
+    }
+
     public void addEnrollmentStatus() {
         if (!filtersList.contains(Filters.ENROLLMENT_STATUS)) {
             filtersList.add(Filters.ENROLLMENT_STATUS);
@@ -127,7 +148,7 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
             this.enrollmentDateLabel = enrollmentDateLabel;
             filtersList.add(1, Filters.ENROLLMENT_DATE);
             notifyDataSetChanged();
-        }else if(enrollmentDateLabel!=null && !Objects.equals(this.enrollmentDateLabel, enrollmentDateLabel)){
+        } else if (enrollmentDateLabel != null && !Objects.equals(this.enrollmentDateLabel, enrollmentDateLabel)) {
             this.enrollmentDateLabel = enrollmentDateLabel;
             notifyDataSetChanged();
         }

@@ -1,6 +1,7 @@
 package org.dhis2.utils.filters;
 
 import android.view.View;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,10 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.BR;
 import org.dhis2.R;
+import org.dhis2.utils.filters.FiltersAdapter.ProgramType;
 import org.dhis2.utils.filters.sorting.Sorting;
 import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.filters.sorting.SortingStatus;
-import org.dhis2.utils.filters.FiltersAdapter.ProgramType;
 
 import java.util.List;
 
@@ -34,7 +35,7 @@ public abstract class FilterHolder extends RecyclerView.ViewHolder implements Vi
     protected ProgramType programType;
     protected ViewDataBinding binding;
 
-    FilterHolder(@NonNull ViewDataBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem){
+    FilterHolder(@NonNull ViewDataBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem) {
         super(binding.getRoot());
         this.binding = binding;
         this.openFilter = openedFilter;
@@ -69,16 +70,21 @@ public abstract class FilterHolder extends RecyclerView.ViewHolder implements Vi
 
         setSortingIcons();
 
-        clickableLayout.setOnClickListener(this);
-        filterArrow.setOnClickListener(this);
-        sortingIcon.setOnClickListener(this);
+        if (clickableLayout != null)
+            clickableLayout.setOnClickListener(this);
+        if (filterArrow != null)
+            filterArrow.setOnClickListener(this);
+        if (sortingIcon != null)
+            sortingIcon.setOnClickListener(this);
 
-        openFilter.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
-            @Override
-            public void onPropertyChanged(Observable sender, int propertyId) {
-                filterArrow.animate().scaleY(openFilter.get() != filterType ? 1 : -1).setDuration(200).start();
-            }
-        });
+        if (openFilter != null)
+            openFilter.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+                @Override
+                public void onPropertyChanged(Observable sender, int propertyId) {
+                    if (filterArrow != null)
+                        filterArrow.animate().scaleY(openFilter.get() != filterType ? 1 : -1).setDuration(200).start();
+                }
+            });
 
         sortingItem.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
@@ -114,26 +120,25 @@ public abstract class FilterHolder extends RecyclerView.ViewHolder implements Vi
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.sortingIcon) {
-            SortingItem sortItem = SortingItem.create(filterType);
-            if (sortingItem.get() != null && sortingItem.get().component1() == sortItem.component1()) {
-                if (sortingItem.get().component2() == SortingStatus.ASC) {
-                    sortItem.setSortingStatus(SortingStatus.DESC);
-                } else if (sortingItem.get().component2() == SortingStatus.DESC) {
-                    sortItem.setSortingStatus(SortingStatus.NONE);
+        if (!FilterManager.getInstance().isFilterActiveForWorkingList(filterType)) {
+            if (view.getId() == R.id.sortingIcon) {
+                SortingItem sortItem = SortingItem.create(filterType);
+                if (sortingItem.get() != null && sortingItem.get().component1() == sortItem.component1()) {
+                    if (sortingItem.get().component2() == SortingStatus.ASC) {
+                        sortItem.setSortingStatus(SortingStatus.DESC);
+                    } else if (sortingItem.get().component2() == SortingStatus.DESC) {
+                        sortItem.setSortingStatus(SortingStatus.NONE);
+                    } else {
+                        sortItem.setSortingStatus(SortingStatus.ASC);
+                    }
                 } else {
                     sortItem.setSortingStatus(SortingStatus.ASC);
                 }
+                sortingItem.set(sortItem);
+                FilterManager.getInstance().setSortingItem(sortingItem.get());
             } else {
-                sortItem.setSortingStatus(SortingStatus.ASC);
+                openFilter.set(openFilter.get() != filterType ? filterType : null);
             }
-            sortingItem.set(sortItem);
-            FilterManager.getInstance().setSortingItem(sortingItem.get());
-        } else {
-            openFilter.set(openFilter.get() != filterType ? filterType : null);
         }
     }
-
-
-
 }
