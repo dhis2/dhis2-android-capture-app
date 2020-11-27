@@ -365,13 +365,25 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
         period: String,
         attributeOptionCombo: String
     ): Flowable<Boolean> {
-        return Flowable.fromCallable {
-            val dataApproval = d2.dataSetModule().dataApprovals()
-                .byOrganisationUnitUid().eq(orgUnit)
-                .byPeriodId().eq(period)
-                .byAttributeOptionComboUid().eq(attributeOptionCombo)
-                .one().blockingGet()
-            dataApproval != null && dataApproval.state() == DataApprovalState.APPROVED_HERE
+        return dataSet.flatMap { dataSet ->
+            dataSet.workflow()?.let { workflow ->
+                Flowable.fromCallable {
+                    val dataApproval = d2.dataSetModule().dataApprovals()
+                        .byOrganisationUnitUid().eq(orgUnit)
+                        .byPeriodId().eq(period)
+                        .byAttributeOptionComboUid().eq(attributeOptionCombo)
+                        .byWorkflowUid().eq(workflow.uid())
+                        .one().blockingGet()
+                    val approvalStates = listOf(
+                        DataApprovalState.APPROVED_ELSEWHERE,
+                        DataApprovalState.APPROVED_ABOVE,
+                        DataApprovalState.APPROVED_HERE,
+                        DataApprovalState.ACCEPTED_ELSEWHERE,
+                        DataApprovalState.ACCEPTED_HERE
+                    )
+                    dataApproval != null && approvalStates.contains(dataApproval.state())
+                }
+            } ?: Flowable.just(false)
         }
     }
 
