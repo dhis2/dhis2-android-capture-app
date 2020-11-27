@@ -2,8 +2,8 @@ package org.dhis2.usescases.teidashboard.robot
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withSubstring
@@ -79,7 +79,7 @@ class EventRobot : BaseRobot() {
     fun typeOnRequiredEventForm(text: String, position: Int) {
         onView(withId(R.id.formRecycler))
             .perform(
-                actionOnItemAtPosition<EditTextCustomHolder>( //EditTextCustomHolder
+                actionOnItemAtPosition<EditTextCustomHolder>(
                     position, typeChildViewWithId(text, R.id.input_editText)
                 )
             )
@@ -111,5 +111,13 @@ class EventRobot : BaseRobot() {
 
     fun clickOnDetails() {
         onView(withText(R.string.event_overview)).perform(click())
+    }
+
+    fun clickOnEventDueDate() {
+        onView(withId(R.id.due_date)).perform(click())
+    }
+
+    fun selectSpecificDate(year: Int, monthOfYear: Int, dayOfMonth: Int) {
+        onView(withId(R.id.widget_datepicker)).perform(PickerActions.setDate(year, monthOfYear, dayOfMonth))
     }
 }

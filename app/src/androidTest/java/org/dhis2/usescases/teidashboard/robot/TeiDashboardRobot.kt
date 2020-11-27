@@ -386,6 +386,11 @@ class TeiDashboardRobot : BaseRobot() {
                 ))))
     }
 
+    fun clickOnEventGroupByStageUsingOU(orgUnit: String) {
+        onView(withId(R.id.tei_recycler))
+            .perform(actionOnItem<EventViewHolder>(hasDescendant(allOf(withText(orgUnit), withId(R.id.organisationUnit))), click()))
+    }
+
     companion object {
         const val OPEN_EVENT_STATUS = R.string.event_open
         const val OVERDUE_EVENT_STATUS = R.string.event_overdue
