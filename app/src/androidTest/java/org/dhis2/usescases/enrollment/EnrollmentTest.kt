@@ -28,6 +28,5 @@ class EnrollmentTest : BaseTest() {
             clickOnAcceptEnrollmentDate()
             checkDateWarningIsDisplayed()
         }
-
     }
 }

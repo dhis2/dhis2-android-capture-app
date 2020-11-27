@@ -382,7 +382,8 @@ class EnrollmentRepository(
             null,
             ObjectStyle.builder().build(),
             true,
-            false
+            false,
+            onRowActionProccesor
         )
     }
 
@@ -404,7 +405,8 @@ class EnrollmentRepository(
             null,
             ObjectStyle.builder().build(),
             true,
-            false
+            false,
+            onRowActionProccesor
         )
     }
 
