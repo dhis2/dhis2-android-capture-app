@@ -9,9 +9,12 @@ import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.workingLists.WorkingListItem;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.program.Program;
+
+import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -301,5 +304,13 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public FeatureType getFeatureType(){
         return eventRepository.featureType().blockingGet();
+    }
+
+    @Override
+    public List<WorkingListItem> workingLists() {
+        return eventRepository.workingLists().toFlowable()
+                .flatMapIterable(data -> data)
+                .map(eventFilter -> new WorkingListItem(eventFilter.uid(), eventFilter.displayName(), null))
+                .toList().blockingGet();
     }
 }

@@ -28,10 +28,13 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
+import org.hisp.dhis.android.core.event.EventFilter;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -249,6 +252,14 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                     }
                     return hasAccess;
                 });
+    }
+
+    @Override
+    public Single<List<EventFilter>> workingLists() {
+        return d2.eventModule().eventFilters()
+                .withEventDataFilters()
+                .byProgram().eq(programUid)
+                .get();
     }
 
 }

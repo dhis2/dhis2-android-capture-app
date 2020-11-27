@@ -40,6 +40,7 @@ import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
+import com.evrencoskun.tableview.filter.Filter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.geojson.Feature;
@@ -353,6 +354,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         FilterManager.getInstance().clearEnrollmentStatus();
         FilterManager.getInstance().clearEventStatus();
         FilterManager.getInstance().clearEnrollmentDate();
+        FilterManager.getInstance().clearWorkingList();
         FilterManager.getInstance().clearSorting();
 
         super.onDestroy();

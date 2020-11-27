@@ -28,7 +28,11 @@ data class WorkingListItem(
         }
     }
 
-    fun isSelected():Boolean {
+    fun deselect() {
+        isActive = false
+    }
+
+    fun isSelected(): Boolean {
         return FilterManager.getInstance().currentWorkingList()?.uid == uid
     }
 }

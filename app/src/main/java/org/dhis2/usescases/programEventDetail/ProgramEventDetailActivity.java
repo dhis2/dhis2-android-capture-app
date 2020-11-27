@@ -24,6 +24,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
+import com.evrencoskun.tableview.filter.Filter;
 import com.mapbox.geojson.Feature;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -135,9 +136,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         } else {
             filtersAdapter.removeAssignedToMe();
         }
+        filtersAdapter.addWorkingLists(presenter.workingLists());
         try {
             binding.filterLayout.setAdapter(filtersAdapter);
-
         } catch (Exception e) {
             Timber.e(e);
         }
@@ -201,6 +202,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         FilterManager.getInstance().clearEventStatus();
         FilterManager.getInstance().clearCatOptCombo();
+        FilterManager.getInstance().clearWorkingList();
     }
 
 

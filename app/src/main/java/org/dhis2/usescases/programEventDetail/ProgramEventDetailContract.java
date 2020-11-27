@@ -11,6 +11,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.workingLists.WorkingListItem;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -97,5 +98,7 @@ public class ProgramEventDetailContract {
         Program getProgram();
 
         FeatureType getFeatureType();
+
+        List<WorkingListItem> workingLists();
     }
 }

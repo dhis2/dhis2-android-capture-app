@@ -1,7 +1,6 @@
 package org.dhis2.utils.filters;
 
 import android.view.View;
-import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -66,6 +65,7 @@ public abstract class FilterHolder extends RecyclerView.ViewHolder implements Vi
         binding.setVariable(BR.filterType, filterType);
         binding.setVariable(BR.filterCount, FilterManager.getInstance().observeField(filterType));
         binding.setVariable(BR.currentSortItem, sortingItem);
+        binding.setVariable(BR.workingListFilter, FilterManager.getInstance().observeWorkingListFilter());
         binding.executePendingBindings();
 
         setSortingIcons();
@@ -139,6 +139,8 @@ public abstract class FilterHolder extends RecyclerView.ViewHolder implements Vi
             } else {
                 openFilter.set(openFilter.get() != filterType ? filterType : null);
             }
+        } else {
+            openFilter.set(null);
         }
     }
 }

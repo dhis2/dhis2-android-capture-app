@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.databinding.ObservableField;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.dhis2.R;
 import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemFilterAssignedBinding;
@@ -22,14 +21,10 @@ import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.filters.workingLists.WorkingListItem;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
 
 public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
 
@@ -78,10 +73,7 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
             case ENROLLMENT_STATUS:
                 return new StatusEnrollmentFilterHolder(ItemFilterEnrollmentStatusBinding.inflate(inflater, parent, false), openedFilter, sortingItem, programType);
             case WORKING_LIST:
-                return new WorkingListFilterHolder(ItemFilterWorkingListBinding.inflate(inflater, parent, false), openedFilter, programType, workingLists, () -> {
-                    notifyDataSetChanged();
-                    return Unit.INSTANCE;
-                });
+                return new WorkingListFilterHolder(ItemFilterWorkingListBinding.inflate(inflater, parent, false), openedFilter, programType, workingLists);
             default:
                 throw new IllegalArgumentException("Unsupported filter value");
         }
@@ -122,11 +114,16 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
     }
 
     public void addWorkingLists(List<WorkingListItem> workingLists) {
-        if (!filtersList.contains(Filters.WORKING_LIST) && !workingLists.isEmpty()) {
+        if (!workingLists.isEmpty()) {
             this.workingLists = workingLists;
-            filtersList.add(0, Filters.WORKING_LIST);
-            notifyDataSetChanged();
+            if (!filtersList.contains(Filters.WORKING_LIST)) {
+                filtersList.add(0, Filters.WORKING_LIST);
+            }
+        } else {
+            this.workingLists = null;
+            filtersList.remove(Filters.WORKING_LIST);
         }
+        notifyDataSetChanged();
     }
 
     public void addEnrollmentStatus() {

@@ -29,7 +29,6 @@ import kotlin.Pair;
 public class FilterManager implements Serializable {
 
     public static final int OU_TREE = 1986;
-    private WorkingListItem currentWorkingList;
 
     public void publishData() {
         filterProcessor.onNext(this);
@@ -75,6 +74,9 @@ public class FilterManager implements Serializable {
     private FlowableProcessor<Pair<PeriodRequest, Filters>> periodRequestProcessor;
     private FlowableProcessor<String> catOptComboRequestProcessor;
 
+    private WorkingListItem currentWorkingList;
+    private ObservableField<WorkingListItem> workingList;
+
     private static FilterManager instance;
 
     public static FilterManager getInstance() {
@@ -112,6 +114,8 @@ public class FilterManager implements Serializable {
         eventStatusFiltersApplied = new ObservableField<>(0);
         enrollmentStatusFiltersApplied = new ObservableField<>(0);
         assignedToMeApplied = new ObservableField<>(0);
+
+        workingList = new ObservableField<>(null);
 
         filterProcessor = PublishProcessor.create();
         ouTreeProcessor = PublishProcessor.create();
@@ -284,6 +288,10 @@ public class FilterManager implements Serializable {
         }
     }
 
+    public ObservableField<WorkingListItem> observeWorkingListFilter(){
+        return workingList;
+    }
+
     public FlowableProcessor<Boolean> getOuTreeProcessor() {
         return ouTreeProcessor;
     }
@@ -428,6 +436,14 @@ public class FilterManager implements Serializable {
         filterProcessor.onNext(this);
     }
 
+    public void clearWorkingList(){
+        if(currentWorkingList != null){
+            currentWorkingList = null;
+            workingList.set(null);
+        }
+        filterProcessor.onNext(this);
+    }
+
     public void clearSorting() {
         sortingItem = null;
         filterProcessor.onNext(this);
@@ -492,10 +508,12 @@ public class FilterManager implements Serializable {
     public void currentWorkingList(WorkingListItem workingListItem) {
         if (workingListItem != null) {
             this.currentWorkingList = workingListItem;
+            this.workingList.set(currentWorkingList);
             applyWorkingListFilters();
         } else {
             clearAllFilters();
             this.currentWorkingList = null;
+            this.workingList.set(null);
         }
         filterProcessor.onNext(this);
     }

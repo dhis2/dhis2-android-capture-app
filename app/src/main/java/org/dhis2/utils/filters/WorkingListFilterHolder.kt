@@ -1,6 +1,5 @@
 package org.dhis2.utils.filters
 
-import android.os.Handler
 import android.view.LayoutInflater
 import androidx.databinding.ObservableField
 import org.dhis2.databinding.ItemFilterWorkingListBinding
@@ -11,8 +10,7 @@ internal class WorkingListFilterHolder(
     private val mBinding: ItemFilterWorkingListBinding,
     openedFilter: ObservableField<Filters>,
     programType: FiltersAdapter.ProgramType,
-    private val workingLists: MutableList<WorkingListItem>,
-    private val onAction: () -> Unit
+    private val workingLists: MutableList<WorkingListItem>
 ) : FilterHolder(mBinding, openedFilter) {
 
     init {
@@ -38,13 +36,16 @@ internal class WorkingListFilterHolder(
                     }.root
                 )
             }
-            setOnCheckedChangeListener { group, checkedId ->
+            setOnCheckedChangeListener { _, checkedId ->
                 workingLists.firstOrNull { it.hashCode() == checkedId }?.let {
-                    if(!it.isSelected()) {
+                    if (!it.isSelected()) {
                         it.select()
                     }
-                    Handler().post { onAction() }
-                }?:FilterManager.getInstance().currentWorkingList(null)
+                } ?: workingLists.forEach {
+                    it.deselect()
+                }.also {
+                    FilterManager.getInstance().currentWorkingList(null)
+                }
             }
         }
     }
