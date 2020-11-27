@@ -6,7 +6,6 @@ import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
-import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel
 import org.dhis2.utils.DhisTextUtils.Companion.isEmpty
@@ -102,12 +101,8 @@ class EventFieldMapper(
             if (fieldSection.isNotEmpty() || sectionList.size == 1) {
                 updateFieldMap(
                     fieldSection,
-                    if (field !is ImageViewModel && showMandatoryErrors &&
+                    if (showMandatoryErrors &&
                         emptyMandatoryFields.containsKey(field.uid())
-                    ) {
-                        field.withWarning(mandatoryFieldWarning)
-                    } else if (field is ImageViewModel && showMandatoryErrors &&
-                        emptyMandatoryFields.containsKey(field.fieldUid())
                     ) {
                         field.withWarning(mandatoryFieldWarning)
                     } else {
@@ -251,6 +246,6 @@ class EventFieldMapper(
     }
 
     private fun fieldIsNotOptionSetOrImage(field: FieldViewModel): Boolean {
-        return field.optionSet() == null || field !is ImageViewModel
+        return field.optionSet() == null
     }
 }

@@ -16,9 +16,9 @@ import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
-import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
+import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
@@ -85,7 +85,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private Map<String, String> errors;
     private EventStatus eventStatus;
     private boolean hasExpired;
-    //    private final FlowableProcessor<String> sectionProcessor;
     private final Flowable<String> sectionProcessor;
     private int unsupportedFields;
     private int totalFields;
@@ -328,11 +327,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                             for (FieldViewModel fieldViewModel : fields) {
                                 fieldViewModel.setAdapterPosition(fields.indexOf(fieldViewModel));
                                 if (fieldViewModel.mandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection())) {
-                                    if (fieldViewModel instanceof ImageViewModel && !emptyMandatoryFields.containsKey(((ImageViewModel) fieldViewModel).fieldUid())) {
-                                        emptyMandatoryFields.put(((ImageViewModel) fieldViewModel).fieldUid(), fieldViewModel);
-                                    } else if (!(fieldViewModel instanceof ImageViewModel)) {
-                                        emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
-                                    }
+                                    emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
                                 }
                             }
                             return fields;
@@ -394,14 +389,16 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         Iterator<FieldViewModel> fieldIterator = fieldViewModels.values().iterator();
         while (fieldIterator.hasNext()) {
             FieldViewModel field = fieldIterator.next();
-            if (field instanceof ImageViewModel) {
-                ImageViewModel imageField = (ImageViewModel) field;
-                if (optionsToHide.containsKey(imageField.fieldUid()) && optionsToHide.get(imageField.fieldUid()).contains(imageField.optionUid())) {
-                    fieldIterator.remove();
-                } else if (optionsGroupToShow.containsKey(imageField.fieldUid()) &&
-                        !eventCaptureRepository.getOptionsFromGroups(optionsGroupToShow.get(imageField.fieldUid())).contains(imageField.optionUid())) {
-                    fieldIterator.remove();
-                }
+            if (field instanceof MatrixOptionSetModel) {
+                ((MatrixOptionSetModel) field).setOptionsToHide(
+                        optionsToHide.get(field.uid()) != null ? optionsToHide.get(field.uid()) : new ArrayList<>(),
+                        eventCaptureRepository.getOptionsFromGroups(
+                                optionsGroupsToHide.get(field.uid()) != null ? optionsGroupsToHide.get(field.uid()) : new ArrayList<>()
+                        ),
+                        eventCaptureRepository.getOptionsFromGroups(
+                                optionsGroupToShow.get(field.uid()) != null ? optionsGroupToShow.get(field.uid()) : new ArrayList<>()
+                        )
+                );
             } else if (field instanceof SpinnerViewModel) {
                 ((SpinnerViewModel) field).setOptionsToHide(
                         optionsToHide.get(field.uid()) != null ? optionsToHide.get(field.uid()) : new ArrayList<>(),

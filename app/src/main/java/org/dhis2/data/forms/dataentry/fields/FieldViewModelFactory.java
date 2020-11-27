@@ -6,7 +6,10 @@ import androidx.annotation.Nullable;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
+import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+
+import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
@@ -29,7 +32,8 @@ public interface FieldViewModelFactory {
                           @Nullable Integer optionCount,
                           @NonNull ObjectStyle objectStyle,
                           @Nullable String fieldMask,
-                          FlowableProcessor<RowAction> processor);
+                          FlowableProcessor<RowAction> processor,
+                          List<Option> options);
 
     @NonNull
     FieldViewModel createSingleSection(String singleSectionName);
