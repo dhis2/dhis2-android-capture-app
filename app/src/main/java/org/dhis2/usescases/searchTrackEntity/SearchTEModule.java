@@ -32,6 +32,7 @@ import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.filters.FiltersAdapter;
+import org.dhis2.utils.filters.workingLists.TeiFilterToWorkingListItemMapper;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 
@@ -70,10 +71,12 @@ public class SearchTEModule {
                                                        MapTeisToFeatureCollection mapTeisToFeatureCollection,
                                                        MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
                                                        MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
-                                                       PreferenceProvider preferenceProvider) {
+                                                       PreferenceProvider preferenceProvider,
+                                                       TeiFilterToWorkingListItemMapper teiWorkingListMapper) {
         return new SearchTEPresenter(view, d2, mapUtils, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapCoordinateFieldToFeatureCollection,
-                new EventToEventUiComponent(), preferenceProvider);
+                new EventToEventUiComponent(), preferenceProvider,
+                teiWorkingListMapper);
     }
 
     @Provides

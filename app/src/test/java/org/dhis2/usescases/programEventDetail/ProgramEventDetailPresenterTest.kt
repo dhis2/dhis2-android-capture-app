@@ -24,6 +24,7 @@ import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
 import org.dhis2.utils.filters.sorting.SortingItem
 import org.dhis2.utils.filters.sorting.SortingStatus
+import org.dhis2.utils.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.FeatureType
@@ -42,6 +43,7 @@ class ProgramEventDetailPresenterTest {
     private val scheduler = TrampolineSchedulerProvider()
     private val filterManager: FilterManager = FilterManager.getInstance()
     private val preferenceProvider: PreferenceProvider = mock()
+    private val workingListMapper: EventFilterToWorkingListItemMapper = mock()
 
     @Before
     fun setUp() {
@@ -50,7 +52,8 @@ class ProgramEventDetailPresenterTest {
             repository,
             scheduler,
             filterManager,
-            preferenceProvider
+            preferenceProvider,
+            workingListMapper
         )
     }
 

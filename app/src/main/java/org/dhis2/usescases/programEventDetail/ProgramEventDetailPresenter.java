@@ -2,13 +2,11 @@ package org.dhis2.usescases.programEventDetail;
 
 import androidx.annotation.NonNull;
 
-import com.mapbox.mapboxsdk.geometry.LatLng;
-
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.workingLists.EventFilterToWorkingListItemMapper;
 import org.dhis2.utils.filters.workingLists.WorkingListItem;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Unit;
@@ -36,6 +34,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     private ProgramEventDetailContract.View view;
     CompositeDisposable compositeDisposable;
     private FlowableProcessor<Unit> listDataProcessor;
+    private EventFilterToWorkingListItemMapper workingListMapper;
 
     //Search fields
     FlowableProcessor<String> eventInfoProcessor;
@@ -46,12 +45,14 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
             @NonNull ProgramEventDetailRepository programEventDetailRepository,
             SchedulerProvider schedulerProvider,
             FilterManager filterManager,
-            PreferenceProvider preferenceProvider) {
+            PreferenceProvider preferenceProvider,
+            EventFilterToWorkingListItemMapper workingListMapper) {
         this.view = view;
         this.eventRepository = programEventDetailRepository;
         this.schedulerProvider = schedulerProvider;
         this.filterManager = filterManager;
         this.preferences = preferenceProvider;
+        this.workingListMapper = workingListMapper;
         eventInfoProcessor = PublishProcessor.create();
         mapProcessor = PublishProcessor.create();
         compositeDisposable = new CompositeDisposable();
@@ -161,7 +162,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .switchMap(unit ->
                                 filterManager.asFlowable()
                                         .startWith(FilterManager.getInstance())
-                                        .filter(data->view.isMapVisible())
+                                        .filter(data -> view.isMapVisible())
                                         .flatMap(filterManager -> eventRepository.filteredEventsForMap(
                                                 filterManager.getPeriodFilters(),
                                                 filterManager.getOrgUnitUidsFilters(),
@@ -238,7 +239,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void getEventInfo(String eventUid) {
-        if(preferences.getBoolean(Preference.EVENT_COORDINATE_CHANGED,false)){
+        if (preferences.getBoolean(Preference.EVENT_COORDINATE_CHANGED, false)) {
             getMapData();
         }
         eventInfoProcessor.onNext(eventUid);
@@ -302,7 +303,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
-    public FeatureType getFeatureType(){
+    public FeatureType getFeatureType() {
         return eventRepository.featureType().blockingGet();
     }
 
@@ -310,7 +311,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     public List<WorkingListItem> workingLists() {
         return eventRepository.workingLists().toFlowable()
                 .flatMapIterable(data -> data)
-                .map(eventFilter -> new WorkingListItem(eventFilter.uid(), eventFilter.displayName(), null))
+                .map(eventFilter -> workingListMapper.map(eventFilter))
                 .toList().blockingGet();
     }
 }

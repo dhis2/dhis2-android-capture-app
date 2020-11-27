@@ -6,6 +6,8 @@ import androidx.databinding.ObservableField;
 import org.dhis2.utils.filters.cat_opt_comb.CatOptCombFilterAdapter;
 import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.filters.sorting.SortingStatus;
+import org.dhis2.utils.filters.workingLists.EventWorkingListItem;
+import org.dhis2.utils.filters.workingLists.TeiWorkingListItem;
 import org.dhis2.utils.filters.workingLists.WorkingListItem;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -288,7 +290,7 @@ public class FilterManager implements Serializable {
         }
     }
 
-    public ObservableField<WorkingListItem> observeWorkingListFilter(){
+    public ObservableField<WorkingListItem> observeWorkingListFilter() {
         return workingList;
     }
 
@@ -436,8 +438,8 @@ public class FilterManager implements Serializable {
         filterProcessor.onNext(this);
     }
 
-    public void clearWorkingList(){
-        if(currentWorkingList != null){
+    public void clearWorkingList() {
+        if (currentWorkingList != null) {
             currentWorkingList = null;
             workingList.set(null);
         }
@@ -528,17 +530,49 @@ public class FilterManager implements Serializable {
     }
 
     private void applyWorkingListFilters() {
-        if (currentWorkingList.getEnrollentStatus() != null) {
-            addEnrollmentStatus(false, currentWorkingList.getEnrollentStatus());
+        if (currentWorkingList instanceof TeiWorkingListItem) {
+            applyTeiWorkingList();
+        } else {
+            applyEventWorkingList();
+        }
+
+    }
+
+    private void applyTeiWorkingList() {
+        TeiWorkingListItem teiWorkingList = (TeiWorkingListItem) currentWorkingList;
+        if (teiWorkingList.getEnrollentStatus() != null) {
+            addEnrollmentStatus(false, teiWorkingList.getEnrollentStatus());
         } else {
             clearEnrollmentStatus();
+        }
+    }
+
+    private void applyEventWorkingList() {
+        EventWorkingListItem eventWorkingListItem = (EventWorkingListItem) currentWorkingList;
+        if (eventWorkingListItem.getAssignedToMe() != null) {
+            setAssignedToMe(eventWorkingListItem.getAssignedToMe());
+        } else {
+            clearAssignToMe();
+        }
+        if (eventWorkingListItem.getEventDatePeriod() != null) {
+
+        } else {
+        }
+        if (eventWorkingListItem.getEventStatus() != null) {
+            addEventStatus(false, eventWorkingListItem.getEventStatus());
+        } else {
+            clearEventStatus();
+        }
+        if (eventWorkingListItem.getOrgUnit() != null) {
+
+        } else {
         }
     }
 
     public boolean isFilterActiveForWorkingList(Filters filterType) {
         switch (filterType) {
             case ENROLLMENT_STATUS:
-                return currentWorkingList() != null && currentWorkingList().getEnrollentStatus() != null;
+                return currentWorkingList() != null && currentWorkingList() instanceof TeiWorkingListItem && ((TeiWorkingListItem) currentWorkingList()).getEnrollentStatus() != null;
             default:
                 return false;
         }

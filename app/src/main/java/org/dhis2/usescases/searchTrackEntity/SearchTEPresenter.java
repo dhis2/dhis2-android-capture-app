@@ -45,6 +45,7 @@ import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.workingLists.TeiFilterToWorkingListItemMapper;
 import org.dhis2.utils.filters.workingLists.WorkingListItem;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
@@ -95,6 +96,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private final AnalyticsHelper analyticsHelper;
     private final BehaviorSubject<String> currentProgram;
     private final PreferenceProvider preferences;
+    private final TeiFilterToWorkingListItemMapper workingListMapper;
     private Program selectedProgram;
 
     private CompositeDisposable compositeDisposable;
@@ -131,7 +133,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
                              MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
                              EventToEventUiComponent eventToEventUiComponent,
-                             PreferenceProvider preferenceProvider) {
+                             PreferenceProvider preferenceProvider,
+                             TeiFilterToWorkingListItemMapper workingListMapper) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -142,7 +145,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.mapTeisToFeatureCollection = mapTeisToFeatureCollection;
         this.mapTeiEventsToFeatureCollection = mapTeiEventsToFeatureCollection;
         this.mapCoordinateFieldToFeatureCollection = mapCoordinateFieldToFeatureCollection;
-
+        this.workingListMapper = workingListMapper;
         this.eventToEventUiComponent = eventToEventUiComponent;
         compositeDisposable = new CompositeDisposable();
         queryData = new HashMap<>();
@@ -1031,7 +1034,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public List<WorkingListItem> workingLists() {
         return searchRepository.workingLists(selectedProgram != null ? selectedProgram.uid() : null).toFlowable()
                 .flatMapIterable(data -> data)
-                .map(teiFilter -> new WorkingListItem(teiFilter.uid(), teiFilter.displayName(), teiFilter.enrollmentStatus()))
+                .map(workingListMapper::map)
                 .toList().blockingGet();
     }
 }

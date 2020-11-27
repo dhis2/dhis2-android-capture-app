@@ -8,7 +8,6 @@ import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
-import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
 import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature;
 import org.dhis2.uicomponents.map.geometry.mapper.feature.MapCoordinateFieldToFeature;
@@ -20,6 +19,8 @@ import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
+import org.dhis2.utils.filters.workingLists.EventFilterToWorkingListItemMapper;
+import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -48,8 +49,10 @@ public class ProgramEventDetailModule {
     @PerActivity
     ProgramEventDetailContract.Presenter providesPresenter(
             @NonNull ProgramEventDetailRepository programEventDetailRepository, SchedulerProvider schedulerProvider, FilterManager filterManager,
-            PreferenceProvider preferenceProvider) {
-        return new ProgramEventDetailPresenter(view, programEventDetailRepository, schedulerProvider, filterManager, preferenceProvider);
+            PreferenceProvider preferenceProvider,
+            EventFilterToWorkingListItemMapper eventWorkingListMapper) {
+        return new ProgramEventDetailPresenter(view, programEventDetailRepository, schedulerProvider, filterManager, preferenceProvider,
+                eventWorkingListMapper);
     }
 
     @Provides
@@ -73,7 +76,7 @@ public class ProgramEventDetailModule {
 
     @Provides
     @PerActivity
-    MapCoordinateFieldToFeature provideMapCoordinateFieldToFeature(MapGeometryToFeature mapGeometryToFeature){
+    MapCoordinateFieldToFeature provideMapCoordinateFieldToFeature(MapGeometryToFeature mapGeometryToFeature) {
         return new MapCoordinateFieldToFeature(mapGeometryToFeature);
     }
 
@@ -83,7 +86,7 @@ public class ProgramEventDetailModule {
                                                        MapEventToFeatureCollection mapEventToFeatureCollection,
                                                        MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
                                                        DhisMapUtils dhisMapUtils) {
-        return new ProgramEventDetailRepositoryImpl(programUid, d2, mapper, mapEventToFeatureCollection, mapCoordinateFieldToFeatureCollection,dhisMapUtils);
+        return new ProgramEventDetailRepositoryImpl(programUid, d2, mapper, mapEventToFeatureCollection, mapCoordinateFieldToFeatureCollection, dhisMapUtils);
     }
 
     @Provides

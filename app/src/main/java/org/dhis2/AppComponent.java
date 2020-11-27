@@ -17,6 +17,7 @@ import org.dhis2.utils.Validator;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsModule;
+import org.dhis2.utils.filters.FilterModule;
 import org.dhis2.utils.reporting.CrashReportController;
 import org.dhis2.utils.reporting.CrashReportModule;
 import org.dhis2.utils.session.PinModule;
@@ -42,7 +43,8 @@ import dagger.Component;
         MatomoAnalyticsModule.class,
         ValidatorModule.class,
         CrashReportModule.class,
-        LocationModule.class
+        LocationModule.class,
+        FilterModule.class
 })
 public interface AppComponent {
 
