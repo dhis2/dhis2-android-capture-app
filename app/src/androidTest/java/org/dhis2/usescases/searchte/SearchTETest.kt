@@ -8,7 +8,10 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import org.dhis2.R
 import org.dhis2.common.idlingresources.MapIdlingResource
 import org.dhis2.usescases.BaseTest
+import org.dhis2.usescases.flow.teiFlow.TeiFlowTest
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
+import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
+import org.dhis2.usescases.flow.teiFlow.teiFlowRobot
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
 import org.dhis2.usescases.searchte.robot.filterRobot
@@ -19,6 +22,8 @@ import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @RunWith(AndroidJUnit4::class)
 class SearchTETest : BaseTest() {
@@ -140,12 +145,22 @@ class SearchTETest : BaseTest() {
         }
     }
 
-    @Ignore("Date dependant. We have to find a way to mock dates")
     @Test
     fun shouldSuccessfullyFilterByEventStatusOverdue() {
         val eventStatusFilter = context.getString(R.string.filters_title_event_status)
         val totalCount = "1"
-        prepareChildProgrammeIntentAndLaunchActivity(rule)
+
+        val programStage = "PNC Visit"
+        val orgUnit = "Ngelehun CHC"
+        val registerTeiDetails = createRegisterTEI()
+        val overdueDate = createOverdueDate()
+        prepareTestAdultWomanProgrammeIntentAndLaunchActivity(rule)
+
+        teiFlowRobot {
+            registerTEI(registerTeiDetails)
+            changeDueDate(overdueDate, programStage, orgUnit)
+            pressBack()
+        }
 
         filterRobot {
             clickOnFilter()
@@ -292,7 +307,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
-    @Ignore
+    @Ignore("To review why the sleep is needed")
     @Test
     fun shouldSuccessfullyShowMapAndTeiCard() {
         val firstName = "Gertrude"
@@ -360,6 +375,45 @@ class SearchTETest : BaseTest() {
         5,
         31
     )
+
+    private fun createRegisterTEI() = RegisterTEIUIModel(
+        "ADRIANNA",
+        "ROBERTS",
+        dateRegistration,
+        dateEnrollment
+    )
+
+    private fun createFirstSpecificDate() = DateRegistrationUIModel(
+        2000,
+        6,
+        30
+    )
+
+    private fun createEnrollmentDate() = DateRegistrationUIModel(
+        2020,
+        10,
+        30
+    )
+
+    private fun getSplitCurrentDate(): DateRegistrationUIModel {
+        val sdf = SimpleDateFormat(TeiFlowTest.DATE_FORMAT)
+        val dateFormat = sdf.format(Date())
+        val splitDate: Array<String> = dateFormat.removePrefix("0").split("/").toTypedArray()
+        val day = splitDate[0].toInt()
+        val month = splitDate[1].toInt()
+        val year = splitDate[2].toInt()
+        return DateRegistrationUIModel(year, month, day)
+    }
+
+    private fun createOverdueDate() = DateRegistrationUIModel(
+        currentDate.year,
+        currentDate.month-1,
+        currentDate.day
+    )
+
+    private val dateRegistration = createFirstSpecificDate()
+    private val dateEnrollment = createEnrollmentDate()
+    private val currentDate = getSplitCurrentDate()
 
     companion object {
         const val PROGRAM_UID = "PROGRAM_UID"
