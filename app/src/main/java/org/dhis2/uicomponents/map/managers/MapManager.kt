@@ -127,4 +127,6 @@ abstract class MapManager(val mapView: MapView) {
     open fun getLayerName(source: String): String {
         return source
     }
+
+    open fun markFeatureAsSelected(point: LatLng, layer: String? = null): Feature? { return null }
 }

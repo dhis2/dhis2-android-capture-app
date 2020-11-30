@@ -1,6 +1,8 @@
 package org.dhis2.uicomponents.map.managers
 
 import android.graphics.Bitmap
+import android.graphics.PointF
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
@@ -10,6 +12,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.BitmapUtils
@@ -377,5 +380,58 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         } else {
             super.getLayerName(source)
         }
+    }
+
+    override fun markFeatureAsSelected(point: LatLng, layer: String?): Feature? {
+        val pointf: PointF = map.projection.toScreenLocation(point)
+        val rectF = RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10)
+
+        val (sources, layers) = getSourcesAndLayersForSearch()
+
+        layer?.let {
+            return selectFeatureForLayer(rectF, TEIS_SOURCE_ID, it)
+        }
+
+        return selectedFeature(rectF, sources, layers, 0)
+    }
+
+    private fun selectedFeature(
+        rectF: RectF,
+        sources: List<String>,
+        layers: List<Array<String>>,
+        count: Int
+    ): Feature? {
+        val source = sources[count]
+        val layersToSearch = layers[count]
+        val features: List<Feature> = map.queryRenderedFeatures(rectF, *layersToSearch)
+        var selectedFeature: Feature? = null
+        return when {
+            features.isNotEmpty() -> {
+                mapLayerManager.selectFeature(null)
+                selectedFeature = features[0]
+                if (source.contains("RELATIONSHIP")) {
+                    selectedFeature = findFeature(
+                        source,
+                        RELATIONSHIP_UID,
+                        selectedFeature!!.getStringProperty(RELATIONSHIP_UID)
+                    )
+                }
+                mapLayerManager.getLayer(source, true)?.setSelectedItem(selectedFeature)
+                selectedFeature
+            }
+            count < sources.size - 1 -> { selectedFeature(rectF, sources, layers, count + 1) }
+            else -> selectedFeature
+        }
+    }
+
+    private fun selectFeatureForLayer(rectF: RectF, source: String, layer: String): Feature? {
+        val features: List<Feature> = map.queryRenderedFeatures(rectF, layer)
+        var feature: Feature? = null
+        if (features.isNotEmpty()) {
+            if (source.contains(TEIS_SOURCE_ID)) {
+                feature = features[0]
+            }
+        }
+        return feature
     }
 }

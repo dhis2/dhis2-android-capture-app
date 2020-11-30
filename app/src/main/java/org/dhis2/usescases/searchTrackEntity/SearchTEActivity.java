@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.graphics.PointF;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Build;
@@ -108,7 +107,6 @@ import kotlin.Pair;
 import kotlin.Unit;
 import timber.log.Timber;
 
-import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.RELATIONSHIP_UID;
 import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.TEI;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CHANGE_PROGRAM;
@@ -981,28 +979,24 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
-        PointF pointf = teiMapManager.getMap().getProjection().toScreenLocation(point);
-        RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
-
-        Pair<List<String>, List<String[]>> sourcesAndLayer = teiMapManager.getSourcesAndLayersForSearch();
-        return findFeature(rectF, sourcesAndLayer.component1(), sourcesAndLayer.component2(), 0);
+        Feature featureFound = teiMapManager.markFeatureAsSelected(point, null);
+        if (featureFound != null) {
+            binding.mapCarousel.scrollToFeature(featureFound);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean onMapLongClick(@NonNull LatLng point) {
-        PointF pointf = teiMapManager.getMap().getProjection().toScreenLocation(point);
-        RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
+        Feature featureFound;
+        String source = teiMapManager.getSourcesAndLayersForSearch().component1().get(0);
 
-        Pair<List<String>, List<String[]>> sourcesAndLayer = teiMapManager.getSourcesAndLayersForSearch();
-        String source = sourcesAndLayer.component1().get(0);
-        boolean featureFound = false;
         if (source.contains(TEI)) {
-            featureFound = findFeature(rectF, sourcesAndLayer.component1(), sourcesAndLayer.component2(), 0);
-        }
-        if (featureFound) {
-            Feature feature = getFeature(rectF, TEI, "TEI_POINT_LAYER_ID");
-            if (feature != null) {
-                navigateToMap(feature);
+            featureFound = teiMapManager.markFeatureAsSelected(point, "TEI_POINT_LAYER_ID");
+            if (featureFound != null) {
+                binding.mapCarousel.scrollToFeature(featureFound);
+                navigateToMap(featureFound);
                 return true;
             }
         }
@@ -1013,7 +1007,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         LatLng point = FeatureExtensionsKt.getPointLatLng(feature);
         String longitude = String.valueOf(point.getLongitude());
         String latitude = String.valueOf(point.getLatitude());
-        String location = "geo:0,0?z=11&q=" + latitude + "," + longitude + "";
+        String location = "geo:0,0?q=" + latitude + "," + longitude + "";
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(location));
@@ -1029,26 +1023,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             }
         }
         return feature;
-    }
-
-    private boolean findFeature(RectF rectF, List<String> sources, List<String[]> layers, int count) {
-        String source = sources.get(count);
-        String[] layersToSearch = layers.get(count);
-        List<Feature> features = teiMapManager.getMap().queryRenderedFeatures(rectF, layersToSearch);
-        if (!features.isEmpty()) {
-            teiMapManager.mapLayerManager.selectFeature(null);
-            Feature selectedFeature = features.get(0);
-            if (source.contains("RELATIONSHIP")) {
-                selectedFeature = teiMapManager.findFeature(source, RELATIONSHIP_UID, selectedFeature.getStringProperty(RELATIONSHIP_UID));
-            }
-            teiMapManager.mapLayerManager.getLayer(source, true).setSelectedItem(selectedFeature);
-            binding.mapCarousel.scrollToFeature(selectedFeature);
-            return true;
-        } else if (count < sources.size() - 1) {
-            return findFeature(rectF, sources, layers, count + 1);
-        } else {
-            return false;
-        }
     }
 
     /*endregion*/
