@@ -1014,16 +1014,5 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         startActivity(intent);
     }
 
-    private Feature getFeature(RectF rectF, String source, String layer) {
-        List<Feature> features = teiMapManager.getMap().queryRenderedFeatures(rectF, layer);
-        Feature feature = null;
-        if (!features.isEmpty()) {
-            if (source.contains(TEI)) {
-                feature = features.get(0);
-            }
-        }
-        return feature;
-    }
-
     /*endregion*/
 }
