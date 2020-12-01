@@ -4,8 +4,8 @@ import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import java.util.ArrayList
-import org.dhis2.Bindings.inDateRange
-import org.dhis2.Bindings.inOrgUnit
+import org.dhis2.data.dhislogic.inDateRange
+import org.dhis2.data.dhislogic.inOrgUnit
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.hisp.dhis.android.core.category.CategoryOption

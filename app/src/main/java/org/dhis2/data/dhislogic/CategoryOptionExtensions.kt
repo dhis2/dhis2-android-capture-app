@@ -1,4 +1,4 @@
-package org.dhis2.Bindings
+package org.dhis2.data.dhislogic
 
 import java.util.Date
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper

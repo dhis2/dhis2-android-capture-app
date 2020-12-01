@@ -2,8 +2,6 @@ package org.dhis2.data.dhislogic
 
 import java.time.Instant
 import java.util.Date
-import org.dhis2.Bindings.inDateRange
-import org.dhis2.Bindings.inOrgUnit
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
