@@ -175,7 +175,8 @@ class GetFeedback(
                         eventValueLevel0.value,
                         eventValueLevel0.colorByLegend,
                         eventValueLevel0.success,
-                        eventValueLevel0.critical
+                        eventValueLevel0.critical,
+                        eventValueLevel0.isNumeric
                     ),
                     event.uid
                 ), children
@@ -199,7 +200,8 @@ class GetFeedback(
                     eventValue.value,
                     eventValue.colorByLegend,
                     eventValue.success,
-                    eventValue.critical
+                    eventValue.critical,
+                    eventValue.isNumeric
                 ) else null,
                 eventValue.dataElement
             ), finalChildren
