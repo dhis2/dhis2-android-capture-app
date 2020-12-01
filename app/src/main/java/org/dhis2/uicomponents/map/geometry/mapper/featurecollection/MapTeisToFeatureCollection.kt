@@ -134,7 +134,7 @@ class MapTeisToFeatureCollection(
 
     private fun teiEnrollmentHasCoordinates(searchTeiModel: SearchTeiModel) =
         searchTeiModel.selectedEnrollment != null &&
-                searchTeiModel.selectedEnrollment.geometry() != null
+            searchTeiModel.selectedEnrollment.geometry() != null
 
     companion object {
         const val TEI = "TEIS_SOURCE_ID"
