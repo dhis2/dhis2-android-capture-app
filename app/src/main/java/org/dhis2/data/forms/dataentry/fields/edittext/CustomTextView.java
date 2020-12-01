@@ -136,14 +136,16 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
         dummy = findViewById(R.id.dummyFocusView);
         labelText = findViewById(R.id.label);
-
         descIcon = findViewById(R.id.descIcon);
-
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
+                View view = (View) binding.getRoot().getParent().getParent();
+                view.findViewById(R.id.fieldSelected).setVisibility(VISIBLE);
                 viewModel.onActivate();
                 activate();
             } else if (focusListener != null && validate()) {
+                View view = (View) binding.getRoot().getParent().getParent();
+                view.findViewById(R.id.fieldSelected).setVisibility(GONE);
                 viewModel.onDeactivate();
                 focusListener.onFocusChange(v, hasFocus);
             }
@@ -185,7 +187,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     }
 
     private void configureViews() {
-
         editText.setFilters(new InputFilter[]{});
         editText.setMaxLines(1);
         editText.setVerticalScrollBarEnabled(false);
@@ -540,9 +541,9 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-        if (!hasFocus) {
+       /* if (!hasFocus) {
             clearBackground(viewModel.isSearchMode());
-        }
+        } */
 
         if (viewModel.isSearchMode() || (!hasFocus && viewModel.editable())) {
             if (viewModel.isSearchMode() || valueHasChanged()) {
@@ -618,7 +619,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     private void clearBackground(boolean isSearchMode) {
         if (!isSearchMode) {
-            binding.getRoot().setBackgroundResource(R.color.form_field_background);
+        //    binding.getRoot().setBackgroundResource(R.color.form_field_background);
         }
     }
 }

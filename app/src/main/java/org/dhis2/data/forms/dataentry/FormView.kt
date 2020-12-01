@@ -43,6 +43,9 @@ class FormView @JvmOverloads constructor(
         dataEntryHeaderHelper.observeHeaderChanges(owner)
         adapter = DataEntryAdapter()
         recyclerView.adapter = adapter
+
+     //   recyclerView.getRecycledViewPool().setMaxRecycledViews(R.layout.form_edit_text_custom,0);
+     //   recyclerView.getRecycledViewPool().setMaxRecycledViews(R.layout.form_long_text_custom,0);
     }
 
     fun render(items: List<FieldViewModel>) {
