@@ -146,12 +146,12 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     @Override
     public void onActivate() {
-    //    activated.set(true);
+        activated.set(true);
     }
 
     @Override
     public void onDeactivate() {
-    //    activated.set(false);
+        activated.set(false);
     }
 
     public void setAdapterPosition(int index) {

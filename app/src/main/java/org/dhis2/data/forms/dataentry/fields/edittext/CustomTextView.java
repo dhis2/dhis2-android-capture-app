@@ -66,9 +66,6 @@ import static org.dhis2.Bindings.ValueExtensionsKt.withValueTypeCheck;
 import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
 import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
 
-/**
- * QUADRAM. Created by frodriguez on 1/17/2018.
- */
 
 public class CustomTextView extends FieldLayout implements View.OnFocusChangeListener, TextView.OnEditorActionListener, FieldLayout.OnActivation {
 
@@ -139,13 +136,13 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         descIcon = findViewById(R.id.descIcon);
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
-                View view = (View) binding.getRoot().getParent().getParent();
-                view.findViewById(R.id.fieldSelected).setVisibility(VISIBLE);
+            //    View view = (View) binding.getRoot().getParent().getParent();
+            //    view.findViewById(R.id.fieldSelected).setVisibility(VISIBLE);
                 viewModel.onActivate();
                 activate();
             } else if (focusListener != null && validate()) {
-                View view = (View) binding.getRoot().getParent().getParent();
-                view.findViewById(R.id.fieldSelected).setVisibility(GONE);
+            //    View view = (View) binding.getRoot().getParent().getParent();
+            //    view.findViewById(R.id.fieldSelected).setVisibility(GONE);
                 viewModel.onDeactivate();
                 focusListener.onFocusChange(v, hasFocus);
             }
