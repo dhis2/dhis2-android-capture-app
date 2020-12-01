@@ -22,7 +22,6 @@ import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.Companion.RELATIONSHIP_UID
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.ENROLLMENT_UID
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.TEI_IMAGE
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.TEI_UID
 import org.dhis2.uicomponents.map.layer.LayerType
@@ -260,17 +259,19 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
     override fun findFeature(propertyValue: String): Feature? {
         val mainProperties = arrayListOf(
             TEI_UID,
-            ENROLLMENT_UID,
             RELATIONSHIP_UID,
             MapEventToFeatureCollection.EVENT
         )
         var featureToReturn: Feature? = null
-        mainLoop@ for (source in teiFeatureCollections!!.keys) {
+        mainLoop@ for (
+            source in teiFeatureCollections?.filterKeys {
+                it != ENROLLMENT_SOURCE_ID
+            }?.keys!!
+        ) {
             sourceLoop@ for (propertyLabel in mainProperties) {
                 val feature = findFeature(source, propertyLabel, propertyValue)
                 if (feature != null) {
                     featureToReturn = feature
-                    mapLayerManager.getLayer(source, true)?.setSelectedItem(featureToReturn)
                     break@sourceLoop
                 }
             }
@@ -287,15 +288,16 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         propertyValue: String
     ): List<Feature>? {
         return mutableListOf<Feature>().apply {
-            teiFeatureCollections?.values?.map { collection ->
-                collection.features()?.filter {
-                    it.getStringProperty(propertyName) == propertyValue
-                }?.map {
-                    mapLayerManager.getLayer(TEIS_SOURCE_ID)
-                        ?.setSelectedItem(it)
-                    it
-                }?.let { addAll(it) }
-            }
+            teiFeatureCollections?.filterKeys { it != ENROLLMENT_SOURCE_ID }
+                ?.map { (key, collection) ->
+                    collection.features()?.filter {
+                        mapLayerManager.getLayer(key)?.visible == true &&
+                            it.getStringProperty(propertyName) == propertyValue
+                    }?.map {
+                        mapLayerManager.getLayer(TEIS_SOURCE_ID)?.setSelectedItem(it)
+                        it
+                    }?.let { addAll(it) }
+                }
 
             fieldFeatureCollections.values.map { collection ->
                 collection.features()?.filter {
