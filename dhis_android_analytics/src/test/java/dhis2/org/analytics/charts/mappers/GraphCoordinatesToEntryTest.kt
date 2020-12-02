@@ -2,17 +2,18 @@ package dhis2.org.analytics.charts.mappers
 
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.GraphPoint
+import java.time.Instant
+import java.util.Date
 import junit.framework.Assert.assertTrue
 import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Test
-import java.time.Instant
-import java.util.Date
 
 class GraphCoordinatesToEntryTest {
 
     private val graphToLineData = GraphCoordinatesToEntry()
     private var dailyPeriodPeriod: Long =
-        Date.from(Instant.parse("2020-01-02T00:00:00.00Z")).time - Date.from(Instant.parse("2020-01-01T00:00:00.00Z")).time
+        Date.from(Instant.parse("2020-01-02T00:00:00.00Z")).time -
+            Date.from(Instant.parse("2020-01-01T00:00:00.00Z")).time
 
     @Test
     fun `Should return mapped list`() {
@@ -22,7 +23,7 @@ class GraphCoordinatesToEntryTest {
         result.forEachIndexed { index, entry ->
             assertTrue(
                 entry.y == mockedCoordinates()[index].fieldValue &&
-                        entry.x == expectedEntryPosition[index]
+                    entry.x == expectedEntryPosition[index]
             )
         }
     }

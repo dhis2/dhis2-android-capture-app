@@ -403,11 +403,14 @@ class DataValuePresenter(
 
             val isEditable = accessDataWrite &&
                 !isExpired(dataSet) &&
-                dataInputPeriodModel.isEmpty() || (
-                checkHasInputPeriod() != null && DateUtils.getInstance().isInsideInputPeriod(
-                    checkHasInputPeriod()
-                )
-                ) &&
+                (
+                    dataInputPeriodModel.isEmpty() || (
+                        checkHasInputPeriod() != null && DateUtils.getInstance()
+                            .isInsideInputPeriod(
+                                checkHasInputPeriod()
+                            )
+                        )
+                    ) &&
                 !isApproval
 
             return Quartet.create(dataTableModel, listFields, cells, isEditable)
@@ -496,7 +499,12 @@ class DataValuePresenter(
         for (dataValues in cells) {
             for (i in dataValues.indices) {
                 if (dataValues[i].isNotEmpty()) {
-                    totals[i] += Integer.parseInt(dataValues[i])
+                    try {
+                        val value = Integer.parseInt(dataValues[i])
+                        totals[i] += value
+                    } catch (e: Exception) {
+                        Timber.d(e)
+                    }
                 }
             }
         }
@@ -724,20 +732,21 @@ class DataValuePresenter(
         listCategories: List<List<Pair<CategoryOption, Category>>>,
         rowPosition: Int,
         catComboUidList: MutableList<List<String>>,
-        currentCatComboIds: MutableList<String>?
+        catComboIds: MutableList<String>?
     ): List<List<String>> {
-        var currentCatComboIds = currentCatComboIds
+        var currentCatComboIds = catComboIds
         if (rowPosition == listCategories.size) {
-            val resultHelp = ArrayList(currentCatComboIds!!)
-            catComboUidList.add(resultHelp)
+            currentCatComboIds?.toList()?.let { catComboUidList.add(it) }
             return catComboUidList
         }
-        for (element in listCategories[rowPosition]) {
+        listCategories[rowPosition].forEach { element ->
             if (rowPosition == 0) {
-                currentCatComboIds = ArrayList()
+                currentCatComboIds = mutableListOf()
             }
-            removeCategoryOptionsBelowRowPosition(currentCatComboIds!!, rowPosition)
-            currentCatComboIds.add(element.val0().uid())
+            currentCatComboIds?.let {
+                removeCategoryOptionsBelowRowPosition(it, rowPosition)
+                it.add(element.val0().uid())
+            }
             getCatOptionCombos(listCategories, rowPosition + 1, catComboUidList, currentCatComboIds)
         }
 

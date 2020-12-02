@@ -8,12 +8,15 @@ import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withChild
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.allElementsHave
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.dateIsInRange
+import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.utils.filters.FilterHolder
 import org.hamcrest.Matchers.allOf
@@ -103,4 +106,13 @@ class FilterRobot : BaseRobot() {
             .check(matches(dateIsInRange(R.id.sorting_field_value, startDate, endDate)))
     }
 
+    fun checkFilterCounter(filterCount: String) {
+        onView(allOf(withId(R.id.filterCounter), isDisplayed(), withParent(withId(R.id.mainToolbar))))
+            .check(matches(withChild(withText(filterCount))))
+    }
+
+    fun checkCountAtFilter(filter: String, count: String) {
+        onView(withId(R.id.filterRecyclerLayout))
+            .check(matches(hasItem(allOf(hasDescendant(withText(filter)), hasDescendant(withText(count))))))
+    }
 }

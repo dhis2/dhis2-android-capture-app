@@ -202,7 +202,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation "androidx.multidex:multidex:${libraries.multidex}"
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycle}"
     implementation "androidx.work:work-runtime:2.2.0"
     implementation "androidx.work:work-rxjava2:2.2.0"
@@ -252,11 +252,6 @@ dependencies {
     // Extension which generates mappers for work with cursors
     kapt "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
     kapt "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
-
-    //region PLAY SERVICES
-    //LOCATION
-    implementation 'com.google.android.gms:play-services-basement:17.1.1'
-    implementation 'com.google.android.gms:play-services-location:17.0.0'
     //endregion
 
     // Kujaku dependencies
@@ -281,7 +276,6 @@ dependencies {
     //FIREBASE
     implementation 'com.google.firebase:firebase-core:17.2.0'
     implementation 'com.google.firebase:firebase-perf:19.0.0'
-    implementation 'com.google.firebase:firebase-messaging:20.0.0'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
@@ -360,5 +354,3 @@ dependencies {
     androidTestImplementation 'com.jakewharton.espresso:okhttp3-idling-resource:1.0.0'
     androidTestImplementation 'com.squareup.rx.idler:rx2-idler:0.11.0'
 }
-
-apply plugin: 'com.google.gms.google-services'

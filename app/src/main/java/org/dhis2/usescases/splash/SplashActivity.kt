@@ -10,7 +10,6 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
-import com.google.firebase.iid.FirebaseInstanceId
 import com.scottyab.rootbeer.RootBeer
 import javax.inject.Inject
 import javax.inject.Named
@@ -22,7 +21,6 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.sync.SyncActivity
-import timber.log.Timber
 
 class SplashActivity : ActivityGlobalAbstract(), SplashView {
     companion object {
@@ -47,15 +45,6 @@ class SplashActivity : ActivityGlobalAbstract(), SplashView {
         appComponent.plus(SplashModule(this, serverComponent)).inject(this)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash)
-
-        FirebaseInstanceId.getInstance().instanceId
-            .addOnCompleteListener {
-                if (!it.isSuccessful) {
-                    Timber.tag("NOTIFICATION").d("GET INSTANCE FAILED")
-                } else {
-                    Timber.tag("NOTIFICATION").d("TOKEN IS: %s", it.result!!.token)
-                }
-            }
 
         renderFlag(flag)
     }

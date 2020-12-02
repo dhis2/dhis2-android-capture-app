@@ -2,6 +2,8 @@ package dhis2.org.analytics.charts
 
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.GraphPoint
+import java.text.SimpleDateFormat
+import java.util.Date
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.period.PeriodType
 
@@ -20,13 +22,14 @@ class ChartsRepositoryImpl(
                         dataElement.uid()
                     ).map { eventAndValue ->
                         GraphPoint(
-                            eventAndValue.first.eventDate()!!,
+                            formattedDate(eventAndValue.first.eventDate()!!),
                             eventAndValue.second.value()!!.toFloat()
                         )
                     }
 
+                    val period = programStage.periodType() ?: PeriodType.Daily
                     Graph(
-                        "${programStage.displayName()}-${dataElement.displayFormName()}",
+                        "${period.name}-${dataElement.displayFormName()}",
                         false,
                         coordinates,
                         "",
@@ -35,5 +38,15 @@ class ChartsRepositoryImpl(
                     )
                 }.filter { it.coordinates.isNotEmpty() }
             }.flatten()
+    }
+
+    private fun formattedDate(date: Date): Date {
+        return try {
+            val formattedDateString = SimpleDateFormat("yyyy-MM-dd").format(date)
+            val formattedDate = SimpleDateFormat("yyyy-MM-dd").parse(formattedDateString)
+            formattedDate ?: date
+        } catch (e: Exception) {
+            date
+        }
     }
 }

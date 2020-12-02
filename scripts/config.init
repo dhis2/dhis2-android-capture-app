@@ -1,4 +1,4 @@
-build_time_average=800
+build_time_average=980
 polling_interval=10
 browserstack_username=$BROWSERSTACK_USERNAME
 browserstack_access_key=$BROWSERSTACK_ACCESS_KEY

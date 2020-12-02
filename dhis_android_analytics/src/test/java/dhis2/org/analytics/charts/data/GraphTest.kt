@@ -1,15 +1,16 @@
 package dhis2.org.analytics.charts.data
 
+import java.time.Instant
+import java.util.Date
 import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.time.Instant
-import java.util.Date
 
 class GraphTest {
 
     private var dailyPeriodPeriod: Long =
-        Date.from(Instant.parse("2020-01-02T00:00:00.00Z")).time - Date.from(Instant.parse("2020-01-01T00:00:00.00Z")).time
+        Date.from(Instant.parse("2020-01-02T00:00:00.00Z")).time -
+            Date.from(Instant.parse("2020-01-01T00:00:00.00Z")).time
 
     @Test
     fun `Should return the correct number of steps from the first one`() {
@@ -23,7 +24,7 @@ class GraphTest {
     @Test
     fun `Should return the correct number of steps if empty coordinates`() {
         val graph = mockedGraph(emptyList())
-        val testDate =  Date.from(Instant.parse("2020-01-02T00:00:00.00Z"))
+        val testDate = Date.from(Instant.parse("2020-01-02T00:00:00.00Z"))
         assertTrue(graph.numberOfStepsToDate(testDate) == 0f)
     }
 

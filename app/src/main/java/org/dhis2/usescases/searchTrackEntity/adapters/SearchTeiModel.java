@@ -8,6 +8,7 @@ import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -132,6 +133,7 @@ public class SearchTeiModel implements CarouselItemModel {
         this.defaultTypeIcon = defaultTypeIcon;
     }
 
+    @Nullable
     public String getDefaultTypeIcon() {
         return defaultTypeIcon;
     }

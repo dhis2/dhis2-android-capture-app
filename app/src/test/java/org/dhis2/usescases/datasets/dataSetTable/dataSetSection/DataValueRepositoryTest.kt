@@ -520,13 +520,14 @@ class DataValueRepositoryTest {
         val orgUnit = "orgUnit"
         val period = "period"
         val attributeOptionCombo = "attributeOptionCombo"
-        val dataApproval = DataApproval.builder()
-            .state(DataApprovalState.APPROVED_HERE)
-            .organisationUnit(orgUnit)
-            .period(period)
-            .attributeOptionCombo(attributeOptionCombo)
-            .workflow("workflow")
-            .build()
+        val approvalStates = listOf(
+            DataApprovalState.APPROVED_ELSEWHERE,
+            DataApprovalState.APPROVED_ABOVE,
+            DataApprovalState.APPROVED_HERE,
+            DataApprovalState.ACCEPTED_ELSEWHERE,
+            DataApprovalState.ACCEPTED_HERE
+        )
+
         whenever(
             d2.dataSetModule().dataApprovals()
                 .byOrganisationUnitUid()
@@ -564,20 +565,31 @@ class DataValueRepositoryTest {
                 .byAttributeOptionComboUid().eq(attributeOptionCombo)
                 .one()
         ) doReturn mock()
-        whenever(
-            d2.dataSetModule().dataApprovals()
-                .byOrganisationUnitUid().eq(orgUnit)
-                .byPeriodId().eq(period)
-                .byAttributeOptionComboUid().eq(attributeOptionCombo)
-                .one().blockingGet()
-        ) doReturn dataApproval
 
-        val testObserver = repository.isApproval(orgUnit, period, attributeOptionCombo).test()
+        approvalStates.forEach { dataApprovalState ->
+            val dataApproval = DataApproval.builder()
+                .state(dataApprovalState)
+                .organisationUnit(orgUnit)
+                .period(period)
+                .attributeOptionCombo(attributeOptionCombo)
+                .workflow("workflow")
+                .build()
 
-        testObserver.assertNoErrors()
-        testObserver.assertValue(true)
+            whenever(
+                d2.dataSetModule().dataApprovals()
+                    .byOrganisationUnitUid().eq(orgUnit)
+                    .byPeriodId().eq(period)
+                    .byAttributeOptionComboUid().eq(attributeOptionCombo)
+                    .one().blockingGet()
+            ) doReturn dataApproval
 
-        testObserver.dispose()
+            val testObserver = repository.isApproval(orgUnit, period, attributeOptionCombo).test()
+
+            testObserver.assertNoErrors()
+            testObserver.assertValue(true)
+
+            testObserver.dispose()
+        }
     }
 
     @Test
@@ -585,13 +597,7 @@ class DataValueRepositoryTest {
         val orgUnit = "orgUnit"
         val period = "period"
         val attributeOptionCombo = "attributeOptionCombo"
-        val dataApproval = DataApproval.builder()
-            .state(DataApprovalState.UNAPPROVED_ABOVE)
-            .organisationUnit(orgUnit)
-            .period(period)
-            .attributeOptionCombo(attributeOptionCombo)
-            .workflow("workflow")
-            .build()
+
         whenever(
             d2.dataSetModule().dataApprovals()
                 .byOrganisationUnitUid()
@@ -629,20 +635,40 @@ class DataValueRepositoryTest {
                 .byAttributeOptionComboUid().eq(attributeOptionCombo)
                 .one()
         ) doReturn mock()
-        whenever(
-            d2.dataSetModule().dataApprovals()
-                .byOrganisationUnitUid().eq(orgUnit)
-                .byPeriodId().eq(period)
-                .byAttributeOptionComboUid().eq(attributeOptionCombo)
-                .one().blockingGet()
-        ) doReturn dataApproval
 
-        val testObserver = repository.isApproval(orgUnit, period, attributeOptionCombo).test()
+        val approvalStates = listOf(
+            DataApprovalState.APPROVED_ELSEWHERE,
+            DataApprovalState.APPROVED_ABOVE,
+            DataApprovalState.APPROVED_HERE,
+            DataApprovalState.ACCEPTED_ELSEWHERE,
+            DataApprovalState.ACCEPTED_HERE
+        )
+        val unapprovedStates = DataApprovalState.values().filter { !approvalStates.contains(it) }
 
-        testObserver.assertNoErrors()
-        testObserver.assertValue(false)
+        unapprovedStates.forEach { dataApprovalState ->
+            val dataApproval = DataApproval.builder()
+                .state(dataApprovalState)
+                .organisationUnit(orgUnit)
+                .period(period)
+                .attributeOptionCombo(attributeOptionCombo)
+                .workflow("workflow")
+                .build()
 
-        testObserver.dispose()
+            whenever(
+                d2.dataSetModule().dataApprovals()
+                    .byOrganisationUnitUid().eq(orgUnit)
+                    .byPeriodId().eq(period)
+                    .byAttributeOptionComboUid().eq(attributeOptionCombo)
+                    .one().blockingGet()
+            ) doReturn dataApproval
+
+            val testObserver = repository.isApproval(orgUnit, period, attributeOptionCombo).test()
+
+            testObserver.assertNoErrors()
+            testObserver.assertValue(false)
+
+            testObserver.dispose()
+        }
     }
 
     @Test

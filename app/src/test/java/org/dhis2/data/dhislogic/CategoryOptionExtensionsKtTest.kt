@@ -2,10 +2,11 @@ package org.dhis2.data.dhislogic
 
 import java.time.Instant
 import java.util.Date
-import org.dhis2.Bindings.inDateRange
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
+import org.hisp.dhis.android.core.common.ObjectWithUid
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -56,12 +57,56 @@ class CategoryOptionExtensionsKtTest {
         )
     }
 
+    @Test
+    fun `Should return true if orgUnitUid is null`() {
+        assertTrue(
+            catOption(null).inOrgUnit(null) &&
+                catOption(listOf()).inOrgUnit(null)
+        )
+    }
+
+    @Test
+    fun `Should return true if orgUnits are null or empty`() {
+        val orgUnitUid = "orgUnitUid"
+        assertTrue(
+            catOption(null).inOrgUnit(orgUnitUid) &&
+                catOption(listOf()).inOrgUnit(orgUnitUid)
+        )
+    }
+
+    @Test
+    fun `Should return true if orgUnitUid is in orgUnits`() {
+        val orgUnitUid = "orgUnitUid"
+        val orgUnits = listOf(ObjectWithUid.create(orgUnitUid))
+        assertTrue(
+            catOption(orgUnits).inOrgUnit(orgUnitUid)
+        )
+    }
+
+    @Test
+    fun `Should return false if orgUnitUid is not in orgUnits`() {
+        val orgUnitUid = "orgUnitUid"
+        val orgUnits = listOf(ObjectWithUid.create("otherUid"))
+        assertFalse(
+            catOption(orgUnits).inOrgUnit(orgUnitUid)
+        )
+    }
+
     private fun catOption(startDate: Date?, endDate: Date?): CategoryOption {
         return CategoryOption.builder()
             .uid("CatOptUid")
             .displayName("CatOptName")
             .startDate(startDate)
             .endDate(endDate)
+            .access(Access.create(true, true, DataAccess.create(true, true)))
+            .build()
+    }
+
+    private fun catOption(orgUnits: List<ObjectWithUid>?): CategoryOption {
+        return CategoryOption.builder()
+            .uid("CatOptUid")
+            .displayName("CatOptName")
+            .organisationUnits(orgUnits)
             .access(Access.create(true, true, DataAccess.create(true, true)))
             .build()
     }

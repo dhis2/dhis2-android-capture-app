@@ -64,4 +64,8 @@ public abstract class AbstractViewHolder extends RecyclerView.ViewHolder {
         return false;
     }
 
+    public void handleClickIfNeeded(){
+
+    }
+
 }
