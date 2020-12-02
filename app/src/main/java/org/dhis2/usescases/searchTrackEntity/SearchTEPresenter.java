@@ -151,6 +151,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void init(String trackedEntityType) {
         this.trackedEntityType = trackedEntityType;
         this.trackedEntity = searchRepository.getTrackedEntityType(trackedEntityType).blockingFirst();
+        initAssignmentFilter();
         compositeDisposable.add(
                 searchRepository.programsWithRegistration(trackedEntityType)
                         .subscribeOn(schedulerProvider.io())
