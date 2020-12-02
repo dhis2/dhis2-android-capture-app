@@ -31,29 +31,29 @@ class DashboardPagerAdapter(
 
     private fun createLandscapeFragment(position: Int): Fragment {
         return when (position) {
-            0 -> IndicatorsFragment()
-            1 -> RelationshipFragment()
-            2 -> NotesFragment.newTrackerInstance(currentProgram!!, teiUid)
+            ANALYTICS_LANDSCAPE_POSITION -> IndicatorsFragment()
+            RELATIONSHIPS_LANDSCAPE_POSITION -> RelationshipFragment()
+            NOTES_LANDSCAPE_POSITION -> NotesFragment.newTrackerInstance(currentProgram!!, teiUid)
             else -> throw IllegalStateException("Fragment not supported")
         }
     }
 
     private fun createPortraitFragment(position: Int): Fragment {
         return when (position) {
-            0 -> TEIDataFragment.newInstance(currentProgram, teiUid, enrollmentUid)
-            1 -> {
+            DETAILS_PORTRAIT_POSITION -> TEIDataFragment.newInstance(currentProgram, teiUid, enrollmentUid)
+            ANALYTICS_PORTRAIT_POSITION -> {
                 if (indicatorsFragment == null) {
                     indicatorsFragment = IndicatorsFragment()
                 }
                 indicatorsFragment!!
             }
-            2 -> {
+            RELATIONSHIPS_PORTRAIT_POSITION -> {
                 if (relationshipFragment == null) {
                     relationshipFragment = RelationshipFragment()
                 }
                 relationshipFragment!!
             }
-            3 -> NotesFragment.newTrackerInstance(currentProgram!!, teiUid)
+            NOTES_PORTRAIT_POSITION -> NotesFragment.newTrackerInstance(currentProgram!!, teiUid)
             else -> throw IllegalStateException("Fragment not supported")
         }
     }
