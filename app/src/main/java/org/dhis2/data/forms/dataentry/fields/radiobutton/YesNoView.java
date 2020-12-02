@@ -367,8 +367,18 @@ public class YesNoView extends FieldLayout {
         if (binding == null) {
             setIsBgTransparent(viewModel.isBackgroundTransparent());
         }
-        setActivationListener(() -> viewModel.onActivate());
+     //   setActivationListener(() -> viewModel.onActivate());
 
+     /*   setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus){
+                    viewModel.onActivate();
+                } else {
+                    viewModel.onDeactivate();
+                }
+            }
+        }); */
         setLabel(viewModel.getFormattedLabel());
         setDescription(viewModel.description());
         setValueType(viewModel.valueType());
@@ -378,13 +388,14 @@ public class YesNoView extends FieldLayout {
         setValueListener(new OnValueChanged() {
             @Override
             public void onValueChanged(boolean isActive) {
+                viewModel.onActivate();
                 if (isActive) {
                     viewModel.onValueChanged(String.valueOf(true));
                 } else {
                     viewModel.onValueChanged(String.valueOf(false));
                 }
-                clearBackground(viewModel.isSearchMode());
-                nextFocus(binding.getRoot());
+            //    clearBackground(viewModel.isSearchMode());
+            //    nextFocus(binding.getRoot());
             }
 
             @Override
