@@ -111,6 +111,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     private void setInputType(ValueType valueType) {
 
         editText.setFilters(new InputFilter[]{});
+        editText.setFocusable(true);
 
 
         if (editTextModel.editable())
@@ -123,6 +124,8 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                             InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                     break;
                 case TEXT:
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT);
+                    break;
                 case LONG_TEXT:
                     editText.setKeyListener(null);
                     editText.setFocusable(false);

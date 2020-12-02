@@ -403,11 +403,14 @@ class DataValuePresenter(
 
             val isEditable = accessDataWrite &&
                 !isExpired(dataSet) &&
-                dataInputPeriodModel.isEmpty() || (
-                checkHasInputPeriod() != null && DateUtils.getInstance().isInsideInputPeriod(
-                    checkHasInputPeriod()
-                )
-                ) &&
+                (
+                    dataInputPeriodModel.isEmpty() || (
+                        checkHasInputPeriod() != null && DateUtils.getInstance()
+                            .isInsideInputPeriod(
+                                checkHasInputPeriod()
+                            )
+                        )
+                    ) &&
                 !isApproval
 
             return Quartet.create(dataTableModel, listFields, cells, isEditable)
@@ -496,7 +499,12 @@ class DataValuePresenter(
         for (dataValues in cells) {
             for (i in dataValues.indices) {
                 if (dataValues[i].isNotEmpty()) {
-                    totals[i] += Integer.parseInt(dataValues[i])
+                    try {
+                        val value = Integer.parseInt(dataValues[i])
+                        totals[i] += value
+                    } catch (e: Exception) {
+                        Timber.d(e)
+                    }
                 }
             }
         }

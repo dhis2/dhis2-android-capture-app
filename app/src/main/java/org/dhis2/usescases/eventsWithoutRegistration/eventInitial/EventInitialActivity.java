@@ -287,6 +287,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.shareContainer.setVisibility(View.GONE);
             binding.actionButton.setText(R.string.next);
         } else {
+            fixedOrgUnit = true;
+            binding.orgUnitLayout.setEnabled(false);
             binding.actionButton.setText(R.string.update);
         }
 

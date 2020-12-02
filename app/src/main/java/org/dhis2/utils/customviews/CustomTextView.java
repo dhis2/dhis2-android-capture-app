@@ -151,6 +151,7 @@ public class CustomTextView extends FieldLayout {
         editText.setFilters(new InputFilter[]{});
         editText.setMaxLines(1);
         editText.setVerticalScrollBarEnabled(false);
+        descIcon.setVisibility(View.GONE);
 
         if (valueType != null)
             switch (valueType) {

@@ -402,9 +402,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == ACCESS_LOCATION_PERMISSION_REQUEST) {
+        if (isMapVisible() && teiMapManager.getPermissionsManager() != null) {
+            teiMapManager.getPermissionsManager().onRequestPermissionsResult(requestCode, permissions, grantResults);
+        } else if (requestCode == ACCESS_LOCATION_PERMISSION_REQUEST) {
             initSearchNeeded = false;
         }
+
     }
 
     @Override
@@ -503,6 +506,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.toolbarProgress.show();
             teiMapManager.init(() -> {
                 presenter.getMapData();
+                return Unit.INSTANCE;
+            }, (permissionManager) -> {
+                permissionManager.requestLocationPermissions(this);
                 return Unit.INSTANCE;
             });
         } else {
