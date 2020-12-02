@@ -310,15 +310,13 @@ class SearchTETest : BaseTest() {
     @Ignore("To review why the sleep is needed")
     @Test
     fun shouldSuccessfullyShowMapAndTeiCard() {
-        val firstName = "Gertrude"
+        val firstName = "Lynn"
 
-        prepareChildProgrammeIntentAndLaunchActivity(rule)
+        prepareTBIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
             clickOnOptionMenu()
             clickOnShowMap()
-            swipeCarouselToLeft()
-            checkCarouselTEICardInfo(firstName)
             try {
                 mapIdlingResource = MapIdlingResource(rule)
                 IdlingRegistry.getInstance().register(mapIdlingResource)
@@ -326,6 +324,8 @@ class SearchTETest : BaseTest() {
             } catch (ex: IdlingResourceTimeoutException) {
                 throw RuntimeException("Could not start test")
             }
+            waitToDebounce(3000)
+            checkCarouselTEICardInfo(firstName)
         }
     }
 
