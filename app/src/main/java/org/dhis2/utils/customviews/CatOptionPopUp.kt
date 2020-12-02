@@ -5,7 +5,7 @@ import android.view.Menu
 import android.view.View
 import android.widget.PopupMenu
 import java.util.Date
-import org.dhis2.Bindings.inDateRange
+import org.dhis2.data.dhislogic.inDateRange
 import org.hisp.dhis.android.core.category.CategoryOption
 
 class CatOptionPopUp(
