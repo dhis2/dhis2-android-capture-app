@@ -616,7 +616,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     private void clearBackground(boolean isSearchMode) {
         if (!isSearchMode) {
-        //    binding.getRoot().setBackgroundResource(R.color.form_field_background);
+            binding.getRoot().setBackgroundResource(R.color.form_field_background);
         }
     }
 }
