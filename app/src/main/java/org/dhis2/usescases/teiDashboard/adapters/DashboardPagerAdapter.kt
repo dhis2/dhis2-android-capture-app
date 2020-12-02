@@ -40,7 +40,8 @@ class DashboardPagerAdapter(
 
     private fun createPortraitFragment(position: Int): Fragment {
         return when (position) {
-            DETAILS_PORTRAIT_POSITION -> TEIDataFragment.newInstance(currentProgram, teiUid, enrollmentUid)
+            DETAILS_PORTRAIT_POSITION ->
+                TEIDataFragment.newInstance(currentProgram, teiUid, enrollmentUid)
             ANALYTICS_PORTRAIT_POSITION -> {
                 if (indicatorsFragment == null) {
                     indicatorsFragment = IndicatorsFragment()
