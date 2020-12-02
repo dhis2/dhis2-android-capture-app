@@ -22,6 +22,9 @@
         <variable
             name="workingListFilter"
             type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.workingLists.TeiWorkingListItem&gt;" />
+        <variable
+            name="filterItem"
+            type="org.dhis2.utils.filters.EnrollmentStatusFilter" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -44,6 +47,7 @@
             android:layout_height="wrap_content"
             app:currentFilter="@{currentFilter}"
             app:filterType="@{filterType}"
+            app:filterItem="@{filterItem}"
             app:layout_constraintTop_toBottomOf="@id/filterLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

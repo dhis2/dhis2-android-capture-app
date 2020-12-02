@@ -40,13 +40,11 @@ import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
-import com.evrencoskun.tableview.filter.Filter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.geojson.Feature;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
-import com.mapbox.mapboxsdk.maps.Style;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
@@ -79,6 +77,7 @@ import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.customviews.ScanTextView;
+import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.Filters;
 import org.dhis2.utils.filters.FiltersAdapter;
@@ -97,7 +96,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -147,11 +145,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private FeatureType featureType;
     private TeiMapManager teiMapManager;
     private boolean initSearchNeeded = true;
-    private Snackbar downloadingSnackbar;
-    private String currentStyle = Style.MAPBOX_STREETS;
     private ObjectAnimator animation = null;
-    private Set<String> sources;
-    private Set<String> eventSources;
     private String updateTei;
     private String updateEvent;
     private CarouselAdapter carouselAdapter;
@@ -212,12 +206,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             return true;
         });
 
-        filtersAdapter.addEnrollmentStatus();
-        filtersAdapter.addEventStatus();
-        filtersAdapter.addWorkingLists(presenter.workingLists());
         try {
             binding.filterRecyclerLayout.setAdapter(filtersAdapter);
-
         } catch (Exception e) {
             Timber.e(e);
         }
@@ -330,7 +320,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
         FilterManager.getInstance().clearUnsupportedFilters();
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
-        filtersAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -644,19 +633,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     updateMapVisibility(selectedProgram);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((Program) adapterView.getItemAtPosition(pos - 1));
-                    String enrollmentDateLabel = selectedProgram.enrollmentDateLabel();
-                    filtersAdapter.addEnrollmentDate(enrollmentDateLabel != null ? enrollmentDateLabel : getString(R.string.enrollment_date));
                 } else if (programs.size() == 1 && pos != 0) {
                     updateMapVisibility(programs.get(0));
                     presenter.setProgram(programs.get(0));
-                    String enrollmentDateLabel = programs.get(0).enrollmentDateLabel();
-                    filtersAdapter.addEnrollmentDate(enrollmentDateLabel != null ? enrollmentDateLabel : getString(R.string.enrollment_date));
                 } else {
                     updateMapVisibility(null);
                     presenter.setProgram(null);
-                    filtersAdapter.removeEnrollmentDate();
                 }
-                filtersAdapter.addWorkingLists(presenter.workingLists());
             }
 
             @Override
@@ -690,16 +673,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 binding.programSpinner.setSelection(i + 1);
             }
         }
-    }
-
-    @Override
-    public void showAssignmentFilter() {
-        filtersAdapter.addAssignedToMe();
-    }
-
-    @Override
-    public void hideAssignmentFilter() {
-        filtersAdapter.removeAssignedToMe();
     }
 
     @Override
@@ -844,6 +817,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         initSet.applyTo(binding.backdropLayout);
     }
 
+    @Override
+    public void setFilters(List<FilterItem> filtersToDisplay) {
+        filtersAdapter.submitList(filtersToDisplay);
+    }
+
     private void setFabVisibility(boolean backDropActive) {
         binding.enrollmentButton.animate()
                 .setDuration(500)
@@ -869,11 +847,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void clearFilters() {
         if (switchOpenClose == 0) {
-            FilterManager.getInstance().clearAllFilters();
             filtersAdapter.notifyDataSetChanged();
+            FilterManager.getInstance().clearAllFilters();
         } else
             presenter.onClearClick();
-
     }
 
     @Override
@@ -913,9 +890,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void openDashboard(String teiUid, String programUid, String enrollmentUid) {
-        if (downloadingSnackbar != null && downloadingSnackbar.isShown()) {
-            downloadingSnackbar.dismiss();
-        }
         startActivity(TeiDashboardMobileActivity.intent(this, teiUid, enrollmentUid != null ? programUid : null, enrollmentUid));
     }
 
@@ -938,9 +912,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setMap(TrackerMapData trackerMapData) {
         binding.progressLayout.setVisibility(View.GONE);
-
-        sources = trackerMapData.getTeiFeatures().keySet();
-        eventSources = trackerMapData.getEventFeatures().getFeatureCollectionMap().keySet();
         List<CarouselItemModel> allItems = new ArrayList<>();
         allItems.addAll(trackerMapData.getTeiModels());
         allItems.addAll(trackerMapData.getEventModels());

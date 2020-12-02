@@ -6,6 +6,7 @@ import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.filter.FilterPresenter;
+import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
@@ -19,8 +20,8 @@ import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
+import org.dhis2.utils.filters.ProgramType;
 import org.dhis2.utils.filters.workingLists.EventFilterToWorkingListItemMapper;
-import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -50,9 +51,11 @@ public class ProgramEventDetailModule {
     ProgramEventDetailContract.Presenter providesPresenter(
             @NonNull ProgramEventDetailRepository programEventDetailRepository, SchedulerProvider schedulerProvider, FilterManager filterManager,
             PreferenceProvider preferenceProvider,
-            EventFilterToWorkingListItemMapper eventWorkingListMapper) {
+            EventFilterToWorkingListItemMapper eventWorkingListMapper,
+            FilterRepository filterRepository) {
         return new ProgramEventDetailPresenter(view, programEventDetailRepository, schedulerProvider, filterManager, preferenceProvider,
-                eventWorkingListMapper);
+                eventWorkingListMapper,
+                filterRepository);
     }
 
     @Provides
@@ -97,7 +100,7 @@ public class ProgramEventDetailModule {
 
     @Provides
     @PerActivity
-    FiltersAdapter provideFiltersAdapter(FilterPresenter filterPresenter) {
-        return new FiltersAdapter(FiltersAdapter.ProgramType.EVENT, filterPresenter);
+    FiltersAdapter provideNewFiltersAdapter(FilterPresenter filterPresenter) {
+        return new FiltersAdapter(ProgramType.EVENT, filterPresenter);
     }
 }

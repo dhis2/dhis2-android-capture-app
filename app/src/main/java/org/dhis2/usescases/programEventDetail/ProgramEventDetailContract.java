@@ -10,6 +10,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
+import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.workingLists.WorkingListItem;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -20,10 +21,6 @@ import org.hisp.dhis.android.core.program.Program;
 import java.util.List;
 
 import io.reactivex.functions.Consumer;
-
-/**
- * QUADRAM. Created by Cristian on 13/02/2017.
- */
 
 public class ProgramEventDetailContract {
 
@@ -51,11 +48,7 @@ public class ProgramEventDetailContract {
 
         void setMap(ProgramEventMapData mapData);
 
-        void setEventInfo(Pair<ProgramEventViewModel,LatLng> programEventViewModel);
-
         void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
-
-        void clearFilters();
 
         void setFeatureType(FeatureType featureType);
 
@@ -70,6 +63,8 @@ public class ProgramEventDetailContract {
         void showSyncDialog(String uid);
 
         void showCatOptComboDialog(String catComboUid);
+
+        void setFilterItems(List<FilterItem> programFilters);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -90,8 +85,6 @@ public class ProgramEventDetailContract {
         void getMapData();
 
         void clearFilterClick();
-
-        boolean hasAssignment();
 
         void filterCatOptCombo(String selectedCatOptionCombo);
 

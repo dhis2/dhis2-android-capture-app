@@ -2,6 +2,7 @@ package org.dhis2.usescases.programEventDetail;
 
 import androidx.annotation.NonNull;
 
+import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
@@ -31,6 +32,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     private final SchedulerProvider schedulerProvider;
     private final FilterManager filterManager;
     private final PreferenceProvider preferences;
+    private final FilterRepository filterRepository;
     private ProgramEventDetailContract.View view;
     CompositeDisposable compositeDisposable;
     private FlowableProcessor<Unit> listDataProcessor;
@@ -46,13 +48,14 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
             SchedulerProvider schedulerProvider,
             FilterManager filterManager,
             PreferenceProvider preferenceProvider,
-            EventFilterToWorkingListItemMapper workingListMapper) {
+            EventFilterToWorkingListItemMapper workingListMapper, FilterRepository filterRepository) {
         this.view = view;
         this.eventRepository = programEventDetailRepository;
         this.schedulerProvider = schedulerProvider;
         this.filterManager = filterManager;
         this.preferences = preferenceProvider;
         this.workingListMapper = workingListMapper;
+        this.filterRepository = filterRepository;
         eventInfoProcessor = PublishProcessor.create();
         mapProcessor = PublishProcessor.create();
         compositeDisposable = new CompositeDisposable();
@@ -61,6 +64,18 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void init() {
+
+        compositeDisposable.add(
+                FilterManager.getInstance().asFlowable()
+                .map(filters->filterRepository.programFilters(getProgram().uid()))
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                        view::setFilterItems,
+                        Timber::e
+                )
+        );
+
         compositeDisposable.add(FilterManager.getInstance().getCatComboRequest()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -282,12 +297,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void clearFilterClick() {
         filterManager.clearAllFilters();
-        view.clearFilters();
-    }
-
-    @Override
-    public boolean hasAssignment() {
-        return eventRepository.hasAssignment();
     }
 
     @Override

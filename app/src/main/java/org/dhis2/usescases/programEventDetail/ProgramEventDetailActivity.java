@@ -11,9 +11,7 @@ import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
@@ -24,11 +22,9 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
-import com.evrencoskun.tableview.filter.Filter;
 import com.mapbox.geojson.Feature;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
-import com.mapbox.mapboxsdk.plugins.markerview.MarkerView;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
@@ -37,7 +33,6 @@ import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
-import org.dhis2.databinding.InfoWindowEventBinding;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.layer.LayerType;
 import org.dhis2.uicomponents.map.layer.MapLayer;
@@ -54,6 +49,7 @@ import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.category.CategoryDialog;
+import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
@@ -98,7 +94,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private ProgramEventDetailLiveAdapter liveAdapter;
     private boolean backDropActive;
     private String programUid;
-    private MarkerView currentMarker;
     private FeatureType featureType;
     private EventMapManager eventMapManager;
 
@@ -130,13 +125,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         liveAdapter = new ProgramEventDetailLiveAdapter(presenter.getProgram(), presenter);
         binding.recycler.setAdapter(liveAdapter);
 
-        filtersAdapter.addEventStatus();
-        if (presenter.hasAssignment()) {
-            filtersAdapter.addAssignedToMe();
-        } else {
-            filtersAdapter.removeAssignedToMe();
-        }
-        filtersAdapter.addWorkingLists(presenter.workingLists());
         try {
             binding.filterLayout.setAdapter(filtersAdapter);
         } catch (Exception e) {
@@ -180,7 +168,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         }
         binding.addEventButton.setEnabled(true);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
-        filtersAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -296,11 +283,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public void clearFilters() {
-        filtersAdapter.notifyDataSetChanged();
-    }
-
-    @Override
     public void setFeatureType(FeatureType type) {
         this.featureType = type;
     }
@@ -350,9 +332,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos) {
-        if (!categoryOptionCombos.val0().isDefault()) {
-            filtersAdapter.addCatOptCombFilter(categoryOptionCombos);
-        }
+
     }
 
     @Override
@@ -378,7 +358,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
-            filtersAdapter.notifyDataSetChanged();
             updateFilters(FilterManager.getInstance().getTotalFilters());
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -423,26 +402,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         animations.endMapLoading(binding.mapCarousel);
         binding.toolbarProgress.hide();
-    }
-
-    @Override
-    public void setEventInfo(Pair<ProgramEventViewModel, LatLng> eventInfo) {
-        if (currentMarker != null) {
-            eventMapManager.getMarkerViewManager().removeMarker(currentMarker);
-        }
-        InfoWindowEventBinding binding = InfoWindowEventBinding.inflate(LayoutInflater.from(this));
-        binding.setEvent(eventInfo.val0());
-        binding.setPresenter(presenter);
-        View view = binding.getRoot();
-        view.setOnClickListener(viewClicked ->
-                eventMapManager.getMarkerViewManager().removeMarker(currentMarker));
-        view.setOnLongClickListener(view1 -> {
-            presenter.onEventClick(eventInfo.val0().uid(), eventInfo.val0().orgUnitUid());
-            return true;
-        });
-        view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        currentMarker = new MarkerView(eventInfo.val1(), view);
-        eventMapManager.getMarkerViewManager().addMarker(currentMarker);
     }
 
     @Override
@@ -581,5 +540,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 getSupportFragmentManager(),
                 CategoryDialog.Companion.getTAG()
         );
+    }
+
+    @Override
+    public void setFilterItems(List<FilterItem> programFilters) {
+        filtersAdapter.submitList(programFilters);
     }
 }

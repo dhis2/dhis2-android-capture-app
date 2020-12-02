@@ -7,6 +7,8 @@
 
         <import type="android.view.View" />
 
+        <import type="org.hisp.dhis.android.core.enrollment.EnrollmentStatus" />
+
         <variable
             name="currentFilter"
             type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.Filters&gt;" />
@@ -14,6 +16,10 @@
         <variable
             name="filterType"
             type="org.dhis2.utils.filters.Filters" />
+
+        <variable
+            name="filterItem"
+            type="org.dhis2.utils.filters.EnrollmentStatusFilter" />
 
     </data>
 
@@ -54,7 +60,9 @@
                 android:id="@+id/stateActive"
                 style="@style/filterCheckBox"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:checked="@{filterItem.observeEnrollmentStatus() == EnrollmentStatus.ACTIVE}"
+                android:onCheckedChanged="@{(view, checked)->filterItem.setEnrollmentStatus(checked,EnrollmentStatus.ACTIVE)}" />
         </LinearLayout>
 
         <!--COMPLETED-->
@@ -84,7 +92,9 @@
                 android:id="@+id/stateCompleted"
                 style="@style/filterCheckBox"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:checked="@{filterItem.observeEnrollmentStatus() == EnrollmentStatus.COMPLETED}"
+                android:onCheckedChanged="@{(view, checked)->filterItem.setEnrollmentStatus(checked,EnrollmentStatus.COMPLETED)}" />
         </LinearLayout>
 
         <!--CANCELLED-->
@@ -115,6 +125,8 @@
                 style="@style/filterCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checked="@{filterItem.observeEnrollmentStatus() == EnrollmentStatus.CANCELLED}"
+                android:onCheckedChanged="@{(view, checked)->filterItem.setEnrollmentStatus(checked,EnrollmentStatus.CANCELLED)}"
                 tools:checked="true" />
         </LinearLayout>
 

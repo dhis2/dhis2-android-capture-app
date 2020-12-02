@@ -10,6 +10,7 @@ import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
 import org.dhis2.data.filter.FilterPresenter;
+import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
@@ -32,6 +33,7 @@ import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.filters.FiltersAdapter;
+import org.dhis2.utils.filters.ProgramType;
 import org.dhis2.utils.filters.workingLists.TeiFilterToWorkingListItemMapper;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
@@ -72,11 +74,12 @@ public class SearchTEModule {
                                                        MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
                                                        MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
                                                        PreferenceProvider preferenceProvider,
-                                                       TeiFilterToWorkingListItemMapper teiWorkingListMapper) {
+                                                       TeiFilterToWorkingListItemMapper teiWorkingListMapper,
+                                                       FilterRepository filterRepository) {
         return new SearchTEPresenter(view, d2, mapUtils, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapCoordinateFieldToFeatureCollection,
                 new EventToEventUiComponent(), preferenceProvider,
-                teiWorkingListMapper);
+                teiWorkingListMapper, filterRepository);
     }
 
     @Provides
@@ -159,7 +162,7 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    FiltersAdapter provideFiltersAdapter(FilterPresenter filterPresenter) {
-        return new FiltersAdapter(FiltersAdapter.ProgramType.TRACKER, filterPresenter);
+    FiltersAdapter provideNewFiltersAdapter(FilterPresenter filterPresenter) {
+        return new FiltersAdapter(ProgramType.TRACKER, filterPresenter);
     }
 }

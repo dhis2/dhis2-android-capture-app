@@ -2,6 +2,8 @@ package org.dhis2.utils.filters;
 
 import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.utils.filters.cat_opt_comb.CatOptCombFilterAdapter;
 import org.dhis2.utils.filters.sorting.SortingItem;
@@ -51,12 +53,16 @@ public class FilterManager implements Serializable {
     private CatOptCombFilterAdapter catComboAdapter;
 
     private List<OrganisationUnit> ouFilters;
+    private MutableLiveData<List<OrganisationUnit>> liveDataOUFilter = new MutableLiveData<>();
     private List<State> stateFilters;
+    private ObservableField<List<State>> observableStates = new ObservableField<>();
     private List<DatePeriod> periodFilters;
     private List<DatePeriod> enrollmentPeriodFilters;
     private List<CategoryOptionCombo> catOptComboFilters;
     private List<EventStatus> eventStatusFilters;
+    private ObservableField<List<EventStatus>> observableEventStatus = new ObservableField<>();
     private List<EnrollmentStatus> enrollmentStatusFilters;
+    private ObservableField<EnrollmentStatus> observableEnrollmentStatus = new ObservableField<>();
     private boolean assignedFilter;
     private SortingItem sortingItem;
 
@@ -176,6 +182,7 @@ public class FilterManager implements Serializable {
             else if (!stateFilters.contains(stateToAdd))
                 stateFilters.add(stateToAdd);
         }
+        observableStates.set(stateFilters);
 
         boolean hasNotSyncedState = stateFilters.contains(State.TO_POST) &&
                 stateFilters.contains(State.TO_UPDATE) &&
@@ -208,6 +215,7 @@ public class FilterManager implements Serializable {
             else if (!eventStatusFilters.contains(eventStatus))
                 eventStatusFilters.add(eventStatus);
         }
+        observableEventStatus.set(eventStatusFilters);
         if (eventStatusFilters.contains(EventStatus.ACTIVE)) {
             eventStatusFiltersApplied.set(eventStatusFilters.size() - 1);
         } else {
@@ -222,6 +230,7 @@ public class FilterManager implements Serializable {
         } else {
             enrollmentStatusFilters.clear();
             enrollmentStatusFilters.add(enrollmentStatus);
+            observableEnrollmentStatus.set(enrollmentStatus);
         }
         enrollmentStatusFiltersApplied.set(enrollmentStatusFilters.size());
         if (!workingListActive())
@@ -249,6 +258,7 @@ public class FilterManager implements Serializable {
         else
             ouFilters.add(ou);
 
+        liveDataOUFilter.setValue(ouFilters);
         ouFiltersApplied.set(ouFilters.size());
         filterProcessor.onNext(this);
     }
@@ -350,6 +360,10 @@ public class FilterManager implements Serializable {
         return ouFilters;
     }
 
+    public LiveData<List<OrganisationUnit>> observeOrgUnitFilters(){
+        return liveDataOUFilter;
+    }
+
     public List<CategoryOptionCombo> getCatOptComboFilters() {
         return catOptComboFilters;
     }
@@ -362,12 +376,24 @@ public class FilterManager implements Serializable {
         return stateFilters;
     }
 
+    public ObservableField<List<State>> observeSyncState(){
+        return observableStates;
+    }
+
     public List<EventStatus> getEventStatusFilters() {
         return eventStatusFilters;
     }
 
+    public ObservableField<List<EventStatus>> observeEventStatus(){
+        return observableEventStatus;
+    }
+
     public List<EnrollmentStatus> getEnrollmentStatusFilters() {
         return enrollmentStatusFilters;
+    }
+
+    public ObservableField<EnrollmentStatus> observeEnrollmentStatus(){
+        return observableEnrollmentStatus;
     }
 
     public void addPeriodRequest(PeriodRequest periodRequest, Filters filter) {
@@ -380,6 +406,7 @@ public class FilterManager implements Serializable {
 
     public void removeAll() {
         ouFilters = new ArrayList<>();
+        liveDataOUFilter.setValue(ouFilters);
         ouFiltersApplied.set(ouFilters.size());
         filterProcessor.onNext(this);
     }
@@ -395,6 +422,7 @@ public class FilterManager implements Serializable {
             }
             ouFilters.add(content);
         }
+        liveDataOUFilter.setValue(ouFilters);
         ouFiltersApplied.set(ouFilters.size());
         filterProcessor.onNext(this);
     }
@@ -412,11 +440,13 @@ public class FilterManager implements Serializable {
     public void clearEventStatus() {
         eventStatusFilters.clear();
         eventStatusFiltersApplied.set(eventStatusFilters.size());
+        observableEventStatus.set(eventStatusFilters);
         filterProcessor.onNext(this);
     }
 
     public void clearEnrollmentStatus() {
         enrollmentStatusFilters.clear();
+        observableEnrollmentStatus.set(null);
         enrollmentStatusFiltersApplied.set(enrollmentStatusFilters.size());
         filterProcessor.onNext(this);
     }
@@ -453,10 +483,14 @@ public class FilterManager implements Serializable {
 
     public void clearAllFilters() {
         eventStatusFilters.clear();
+        observableEventStatus.set(eventStatusFilters);
         enrollmentStatusFilters.clear();
+        observableEnrollmentStatus.set(null);
         catOptComboFilters.clear();
         stateFilters.clear();
+        observableStates.set(stateFilters);
         ouFilters.clear();
+        liveDataOUFilter.setValue(ouFilters);
         periodFilters = new ArrayList<>();
         enrollmentPeriodFilters = new ArrayList<>();
         enrollmentPeriodIdSelected = 0;

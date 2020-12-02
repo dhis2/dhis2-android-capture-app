@@ -1,7 +1,9 @@
 package org.dhis2.usescases.main
 
 import android.view.Gravity
+import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
+import org.dhis2.data.filter.FilterRepository
 import org.dhis2.data.prefs.Preference
 import org.dhis2.data.prefs.Preference.Companion.DEFAULT_CAT_COMBO
 import org.dhis2.data.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
@@ -22,7 +24,8 @@ class MainPresenter(
     private val schedulerProvider: SchedulerProvider,
     private val preferences: PreferenceProvider,
     private val workManagerController: WorkManagerController,
-    private val filterManager: FilterManager
+    private val filterManager: FilterManager,
+    private val filterRepository: FilterRepository
 ) {
 
     var disposable: CompositeDisposable = CompositeDisposable()
@@ -69,6 +72,16 @@ class MainPresenter(
     }
 
     fun initFilters() {
+        disposable.add(
+            filterManager.asFlowable().startWith(filterManager).switchMap { Flowable.just(filterRepository.homeFilters()) }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { filters -> view.setFilters(filters) },
+                    { Timber.e(it) }
+                )
+        )
+
         disposable.add(
             filterManager.asFlowable()
                 .subscribeOn(schedulerProvider.io())

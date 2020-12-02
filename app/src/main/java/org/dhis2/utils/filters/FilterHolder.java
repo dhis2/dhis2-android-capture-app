@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.BR;
 import org.dhis2.R;
-import org.dhis2.utils.filters.FiltersAdapter.ProgramType;
 import org.dhis2.utils.filters.sorting.Sorting;
 import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.filters.sorting.SortingStatus;
@@ -142,5 +141,10 @@ public abstract class FilterHolder extends RecyclerView.ViewHolder implements Vi
         } else {
             openFilter.set(null);
         }
+    }
+
+    public void bind(FilterItem filterItem){
+        binding.setVariable(BR.filterItem, filterItem);
+        bind();
     }
 }

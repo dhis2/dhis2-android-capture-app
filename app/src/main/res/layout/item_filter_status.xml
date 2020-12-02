@@ -22,19 +22,27 @@
         <variable
             name="currentSortItem"
             type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.sorting.SortingItem&gt;" />
+
+        <variable
+            name="programType"
+            type="org.dhis2.utils.filters.ProgramType" />
+
+        <variable
+            name="filterItem"
+            type="org.dhis2.utils.filters.EventStatusFilter" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/root"
         android:layout_width="match_parent"
-        tools:background="?colorPrimary"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        tools:background="?colorPrimary">
 
         <include
             android:id="@+id/filterLayout"
             layout="@layout/item_header_filter"
-            app:filterCount="@{filterCount}"
             app:currentSortItem="@{currentSortItem}"
+            app:filterCount="@{filterCount}"
             app:layout_constraintTop_toBottomOf="parent" />
 
         <include
@@ -43,8 +51,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:currentFilter="@{currentFilter}"
+            app:filterItem="@{filterItem}"
             app:filterType="@{filterType}"
-            app:layout_constraintTop_toBottomOf="@id/filterLayout" />
+            app:layout_constraintTop_toBottomOf="@id/filterLayout"
+            app:programType="@{programType}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -41,6 +41,7 @@ import org.dhis2.utils.analytics.BLOCK_SESSION
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.extension.navigateTo
+import org.dhis2.utils.filters.FilterItem
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.FiltersAdapter
 import org.dhis2.utils.session.PIN_DIALOG_TAG
@@ -58,9 +59,11 @@ class MainActivity :
     lateinit var mainComponent: MainComponent
     @Inject
     lateinit var presenter: MainPresenter
-
+/*
     @Inject
-    lateinit var adapter: FiltersAdapter
+    lateinit var adapter: FiltersAdapter*/
+    @Inject
+    lateinit var newAdapter: FiltersAdapter
 
     private var programFragment: ProgramFragment? = null
 
@@ -110,10 +113,7 @@ class MainActivity :
             Constants.SHARE_PREFS, Context.MODE_PRIVATE
         )
 
-        if (presenter.hasProgramWithAssignment()) {
-            adapter.addAssignedToMe()
-        }
-        binding.filterRecycler.adapter = adapter
+        binding.filterRecycler.adapter = newAdapter
 
         if (BuildConfig.DEBUG) {
             binding.moreOptions.setOnLongClickListener {
@@ -149,7 +149,6 @@ class MainActivity :
             )
         }
         binding.totalFilters = FilterManager.getInstance().totalFilters
-        adapter.notifyDataSetChanged()
     }
 
     override fun onPause() {
@@ -268,10 +267,13 @@ class MainActivity :
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
-            adapter.notifyDataSetChanged()
             updateFilters(FilterManager.getInstance().totalFilters)
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun setFilters(filters: List<FilterItem>) {
+        newAdapter.submitList(filters)
     }
 
     override fun fail(message: String, exception: String) {

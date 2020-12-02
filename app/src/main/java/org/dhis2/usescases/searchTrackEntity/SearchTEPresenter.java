@@ -20,6 +20,7 @@ import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.R;
 import org.dhis2.data.dhislogic.DhisMapUtils;
+import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
@@ -97,6 +98,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private final BehaviorSubject<String> currentProgram;
     private final PreferenceProvider preferences;
     private final TeiFilterToWorkingListItemMapper workingListMapper;
+    private final FilterRepository filterRepository;
     private Program selectedProgram;
 
     private CompositeDisposable compositeDisposable;
@@ -134,7 +136,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
                              EventToEventUiComponent eventToEventUiComponent,
                              PreferenceProvider preferenceProvider,
-                             TeiFilterToWorkingListItemMapper workingListMapper) {
+                             TeiFilterToWorkingListItemMapper workingListMapper,
+                             FilterRepository filterRepository) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -147,6 +150,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.mapCoordinateFieldToFeatureCollection = mapCoordinateFieldToFeatureCollection;
         this.workingListMapper = workingListMapper;
         this.eventToEventUiComponent = eventToEventUiComponent;
+        this.filterRepository = filterRepository;
         compositeDisposable = new CompositeDisposable();
         queryData = new HashMap<>();
         queryProcessor = PublishProcessor.create();
@@ -165,6 +169,26 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void init(String trackedEntityType) {
         this.trackedEntityType = trackedEntityType;
         this.trackedEntity = searchRepository.getTrackedEntityType(trackedEntityType).blockingFirst();
+
+        compositeDisposable.add(currentProgram
+                .switchMap(programUid ->
+                        FilterManager.getInstance().asFlowable()
+                                .startWith(FilterManager.getInstance())
+                                .map(filterManager -> {
+                                    if (programUid.isEmpty()) {
+                                        return filterRepository.trackedEntityFilters();
+                                    } else {
+                                        return filterRepository.programFilters(programUid);
+                                    }
+                                }).toObservable())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                        view::setFilters,
+                        Timber::e
+                )
+        );
+
         compositeDisposable.add(
                 searchRepository.programsWithRegistration(trackedEntityType)
                         .subscribeOn(schedulerProvider.io())
@@ -514,7 +538,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             preferences.removeValue(Preference.CURRENT_ORG_UNIT);
             queryData.clear();
         }
-        initAssignmentFilter();
     }
 
     private boolean isPreviousAndCurrentProgramTheSame(Program programSelected, String previousProgramUid, String currentProgramUid) {
@@ -969,19 +992,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             }
         }
         return stagesStyleMap;
-    }
-
-    @Override
-    public void initAssignmentFilter() {
-        boolean hasAssignment = selectedProgram != null && !d2.programModule().programStages()
-                .byProgramUid().eq(selectedProgram.uid())
-                .byEnableUserAssignment().isTrue()
-                .blockingIsEmpty();
-        if (hasAssignment) {
-            view.showAssignmentFilter();
-        } else {
-            view.hideAssignmentFilter();
-        }
     }
 
     @Override

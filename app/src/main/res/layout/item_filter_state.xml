@@ -22,6 +22,10 @@
         <variable
             name="currentSortItem"
             type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.sorting.SortingItem&gt;" />
+
+        <variable
+            name="filterItem"
+            type="org.dhis2.utils.filters.SyncStateFilter" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -43,6 +47,7 @@
             android:layout_height="wrap_content"
             app:currentFilter="@{currentFilter}"
             app:filterType="@{filterType}"
+            app:filterItem="@{filterItem}"
             app:layout_constraintTop_toBottomOf="@id/filterLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

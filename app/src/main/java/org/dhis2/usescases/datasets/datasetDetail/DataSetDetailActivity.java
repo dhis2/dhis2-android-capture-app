@@ -17,7 +17,6 @@ import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityDatasetDetailBinding;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
@@ -26,11 +25,10 @@ import org.dhis2.usescases.orgunitselector.OUTreeActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.category.CategoryDialog;
+import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.hisp.dhis.android.core.category.CategoryCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 
 import java.util.List;
 
@@ -80,7 +78,6 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         presenter.init();
         binding.addDatasetButton.setEnabled(true);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
-        filtersAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -109,7 +106,6 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
-            filtersAdapter.notifyDataSetChanged();
             updateFilters(filterManager.getTotalFilters());
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -161,11 +157,6 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
                     true
             );
         }
-    }
-
-    @Override
-    public void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos) {
-        filtersAdapter.addCatOptCombFilter(categoryOptionCombos);
     }
 
     @SuppressLint("RestrictedApi")
@@ -232,5 +223,10 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
                 getSupportFragmentManager(),
                 CategoryDialog.Companion.getTAG()
         );
+    }
+
+    @Override
+    public void setFilters(List<FilterItem> filterItems) {
+        filtersAdapter.submitList(filterItems);
     }
 }

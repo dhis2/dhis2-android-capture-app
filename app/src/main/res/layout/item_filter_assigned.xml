@@ -21,6 +21,9 @@
         <variable
             name="currentSortItem"
             type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.sorting.SortingItem&gt;" />
+        <variable
+            name="filterItem"
+            type="org.dhis2.utils.filters.AssignedFilter" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -40,12 +43,13 @@
             style="@style/Widget.AppCompat.CompoundButton.Switch"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:checked="true"
+            android:checked="@{filterItem.assignedToMe}"
             app:thumbTint="@drawable/selector_material_thumb"
             app:useMaterialThemeColors="false"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onCheckedChanged="@{(switch, checked)->filterItem.activate(checked)}"
             android:layout_marginEnd="8dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

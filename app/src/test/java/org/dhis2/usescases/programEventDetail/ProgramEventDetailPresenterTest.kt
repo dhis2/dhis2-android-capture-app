@@ -53,7 +53,8 @@ class ProgramEventDetailPresenterTest {
             scheduler,
             filterManager,
             preferenceProvider,
-            workingListMapper
+            workingListMapper,
+            filterRepository
         )
     }
 

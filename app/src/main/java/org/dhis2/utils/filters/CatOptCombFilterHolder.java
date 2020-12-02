@@ -19,16 +19,25 @@ import java.util.List;
 
 class CatOptCombFilterHolder extends FilterHolder {
 
-    private final Pair<CategoryCombo, List<CategoryOptionCombo>> catComboData;
+    private Pair<CategoryCombo, List<CategoryOptionCombo>> catComboData;
 
     CatOptCombFilterHolder(@NonNull ItemFilterCatOptCombBinding binding,
                            ObservableField<Filters> openedFilter,
                            Pair<CategoryCombo, List<CategoryOptionCombo>> catCombData,
-                           FiltersAdapter.ProgramType programType) {
+                           ProgramType programType) {
         super(binding, openedFilter);
         filterType = Filters.CAT_OPT_COMB;
         this.catComboData = catCombData;
         this.programType = programType;
+    }
+
+    public void bind(FilterItem filterItem) {
+        CatOptionComboFilter catComboFilter = (CatOptionComboFilter) filterItem;
+        this.catComboData = Pair.create(
+                catComboFilter.getCatCombo(),
+                catComboFilter.getCatOptionCombos()
+        );
+        bind();
     }
 
     @Override

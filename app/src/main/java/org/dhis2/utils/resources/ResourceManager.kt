@@ -82,5 +82,9 @@ class ResourceManager(val context: Context) {
     fun lastNBiWeeks(biweeks: Int) = "Last %d biweeks".format(biweeks)
 
     fun span():String = "%s - %s"
+    fun filterPeriodLabel(): String = context.getString(R.string.filters_title_period)
+    fun filterDateLabel(): String = context.getString(R.string.filters_title_date)
+    fun filterEnrollmentDateLabel():String = context.getString(R.string.enrollment_date)
+    fun filterEventDateLabel(): String =context.getString(R.string.filters_title_event_date)
 
 }
