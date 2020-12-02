@@ -114,16 +114,20 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
 
     @Override
     public int getLayoutId() {
+        if (renderingType() == ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS) {
+            return R.layout.form_radio_button_horizontal;
+        }
         return R.layout.form_yes_no;
     }
 
-    public void onValueChanged(String value) {
+    public void onValueChanged(Boolean value) {
         if (processor() == null) return;
 
-        processor().onNext(RowAction.create(uid(), value, getAdapterPosition()));
+        processor().onNext(RowAction.create(uid(), String.valueOf(value), getAdapterPosition()));
     }
 
     public abstract boolean isBackgroundTransparent();
 
     public abstract boolean isSearchMode();
+
 }
