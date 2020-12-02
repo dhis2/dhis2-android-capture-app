@@ -181,7 +181,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         setScreenName(this.getLocalClassName());
         ((App) getApplicationContext()).userComponent().plus(
                 new EventInitialModule(this,
-                        eventUid)
+                        eventUid,
+                        programStageUid)
         ).inject(this);
         super.onCreate(savedInstanceState);
 
@@ -563,6 +564,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             else if (catCombo.isDefault())
                 catOptionComboUid = categoryOptionCombos.get(0).uid();
 
+            checkActionButtonVisibility();
         });
     }
 
