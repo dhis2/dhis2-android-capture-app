@@ -148,7 +148,7 @@
                         android:focusable="true"
                         android:onClick="@{v -> item.onClear()}"
                         android:padding="10dp"
-                        android:visibility="@{item.editable() ? View.VISIBLE : View.GONE}"
+                        android:visibility="@{item.isClearable() ? View.VISIBLE : View.GONE}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:srcCompat="@drawable/ic_close" />
 

@@ -144,6 +144,10 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
         onValueChanged(null);
     }
 
+    public boolean isClearable() {
+        return editable() && value() != null;
+    }
+
     public boolean isNegativeChecked() {
         return value() != null && !Boolean.parseBoolean(value());
     }
