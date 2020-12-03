@@ -255,6 +255,7 @@
     <string name="share">Баҳам кўриш</string>
     <string name="max">Максимум</string>
     <string name="current">Жорий</string>
+    <string name="tei">TEI</string>
     <string name="warning_on_complete_title">Огоҳлантириш</string>
     <string name="error_on_complete_title">Хато</string>
     <string name="save">Сақлаш</string>
@@ -263,18 +264,23 @@
     <string name="relationships">ўзаро алоқалар</string>
     <string name="qr_data_values">Маълумотларнинг қийматлари</string>
     <string name="delete_local_data">Локал маълумотларни ўчириш</string>
+    <string name="dashboard_overview">Қисқача кўздан кечириш</string>
     <string name="dashboard_relationships">Ўзаро алоқалар</string>
     <string name="dashboard_indicators">Кўрсатгичлар</string>
+    <string name="dashboard_analytics">Аналитика</string>
     <string name="dashboard_notes">Изоҳлар</string>
     <string name="event_overview">Тафсилотлари</string>
     <string name="event_event">Ҳодиса/Тадбир</string>
     <string name="event_indicators">Индикаторлар</string>
     <string name="event_notes">Изоҳлар</string>
+    <string name="finish">Тугатиш</string>
+    <string name="please_wait">Илтимос, кутинг</string>
     <string name="skip">Ўтказиб юбориш</string>
     <string name="reschedule">Қайта режаланг</string>
     <string name="event_overdue">Муддат ўтган</string>
     <string name="table">Жадвал</string>
     <string name="local_data_accept">Қабул қилинг</string>
+    <string name="org_unit_selection_warning">Камида битта ташкилий бўлим танланиши керак</string>
     <string name="login_server_info_title">Сервер URLи</string>
     <string name="state_warning">Огоҳлантириш</string>
     <string name="action_close">Ёпиш</string>
@@ -286,6 +292,7 @@
     <string name="period_week">Ҳафта</string>
     <string name="sms_completed">бажарилди</string>
     <string name="sms_bar_state_sending">Жараёнда</string>
+    <string name="sms_bar_state_sent">Юборилди</string>
     <string name="sms_bar_state_failed">Амалга ошмади</string>
 
     <string name="polygon_captured">Кўпбурчак ушланди</string>
@@ -329,4 +336,11 @@
     <string name="dataset_data">Маълумот</string>
     <string name="customactivityoncrash_error_activity_restart_app">Орқага қайтинг</string>
     <string name="customactivityoncrash_error_activity_error_details_close">Ёпиш</string>
+    <string name="section_charts">Диаграммалар</string>
+    <string name="navigation_analytics">Аналитика</string>
+    <string name="navigation_programs">Дастурлар</string>
+    <string name="navigation_events">Ҳодиса/Тадбирлар</string>
+    <string name="navigation_relationships">Ўзаро алоқалар</string>
+    <string name="navigation_notes">Изоҳлар</string>
+    <string name="navigation_data_entry">Маълумот киритиш</string>
     </resources>
