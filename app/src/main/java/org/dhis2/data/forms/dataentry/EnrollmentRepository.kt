@@ -245,7 +245,8 @@ class EnrollmentRepository(
             optionCount,
             attribute.style(),
             attribute.fieldMask(),
-            onRowActionProccesor
+            onRowActionProccesor,
+            null
         )
 
         return if (!error.isNullOrEmpty()) {
@@ -381,7 +382,8 @@ class EnrollmentRepository(
             null,
             ObjectStyle.builder().build(),
             true,
-            false
+            false,
+            onRowActionProccesor
         )
     }
 
@@ -403,7 +405,8 @@ class EnrollmentRepository(
             null,
             ObjectStyle.builder().build(),
             true,
-            false
+            false,
+            onRowActionProccesor
         )
     }
 

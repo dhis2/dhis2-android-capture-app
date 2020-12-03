@@ -15,7 +15,7 @@
 
     </data>
 
-    <org.dhis2.utils.customviews.UnsupportedView
+    <org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedView
         android:id="@+id/unsupportedView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

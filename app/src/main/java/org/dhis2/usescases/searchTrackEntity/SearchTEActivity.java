@@ -82,6 +82,7 @@ import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
 import java.io.File;
 import java.lang.reflect.Field;

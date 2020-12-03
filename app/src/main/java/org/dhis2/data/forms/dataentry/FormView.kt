@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.utils.Constants
+import org.dhis2.utils.customviews.CustomDialog
 
 class FormView @JvmOverloads constructor(
     context: Context,
@@ -42,6 +44,17 @@ class FormView @JvmOverloads constructor(
     fun init(owner: LifecycleOwner) {
         dataEntryHeaderHelper.observeHeaderChanges(owner)
         adapter = DataEntryAdapter()
+        adapter.didItemShowDialog = { title, message ->
+            CustomDialog(
+                context,
+                title,
+                message ?: context.getString(R.string.empty_description),
+                context.getString(R.string.action_close),
+                null,
+                Constants.DESCRIPTION_DIALOG,
+                null
+            ).show()
+        }
         recyclerView.adapter = adapter
     }
 
@@ -55,15 +68,18 @@ class FormView @JvmOverloads constructor(
             offset = it.top
         }
 
-        adapter.swap(items) {
-            dataEntryHeaderHelper.onItemsUpdatedCallback()
-        }
+        adapter.swap(
+            items,
+            Runnable {
+                dataEntryHeaderHelper.onItemsUpdatedCallback()
+            }
+        )
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
 
     // TODO methods to remove
 
-    fun setLastFocusItem(lastFocusItem: String?) {
+    fun setLastFocusItem(lastFocusItem: String) {
         adapter.setLastFocusItem(lastFocusItem)
     }
 }

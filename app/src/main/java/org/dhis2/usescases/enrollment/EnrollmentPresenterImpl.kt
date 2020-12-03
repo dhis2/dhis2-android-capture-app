@@ -220,16 +220,19 @@ class EnrollmentPresenterImpl(
                                 fieldsFlowable.onNext(true)
                             }
                             ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
-                                /*Do nothing*/
+                                view.hideProgress()
                             }
                             ValueStoreImpl.ValueStoreResult.VALUE_NOT_UNIQUE -> {
                                 view.showInfoDialog(
                                     view.context.getString(R.string.error),
                                     view.context.getString(R.string.unique_warning)
                                 )
+                                view.hideProgress()
                             }
-                            ValueStoreImpl.ValueStoreResult.UID_IS_NOT_DE_OR_ATTR ->
+                            ValueStoreImpl.ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
                                 Timber.tag(TAG).d("${it.uid} is not a data element or attribute")
+                                view.hideProgress()
+                            }
                         }
                     },
                     { Timber.tag(TAG).e(it) }
@@ -327,8 +330,8 @@ class EnrollmentPresenterImpl(
                 if (isUnique && field.value() != null) {
                     uniqueValueAlreadyExist =
                         d2.trackedEntityModule().trackedEntityAttributeValues()
-                        .byTrackedEntityAttribute().eq(field.uid())
-                        .byValue().eq(field.value()).blockingGet().size > 1
+                            .byTrackedEntityAttribute().eq(field.uid())
+                            .byValue().eq(field.value()).blockingGet().size > 1
                     if (uniqueValueAlreadyExist) {
                         uniqueFields[field.uid()] = field.label()
                     }
@@ -447,7 +450,7 @@ class EnrollmentPresenterImpl(
         val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
         val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
             d2.categoryModule().categoryCombos().uid(catComboUid)
-            .blockingGet().isDefault == false
+                .blockingGet().isDefault == false
         val needsCoordinates =
             stage.featureType() != null && stage.featureType() != FeatureType.NONE
 
@@ -602,8 +605,8 @@ class EnrollmentPresenterImpl(
             )
             valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, true)
         } else if (!optionsGroupsToHide.containsKey(field) || !optionsGroupsToHide.contains(
-            optionGroupUid
-        )
+                optionGroupUid
+            )
         ) {
             if (optionsGroupToShow[field] != null) {
                 optionsGroupToShow[field]!!.add(optionGroupUid)

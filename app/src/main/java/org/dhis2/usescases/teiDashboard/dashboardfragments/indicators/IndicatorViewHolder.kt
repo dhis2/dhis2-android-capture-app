@@ -24,8 +24,8 @@ class IndicatorViewHolder(
             val params = binding.guideline.layoutParams as ConstraintLayout.LayoutParams
             params.guidePercent = 0.6F
             binding.guideline.layoutParams = params
-            // binding.label = programIndicatorModel.programIndicator.displayName()
-            // binding.description = programIndicatorModel.programIndicator.displayDescription()
+            binding.label = programIndicatorModel.programIndicator.displayName()
+            binding.description = programIndicatorModel.programIndicator.displayDescription()
         }
 
         val color = when {

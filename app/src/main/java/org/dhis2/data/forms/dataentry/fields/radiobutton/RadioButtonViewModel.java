@@ -54,9 +54,9 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
                                                     @NonNull Boolean mandatory, @Nullable String value, @Nullable String section,
                                                     Boolean editable, @Nullable String description, ObjectStyle objectStyle, ValueTypeRenderingType renderingType, Boolean isBackgroundTransparent, boolean isSearchMode) {
         if (value == null) {
-            return new AutoValue_RadioButtonViewModel(id, label, null, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, null,mandatory, type, renderingType, isBackgroundTransparent, isSearchMode);
+            return new AutoValue_RadioButtonViewModel(id, label, null, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, null, mandatory, type, renderingType, isBackgroundTransparent, isSearchMode);
         } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED.toString())) {
-            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED.toString(), section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, null,mandatory, type, renderingType, isBackgroundTransparent, isSearchMode);
+            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED.toString(), section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, null, mandatory, type, renderingType, isBackgroundTransparent, isSearchMode);
         } else if (value.toLowerCase(Locale.US).equals(Value.UNCHECKED.toString())) {
             return new AutoValue_RadioButtonViewModel(id, label, Value.UNCHECKED.toString(), section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, null, mandatory, type, renderingType, isBackgroundTransparent, isSearchMode);
         } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED_NO.toString())) {
@@ -71,9 +71,9 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
                                                     @NonNull Boolean mandatory, @Nullable String value, @Nullable String section,
                                                     Boolean editable, @Nullable String description, ObjectStyle objectStyle, ValueTypeRenderingType renderingType, Boolean isBackgroundTransparent, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
         if (value == null) {
-            return new AutoValue_RadioButtonViewModel(id, label, null, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, processor,mandatory, type, renderingType, isBackgroundTransparent, isSearchMode);
+            return new AutoValue_RadioButtonViewModel(id, label, null, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, processor, mandatory, type, renderingType, isBackgroundTransparent, isSearchMode);
         } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED.toString())) {
-            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED.toString(), section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, processor,mandatory, type, renderingType, isBackgroundTransparent, isSearchMode);
+            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED.toString(), section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, processor, mandatory, type, renderingType, isBackgroundTransparent, isSearchMode);
         } else if (value.toLowerCase(Locale.US).equals(Value.UNCHECKED.toString())) {
             return new AutoValue_RadioButtonViewModel(id, label, Value.UNCHECKED.toString(), section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, processor, mandatory, type, renderingType, isBackgroundTransparent, isSearchMode);
         } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED_NO.toString())) {
@@ -85,45 +85,78 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
 
     @Override
     public FieldViewModel setMandatory() {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, processor(),mandatory(), valueType(), renderingType(), isBackgroundTransparent(), isSearchMode());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, processor(), mandatory(), valueType(), renderingType(), isBackgroundTransparent(), isSearchMode());
     }
 
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error, description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, processor(),mandatory(), valueType(), renderingType(), isBackgroundTransparent(), isSearchMode());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error, description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, processor(), mandatory(), valueType(), renderingType(), isBackgroundTransparent(), isSearchMode());
     }
 
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, processor(),mandatory(), valueType(), renderingType(), isBackgroundTransparent(), isSearchMode());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, processor(), mandatory(), valueType(), renderingType(), isBackgroundTransparent(), isSearchMode());
     }
 
     @NonNull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), data, programStageSection(), allowFutureDate(), false, optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, processor(),mandatory(), valueType(), renderingType(), isBackgroundTransparent(), isSearchMode());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), data, programStageSection(), allowFutureDate(), false, optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, processor(), mandatory(), valueType(), renderingType(), isBackgroundTransparent(), isSearchMode());
     }
 
     @NonNull
     @Override
     public FieldViewModel withEditMode(boolean isEditable) {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), isEditable, optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, processor(),mandatory(), valueType(), renderingType(), isBackgroundTransparent(), isSearchMode());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), isEditable, optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, processor(), mandatory(), valueType(), renderingType(), isBackgroundTransparent(), isSearchMode());
     }
 
     @Override
     public int getLayoutId() {
+        if (renderingType() == ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS ||
+                renderingType() == ValueTypeRenderingType.DEFAULT ||
+                renderingType() == ValueTypeRenderingType.VERTICAL_RADIOBUTTONS
+        ) {
+            return R.layout.form_radio_button_horizontal;
+        }
         return R.layout.form_yes_no;
     }
 
-    public void onValueChanged() {
+    public void onValueChanged(Boolean value) {
+        activated.set(true);
+
+        String result = null;
+        if (value != null) {
+            result = String.valueOf(value);
+        }
+
         if (processor() == null) return;
 
-        processor().onNext(RowAction.create(uid(), value(), getAdapterPosition()));
+        processor().onNext(RowAction.create(uid(), result, getAdapterPosition()));
     }
 
     public abstract boolean isBackgroundTransparent();
 
     public abstract boolean isSearchMode();
+
+    public void onClear() {
+        onValueChanged(null);
+    }
+
+    public boolean isClearable() {
+        return editable() && value() != null;
+    }
+
+    public boolean isNegativeChecked() {
+        return value() != null && !Boolean.parseBoolean(value());
+    }
+
+    public boolean isAffirmativeChecked() {
+        return Boolean.parseBoolean(value());
+    }
+
+    public void onDescriptionClick() {
+        callback.showDialog(label(), description());
+    }
 }

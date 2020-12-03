@@ -5,6 +5,7 @@ import android.view.Menu;
 import android.view.View;
 
 import org.dhis2.App;
+import org.dhis2.data.forms.dataentry.fields.spinner.OptionSetView;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;

@@ -86,8 +86,6 @@ public class EventCaptureContract {
 
         boolean isEnrollmentOpen();
 
-        void goToSection(String sectionUid);
-
         void goToSection();
 
         void completeEvent(boolean addNew);

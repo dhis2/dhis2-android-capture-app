@@ -15,6 +15,9 @@ interface FieldUiModel {
     fun onDeactivate()
 
     interface Callback {
+
         fun onNext()
+
+        fun showDialog(title: String, message: String?)
     }
 }

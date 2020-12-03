@@ -97,7 +97,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
 
     @Override
     public int getLayoutId() {
-        return R.layout.form_option_set;
+        return R.layout.form_option_set_spinner;
     }
 
     public abstract boolean isBackgroundTransparent();

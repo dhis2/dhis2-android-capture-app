@@ -9,8 +9,6 @@ import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
-import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
@@ -212,55 +210,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return renderingType;
     }
 
-    private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels, FlowableProcessor<RowAction> proccesor) {
-        ArrayList<FieldViewModel> renderList = new ArrayList<>();
-
-        for (FieldViewModel fieldViewModel : fieldViewModels) {
-
-            ProgramStageSectionRenderingType renderingType = renderingType(fieldViewModel.programStageSection());
-            if (fieldViewModel instanceof ImageViewModel && !isEmpty(fieldViewModel.optionSet()) && renderingType != ProgramStageSectionRenderingType.LISTING) {
-                List<Option> options = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())
-                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                        .blockingGet();
-                for (Option option : options) {
-                    ValueTypeDeviceRendering fieldRendering = null;
-
-                    if (stageDataElementsMap.containsKey(fieldViewModel.uid())) {
-                        ProgramStageDataElement psDE = stageDataElementsMap.get(fieldViewModel.uid());
-                        fieldRendering = psDE.renderType() != null && psDE.renderType().mobile() != null ? psDE.renderType().mobile() : null;
-                    }
-
-                    ObjectStyle objectStyle = option.style();
-
-                    renderList.add(fieldFactory.create(
-                            fieldViewModel.uid() + "." + option.uid(),
-                            fieldViewModel.label() + ImageViewModel.NAME_CODE_DELIMITATOR + option.displayName() + ImageViewModel.NAME_CODE_DELIMITATOR + option.code(),
-                            ValueType.TEXT,
-                            fieldViewModel.mandatory(),
-                            fieldViewModel.optionSet(),
-                            fieldViewModel.value(),
-                            fieldViewModel.programStageSection(),
-                            fieldViewModel.allowFutureDate(),
-                            fieldViewModel.editable() == null ? false : fieldViewModel.editable(),
-                            renderingType, fieldViewModel.description(),
-                            fieldRendering,
-                            options.size(),
-                            objectStyle,
-                            fieldViewModel.fieldMask(),
-                            proccesor));
-
-                }
-            } else if (fieldViewModel instanceof OptionSetViewModel) {
-                List<Option> options = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())
-                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                        .blockingGet();
-                renderList.add(((OptionSetViewModel) fieldViewModel).withOptions(options));
-            } else
-                renderList.add(fieldViewModel);
-        }
-        return renderList;
-    }
-
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list(FlowableProcessor<RowAction> processor) {
@@ -291,8 +240,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                         return fieldViewModel;
                     }).toList().toFlowable()
-                    .map(fieldViewModels -> sectionFields = fieldViewModels)
-                    .map(fieldViewModels-> checkRenderType(fieldViewModels, processor));
+                    .map(fieldViewModels -> sectionFields = fieldViewModels);
         } else {
             return Flowable.fromCallable(() -> {
                 List<ProgramStageDataElement> stageDataElements = d2.programModule().programStageDataElements()
@@ -316,75 +264,78 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 }
                 return stageDataElements;
             })
-                .flatMapIterable(list -> list)
-                .map(programStageDataElement -> {
-                    DataElement de = d2.dataElementModule().dataElements().uid(programStageDataElement.dataElement().uid()).blockingGet();
-                    TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, de.uid());
+                    .flatMapIterable(list -> list)
+                    .map(programStageDataElement -> {
+                        DataElement de = d2.dataElementModule().dataElements().uid(programStageDataElement.dataElement().uid()).blockingGet();
+                        TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, de.uid());
 
-                    ProgramStageSection programStageSection = null;
-                    for (ProgramStageSection section : sectionMap.values()) {
-                        if (UidsHelper.getUidsList(section.dataElements()).contains(de.uid())) {
-                            programStageSection = section;
-                            break;
-                        }
-                    }
-
-                    String uid = de.uid();
-                    String displayName = de.displayName();
-                    ValueType valueType = de.valueType();
-                    boolean mandatory = programStageDataElement.compulsory() != null ? programStageDataElement.compulsory() : false;
-                    String optionSet = de.optionSetUid();
-                    String dataValue = valueRepository.blockingExists() ? valueRepository.blockingGet().value() : null;
-                    String friendlyValue = dataValue != null ? ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2) : null;
-
-                    boolean allowFutureDates = programStageDataElement.allowFutureDate() != null ? programStageDataElement.allowFutureDate() : false;
-                    String formName = de.displayFormName();
-                    String description = de.displayDescription();
-
-                    int optionCount = 0;
-                    if (!isEmpty(optionSet)) {
-                        if (!isEmpty(dataValue)) {
-                            if (d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).one().blockingExists()) {
-                                dataValue = d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).one().blockingGet().displayName();
+                        ProgramStageSection programStageSection = null;
+                        for (ProgramStageSection section : sectionMap.values()) {
+                            if (UidsHelper.getUidsList(section.dataElements()).contains(de.uid())) {
+                                programStageSection = section;
+                                break;
                             }
                         }
-                        optionCount = d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount();
-                    }
 
-                    ValueTypeDeviceRendering fieldRendering = programStageDataElement.renderType() != null ?
-                            programStageDataElement.renderType().mobile() : null;
+                        String uid = de.uid();
+                        String displayName = de.displayName();
+                        ValueType valueType = de.valueType();
+                        boolean mandatory = programStageDataElement.compulsory() != null ? programStageDataElement.compulsory() : false;
+                        String optionSet = de.optionSetUid();
+                        String dataValue = valueRepository.blockingExists() ? valueRepository.blockingGet().value() : null;
+                        String friendlyValue = dataValue != null ? ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2) : null;
 
-                    ObjectStyle objectStyle = de.style() != null ? de.style() : ObjectStyle.builder().build();
+                        boolean allowFutureDates = programStageDataElement.allowFutureDate() != null ? programStageDataElement.allowFutureDate() : false;
+                        String formName = de.displayFormName();
+                        String description = de.displayDescription();
 
-                    String error = checkConflicts(de.uid(), dataValue);
+                        int optionCount = 0;
+                        List<Option> options;
+                        if (!isEmpty(optionSet)) {
+                            if (!isEmpty(dataValue)) {
+                                if (d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).one().blockingExists()) {
+                                    dataValue = d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).one().blockingGet().displayName();
+                                }
+                            }
+                            optionCount = d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount();
+                            options = d2.optionModule().options().byOptionSetUid().eq(optionSet).orderBySortOrder(RepositoryScope.OrderByDirection.ASC).blockingGet();
+                        } else {
+                            options = new ArrayList<>();
+                        }
 
-                    if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-                        dataValue = dataValue + "_ou_" + friendlyValue;
-                    } else {
-                        dataValue = friendlyValue;
-                    }
+                        ValueTypeDeviceRendering fieldRendering = programStageDataElement.renderType() != null ?
+                                programStageDataElement.renderType().mobile() : null;
 
-                    ProgramStageSectionRenderingType renderingType = programStageSection != null && programStageSection.renderType() != null &&
-                            programStageSection.renderType().mobile() != null ?
-                            programStageSection.renderType().mobile().type() : null;
+                        ObjectStyle objectStyle = de.style() != null ? de.style() : ObjectStyle.builder().build();
 
-                    FieldViewModel fieldViewModel =
-                            fieldFactory.create(uid, formName == null ? displayName : formName,
-                                    valueType, mandatory, optionSet, dataValue,
-                                    programStageSection != null ? programStageSection.uid() : null, allowFutureDates,
-                                    isEventEditable,
-                                    renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(), processor);
+                        String error = checkConflicts(de.uid(), dataValue);
 
-                    if (!error.isEmpty()) {
-                        return fieldViewModel.withError(error);
-                    } else {
-                        return fieldViewModel;
-                    }
+                        if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
+                            dataValue = dataValue + "_ou_" + friendlyValue;
+                        } else {
+                            dataValue = friendlyValue;
+                        }
 
-                })
+                        ProgramStageSectionRenderingType renderingType = programStageSection != null && programStageSection.renderType() != null &&
+                                programStageSection.renderType().mobile() != null ?
+                                programStageSection.renderType().mobile().type() : null;
+
+                        FieldViewModel fieldViewModel =
+                                fieldFactory.create(uid, formName == null ? displayName : formName,
+                                        valueType, mandatory, optionSet, dataValue,
+                                        programStageSection != null ? programStageSection.uid() : null, allowFutureDates,
+                                        isEventEditable,
+                                        renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(), processor, options);
+
+                        if (!error.isEmpty()) {
+                            return fieldViewModel.withError(error);
+                        } else {
+                            return fieldViewModel;
+                        }
+
+                    })
                     .toList().toFlowable()
-                    .map(data -> sectionFields = data)
-                    .map(fieldViewModels-> checkRenderType(fieldViewModels, processor));
+                    .map(data -> sectionFields = data);
         }
     }
 

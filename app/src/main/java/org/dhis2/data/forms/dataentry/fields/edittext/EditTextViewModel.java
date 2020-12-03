@@ -61,7 +61,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public EditTextViewModel withWarning(@NonNull String warning) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 value(), programStageSection(), null, editable(), null,
-                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(),hint(), maxLines(), inputType(), valueType(), warning, error(), renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering());
+                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(), hint(), maxLines(), inputType(), valueType(), warning, error(), renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering());
     }
 
     @NonNull
@@ -69,7 +69,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public EditTextViewModel withError(@NonNull String error) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 value(), programStageSection(), null, true, null,
-                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(),hint(), maxLines(), inputType(), valueType(), warning(), error,
+                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(), hint(), maxLines(), inputType(), valueType(), warning(), error,
                 renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering());
     }
 
@@ -96,12 +96,15 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public FieldViewModel withEditMode(boolean isEditable) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 value(), programStageSection(), null, isEditable, null,
-                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(),hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
+                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
                 renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering());
     }
 
     @Override
     public int getLayoutId() {
+        if (valueType() == ValueType.LONG_TEXT) {
+            return R.layout.form_long_text_custom;
+        }
         return R.layout.form_edit_text_custom;
     }
 
@@ -109,7 +112,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
         processor().onNext(RowAction.create(uid(), value, getAdapterPosition()));
     }
 
-    public boolean isLongText(){
+    public boolean isLongText() {
         return valueType() == ValueType.LONG_TEXT;
     }
 }

@@ -1,8 +1,8 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormComponent;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormModule;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormComponent;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormModule;
 
 import dagger.Subcomponent;
 
