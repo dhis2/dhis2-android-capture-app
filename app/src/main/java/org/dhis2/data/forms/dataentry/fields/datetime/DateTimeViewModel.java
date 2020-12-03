@@ -98,17 +98,19 @@ public abstract class DateTimeViewModel extends FieldViewModel {
     public void onDateSelected(Date date) {
         if (processor() == null) return;
 
-        String dateFormatted;
-        switch (valueType()){
-            case DATETIME:
-               dateFormatted = DateUtils.databaseDateFormat().format(date);
-               break;
-            case DATE:
-               dateFormatted = DateUtils.oldUiDateFormat().format(date);
-               break;
-            case TIME:
-            default:
-               dateFormatted = DateUtils.timeFormat().format(date);
+        String dateFormatted = "";
+        if (date != null) {
+            switch (valueType()){
+                case DATETIME:
+                    dateFormatted = DateUtils.databaseDateFormat().format(date);
+                    break;
+                case DATE:
+                    dateFormatted = DateUtils.oldUiDateFormat().format(date);
+                    break;
+                case TIME:
+                default:
+                    dateFormatted = DateUtils.timeFormat().format(date);
+            }
         }
         RowAction rowAction = RowAction.create(uid(), date != null ? dateFormatted : null, getAdapterPosition());
         processor().onNext(rowAction);

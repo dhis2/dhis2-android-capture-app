@@ -10,7 +10,6 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 
-
 public class FormViewHolder extends RecyclerView.ViewHolder {
 
     protected ViewDataBinding binding;
@@ -28,6 +27,7 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
     public void bind(FieldUiModel uiModel, int position, FieldItemCallback callback) {
         FieldViewModel viewModel = (FieldViewModel) uiModel;
         viewModel.setCallback(() -> callback.onNext(position));
+
         binding.setVariable(BR.item, viewModel);
         binding.executePendingBindings();
     }
