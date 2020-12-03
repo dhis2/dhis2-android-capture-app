@@ -106,7 +106,6 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
             return R.layout.form_long_text_custom;
         }
         return R.layout.form_edit_text_custom;
-
     }
 
     public void onTextFilled(String value) {

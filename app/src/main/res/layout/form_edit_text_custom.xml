@@ -8,7 +8,6 @@
         <variable
             name="item"
             type="org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

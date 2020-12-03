@@ -25,6 +25,7 @@ class DataEntryAdapter :
     private var lastFocusItem: String? = null
     private var nextFocusPosition = -1
     var sectionPositions: MutableMap<String, Int> = LinkedHashMap()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FormViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding =

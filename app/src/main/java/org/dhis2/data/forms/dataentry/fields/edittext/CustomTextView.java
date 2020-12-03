@@ -66,9 +66,6 @@ import static org.dhis2.Bindings.ValueExtensionsKt.withValueTypeCheck;
 import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
 import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
 
-/**
- * QUADRAM. Created by frodriguez on 1/17/2018.
- */
 
 public class CustomTextView extends FieldLayout implements View.OnFocusChangeListener, TextView.OnEditorActionListener, FieldLayout.OnActivation {
 
@@ -136,9 +133,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
         dummy = findViewById(R.id.dummyFocusView);
         labelText = findViewById(R.id.label);
-
         descIcon = findViewById(R.id.descIcon);
-
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 viewModel.onActivate();
@@ -185,7 +180,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     }
 
     private void configureViews() {
-
         editText.setFilters(new InputFilter[]{});
         editText.setMaxLines(1);
         editText.setVerticalScrollBarEnabled(false);
@@ -540,10 +534,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-        if (!hasFocus) {
-            clearBackground(viewModel.isSearchMode());
-        }
-
         if (viewModel.isSearchMode() || (!hasFocus && viewModel.editable())) {
             if (viewModel.isSearchMode() || valueHasChanged()) {
                 sendAction();
