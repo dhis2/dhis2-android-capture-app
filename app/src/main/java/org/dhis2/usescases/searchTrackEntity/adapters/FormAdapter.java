@@ -239,4 +239,9 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> implements
             //getItem(position+1).onActive();
         }
     }
+
+    @Override
+    public void onShowDialog(String title, String message) {
+
+    }
 }

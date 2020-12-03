@@ -150,4 +150,8 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
     public boolean isAffirmativeChecked() {
         return Boolean.parseBoolean(value());
     }
+
+    public void onDescriptionClick() {
+        callback.showDialog(label(), description());
+    }
 }

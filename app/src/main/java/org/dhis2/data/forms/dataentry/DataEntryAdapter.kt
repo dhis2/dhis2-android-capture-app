@@ -17,6 +17,9 @@ import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 class DataEntryAdapter :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),
     FieldItemCallback {
+
+    var didItemShowDialog: ((title: String, message: String?) -> Unit)? = null
+
     private val sectionHandler = SectionHandler()
     private val currentFocusUid: MutableLiveData<String> = MutableLiveData()
     private var lastFocusItem: String? = null
@@ -144,6 +147,12 @@ class DataEntryAdapter :
     override fun onNext(position: Int) {
         if (position < itemCount) {
             getItem(position + 1)!!.onActivate()
+        }
+    }
+
+    override fun onShowDialog(title: String, message: String?) {
+        didItemShowDialog?.let { action ->
+            action(title, message)
         }
     }
 }
