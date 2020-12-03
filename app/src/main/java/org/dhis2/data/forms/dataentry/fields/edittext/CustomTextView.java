@@ -136,13 +136,9 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         descIcon = findViewById(R.id.descIcon);
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
-            //    View view = (View) binding.getRoot().getParent().getParent();
-            //    view.findViewById(R.id.fieldSelected).setVisibility(VISIBLE);
                 viewModel.onActivate();
                 activate();
             } else if (focusListener != null && validate()) {
-            //    View view = (View) binding.getRoot().getParent().getParent();
-            //    view.findViewById(R.id.fieldSelected).setVisibility(GONE);
                 viewModel.onDeactivate();
                 focusListener.onFocusChange(v, hasFocus);
             }
@@ -538,10 +534,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-       /* if (!hasFocus) {
-            clearBackground(viewModel.isSearchMode());
-        } */
-
         if (viewModel.isSearchMode() || (!hasFocus && viewModel.editable())) {
             if (viewModel.isSearchMode() || valueHasChanged()) {
                 sendAction();
