@@ -135,6 +135,7 @@ class SyncPresenterImpl(
         Completable.fromObservable(
             d2.metadataModule().download()
                 .doOnNext { data ->
+                    Timber.log(1, data.toString())
                     progressUpdate.onProgressUpdate(ceil(data.percentage() ?: 0.0).toInt())
                 }
                 .doOnComplete { setUpSMS() }
