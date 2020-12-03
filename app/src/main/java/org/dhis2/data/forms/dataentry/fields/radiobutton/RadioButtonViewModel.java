@@ -42,7 +42,6 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
     @NonNull
     public abstract Boolean mandatory();
 
-
     @NonNull
     public abstract ValueType valueType();
 
@@ -119,6 +118,9 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
                 renderingType() == ValueTypeRenderingType.VERTICAL_RADIOBUTTONS
         ) {
             return R.layout.form_radio_button_horizontal;
+        } else if (renderingType() == ValueTypeRenderingType.HORIZONTAL_CHECKBOXES ||
+                renderingType() == ValueTypeRenderingType.VERTICAL_RADIOBUTTONS) {
+            return R.layout.form_check_button;
         }
         return R.layout.form_yes_no;
     }
