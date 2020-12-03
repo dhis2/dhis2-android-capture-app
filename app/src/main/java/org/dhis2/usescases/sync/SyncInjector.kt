@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 import org.dhis2.data.dagger.PerActivity
+import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.hisp.dhis.android.core.D2
@@ -22,13 +23,15 @@ class SyncModule(private val view: SyncView) {
     fun providePresenter(
         syncRepository: SyncRepository,
         schedulerProvider: SchedulerProvider,
-        workManagerController: WorkManagerController
+        workManagerController: WorkManagerController,
+        preferences: PreferenceProvider
     ): SyncPresenter {
         return SyncPresenter(
             view,
             syncRepository,
             schedulerProvider,
-            workManagerController
+            workManagerController,
+            preferences
         )
     }
 
