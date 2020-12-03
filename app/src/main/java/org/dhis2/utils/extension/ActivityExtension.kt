@@ -6,11 +6,15 @@ import android.os.Bundle
 
 inline fun <reified T> Activity.navigateTo(
     finishCurrent: Boolean = false,
-    noinline block: (Bundle.() -> Unit)? = null
+    noinline block: (Bundle.() -> Unit)? = null,
+    flagsToApply: Int? = null
 ) {
     Intent(this, T::class.java).apply {
         block?.apply {
             putExtra(T::class.java.name, Bundle().also(this))
+        }
+        flagsToApply?.let {
+            flags = flagsToApply
         }
         startActivity(this)
         if (finishCurrent) {
