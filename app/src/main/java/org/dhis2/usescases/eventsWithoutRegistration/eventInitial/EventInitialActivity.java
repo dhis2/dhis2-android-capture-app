@@ -558,7 +558,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
                     if (stringCategoryOptionMap != null && stringCategoryOptionMap.get(category.uid()) != null)
                         catSelectorBinding.catCombo.setText(stringCategoryOptionMap.get(category.uid()).displayName());
-
+                    catSelectorBinding.getRoot().setEnabled(accessData);
                     binding.catComboLayout.addView(catSelectorBinding.getRoot());
                 }
             else if (catCombo.isDefault())
