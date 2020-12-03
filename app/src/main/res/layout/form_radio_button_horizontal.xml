@@ -9,6 +9,10 @@
 
         <import type="org.hisp.dhis.android.core.common.ValueType" />
 
+        <import type="org.hisp.dhis.android.core.common.ValueTypeRenderingType" />
+
+        <import type="android.widget.LinearLayout" />
+
         <variable
             name="item"
             type="org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel" />
@@ -102,7 +106,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
-                        android:orientation="horizontal"
+                        android:orientation="@{item.renderingType() == ValueTypeRenderingType.VERTICAL_RADIOBUTTONS ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/clearSelection"
                         app:layout_constraintHorizontal_bias="0.0"

@@ -115,7 +115,8 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
     @Override
     public int getLayoutId() {
         if (renderingType() == ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS ||
-                renderingType() == ValueTypeRenderingType.DEFAULT
+                renderingType() == ValueTypeRenderingType.DEFAULT ||
+                renderingType() == ValueTypeRenderingType.VERTICAL_RADIOBUTTONS
         ) {
             return R.layout.form_radio_button_horizontal;
         }
