@@ -14,9 +14,9 @@ Please note that in this version of the web app, only users with 'ALL' authority
 Includes configurations such as how often the android app will synchronize metadata and data, number of reserved values to download per TEI, and encrypt the device database.
 
 > **Warning**
-> This version includes a **manual** option for metadata and data sync, so users can decide if the data entered in the app, is uploaded to the server manually or scheduled.
+> This version includes a **manual** option for metadata and data sync, so admins can decide if the app will synchronize metadata and data only when requested by the android app user (instead of being scheduled).
 >
-> These options are only available from Android App 2.3.0 onward.
+> This option is only available from Android App 2.3.0 onward.
 
 
 ![](resources/images/general-settings.png)
