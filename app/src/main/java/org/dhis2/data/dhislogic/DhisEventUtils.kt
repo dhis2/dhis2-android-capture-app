@@ -68,7 +68,11 @@ class DhisEventUtils @Inject constructor(
         val stageRepeatableCountSelected = stage.repeatable() == true &&
             totalEventCount > 0 && isSelected
 
-        return enrollmentStatusCheck && (
+        val access = d2.programModule().programs()
+            .uid(stage.program()?.uid()).blockingGet().access().data().write() == true &&
+            stage.access().data().write() == true
+
+        return access && enrollmentStatusCheck && (
             stageNotRepeatableZeroCount ||
                 stageRepeatableZeroCount ||
                 stageRepeatableCountSelected

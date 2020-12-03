@@ -41,9 +41,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     private final String eventUid;
     private final D2 d2;
+    private final String stageUid;
 
-    EventInitialRepositoryImpl(String eventUid, D2 d2) {
+    EventInitialRepositoryImpl(String eventUid, String stageUid, D2 d2) {
         this.eventUid = eventUid;
+        this.stageUid = stageUid;
         this.d2 = d2;
     }
 
@@ -317,10 +319,12 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
     private Observable<Boolean> programAccess(String programUid) {
-        return Observable.fromCallable(() ->
-                d2.programModule().programStages().byProgramUid().eq(programUid).one().blockingGet().access().data().write() &&
-                        d2.programModule().programs().uid(programUid).blockingGet().access().data().write()
-
+        return Observable.fromCallable(() -> {
+                    boolean programAccess = d2.programModule().programs().uid(programUid).blockingGet().access().data().write();
+                    boolean stageAccess =
+                            d2.programModule().programStages().uid(stageUid).blockingGet().access().data().write();
+                    return programAccess && stageAccess;
+                }
         );
     }
 
