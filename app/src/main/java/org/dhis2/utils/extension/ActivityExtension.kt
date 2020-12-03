@@ -18,3 +18,14 @@ inline fun <reified T> Activity.navigateTo(
         }
     }
 }
+
+fun Activity.share(messageToShare: String) {
+    val sendIntent: Intent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, messageToShare)
+        type = "text/plain"
+    }
+
+    val shareIntent = Intent.createChooser(sendIntent, null)
+    startActivity(shareIntent)
+}

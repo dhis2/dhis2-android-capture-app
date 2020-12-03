@@ -12,7 +12,6 @@ import android.util.TypedValue;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.DataBindingUtil;
 import androidx.work.WorkInfo;
-import androidx.work.WorkManager;
 
 import com.airbnb.lottie.LottieDrawable;
 
@@ -23,30 +22,34 @@ import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.databinding.ActivitySynchronizationBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.OnDialogClickListener;
+import org.dhis2.utils.extension.ActivityExtensionKt;
 
 import javax.inject.Inject;
 
+import static org.dhis2.data.service.SyncOutputKt.METADATA_MESSAGE;
 
-public class SyncActivity extends ActivityGlobalAbstract implements SyncContracts.View {
+
+public class SyncActivity extends ActivityGlobalAbstract implements SyncView {
 
     ActivitySynchronizationBinding binding;
 
     @Inject
-    SyncContracts.Presenter presenter;
+    SyncPresenter presenter;
 
     @Inject
     WorkManagerController workManagerController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(new SyncModule()).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new SyncModule(this)).inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_synchronization);
         binding.setPresenter(presenter);
-        presenter.init(this);
         presenter.sync();
     }
 
@@ -56,14 +59,14 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         workManagerController.getWorkInfosForUniqueWorkLiveData(Constants.INITIAL_SYNC).observe(this, workInfoList -> {
             for (WorkInfo wi : workInfoList) {
                 if (wi.getTags().contains(Constants.META_NOW))
-                    handleMetaState(wi.getState());
+                    handleMetaState(wi.getState(), wi.getOutputData().getString(METADATA_MESSAGE));
                 else if (wi.getTags().contains(Constants.DATA_NOW))
                     handleDataState(wi.getState());
             }
         });
     }
 
-    private void handleMetaState(WorkInfo.State metadataState) {
+    private void handleMetaState(WorkInfo.State metadataState, String message) {
         switch (metadataState) {
             case RUNNING:
                 Bindings.setDrawableEnd(binding.metadataText, AppCompatResources.getDrawable(this, R.drawable.animator_sync));
@@ -71,7 +74,26 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
             case SUCCEEDED:
                 binding.metadataText.setText(getString(R.string.configuration_ready));
                 Bindings.setDrawableEnd(binding.metadataText, AppCompatResources.getDrawable(this, R.drawable.animator_done));
-                presenter.getTheme();
+                presenter.onMetadataSyncSuccess();
+                break;
+            case FAILED:
+                showInfoDialog(
+                        getString(R.string.something_wrong),
+                        getString(R.string.metada_first_sync_error),
+                        getString(R.string.go_back),
+                        getString(R.string.share),
+                        new OnDialogClickListener() {
+                            @Override
+                            public void onPositiveClick() {
+                                ActivityExtensionKt.share(SyncActivity.this, message);
+                            }
+
+                            @Override
+                            public void onNegativeClick() {
+                                presenter.logout();
+                            }
+                        }
+                );
                 break;
             default:
                 break;
@@ -88,8 +110,6 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
             case SUCCEEDED:
                 binding.eventsText.setText(getString(R.string.data_ready));
                 Bindings.setDrawableEnd(binding.eventsText, AppCompatResources.getDrawable(this, R.drawable.animator_done));
-                /*presenter.scheduleSync(getSharedPreferences().getInt(Constants.TIME_META, Constants.TIME_DAILY),
-                        getSharedPreferences().getInt(Constants.TIME_DATA, Constants.TIME_15M));*/
                 presenter.syncReservedValues();
                 startMain();
                 break;
@@ -114,7 +134,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         if (binding.lottieView != null) {
             binding.lottieView.cancelAnimation();
         }
-        presenter.onDettach();
+        presenter.onDetach();
         super.onStop();
     }
 
@@ -164,4 +184,11 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         finish();
     }
 
+    @Override
+    public void goToLogin() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
 }
