@@ -10,6 +10,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Single
+import java.util.UUID
 import org.dhis2.data.prefs.Preference
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
@@ -19,7 +20,6 @@ import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.utils.Constants
 import org.junit.Before
 import org.junit.Test
-import java.util.UUID
 
 class SyncPresenterTest {
 
@@ -54,7 +54,8 @@ class SyncPresenterTest {
     @Test
     fun `Should return work info live data`() {
         presenter.observeSyncProcess()
-        verify(workManagerController, times(1)).getWorkInfosForUniqueWorkLiveData(Constants.INITIAL_SYNC)
+        verify(workManagerController, times(1))
+            .getWorkInfosForUniqueWorkLiveData(Constants.INITIAL_SYNC)
     }
 
     @Test
@@ -96,7 +97,7 @@ class SyncPresenterTest {
         verify(preferences, times(1)).setValue(Preference.FLAG, flagAndTheme.first)
         verify(preferences, times(1)).setValue(Preference.THEME, flagAndTheme.second)
         verify(view, times(1)).setFlag(flagAndTheme.first)
-        verify(view, times(1)).setTheme(flagAndTheme.second)
+        verify(view, times(1)).setServerTheme(flagAndTheme.second)
     }
 
     @Test
@@ -132,6 +133,4 @@ class SyncPresenterTest {
             arrayListOf(Constants.DATA_NOW), 0
         )
     }
-
-
 }

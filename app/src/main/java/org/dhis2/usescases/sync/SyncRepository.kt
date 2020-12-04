@@ -25,5 +25,4 @@ class SyncRepository(private val d2: D2, private val systemStyleMapper: SystemSt
     fun logout(): Completable {
         return d2.userModule().logOut()
     }
-
 }

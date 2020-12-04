@@ -1,8 +1,7 @@
 package org.dhis2.usescases.sync
 
-import org.dhis2.R
 import javax.inject.Inject
-
+import org.dhis2.R
 
 class SystemStyleMapper @Inject constructor() {
 

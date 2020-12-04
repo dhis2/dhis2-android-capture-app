@@ -46,5 +46,4 @@ class SyncModule(private val view: SyncView) {
             systemStyleMapper
         )
     }
-
 }

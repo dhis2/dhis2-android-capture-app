@@ -71,7 +71,7 @@ class SyncPresenter internal constructor(
                 .subscribe(
                     { (first, second) ->
                         view.setFlag(first)
-                        view.setTheme(second)
+                        view.setServerTheme(second)
                     },
                     { t: Throwable? ->
                         Timber.e(t)
@@ -111,5 +111,4 @@ class SyncPresenter internal constructor(
     fun onDetach() {
         disposable.clear()
     }
-
 }

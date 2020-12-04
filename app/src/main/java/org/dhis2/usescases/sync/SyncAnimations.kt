@@ -4,9 +4,9 @@ import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
+import javax.inject.Inject
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.ColorUtils
-import javax.inject.Inject
 
 class SyncAnimations @Inject constructor() {
 
