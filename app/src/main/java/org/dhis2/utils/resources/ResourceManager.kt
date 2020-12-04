@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import org.dhis2.R
+import org.dhis2.utils.ColorUtils
 
 class ResourceManager(val context: Context) {
 
@@ -30,7 +31,15 @@ class ResourceManager(val context: Context) {
         }
     }
 
+    fun getColorFrom(hexColor: String?): Int {
+        return hexColor?.let {
+            ColorUtils.parseColor(it)
+        } ?: -1
+    }
+
     fun defaultEventLabel(): String = context.getString(R.string.events)
     fun defaultDataSetLabel(): String = context.getString(R.string.data_sets)
     fun defaultTeiLabel(): String = context.getString(R.string.tei)
+    fun jiraIssueSentMessage(): String = context.getString(R.string.jira_issue_sent)
+    fun jiraIssueSentErrorMessage(): String = context.getString(R.string.jira_issue_sent_error)
 }

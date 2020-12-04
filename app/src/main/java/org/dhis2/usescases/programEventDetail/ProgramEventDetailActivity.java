@@ -24,9 +24,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
-import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerView;
@@ -41,6 +39,7 @@ import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.InfoWindowEventBinding;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.layer.LayerType;
+import org.dhis2.uicomponents.map.layer.MapLayer;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.EventMapManager;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -64,6 +63,7 @@ import org.hisp.dhis.android.core.program.Program;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -143,7 +143,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         }
 
         binding.mapLayerButton.setOnClickListener(view ->
-                new MapLayerDialog(eventMapManager.mapLayerManager)
+                new MapLayerDialog(eventMapManager)
                         .show(getSupportFragmentManager(), MapLayerDialog.class.getName())
         );
 
@@ -214,6 +214,13 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         binding.mapView.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (isMapVisible() && eventMapManager.getPermissionsManager() != null) {
+            eventMapManager.getPermissionsManager().onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 
     @Override
@@ -388,39 +395,36 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public void setMap(FeatureCollection featureCollection, BoundingBox boundingBox, List<ProgramEventViewModel> programEventViewModels) {
-        eventMapManager.init(() -> {
-            eventMapManager.update(
-                    featureCollection,
-                    boundingBox
-            );
-            if (binding.mapCarousel.getAdapter() == null) {
-                CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
-                        .addOnSyncClickListener(
-                                teiUid -> {
-                                    if (binding.mapCarousel.getCarouselEnabled()) {
-                                        presenter.onSyncIconClick(teiUid);
-                                    }
-                                    return true;
-                                })
-                        .addOnEventClickListener((teiUid, orgUnit, eventUid) -> {
-                            if (binding.mapCarousel.getCarouselEnabled()) {
-                                presenter.onEventClick(teiUid, orgUnit);
-                            }
-                            return true;
-                        })
-                        .build();
-                binding.mapCarousel.setAdapter(carouselAdapter);
-                binding.mapCarousel.attachToMapManager(eventMapManager, () -> true);
-                carouselAdapter.addItems(programEventViewModels);
-            } else {
-                ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(programEventViewModels, eventMapManager.mapLayerManager);
-            }
+    public void setMap(ProgramEventMapData mapData) {
+        eventMapManager.update(
+                mapData.getFeatureCollectionMap(),
+                mapData.getBoundingBox()
+        );
+        if (binding.mapCarousel.getAdapter() == null) {
+            CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
+                    .addOnSyncClickListener(
+                            teiUid -> {
+                                if (binding.mapCarousel.getCarouselEnabled()) {
+                                    presenter.onSyncIconClick(teiUid);
+                                }
+                                return true;
+                            })
+                    .addOnEventClickListener((teiUid, orgUnit, eventUid) -> {
+                        if (binding.mapCarousel.getCarouselEnabled()) {
+                            presenter.onEventClick(teiUid, orgUnit);
+                        }
+                        return true;
+                    })
+                    .build();
+            binding.mapCarousel.setAdapter(carouselAdapter);
+            binding.mapCarousel.attachToMapManager(eventMapManager, () -> true);
+            carouselAdapter.addItems(mapData.getEvents());
+        } else {
+            ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(mapData.getEvents(), eventMapManager.mapLayerManager);
+        }
 
-            eventMapManager.mapLayerManager.selectFeature(null);
-            binding.mapLayerButton.setVisibility(View.VISIBLE);
-            return Unit.INSTANCE;
-        });
+        eventMapManager.mapLayerManager.selectFeature(null);
+        binding.mapLayerButton.setVisibility(View.VISIBLE);
 
         animations.endMapLoading(binding.mapCarousel);
         binding.toolbarProgress.hide();
@@ -540,7 +544,13 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         if (showMap) {
             binding.toolbarProgress.setVisibility(View.VISIBLE);
             binding.toolbarProgress.show();
-            presenter.getMapData();
+            eventMapManager.init(() -> {
+                presenter.getMapData();
+                return Unit.INSTANCE;
+            }, (permissionManager) -> {
+                permissionManager.requestLocationPermissions(this);
+                return Unit.INSTANCE;
+            });
         } else {
             binding.mapLayerButton.setVisibility(View.GONE);
         }
@@ -550,7 +560,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public boolean onMapClick(@NonNull LatLng point) {
         PointF pointf = eventMapManager.getMap().getProjection().toScreenLocation(point);
         RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
-        List<Feature> features = eventMapManager.getMap().queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "POINT_LAYER" : "POLYGON_LAYER");
+
+        List<Feature> features = new ArrayList<>();
+        for (MapLayer mapLayer : eventMapManager.mapLayerManager.getLayers()) {
+            features.addAll(eventMapManager.getMap().queryRenderedFeatures(rectF, mapLayer.getId()));
+        }
         if (!features.isEmpty()) {
             Feature selectedFeature = eventMapManager.findFeature(LayerType.EVENT_LAYER.name(), EVENT, features.get(0).getStringProperty(EVENT));
             eventMapManager.mapLayerManager.getLayer(LayerType.EVENT_LAYER.name(), true).setSelectedItem(selectedFeature);

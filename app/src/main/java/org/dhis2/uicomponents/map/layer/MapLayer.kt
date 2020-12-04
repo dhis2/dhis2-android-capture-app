@@ -5,6 +5,7 @@ import com.mapbox.geojson.Feature
 const val TYPE = "\$type"
 const val TYPE_POINT = "Point"
 const val TYPE_POLYGON = "Polygon"
+
 interface MapLayer {
 
     fun showLayer()
@@ -16,4 +17,6 @@ interface MapLayer {
     fun findFeatureWithUid(featureUidProperty: String): Feature?
 
     var visible: Boolean
+
+    fun getId(): String
 }

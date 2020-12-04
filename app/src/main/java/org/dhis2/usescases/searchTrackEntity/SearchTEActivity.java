@@ -42,9 +42,7 @@ import androidx.paging.PagedList;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
@@ -59,12 +57,10 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
-import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.TeiMapManager;
 import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.uicomponents.map.model.CarouselItemModel;
-import org.dhis2.uicomponents.map.model.EventUiComponentModel;
 import org.dhis2.uicomponents.map.model.MapStyle;
 import org.dhis2.usescases.coodinates.CoordinatesView;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
@@ -218,14 +214,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         filtersAdapter.addEnrollmentStatus();
         filtersAdapter.addEventStatus();
         try {
-            binding.filterLayout.setAdapter(filtersAdapter);
+            binding.filterRecyclerLayout.setAdapter(filtersAdapter);
 
         } catch (Exception e) {
             Timber.e(e);
         }
 
         binding.mapLayerButton.setOnClickListener(view -> {
-            new MapLayerDialog(teiMapManager.mapLayerManager)
+            new MapLayerDialog(teiMapManager)
                     .show(getSupportFragmentManager(), MapLayerDialog.class.getName());
         });
 
@@ -294,7 +290,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             presenter.restoreQueryData((HashMap<String, String>) savedInstanceState.getSerializable(Constants.QUERY_DATA));
         }
         updateFiltersSearch(presenter.getQueryData().size());
-
         teiMapManager = new TeiMapManager(binding.mapView);
         teiMapManager.setTeiFeatureType(presenter.getTrackedEntityType(tEType).featureType());
         teiMapManager.setEnrollmentFeatureType(presenter.getProgram() != null ? presenter.getProgram().featureType() : null);
@@ -405,9 +400,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == ACCESS_LOCATION_PERMISSION_REQUEST) {
+        if (isMapVisible() && teiMapManager.getPermissionsManager() != null) {
+            teiMapManager.getPermissionsManager().onRequestPermissionsResult(requestCode, permissions, grantResults);
+        } else if (requestCode == ACCESS_LOCATION_PERMISSION_REQUEST) {
             initSearchNeeded = false;
         }
+
     }
 
     @Override
@@ -504,7 +502,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (showMap) {
             binding.toolbarProgress.setVisibility(View.VISIBLE);
             binding.toolbarProgress.show();
-            presenter.getMapData();
+            teiMapManager.init(() -> {
+                presenter.getMapData();
+                return Unit.INSTANCE;
+            }, (permissionManager) -> {
+                permissionManager.requestLocationPermissions(this);
+                return Unit.INSTANCE;
+            });
         } else {
             binding.mapLayerButton.setVisibility(View.GONE);
         }
@@ -794,7 +798,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void showHideFilter() {
-        binding.filterLayout.setVisibility(View.GONE);
+        binding.filterRecyclerLayout.setVisibility(View.GONE);
         binding.formRecycler.setVisibility(View.VISIBLE);
 
         swipeFilters(false);
@@ -802,7 +806,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void showHideFilterGeneral() {
-        binding.filterLayout.setVisibility(View.VISIBLE);
+        binding.filterRecyclerLayout.setVisibility(View.VISIBLE);
         binding.formRecycler.setVisibility(View.GONE);
 
         swipeFilters(true);
@@ -831,7 +835,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         initSet.clone(binding.backdropLayout);
 
         if (backDropActive) {
-            initSet.connect(R.id.mainLayout, ConstraintSet.TOP, general ? R.id.filterLayout : R.id.form_recycler, ConstraintSet.BOTTOM, 50);
+            initSet.connect(R.id.mainLayout, ConstraintSet.TOP, general ? R.id.filterRecyclerLayout : R.id.form_recycler, ConstraintSet.BOTTOM, 50);
         } else {
             initSet.connect(R.id.mainLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
         }
@@ -934,24 +938,26 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     /*region MAP*/
     @Override
-    public void setMap(List<SearchTeiModel> teis, HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox, EventsByProgramStage events, List<EventUiComponentModel> eventUiComponentModels) {
+    public void setMap(TrackerMapData trackerMapData) {
         binding.progressLayout.setVisibility(View.GONE);
 
-        sources = teiFeatureCollections.keySet();
-        eventSources = events.component2().keySet();
+        sources = trackerMapData.getTeiFeatures().keySet();
+        eventSources = trackerMapData.getEventFeatures().getFeatureCollectionMap().keySet();
         List<CarouselItemModel> allItems = new ArrayList<>();
-        allItems.addAll(teis);
-        allItems.addAll(eventUiComponentModels);
-        for (SearchTeiModel searchTeiModel : teis) {
+        allItems.addAll(trackerMapData.getTeiModels());
+        allItems.addAll(trackerMapData.getEventModels());
+        for (SearchTeiModel searchTeiModel : trackerMapData.getTeiModels()) {
             allItems.addAll(new MapRelationshipToRelationshipMapModel().mapList(searchTeiModel.getRelationships()));
         }
 
-        teiMapManager.init(() -> {
-            teiMapManager.update(teiFeatureCollections, events, boundingBox);
-            updateCarousel(allItems);
-            binding.mapLayerButton.setVisibility(View.VISIBLE);
-            return Unit.INSTANCE;
-        });
+        teiMapManager.update(
+                trackerMapData.getTeiFeatures(),
+                trackerMapData.getEventFeatures(),
+                trackerMapData.getDataElementFeaturess(),
+                trackerMapData.getTeiBoundingBox()
+        );
+        updateCarousel(allItems);
+        binding.mapLayerButton.setVisibility(View.VISIBLE);
 
         animations.endMapLoading(binding.mapCarousel);
         binding.toolbarProgress.hide();

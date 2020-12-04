@@ -178,11 +178,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         initVariables();
-        setScreenName(this.getLocalClassName());
         ((App) getApplicationContext()).userComponent().plus(
                 new EventInitialModule(this,
                         eventUid)
         ).inject(this);
+        setScreenName(this.getLocalClassName());
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_initial);
@@ -287,6 +287,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.shareContainer.setVisibility(View.GONE);
             binding.actionButton.setText(R.string.next);
         } else {
+            fixedOrgUnit = true;
+            binding.orgUnitLayout.setEnabled(false);
             binding.actionButton.setText(R.string.update);
         }
 
@@ -704,7 +706,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
         Calendar c = Calendar.getInstance();
-        c.set(year, month, day, 0, 0);
+        c.set(year, month, day, 0, 0, 0);
+        c.set(Calendar.MILLISECOND, 0);
         selectedDate = c.getTime();
         selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
         binding.date.setText(selectedDateString);

@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
 import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.prefs.PreferenceProvider;
@@ -15,6 +16,11 @@ import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
 import org.dhis2.uicomponents.map.geometry.line.MapLineRelationshipToFeature;
+import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature;
+import org.dhis2.uicomponents.map.geometry.mapper.feature.MapCoordinateFieldToFeature;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapAttributeToFeature;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeature;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection;
@@ -57,14 +63,16 @@ public class SearchTEModule {
     @Provides
     @PerActivity
     SearchTEContractsModule.Presenter providePresenter(D2 d2,
+                                                       DhisMapUtils mapUtils,
                                                        SearchRepository searchRepository,
                                                        SchedulerProvider schedulerProvider,
                                                        AnalyticsHelper analyticsHelper,
                                                        MapTeisToFeatureCollection mapTeisToFeatureCollection,
                                                        MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
+                                                       MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
                                                        PreferenceProvider preferenceProvider) {
-        return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
-                analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection,
+        return new SearchTEPresenter(view, d2, mapUtils, searchRepository, schedulerProvider,
+                analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapCoordinateFieldToFeatureCollection,
                 new EventToEventUiComponent(), preferenceProvider);
     }
 
@@ -95,6 +103,24 @@ public class SearchTEModule {
     @PerActivity
     SearchRepository searchRepository(@NonNull D2 d2, FilterPresenter filterPresenter, ResourceManager resources, SearchSortingValueSetter searchSortingValueSetter) {
         return new SearchRepositoryImpl(teiType, d2, filterPresenter, resources, searchSortingValueSetter);
+    }
+
+    @Provides
+    @PerActivity
+    MapCoordinateFieldToFeatureCollection provideMapDataElementToFeatureCollection(MapAttributeToFeature attributeToFeatureMapper, MapDataElementToFeature dataElementToFeatureMapper) {
+        return new MapCoordinateFieldToFeatureCollection(dataElementToFeatureMapper, attributeToFeatureMapper);
+    }
+
+    @Provides
+    @PerActivity
+    MapGeometryToFeature provideMapGeometryToFeature() {
+        return new MapGeometryToFeature(new MapPointToFeature(), new MapPolygonToFeature());
+    }
+
+    @Provides
+    @PerActivity
+    MapCoordinateFieldToFeature provideMapCoordinateFieldToFeature(MapGeometryToFeature mapGeometryToFeature) {
+        return new MapCoordinateFieldToFeature(mapGeometryToFeature);
     }
 
     @Provides

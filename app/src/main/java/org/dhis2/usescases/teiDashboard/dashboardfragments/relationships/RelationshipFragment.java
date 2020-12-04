@@ -41,7 +41,6 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OnDialogClickListener;
-import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,14 +52,9 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
 
 import static android.app.Activity.RESULT_OK;
 import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.RELATIONSHIP_UID;
-
-/**
- * QUADRAM. Created by ppajuelo on 29/11/2017.
- */
 
 public class RelationshipFragment extends FragmentGlobalAbstract implements RelationshipView, MapboxMap.OnMapClickListener {
 
@@ -99,7 +93,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
         relationshipMapManager = new RelationshipMapManager(binding.mapView);
         relationshipMapManager.setOnMapClickListener(this);
-        relationshipMapManager.init(() -> {
+        relationshipMapManager.init(() -> Unit.INSTANCE, (permissionManager) -> {
+            permissionManager.requestLocationPermissions(activity);
             return Unit.INSTANCE;
         });
 
@@ -113,7 +108,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         });
 
         binding.mapLayerButton.setOnClickListener(view -> {
-            MapLayerDialog layerDialog = new MapLayerDialog(relationshipMapManager.mapLayerManager);
+            MapLayerDialog layerDialog = new MapLayerDialog(relationshipMapManager);
             layerDialog.show(getChildFragmentManager(), MapLayerDialog.class.getName());
         });
 
@@ -121,9 +116,16 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (binding.mapView.getVisibility() == View.VISIBLE && relationshipMapManager.getPermissionsManager() != null) {
+            relationshipMapManager.getPermissionsManager().onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        if(binding.mapView.getVisibility() == View.VISIBLE){
+        if (binding.mapView.getVisibility() == View.VISIBLE) {
             animations.initMapLoading(binding.mapCarousel);
         }
         presenter.init();
@@ -268,8 +270,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     @Override
     public void setFeatureCollection(
-           @NonNull String currentTei,
-           @NonNull List<RelationshipUiComponentModel> relationships,
+            @NonNull String currentTei,
+            @NonNull List<RelationshipUiComponentModel> relationships,
             @NotNull kotlin.Pair<? extends Map<String, FeatureCollection>, ? extends BoundingBox> map) {
         relationshipMapManager.update(
                 map.getFirst(),
@@ -281,13 +283,13 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                 new CarouselAdapter.Builder()
                         .addCurrentTei(currentTei)
                         .addOnDeleteRelationshipListener(relationshipUid -> {
-                            if(binding.mapCarousel.getCarouselEnabled()) {
+                            if (binding.mapCarousel.getCarouselEnabled()) {
                                 presenter.deleteRelationship(relationshipUid);
                             }
                             return true;
                         })
                         .addOnRelationshipClickListener(teiUid -> {
-                            if(binding.mapCarousel.getCarouselEnabled()) {
+                            if (binding.mapCarousel.getCarouselEnabled()) {
                                 presenter.openDashboard(teiUid);
                             }
                             return true;

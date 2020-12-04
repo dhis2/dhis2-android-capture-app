@@ -453,6 +453,7 @@
     <string name="dashboard_overview">Overview</string>
     <string name="dashboard_relationships">Relationships</string>
     <string name="dashboard_indicators">Indicators</string>
+    <string name="dashboard_analytics">Analytics</string>
     <string name="empty_indicators">There are no indicators for this program.</string>
     <string name="dashboard_notes">Notes</string>
     <string name="unable_to_complete">Unable to complete</string>
@@ -692,6 +693,8 @@
     <string name="sync_parameters_not_editable">Sync parameters are not editable</string>
     <string name="rv_no_editable">Number of reserved values downloaded is not editable</string>
     <string name="dialog_layer_satellite">Show satellite view</string>
+    <string name="dialog_layer_satellite_base_map">Satellite view</string>
+    <string name="dialog_layer_street_base_map">Street view</string>
     <string name="dialog_layer_event">Show events</string>
     <string name="dialog_layer_tei_coordinates">Show tei coordinates</string>
     <string name="dialog_layer_enrollment_coordinates">Show enrollment coordinates</string>
@@ -761,4 +764,20 @@
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Error information</string>
     <string name="metada_first_sync_error">We found an error when syncing with your server. Share the error with your system administrator if possible.</string>
     <string name="error_init_session">We could not init the session with your user</string>
+    <string name="enrollment_date_edition_warning">There are planned events that won\'t be re-scheduled</string>
+    <string name="jira_issue_sent">Issue Sent</string>
+    <string name="jira_issue_sent_error">Error sending issue</string>
+    <string name="section_charts">Charts</string>
+    <string name="enable_location_message">Your device location is disconnected. Please enable it to capture coordinates</string>
+    <string name="navigation_list_view">List view</string>
+    <string name="navigation_table_view">Table view</string>
+    <string name="navigation_map_view">Map view</string>
+    <string name="navigation_analytics">Analytics</string>
+    <string name="navigation_tasks">Tasks</string>
+    <string name="navigation_programs">Programs</string>
+    <string name="navigation_events">Events</string>
+    <string name="navigation_relationships">Relationships</string>
+    <string name="navigation_notes">Notes</string>
+    <string name="navigation_data_entry">Data entry</string>
+    <string name="navigation_tei_data">Details</string>
 </resources>

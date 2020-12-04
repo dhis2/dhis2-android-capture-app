@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mapbox.geojson.Feature
 import kotlin.math.abs
 import org.dhis2.uicomponents.map.camera.centerCameraOnFeature
+import org.dhis2.uicomponents.map.camera.centerCameraOnFeatures
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.carousel.CarouselLayoutManager
 import org.dhis2.uicomponents.map.managers.MapManager
@@ -41,11 +42,16 @@ class CarouselView @JvmOverloads constructor(
                 super.onScrollStateChanged(recyclerView, newState)
                 if (newState == SCROLL_STATE_IDLE && carouselEnabled) {
                     mapManager.mapLayerManager.selectFeature(null)
-                    val feature = mapManager.findFeature(currentItem())
-                    if (feature == null) {
-                        callback.invoke()
+                    val features = mapManager.findFeatures(currentItem())
+                    if (features != null && features.isNotEmpty() && features.size > 1) {
+                        mapManager.map?.centerCameraOnFeatures(features)
                     } else {
-                        mapManager.map.centerCameraOnFeature(feature)
+                        val feature = mapManager.findFeature(currentItem())
+                        if (feature == null) {
+                            callback.invoke()
+                        } else {
+                            mapManager.map?.centerCameraOnFeature(feature)
+                        }
                     }
                 }
             }

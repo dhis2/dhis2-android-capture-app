@@ -3,7 +3,6 @@ package org.dhis2.usescases.programEventDetail
 import java.util.Date
 import javax.inject.Inject
 import org.dhis2.Bindings.userFriendlyValue
-import org.dhis2.data.dhislogic.DhisEventUtils
 import org.dhis2.data.tuples.Pair
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
@@ -16,7 +15,7 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 
-class ProgramEventMapper @Inject constructor(val d2: D2, val dhisEventUtils: DhisEventUtils) {
+class ProgramEventMapper @Inject constructor(val d2: D2) {
 
     fun eventToEventViewModel(event: Event): EventViewModel {
         return EventViewModel(
@@ -74,7 +73,7 @@ class ProgramEventMapper @Inject constructor(val d2: D2, val dhisEventUtils: Dhi
             hasExpired || !inOrgUnitRange,
             attrOptCombo,
             event.geometry(),
-            dhisEventUtils.isEventEditable(event.uid())
+            d2.eventModule().eventService().blockingIsEditable(event.uid())
         )
     }
 

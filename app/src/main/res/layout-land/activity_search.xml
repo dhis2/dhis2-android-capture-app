@@ -234,7 +234,7 @@
                 app:layout_constraintGuide_percent="0.4" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/filterLayout"
+                android:id="@+id/filterRecyclerLayout"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

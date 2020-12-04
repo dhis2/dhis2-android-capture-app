@@ -452,4 +452,9 @@ class SyncPresenterImpl(
             eventName
         )
     }
+
+    override fun updateProyectAnalytics() {
+        // TODO: Depends on SDK and Settings Web app
+        analyticsHelper.updateMatomoSecondaryTracker(Any())
+    }
 }

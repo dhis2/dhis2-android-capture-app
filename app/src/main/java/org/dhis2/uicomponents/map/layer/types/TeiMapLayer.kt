@@ -61,7 +61,7 @@ class TeiMapLayer(
             ?: SymbolLayer(POINT_LAYER_ID, TEIS_SOURCE_ID)
                 .withProperties(
                     PropertyFactory.iconImage(Expression.get(TEI_UID)),
-                    PropertyFactory.iconOffset(arrayOf(0f, -25f)),
+                    PropertyFactory.iconOffset(arrayOf(0f, -12f)),
                     PropertyFactory.iconAllowOverlap(true),
                     PropertyFactory.textAllowOverlap(true)
                 ).withFilter(
@@ -76,7 +76,7 @@ class TeiMapLayer(
             ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_POINT_SOURCE_ID)
                 .withProperties(
                     PropertyFactory.iconImage(Expression.get(TEI_UID)),
-                    PropertyFactory.iconOffset(arrayOf(0f, -20f)),
+                    PropertyFactory.iconOffset(arrayOf(0f, -12f)),
                     PropertyFactory.iconAllowOverlap(true),
                     PropertyFactory.textAllowOverlap(true)
                 ).withFilter(
@@ -223,5 +223,13 @@ class TeiMapLayer(
             ?.querySourceFeatures(Expression.eq(Expression.get("teiUid"), featureUidProperty))
             ?.firstOrNull()
             .also { setSelectedItem(it) }
+    }
+
+    override fun getId(): String {
+        return if (featureType == FeatureType.POINT) {
+            POINT_LAYER_ID
+        } else {
+            POLYGON_LAYER_ID
+        }
     }
 }

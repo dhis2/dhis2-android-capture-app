@@ -14,7 +14,6 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
-import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -45,6 +44,7 @@ import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
+import org.dhis2.utils.reporting.CrashReportModule;
 import org.dhis2.utils.analytics.matomo.TrackerController;
 import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
@@ -65,7 +65,6 @@ import java.net.SocketException;
 import javax.inject.Singleton;
 
 import cat.ereza.customactivityoncrash.config.CaocConfig;
-import io.fabric.sdk.android.Fabric;
 import io.reactivex.Scheduler;
 import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -85,8 +84,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
-
-    protected boolean wantToImportDB = false;
 
     @NonNull
     @Singleton
@@ -113,13 +110,11 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     private boolean fromBackGround = false;
     private boolean recreated;
-    private Tracker matomoTracker;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree());
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
         if (BuildConfig.DEBUG)
@@ -127,40 +122,23 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
         MapController.Companion.init(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
 
-        Fabric.with(this, new Crashlytics());
-
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
             upgradeSecurityProviderSync();
 
         setUpAppComponent();
-        if (wantToImportDB) {
-            populateDBIfNeeded();
-        }
+        Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree(appComponent.injectCrashReportController()));
+
         setUpServerComponent();
         setUpRxPlugin();
         initAcra();
         initCustomCrashActivity();
-        if (getTracker() != null) {
-            TrackHelper.track().download().identifier(new DownloadTracker.Extra.ApkChecksum(this)).with(getTracker());
-        }
+        appComponent.matomoController().trackDownload();
     }
 
     private void initCustomCrashActivity() {
         CaocConfig.Builder.create()
                 .errorDrawable(R.drawable.ic_dhis)
                 .apply();
-    }
-
-    public synchronized Tracker getTracker() {
-        if (matomoTracker == null) {
-            matomoTracker = TrackerController.Companion.generateTracker(this);
-        }
-        return matomoTracker;
-    }
-
-    private void populateDBIfNeeded() {
-        DBTestLoader dbTestLoader = new DBTestLoader(getApplicationContext());
-        dbTestLoader.copyDatabaseFromAssetsIfNeeded();
     }
 
     private void upgradeSecurityProviderSync() {
@@ -236,7 +214,8 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()))
                 .analyticsModule(new AnalyticsModule())
                 .preferenceModule(new PreferenceModule())
-                .workManagerController(new WorkManagerModule());
+                .workManagerController(new WorkManagerModule())
+                .crashReportModule(new CrashReportModule());
     }
 
     @NonNull
@@ -311,7 +290,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     public void releaseUserComponent() {
         userComponent = null;
     }
-
 
     ////////////////////////////////////////////////////////////////////////
     // Dashboard component

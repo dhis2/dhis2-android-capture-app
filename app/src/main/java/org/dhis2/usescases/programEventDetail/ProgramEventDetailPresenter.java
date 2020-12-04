@@ -158,6 +158,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .switchMap(unit ->
                                 filterManager.asFlowable()
                                         .startWith(FilterManager.getInstance())
+                                        .filter(data->view.isMapVisible())
                                         .flatMap(filterManager -> eventRepository.filteredEventsForMap(
                                                 filterManager.getPeriodFilters(),
                                                 filterManager.getOrgUnitUidsFilters(),
@@ -169,7 +170,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                map -> view.setMap(map.component1(), map.component2(), map.component3()),
+                                map -> view.setMap(map),
                                 throwable -> view.renderError(throwable.getMessage())
                         ));
 

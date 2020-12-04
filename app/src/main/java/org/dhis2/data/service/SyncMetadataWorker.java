@@ -98,6 +98,8 @@ public class SyncMetadataWorker extends Worker {
             if (!isMetaOk)
                 return Result.failure(createOutputData(false, message));
 
+            presenter.updateProyectAnalytics();
+
             presenter.startPeriodicMetaWork();
 
             return Result.success(createOutputData(true, message));
