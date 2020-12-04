@@ -31,8 +31,8 @@ class MapIdlingResource(
         this.resourceCallback = resourceCallback
     }
 
-    override fun onMapReady(map: MapboxMap) {
-        this.map = map
+    override fun onMapReady(mapboxMap: MapboxMap) {
+        this.map = mapboxMap
         if (resourceCallback != null) {
             resourceCallback!!.onTransitionToIdle()
         }

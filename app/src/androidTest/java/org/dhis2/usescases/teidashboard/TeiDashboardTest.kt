@@ -37,7 +37,7 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
-            clickOnNotesTab()
+            goToNotes()
         }
 
         noteRobot {
@@ -53,7 +53,7 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
-            clickOnNotesTab()
+            goToNotes()
         }
 
         noteRobot {
@@ -70,7 +70,7 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiWithExistingNoteAndLaunchActivity(rule)
 
         teiDashboardRobot {
-            clickOnNotesTab()
+            goToNotes()
         }
 
         noteRobot {
@@ -228,7 +228,7 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
-            clickOnIndicatorsTab()
+            goToAnalytics()
         }
 
         indicatorsRobot {
@@ -343,7 +343,7 @@ class TeiDashboardTest : BaseTest() {
         }
 
         teiDashboardRobot {
-            clickOnRelationshipTab()
+            goToRelationships()
         }
 
         relationshipRobot {
@@ -414,7 +414,7 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiForAnalyticsAndLaunchActivity(rule)
 
         teiDashboardRobot {
-            clickOnIndicatorsTab()
+            goToAnalytics()
         }
 
         indicatorsRobot {

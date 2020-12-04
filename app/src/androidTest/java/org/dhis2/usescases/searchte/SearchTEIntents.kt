@@ -13,6 +13,7 @@ private const val TB_PROGRAM_UID_VALUE = "ur1Edk5Oe2n"
 private const val CHILD_TE_TYPE_VALUE = "nEenWmSyUEp"
 private const val PROGRAM_RULES_TE_TYPE_VALUE = "nEenWmSyUEp"
 private const val ADULT_WOMAN_TE_TYPE_VALUE = "nEenWmSyUEp"
+private const val TB_TE_TYPE_VALUE = "nEenWmSyUEp"
 private const val CHILD_TE_TYPE = "TRACKED_ENTITY_UID"
 
 fun prepareChildProgrammeIntentAndLaunchActivity(ruleSearch: ActivityTestRule<SearchTEActivity>) {
@@ -28,7 +29,7 @@ fun prepareTestAdultWomanProgrammeIntentAndLaunchActivity(ruleSearch: ActivityTe
 }
 
 fun prepareTBIntentAndLaunchActivity(ruleSearch: ActivityTestRule<SearchTEActivity>) {
-    startSearchActivity(TB_PROGRAM_UID_VALUE, CHILD_TE_TYPE_VALUE, ruleSearch)
+    startSearchActivity(TB_PROGRAM_UID_VALUE, TB_TE_TYPE_VALUE, ruleSearch)
 }
 
 fun startSearchActivity(programUID: String?, teType: String, ruleSearch: ActivityTestRule<SearchTEActivity>) {
