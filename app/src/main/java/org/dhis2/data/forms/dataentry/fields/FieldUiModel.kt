@@ -19,5 +19,7 @@ interface FieldUiModel {
         fun onNext()
 
         fun showDialog(title: String, message: String?)
+
+        fun onClick()
     }
 }

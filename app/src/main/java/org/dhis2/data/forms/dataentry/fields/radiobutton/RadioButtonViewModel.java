@@ -124,7 +124,7 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
     }
 
     public void onValueChanged(Boolean value) {
-        activated.set(true);
+        callback.onClick();
 
         String result = null;
         if (value != null) {

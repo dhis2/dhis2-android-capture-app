@@ -19,6 +19,7 @@ class DataEntryAdapter :
     FieldItemCallback {
 
     var didItemShowDialog: ((title: String, message: String?) -> Unit)? = null
+    private var currentFocusPosition = 0
 
     private val sectionHandler = SectionHandler()
     private val currentFocusUid: MutableLiveData<String> = MutableLiveData()
@@ -37,7 +38,11 @@ class DataEntryAdapter :
         if (getItem(position) is SectionViewModel) {
             updateSectionData(position, false)
         }
-        holder.bind(getItem(position), position, this)
+        holder.bind(getItem(position), position, this, isItemFocused(position))
+    }
+
+    private fun isItemFocused(position: Int): Boolean {
+        return position == currentFocusPosition;
     }
 
     fun updateSectionData(position: Int, isHeader: Boolean) {
@@ -147,13 +152,21 @@ class DataEntryAdapter :
 
     override fun onNext(position: Int) {
         if (position < itemCount) {
-            getItem(position + 1)!!.onActivate()
+            onItemClick(position + 1)
         }
     }
 
     override fun onShowDialog(title: String, message: String?) {
         didItemShowDialog?.let { action ->
             action(title, message)
+        }
+    }
+
+    override fun onItemClick(position: Int) {
+        if (currentFocusPosition != position) {
+            getItem(currentFocusPosition).onDeactivate()
+            currentFocusPosition = position
+            getItem(currentFocusPosition).onActivate()
         }
     }
 }
