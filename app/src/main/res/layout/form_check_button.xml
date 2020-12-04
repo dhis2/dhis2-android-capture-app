@@ -121,10 +121,10 @@
                             android:layout_marginEnd="16dp"
                             android:checked="@{item.isAffirmativeChecked}"
                             android:onClick="@{v -> item.onValueChanged(true)}"
-                            android:text="@string/yes"
-                            android:textColor="?colorAccent"
                             android:textSize="@dimen/form_edit_text_size"
-                            app:buttonTint="?colorAccent"
+                            android:text="@string/yes"
+                            android:textColor="@drawable/radiobutton_color_selector"
+                            app:buttonTint="@drawable/radiobutton_color_selector"
                             tools:checked="true" />
 
                         <com.google.android.material.checkbox.MaterialCheckBox
@@ -135,10 +135,11 @@
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="25dp"
                             android:text="@string/no"
-                            android:textColor="?colorAccent"
+                            android:textColor="@drawable/radiobutton_color_selector"
+                            app:buttonTint="@drawable/radiobutton_color_selector"
                             android:textSize="@dimen/form_edit_text_size"
                             android:visibility="@{item.valueType() == ValueType.TRUE_ONLY ? View.GONE : View.VISIBLE}"
-                            app:buttonTint="?colorAccent" />
+                            />
                     </LinearLayout>
 
                     <ImageView
