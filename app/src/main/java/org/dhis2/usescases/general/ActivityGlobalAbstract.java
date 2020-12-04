@@ -382,33 +382,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
                     .setNegativeButton(negativeButtonText, (dialogInterface, i) -> clickListener.onNegativeClick())
                     .show();
         }
-           /*
-            AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-
-            //TITLE
-            final View titleView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_title, null);
-            ((TextView) titleView.findViewById(R.id.dialogTitle)).setText(title);
-            alertDialog.setCustomTitle(titleView);
-
-            //BODY
-            final View msgView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_body, null);
-            ((TextView) msgView.findViewById(R.id.dialogBody)).setText(message);
-            ((Button) msgView.findViewById(R.id.dialogAccept)).setText(positiveButtonText);
-            ((Button) msgView.findViewById(R.id.dialogCancel)).setText(negativeButtonText);
-            msgView.findViewById(R.id.dialogAccept).setOnClickListener(view -> {
-                clickListener.onPositiveClick();
-                alertDialog.dismiss();
-            });
-            msgView.findViewById(R.id.dialogCancel).setOnClickListener(view -> {
-                clickListener.onNegativeClick();
-                alertDialog.dismiss();
-            });
-            alertDialog.setView(msgView);
-
-            return alertDialog;
-
-        } else
-            return null;*/
     }
 
     @Override

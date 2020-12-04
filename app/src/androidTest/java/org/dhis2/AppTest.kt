@@ -1,16 +1,21 @@
 package org.dhis2
 
+import androidx.lifecycle.MutableLiveData
+import androidx.work.WorkInfo
 import org.dhis2.common.preferences.PreferencesTestingModule
 import org.dhis2.data.schedulers.SchedulerModule
 import org.dhis2.data.schedulers.SchedulersProviderImpl
 import org.dhis2.data.server.ServerModule
-import org.dhis2.data.service.workManager.WorkManagerModule
 import org.dhis2.data.user.UserModule
+import org.dhis2.usescases.sync.MockedWorkManagerModule
+import org.dhis2.usescases.sync.MockedWorkManagerController
 import org.dhis2.utils.analytics.AnalyticsModule
 import org.hisp.dhis.android.core.D2Manager
 import org.matomo.sdk.Tracker
 
 class AppTest : App() {
+
+    val mutableWorkInfoStatuses = MutableLiveData<List<WorkInfo>>()
 
     @Override
     override fun onCreate() {
@@ -48,7 +53,13 @@ class AppTest : App() {
             .schedulerModule(SchedulerModule(SchedulersProviderImpl()))
             .analyticsModule(AnalyticsModule())
             .preferenceModule(PreferencesTestingModule())
-            .workManagerController(WorkManagerModule())
+            .workManagerController(
+                MockedWorkManagerModule(
+                    MockedWorkManagerController(
+                        mutableWorkInfoStatuses
+                    )
+                )
+            )
     }
 
     override fun getTracker(): Tracker? {

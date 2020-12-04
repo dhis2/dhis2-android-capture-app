@@ -3,8 +3,10 @@ package org.dhis2.usescases.sync
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.work.WorkInfo
+import javax.inject.Inject
 import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.drawableFrom
 import org.dhis2.Bindings.userComponent
@@ -16,15 +18,10 @@ import org.dhis2.usescases.main.MainActivity
 import org.dhis2.utils.OnDialogClickListener
 import org.dhis2.utils.extension.navigateTo
 import org.dhis2.utils.extension.share
-import javax.inject.Inject
 
 class SyncActivity : ActivityGlobalAbstract(), SyncView {
 
-    val binding: ActivitySynchronizationBinding by lazy {
-        ActivitySynchronizationBinding.inflate(
-            layoutInflater
-        )
-    }
+    lateinit var binding: ActivitySynchronizationBinding
 
     @Inject
     lateinit var presenter: SyncPresenter
@@ -35,6 +32,7 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
     override fun onCreate(savedInstanceState: Bundle?) {
         userComponent()?.plus(SyncModule(this))?.inject(this) ?: finish()
         super.onCreate(savedInstanceState)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_synchronization)
         binding.presenter = presenter
         presenter.sync()
     }
@@ -116,7 +114,7 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
         super.onStop()
     }
 
-    override fun setTheme(themeId: Int) {
+    override fun setServerTheme(themeId: Int) {
         animations.startThemeAnimation(this, { super.setTheme(themeId) }) { colorValue ->
             binding.logo.setBackgroundColor(colorValue)
         }
