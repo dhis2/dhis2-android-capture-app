@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -107,7 +106,6 @@ import kotlin.Pair;
 import kotlin.Unit;
 import timber.log.Timber;
 
-import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.TEI;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CHANGE_PROGRAM;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
@@ -117,7 +115,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
         @BindingMethod(type = FloatingActionButton.class, attribute = "app:srcCompat", method = "setImageDrawable")
 })
 public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View,
-        MapboxMap.OnMapClickListener, MapboxMap.OnMapLongClickListener {
+        MapboxMap.OnMapClickListener {
 
     ActivitySearchBinding binding;
     @Inject
@@ -296,9 +294,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         teiMapManager.setEnrollmentFeatureType(presenter.getProgram() != null ? presenter.getProgram().featureType() : null);
         teiMapManager.setCarouselAdapter(carouselAdapter);
         teiMapManager.setOnMapClickListener(this);
-        teiMapManager.setOnMapLongClickListener(this);
 
-        binding.mapCarousel.attachToMapManager(teiMapManager, () -> true);
+        binding.mapCarousel.attachToMapManager(teiMapManager, (feature, found) -> {
+            if (found && feature != null) {
+                binding.mapNavigateFab.show();
+                binding.mapNavigateFab.setOnClickListener( fab -> navigateToMap(feature));
+            } else {
+                binding.mapNavigateFab.hide();
+                binding.mapNavigateFab.setOnClickListener(null);
+            }
+            return true;
+        });
     }
 
     @Override
@@ -497,6 +503,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //region SearchForm
 
     private void showMap(boolean showMap) {
+        binding.mapNavigateFab.hide();
         binding.scrollView.setVisibility(showMap ? View.GONE : View.VISIBLE);
         binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
         binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : View.GONE);
@@ -989,22 +996,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (featureFound != null) {
             binding.mapCarousel.scrollToFeature(featureFound);
             return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean onMapLongClick(@NonNull LatLng point) {
-        Feature featureFound;
-        String source = teiMapManager.getSourcesAndLayersForSearch().component1().get(0);
-
-        if (source.contains(TEI)) {
-            featureFound = teiMapManager.markFeatureAsSelected(point, "TEI_POINT_LAYER_ID");
-            if (featureFound != null) {
-                binding.mapCarousel.scrollToFeature(featureFound);
-                navigateToMap(featureFound);
-                return true;
-            }
         }
         return false;
     }

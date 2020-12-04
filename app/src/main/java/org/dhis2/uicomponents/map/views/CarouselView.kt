@@ -36,10 +36,20 @@ class CarouselView @JvmOverloads constructor(
         this.carouselAdapter = adapter
     }
 
-    fun attachToMapManager(mapManager: MapManager, callback: () -> Boolean) {
+    fun attachToMapManager(
+        mapManager: MapManager,
+        callback: (feature: Feature?, found: Boolean) -> Boolean
+    ) {
         addOnScrollListener(object : OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
+                if (
+                    newState == SCROLL_STATE_DRAGGING ||
+                    newState == SCROLL_STATE_SETTLING &&
+                    carouselEnabled
+                ) {
+                    callback.invoke(null, false)
+                }
                 if (newState == SCROLL_STATE_IDLE && carouselEnabled) {
                     mapManager.mapLayerManager.selectFeature(null)
                     val features = mapManager.findFeatures(currentItem())
@@ -48,9 +58,10 @@ class CarouselView @JvmOverloads constructor(
                     } else {
                         val feature = mapManager.findFeature(currentItem())
                         if (feature == null) {
-                            callback.invoke()
+                            callback.invoke(feature, false)
                         } else {
                             mapManager.map?.centerCameraOnFeature(feature)
+                            callback.invoke(feature, true)
                         }
                     }
                 }

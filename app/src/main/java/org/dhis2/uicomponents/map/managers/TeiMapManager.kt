@@ -385,7 +385,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
     }
 
     override fun markFeatureAsSelected(point: LatLng, layer: String?): Feature? {
-        val pointf: PointF = map.projection.toScreenLocation(point)
+        val pointf: PointF = map?.projection?.toScreenLocation(point)!!
         val rectF = RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10)
 
         val (sources, layers) = getSourcesAndLayersForSearch()
@@ -405,7 +405,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
     ): Feature? {
         val source = sources[count]
         val layersToSearch = layers[count]
-        val features: List<Feature> = map.queryRenderedFeatures(rectF, *layersToSearch)
+        val features: List<Feature> = map?.queryRenderedFeatures(rectF, *layersToSearch)!!
         var selectedFeature: Feature? = null
         return when {
             features.isNotEmpty() -> {
@@ -427,7 +427,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
     }
 
     private fun selectFeatureForLayer(rectF: RectF, source: String, layer: String): Feature? {
-        val features: List<Feature> = map.queryRenderedFeatures(rectF, layer)
+        val features: List<Feature> = map?.queryRenderedFeatures(rectF, layer)!!
         var feature: Feature? = null
         if (features.isNotEmpty()) {
             if (source.contains(TEIS_SOURCE_ID)) {
