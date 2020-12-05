@@ -14,7 +14,6 @@ import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.util.Patterns;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +26,6 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.Observable;
 import androidx.databinding.ViewDataBinding;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -55,6 +53,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import timber.log.Timber;
@@ -63,13 +62,11 @@ import static android.content.Context.MODE_PRIVATE;
 import static android.text.TextUtils.isEmpty;
 import static java.lang.String.valueOf;
 import static org.dhis2.Bindings.ValueExtensionsKt.withValueTypeCheck;
-import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
-import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
 
 
-public class CustomTextView extends FieldLayout implements View.OnFocusChangeListener, TextView.OnEditorActionListener, FieldLayout.OnActivation {
+public class CustomTextView extends FieldLayout {
 
-    String urlStringPattern = "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$";
+    String urlStringPattern = "^(http://www\\.|https://www\\.|http://|https://)[a-z0-9]+([\\-.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(/.*)?$";
     Pattern urlPattern = Pattern.compile(urlStringPattern);
 
     private boolean isBgTransparent;
@@ -79,14 +76,10 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     private String label;
     private ValueType valueType;
     private ViewDataBinding binding;
-
-    private OnFocusChangeListener focusListener;
-
     private LayoutInflater inflater;
     private TextInputLayout inputLayout;
     private boolean isLongText;
     private View descriptionLabel;
-    private View dummy;
     private TextView labelText;
     private ImageView clearButton;
     private Map<ValueType, Validator> validators;
@@ -117,7 +110,10 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void setLayout() {
+    private void setLayout(boolean isBgTransparent, boolean isLongText) {
+        this.isBgTransparent = isBgTransparent;
+        this.isLongText = isLongText;
+
         if (isBgTransparent && !isLongText)
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view, this, true);
         else if (!isBgTransparent && !isLongText)
@@ -131,17 +127,39 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         editText = findViewById(R.id.input_editText);
         icon = findViewById(R.id.renderImage);
         descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
-        dummy = findViewById(R.id.dummyFocusView);
         labelText = findViewById(R.id.label);
         descIcon = findViewById(R.id.descIcon);
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
-                viewModel.onActivate();
-                activate();
-            } else if (focusListener != null && validate()) {
-                viewModel.onDeactivate();
-                focusListener.onFocusChange(v, hasFocus);
+
+                viewModel.onClick();
+                if (viewModel.isSearchMode()) {
+                    sendAction();
+                }
+            } else {
+
+                if (validate()) {
+//                    if (viewModel.isSearchMode() || viewModel.editable()) {
+                    if (valueHasChanged()) {
+                        sendAction();
+                    }
+//                    }
+                    validateRegex();
+                }
             }
+        });
+
+        editText.setOnEditorActionListener((v, actionId, event) -> {
+            if (validate()) {
+                if (viewModel.valueType() != ValueType.LONG_TEXT) {
+                    viewModel.callback.onNext();
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            return true;
         });
 
         if (isLongText) {
@@ -258,12 +276,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         binding.executePendingBindings();
     }
 
-    public void setLayoutData(boolean isBgTransparent, boolean isLongText) {
-        this.isBgTransparent = isBgTransparent;
-        this.isLongText = isLongText;
-        setLayout();
-    }
-
     public void setValueType(ValueType valueType) {
         this.valueType = valueType;
         this.validator = validators.get(valueType);
@@ -334,10 +346,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         return inputLayout;
     }
 
-    public void setFocusChangedListener(OnFocusChangeListener listener) {
-        this.focusListener = listener;
-    }
-
     private boolean validate() {
         if (editText.getText() != null && !isEmpty(editText.getText())) {
             switch (valueType) {
@@ -377,14 +385,14 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                         return false;
                     }
                 case UNIT_INTERVAL:
-                    if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 1)
+                    if (Float.parseFloat(editText.getText().toString()) >= 0 && Float.parseFloat(editText.getText().toString()) <= 1)
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_interval));
                         return false;
                     }
                 case PERCENTAGE:
-                    if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 100)
+                    if (Float.parseFloat(editText.getText().toString()) >= 0 && Float.parseFloat(editText.getText().toString()) <= 100)
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_percentage));
@@ -418,15 +426,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
             icon.setVisibility(View.VISIBLE);
     }
 
-    public void setOnEditorActionListener(TextView.OnEditorActionListener actionListener) {
-        editText.setOnEditorActionListener((v, actionId, event) -> {
-            if (validate())
-                return actionListener.onEditorAction(v, actionId, event);
-            return true;
-        });
-    }
-
-
     public void setObjectStyle(ObjectStyle objectStyle) {
         Drawable styleIcon = ObjectStyleUtils.getIconResource(editText.getContext(), objectStyle.icon(), -1);
         icon.setImageDrawable(styleIcon);
@@ -438,9 +437,24 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         descIcon.setColorFilter(colorResource);
     }
 
-    public void setOnLongActionListener(View.OnLongClickListener listener) {
-        if (!editText.isFocusable())
-            editText.setOnLongClickListener(listener);
+    private void setOnLongActionListener() {
+        if (!editText.isFocusable()) {
+            editText.setOnLongClickListener(view -> {
+                ClipboardManager clipboard = (ClipboardManager) binding.getRoot().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                try {
+                    if (!((TextInputAutoCompleteTextView) view).getText().toString().equals("")) {
+                        ClipData clip = ClipData.newPlainText("copy", ((TextInputAutoCompleteTextView) view).getText());
+                        clipboard.setPrimaryClip(clip);
+                        Toast.makeText(binding.getRoot().getContext(),
+                                binding.getRoot().getContext().getString(R.string.copied_text), Toast.LENGTH_LONG).show();
+                    }
+                    return true;
+                } catch (Exception e) {
+                    Timber.e(e);
+                    return false;
+                }
+            });
+        }
     }
 
     @Override
@@ -465,54 +479,28 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     public void setViewModel(EditTextViewModel viewModel) {
         this.viewModel = viewModel;
-        viewModel.activated.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
-            @Override
-            public void onPropertyChanged(Observable sender, int propertyId) {
-                if (viewModel.activated.get()) {
-                    if (viewModel.editable()) {
-                        getEditText().requestFocus();
-                    } else {
-                        viewModel.callback.onNext();
-                    }
-                }
-            }
-        });
-
         if (binding == null) {
-            setLayoutData(viewModel.isBackgroundTransparent(), viewModel.isLongText());
+            setLayout(viewModel.isBackgroundTransparent(), viewModel.isLongText());
         }
 
         setRenderType(viewModel.renderType());
-        setFocusChangedListener(this);
-        setOnEditorActionListener(this);
-        setActivationListener(this);
         setValueType(viewModel.valueType());
         setObjectStyle(viewModel.objectStyle());
         setLabel(viewModel.label(), viewModel.mandatory());
         setHint(viewModel.hint());
+        binding.setVariable(BR.focus, viewModel.activated);
         setDescription(viewModel.description());
         setText(withValueTypeCheck(viewModel.value(), viewModel.valueType()));
         setWarning(viewModel.warning(), viewModel.error());
-        if (!viewModel.isSearchMode() && viewModel.value() != null && !viewModel.value().isEmpty()
-                && viewModel.fieldMask() != null && !viewModel.value().matches(viewModel.fieldMask()))
+        if (!viewModel.isSearchMode() && viewModel.value() != null &&
+                !Objects.requireNonNull(viewModel.value()).isEmpty() &&
+                viewModel.fieldMask() != null &&
+                !Objects.requireNonNull(viewModel.value()).matches(Objects.requireNonNull(viewModel.fieldMask()))) {
             setWarning(binding.getRoot().getContext().getString(R.string.wrong_pattern), "");
+        }
         setEditable(viewModel.editable());
         setRenderingType(viewModel.fieldRendering(), viewModel.uid());
-        setOnLongActionListener(view -> {
-            ClipboardManager clipboard = (ClipboardManager) binding.getRoot().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-            try {
-                if (!((TextInputAutoCompleteTextView) view).getText().toString().equals("")) {
-                    ClipData clip = ClipData.newPlainText("copy", ((TextInputAutoCompleteTextView) view).getText());
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(binding.getRoot().getContext(),
-                            binding.getRoot().getContext().getString(R.string.copied_text), Toast.LENGTH_LONG).show();
-                }
-                return true;
-            } catch (Exception e) {
-                Timber.e(e);
-                return false;
-            }
-        });
+        setOnLongActionListener();
     }
 
     private void setRenderingType(ValueTypeDeviceRendering renderingType, String uid) {
@@ -530,16 +518,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         }.getType();
 
         return gson.fromJson(json, type);
-    }
-
-    @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-        if (viewModel.isSearchMode() || (!hasFocus && viewModel.editable())) {
-            if (viewModel.isSearchMode() || valueHasChanged()) {
-                sendAction();
-            }
-        }
-        validateRegex();
     }
 
     private void sendAction() {
@@ -572,7 +550,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     private void validateRegex() {
         if (!viewModel.isSearchMode())
             if (viewModel.fieldMask() != null && !getEditText().getText().toString().isEmpty() &&
-                    !getEditText().getText().toString().matches(viewModel.fieldMask()))
+                    !getEditText().getText().toString().matches(Objects.requireNonNull(viewModel.fieldMask())))
                 setWarning(binding.getRoot().getContext().getString(R.string.wrong_pattern), "");
             else
                 setWarning(viewModel.warning(), viewModel.error());
@@ -581,29 +559,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     private Boolean valueHasChanged() {
         return !Preconditions.equals(isEmpty(getEditText().getText()) ? "" : getEditText().getText().toString(),
                 viewModel.value() == null ? "" : valueOf(viewModel.value())) || viewModel.error() != null;
-    }
-
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        if (viewModel.valueType() != ValueType.LONG_TEXT) {
-            getEditText().clearFocus();
-            closeKeyboard(getEditText());
-            viewModel.callback.onNext();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public void onActivation() {
-        getEditText().setFocusable(true);
-        getEditText().setFocusableInTouchMode(true);
-        getEditText().requestFocus();
-        openKeyboard(getEditText());
-        if (viewModel.isSearchMode()) {
-            sendAction();
-        }
     }
 
     private void clearBackground(boolean isSearchMode) {

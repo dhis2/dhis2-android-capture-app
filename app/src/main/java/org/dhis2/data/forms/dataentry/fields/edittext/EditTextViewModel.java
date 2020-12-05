@@ -115,4 +115,8 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public boolean isLongText() {
         return valueType() == ValueType.LONG_TEXT;
     }
+
+    public void onClick() {
+        callback.onClick();
+    }
 }

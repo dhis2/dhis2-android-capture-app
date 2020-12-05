@@ -119,7 +119,7 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
         ) {
             return R.layout.form_radio_button_horizontal;
         } else if (renderingType() == ValueTypeRenderingType.HORIZONTAL_CHECKBOXES ||
-                renderingType() == ValueTypeRenderingType.VERTICAL_RADIOBUTTONS) {
+                renderingType() == ValueTypeRenderingType.VERTICAL_CHECKBOXES) {
             return R.layout.form_check_button;
         }
         return R.layout.form_yes_no;

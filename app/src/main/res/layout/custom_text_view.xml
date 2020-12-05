@@ -23,6 +23,10 @@
             name="fieldHint"
             type="String" />
 
+        <variable
+            name="focus"
+            type="androidx.databinding.ObservableBoolean" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,21 +40,21 @@
             android:id="@+id/dummyFocusView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
             android:focusable="true"
+            android:focusableInTouchMode="true"
             app:layout_constraintStart_toStartOf="parent"
-            android:focusableInTouchMode="true" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/renderImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginBottom="5dp"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@drawable/sierra_leone"
             tools:visibility="visible" />
 
@@ -61,9 +65,9 @@
             android:layout_height="wrap_content"
             android:text="@{label}"
             app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/renderImage"
             tools:text="@string/lorem" />
@@ -83,18 +87,18 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            app:layout_constraintTop_toBottomOf="@id/label"
-            android:layout_marginHorizontal="12dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginHorizontal="12dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/label">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/input_layout"
-                android:theme="@style/loginInputText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint='@{fieldHint}'
+                android:theme="@style/loginInputText"
                 tools:hint="hint">
 
                 <org.dhis2.utils.customviews.TextInputAutoCompleteTextView
@@ -105,21 +109,22 @@
                     android:imeOptions="actionNext"
                     android:maxLines="1"
                     android:textAlignment="textStart"
-                    android:textSize="@dimen/form_edit_text_size"
                     android:textIsSelectable="true"
+                    android:textSize="@dimen/form_edit_text_size"
+                    app:requestFocus="@{focus}"
                     tools:text="hello" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageView
-                android:layout_gravity="center"
                 android:id="@+id/descIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:padding="10dp"
                 android:visibility="gone"
-                tools:visibility="visible"
-                tools:src="@drawable/ic_form_email"/>
+                tools:src="@drawable/ic_form_email"
+                tools:visibility="visible" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
