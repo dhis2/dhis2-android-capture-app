@@ -30,7 +30,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-
         <org.dhis2.data.forms.dataentry.fields.radiobutton.YesNoView
             android:id="@+id/customYesNo"
             android:layout_width="match_parent"
