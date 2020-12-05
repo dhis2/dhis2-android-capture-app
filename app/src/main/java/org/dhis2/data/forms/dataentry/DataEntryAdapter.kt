@@ -42,7 +42,7 @@ class DataEntryAdapter :
     }
 
     private fun isItemFocused(position: Int): Boolean {
-        return position == currentFocusPosition;
+        return position == currentFocusPosition
     }
 
     fun updateSectionData(position: Int, isHeader: Boolean) {
@@ -151,7 +151,7 @@ class DataEntryAdapter :
     }
 
     override fun onNext(position: Int) {
-        if (position < itemCount) {
+        if (position < itemCount - 1) {
             onItemClick(position + 1)
         }
     }

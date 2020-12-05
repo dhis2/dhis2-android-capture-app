@@ -2,7 +2,7 @@ package org.dhis2.data.forms.dataentry.fields;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.databinding.ObservableField;
+import androidx.databinding.ObservableBoolean;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
@@ -75,7 +75,7 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     public Callback callback;
 
-    public ObservableField<Boolean> activated = new ObservableField<>(false);
+    public ObservableBoolean activated = new ObservableBoolean();
 
     public String getFormattedLabel() {
         if (mandatory()) {
@@ -99,7 +99,7 @@ public abstract class FieldViewModel implements FieldUiModel {
         }
     }
 
-    public int getErrorAppearance(){
+    public int getErrorAppearance() {
         if (error() != null) {
             return R.style.error_appearance;
         } else if (warning() != null) {
@@ -160,5 +160,9 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     protected int getAdapterPosition() {
         return adapterPosition;
+    }
+
+    public void onItemClick() {
+        callback.onClick();
     }
 }

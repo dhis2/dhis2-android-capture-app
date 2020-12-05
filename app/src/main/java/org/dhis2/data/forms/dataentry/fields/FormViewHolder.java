@@ -47,6 +47,8 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
 
         if (isFocused) {
             viewModel.onActivate();
+        } else {
+            viewModel.onDeactivate();
         }
 
         binding.setVariable(BR.item, viewModel);
