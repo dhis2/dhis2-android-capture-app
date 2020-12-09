@@ -84,6 +84,7 @@ import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -296,7 +297,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         teiMapManager.setOnMapClickListener(this);
 
         binding.mapCarousel.attachToMapManager(teiMapManager, (feature, found) -> {
-            if (found && feature != null) {
+
+            if (found && feature != null && FeatureExtensionsKt.isPoint(feature)) {
                 binding.mapNavigateFab.show();
                 binding.mapNavigateFab.setOnClickListener( fab -> navigateToMap(feature));
             } else {
