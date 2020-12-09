@@ -73,7 +73,7 @@ class MainPresenter(
 
     fun initFilters() {
         disposable.add(
-            filterManager.asFlowable().startWith(filterManager).switchMap { Flowable.just(filterRepository.homeFilters()) }
+            Flowable.just(filterRepository.homeFilters())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(

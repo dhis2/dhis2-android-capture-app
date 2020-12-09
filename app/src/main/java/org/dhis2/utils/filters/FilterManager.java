@@ -57,6 +57,7 @@ public class FilterManager implements Serializable {
     private List<State> stateFilters;
     private ObservableField<List<State>> observableStates = new ObservableField<>();
     private List<DatePeriod> periodFilters;
+    private ObservableField<List<DatePeriod>> observablePeriodFilters = new ObservableField<>();
     private List<DatePeriod> enrollmentPeriodFilters;
     private List<CategoryOptionCombo> catOptComboFilters;
     private List<EventStatus> eventStatusFilters;
@@ -239,7 +240,7 @@ public class FilterManager implements Serializable {
 
     public void addPeriod(List<DatePeriod> datePeriod) {
         this.periodFilters = datePeriod;
-
+        observablePeriodFilters.set(datePeriod);
         periodFiltersApplied.set(datePeriod != null && !datePeriod.isEmpty() ? 1 : 0);
         filterProcessor.onNext(this);
     }
@@ -350,6 +351,10 @@ public class FilterManager implements Serializable {
 
     public List<DatePeriod> getPeriodFilters() {
         return periodFilters != null ? periodFilters : new ArrayList<>();
+    }
+
+    public ObservableField<List<DatePeriod>> observePeriodFilter(){
+        return observablePeriodFilters;
     }
 
     public List<DatePeriod> getEnrollmentPeriodFilters() {
@@ -492,6 +497,7 @@ public class FilterManager implements Serializable {
         ouFilters.clear();
         liveDataOUFilter.setValue(ouFilters);
         periodFilters = new ArrayList<>();
+        observablePeriodFilters.set(periodFilters);
         enrollmentPeriodFilters = new ArrayList<>();
         enrollmentPeriodIdSelected = 0;
         periodIdSelected = 0;

@@ -15,6 +15,10 @@
             name="filterType"
             type="org.dhis2.utils.filters.Filters" />
 
+        <variable
+            name="filterItem"
+            type="org.dhis2.utils.filters.FilterItem" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

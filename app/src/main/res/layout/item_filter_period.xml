@@ -21,6 +21,7 @@
         <variable
             name="currentSortItem"
             type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.sorting.SortingItem&gt;" />
+
         <variable
             name="filterItem"
             type="org.dhis2.utils.filters.FilterItem" />
@@ -36,6 +37,7 @@
             layout="@layout/item_header_filter"
             app:currentSortItem="@{currentSortItem}"
             app:filterCount="@{filterCount}"
+            app:filterItem="@{filterItem}"
             app:layout_constraintTop_toBottomOf="parent" />
 
         <org.dhis2.utils.filters.dates.FilterPeriodView
@@ -43,10 +45,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:currentFilter="@{currentFilter}"
+            app:filterItem="@{filterItem}"
             app:filterType="@{filterType}"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/filterLayout"
-            app:filterItem="@{filterItem}"/>
+            app:layout_constraintTop_toBottomOf="@id/filterLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

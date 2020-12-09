@@ -59,9 +59,7 @@ class MainActivity :
     lateinit var mainComponent: MainComponent
     @Inject
     lateinit var presenter: MainPresenter
-/*
-    @Inject
-    lateinit var adapter: FiltersAdapter*/
+
     @Inject
     lateinit var newAdapter: FiltersAdapter
 

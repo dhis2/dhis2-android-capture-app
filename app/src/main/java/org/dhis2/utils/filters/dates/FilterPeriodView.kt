@@ -27,9 +27,8 @@ class FilterPeriodView @JvmOverloads constructor(
     private var enrollmentFilterItem: EnrollmentDateFilter? = null
     private var periodFilterItem: PeriodFilter? = null
     private var periodRequest: (FilterManager.PeriodRequest, Int) -> Unit =
-        { periodRequest, checkedId -> }
-    private var periodListener: (List<DatePeriod>) -> Unit = { datePeriods -> }
-    private var checkedIdListener: (Int)->Unit = {}
+        { _, _ -> }
+    private var onPeriodSelected: (List<DatePeriod>, Int) -> Unit = { _, _ -> }
 
     init {
         setListeners()
@@ -51,48 +50,26 @@ class FilterPeriodView @JvmOverloads constructor(
         }
     }
 
-    private fun setEnrollmentFilter(enrollmentDateFilter: EnrollmentDateFilter) {
+    private fun setEnrollmentFilter(filterItem: EnrollmentDateFilter) {
+        updateSelection(filterItem.selectedEnrollmentPeriodId)
         periodRequest = { periodRequest, checkedId ->
             updateSelection(checkedId)
-            FilterManager.getInstance().addPeriodRequest(
-                periodRequest,
-                Filters.ENROLLMENT_DATE
-            )
-            if (checkedId != FilterManager.getInstance().enrollmentPeriodIdSelected) {
-                FilterManager.getInstance().enrollmentPeriodIdSelected = checkedId
-            }
+            filterItem.requestPeriod(periodRequest, checkedId)
         }
-
-        periodListener = { periodDates ->
-            FilterManager.getInstance().addEnrollmentPeriod(periodDates)
-        }
-        checkedIdListener = {
-            if (id != FilterManager.getInstance().enrollmentPeriodIdSelected) {
-                FilterManager.getInstance().enrollmentPeriodIdSelected = id
-            }
+        onPeriodSelected = { periods, checkedId ->
+            filterItem.setSelectedPeriod(periods, checkedId)
         }
     }
 
     private fun setPeriodFilter(filterItem: PeriodFilter) {
+        updateSelection(filterItem.selectedPeriodId)
         periodRequest = { periodRequest, checkedId ->
             updateSelection(checkedId)
-            FilterManager.getInstance().addPeriodRequest(
-                periodRequest,
-                Filters.PERIOD
-            )
-            if (checkedId != FilterManager.getInstance().periodIdSelected) {
-                FilterManager.getInstance().periodIdSelected = checkedId
-            }
+            filterItem.requestPeriod(periodRequest, checkedId)
         }
 
-        periodListener = { periodDates ->
-            FilterManager.getInstance().addPeriod(periodDates)
-        }
-
-        checkedIdListener = {
-            if (id != FilterManager.getInstance().periodIdSelected) {
-                FilterManager.getInstance().periodIdSelected = id
-            }
+        onPeriodSelected = { periods, checkedId ->
+            filterItem.setSelectedPeriod(periods, checkedId)
         }
     }
 
@@ -157,18 +134,16 @@ class FilterPeriodView @JvmOverloads constructor(
                     }
                 }
 
-                periodListener(
-                    if (dates != null) {
-                        listOf(
-                            DatePeriod.builder().startDate(dates[0]).endDate(dates[1])
-                                .build()
-                        )
-                    } else {
-                        emptyList()
-                    }
-                )
+                val periods = if (dates != null) {
+                    listOf(
+                        DatePeriod.builder().startDate(dates[0]).endDate(dates[1])
+                            .build()
+                    )
+                } else {
+                    emptyList()
+                }
+                onPeriodSelected(periods, id)
             }
-            checkedIdListener(id)
         }
     }
 

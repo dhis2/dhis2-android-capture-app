@@ -240,7 +240,7 @@ class FilterRepository @Inject constructor(
             add(
                 PeriodFilter(
                     resources.filterEventDateLabel(),
-                    FilterManager.getInstance().periodFilters,
+                    FilterManager.getInstance().observePeriodFilter(),
                     FilterManager.getInstance().periodIdSelected
                 )
             )
@@ -256,7 +256,7 @@ class FilterRepository @Inject constructor(
             add(
                 PeriodFilter(
                     resources.filterPeriodLabel(),
-                    FilterManager.getInstance().periodFilters,
+                    FilterManager.getInstance().observePeriodFilter(),
                     FilterManager.getInstance().periodIdSelected
                 )
             )
@@ -284,7 +284,7 @@ class FilterRepository @Inject constructor(
             add(
                 PeriodFilter(
                     resources.filterDateLabel(),
-                    FilterManager.getInstance().periodFilters,
+                    FilterManager.getInstance().observePeriodFilter(),
                     FilterManager.getInstance().periodIdSelected
                 )
             )
@@ -310,7 +310,7 @@ class FilterRepository @Inject constructor(
             add(
                 PeriodFilter(
                     resources.filterEventDateLabel(),
-                    FilterManager.getInstance().periodFilters,
+                    FilterManager.getInstance().observePeriodFilter(),
                     FilterManager.getInstance().periodIdSelected
                 )
             )
@@ -345,7 +345,7 @@ class FilterRepository @Inject constructor(
             add(
                 PeriodFilter(
                     resources.filterDateLabel(),
-                    FilterManager.getInstance().periodFilters,
+                    FilterManager.getInstance().observePeriodFilter(),
                     FilterManager.getInstance().periodIdSelected
                 )
             )
