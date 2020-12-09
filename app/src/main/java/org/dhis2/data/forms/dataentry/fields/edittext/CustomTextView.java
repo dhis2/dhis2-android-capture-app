@@ -527,7 +527,6 @@ public class CustomTextView extends FieldLayout {
         } else {
             viewModel.onTextFilled(null);
         }
-        clearBackground(viewModel.isSearchMode());
     }
 
     private void checkAutocompleteRendering() {
@@ -557,11 +556,5 @@ public class CustomTextView extends FieldLayout {
     private Boolean valueHasChanged() {
         return !Preconditions.equals(isEmpty(getEditText().getText()) ? "" : getEditText().getText().toString(),
                 viewModel.value() == null ? "" : valueOf(viewModel.value())) || viewModel.error() != null;
-    }
-
-    private void clearBackground(boolean isSearchMode) {
-        if (!isSearchMode) {
-            binding.getRoot().setBackgroundResource(R.color.form_field_background);
-        }
     }
 }

@@ -272,7 +272,6 @@ public class OptionSetSelectionView extends FieldLayout {
                 viewModel.onOptionSelected(null);
             }
         });
-        setActivationListener(viewModel::onActivate);
         setOptionsToShow(
                 viewModel.getOptionsToHide(), viewModel.getOptionsToShow()
         );

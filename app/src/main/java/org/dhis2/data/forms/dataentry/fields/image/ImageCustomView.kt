@@ -1,10 +1,11 @@
-package org.dhis2.utils.customviews
+package org.dhis2.data.forms.dataentry.fields.image
 
 import android.content.Context
 import android.util.AttributeSet
 import org.dhis2.Bindings.Bindings
 import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.databinding.FormImageBinding
+import org.dhis2.utils.customviews.FieldLayout
 import org.hisp.dhis.android.core.option.Option
 
 class ImageCustomView @JvmOverloads constructor(

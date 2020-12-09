@@ -193,7 +193,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                     }
                 }
             } else {
-                activate();
+                viewModel.onItemClick();
             }
         });
 
@@ -212,7 +212,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                     }
                 }
             } else {
-                activate();
+                viewModel.onItemClick();
             }
         });
     }
@@ -299,7 +299,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     @Override
     public void onClick(View view) {
-        activate();
+        viewModel.onItemClick();
         switch (view.getId()) {
             case R.id.location1:
                 getLocation();
@@ -376,10 +376,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (hasFocus) {
-            activate();
+            viewModel.onItemClick();
             latitude.performClick();
-        } else {
-            viewModel.onDeactivate();
         }
     }
 
@@ -511,10 +509,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         setCurrentLocationListener(geometry -> {
             closeKeyboard(binding.getRoot());
             viewModel.onCurrentLocationClick(geometry);
-            clearBackground(viewModel.isSearchMode());
-            viewModel.onDeactivate();
         });
-        setActivationListener(viewModel::onActivate);
 
         setFeatureType(viewModel.featureType());
         setLabel(viewModel.getFormattedLabel());
@@ -526,11 +521,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         setEditable(viewModel.editable());
     }
 
-    private void clearBackground(boolean isSearchMode) {
-        if (!isSearchMode) {
-            binding.getRoot().setBackgroundResource(R.color.form_field_background);
-        }
-    }
 
     private void subscribe() {
         ((ActivityResultObservable) getContext()).subscribe(this);

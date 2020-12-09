@@ -20,8 +20,6 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.BR;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
-import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.utils.ColorUtils;
@@ -54,7 +52,6 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     private OnDateSelected listener;
 
     private String label;
-    private String description;
     private Date date;
     private View clearButton;
     private View descriptionLabel;
@@ -87,6 +84,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         descriptionIcon.setImageResource(R.drawable.ic_form_time);
         clearButton = findViewById(R.id.clear_button);
         clearButton.setOnClickListener(v -> {
+            viewModel.onItemClick();
             clearTime();
         });
         editText.setFocusable(false); //Makes editText not editable
@@ -118,7 +116,6 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setDescription(String description) {
-        this.description = description;
         descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
         descriptionLabel.setOnClickListener(v ->
                 new CustomDialog(
@@ -154,10 +151,12 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setError(String msg) {
-        inputLayout.setErrorTextAppearance(R.style.error_appearance);
-        inputLayout.setError(msg);
-        editText.setText(null);
-        editText.requestFocus();
+        if (msg != null) {
+            inputLayout.setErrorTextAppearance(R.style.error_appearance);
+            inputLayout.setError(msg);
+            editText.setText(null);
+            editText.requestFocus();
+        }
     }
 
     public void setMandatory() {
@@ -177,7 +176,9 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         requestFocus();
-        activate();
+        viewModel.onItemClick();
+        closeKeyboard(binding.getRoot());
+
         final Calendar c = Calendar.getInstance();
         if (date != null)
             c.setTime(date);
@@ -196,21 +197,23 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
 
             if (is24HourFormat) {
                 calendarTime = twentyFourHourFormat.format(selectedDate);
-                editText.setText(calendarTime);
             } else {
                 calendarTime = twelveHourFormat.format(selectedDate);
-                editText.setText(calendarTime);
             }
+            editText.setText(calendarTime);
+
             listener.onDateSelected(selectedDate);
             nextFocus(view);
             date = null;
             updateDeleteVisibility(clearButton);
         }, hour, minute, is24HourFormat);
+
         dialog.setTitle(label);
 
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getContext().getString(R.string.date_dialog_clear), (timeDialog, which) -> {
-            clearTime();
-        });
+        dialog.setButton(
+                DialogInterface.BUTTON_NEGATIVE, getContext().getString(R.string.date_dialog_clear),
+                (timeDialog, which) -> clearTime()
+        );
 
         dialog.show();
     }
@@ -278,21 +281,6 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         setError(viewModel.error());
         setWarning(viewModel.warning());
         setEditable(viewModel.editable());
-        setDateListener(date -> {
-            viewModel.onDateSelected(date);
-            clearBackground(viewModel.isSearchMode());
-        });
-        setActivationListener(() -> {
-            viewModel.onActivate();
-            //TODO does TimeView needs keyboard?
-            closeKeyboard(binding.getRoot());
-        });
-    }
-
-    private void clearBackground(boolean isSearchMode) {
-        if (!isSearchMode) {
-            binding.getRoot().setBackgroundResource(R.color.form_field_background);
-            viewModel.onDeactivate();
-        }
+        setDateListener(viewModel::onDateSelected);
     }
 }

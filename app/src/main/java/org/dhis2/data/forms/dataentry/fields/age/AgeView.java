@@ -115,14 +115,12 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     private void onFocusChanged(View view, boolean hasFocus) {
         if (hasFocus) {
             onClick(view);
-        } else {
-            viewModel.onDeactivate();
         }
     }
 
     @Override
     public void onClick(View view) {
-        activate();
+        viewModel.onItemClick();
         switch (view.getId()) {
             case R.id.date_picker:
                 showCustomCalendar(view);
@@ -361,12 +359,9 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         setAgeChangedListener(ageDate -> {
             if (viewModel.value() == null || !Objects.equals(viewModel.value(), ageDate == null ? null : DateUtils.databaseDateFormat().format(ageDate))) {
                 viewModel.onAgeSet(ageDate);
-                clearBackground(viewModel.isSearchMode());
-                viewModel.onDeactivate();
                 viewModel.callback.onNext();
             }
         });
-        setActivationListener(viewModel::onActivate);
 
         setLabel(viewModel.getFormattedLabel(), viewModel.description());
 
@@ -384,11 +379,5 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
             clearErrors();
 
         setEditable(viewModel.editable());
-    }
-
-    private void clearBackground(boolean isSearchMode) {
-        if (!isSearchMode) {
-            binding.getRoot().setBackgroundResource(R.color.form_field_background);
-        }
     }
 }
