@@ -116,9 +116,12 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
     public int getLayoutId() {
         if (renderingType() == ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS ||
                 renderingType() == ValueTypeRenderingType.DEFAULT ||
-                renderingType() == ValueTypeRenderingType.VERTICAL_RADIOBUTTONS
+                renderingType() == ValueTypeRenderingType.VERTICAL_RADIOBUTTONS ||
+                (renderingType() == ValueTypeRenderingType.TOGGLE && valueType() != ValueType.TRUE_ONLY)
         ) {
             return R.layout.form_radio_button_horizontal;
+        } else if (renderingType() == ValueTypeRenderingType.TOGGLE && valueType() == ValueType.TRUE_ONLY) {
+            return R.layout.form_toggle;
         }
         return R.layout.form_yes_no;
     }
