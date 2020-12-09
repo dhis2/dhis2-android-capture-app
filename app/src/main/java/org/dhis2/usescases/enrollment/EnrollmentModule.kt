@@ -94,7 +94,7 @@ class EnrollmentModule(
     @Provides
     @PerActivity
     fun fieldFactory(context: Context): FieldViewModelFactory {
-        return FieldViewModelFactoryImpl(context.valueTypeHintMap(),false)
+        return FieldViewModelFactoryImpl(context.valueTypeHintMap(), false)
     }
 
     @Provides
