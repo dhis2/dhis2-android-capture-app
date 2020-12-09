@@ -4,27 +4,23 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.ListAdapter
-import java.util.ArrayList
-import java.util.LinkedHashMap
 import org.dhis2.data.forms.dataentry.fields.FieldUiModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder.FieldItemCallback
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
+import java.util.ArrayList
+import java.util.LinkedHashMap
 
 class DataEntryAdapter :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),
     FieldItemCallback {
 
     var didItemShowDialog: ((title: String, message: String?) -> Unit)? = null
-    private var currentFocusPosition = 0
+    private var currentFocusPosition: Int? = null
 
     private val sectionHandler = SectionHandler()
-    private val currentFocusUid: MutableLiveData<String> = MutableLiveData()
-    private var lastFocusItem: String? = null
-    private var nextFocusPosition = -1
     var sectionPositions: MutableMap<String, Int> = LinkedHashMap()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FormViewHolder {
@@ -83,42 +79,8 @@ class DataEntryAdapter :
             items.add(fieldViewModel)
         }
         submitList(items) {
-            var currentFocusPosition = -1
-            var lastFocusPosition = -1
-            if (lastFocusItem != null) {
-                nextFocusPosition = -1
-                for (i in items.indices) {
-                    val item = items[i] as FieldViewModel
-                    if (item.getUid() == lastFocusItem) {
-                        lastFocusPosition = i
-                        nextFocusPosition = i + 1
-                    }
-                    if (i == nextFocusPosition && !item.editable()!! && item !is SectionViewModel) {
-                        nextFocusPosition++
-                    }
-                    if (item.getUid() == currentFocusUid.value) currentFocusPosition = i
-                }
-            }
-            if (nextFocusPosition != -1 &&
-                currentFocusPosition == lastFocusPosition &&
-                nextFocusPosition < items.size
-            ) {
-                currentFocusUid.setValue(
-                    getItem(nextFocusPosition)!!.getUid()
-                )
-            } else if (currentFocusPosition != -1 &&
-                currentFocusPosition < items.size
-            ) {
-                currentFocusUid.value = getItem(currentFocusPosition)!!.getUid()
-            }
             commitCallback.run()
         }
-    }
-
-    fun setLastFocusItem(lastFocusItem: String) {
-        currentFocusUid.value = lastFocusItem
-        nextFocusPosition = -1
-        this.lastFocusItem = lastFocusItem
     }
 
     fun getSectionSize(): Int {
@@ -163,10 +125,19 @@ class DataEntryAdapter :
     }
 
     override fun onItemClick(position: Int) {
+
         if (currentFocusPosition != position) {
-            getItem(currentFocusPosition).onDeactivate()
-            currentFocusPosition = position
-            getItem(currentFocusPosition).onActivate()
+
+            currentFocusPosition?.let {
+                getItem(it).onDeactivate()
+            }
+
+            if (getItem(position) is SectionViewModel) {
+                currentFocusPosition = null
+            } else {
+                currentFocusPosition = position
+                getItem(currentFocusPosition!!).onActivate()
+            }
         }
     }
 }

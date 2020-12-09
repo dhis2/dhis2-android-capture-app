@@ -68,7 +68,6 @@ class EnrollmentPresenterImpl(
     private val optionsGroupsToHide = HashMap<String, ArrayList<String>>()
     private val optionsGroupToShow = HashMap<String, ArrayList<String>>()
     private val fieldsFlowable: FlowableProcessor<Boolean> = PublishProcessor.create()
-    private var lastFocusItem: String? = null
     private var selectedSection: String = ""
     private var errorFields = mutableMapOf<String, String>()
     private var mandatoryFields = mutableMapOf<String, String>()
@@ -216,7 +215,6 @@ class EnrollmentPresenterImpl(
                                 if (shouldShowDateEditionWarning(it.uid)) {
                                     view.showDateEditionWarning()
                                 }
-                                lastFocusItem = it.uid
                                 fieldsFlowable.onNext(true)
                             }
                             ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
@@ -536,10 +534,6 @@ class EnrollmentPresenterImpl(
     fun deleteAllSavedData() {
         teiRepository.blockingDelete()
         analyticsHelper.setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK)
-    }
-
-    fun getLastFocusItem(): String? {
-        return lastFocusItem
     }
 
     @SuppressLint("CheckResult")
