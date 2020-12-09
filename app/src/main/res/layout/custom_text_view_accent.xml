@@ -22,6 +22,10 @@
         <variable
             name="fieldHint"
             type="String" />
+
+        <variable
+            name="focus"
+            type="androidx.databinding.ObservableBoolean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -37,11 +41,11 @@
         <View
             android:id="@+id/dummyFocusView"
             android:layout_width="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             android:layout_height="wrap_content"
             android:focusable="true"
-            android:focusableInTouchMode="true" />
+            android:focusableInTouchMode="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/renderImage"
@@ -50,10 +54,10 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="5dp"
             android:visibility="gone"
-            tools:srcCompat="@drawable/sierra_leone"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@drawable/sierra_leone"
             tools:visibility="visible" />
 
         <TextView
@@ -61,12 +65,12 @@
             style="@style/FieldLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?colorAccent"
             android:text="@{label}"
+            android:textColor="?colorAccent"
             app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/renderImage"
             tools:text="@string/lorem" />
@@ -87,10 +91,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/label"
-            android:layout_marginHorizontal="12dp"
             android:layout_below="@id/renderImage"
-            android:orientation="horizontal">
+            android:layout_marginHorizontal="12dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/label">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/input_layout"
@@ -112,6 +116,7 @@
                     android:textColor="?colorAccent"
                     android:textIsSelectable="true"
                     android:textSize="@dimen/form_edit_text_size"
+                    app:requestFocus="@{focus}"
                     tools:text="@string/lorem" />
 
             </com.google.android.material.textfield.TextInputLayout>

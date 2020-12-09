@@ -4,12 +4,15 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
 import org.dhis2.data.filter.FilterPresenter;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
@@ -70,10 +73,11 @@ public class SearchTEModule {
                                                        MapTeisToFeatureCollection mapTeisToFeatureCollection,
                                                        MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
                                                        MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
-                                                       PreferenceProvider preferenceProvider) {
+                                                       PreferenceProvider preferenceProvider,
+                                                       FieldViewModelFactory fieldViewModelFactory) {
         return new SearchTEPresenter(view, d2, mapUtils, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapCoordinateFieldToFeatureCollection,
-                new EventToEventUiComponent(), preferenceProvider);
+                new EventToEventUiComponent(), preferenceProvider, fieldViewModelFactory.fieldProcessor());
     }
 
     @Provides
@@ -101,8 +105,14 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchRepository searchRepository(@NonNull D2 d2, FilterPresenter filterPresenter, ResourceManager resources, SearchSortingValueSetter searchSortingValueSetter) {
-        return new SearchRepositoryImpl(teiType, d2, filterPresenter, resources, searchSortingValueSetter);
+    SearchRepository searchRepository(@NonNull D2 d2, FilterPresenter filterPresenter, ResourceManager resources, SearchSortingValueSetter searchSortingValueSetter, FieldViewModelFactory fieldFactory) {
+        return new SearchRepositoryImpl(teiType, d2, filterPresenter, resources, searchSortingValueSetter, fieldFactory);
+    }
+
+    @Provides
+    @PerActivity
+    FieldViewModelFactory fieldViewModelFactory(Context context) {
+        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), true);
     }
 
     @Provides

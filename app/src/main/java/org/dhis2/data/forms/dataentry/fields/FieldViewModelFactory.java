@@ -8,7 +8,10 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
+import autovalue.shaded.org.checkerframework$.checker.nullness.qual.$NonNull;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -35,6 +38,12 @@ public interface FieldViewModelFactory {
                           FlowableProcessor<RowAction> processor,
                           List<Option> options);
 
+    @Nullable
+    FieldViewModel createForAttribute(@$NonNull TrackedEntityAttribute trackedEntityAttribute,
+                                      @Nullable ProgramTrackedEntityAttribute programTrackedEntityAttribute,
+                                      @Nullable String value,
+                                      boolean editable);
+
     @NonNull
     FieldViewModel createSingleSection(String singleSectionName);
 
@@ -47,4 +56,7 @@ public interface FieldViewModelFactory {
 
     @NonNull
     Flowable<String> sectionProcessor();
+
+    @NonNull
+    Flowable<RowAction> fieldProcessor();
 }

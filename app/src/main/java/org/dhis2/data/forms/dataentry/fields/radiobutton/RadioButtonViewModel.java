@@ -120,7 +120,7 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
         ) {
             return R.layout.form_radio_button_horizontal;
         } else if (renderingType() == ValueTypeRenderingType.HORIZONTAL_CHECKBOXES ||
-                renderingType() == ValueTypeRenderingType.VERTICAL_RADIOBUTTONS) {
+                renderingType() == ValueTypeRenderingType.VERTICAL_CHECKBOXES) {
             return R.layout.form_check_button;
         } else if (renderingType() == ValueTypeRenderingType.TOGGLE && valueType() == ValueType.TRUE_ONLY) {
             return R.layout.form_toggle;
@@ -129,7 +129,7 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
     }
 
     public void onValueChanged(Boolean value) {
-        activated.set(true);
+        onItemClick();
 
         String result = null;
         if (value != null) {

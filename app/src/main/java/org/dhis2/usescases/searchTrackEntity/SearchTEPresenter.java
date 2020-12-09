@@ -20,6 +20,7 @@ import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.R;
 import org.dhis2.data.dhislogic.DhisMapUtils;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
@@ -50,7 +51,6 @@ import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Unit;
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -118,6 +118,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private boolean teiTypeHasAttributesToDisplay = true;
     private boolean isSearching;
     private DhisMapUtils mapUtils;
+    private final Flowable<RowAction> fieldProcessor;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -130,7 +131,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
                              MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
                              EventToEventUiComponent eventToEventUiComponent,
-                             PreferenceProvider preferenceProvider) {
+                             PreferenceProvider preferenceProvider,
+                             Flowable<RowAction> fieldProcessor) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -141,6 +143,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.mapTeisToFeatureCollection = mapTeisToFeatureCollection;
         this.mapTeiEventsToFeatureCollection = mapTeiEventsToFeatureCollection;
         this.mapCoordinateFieldToFeatureCollection = mapCoordinateFieldToFeatureCollection;
+        this.fieldProcessor = fieldProcessor;
 
         this.eventToEventUiComponent = eventToEventUiComponent;
         compositeDisposable = new CompositeDisposable();
@@ -188,25 +191,19 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
 
         compositeDisposable.add(currentProgram
-                .flatMap(programUid -> {
-                    if (programUid.isEmpty())
-                        return searchRepository.trackedEntityTypeAttributes()
-                                .map(attributes -> Pair.create(attributes, new ArrayList<ValueTypeDeviceRendering>()));
-                    else
-                        return searchRepository.programAttributes(selectedProgram.uid())
-                                .map(data -> Pair.create(data.getTrackedEntityAttributes(), data.getRendering()));
-                })
+                .flatMap(programUid ->
+                        searchRepository.searchFields(programUid, queryData))
                 .subscribe(
                         data -> {
-                            if (data.val0().isEmpty()) {
+                            if (data.isEmpty()) {
                                 teiTypeHasAttributesToDisplay = false;
                             }
-                            view.setForm(data.val0(), selectedProgram, queryData, data.val1());
+                            view.setFormData(data);
                         },
                         Timber::d)
         );
 
-        compositeDisposable.add(view.rowActionss()
+        compositeDisposable.add(fieldProcessor
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(data -> {
@@ -233,20 +230,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
 
         ConnectableFlowable<Pair<HashMap<String, String>, FilterManager>> updaterFlowable = currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
-                .doOnEach(element -> {
-                    Timber.d("outer updaterFlowable before %s", element.getValue());
-                })
                 .switchMap(program ->
                         Flowable.combineLatest(queryProcessor.startWith(queryData),
                                 FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
-                                Pair::create).doOnEach(element -> {
-                            Timber.d("inner %s", element.getValue());
-                        })
-
+                                Pair::create)
                 )
-                .doOnEach(element -> {
-                    Timber.d("outer updaterFlowable after %s", element.getValue());
-                })
                 .onBackpressureLatest()
                 .publish();
 
@@ -271,7 +259,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         compositeDisposable.add(
                 listDataProcessor
-                        .doOnEach(element -> Timber.d("listDataProcessor %s", element.getValue()))
                         .switchMap(map -> {
                             CountingIdlingResourceSingleton.INSTANCE.increment();
                             return Flowable.just(searchRepository.searchTrackedEntities(
