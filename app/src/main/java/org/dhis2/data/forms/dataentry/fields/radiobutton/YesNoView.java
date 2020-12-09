@@ -347,7 +347,6 @@ public class YesNoView extends FieldLayout {
 
     public interface OnValueChanged {
         void onValueChanged(boolean isActive);
-
         void onClearValue();
     }
 
