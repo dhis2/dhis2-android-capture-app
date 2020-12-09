@@ -45,15 +45,15 @@ import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.geojson.Feature;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
-import com.mapbox.mapboxsdk.maps.Style;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
+import org.dhis2.data.forms.dataentry.DataEntryAdapter;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
@@ -65,7 +65,6 @@ import org.dhis2.uicomponents.map.model.MapStyle;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.orgunitselector.OUTreeActivity;
-import org.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.RelationshipLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
@@ -82,7 +81,6 @@ import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
@@ -93,11 +91,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.inject.Inject;
 
-import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 import kotlin.Unit;
@@ -143,14 +139,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private FeatureType featureType;
     private TeiMapManager teiMapManager;
     private boolean initSearchNeeded = true;
-    private Snackbar downloadingSnackbar;
-    private String currentStyle = Style.MAPBOX_STREETS;
     private ObjectAnimator animation = null;
-    private Set<String> sources;
-    private Set<String> eventSources;
     private String updateTei;
     private String updateEvent;
     private CarouselAdapter carouselAdapter;
+    private DataEntryAdapter adapter = new DataEntryAdapter();
 
     //---------------------------------------------------------------------------------------------
 
@@ -196,7 +189,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.scrollView.setAdapter(liveAdapter);
         }
 
-        binding.formRecycler.setAdapter(new FormAdapter(this, presenter));
+        binding.formRecycler.setAdapter(adapter);
         binding.enrollmentButton.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 v.requestFocus();
@@ -489,17 +482,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void setForm(List<TrackedEntityAttribute> trackedEntityAttributes, @Nullable Program program, HashMap<String, String> queryData,
-                        List<ValueTypeDeviceRendering> renderingTypes) {
-        //Form has been set.
-        FormAdapter formAdapter = (FormAdapter) binding.formRecycler.getAdapter();
-        formAdapter.setList(trackedEntityAttributes, program, queryData, renderingTypes);
-        updateFiltersSearch(queryData.size());
-    }
-
-    @NonNull
-    public Flowable<RowAction> rowActionss() {
-        return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowableRA();
+    public void setFormData(List<FieldViewModel> data) {
+        adapter.swap(data, () -> {
+        });
+        updateFiltersSearch(presenter.getQueryData().size());
     }
 
     @Override
@@ -889,9 +875,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void openDashboard(String teiUid, String programUid, String enrollmentUid) {
-        if (downloadingSnackbar != null && downloadingSnackbar.isShown()) {
-            downloadingSnackbar.dismiss();
-        }
         startActivity(TeiDashboardMobileActivity.intent(this, teiUid, enrollmentUid != null ? programUid : null, enrollmentUid));
     }
 
@@ -914,9 +897,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setMap(TrackerMapData trackerMapData) {
         binding.progressLayout.setVisibility(View.GONE);
-
-        sources = trackerMapData.getTeiFeatures().keySet();
-        eventSources = trackerMapData.getEventFeatures().getFeatureCollectionMap().keySet();
         List<CarouselItemModel> allItems = new ArrayList<>();
         allItems.addAll(trackerMapData.getTeiModels());
         allItems.addAll(trackerMapData.getEventModels());

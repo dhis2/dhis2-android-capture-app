@@ -12,6 +12,7 @@ import android.os.Build;
 import android.text.method.ScrollingMovementMethod;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -45,6 +46,9 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
+import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
 
 /**
  * QUADRAM. Created by ppajuelo on 28/09/2017.
@@ -586,5 +590,17 @@ public class Bindings {
     @BindingAdapter(value = "textColor")
     public static void setTextColor(TextView view, int color) {
         view.setTextColor(color);
+    }
+
+    @BindingAdapter("requestFocus")
+    public static void requestFocus(EditText editText, boolean focused) {
+        if (focused) {
+            editText.setFocusableInTouchMode(true);
+            editText.requestFocus();
+            openKeyboard(editText);
+        } else {
+            editText.clearFocus();
+            closeKeyboard(editText);
+        }
     }
 }

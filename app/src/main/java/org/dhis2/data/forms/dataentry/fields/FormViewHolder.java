@@ -25,9 +25,10 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public void bind(FieldUiModel uiModel, int position, FieldItemCallback callback) {
+    public void bind(FieldUiModel uiModel, int position, FieldItemCallback callback, boolean isFocused) {
         FieldViewModel viewModel = (FieldViewModel) uiModel;
         viewModel.setCallback(new FieldUiModel.Callback() {
+
             @Override
             public void onNext() {
                 callback.onNext(position);
@@ -37,7 +38,19 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
             public void showDialog(@NotNull String title, String message) {
                 callback.onShowDialog(title, message);
             }
+
+            @Override
+            public void onClick() {
+                callback.onItemClick(position);
+            }
         });
+
+        if (isFocused) {
+            viewModel.onActivate();
+        } else {
+            viewModel.onDeactivate();
+        }
+
         binding.setVariable(BR.item, viewModel);
         binding.executePendingBindings();
     }
@@ -47,5 +60,7 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
         void onNext(int position);
 
         void onShowDialog(String title, @Nullable String message);
+
+        void onItemClick(int position);
     }
 }

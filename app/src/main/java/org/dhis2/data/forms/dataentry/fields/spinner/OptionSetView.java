@@ -47,7 +47,6 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
     private View descriptionLabel;
     private View delete;
     private OnSelectedOption listener;
-    private int numberOfOptions = 0;
     private TextView labelText;
     private SpinnerViewModel viewModel;
 
@@ -114,10 +113,6 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
     @Override
     public void setOnClickListener(@Nullable OnClickListener l) {
         editText.setOnClickListener(l);
-    }
-
-    public void setNumberOfOptions(int numberOfOptions) {
-        this.numberOfOptions = numberOfOptions;
     }
 
     public void deleteSelectedOption() {
@@ -223,10 +218,6 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
                 ).show());
     }
 
-    public boolean openOptionDialog() {
-        return numberOfOptions > getContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE).getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15);
-    }
-
     @Override
     public void onClick(View v) {
         requestFocus();
@@ -271,7 +262,6 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
             clearBackground(!viewModel.isBackgroundTransparent());
         });
         setActivationListener(viewModel::onActivate);
-        setNumberOfOptions(viewModel.numberOfOptions());
         updateEditable(viewModel.editable());
         setValue(viewModel.value());
         setWarning(viewModel.warning(), viewModel.error());

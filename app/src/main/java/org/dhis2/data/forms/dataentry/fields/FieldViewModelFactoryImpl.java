@@ -25,11 +25,14 @@ import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import autovalue.shaded.org.checkerframework$.checker.nullness.qual.$NonNull;
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
@@ -42,6 +45,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     @NonNull
     private final Map<ValueType, String> valueTypeHintMap;
 
+    private final FlowableProcessor<RowAction> fieldProcessor = PublishProcessor.create();
     private final FlowableProcessor<String> sectionProcessor = PublishProcessor.create();
     private final ObservableField<String> currentSection = new ObservableField<String>("");
 
@@ -51,9 +55,36 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
             ValueTypeRenderingType.VERTICAL_RADIOBUTTONS
     );
+    private final boolean searchMode;
 
-    public FieldViewModelFactoryImpl(Map<ValueType, String> valueTypeHintMap) {
+    public FieldViewModelFactoryImpl(Map<ValueType, String> valueTypeHintMap, boolean searchMode) {
         this.valueTypeHintMap = valueTypeHintMap;
+        this.searchMode = searchMode;
+    }
+
+    @Nullable
+    @Override
+    public FieldViewModel createForAttribute(@$NonNull TrackedEntityAttribute trackedEntityAttribute,
+                                             @Nullable ProgramTrackedEntityAttribute programTrackedEntityAttribute,
+                                             @Nullable String value,
+                                             boolean editable) {
+        return create(trackedEntityAttribute.uid(),
+                programTrackedEntityAttribute != null ? programTrackedEntityAttribute.displayName() : trackedEntityAttribute.displayFormName(),
+                trackedEntityAttribute.valueType(),
+                programTrackedEntityAttribute != null ? programTrackedEntityAttribute.mandatory() : false,
+                trackedEntityAttribute.optionSet() != null ? trackedEntityAttribute.optionSet().uid() : null,
+                value,
+                null,
+                programTrackedEntityAttribute != null && programTrackedEntityAttribute.allowFutureDate() != null ? programTrackedEntityAttribute.allowFutureDate() : true,
+                editable,
+                ProgramStageSectionRenderingType.LISTING,
+                programTrackedEntityAttribute != null ? programTrackedEntityAttribute.displayDescription() : trackedEntityAttribute.displayDescription(),
+                programTrackedEntityAttribute != null && programTrackedEntityAttribute.renderType() != null ? programTrackedEntityAttribute.renderType().mobile() : null,
+                null,
+                trackedEntityAttribute.style() != null ? trackedEntityAttribute.style() : ObjectStyle.builder().build(),
+                trackedEntityAttribute.fieldMask(),
+                fieldProcessor, null
+        );
     }
 
     @NonNull
@@ -66,11 +97,11 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         if (DhisTextUtils.Companion.isNotEmpty(optionSet)) {
             if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING) {
                 if (fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
-                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, fieldRendering, valueTypeHintMap.get(type), true, false, processor);
+                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, fieldRendering, valueTypeHintMap.get(type), !searchMode, searchMode, processor);
                 } else if (fieldRendering != null && type == ValueType.TEXT && optionSetTextRenderings.contains(fieldRendering.type())) {
                     return OptionSetViewModel.create(id, label, mandatory, optionSet, value, section, editable, description, objectStyle, true, ProgramStageSectionRenderingType.LISTING.toString(), fieldRendering, processor);
                 } else {
-                    return SpinnerViewModel.create(id, label, valueTypeHintMap.get(type), mandatory, optionSet, value, section, editable, description, optionCount, objectStyle, true, ProgramStageSectionRenderingType.LISTING.toString(), processor);
+                    return SpinnerViewModel.create(id, label, valueTypeHintMap.get(type), mandatory, optionSet, value, section, editable, description, objectStyle, !searchMode, ProgramStageSectionRenderingType.LISTING.toString(), processor);
                 }
             } else{
                 return MatrixOptionSetModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, processor, options, renderingType == ProgramStageSectionRenderingType.MATRIX ? 2 : 1 );
@@ -79,7 +110,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
         switch (type) {
             case AGE:
-                return AgeViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, true, false, processor);
+                return AgeViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, !searchMode, searchMode, processor);
             case TEXT:
             case EMAIL:
             case LETTER:
@@ -94,30 +125,30 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case UNIT_INTERVAL:
             case URL:
                 if (fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
-                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, fieldRendering, valueTypeHintMap.get(type), true, false, processor);
+                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, fieldRendering, valueTypeHintMap.get(type), !searchMode, searchMode, processor);
                 } else {
-                    return EditTextViewModel.create(id, label, mandatory, value, valueTypeHintMap.get(type), 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask, ProgramStageSectionRenderingType.LISTING.toString(), true, false, processor);
+                    return EditTextViewModel.create(id, label, mandatory, value, valueTypeHintMap.get(type), 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask, ProgramStageSectionRenderingType.LISTING.toString(), !searchMode, searchMode, processor);
                 }
             case IMAGE:
-                return PictureViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, processor, true);
+                return PictureViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, processor, !searchMode);
             case TIME:
             case DATE:
             case DATETIME:
-                return DateTimeViewModel.create(id, label, mandatory, type, value, section, allowFutureDates, editable, description, objectStyle, true, false, processor);
+                return DateTimeViewModel.create(id, label, mandatory, type, value, section, allowFutureDates, editable, description, objectStyle, !searchMode, searchMode, processor);
             case COORDINATE:
-                return CoordinateViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, FeatureType.POINT, true, false, processor);
+                return CoordinateViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, FeatureType.POINT, !searchMode, searchMode, processor);
             case BOOLEAN:
             case TRUE_ONLY:
                 return RadioButtonViewModel.fromRawValue(id, label, type, mandatory, value, section, editable, description, objectStyle,
-                        fieldRendering != null ? fieldRendering.type() : ValueTypeRenderingType.DEFAULT, true, processor, false);
+                        fieldRendering != null ? fieldRendering.type() : ValueTypeRenderingType.DEFAULT, !searchMode, processor, searchMode);
             case ORGANISATION_UNIT:
-                return OrgUnitViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, true, ProgramStageSectionRenderingType.LISTING.toString(), processor);
+                return OrgUnitViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, !searchMode, ProgramStageSectionRenderingType.LISTING.toString(), processor);
             case FILE_RESOURCE:
             case TRACKER_ASSOCIATE:
             case USERNAME:
                 return UnsupportedViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, processor);
             default:
-                return EditTextViewModel.create(id, label, mandatory, value, valueTypeHintMap.get(type), 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask, ProgramStageSectionRenderingType.LISTING.toString(), true, false, processor);
+                return EditTextViewModel.create(id, label, mandatory, value, valueTypeHintMap.get(type), 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask, ProgramStageSectionRenderingType.LISTING.toString(), !searchMode, searchMode, processor);
         }
     }
 
@@ -164,5 +195,11 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     @Override
     public Flowable<String> sectionProcessor() {
         return sectionProcessor;
+    }
+
+    @NonNull
+    @Override
+    public Flowable<RowAction> fieldProcessor() {
+        return fieldProcessor;
     }
 }
