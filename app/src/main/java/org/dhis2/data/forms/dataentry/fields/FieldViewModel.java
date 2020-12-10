@@ -2,7 +2,6 @@ package org.dhis2.data.forms.dataentry.fields;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.databinding.ObservableBoolean;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
@@ -75,7 +74,7 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     public Callback callback;
 
-    public ObservableBoolean activated = new ObservableBoolean();
+    public boolean activated = false;
 
     public String getFormattedLabel() {
         if (mandatory()) {
@@ -134,7 +133,8 @@ public abstract class FieldViewModel implements FieldUiModel {
                     && (this.fieldMask() == null ? that.fieldMask() == null : this.fieldMask().equals(that.fieldMask()))
                     && this.dataEntryViewType().equals(that.dataEntryViewType())
                     && this.mandatory().equals(that.mandatory())
-                    && (this.value() == null ? that.value() == null : this.value().equals(that.value()));
+                    && (this.value() == null ? that.value() == null : this.value().equals(that.value()))
+                    && (this.activated == that.activated);
         }
         return false;
     }
@@ -146,12 +146,12 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     @Override
     public void onActivate() {
-        activated.set(true);
+        activated = true;
     }
 
     @Override
     public void onDeactivate() {
-        activated.set(false);
+        activated = false;
     }
 
     public void setAdapterPosition(int index) {

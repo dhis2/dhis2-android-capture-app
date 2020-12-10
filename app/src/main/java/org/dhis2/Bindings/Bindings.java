@@ -47,7 +47,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
 import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
 
 /**
@@ -598,9 +597,6 @@ public class Bindings {
             editText.setFocusableInTouchMode(true);
             editText.requestFocus();
             openKeyboard(editText);
-        } else {
-            editText.clearFocus();
-            closeKeyboard(editText);
         }
     }
 }
