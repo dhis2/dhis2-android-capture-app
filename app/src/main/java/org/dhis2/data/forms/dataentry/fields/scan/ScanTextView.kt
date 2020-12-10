@@ -80,7 +80,7 @@ class ScanTextView @JvmOverloads constructor(
                 closeKeyboard()
                 onScanResult.invoke(editText.text.toString())
             } else {
-                viewModel.onItemClick();
+                viewModel.onItemClick()
             }
         }
     }
@@ -101,7 +101,7 @@ class ScanTextView @JvmOverloads constructor(
     fun setOnScannerListener(function: (String?) -> Unit) {
         this.onScanResult = function
         delete.setOnClickListener {
-            viewModel.onItemClick();
+            viewModel.onItemClick()
             function.invoke(null)
         }
     }
