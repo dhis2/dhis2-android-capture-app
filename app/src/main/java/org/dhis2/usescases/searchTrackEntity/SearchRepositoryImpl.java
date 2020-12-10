@@ -100,7 +100,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public Observable<List<FieldViewModel>> searchFields(@Nullable String programUid, Map<String, String> currentSearchValues) {
-        if (programUid == null) {
+        if (programUid.isEmpty()) {
             return trackedEntitySearchFields(currentSearchValues);
         } else {
             return programTrackedEntityAttributes(programUid, currentSearchValues);
