@@ -130,7 +130,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     }
 
     public void setError(String msg) {
-        if (msg != null){
+        if (msg != null) {
             inputLayout.setErrorTextAppearance(R.style.error_appearance);
             inputLayout.setError(msg);
             editText.setText(null);
@@ -138,16 +138,12 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         }
     }
 
-    public void setIsBgTransparent(boolean isBgTransparent) {
-        this.isBgTransparent = isBgTransparent;
-        setLayout();
-    }
-
     public void setAllowFutureDates(boolean allowFutureDates) {
         this.allowFutureDates = allowFutureDates;
     }
 
-    private void setLayout() {
+    private void setLayout(boolean isBgTransparent) {
+        this.isBgTransparent = isBgTransparent;
         binding = DateTimeViewBinding.inflate(inflater, this, true);
         inputLayout = findViewById(R.id.inputLayout);
         icon = findViewById(R.id.descIcon);
@@ -163,7 +159,10 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this);
         editText.setOnClickListener(this);
-        clearButton.setOnClickListener(v -> clearDate());
+        clearButton.setOnClickListener(v -> {
+            viewModel.onItemClick();
+            clearDate();
+        });
     }
 
     @Override
@@ -179,7 +178,8 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     @Override
     public void onClick(View view) {
         requestFocus();
-        activate();
+        viewModel.onItemClick();
+        closeKeyboard(binding.getRoot());
         showCustomCalendar(view);
     }
 
@@ -284,7 +284,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         this.viewModel = viewModel;
 
         if (binding == null) {
-            setIsBgTransparent(viewModel.isBackgroundTransparent());
+            setLayout(viewModel.isBackgroundTransparent());
         }
 
         setLabel(viewModel.getFormattedLabel());
@@ -294,21 +294,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         setAllowFutureDates(viewModel.allowFutureDate());
         setWarning(viewModel.warning());
         setEditable(viewModel.editable());
-        setDateListener(date -> {
-            viewModel.onDateSelected(date);
-            clearBackground(viewModel.isSearchMode());
-        });
-        setActivationListener(() -> {
-            viewModel.onActivate();
-            //TODO does DateTimeView needs keyboard?
-            closeKeyboard(binding.getRoot());
-        });
+        setDateListener(viewModel::onDateSelected);
     }
 
-    private void clearBackground(boolean isSearchMode) {
-        if (!isSearchMode) {
-            binding.getRoot().setBackgroundResource(R.color.form_field_background);
-            viewModel.onDeactivate();
-        }
-    }
 }

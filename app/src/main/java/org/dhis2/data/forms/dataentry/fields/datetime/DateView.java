@@ -50,7 +50,6 @@ public class DateView extends FieldLayout implements View.OnClickListener {
 
     private String label;
     private boolean allowFutureDates;
-    private String description;
     private Date date;
     private TextInputLayout inputLayout;
     private ImageView clearButton;
@@ -78,7 +77,8 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         super.init(context);
     }
 
-    private void setLayout() {
+    private void setLayout(boolean isBgTransparent) {
+        this.isBgTransparent = isBgTransparent;
         if (isBgTransparent)
             binding = DataBindingUtil.inflate(inflater, R.layout.date_time_view, this, true);
         else
@@ -97,7 +97,10 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this::onFocusChanged);
         editText.setOnClickListener(this);
-        clearButton.setOnClickListener(v -> clearDate());
+        clearButton.setOnClickListener(v -> {
+            viewModel.onItemClick();
+            clearDate();
+        });
         descriptionIcon.setOnClickListener(this);
     }
 
@@ -112,11 +115,6 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         editText.setOnClickListener(this);
     }
 
-    public void setIsBgTransparent(boolean isBgTransparent) {
-        this.isBgTransparent = isBgTransparent;
-        setLayout();
-    }
-
     public void setLabel(String label) {
         this.label = label;
         binding.setVariable(BR.label, label);
@@ -129,7 +127,6 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setDescription(String description) {
-        this.description = description;
         descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
         descriptionLabel.setOnClickListener(v ->
                 new CustomDialog(
@@ -189,7 +186,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setError(String msg) {
-        if (msg != null){
+        if (msg != null) {
             inputLayout.setErrorTextAppearance(R.style.error_appearance);
             inputLayout.setError(msg);
             editText.setText(null);
@@ -201,15 +198,17 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         this.listener = listener;
     }
 
-    private void onFocusChanged(View view, boolean b) {
-        if (b)
+    private void onFocusChanged(View view, boolean hasFocus) {
+        if (hasFocus) {
             onClick(view);
+        }
     }
 
     @Override
     public void onClick(View view) {
         requestFocus();
-        activate();
+        viewModel.onItemClick();
+        closeKeyboard(binding.getRoot());
         showCustomCalendar();
     }
 
@@ -224,7 +223,6 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     }
 
     private void showCustomCalendar() {
-
         DatePickerUtils.getDatePickerDialog(getContext(), label, date, allowFutureDates,
                 new DatePickerUtils.OnDatePickerClickListener() {
                     @Override
@@ -295,9 +293,8 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         this.viewModel = viewModel;
 
         if (binding == null) {
-            setIsBgTransparent(viewModel.isBackgroundTransparent());
+            setLayout(viewModel.isBackgroundTransparent());
         }
-
         setLabel(viewModel.getFormattedLabel());
         setDescription(viewModel.description());
         initData(viewModel.value());
@@ -305,20 +302,6 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         setAllowFutureDates(viewModel.allowFutureDate());
         setWarning(viewModel.warning());
         setEditable(viewModel.editable());
-        setDateListener(date -> {
-            viewModel.onDateSelected(date);
-            clearBackground(viewModel.isSearchMode());
-        });
-        setActivationListener(() -> {
-            viewModel.onActivate();
-            closeKeyboard(binding.getRoot());
-        });
-    }
-
-    private void clearBackground(boolean isSearchMode) {
-        if (!isSearchMode) {
-            binding.getRoot().setBackgroundResource(R.color.form_field_background);
-            viewModel.onDeactivate();
-        }
+        setDateListener(viewModel::onDateSelected);
     }
 }

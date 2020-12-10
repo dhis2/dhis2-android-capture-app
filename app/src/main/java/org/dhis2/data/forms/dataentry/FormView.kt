@@ -76,10 +76,4 @@ class FormView @JvmOverloads constructor(
         )
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
-
-    // TODO methods to remove
-
-    fun setLastFocusItem(lastFocusItem: String) {
-        adapter.setLastFocusItem(lastFocusItem)
-    }
 }

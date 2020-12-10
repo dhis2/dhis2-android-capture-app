@@ -43,6 +43,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
     private String value;
     private TextView labelText;
     private final FragmentManager supportFragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
+    private OrgUnitViewModel viewModel;
 
     public OrgUnitView(Context context) {
         super(context);
@@ -80,7 +81,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
-                activate();
+                viewModel.onItemClick();
                 editText.performClick();
             }
         });
@@ -213,6 +214,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
     }
 
     public void setViewModel(OrgUnitViewModel viewModel) {
+        this.viewModel = viewModel;
         if (binding == null) {
             setLayoutData(viewModel.isBackgroundTransparent(), viewModel.renderType());
         }
@@ -232,6 +234,5 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
 
         updateEditable(viewModel.editable());
         setListener(viewModel::onDataChange);
-        setActivationListener(viewModel::onActivate);
     }
 }

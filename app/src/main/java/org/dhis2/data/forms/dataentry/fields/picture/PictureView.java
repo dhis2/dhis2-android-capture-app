@@ -47,7 +47,7 @@ import kotlin.Pair;
 
 import static android.text.TextUtils.isEmpty;
 
-public class PictureView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
+public class PictureView extends FieldLayout implements View.OnClickListener {
 
     private ViewDataBinding binding;
     private String uid;
@@ -80,13 +80,9 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     @Override
     public void onClick(View v) {
         if (isEditable && v == addImageBtn) {
+            viewModel.onItemClick();
             selectImage();
         }
-    }
-
-    @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-
     }
 
     private void setLayout() {
@@ -97,12 +93,16 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
         errorView = findViewById(R.id.errorMessage);
         image = findViewById(R.id.image);
-        image.setOnClickListener(view -> showFullPicture());
+        image.setOnClickListener(view -> {
+            viewModel.onItemClick();
+            showFullPicture();
+        });
         addImageBtn = findViewById(R.id.addImageBtn);
         imageCard = findViewById(R.id.imageCard);
         addImageBtn.setOnClickListener(this);
         clearButton = findViewById(R.id.clear);
         clearButton.setOnClickListener(view -> {
+                    viewModel.onItemClick();
                     if (isEditable && removeFile()) {
                         addImageBtn.setVisibility(VISIBLE);
                         imageCard.setVisibility(View.GONE);
@@ -261,7 +261,6 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
         if (binding == null) {
             setIsBgTransparent(viewModel.isBackgroundTransparent());
         }
-        setActivationListener(viewModel::onActivate);
         setProcessor(viewModel.uid().contains("_") ? viewModel.uid().split("_")[0] : viewModel.uid(),
                 viewModel.uid().contains("_") ? viewModel.uid().split("_")[1] : viewModel.uid());
         setLabel(viewModel.getFormattedLabel());

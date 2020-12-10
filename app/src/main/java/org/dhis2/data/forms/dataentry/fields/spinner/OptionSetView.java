@@ -86,7 +86,10 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         editText.setFocusable(false);
         editText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
-        delete.setOnClickListener(view -> deleteSelectedOption());
+        delete.setOnClickListener(view -> {
+            viewModel.onItemClick();
+            deleteSelectedOption();
+        });
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus)
@@ -221,6 +224,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
     @Override
     public void onClick(View v) {
         requestFocus();
+        viewModel.onItemClick();
         closeKeyboard(v);
 //        setSelectedBackground(isSearchMode);
         OptionSetDialog dialog = new OptionSetDialog();
@@ -257,23 +261,12 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         if (binding == null) {
             setLayoutData(viewModel.isBackgroundTransparent(), viewModel.renderType());
         }
-        setOnSelectedOptionListener((optionName, optionCode) -> {
-            viewModel.onOptionSelected(optionName, optionCode);
-            clearBackground(!viewModel.isBackgroundTransparent());
-        });
-        setActivationListener(viewModel::onActivate);
+        setOnSelectedOptionListener(viewModel::onOptionSelected);
         updateEditable(viewModel.editable());
         setValue(viewModel.value());
         setWarning(viewModel.warning(), viewModel.error());
         setLabel(viewModel.label(), viewModel.mandatory());
         setDescription(viewModel.description());
         setOnClickListener(this);
-    }
-
-    private void clearBackground(boolean isSearchMode) {
-        if (!isSearchMode) {
-            binding.getRoot().setBackgroundResource(R.color.form_field_background);
-            viewModel.onDeactivate();
-        }
     }
 }

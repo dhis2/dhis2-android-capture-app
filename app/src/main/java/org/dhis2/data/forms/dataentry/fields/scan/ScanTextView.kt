@@ -71,6 +71,7 @@ class ScanTextView @JvmOverloads constructor(
         this.labelText = binding.root.findViewById(R.id.label)
 
         qrIcon.setOnClickListener {
+            viewModel.onItemClick()
             checkCameraPermission()
         }
 
@@ -79,7 +80,7 @@ class ScanTextView @JvmOverloads constructor(
                 closeKeyboard()
                 onScanResult.invoke(editText.text.toString())
             } else {
-                activationListener.onActivation()
+                viewModel.onItemClick();
             }
         }
     }
@@ -100,6 +101,7 @@ class ScanTextView @JvmOverloads constructor(
     fun setOnScannerListener(function: (String?) -> Unit) {
         this.onScanResult = function
         delete.setOnClickListener {
+            viewModel.onItemClick();
             function.invoke(null)
         }
     }
@@ -228,17 +230,8 @@ class ScanTextView @JvmOverloads constructor(
             optionSet = optionSet()
             setOnScannerListener { value ->
                 setText(value)
-                clearBackground(viewModel.isSearchMode())
                 viewModel.onScanSelected(value)
             }
-            setActivationListener(viewModel::onActivate)
-        }
-    }
-
-    private fun clearBackground(isSearchMode: Boolean) {
-        if (!isSearchMode) {
-            binding.root.setBackgroundResource(R.color.form_field_background)
-            viewModel.onDeactivate()
         }
     }
 

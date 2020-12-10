@@ -285,6 +285,8 @@ public abstract class OptionSetViewModel extends FieldViewModel {
     }
 
     public void onOptionSelected(String optionCode) {
+        onItemClick();
+
         processor().onNext(RowAction.create(uid(), optionCode));
     }
 }

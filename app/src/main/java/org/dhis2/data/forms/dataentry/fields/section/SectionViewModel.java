@@ -342,6 +342,8 @@ public abstract class SectionViewModel extends FieldViewModel {
     }
 
     public void setSelected() {
+        onItemClick();
+
         if (selectedField() != null && sectionProcessor() != null) {
             String sectionToOpen = Objects.equals(selectedField().get(), uid()) ? "" : uid();
             selectedField().set(sectionToOpen);
