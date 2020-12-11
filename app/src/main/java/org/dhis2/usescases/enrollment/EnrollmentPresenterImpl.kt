@@ -60,9 +60,11 @@ class EnrollmentPresenterImpl(
     private val analyticsHelper: AnalyticsHelper,
     private val mandatoryWarning: String,
     private val onRowActionProcessor: FlowableProcessor<RowAction>,
-    private val sectionProcessor: Flowable<String>
+    private val sectionProcessor: Flowable<String>,
+    private val focusProcessor: FlowableProcessor<HashMap<String, Boolean>>
 ) : RulesActionCallbacks {
 
+    private var focusedItem: String? = null
     private val disposable = CompositeDisposable()
     private val optionsToHide = HashMap<String, ArrayList<String>>()
     private val optionsGroupsToHide = HashMap<String, ArrayList<String>>()
@@ -76,6 +78,7 @@ class EnrollmentPresenterImpl(
     private var showErrors: Pair<Boolean, Boolean> = Pair(first = false, second = false)
     private var hasShownIncidentDateEditionWarning = false
     private var hasShownEnrollmentDateEditionWarning = false
+    private var itemList: List<FieldViewModel>? = null
 
     fun init() {
         view.setSaveButtonVisible(false)
@@ -144,6 +147,11 @@ class EnrollmentPresenterImpl(
                 .doOnNext { view.showProgress() }
                 .observeOn(schedulerProvider.io())
                 .flatMap { rowAction ->
+
+                    if (rowAction.lastFocusPosition() != null && rowAction.lastFocusPosition() >= 0) {
+                        this.focusedItem = rowAction.id()
+                    }
+
                     when (rowAction.id()) {
                         EnrollmentRepository.ENROLLMENT_DATE_UID -> {
                             enrollmentObjectRepository.setEnrollmentDate(
@@ -254,7 +262,8 @@ class EnrollmentPresenterImpl(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe({
-                    view.showFields(it)
+                    itemList = it
+                    view.showFields(setFocusedItem(itemList!!))
                     view.setSaveButtonVisible(true)
                     view.hideProgress()
                 }) {
@@ -272,8 +281,57 @@ class EnrollmentPresenterImpl(
                 )
         )
 
+        disposable.add(
+            focusProcessor
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { map ->
+                        val uid = map.keys.first()
+                        val isOnNext = map.values.first()
+
+                        focusedItem = if (isOnNext) {
+                            getNextItem(uid)
+                        } else {
+                            uid
+                        }
+
+                        itemList?.let {
+                            view.showFields(setFocusedItem(it))
+                        }
+                    },
+                    {
+                        Timber.e(it)
+                    }
+                )
+        )
+
         fields.connect()
     }
+
+    private fun getNextItem(currentItemUid: String): String? {
+        return itemList?.let { list ->
+            val oldItem = list.find { it.uid() == currentItemUid }
+            val pos = list.indexOf(oldItem)
+            if (pos < list.size - 1) {
+                return list[pos + 1].getUid()
+            }
+            return null
+        }
+    }
+
+    private fun setFocusedItem(list: List<FieldViewModel>) = focusedItem?.let {
+        list.find {
+            it.uid() == focusedItem
+        }?.let {
+            val pos = list.indexOf(it)
+            val newItem = it.withFocus()
+            list.updated(pos, newItem)
+        } ?: list
+    } ?: list
+
+    fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =
+        mapIndexed { i, existing -> if (i == index) elem else existing }
 
     fun setCurrentSection(sectionUid: String): String {
         if (sectionUid == selectedSection) {
@@ -328,8 +386,8 @@ class EnrollmentPresenterImpl(
                 if (isUnique && field.value() != null) {
                     uniqueValueAlreadyExist =
                         d2.trackedEntityModule().trackedEntityAttributeValues()
-                        .byTrackedEntityAttribute().eq(field.uid())
-                        .byValue().eq(field.value()).blockingGet().size > 1
+                            .byTrackedEntityAttribute().eq(field.uid())
+                            .byValue().eq(field.value()).blockingGet().size > 1
                     if (uniqueValueAlreadyExist) {
                         uniqueFields[field.uid()] = field.label()
                     }
@@ -389,7 +447,7 @@ class EnrollmentPresenterImpl(
         return Pair(values, total)
     }
 
-    fun getFieldFlowable(): ConnectableFlowable<List<FieldViewModel>> {
+    private fun getFieldFlowable(): ConnectableFlowable<List<FieldViewModel>> {
         return fieldsFlowable.startWith(true)
             .observeOn(schedulerProvider.io())
             .flatMap {
@@ -448,7 +506,7 @@ class EnrollmentPresenterImpl(
         val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
         val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
             d2.categoryModule().categoryCombos().uid(catComboUid)
-            .blockingGet().isDefault == false
+                .blockingGet().isDefault == false
         val needsCoordinates =
             stage.featureType() != null && stage.featureType() != FeatureType.NONE
 
@@ -599,8 +657,8 @@ class EnrollmentPresenterImpl(
             )
             valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, true)
         } else if (!optionsGroupsToHide.containsKey(field) || !optionsGroupsToHide.contains(
-            optionGroupUid
-        )
+                optionGroupUid
+            )
         ) {
             if (optionsGroupToShow[field] != null) {
                 optionsGroupToShow[field]!!.add(optionGroupUid)

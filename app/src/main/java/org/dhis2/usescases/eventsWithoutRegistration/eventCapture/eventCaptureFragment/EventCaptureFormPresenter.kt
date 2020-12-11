@@ -4,6 +4,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
@@ -16,9 +17,10 @@ class EventCaptureFormPresenter(
     val d2: D2,
     val valueStore: ValueStore,
     val schedulerProvider: SchedulerProvider,
-    val onFieldActionProcessor: FlowableProcessor<RowAction>
+    private val onFieldActionProcessor: FlowableProcessor<RowAction>,
+    private val focusProcessor: FlowableProcessor<HashMap<String, Boolean>>
 ) {
-    private var lastFocusItem: String = ""
+    private var focusedItem: String? = null
     private var selectedSection: String? = null
     var disposable: CompositeDisposable = CompositeDisposable()
 
@@ -30,9 +32,6 @@ class EventCaptureFormPresenter(
                 .doOnNext { activityPresenter.showProgress() }
                 .observeOn(schedulerProvider.io())
                 .switchMap { action ->
-                    if (action.lastFocusPosition() != null && action.lastFocusPosition() >= 0) {
-                        this.lastFocusItem = action.id()
-                    }
                     valueStore.save(action.id(), action.value())
                 }
                 .subscribeOn(schedulerProvider.io())
@@ -40,7 +39,6 @@ class EventCaptureFormPresenter(
                 .subscribe(
                     {
                         if (it.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
-                            activityPresenter.setLastUpdatedUid(lastFocusItem)
                             activityPresenter.nextCalculation(true)
                         }
                     },
@@ -48,28 +46,13 @@ class EventCaptureFormPresenter(
                 )
         )
 
-        /*disposable.add(
-            view.sectionSelectorFlowable()
-                .map { setCurrentSection(it) }
-                .distinctUntilChanged()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    {
-                        view.saveOpenedSection(it)
-                        activityPresenter.goToSection(it)
-                    },
-                    Timber::e
-                )
-        )*/
-
         disposable.add(
             activityPresenter.formFieldsFlowable()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { fields ->
-                        view.showFields(fields, lastFocusItem)
+                        view.showFields(setFocusedItem(fields))
                         activityPresenter.hideProgress()
                         selectedSection ?: fields
                             .mapNotNull { it.programStageSection() }
@@ -79,15 +62,30 @@ class EventCaptureFormPresenter(
                     { Timber.e(it) }
                 )
         )
-    }
 
-    private fun setCurrentSection(sectionUid: String): String? {
-        if (sectionUid == selectedSection) {
-            this.selectedSection = ""
-        } else {
-            this.selectedSection = sectionUid
-        }
-        return selectedSection
+        disposable.add(
+            focusProcessor
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { map ->
+                        val uid = map.keys.first()
+                        val isOnNext = map.values.first()
+
+                        focusedItem = if (isOnNext) {
+                            getNextItem(uid)
+                        } else {
+                            uid
+                        }
+                        val list = activityPresenter.formFieldsFlowable().blockingFirst()
+                        view.showFields(setFocusedItem(list))
+
+                    },
+                    {
+                        Timber.e(it)
+                    }
+                )
+        )
     }
 
     fun onDetach() {
@@ -97,4 +95,25 @@ class EventCaptureFormPresenter(
     fun onActionButtonClick() {
         activityPresenter.attempFinish()
     }
+
+    private fun getNextItem(currentItemUid: String): String? {
+        val list = activityPresenter.formFieldsFlowable().blockingFirst()
+        val oldItem = list.find { it.uid() == currentItemUid }
+        val pos = list.indexOf(oldItem)
+        if (pos < list.size - 1) {
+            return list[pos + 1].getUid()
+        }
+        return null
+    }
+
+    private fun setFocusedItem(list: MutableList<FieldViewModel>) = focusedItem?.let {
+        val oldItem = list.find { it.uid() == focusedItem }
+        val pos = list.indexOf(oldItem)
+        val newItem = oldItem?.withFocus()
+        list.updated(pos, newItem) as MutableList<FieldViewModel>
+    } ?: list
+
+
+    fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =
+        mapIndexed { i, existing -> if (i == index) elem else existing }
 }

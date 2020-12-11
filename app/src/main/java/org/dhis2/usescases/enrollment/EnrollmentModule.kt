@@ -113,7 +113,8 @@ class EnrollmentModule(
         valueStore: ValueStore,
         analyticsHelper: AnalyticsHelper,
         onRowActionProcessor: FlowableProcessor<RowAction>,
-        fieldViewModelFactory: FieldViewModelFactory
+        fieldViewModelFactory: FieldViewModelFactory,
+        focusProcessor: FlowableProcessor<HashMap<String, Boolean>>
     ): EnrollmentPresenterImpl {
         return EnrollmentPresenterImpl(
             enrollmentView,
@@ -128,7 +129,8 @@ class EnrollmentModule(
             analyticsHelper,
             context.getString(R.string.field_is_mandatory),
             onRowActionProcessor,
-            fieldViewModelFactory.sectionProcessor()
+            fieldViewModelFactory.sectionProcessor(),
+            focusProcessor
         )
     }
 
