@@ -18,7 +18,6 @@ class DataEntryAdapter :
     FieldItemCallback {
 
     var didItemShowDialog: ((title: String, message: String?) -> Unit)? = null
-    private var currentFocusPosition: Int? = null
 
     private val sectionHandler = SectionHandler()
     var sectionPositions: MutableMap<String, Int> = LinkedHashMap()
@@ -34,11 +33,7 @@ class DataEntryAdapter :
         if (getItem(position) is SectionViewModel) {
             updateSectionData(position, false)
         }
-        holder.bind(getItem(position), position, this, isItemFocused(position))
-    }
-
-    private fun isItemFocused(position: Int): Boolean {
-        return position == currentFocusPosition
+        holder.bind(getItem(position), this)
     }
 
     fun updateSectionData(position: Int, isHeader: Boolean) {
@@ -71,14 +66,13 @@ class DataEntryAdapter :
 
     fun swap(updates: List<FieldViewModel>, commitCallback: Runnable) {
         sectionPositions = LinkedHashMap()
-        val items: MutableList<FieldUiModel> = ArrayList()
         for (fieldViewModel in updates) {
             if (fieldViewModel is SectionViewModel) {
                 sectionPositions[fieldViewModel.getUid()] = updates.indexOf(fieldViewModel)
             }
-            items.add(fieldViewModel)
         }
-        submitList(items) {
+
+        submitList(updates) {
             commitCallback.run()
         }
     }
@@ -112,32 +106,9 @@ class DataEntryAdapter :
         }
     }
 
-    override fun onNext(position: Int) {
-        if (position < itemCount - 1) {
-            onItemClick(position + 1)
-        }
-    }
-
     override fun onShowDialog(title: String, message: String?) {
         didItemShowDialog?.let { action ->
             action(title, message)
-        }
-    }
-
-    override fun onItemClick(position: Int) {
-
-        if (currentFocusPosition != position) {
-
-            currentFocusPosition?.let {
-                getItem(it).onDeactivate()
-            }
-
-            if (getItem(position) is SectionViewModel) {
-                currentFocusPosition = null
-            } else {
-                currentFocusPosition = position
-                getItem(currentFocusPosition!!).onActivate()
-            }
         }
     }
 }

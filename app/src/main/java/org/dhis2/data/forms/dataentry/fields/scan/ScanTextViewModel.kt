@@ -50,6 +50,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
                 DataEntryViewHolderTypes.SCAN_CODE,
                 null,
                 null,
+                false,
                 fieldRendering,
                 hint,
                 isBackgroundTransparent,
@@ -91,6 +92,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
                 DataEntryViewHolderTypes.SCAN_CODE,
                 processor,
                 focusProcessor,
+                false,
                 fieldRendering,
                 hint,
                 isBackgroundTransparent,
@@ -116,6 +118,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             DataEntryViewHolderTypes.SCAN_CODE,
             processor(),
             focusProcessor(),
+            activated(),
             fieldRendering,
             hint,
             isBackgroundTransparent(),
@@ -140,6 +143,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             DataEntryViewHolderTypes.SCAN_CODE,
             processor(),
             focusProcessor(),
+            activated(),
             fieldRendering,
             hint,
             isBackgroundTransparent(),
@@ -164,6 +168,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             DataEntryViewHolderTypes.SCAN_CODE,
             processor(),
             focusProcessor(),
+            activated(),
             fieldRendering,
             hint,
             isBackgroundTransparent(),
@@ -188,6 +193,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             DataEntryViewHolderTypes.SCAN_CODE,
             processor(),
             focusProcessor(),
+            activated(),
             fieldRendering,
             hint,
             isBackgroundTransparent(),
@@ -212,11 +218,38 @@ abstract class ScanTextViewModel : FieldViewModel() {
             DataEntryViewHolderTypes.SCAN_CODE,
             processor(),
             focusProcessor(),
+            activated(),
             fieldRendering,
             hint,
             isBackgroundTransparent(),
             isSearchMode()
         )
+
+    override fun withFocus(): FieldViewModel =
+        AutoValue_ScanTextViewModel(
+            uid(),
+            label(),
+            mandatory(),
+            value(),
+            programStageSection(),
+            allowFutureDate(),
+            editable(),
+            optionSet(),
+            warning(),
+            error(),
+            description(),
+            objectStyle(),
+            fieldMask(),
+            DataEntryViewHolderTypes.SCAN_CODE,
+            processor(),
+            focusProcessor(),
+            true,
+            fieldRendering,
+            hint,
+            isBackgroundTransparent(),
+            isSearchMode()
+        )
+
 
     override fun getLayoutId(): Int {
         return R.layout.form_scan

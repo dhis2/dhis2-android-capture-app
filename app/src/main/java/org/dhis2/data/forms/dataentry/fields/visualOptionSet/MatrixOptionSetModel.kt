@@ -58,6 +58,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
                 DataEntryViewHolderTypes.PICTURE,
                 processor,
                 focusProcessor,
+                false,
                 options,
                 numberOfColumns
             )
@@ -82,6 +83,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             dataEntryViewType(),
             processor(),
             focusProcessor(),
+            activated(),
             options(),
             numberOfColumns()
         )
@@ -105,6 +107,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             dataEntryViewType(),
             processor(),
             focusProcessor(),
+            activated(),
             options(),
             numberOfColumns()
         )
@@ -128,6 +131,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             dataEntryViewType(),
             processor(),
             focusProcessor(),
+            activated(),
             options(),
             numberOfColumns()
         )
@@ -151,6 +155,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             dataEntryViewType(),
             processor(),
             focusProcessor(),
+            activated(),
             options(),
             numberOfColumns()
         )
@@ -174,6 +179,31 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             dataEntryViewType(),
             processor(),
             focusProcessor(),
+            activated(),
+            options(),
+            numberOfColumns()
+        )
+    }
+
+    override fun withFocus(): FieldViewModel {
+        return AutoValue_MatrixOptionSetModel(
+            uid(),
+            label(),
+            mandatory(),
+            value(),
+            programStageSection(),
+            false,
+            editable(),
+            optionSet(),
+            warning(),
+            error(),
+            description(),
+            objectStyle(),
+            fieldMask(),
+            dataEntryViewType(),
+            processor(),
+            focusProcessor(),
+            true,
             options(),
             numberOfColumns()
         )

@@ -340,6 +340,7 @@ public class YesNoView extends FieldLayout {
 
     public interface OnValueChanged {
         void onValueChanged(boolean isActive);
+
         void onClearValue();
     }
 
@@ -368,7 +369,7 @@ public class YesNoView extends FieldLayout {
         setValueListener(new OnValueChanged() {
             @Override
             public void onValueChanged(boolean isActive) {
-                viewModel.onActivate();
+                viewModel.onItemClick();
                 if (isActive) {
                     viewModel.onValueChanged(true);
                 } else {
@@ -388,7 +389,6 @@ public class YesNoView extends FieldLayout {
     private void clearBackground(boolean isSearchMode) {
         if (!isSearchMode) {
             binding.getRoot().setBackgroundResource(R.color.form_field_background);
-            viewModel.onDeactivate();
         }
     }
 }

@@ -62,6 +62,9 @@ public abstract class FieldViewModel implements FieldUiModel {
     public abstract FieldViewModel withEditMode(boolean isEditable);
 
     @NonNull
+    public abstract FieldViewModel withFocus();
+
+    @NonNull
     public abstract ObjectStyle objectStyle();
 
     @Nullable
@@ -79,7 +82,8 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     public Callback callback;
 
-    public boolean activated = false;
+    @NonNull
+    public abstract Boolean activated();
 
     public String getFormattedLabel() {
         if (mandatory()) {
@@ -139,7 +143,7 @@ public abstract class FieldViewModel implements FieldUiModel {
                     && this.dataEntryViewType().equals(that.dataEntryViewType())
                     && this.mandatory().equals(that.mandatory())
                     && (this.value() == null ? that.value() == null : this.value().equals(that.value()))
-                    && (this.activated == that.activated);
+                    && (this.activated() == that.activated());
         }
         return false;
     }
@@ -147,16 +151,6 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Override
     public void setCallback(@NotNull Callback callback) {
         this.callback = callback;
-    }
-
-    @Override
-    public void onActivate() {
-        activated = true;
-    }
-
-    @Override
-    public void onDeactivate() {
-        activated = false;
     }
 
     public void setAdapterPosition(int index) {

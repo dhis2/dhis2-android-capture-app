@@ -10,10 +10,6 @@ interface FieldUiModel {
 
     fun equals(item: FieldUiModel): Boolean
 
-    fun onActivate()
-
-    fun onDeactivate()
-
     fun onItemClick()
 
     fun onNext()

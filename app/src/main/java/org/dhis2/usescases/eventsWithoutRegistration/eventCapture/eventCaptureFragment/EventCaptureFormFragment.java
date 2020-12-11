@@ -89,7 +89,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     }
 
     @Override
-    public void showFields(@NonNull List<FieldViewModel> updates, @NonNull String lastFocusItem) {
+    public void showFields(@NonNull List<FieldViewModel> updates) {
         binding.formView.render(updates);
     }
 }

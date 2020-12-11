@@ -35,42 +35,48 @@ public abstract class SpinnerViewModel extends FieldViewModel {
 
     public static SpinnerViewModel create(String id, String label, String hintFilterOptions, Boolean mandatory,
                                           String optionSet, String value, String section, Boolean editable, String description, ObjectStyle objectStyle, boolean isBackgroundTransparent, String renderType) {
-        return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, editable, null, null, description, objectStyle, null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, null, null, hintFilterOptions, optionSet, isBackgroundTransparent, renderType);
+        return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, editable, null, null, description, objectStyle, null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, null, null, false, hintFilterOptions, optionSet, isBackgroundTransparent, renderType);
     }
 
     public static SpinnerViewModel create(String id, String label, String hintFilterOptions, Boolean mandatory,
                                           String optionSet, String value, String section, Boolean editable, String description, ObjectStyle objectStyle, boolean isBackgroundTransparent, String renderType, FlowableProcessor<RowAction> processor, FlowableProcessor<HashMap<String, Boolean>> focusProcessor) {
-        return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, editable, null, null, description, objectStyle, null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor, focusProcessor, hintFilterOptions, optionSet, isBackgroundTransparent, renderType);
+        return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, editable, null, null, description, objectStyle, null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor, focusProcessor, false, hintFilterOptions, optionSet, isBackgroundTransparent, renderType);
     }
 
 
     @Override
     public FieldViewModel setMandatory() {
-        return new AutoValue_SpinnerViewModel(uid(), label(), true, value(), programStageSection(), allowFutureDate(), editable(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(), focusProcessor(), hint(), optionSet(), isBackgroundTransparent(), renderType());
+        return new AutoValue_SpinnerViewModel(uid(), label(), true, value(), programStageSection(), allowFutureDate(), editable(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(), focusProcessor(), activated(), hint(), optionSet(), isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), editable(), warning(), error, description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(), focusProcessor(), hint(), optionSet(), isBackgroundTransparent(), renderType());
+        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), editable(), warning(), error, description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(), focusProcessor(), activated(), hint(), optionSet(), isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), editable(), warning, error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(), focusProcessor(), hint(), optionSet(), isBackgroundTransparent(), renderType());
+        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), editable(), warning, error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(), focusProcessor(), activated(), hint(), optionSet(), isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), data, programStageSection(), allowFutureDate(), false, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(), focusProcessor(), hint(), optionSet(), isBackgroundTransparent(), renderType());
+        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), data, programStageSection(), allowFutureDate(), false, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(), focusProcessor(), activated(), hint(), optionSet(), isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withEditMode(boolean isEditable) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), isEditable, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(), focusProcessor(), hint(), optionSet(), isBackgroundTransparent(), renderType());
+        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), isEditable, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(), focusProcessor(), activated(), hint(), optionSet(), isBackgroundTransparent(), renderType());
+    }
+
+    @NonNull
+    @Override
+    public FieldViewModel withFocus() {
+        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), editable(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(), focusProcessor(), true, hint(), optionSet(), isBackgroundTransparent(), renderType());
     }
 
     public void setOptionsToHide(List<String> optionsToHide, List<String> optionsGroupsToHide) {

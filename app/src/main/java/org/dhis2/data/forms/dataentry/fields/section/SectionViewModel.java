@@ -69,6 +69,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 DataEntryViewHolderTypes.SECTION,
                 null,
                 null,
+                false,
                 isOpen,
                 totalFields,
                 completedFields,
@@ -98,6 +99,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 DataEntryViewHolderTypes.SECTION,
                 null,
                 null,
+                false,
                 false,
                 0,
                 0,
@@ -133,6 +135,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 DataEntryViewHolderTypes.SECTION,
                 processor(),
                 focusProcessor(),
+                activated(),
                 isOpen(),
                 totalFields(),
                 completedFields(),
@@ -163,6 +166,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 DataEntryViewHolderTypes.SECTION,
                 processor(),
                 focusProcessor(),
+                activated(),
                 isOpen(),
                 totalFields(),
                 completedFields(),
@@ -193,6 +197,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 DataEntryViewHolderTypes.SECTION,
                 processor(),
                 focusProcessor(),
+                activated(),
                 isOpen(),
                 totalFields(),
                 completedFields(),
@@ -228,6 +233,12 @@ public abstract class SectionViewModel extends FieldViewModel {
         return this;
     }
 
+    @NonNull
+    @Override
+    public FieldViewModel withFocus() {
+        return this;
+    }
+
     public SectionViewModel setOpen(boolean isOpen) {
         return new AutoValue_SectionViewModel(
                 uid(),
@@ -246,6 +257,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 DataEntryViewHolderTypes.SECTION,
                 processor(),
                 focusProcessor(),
+                activated(),
                 isOpen,
                 totalFields(),
                 completedFields(),
@@ -275,6 +287,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 DataEntryViewHolderTypes.SECTION,
                 processor(),
                 focusProcessor(),
+                activated(),
                 isOpen(),
                 totalFields,
                 completedFields(),
@@ -304,6 +317,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 DataEntryViewHolderTypes.SECTION,
                 processor(),
                 focusProcessor(),
+                activated(),
                 isOpen(),
                 totalFields(),
                 completedFields,
