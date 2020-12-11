@@ -75,8 +75,4 @@ class OrgUnitFilterView @JvmOverloads constructor(
             Observer<List<OrganisationUnit?>> { ouFilterAdapter.notifyDataSetChanged() }
         )
     }
-
-    /*fun setFilterPresenter(filterPresenter: FilterPresenter) {
-        this.filterPresenter = filterPresenter
-    }*/
 }

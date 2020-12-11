@@ -1,11 +1,14 @@
 package org.dhis2.data.filter
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.android.plugins.RxAndroidPlugins
+import io.reactivex.schedulers.Schedulers
 import java.util.Date
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.common.State
@@ -14,9 +17,14 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 class DataSetFilterSearchHelperTest {
+
+    @Rule
+    @JvmField
+    var instantExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var dataSetFilterSearchHelper: DataSetFilterSearchHelper
     private val filterRepository: FilterRepository = mock()
@@ -24,6 +32,7 @@ class DataSetFilterSearchHelperTest {
 
     @Before
     fun setUp() {
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
         dataSetFilterSearchHelper = DataSetFilterSearchHelper(
             filterRepository,
             filterManager
@@ -31,6 +40,11 @@ class DataSetFilterSearchHelperTest {
         whenever(
             filterRepository.dataSetInstanceSummaries()
         ) doReturn mock()
+    }
+
+    @After
+    fun tearDown() {
+        RxAndroidPlugins.reset()
     }
 
     @After

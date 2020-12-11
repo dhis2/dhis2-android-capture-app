@@ -1,5 +1,8 @@
 package org.dhis2.utils.filters
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import io.reactivex.android.plugins.RxAndroidPlugins
+import io.reactivex.schedulers.Schedulers
 import java.util.Date
 import org.dhis2.utils.filters.sorting.SortingItem
 import org.dhis2.utils.filters.sorting.SortingStatus
@@ -9,18 +12,31 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
+import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 class FilterManagerTest {
+
+    @Rule
+    @JvmField
+    var instantExecutorRule = InstantTaskExecutorRule()
 
     lateinit var filterManager: FilterManager
 
     @Before
     fun setUp() {
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
+
         filterManager = FilterManager.getInstance()
         filterManager.reset()
+    }
+
+    @After
+    fun tearDown() {
+        RxAndroidPlugins.reset()
     }
 
     @Test

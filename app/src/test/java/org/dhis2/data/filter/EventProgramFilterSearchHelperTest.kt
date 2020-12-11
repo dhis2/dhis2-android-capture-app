@@ -1,11 +1,14 @@
 package org.dhis2.data.filter
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.android.plugins.RxAndroidPlugins
+import io.reactivex.schedulers.Schedulers
 import java.util.Date
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
@@ -18,9 +21,14 @@ import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 class EventProgramFilterSearchHelperTest {
+
+    @Rule
+    @JvmField
+    var instantExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var eventFilterSearchHelper: EventProgramFilterSearchHelper
     private val filterRepository: FilterRepository = mock()
@@ -28,6 +36,8 @@ class EventProgramFilterSearchHelperTest {
 
     @Before
     fun setUp() {
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
+
         eventFilterSearchHelper = EventProgramFilterSearchHelper(
             filterRepository,
             filterManager
@@ -40,6 +50,7 @@ class EventProgramFilterSearchHelperTest {
     @After
     fun clearAll() {
         filterManager.clearAllFilters()
+        RxAndroidPlugins.reset()
     }
 
     @Test

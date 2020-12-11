@@ -10,6 +10,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
+import org.dhis2.data.filter.FilterRepository
 import org.dhis2.data.prefs.Preference.Companion.DEFAULT_CAT_COMBO
 import org.dhis2.data.prefs.Preference.Companion.PIN
 import org.dhis2.data.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
@@ -42,11 +43,20 @@ class MainPresenterTest {
     private val preferences: PreferenceProvider = mock()
     private val workManagerController: WorkManagerController = mock()
     private val filterManager: FilterManager = mock()
+    private val filterRepository: FilterRepository = mock()
 
     @Before
     fun setUp() {
         presenter =
-            MainPresenter(view, d2, schedulers, preferences, workManagerController, filterManager)
+            MainPresenter(
+                view,
+                d2,
+                schedulers,
+                preferences,
+                workManagerController,
+                filterManager,
+                filterRepository
+            )
     }
 
     @Test

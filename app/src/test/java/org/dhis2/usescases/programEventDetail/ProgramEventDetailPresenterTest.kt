@@ -1,5 +1,6 @@
 package org.dhis2.usescases.programEventDetail
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
 import com.mapbox.geojson.BoundingBox
@@ -14,7 +15,10 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.android.plugins.RxAndroidPlugins
+import io.reactivex.schedulers.Schedulers
 import junit.framework.Assert.assertTrue
+import org.dhis2.data.filter.FilterRepository
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.tuples.Pair
@@ -31,11 +35,17 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 class ProgramEventDetailPresenterTest {
+    @Rule
+    @JvmField
+    var instantExecutorRule = InstantTaskExecutorRule()
 
+    private val filterRepository: FilterRepository = mock()
     private lateinit var presenter: ProgramEventDetailPresenter
 
     private val view: ProgramEventDetailContract.View = mock()
@@ -47,6 +57,8 @@ class ProgramEventDetailPresenterTest {
 
     @Before
     fun setUp() {
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
+
         presenter = ProgramEventDetailPresenter(
             view,
             repository,
@@ -56,6 +68,12 @@ class ProgramEventDetailPresenterTest {
             workingListMapper,
             filterRepository
         )
+    }
+
+    @After
+    fun clear() {
+        FilterManager.getInstance().clearAllFilters()
+        RxAndroidPlugins.reset()
     }
 
     @Test
@@ -170,7 +188,6 @@ class ProgramEventDetailPresenterTest {
     fun `Should clear all filters when reset filter button is clicked`() {
         presenter.clearFilterClick()
         assertTrue(filterManager.totalFilters == 0)
-        verify(view).clearFilters()
     }
 
     private fun dummyCategoryCombo() = CategoryCombo.builder().uid("uid").build()
