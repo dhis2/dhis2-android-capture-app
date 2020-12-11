@@ -27,6 +27,7 @@ import androidx.databinding.BindingAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.R;
@@ -52,9 +53,6 @@ import java.util.Date;
 import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
 import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
 
-/**
- * QUADRAM. Created by ppajuelo on 28/09/2017.
- */
 
 public class Bindings {
 
@@ -590,61 +588,56 @@ public class Bindings {
     }
 
     @BindingAdapter("setTextColor")
-    public static void setTextColor(RadioButton radioButton, boolean isBgTransparent) {
+    public static void setTextColorRadioButton(RadioButton radioButton, boolean isBgTransparent) {
+        radioButton.setTextColor(getColorStateViewChecked(radioButton.getContext(), isBgTransparent));
+    }
+
+    @BindingAdapter("tintRadioButton")
+    public static void tintRadioButton(RadioButton radioButton, boolean isBg) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            radioButton.setButtonTintList(getColorStateViewChecked(radioButton.getContext(), isBg));
+            radioButton.invalidate();
+        }
+    }
+
+    @BindingAdapter("setTextColor")
+    public static void setTextColorCheckbox(MaterialCheckBox checkbox, boolean isBgTransparent) {
+        checkbox.setTextColor(getColorStateViewChecked(checkbox.getContext(), isBgTransparent));
+    }
+
+    @BindingAdapter("tintCheckboxButton")
+    public static void tintCheckbox(MaterialCheckBox radioButton, boolean isBg) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            radioButton.setButtonTintList(getColorStateViewChecked(radioButton.getContext(), isBg));
+            radioButton.invalidate();
+        }
+    }
+
+    private static ColorStateList getColorStateViewChecked(Context context, boolean isBackground){
         int colorStateChecked;
         int colorStateUnchecked;
 
-        if (isBgTransparent){
-            colorStateChecked = ColorUtils.getPrimaryColor(radioButton.getContext(),
+        if (isBackground) {
+            colorStateChecked = ColorUtils.getPrimaryColor(context,
                     ColorUtils.ColorType.PRIMARY);
+            colorStateUnchecked = ContextCompat.getColor(context, R.color.textPrimary);
         } else {
-            colorStateChecked = ColorUtils.getPrimaryColor(radioButton.getContext(),
+            colorStateChecked = ColorUtils.getPrimaryColor(context,
                     ColorUtils.ColorType.ACCENT);
+            colorStateUnchecked = colorStateChecked;
         }
-        colorStateUnchecked = ContextCompat.getColor(radioButton.getContext(), R.color.textPrimary);
-        ColorStateList colorStateList = new ColorStateList(
+
+
+        return new ColorStateList(
                 new int[][]{
                         new int[]{android.R.attr.state_checked},
                         new int[]{-android.R.attr.state_checked}
                 },
                 new int[] {
-                        colorStateChecked
-                       ,colorStateUnchecked
+                        colorStateChecked,
+                        colorStateUnchecked
                 }
         );
-
-        radioButton.setTextColor(colorStateList);
-    }
-
-    @BindingAdapter("tintRadioButton")
-    public static void tintRadioButton(RadioButton radioButton, boolean isBg) {
-        if (Build.VERSION.SDK_INT >= 21) {
-            int colorStateChecked;
-            int colorStateUnchecked;
-
-            if (isBg) {
-                colorStateChecked = ColorUtils.getPrimaryColor(radioButton.getContext(),
-                        ColorUtils.ColorType.PRIMARY);
-            } else {
-                colorStateChecked = ColorUtils.getPrimaryColor(radioButton.getContext(),
-                        ColorUtils.ColorType.ACCENT);
-            }
-
-            colorStateUnchecked = ContextCompat.getColor(radioButton.getContext(), R.color.textPrimary);
-            ColorStateList colorStateList = new ColorStateList(
-                    new int[][]{
-                            new int[]{android.R.attr.state_checked},
-                            new int[]{-android.R.attr.state_checked}
-                    },
-                    new int[] {
-                            colorStateChecked,
-                            colorStateUnchecked
-                    }
-            );
-
-            radioButton.setButtonTintList(colorStateList);
-            radioButton.invalidate();
-        }
     }
 
     @BindingAdapter("requestFocus")
