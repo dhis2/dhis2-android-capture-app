@@ -94,7 +94,7 @@ class VisualOptionSetView @JvmOverloads constructor(
         return ImageCustomView(context).apply {
             tag = viewModel?.optionTag(option)
             layoutParams =
-                LayoutParams(parentWidth / numberOfColumns, 500).apply {
+                FrameLayout.LayoutParams(parentWidth / numberOfColumns, 500).apply {
                     topMargin = (index / numberOfColumns) * 500
                     marginStart =
                         (index % numberOfColumns) * (parentWidth / numberOfColumns)
