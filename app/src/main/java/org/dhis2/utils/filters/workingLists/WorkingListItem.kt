@@ -40,7 +40,8 @@ sealed class WorkingListItem(
 data class TeiWorkingListItem(
     override val uid: String,
     override val label: String,
-    val enrollentStatus: EnrollmentStatus?
+    val enrollentStatus: EnrollmentStatus?,
+    val assignedToMe: Boolean?
 ) : WorkingListItem(uid, label)
 
 data class EventWorkingListItem(

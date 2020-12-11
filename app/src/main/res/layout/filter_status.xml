@@ -12,10 +12,6 @@
         <import type="org.hisp.dhis.android.core.event.EventStatus" />
 
         <variable
-            name="currentFilter"
-            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.Filters&gt;" />
-
-        <variable
             name="filterType"
             type="org.dhis2.utils.filters.Filters" />
 
@@ -35,7 +31,7 @@
         android:orientation="vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:visibility="@{currentFilter == filterType ? View.VISIBLE : View.GONE}"
+        android:visibility="@{filterItem.openFilter == filterType ? View.VISIBLE : View.GONE}"
         app:layout_constraintTop_toTopOf="parent">
 
         <!--OPEN-->

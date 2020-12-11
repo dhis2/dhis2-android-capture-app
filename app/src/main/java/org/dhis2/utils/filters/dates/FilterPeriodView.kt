@@ -34,14 +34,6 @@ class FilterPeriodView @JvmOverloads constructor(
         setListeners()
     }
 
-    fun setFilterType(filterType: Filters) {
-        binding.filterType = filterType
-    }
-
-    fun setCurrentFilter(currentFilter: ObservableField<Filters>) {
-        binding.currentFilter = currentFilter
-    }
-
     fun setFilterItem(filterItem: FilterItem) {
         if (filterItem is EnrollmentDateFilter) {
             setEnrollmentFilter(filterItem)

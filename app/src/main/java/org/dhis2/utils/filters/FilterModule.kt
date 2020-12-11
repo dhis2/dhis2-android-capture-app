@@ -20,14 +20,14 @@ class FilterModule {
     @Singleton
     fun eventWorkingListMapper(resourceManager: ResourceManager): EventFilterToWorkingListItemMapper {
         return EventFilterToWorkingListItemMapper(
-            resourceManager.defaultWorkingListLabel(),
-            RelativePeriodToStringMapper(resourceManager)
+            resourceManager.filterResources.defaultWorkingListLabel(),
+            RelativePeriodToStringMapper(resourceManager.filterResources)
         )
     }
 
     @Provides
     @Singleton
     fun teiWorkingListMapper(resourceManager: ResourceManager): TeiFilterToWorkingListItemMapper {
-        return TeiFilterToWorkingListItemMapper(resourceManager.defaultWorkingListLabel())
+        return TeiFilterToWorkingListItemMapper(resourceManager.filterResources.defaultWorkingListLabel())
     }
 }

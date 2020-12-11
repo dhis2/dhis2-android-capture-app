@@ -8,12 +8,11 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.FrameLayout
 import androidx.core.widget.addTextChangedListener
-import androidx.databinding.ObservableField
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import org.dhis2.App
 import org.dhis2.data.filter.FilterPresenter
 import org.dhis2.databinding.FilterOrgUnitBinding
-import org.dhis2.utils.filters.Filters
 import org.dhis2.utils.filters.OrgUnitFilter
 import org.dhis2.utils.filters.sorting.FilteredOrgUnitResult
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -25,7 +24,11 @@ class OrgUnitFilterView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val ouFilterAdapter by lazy { OUFilterAdapter() }
-    private var filterPresenter: FilterPresenter? = null
+
+    private val filterPresenter: FilterPresenter? by lazy {
+        (context.applicationContext as App).userComponent()?.filterPresenter()
+    }
+
     private val binding =
         FilterOrgUnitBinding.inflate(LayoutInflater.from(context), this, true).apply {
             ouRecycler.adapter = ouFilterAdapter
@@ -65,21 +68,15 @@ class OrgUnitFilterView @JvmOverloads constructor(
         }
 
     fun setFilterItem(filterItem: OrgUnitFilter) {
+        binding.filterItem = filterItem
+        binding.filterType = filterItem.type
         filterItem.selectedOrgUnits.observe(
             (context as LifecycleOwner),
             Observer<List<OrganisationUnit?>> { ouFilterAdapter.notifyDataSetChanged() }
         )
     }
 
-    fun setFilterPresenter(filterPresenter: FilterPresenter) {
+    /*fun setFilterPresenter(filterPresenter: FilterPresenter) {
         this.filterPresenter = filterPresenter
-    }
-
-    fun setCurrentFilter(currentFilter: ObservableField<Filters>) {
-        binding.currentFilter = currentFilter
-    }
-
-    fun setFilterType(filterType: Filters) {
-        binding.filterType = filterType
-    }
+    }*/
 }

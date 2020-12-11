@@ -761,15 +761,4 @@ public class SearchRepositoryImpl implements SearchRepository {
         return d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingExists() &&
                 d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingGet().valueType() == ValueType.IMAGE;
     }
-
-    @Override
-    public Single<List<TrackedEntityInstanceFilter>> workingLists(String programUid) {
-        if(programUid == null){
-            return Single.just(new ArrayList<>());
-        }
-        return d2.trackedEntityModule().trackedEntityInstanceFilters()
-                .withTrackedEntityInstanceEventFilters()
-                .byProgram().eq(programUid)
-                .get();
-    }
 }

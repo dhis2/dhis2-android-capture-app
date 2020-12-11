@@ -162,7 +162,7 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    FiltersAdapter provideNewFiltersAdapter(FilterPresenter filterPresenter) {
-        return new FiltersAdapter(ProgramType.TRACKER, filterPresenter);
+    FiltersAdapter provideNewFiltersAdapter() {
+        return new FiltersAdapter();
     }
 }

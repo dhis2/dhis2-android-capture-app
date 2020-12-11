@@ -12,12 +12,15 @@ import android.os.Build;
 import android.text.method.ScrollingMovementMethod;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.databinding.BindingAdapter;
@@ -29,9 +32,16 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.dhis2.R;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
+import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.filters.CatOptionComboFilter;
+import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.Filters;
+import org.dhis2.utils.filters.cat_opt_comb.CatOptCombFilterAdapter;
+import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.resources.ResourceManager;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -45,6 +55,9 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 28/09/2017.
@@ -581,5 +594,77 @@ public class Bindings {
         else
             DrawableCompat.setTint(mutableDrawable, ContextCompat.getColor(view.getContext(), R.color.text_black_333));
 
+    }
+
+    @BindingAdapter(value = {"catComboAdapterData", "catComboAdapterTitle"})
+    public static void setCatComboAdapter(AppCompatSpinner spinner, List<CategoryOptionCombo> catComboAdapterData, String catComboAdapterTitle) {
+        CatComboAdapter spinnerAdapter = new CatComboAdapter(spinner.getContext(),
+                R.layout.spinner_layout,
+                R.id.spinner_text,
+                catComboAdapterData != null ? catComboAdapterData : new ArrayList<>(),
+                catComboAdapterTitle,
+                R.color.white_faf);
+
+        spinner.setAdapter(spinnerAdapter);
+    }
+
+    @BindingAdapter("onCatComboSelected")
+    public static void setOnCatComboSelected(AppCompatSpinner spinner, CatOptionComboFilter itemFilter) {
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                if (position != 0) {
+                    itemFilter.selectCatOptionCombo(position - 1);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+    }
+
+    @BindingAdapter("withCatComboFilterAdapter")
+    public static void setWithCatComboFilterAdapter(RecyclerView recyclerView, boolean setAdapter) {
+        if (setAdapter) {
+            recyclerView.setAdapter(new CatOptCombFilterAdapter());
+        }
+    }
+
+    @BindingAdapter("fromResource")
+    public static void setFromResource(ImageView imageView, @DrawableRes int resource) {
+        try {
+            imageView.setImageDrawable(AppCompatResources.getDrawable(imageView.getContext(), resource));
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+    }
+
+    @BindingAdapter(value = {"sortingItem", "filterType"}, requireAll = true)
+    public static void setSortingIcon(ImageView sortingIcon, SortingItem sortingItem, Filters filterType) {
+        if (sortingItem != null) {
+            if (sortingItem.component1() != filterType) {
+                sortingIcon.setImageDrawable(AppCompatResources.getDrawable(sortingIcon.getContext(), R.drawable.ic_sort_deactivated));
+            } else {
+                switch (sortingItem.component2()) {
+                    case ASC:
+                        sortingIcon.setImageDrawable(AppCompatResources.getDrawable(sortingIcon.getContext(), R.drawable.ic_sort_ascending));
+                        break;
+                    case DESC:
+                        sortingIcon.setImageDrawable(AppCompatResources.getDrawable(sortingIcon.getContext(), R.drawable.ic_sort_descending));
+                        break;
+                    case NONE:
+                    default:
+                        sortingIcon.setImageDrawable(AppCompatResources.getDrawable(sortingIcon.getContext(), R.drawable.ic_sort_deactivated));
+                        break;
+                }
+            }
+        }
+    }
+
+    @BindingAdapter(value = {"filterArrow", "filterType"})
+    public static void setFilterArrow(View view, Filters openFilter, Filters filterType) {
+        view.animate().scaleY(openFilter != filterType ? 1 : -1).setDuration(200).start();
     }
 }

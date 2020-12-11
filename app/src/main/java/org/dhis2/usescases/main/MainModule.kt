@@ -39,7 +39,7 @@ class MainModule(val view: MainView) {
 
     @Provides
     @PerActivity
-    fun providesNewFilterAdapter(filterPresenter: FilterPresenter): FiltersAdapter {
-        return FiltersAdapter(ProgramType.ALL, filterPresenter)
+    fun providesNewFilterAdapter(): FiltersAdapter {
+        return FiltersAdapter()
     }
 }

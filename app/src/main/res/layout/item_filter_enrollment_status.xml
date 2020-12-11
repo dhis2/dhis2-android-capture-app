@@ -8,18 +8,6 @@
         <import type="android.view.View" />
 
         <variable
-            name="currentFilter"
-            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.Filters&gt;" />
-
-        <variable
-            name="filterCount"
-            type="androidx.databinding.ObservableField&lt;java.lang.Integer&gt;" />
-
-        <variable
-            name="filterType"
-            type="org.dhis2.utils.filters.Filters" />
-
-        <variable
             name="workingListFilter"
             type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.workingLists.TeiWorkingListItem&gt;" />
         <variable
@@ -37,7 +25,8 @@
         <include
             android:id="@+id/filterLayout"
             layout="@layout/item_header_filter"
-            app:filterCount="@{filterCount}"
+            app:filterCount="@{filterItem.observeCount()}"
+            app:filterItem="@{filterItem}"
             app:layout_constraintTop_toBottomOf="parent" />
 
         <include
@@ -45,8 +34,7 @@
             layout="@layout/filter_enrollment_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:currentFilter="@{currentFilter}"
-            app:filterType="@{filterType}"
+            app:filterType="@{filterItem.type}"
             app:filterItem="@{filterItem}"
             app:layout_constraintTop_toBottomOf="@id/filterLayout" />
 

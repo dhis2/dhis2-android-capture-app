@@ -83,7 +83,7 @@ public class TEIDataModule {
 
     @Provides
     @PerFragment
-    FiltersAdapter provideNewFiltersAdapter(FilterPresenter filterPresenter) {
-        return new FiltersAdapter(ProgramType.DASHBOARD, filterPresenter);
+    FiltersAdapter provideNewFiltersAdapter() {
+        return new FiltersAdapter();
     }
 }

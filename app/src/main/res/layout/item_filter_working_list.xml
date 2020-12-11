@@ -7,18 +7,6 @@
         <import type="android.view.View" />
 
         <variable
-            name="currentFilter"
-            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.Filters&gt;" />
-
-        <variable
-            name="filterCount"
-            type="androidx.databinding.ObservableField&lt;java.lang.Integer&gt;" />
-
-        <variable
-            name="filterType"
-            type="org.dhis2.utils.filters.Filters" />
-
-        <variable
             name="filterItem"
             type="org.dhis2.utils.filters.WorkingListFilter" />
     </data>

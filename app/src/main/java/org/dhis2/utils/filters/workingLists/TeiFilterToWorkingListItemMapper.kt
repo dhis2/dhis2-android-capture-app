@@ -1,5 +1,6 @@
 package org.dhis2.utils.filters.workingLists
 
+import org.hisp.dhis.android.core.common.AssignedUserMode
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter
 
 class TeiFilterToWorkingListItemMapper(
@@ -9,7 +10,8 @@ class TeiFilterToWorkingListItemMapper(
         return TeiWorkingListItem(
             teiFilter.uid(),
             teiFilter.displayName() ?: defaultWorkingListLabel,
-            teiFilter.enrollmentStatus()
+            teiFilter.enrollmentStatus(),
+            teiFilter.eventFilters()?.any { eventFilter->eventFilter.assignedUserMode() == AssignedUserMode.CURRENT }
         )
     }
 }

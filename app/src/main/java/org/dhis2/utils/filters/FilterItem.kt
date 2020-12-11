@@ -1,7 +1,13 @@
 package org.dhis2.utils.filters
 
+import androidx.annotation.DrawableRes
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
+import org.dhis2.R
+import org.dhis2.utils.filters.sorting.Sorting
+import org.dhis2.utils.filters.sorting.SortingItem
+import org.dhis2.utils.filters.sorting.SortingItem.Companion.create
+import org.dhis2.utils.filters.sorting.SortingStatus
 import org.dhis2.utils.filters.workingLists.WorkingListItem
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
@@ -10,19 +16,74 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
+import timber.log.Timber
 
-sealed class FilterItem(val type: Filters, var isEnable: Boolean = true) {
+sealed class FilterItem(
+    val type: Filters,
+    open val programType: ProgramType,
+    open val sortingItem: ObservableField<SortingItem>,
+    open val openFilter: ObservableField<Filters>,
+    open val filterLabel: String
+) {
     open fun filterValue(): ObservableField<String> {
         return ObservableField("Hello there!")
+    }
+
+    @DrawableRes
+    abstract fun icon(): Int
+
+    fun showSorting(): Boolean {
+        return Sorting.getSortingOptions(programType).any { it == type }
+    }
+
+    fun observeCount(): ObservableField<Int> {
+        return FilterManager.getInstance().observeField(type)
+    }
+
+    fun onSortingClick() {
+        if (!FilterManager.getInstance().isFilterActiveForWorkingList(type)) {
+            val sortItem = create(type)
+            if (sortingItem.get() != null && sortingItem.get()?.filterSelectedForSorting == sortItem.filterSelectedForSorting) {
+                when {
+                    sortingItem.get()?.sortingStatus === SortingStatus.ASC -> {
+                        sortItem.sortingStatus = SortingStatus.DESC
+                    }
+                    sortingItem.get()?.sortingStatus === SortingStatus.DESC -> {
+                        sortItem.sortingStatus = SortingStatus.NONE
+                    }
+                    else -> {
+                        sortItem.sortingStatus = SortingStatus.ASC
+                    }
+                }
+            } else {
+                sortItem.sortingStatus = SortingStatus.ASC
+            }
+            sortingItem.set(sortItem)
+            FilterManager.getInstance().sortingItem = sortingItem.get()
+        }
+    }
+
+    fun onClick() {
+        if (!FilterManager.getInstance().isFilterActiveForWorkingList(type)) {
+            openFilter.set(if (openFilter.get() != type) type else null)
+        } else {
+            openFilter.set(null)
+        }
+    }
+
+    fun displayExpandArrow(): Boolean {
+        return type != Filters.ASSIGNED_TO_ME
     }
 }
 
 data class PeriodFilter(
-    val periodLabel: String,
-    var selectedPeriod: ObservableField<List<DatePeriod>>,
-    val selectedPeriodId: Int
-) : FilterItem(Filters.PERIOD) {
-    private val currentValue =  ObservableField("No filters applying")
+    val selectedPeriodId: Int,
+    override val programType: ProgramType,
+    override val sortingItem: ObservableField<SortingItem>,
+    override val openFilter: ObservableField<Filters>,
+    override val filterLabel: String
+) : FilterItem(Filters.PERIOD, programType, sortingItem, openFilter, filterLabel) {
+    private val currentValue = ObservableField("No filters applied")
     override fun filterValue(): ObservableField<String> {
         return currentValue
     }
@@ -31,7 +92,7 @@ data class PeriodFilter(
         if (checkedId != FilterManager.getInstance().periodIdSelected) {
             FilterManager.getInstance().periodIdSelected = checkedId
             FilterManager.getInstance().addPeriod(periods)
-            currentValue.set(periods.first().toString())
+            currentValue.set(if (periods.isNotEmpty()) "Filters applying" else "No filters applied")
         }
     }
 
@@ -41,13 +102,19 @@ data class PeriodFilter(
             FilterManager.getInstance().periodIdSelected = checkedId
         }
     }
+
+    override fun icon(): Int {
+        return R.drawable.ic_calendar_positive
+    }
 }
 
 data class EnrollmentDateFilter(
-    val enrollmentDateLabel: String,
-    var selectedEnrollmentDate: List<DatePeriod>,
-    val selectedEnrollmentPeriodId: Int
-) : FilterItem(Filters.ENROLLMENT_DATE) {
+    val selectedEnrollmentPeriodId: Int,
+    override val programType: ProgramType,
+    override val sortingItem: ObservableField<SortingItem>,
+    override val openFilter: ObservableField<Filters>,
+    override val filterLabel: String
+) : FilterItem(Filters.ENROLLMENT_DATE, programType, sortingItem, openFilter, filterLabel) {
     fun setSelectedPeriod(periods: List<DatePeriod>, checkedId: Int) {
         if (checkedId != FilterManager.getInstance().enrollmentPeriodIdSelected) {
             FilterManager.getInstance().enrollmentPeriodIdSelected = checkedId
@@ -61,10 +128,19 @@ data class EnrollmentDateFilter(
             FilterManager.getInstance().enrollmentPeriodIdSelected = checkedId
         }
     }
+
+    override fun icon(): Int {
+        return R.drawable.ic_calendar_positive
+    }
 }
 
-data class EnrollmentStatusFilter(var selectedEnrollmentStatus: List<EnrollmentStatus>?) :
-    FilterItem(Filters.ENROLLMENT_STATUS) {
+data class EnrollmentStatusFilter(
+    var selectedEnrollmentStatus: List<EnrollmentStatus>?,
+    override val programType: ProgramType,
+    override val sortingItem: ObservableField<SortingItem>,
+    override val openFilter: ObservableField<Filters>,
+    override val filterLabel: String
+) : FilterItem(Filters.ENROLLMENT_STATUS, programType, sortingItem, openFilter, filterLabel) {
 
     fun setEnrollmentStatus(addEnrollment: Boolean, enrollmentStatus: EnrollmentStatus) {
         FilterManager.getInstance().addEnrollmentStatus(!addEnrollment, enrollmentStatus)
@@ -73,12 +149,32 @@ data class EnrollmentStatusFilter(var selectedEnrollmentStatus: List<EnrollmentS
     fun observeEnrollmentStatus(): ObservableField<EnrollmentStatus> {
         return FilterManager.getInstance().observeEnrollmentStatus()
     }
+
+    override fun icon(): Int {
+        return R.drawable.ic_enrollment_status_filter
+    }
 }
 
-data class OrgUnitFilter(var selectedOrgUnits: LiveData<List<OrganisationUnit>>) :
-    FilterItem(Filters.ORG_UNIT)
+data class OrgUnitFilter(
+    var selectedOrgUnits: LiveData<List<OrganisationUnit>>,
+    override val programType: ProgramType,
+    override val sortingItem: ObservableField<SortingItem>,
+    override val openFilter: ObservableField<Filters>,
+    override val filterLabel: String
+) :
+    FilterItem(Filters.ORG_UNIT, programType, sortingItem, openFilter, filterLabel) {
+    override fun icon(): Int {
+        return R.drawable.ic_filter_ou
+    }
+}
 
-data class SyncStateFilter(var selectedSyncStates: List<State>) : FilterItem(Filters.SYNC_STATE) {
+data class SyncStateFilter(
+    var selectedSyncStates: List<State>,
+    override val programType: ProgramType,
+    override val sortingItem: ObservableField<SortingItem>,
+    override val openFilter: ObservableField<Filters>,
+    override val filterLabel: String
+) : FilterItem(Filters.SYNC_STATE, programType, sortingItem, openFilter, filterLabel) {
     fun setSyncStatus(addState: Boolean, vararg syncStates: State) {
         FilterManager.getInstance().addState(!addState, *syncStates)
     }
@@ -86,17 +182,46 @@ data class SyncStateFilter(var selectedSyncStates: List<State>) : FilterItem(Fil
     fun observeSyncState(): ObservableField<List<State>> {
         return FilterManager.getInstance().observeSyncState()
     }
+
+    override fun icon(): Int {
+        return R.drawable.ic_filter_sync
+    }
 }
 
 data class CatOptionComboFilter(
     val catCombo: CategoryCombo,
     val catOptionCombos: List<CategoryOptionCombo>,
-    var selectedCatOptCombos: List<CategoryOptionCombo>
-) :
-    FilterItem(Filters.CAT_OPT_COMB)
+    var selectedCatOptCombos: List<CategoryOptionCombo>,
+    override val programType: ProgramType,
+    override val sortingItem: ObservableField<SortingItem>,
+    override val openFilter: ObservableField<Filters>,
+    override val filterLabel: String
+) : FilterItem(Filters.CAT_OPT_COMB, programType, sortingItem, openFilter, filterLabel) {
+    fun showSpinner(): Boolean {
+        return catOptionCombos.size < 15
+    }
 
-data class EventStatusFilter(var selectedEventStatus: List<EventStatus>) :
-    FilterItem(Filters.EVENT_STATUS) {
+    fun showDialog() {
+        FilterManager.getInstance().addCatOptComboRequest(catCombo.uid())
+    }
+
+    fun selectCatOptionCombo(position: Int) {
+        FilterManager.getInstance().addCatOptCombo(catOptionCombos[position])
+    }
+
+    override fun icon(): Int {
+        return R.drawable.ic_filter_sync
+    }
+}
+
+data class EventStatusFilter(
+    var selectedEventStatus: List<EventStatus>,
+    override val programType: ProgramType,
+    override val sortingItem: ObservableField<SortingItem>,
+    override val openFilter: ObservableField<Filters>,
+    override val filterLabel: String
+) :
+    FilterItem(Filters.EVENT_STATUS, programType, sortingItem, openFilter, filterLabel) {
     fun setEventStatus(addStatus: Boolean, vararg eventStatus: EventStatus) {
         FilterManager.getInstance().addEventStatus(!addStatus, *eventStatus)
     }
@@ -104,18 +229,40 @@ data class EventStatusFilter(var selectedEventStatus: List<EventStatus>) :
     fun observeEventStatus(): ObservableField<List<EventStatus>> {
         return FilterManager.getInstance().observeEventStatus()
     }
+
+    override fun icon(): Int {
+        return R.drawable.ic_status
+    }
 }
 
-data class AssignedFilter(var assignedToMe: Boolean) : FilterItem(Filters.ASSIGNED_TO_ME) {
+data class AssignedFilter(
+    val assignedToMe: Boolean? = null,
+    override val programType: ProgramType,
+    override val sortingItem: ObservableField<SortingItem>,
+    override val openFilter: ObservableField<Filters>,
+    override val filterLabel: String
+) : FilterItem(Filters.ASSIGNED_TO_ME, programType, sortingItem, openFilter, filterLabel) {
     fun activate(setActive: Boolean) {
         FilterManager.getInstance().setAssignedToMe(setActive)
+    }
+
+    fun observeAssignedToMe(): ObservableField<Boolean> {
+        return FilterManager.getInstance().observeAssignedToMe()
+    }
+
+    override fun icon(): Int {
+        return R.drawable.ic_assignment
     }
 }
 
 data class WorkingListFilter(
     val workingLists: List<WorkingListItem>,
-    var currentWorkingList: WorkingListItem?
-) : FilterItem(Filters.WORKING_LIST) {
+    var currentWorkingList: WorkingListItem?,
+    override val programType: ProgramType,
+    override val sortingItem: ObservableField<SortingItem>,
+    override val openFilter: ObservableField<Filters>,
+    override val filterLabel: String
+) : FilterItem(Filters.WORKING_LIST, programType, sortingItem, openFilter, filterLabel) {
     fun onChecked(checkedId: Int) {
         workingLists.firstOrNull { it.hashCode() == checkedId }?.let {
             if (!it.isSelected()) {
@@ -126,5 +273,9 @@ data class WorkingListFilter(
         }.also {
             FilterManager.getInstance().currentWorkingList(null)
         }
+    }
+
+    override fun icon(): Int {
+        return -1
     }
 }

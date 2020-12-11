@@ -1039,12 +1039,4 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 searchRepository.getTrackedEntityInfo(teiUid, selectedProgram, FilterManager.getInstance().getSortingItem())
         );
     }
-
-    @Override
-    public List<WorkingListItem> workingLists() {
-        return searchRepository.workingLists(selectedProgram != null ? selectedProgram.uid() : null).toFlowable()
-                .flatMapIterable(data -> data)
-                .map(workingListMapper::map)
-                .toList().blockingGet();
-    }
 }

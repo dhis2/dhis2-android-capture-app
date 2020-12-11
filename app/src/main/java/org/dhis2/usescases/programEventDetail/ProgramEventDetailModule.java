@@ -100,7 +100,7 @@ public class ProgramEventDetailModule {
 
     @Provides
     @PerActivity
-    FiltersAdapter provideNewFiltersAdapter(FilterPresenter filterPresenter) {
-        return new FiltersAdapter(ProgramType.EVENT, filterPresenter);
+    FiltersAdapter provideNewFiltersAdapter() {
+        return new FiltersAdapter();
     }
 }

@@ -1,5 +1,6 @@
 package org.dhis2.data.filter
 
+import androidx.databinding.ObservableField
 import org.dhis2.utils.filters.AssignedFilter
 import org.dhis2.utils.filters.CatOptionComboFilter
 import org.dhis2.utils.filters.EnrollmentDateFilter
@@ -7,10 +8,12 @@ import org.dhis2.utils.filters.EnrollmentStatusFilter
 import org.dhis2.utils.filters.EventStatusFilter
 import org.dhis2.utils.filters.FilterItem
 import org.dhis2.utils.filters.FilterManager
+import org.dhis2.utils.filters.Filters
 import org.dhis2.utils.filters.OrgUnitFilter
 import org.dhis2.utils.filters.PeriodFilter
 import org.dhis2.utils.filters.SyncStateFilter
 import org.dhis2.utils.filters.WorkingListFilter
+import org.dhis2.utils.filters.sorting.SortingItem
 import org.dhis2.utils.filters.workingLists.EventWorkingListItem
 import org.dhis2.utils.filters.workingLists.TeiWorkingListItem
 import org.dhis2.utils.resources.ResourceManager
@@ -35,6 +38,9 @@ class FilterRepository @Inject constructor(
     private val d2: D2,
     private val resources: ResourceManager
 ) {
+
+    private val observableSortingInject = ObservableField<SortingItem>()
+    private val observableOpenFilter = ObservableField<Filters>()
 
     fun trackedEntityInstanceQueryByProgram(
         programUid: String
@@ -239,15 +245,49 @@ class FilterRepository @Inject constructor(
         return mutableListOf<FilterItem>().apply {
             add(
                 PeriodFilter(
-                    resources.filterEventDateLabel(),
-                    FilterManager.getInstance().observePeriodFilter(),
-                    FilterManager.getInstance().periodIdSelected
+                    FilterManager.getInstance().periodIdSelected,
+                    org.dhis2.utils.filters.ProgramType.TRACKER,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    resources.filterResources.filterEventDateLabel()
                 )
             )
-            add(OrgUnitFilter(FilterManager.getInstance().observeOrgUnitFilters()))
-            add(SyncStateFilter(emptyList()))
-            add(EnrollmentStatusFilter(FilterManager.getInstance().enrollmentStatusFilters))
-            add(EventStatusFilter(emptyList()))
+            add(
+                OrgUnitFilter(
+                    FilterManager.getInstance().observeOrgUnitFilters(),
+                    org.dhis2.utils.filters.ProgramType.TRACKER,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    resources.filterResources.filterOrgUnitLabel()
+                )
+            )
+            add(
+                SyncStateFilter(
+                    emptyList(),
+                    org.dhis2.utils.filters.ProgramType.TRACKER,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    resources.filterResources.filterSyncLabel()
+                )
+            )
+            add(
+                EnrollmentStatusFilter(
+                    FilterManager.getInstance().enrollmentStatusFilters,
+                    org.dhis2.utils.filters.ProgramType.TRACKER,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    resources.filterResources.filterEnrollmentStatusLabel()
+                )
+            )
+            add(
+                EventStatusFilter(
+                    emptyList(),
+                    org.dhis2.utils.filters.ProgramType.TRACKER,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    resources.filterResources.filterEventStatusLabel()
+                )
+            )
         }
     }
 
@@ -255,13 +295,31 @@ class FilterRepository @Inject constructor(
         return mutableListOf<FilterItem>().apply {
             add(
                 PeriodFilter(
-                    resources.filterPeriodLabel(),
-                    FilterManager.getInstance().observePeriodFilter(),
-                    FilterManager.getInstance().periodIdSelected
+                    FilterManager.getInstance().periodIdSelected,
+                    org.dhis2.utils.filters.ProgramType.DATASET,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    resources.filterResources.filterPeriodLabel()
                 )
             )
-            add(OrgUnitFilter(FilterManager.getInstance().observeOrgUnitFilters()))
-            add(SyncStateFilter(emptyList()))
+            add(
+                OrgUnitFilter(
+                    FilterManager.getInstance().observeOrgUnitFilters(),
+                    org.dhis2.utils.filters.ProgramType.DATASET,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    resources.filterResources.filterOrgUnitLabel()
+                )
+            )
+            add(
+                SyncStateFilter(
+                    emptyList(),
+                    org.dhis2.utils.filters.ProgramType.DATASET,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    resources.filterResources.filterSyncLabel()
+                )
+            )
             val dataSet = d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet()
             val categoryCombo =
                 d2.categoryModule().categoryCombos().uid(dataSet.categoryCombo()?.uid())
@@ -272,7 +330,11 @@ class FilterRepository @Inject constructor(
                         categoryCombo,
                         d2.categoryModule().categoryOptionCombos().byCategoryComboUid()
                             .eq(categoryCombo.uid()).blockingGet(),
-                        emptyList()
+                        emptyList(),
+                        org.dhis2.utils.filters.ProgramType.DATASET,
+                        observableSortingInject,
+                        observableOpenFilter,
+                        categoryCombo.displayName() ?: ""
                     )
                 )
             }
@@ -283,52 +345,130 @@ class FilterRepository @Inject constructor(
         return mutableListOf<FilterItem>().apply {
             add(
                 PeriodFilter(
-                    resources.filterDateLabel(),
-                    FilterManager.getInstance().observePeriodFilter(),
-                    FilterManager.getInstance().periodIdSelected
+                    FilterManager.getInstance().periodIdSelected,
+                    org.dhis2.utils.filters.ProgramType.ALL,
+                    observableSortingInject, observableOpenFilter,
+                    resources.filterResources.filterDateLabel()
                 )
             )
-            add(OrgUnitFilter(FilterManager.getInstance().observeOrgUnitFilters()))
-            add(SyncStateFilter(emptyList()))
+            add(
+                OrgUnitFilter(
+                    FilterManager.getInstance().observeOrgUnitFilters(),
+                    org.dhis2.utils.filters.ProgramType.ALL,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    resources.filterResources.filterOrgUnitLabel()
+                )
+            )
+            add(
+                SyncStateFilter(
+                    emptyList(), org.dhis2.utils.filters.ProgramType.ALL,
+                    observableSortingInject, observableOpenFilter,
+                    resources.filterResources.filterSyncLabel()
+                )
+            )
             if (!d2.programModule().programStages()
                     .byEnableUserAssignment().eq(true).blockingIsEmpty()
             ) {
-                add(AssignedFilter(FilterManager.getInstance().assignedFilter))
+                add(
+                    AssignedFilter(
+                        programType = org.dhis2.utils.filters.ProgramType.ALL,
+                        sortingItem = observableSortingInject,
+                        openFilter = observableOpenFilter,
+                        filterLabel = resources.filterResources.filterAssignedToMeLabel()
+                    )
+                )
             }
         }
     }
 
     private fun getTrackerFilters(program: Program): List<FilterItem> {
         return mutableListOf<FilterItem>().apply {
-            val workingLists = d2.trackedEntityModule().trackedEntityInstanceFilters().byProgram()
-                .eq(program.uid()).blockingGet().map {
-                    TeiWorkingListItem(it.uid(), it.displayName() ?: "", null)
+            val workingLists = d2.trackedEntityModule().trackedEntityInstanceFilters()
+                .byProgram().eq(program.uid())
+                .withTrackedEntityInstanceEventFilters()
+                .blockingGet()
+                .map {
+                    TeiWorkingListItem(
+                        it.uid(),
+                        it.displayName() ?: "",
+                        it.enrollmentStatus(),
+                        it.eventFilters()?.any { eventFilter ->
+                            eventFilter.assignedUserMode() == AssignedUserMode.CURRENT
+                        }
+                    )
                 }
             if (workingLists.isNotEmpty()) {
-                add(WorkingListFilter(workingLists, null))
+                add(
+                    WorkingListFilter(
+                        workingLists,
+                        null,
+                        org.dhis2.utils.filters.ProgramType.TRACKER,
+                        observableSortingInject, observableOpenFilter,
+                        ""
+                    )
+                )
             }
             add(
                 PeriodFilter(
-                    resources.filterEventDateLabel(),
-                    FilterManager.getInstance().observePeriodFilter(),
-                    FilterManager.getInstance().periodIdSelected
+                    FilterManager.getInstance().periodIdSelected,
+                    org.dhis2.utils.filters.ProgramType.TRACKER,
+                    observableSortingInject, observableOpenFilter,
+                    resources.filterResources.filterEventDateLabel()
                 )
             )
             add(
                 EnrollmentDateFilter(
-                    program.enrollmentDateLabel() ?: resources.filterEnrollmentDateLabel(),
-                    FilterManager.getInstance().enrollmentPeriodFilters,
-                    FilterManager.getInstance().enrollmentPeriodIdSelected
+                    FilterManager.getInstance().enrollmentPeriodIdSelected,
+                    org.dhis2.utils.filters.ProgramType.TRACKER,
+                    observableSortingInject, observableOpenFilter,
+                    program.enrollmentDateLabel() ?: resources.filterResources.filterEnrollmentDateLabel()
                 )
             )
-            add(OrgUnitFilter(FilterManager.getInstance().observeOrgUnitFilters()))
-            add(SyncStateFilter(emptyList()))
-            add(EnrollmentStatusFilter(FilterManager.getInstance().enrollmentStatusFilters))
-            add(EventStatusFilter(emptyList()))
+            add(
+                OrgUnitFilter(
+                    FilterManager.getInstance().observeOrgUnitFilters(),
+                    org.dhis2.utils.filters.ProgramType.TRACKER,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    resources.filterResources.filterOrgUnitLabel()
+                )
+            )
+            add(
+                SyncStateFilter(
+                    emptyList(),
+                    org.dhis2.utils.filters.ProgramType.TRACKER,
+                    observableSortingInject, observableOpenFilter,
+                    resources.filterResources.filterSyncLabel()
+                )
+            )
+            add(
+                EnrollmentStatusFilter(
+                    FilterManager.getInstance().enrollmentStatusFilters,
+                    org.dhis2.utils.filters.ProgramType.TRACKER,
+                    observableSortingInject, observableOpenFilter,
+                    resources.filterResources.filterEnrollmentStatusLabel()
+                )
+            )
+            add(
+                EventStatusFilter(
+                    emptyList(),
+                    org.dhis2.utils.filters.ProgramType.TRACKER,
+                    observableSortingInject, observableOpenFilter,
+                    resources.filterResources.filterEventStatusLabel()
+                )
+            )
             if (!d2.programModule().programStages().byProgramUid().eq(program.uid())
                     .byEnableUserAssignment().eq(true).blockingIsEmpty()
             ) {
-                add(AssignedFilter(FilterManager.getInstance().assignedFilter))
+                add(
+                    AssignedFilter(
+                        programType = org.dhis2.utils.filters.ProgramType.TRACKER,
+                        sortingItem = observableSortingInject,
+                        openFilter = observableOpenFilter,
+                        filterLabel = resources.filterResources.filterAssignedToMeLabel()
+                    )
+                )
             }
         }
     }
@@ -340,22 +480,60 @@ class FilterRepository @Inject constructor(
                     EventWorkingListItem(it.uid(), it.displayName() ?: "", false, null, null, null)
                 }
             if (workingLists.isNotEmpty()) {
-                add(WorkingListFilter(workingLists, null))
+                add(
+                    WorkingListFilter(
+                        workingLists,
+                        null,
+                        org.dhis2.utils.filters.ProgramType.EVENT,
+                        observableSortingInject, observableOpenFilter,
+                        ""
+                    )
+                )
             }
             add(
                 PeriodFilter(
-                    resources.filterDateLabel(),
-                    FilterManager.getInstance().observePeriodFilter(),
-                    FilterManager.getInstance().periodIdSelected
+                    FilterManager.getInstance().periodIdSelected,
+                    org.dhis2.utils.filters.ProgramType.EVENT,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    resources.filterResources.filterDateLabel()
                 )
             )
-            add(OrgUnitFilter(FilterManager.getInstance().observeOrgUnitFilters()))
-            add(SyncStateFilter(emptyList()))
-            add(EventStatusFilter(emptyList()))
+            add(
+                OrgUnitFilter(
+                    FilterManager.getInstance().observeOrgUnitFilters(),
+                    org.dhis2.utils.filters.ProgramType.EVENT,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    resources.filterResources.filterOrgUnitLabel()
+                )
+            )
+            add(
+                SyncStateFilter(
+                    emptyList(), org.dhis2.utils.filters.ProgramType.EVENT,
+                    observableSortingInject, observableOpenFilter,
+                    resources.filterResources.filterSyncLabel()
+                )
+            )
+            add(
+                EventStatusFilter(
+                    emptyList(),
+                    org.dhis2.utils.filters.ProgramType.EVENT,
+                    observableSortingInject, observableOpenFilter,
+                    resources.filterResources.filterEventStatusLabel()
+                )
+            )
             if (!d2.programModule().programStages().byProgramUid().eq(program.uid())
                     .byEnableUserAssignment().eq(true).blockingIsEmpty()
             ) {
-                add(AssignedFilter(FilterManager.getInstance().assignedFilter))
+                add(
+                    AssignedFilter(
+                        programType = org.dhis2.utils.filters.ProgramType.EVENT,
+                        sortingItem = observableSortingInject,
+                        openFilter = observableOpenFilter,
+                        filterLabel = resources.filterResources.filterAssignedToMeLabel()
+                    )
+                )
             }
             val categoryCombo =
                 d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).blockingGet()
@@ -365,7 +543,10 @@ class FilterRepository @Inject constructor(
                         categoryCombo,
                         d2.categoryModule().categoryOptionCombos().byCategoryComboUid()
                             .eq(categoryCombo.uid()).blockingGet(),
-                        emptyList()
+                        emptyList(),
+                        org.dhis2.utils.filters.ProgramType.EVENT,
+                        observableSortingInject, observableOpenFilter,
+                        categoryCombo.displayName() ?: ""
                     )
                 )
             }

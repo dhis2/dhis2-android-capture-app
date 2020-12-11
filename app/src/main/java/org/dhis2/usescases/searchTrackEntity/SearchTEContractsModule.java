@@ -182,7 +182,5 @@ public class SearchTEContractsModule {
         EventUiComponentModel getEventInfo(String eventUid, String teiUid);
 
         void setProgramForTesting(Program program);
-
-        List<WorkingListItem> workingLists();
     }
 }

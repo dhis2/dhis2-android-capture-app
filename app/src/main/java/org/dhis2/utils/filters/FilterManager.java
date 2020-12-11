@@ -5,6 +5,7 @@ import androidx.databinding.ObservableField;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import org.dhis2.R;
 import org.dhis2.utils.filters.cat_opt_comb.CatOptCombFilterAdapter;
 import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.filters.sorting.SortingStatus;
@@ -46,7 +47,7 @@ public class FilterManager implements Serializable {
         FROM_TO, OTHER
     }
 
-    private int periodIdSelected;
+    private int periodIdSelected = R.id.anytime;
     private int enrollmentPeriodIdSelected;
     private int totalSearchTeiFilter = 0;
 
@@ -65,6 +66,7 @@ public class FilterManager implements Serializable {
     private List<EnrollmentStatus> enrollmentStatusFilters;
     private ObservableField<EnrollmentStatus> observableEnrollmentStatus = new ObservableField<>();
     private boolean assignedFilter;
+    private ObservableField<Boolean> observableAssignedToMe = new ObservableField<>();
     private SortingItem sortingItem;
 
     private ArrayList<Filters> unsupportedFilters = new ArrayList<>();
@@ -353,7 +355,7 @@ public class FilterManager implements Serializable {
         return periodFilters != null ? periodFilters : new ArrayList<>();
     }
 
-    public ObservableField<List<DatePeriod>> observePeriodFilter(){
+    public ObservableField<List<DatePeriod>> observePeriodFilter() {
         return observablePeriodFilters;
     }
 
@@ -365,7 +367,7 @@ public class FilterManager implements Serializable {
         return ouFilters;
     }
 
-    public LiveData<List<OrganisationUnit>> observeOrgUnitFilters(){
+    public LiveData<List<OrganisationUnit>> observeOrgUnitFilters() {
         return liveDataOUFilter;
     }
 
@@ -381,7 +383,7 @@ public class FilterManager implements Serializable {
         return stateFilters;
     }
 
-    public ObservableField<List<State>> observeSyncState(){
+    public ObservableField<List<State>> observeSyncState() {
         return observableStates;
     }
 
@@ -389,7 +391,7 @@ public class FilterManager implements Serializable {
         return eventStatusFilters;
     }
 
-    public ObservableField<List<EventStatus>> observeEventStatus(){
+    public ObservableField<List<EventStatus>> observeEventStatus() {
         return observableEventStatus;
     }
 
@@ -397,7 +399,7 @@ public class FilterManager implements Serializable {
         return enrollmentStatusFilters;
     }
 
-    public ObservableField<EnrollmentStatus> observeEnrollmentStatus(){
+    public ObservableField<EnrollmentStatus> observeEnrollmentStatus() {
         return observableEnrollmentStatus;
     }
 
@@ -459,6 +461,7 @@ public class FilterManager implements Serializable {
     public void clearAssignToMe() {
         if (assignedFilter) {
             assignedFilter = false;
+            observableAssignedToMe.set(false);
             assignedToMeApplied.set(0);
             filterProcessor.onNext(this);
         }
@@ -502,6 +505,7 @@ public class FilterManager implements Serializable {
         enrollmentPeriodIdSelected = 0;
         periodIdSelected = 0;
         assignedFilter = false;
+        observableAssignedToMe.set(false);
         sortingItem = null;
 
         eventStatusFiltersApplied.set(eventStatusFilters.size());
@@ -528,10 +532,17 @@ public class FilterManager implements Serializable {
         return assignedFilter;
     }
 
+    public ObservableField<Boolean> observeAssignedToMe(){
+        return observableAssignedToMe;
+    }
+
     public void setAssignedToMe(boolean isChecked) {
         this.assignedFilter = isChecked;
+        observableAssignedToMe.set(isChecked);
         assignedToMeApplied.set(isChecked ? 1 : 0);
-        filterProcessor.onNext(this);
+        if (!workingListActive()) {
+            filterProcessor.onNext(this);
+        }
     }
 
     public void setSortingItem(SortingItem sortingItem) {
@@ -584,6 +595,11 @@ public class FilterManager implements Serializable {
             addEnrollmentStatus(false, teiWorkingList.getEnrollentStatus());
         } else {
             clearEnrollmentStatus();
+        }
+        if (teiWorkingList.getAssignedToMe() != null) {
+            setAssignedToMe(teiWorkingList.getAssignedToMe());
+        }else{
+            clearAssignToMe();
         }
     }
 

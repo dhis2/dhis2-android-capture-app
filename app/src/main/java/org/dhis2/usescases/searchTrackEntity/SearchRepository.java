@@ -62,6 +62,4 @@ public interface SearchRepository {
     List<EventViewModel> getEventsForMap(List<SearchTeiModel> teis);
 
     EventViewModel getEventInfo(String enrollmentUid);
-
-    Single<List<TrackedEntityInstanceFilter>> workingLists(String programUid);
 }

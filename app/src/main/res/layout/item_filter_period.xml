@@ -7,22 +7,6 @@
         <import type="android.view.View" />
 
         <variable
-            name="currentFilter"
-            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.Filters&gt;" />
-
-        <variable
-            name="filterCount"
-            type="androidx.databinding.ObservableField&lt;java.lang.Integer&gt;" />
-
-        <variable
-            name="filterType"
-            type="org.dhis2.utils.filters.Filters" />
-
-        <variable
-            name="currentSortItem"
-            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.sorting.SortingItem&gt;" />
-
-        <variable
             name="filterItem"
             type="org.dhis2.utils.filters.FilterItem" />
     </data>
@@ -35,8 +19,7 @@
         <include
             android:id="@+id/filterLayout"
             layout="@layout/item_header_filter"
-            app:currentSortItem="@{currentSortItem}"
-            app:filterCount="@{filterCount}"
+            app:filterCount="@{filterItem.observeCount()}"
             app:filterItem="@{filterItem}"
             app:layout_constraintTop_toBottomOf="parent" />
 
@@ -44,9 +27,8 @@
             android:id="@+id/periodView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:currentFilter="@{currentFilter}"
+            android:visibility="@{filterItem.openFilter == filterItem.type ? View.VISIBLE : View.GONE}"
             app:filterItem="@{filterItem}"
-            app:filterType="@{filterType}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/filterLayout" />
 

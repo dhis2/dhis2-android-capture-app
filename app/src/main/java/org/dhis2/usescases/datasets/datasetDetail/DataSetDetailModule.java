@@ -69,7 +69,7 @@ public class DataSetDetailModule {
 
     @Provides
     @PerActivity
-    FiltersAdapter provideNewFiltersAdapter(FilterPresenter filterPresenter) {
-        return new FiltersAdapter(ProgramType.DATASET, filterPresenter);
+    FiltersAdapter provideNewFiltersAdapter() {
+        return new FiltersAdapter();
     }
 }
