@@ -8,6 +8,8 @@ import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+
 import io.reactivex.processors.FlowableProcessor;
 
 public abstract class FieldViewModel implements FieldUiModel {
@@ -69,6 +71,9 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     @Nullable
     public abstract FlowableProcessor<RowAction> processor();
+
+    @Nullable
+    public abstract FlowableProcessor<HashMap<String, Boolean>> focusProcessor();
 
     public int adapterPosition = -1;
 
@@ -162,7 +167,21 @@ public abstract class FieldViewModel implements FieldUiModel {
         return adapterPosition;
     }
 
+    @Override
     public void onItemClick() {
-        callback.onClick();
+        if (focusProcessor() != null) {
+            HashMap<String, Boolean> map = new HashMap<>();
+            map.put(uid(), false);
+            focusProcessor().onNext(map);
+        }
+    }
+
+    @Override
+    public void onNext() {
+        if (focusProcessor() != null) {
+            HashMap<String, Boolean> map = new HashMap<>();
+            map.put(uid(), true);
+            focusProcessor().onNext(map);
+        }
     }
 }

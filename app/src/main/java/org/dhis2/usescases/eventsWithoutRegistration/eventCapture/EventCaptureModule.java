@@ -22,6 +22,8 @@ import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
+import java.util.HashMap;
+
 import dagger.Module;
 import dagger.Provides;
 import io.reactivex.processors.FlowableProcessor;
@@ -57,7 +59,7 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    EventFieldMapper provideFieldMapper(Context context, FieldViewModelFactory fieldFactory){
+    EventFieldMapper provideFieldMapper(Context context, FieldViewModelFactory fieldFactory) {
         return new EventFieldMapper(fieldFactory, context.getString(R.string.field_is_mandatory));
     }
 
@@ -65,14 +67,16 @@ public class EventCaptureModule {
     @PerActivity
     EventCaptureContract.EventCaptureRepository provideRepository(FieldViewModelFactory fieldFactory,
                                                                   FormRepository formRepository,
-                                                                  D2 d2) {
-        return new EventCaptureRepositoryImpl(fieldFactory, formRepository, eventUid, d2);
+                                                                  D2 d2,
+                                                                  FlowableProcessor<HashMap<String, Boolean>> focusProcessor
+    ) {
+        return new EventCaptureRepositoryImpl(fieldFactory, formRepository, eventUid, d2, focusProcessor);
     }
 
     @Provides
     @PerActivity
-    FieldViewModelFactory fieldFactory(Context context){
-        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context),false);
+    FieldViewModelFactory fieldFactory(Context context) {
+        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), false);
     }
 
     @Provides
@@ -103,7 +107,13 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    FlowableProcessor<RowAction> getProcessor(){
+    FlowableProcessor<RowAction> getProcessor() {
+        return PublishProcessor.create();
+    }
+
+    @Provides
+    @PerActivity
+    FlowableProcessor<HashMap<String, Boolean>> getFocusProcessor() {
         return PublishProcessor.create();
     }
 }

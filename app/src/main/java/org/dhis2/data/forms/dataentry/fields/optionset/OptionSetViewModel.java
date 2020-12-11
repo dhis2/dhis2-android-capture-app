@@ -13,6 +13,7 @@ import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.option.Option;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.processors.FlowableProcessor;
@@ -60,6 +61,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 null,
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 null,
+                null,
                 isBackgroundTransparent,
                 renderType,
                 fieldRendering,
@@ -79,7 +81,8 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                                             boolean isBackgroundTransparent,
                                             String renderType,
                                             ValueTypeDeviceRendering fieldRendering,
-                                            FlowableProcessor<RowAction> processor) {
+                                            FlowableProcessor<RowAction> processor,
+                                            FlowableProcessor<HashMap<String, Boolean>> focusProcessor) {
 
         return new AutoValue_OptionSetViewModel(
                 id,
@@ -97,6 +100,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 null,
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 processor,
+                focusProcessor,
                 isBackgroundTransparent,
                 renderType,
                 fieldRendering,
@@ -122,6 +126,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 processor(),
+                focusProcessor(),
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),
@@ -148,6 +153,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 processor(),
+                focusProcessor(),
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),
@@ -174,6 +180,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 processor(),
+                focusProcessor(),
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),
@@ -200,6 +207,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 processor(),
+                focusProcessor(),
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),
@@ -225,6 +233,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 processor(),
+                focusProcessor(),
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),
@@ -251,6 +260,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 processor(),
+                focusProcessor(),
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),

@@ -12,6 +12,8 @@ import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
 import autovalue.shaded.org.checkerframework$.checker.nullness.qual.$NonNull;
+
+import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -36,7 +38,8 @@ public interface FieldViewModelFactory {
                           @NonNull ObjectStyle objectStyle,
                           @Nullable String fieldMask,
                           FlowableProcessor<RowAction> processor,
-                          List<Option> options);
+                          List<Option> options,
+                          FlowableProcessor<HashMap<String, Boolean>> focusProcessor);
 
     @Nullable
     FieldViewModel createForAttribute(@$NonNull TrackedEntityAttribute trackedEntityAttribute,

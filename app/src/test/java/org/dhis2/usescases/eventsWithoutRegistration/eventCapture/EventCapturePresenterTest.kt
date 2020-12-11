@@ -48,7 +48,8 @@ class EventCapturePresenterTest {
             getNextVisibleSection,
             eventFieldMapper,
             onRowActionProcessor,
-            fieldFactory.sectionProcessor()
+            fieldFactory.sectionProcessor(),
+            focusProcessor
         )
     }
 

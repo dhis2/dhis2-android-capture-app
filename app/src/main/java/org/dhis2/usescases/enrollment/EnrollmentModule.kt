@@ -63,7 +63,8 @@ class EnrollmentModule(
         d2: D2,
         dhisEnrollmentUtils: DhisEnrollmentUtils,
         onRowActionProcessor: FlowableProcessor<RowAction>,
-        modelFactory: FieldViewModelFactory
+        modelFactory: FieldViewModelFactory,
+        focusProcessor: FlowableProcessor<HashMap<String, Boolean>>
     ): EnrollmentRepository {
         val enrollmentDataSectionLabel = context.getString(R.string.enrollment_data_section_label)
         val singleSectionLabel = context.getString(R.string.enrollment_single_section_label)
@@ -87,7 +88,8 @@ class EnrollmentModule(
             reservedValueWarning,
             enrollmentDateDefaultLabel,
             incidentDateDefaultLabel,
-            onRowActionProcessor
+            onRowActionProcessor,
+            focusProcessor
         )
     }
 
@@ -133,6 +135,12 @@ class EnrollmentModule(
     @Provides
     @PerActivity
     fun provideOnRowActionProcessor(): FlowableProcessor<RowAction> {
+        return PublishProcessor.create()
+    }
+
+    @Provides
+    @PerActivity
+    fun provideFocusProcessor(): FlowableProcessor<HashMap<String, Boolean>> {
         return PublishProcessor.create()
     }
 

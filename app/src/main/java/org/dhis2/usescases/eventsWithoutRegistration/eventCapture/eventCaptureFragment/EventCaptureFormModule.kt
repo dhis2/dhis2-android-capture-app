@@ -24,7 +24,8 @@ class EventCaptureFormModule(
         activityPresenter: EventCaptureContract.Presenter,
         valueStore: ValueStore,
         schedulerProvider: SchedulerProvider,
-        onFieldActionProcessor: FlowableProcessor<RowAction>
+        onFieldActionProcessor: FlowableProcessor<RowAction>,
+        focusProcessor: FlowableProcessor<HashMap<String, Boolean>>
     ): EventCaptureFormPresenter {
         return EventCaptureFormPresenter(
             view,
@@ -32,7 +33,8 @@ class EventCaptureFormModule(
             d2,
             valueStore,
             schedulerProvider,
-            onFieldActionProcessor
+            onFieldActionProcessor,
+            focusProcessor
         )
     }
 }

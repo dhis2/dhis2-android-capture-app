@@ -70,11 +70,13 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private final HashMap<String, ProgramStageDataElement> stageDataElementsMap;
     private RuleEvent.Builder eventBuilder;
     private List<FieldViewModel> sectionFields;
+    private FlowableProcessor<HashMap<String, Boolean>> focusProcessor;
 
-    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2) {
+    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2, FlowableProcessor<HashMap<String, Boolean>> focusProcessor) {
         this.eventUid = eventUid;
         this.formRepository = formRepository;
         this.d2 = d2;
+        this.focusProcessor = focusProcessor;
 
         currentEvent = d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).blockingGet();
         currentStage = d2.programModule().programStages().uid(currentEvent.programStage()).blockingGet();
@@ -325,7 +327,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                         valueType, mandatory, optionSet, dataValue,
                                         programStageSection != null ? programStageSection.uid() : null, allowFutureDates,
                                         isEventEditable,
-                                        renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(), processor, options);
+                                        renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(), processor, options, focusProcessor);
 
                         if (!error.isEmpty()) {
                             return fieldViewModel.withError(error);

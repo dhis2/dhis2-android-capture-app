@@ -37,6 +37,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             description: String?,
             style: ObjectStyle,
             processor: FlowableProcessor<RowAction>?,
+            focusProcessor: FlowableProcessor<HashMap<String, Boolean>>,
             options: List<Option>,
             numberOfColumns: Int
         ): MatrixOptionSetModel {
@@ -56,6 +57,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
                 null,
                 DataEntryViewHolderTypes.PICTURE,
                 processor,
+                focusProcessor,
                 options,
                 numberOfColumns
             )
@@ -79,6 +81,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             fieldMask(),
             dataEntryViewType(),
             processor(),
+            focusProcessor(),
             options(),
             numberOfColumns()
         )
@@ -101,6 +104,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             fieldMask(),
             dataEntryViewType(),
             processor(),
+            focusProcessor(),
             options(),
             numberOfColumns()
         )
@@ -123,6 +127,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             fieldMask(),
             dataEntryViewType(),
             processor(),
+            focusProcessor(),
             options(),
             numberOfColumns()
         )
@@ -145,6 +150,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             fieldMask(),
             dataEntryViewType(),
             processor(),
+            focusProcessor(),
             options(),
             numberOfColumns()
         )
@@ -167,6 +173,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             fieldMask(),
             dataEntryViewType(),
             processor(),
+            focusProcessor(),
             options(),
             numberOfColumns()
         )

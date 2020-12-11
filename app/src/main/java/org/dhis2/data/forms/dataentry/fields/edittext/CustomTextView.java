@@ -150,7 +150,7 @@ public class CustomTextView extends FieldLayout {
         editText.setOnEditorActionListener((v, actionId, event) -> {
             if (validate()) {
                 if (viewModel.valueType() != ValueType.LONG_TEXT) {
-                    viewModel.callback.onNext();
+                    viewModel.onNext();
                     return true;
                 } else {
                     return false;

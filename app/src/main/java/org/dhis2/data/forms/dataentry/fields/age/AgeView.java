@@ -359,7 +359,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         setAgeChangedListener(ageDate -> {
             if (viewModel.value() == null || !Objects.equals(viewModel.value(), ageDate == null ? null : DateUtils.databaseDateFormat().format(ageDate))) {
                 viewModel.onAgeSet(ageDate);
-                viewModel.callback.onNext();
+                viewModel.onNext();
             }
         });
 

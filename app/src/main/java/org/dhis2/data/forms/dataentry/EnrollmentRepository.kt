@@ -46,7 +46,8 @@ class EnrollmentRepository(
     private val reservedValuesWarning: String,
     private val enrollmentDateDefaultLabel: String,
     private val incidentDateDefaultLabel: String,
-    private val onRowActionProccesor: FlowableProcessor<RowAction>
+    private val onRowActionProccesor: FlowableProcessor<RowAction>,
+    private val focusProcessor: FlowableProcessor<HashMap<String, Boolean>>
 ) : DataEntryRepository {
 
     private val enrollmentRepository: EnrollmentObjectRepository =
@@ -246,7 +247,8 @@ class EnrollmentRepository(
             attribute.style(),
             attribute.fieldMask(),
             onRowActionProccesor,
-            null
+            null,
+            focusProcessor
         )
 
         return if (!error.isNullOrEmpty()) {
@@ -383,7 +385,8 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             true,
             false,
-            onRowActionProccesor
+            onRowActionProccesor,
+            focusProcessor
         )
     }
 
@@ -406,7 +409,8 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             true,
             false,
-            onRowActionProccesor
+            onRowActionProccesor,
+            focusProcessor
         )
     }
 

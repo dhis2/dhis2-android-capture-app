@@ -6,6 +6,6 @@ interface EventCaptureFormView {
 
     fun showFields(
         fields: MutableList<FieldViewModel>,
-        lastFocusItem: String
+        focusedItem: String
     )
 }

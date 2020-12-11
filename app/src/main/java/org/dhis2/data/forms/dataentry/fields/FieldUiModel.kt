@@ -14,12 +14,12 @@ interface FieldUiModel {
 
     fun onDeactivate()
 
+    fun onItemClick()
+
+    fun onNext()
+
     interface Callback {
 
-        fun onNext()
-
         fun showDialog(title: String, message: String?)
-
-        fun onClick()
     }
 }
