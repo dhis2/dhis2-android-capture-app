@@ -13,7 +13,7 @@ class ChartViewHolder(
     fun bind(chart: ChartModel) {
         binding.chartTitle.text = chart.graph.title
         val chartView = chart.graph.toChartBuilder()
-            .withType(ChartType.LINE_CHART)
+            .withType(ChartType.BAR_CHART)
             .withGraphData(chart.graph)
             .build().getChartView(binding.root.context)
         binding.chartContainer.removeAllViews()
