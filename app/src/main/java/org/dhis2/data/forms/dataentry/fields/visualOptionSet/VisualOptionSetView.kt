@@ -8,8 +8,8 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.updatePadding
 import org.dhis2.Bindings.dp
-import org.dhis2.utils.customviews.FieldLayout
 import org.dhis2.data.forms.dataentry.fields.image.ImageCustomView
+import org.dhis2.utils.customviews.FieldLayout
 import org.hisp.dhis.android.core.option.Option
 
 class VisualOptionSetView @JvmOverloads constructor(
