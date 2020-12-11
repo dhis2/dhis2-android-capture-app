@@ -16,7 +16,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
-import timber.log.Timber
 
 sealed class FilterItem(
     val type: Filters,
@@ -43,7 +42,9 @@ sealed class FilterItem(
     fun onSortingClick() {
         if (!FilterManager.getInstance().isFilterActiveForWorkingList(type)) {
             val sortItem = create(type)
-            if (sortingItem.get() != null && sortingItem.get()?.filterSelectedForSorting == sortItem.filterSelectedForSorting) {
+            if (sortingItem.get() != null &&
+                sortingItem.get()?.filterSelectedForSorting == sortItem.filterSelectedForSorting
+            ) {
                 when {
                     sortingItem.get()?.sortingStatus === SortingStatus.ASC -> {
                         sortItem.sortingStatus = SortingStatus.DESC

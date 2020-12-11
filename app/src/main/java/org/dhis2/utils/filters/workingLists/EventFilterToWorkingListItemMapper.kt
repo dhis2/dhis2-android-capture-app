@@ -24,9 +24,11 @@ class EventFilterToWorkingListItemMapper(
     }
 
     private fun handleDatePeriodFilter(eventDatePeriod: DateFilterPeriod): String? {
-        return when(eventDatePeriod.type()){
+        return when (eventDatePeriod.type()) {
             DatePeriodType.RELATIVE -> relativePeriodMapper.map(eventDatePeriod.period())
-            DatePeriodType.ABSOLUTE -> relativePeriodMapper.span().format(eventDatePeriod.startDate(), eventDatePeriod.endDate())
+            DatePeriodType.ABSOLUTE ->
+                relativePeriodMapper.span()
+                    .format(eventDatePeriod.startDate(), eventDatePeriod.endDate())
             null -> null
         }
     }

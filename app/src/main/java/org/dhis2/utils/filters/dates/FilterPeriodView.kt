@@ -5,7 +5,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.CompoundButton
 import android.widget.FrameLayout
-import androidx.databinding.ObservableField
+import java.util.Calendar
+import java.util.Date
 import org.dhis2.R
 import org.dhis2.databinding.FilterPeriodBinding
 import org.dhis2.utils.DateUtils
@@ -13,14 +14,13 @@ import org.dhis2.utils.Period
 import org.dhis2.utils.filters.EnrollmentDateFilter
 import org.dhis2.utils.filters.FilterItem
 import org.dhis2.utils.filters.FilterManager
-import org.dhis2.utils.filters.Filters
 import org.dhis2.utils.filters.PeriodFilter
 import org.hisp.dhis.android.core.period.DatePeriod
-import java.util.Calendar
-import java.util.Date
 
 class FilterPeriodView @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr), CompoundButton.OnCheckedChangeListener {
     private val binding =
         FilterPeriodBinding.inflate(LayoutInflater.from(context), this, true)
@@ -73,8 +73,9 @@ class FilterPeriodView @JvmOverloads constructor(
                 var dates: Array<Date?>? = null
                 val calendar = Calendar.getInstance()
                 when (id) {
-                    R.id.today -> dates = DateUtils.getInstance()
-                        .getDateFromDateAndPeriod(calendar.time, Period.DAILY)
+                    R.id.today ->
+                        dates = DateUtils.getInstance()
+                            .getDateFromDateAndPeriod(calendar.time, Period.DAILY)
                     R.id.yesterday -> {
                         calendar.add(Calendar.DAY_OF_YEAR, -1)
                         dates = DateUtils.getInstance().getDateFromDateAndPeriod(
@@ -89,8 +90,9 @@ class FilterPeriodView @JvmOverloads constructor(
                             Period.DAILY
                         )
                     }
-                    R.id.this_week -> dates = DateUtils.getInstance()
-                        .getDateFromDateAndPeriod(calendar.time, Period.WEEKLY)
+                    R.id.this_week ->
+                        dates = DateUtils.getInstance()
+                            .getDateFromDateAndPeriod(calendar.time, Period.WEEKLY)
                     R.id.last_week -> {
                         calendar.add(Calendar.WEEK_OF_YEAR, -1)
                         dates = DateUtils.getInstance().getDateFromDateAndPeriod(
@@ -105,11 +107,12 @@ class FilterPeriodView @JvmOverloads constructor(
                             Period.WEEKLY
                         )
                     }
-                    R.id.this_month -> dates = DateUtils.getInstance()
-                        .getDateFromDateAndPeriod(
-                            calendar.time,
-                            Period.MONTHLY
-                        )
+                    R.id.this_month ->
+                        dates = DateUtils.getInstance()
+                            .getDateFromDateAndPeriod(
+                                calendar.time,
+                                Period.MONTHLY
+                            )
                     R.id.last_month -> {
                         calendar.add(Calendar.MONTH, -1)
                         dates = DateUtils.getInstance().getDateFromDateAndPeriod(

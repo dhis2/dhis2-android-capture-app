@@ -1,6 +1,8 @@
 package org.dhis2.data.filter
 
 import androidx.databinding.ObservableField
+import java.util.Calendar
+import javax.inject.Inject
 import org.dhis2.utils.filters.AssignedFilter
 import org.dhis2.utils.filters.CatOptionComboFilter
 import org.dhis2.utils.filters.EnrollmentDateFilter
@@ -31,8 +33,6 @@ import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
-import java.util.Calendar
-import javax.inject.Inject
 
 class FilterRepository @Inject constructor(
     private val d2: D2,
@@ -368,7 +368,7 @@ class FilterRepository @Inject constructor(
                 )
             )
             if (!d2.programModule().programStages()
-                    .byEnableUserAssignment().eq(true).blockingIsEmpty()
+                .byEnableUserAssignment().eq(true).blockingIsEmpty()
             ) {
                 add(
                     AssignedFilter(
@@ -422,7 +422,8 @@ class FilterRepository @Inject constructor(
                     FilterManager.getInstance().enrollmentPeriodIdSelected,
                     org.dhis2.utils.filters.ProgramType.TRACKER,
                     observableSortingInject, observableOpenFilter,
-                    program.enrollmentDateLabel() ?: resources.filterResources.filterEnrollmentDateLabel()
+                    program.enrollmentDateLabel() ?: resources.filterResources
+                        .filterEnrollmentDateLabel()
                 )
             )
             add(
@@ -459,7 +460,7 @@ class FilterRepository @Inject constructor(
                 )
             )
             if (!d2.programModule().programStages().byProgramUid().eq(program.uid())
-                    .byEnableUserAssignment().eq(true).blockingIsEmpty()
+                .byEnableUserAssignment().eq(true).blockingIsEmpty()
             ) {
                 add(
                     AssignedFilter(
@@ -524,7 +525,7 @@ class FilterRepository @Inject constructor(
                 )
             )
             if (!d2.programModule().programStages().byProgramUid().eq(program.uid())
-                    .byEnableUserAssignment().eq(true).blockingIsEmpty()
+                .byEnableUserAssignment().eq(true).blockingIsEmpty()
             ) {
                 add(
                     AssignedFilter(

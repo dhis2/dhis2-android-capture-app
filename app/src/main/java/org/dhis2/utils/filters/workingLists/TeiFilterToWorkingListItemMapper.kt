@@ -11,7 +11,9 @@ class TeiFilterToWorkingListItemMapper(
             teiFilter.uid(),
             teiFilter.displayName() ?: defaultWorkingListLabel,
             teiFilter.enrollmentStatus(),
-            teiFilter.eventFilters()?.any { eventFilter->eventFilter.assignedUserMode() == AssignedUserMode.CURRENT }
+            teiFilter.eventFilters()?.any { eventFilter ->
+                eventFilter.assignedUserMode() == AssignedUserMode.CURRENT
+            }
         )
     }
 }
