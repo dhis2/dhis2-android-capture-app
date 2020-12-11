@@ -62,7 +62,8 @@ class SearchTEPresenterTest {
             mapTeiEventsToFeatureCollection,
             mapCoordinateFieldToFeatureCollection,
             eventToEventUiComponent,
-            preferenceProvider
+            preferenceProvider,
+            null
         )
     }
 
