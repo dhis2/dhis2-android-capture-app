@@ -5,13 +5,13 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
+import java.util.ArrayList
+import java.util.LinkedHashMap
 import org.dhis2.data.forms.dataentry.fields.FieldUiModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder.FieldItemCallback
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
-import java.util.ArrayList
-import java.util.LinkedHashMap
 
 class DataEntryAdapter :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),

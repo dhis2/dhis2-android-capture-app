@@ -27,10 +27,6 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
 
-/**
- * QUADRAM. Created by frodriguez on 1/24/2018.
- */
-
 public class YesNoView extends FieldLayout {
 
     private ViewDataBinding binding;
