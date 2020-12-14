@@ -119,16 +119,16 @@ class MainActivity :
             when (it.itemId) {
                 R.id.navigation_tasks -> {}
                 R.id.navigation_programs -> {}
-                R.id.navigation_analytics-> {}
+                R.id.navigation_analytics -> {}
                 else -> {}
             }
             true
         }
 
-        //TODO: remove to display BottomNavigationView
-        binding.fragmentContainer.setPadding(0,0,0,0)
+        // TODO: remove to display BottomNavigationView
+        binding.fragmentContainer.setPadding(0, 0, 0, 0)
         binding.navigationBar.visibility = View.GONE
-        //end
+        // end
 
         if (BuildConfig.DEBUG) {
             binding.moreOptions.setOnLongClickListener {
