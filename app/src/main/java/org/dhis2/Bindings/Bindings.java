@@ -612,7 +612,7 @@ public class Bindings {
         }
     }
 
-    private static ColorStateList getColorStateViewChecked(Context context, boolean isBackground){
+    private static ColorStateList getColorStateViewChecked(Context context, boolean isBackground) {
         int colorStateChecked;
         int colorStateUnchecked;
 
@@ -632,7 +632,7 @@ public class Bindings {
                         new int[]{android.R.attr.state_checked},
                         new int[]{-android.R.attr.state_checked}
                 },
-                new int[] {
+                new int[]{
                         colorStateChecked,
                         colorStateUnchecked
                 }
@@ -642,9 +642,10 @@ public class Bindings {
     @BindingAdapter("requestFocus")
     public static void requestFocus(EditText editText, boolean focused) {
         if (focused) {
-            editText.setFocusableInTouchMode(true);
             editText.requestFocus();
             openKeyboard(editText);
+        } else {
+            editText.clearFocus();
         }
     }
 }

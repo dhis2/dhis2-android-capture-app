@@ -15,6 +15,7 @@ import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.util.Patterns;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -129,15 +130,15 @@ public class CustomTextView extends FieldLayout {
         descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
         labelText = findViewById(R.id.label);
         descIcon = findViewById(R.id.descIcon);
-        editText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-
+        editText.setOnTouchListener((v, event) -> {
+            if (MotionEvent.ACTION_UP == event.getAction())
                 viewModel.onItemClick();
-                if (viewModel.isSearchMode()) {
-                    sendAction();
-                }
+            return false;
+        });
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && viewModel.isSearchMode()) {
+                sendAction();
             } else {
-
                 if (validate()) {
                     if (valueHasChanged()) {
                         sendAction();
@@ -282,9 +283,6 @@ public class CustomTextView extends FieldLayout {
     }
 
     public void setEditable(Boolean editable) {
-        editText.setFocusable(editable);
-        editText.setFocusableInTouchMode(editable);
-        editText.setClickable(editable);
         editText.setEnabled(editable);
         editText.setTextColor(
                 !isBgTransparent && !isLongText ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :

@@ -79,7 +79,6 @@ class EventCaptureFormPresenter(
                         }
                         val list = activityPresenter.formFieldsFlowable().blockingFirst()
                         view.showFields(setFocusedItem(list))
-
                     },
                     {
                         Timber.e(it)
@@ -112,7 +111,6 @@ class EventCaptureFormPresenter(
         val newItem = oldItem?.withFocus()
         list.updated(pos, newItem) as MutableList<FieldViewModel>
     } ?: list
-
 
     fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =
         mapIndexed { i, existing -> if (i == index) elem else existing }
