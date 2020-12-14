@@ -935,9 +935,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         if (teiType.style() != null && teiType.style().icon() != null) {
             return
-                    ObjectStyleUtils.getIconResource(view.getContext(), teiType.style().icon(), R.drawable.mapbox_marker_icon_default);
+                    ObjectStyleUtils.getIconResource(view.getContext(), teiType.style().icon(), R.drawable.ic_default_icon);
         } else
-            return AppCompatResources.getDrawable(view.getContext(), R.drawable.mapbox_marker_icon_default);
+            return AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_default_icon);
     }
 
     @Override

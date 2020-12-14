@@ -777,6 +777,7 @@
     <string name="navigation_relationships">Relationships</string>
     <string name="navigation_notes">Notes</string>
     <string name="navigation_data_entry">Data entry</string>
+    <string name="navigation_tei_data">Details</string>
     <string name="working_list_default_label">Working list %s</string>
     <string name="filter_period_last_n_days">Last %d days</string>
     <string name="filter_period_this_year">This year</string>

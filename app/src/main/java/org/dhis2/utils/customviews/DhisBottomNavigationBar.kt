@@ -9,10 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.blue
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.graphics.green
 import androidx.core.graphics.red
+import androidx.core.view.forEach
 import androidx.core.view.forEachIndexed
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -34,6 +36,7 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
     private val currentItemIndicatorColor: Int
     private val itemIndicatorSize: Float
     private val itemIndicatorDrawable: Drawable?
+    private var currentItemId: Int = -1
 
     init {
         labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
@@ -92,9 +95,11 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
 
     override fun setOnNavigationItemSelectedListener(listener: OnNavigationItemSelectedListener?) {
         super.setOnNavigationItemSelectedListener { item ->
+            currentItemId = item.itemId
             findViewById<View>(item.itemId)?.let { itemView ->
                 animateItemIndicatorPosition(itemView)
             }
+            updateBadges()
             listener?.onNavigationItemSelected(item) ?: false
         }
     }
@@ -134,5 +139,32 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
 
     fun isHidden(): Boolean {
         return hidden
+    }
+
+    private fun updateBadges() {
+        menu.forEach { updateBadge(it.itemId, getOrCreateBadge(it.itemId).number) }
+    }
+
+    fun updateBadge(menuItemId: Int, badgeCount: Int) {
+        val badge = getOrCreateBadge(menuItemId)
+        badge.isVisible = badgeCount > 0
+        badge.number = badgeCount
+        badge.horizontalOffset = -5
+        if (currentItemId == menuItemId) {
+            badge.backgroundColor = currentItemIndicatorColor
+        } else {
+            badge.backgroundColor = ColorUtils.setAlphaComponent(currentItemIndicatorColor, 128)
+        }
+    }
+
+    fun selectItemAt(position: Int) {
+        mutableListOf<Int>().apply {
+            menu.forEach {
+                if (it.isVisible) {
+                    add(it.itemId)
+                }
+            }
+            selectedItemId = get(position)
+        }
     }
 }
