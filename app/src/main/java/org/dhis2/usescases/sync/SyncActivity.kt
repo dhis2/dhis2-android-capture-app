@@ -73,8 +73,8 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
         showInfoDialog(
             getString(R.string.something_wrong),
             getString(R.string.metada_first_sync_error),
-            getString(R.string.go_back),
             getString(R.string.share),
+            getString(R.string.go_back),
             object : OnDialogClickListener {
                 override fun onPositiveClick() {
                     share(message!!)

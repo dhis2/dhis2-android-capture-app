@@ -80,7 +80,9 @@ public class SyncMetadataWorker extends Worker {
                     noNetwork = true;
                 if (e instanceof D2Error) {
                     message = D2ErrorUtils.getErrorMessage(getApplicationContext(), e);
-                } else {
+                } else if(e.getCause() instanceof D2Error){
+                    message = D2ErrorUtils.getErrorMessage(getApplicationContext(), e.getCause());
+                }else {
                     message = e.toString();
                 }
             } finally {
