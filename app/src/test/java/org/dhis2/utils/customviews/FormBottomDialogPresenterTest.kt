@@ -49,6 +49,7 @@ class FormBottomDialogPresenterTest {
                     "any",
                     false,
                     false,
+                    PublishProcessor.create(),
                     PublishProcessor.create()
                 )
             ),
@@ -64,6 +65,7 @@ class FormBottomDialogPresenterTest {
                     "optionSetUid",
                     null,
                     ObjectStyle.builder().build(),
+                    PublishProcessor.create(),
                     PublishProcessor.create(),
                     emptyList(),
                     2

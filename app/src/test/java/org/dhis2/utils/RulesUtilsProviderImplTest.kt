@@ -88,7 +88,7 @@ class RulesUtilsProviderImplTest {
             "",
             null,
             null,
-            focusProcessor
+            null
         )
     }
 

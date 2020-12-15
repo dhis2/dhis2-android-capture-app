@@ -30,6 +30,8 @@ class EventCaptureFormPresenterTest {
     private val valueStore: ValueStore = mock()
     private val schedulerProvider = TrampolineSchedulerProvider()
     private val onRowActionProcessor: FlowableProcessor<RowAction> = mock()
+    private val focusProcessor: FlowableProcessor<HashMap<String, Boolean>> = mock()
+
 
     @Before
     fun setUp() {
@@ -39,7 +41,8 @@ class EventCaptureFormPresenterTest {
             d2,
             valueStore,
             schedulerProvider,
-            onRowActionProcessor
+            onRowActionProcessor,
+            focusProcessor
         )
     }
 
@@ -115,7 +118,7 @@ class EventCaptureFormPresenterTest {
         whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
         presenter.init()
         activityPresenter.formFieldsFlowable().onNext(mutableListOf())
-        verify(view, times(1)).showFields(any(), any())
+        verify(view, times(1)).showFields(any())
     }
 
     @Test

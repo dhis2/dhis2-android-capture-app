@@ -48,8 +48,7 @@ class EventCapturePresenterTest {
             getNextVisibleSection,
             eventFieldMapper,
             onRowActionProcessor,
-            fieldFactory.sectionProcessor(),
-            focusProcessor
+            fieldFactory.sectionProcessor()
         )
     }
 
@@ -110,6 +109,7 @@ class EventCapturePresenterTest {
                 ObjectStyle.builder().build(),
                 false,
                 "any",
+                null,
                 null
             )
         )
@@ -133,6 +133,7 @@ class EventCapturePresenterTest {
                 ObjectStyle.builder().build(),
                 false,
                 "any",
+                null,
                 null
             )
         )

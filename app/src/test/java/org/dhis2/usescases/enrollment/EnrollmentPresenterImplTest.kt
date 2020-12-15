@@ -54,6 +54,7 @@ class EnrollmentPresenterImplTest {
     private val valueStore: ValueStore = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
     private val onRowActionProcessor: FlowableProcessor<RowAction> = mock()
+    private val focusProcessor: FlowableProcessor<HashMap<String, Boolean>> = mock()
     private val sectionProcessor: FlowableProcessor<String> = mock()
 
     @Before
@@ -71,7 +72,8 @@ class EnrollmentPresenterImplTest {
             analyticsHelper,
             "This field is mandatory",
             onRowActionProcessor,
-            sectionProcessor
+            sectionProcessor,
+            focusProcessor
         )
     }
 
@@ -379,6 +381,7 @@ class EnrollmentPresenterImplTest {
             "any",
             false,
             false,
+            null,
             null
         )
 

@@ -130,6 +130,7 @@ class OptionSetPresenterTest {
             ObjectStyle.builder().build(),
             false,
             "any",
+            null,
             null
         )
     }
