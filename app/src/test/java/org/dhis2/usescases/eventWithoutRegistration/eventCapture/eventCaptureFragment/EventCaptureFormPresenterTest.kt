@@ -34,7 +34,6 @@ class EventCaptureFormPresenterTest {
     private val onRowActionProcessor: FlowableProcessor<RowAction> = mock()
     private val focusProcessor: FlowableProcessor<Pair<String, Boolean>> = PublishProcessor.create()
 
-
     @Before
     fun setUp() {
         presenter = EventCaptureFormPresenter(
