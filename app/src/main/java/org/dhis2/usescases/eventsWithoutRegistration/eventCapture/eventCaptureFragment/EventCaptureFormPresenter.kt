@@ -1,7 +1,10 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment
 
+import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.BiFunction
 import io.reactivex.processors.FlowableProcessor
+import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
@@ -18,21 +21,43 @@ class EventCaptureFormPresenter(
     val valueStore: ValueStore,
     val schedulerProvider: SchedulerProvider,
     private val onFieldActionProcessor: FlowableProcessor<RowAction>,
-    private val focusProcessor: FlowableProcessor<HashMap<String, Boolean>>
+    private val focusProcessor: FlowableProcessor<Pair<String, Boolean>>
 ) {
-    private var focusedItem: String? = null
     private var selectedSection: String? = null
     var disposable: CompositeDisposable = CompositeDisposable()
+    private var focusedItem: Pair<String, Boolean> = Pair("", false)
+    private var itemList: List<FieldViewModel>? = null
+    private val itemsWithError = mutableListOf<RowAction>()
 
     fun init() {
         disposable.add(
-            onFieldActionProcessor
-                .onBackpressureBuffer()
-                .distinctUntilChanged()
+            Flowable.combineLatest<RowAction, Pair<String, Boolean>, RowAction>(
+                onFieldActionProcessor.onBackpressureBuffer().distinctUntilChanged(),
+                focusProcessor.startWith(focusedItem),
+                BiFunction { action, focusedItem ->
+                    this.focusedItem = focusedItem
+                    action
+                }
+            )
                 .doOnNext { activityPresenter.showProgress() }
                 .observeOn(schedulerProvider.io())
                 .switchMap { action ->
-                    valueStore.save(action.id(), action.value())
+                    if (action.error() != null) {
+                        if (itemsWithError.find { it.id() == action.id() } == null) {
+                            itemsWithError.add(action)
+                        }
+                        Flowable.just(
+                            StoreResult(
+                                action.id(),
+                                ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                            )
+                        )
+                    } else {
+                        itemsWithError.find { it.id() == action.id() }?.let {
+                            itemsWithError.remove(it)
+                        }
+                        valueStore.save(action.id(), action.value())
+                    }
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -40,6 +65,11 @@ class EventCaptureFormPresenter(
                     {
                         if (it.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
                             activityPresenter.nextCalculation(true)
+                        } else {
+                            itemList?.let { fields ->
+                                activityPresenter.formFieldsFlowable()
+                                    .onNext(fields.toMutableList())
+                            }
                         }
                     },
                     Timber::e
@@ -52,7 +82,12 @@ class EventCaptureFormPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { fields ->
-                        view.showFields(setFocusedItem(fields))
+                        itemList = fields
+                        val list = mergeListWithErrorFields(
+                            fields,
+                            itemsWithError
+                        )
+                        view.showFields(setFocusedItem(list).toMutableList())
                         activityPresenter.hideProgress()
                         selectedSection ?: fields
                             .mapNotNull { it.programStageSection() }
@@ -62,29 +97,17 @@ class EventCaptureFormPresenter(
                     { Timber.e(it) }
                 )
         )
+    }
 
-        disposable.add(
-            focusProcessor
-                .subscribeOn(schedulerProvider.ui())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { map ->
-                        val uid = map.keys.first()
-                        val isOnNext = map.values.first()
-
-                        focusedItem = if (isOnNext) {
-                            getNextItem(uid)
-                        } else {
-                            uid
-                        }
-                        val list = activityPresenter.formFieldsFlowable().blockingFirst()
-                        view.showFields(setFocusedItem(list))
-                    },
-                    {
-                        Timber.e(it)
-                    }
-                )
-        )
+    private fun mergeListWithErrorFields(
+        list: List<FieldViewModel>,
+        fieldsWithError: MutableList<RowAction>
+    ): List<FieldViewModel> {
+        return list.map { item ->
+            fieldsWithError.find { it.id() == item.uid() }?.let { action ->
+                item.withValue(action.value()).withError(action.error())
+            } ?: item
+        }
     }
 
     fun onDetach() {
@@ -96,21 +119,30 @@ class EventCaptureFormPresenter(
     }
 
     private fun getNextItem(currentItemUid: String): String? {
-        val list = activityPresenter.formFieldsFlowable().blockingFirst()
-        val oldItem = list.find { it.uid() == currentItemUid }
-        val pos = list.indexOf(oldItem)
-        if (pos < list.size - 1) {
-            return list[pos + 1].getUid()
+        itemList?.let { fields ->
+            val oldItem = fields.find { it.uid() == currentItemUid }
+            val pos = fields.indexOf(oldItem)
+            if (pos < fields.size - 1) {
+                return fields[pos + 1].getUid()
+            }
         }
+
         return null
     }
 
-    private fun setFocusedItem(list: MutableList<FieldViewModel>) = focusedItem?.let {
-        val oldItem = list.find { it.uid() == focusedItem }
-        val pos = list.indexOf(oldItem)
-        val newItem = oldItem?.withFocus()
-        list.updated(pos, newItem) as MutableList<FieldViewModel>
-    } ?: list
+    private fun setFocusedItem(list: List<FieldViewModel>) = focusedItem.let {
+        val uid = if (it.second) {
+            getNextItem(it.first)
+        } else {
+            it.first
+        }
+
+        list.find { item ->
+            item.uid() == uid
+        }?.let { item ->
+            list.updated(list.indexOf(item), item.withFocus(true))
+        } ?: list
+    }
 
     fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =
         mapIndexed { i, existing -> if (i == index) elem else existing }

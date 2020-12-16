@@ -7,10 +7,12 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.processors.FlowableProcessor
+import io.reactivex.processors.PublishProcessor
 import io.reactivex.subjects.BehaviorSubject
 import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
@@ -30,7 +32,7 @@ class EventCaptureFormPresenterTest {
     private val valueStore: ValueStore = mock()
     private val schedulerProvider = TrampolineSchedulerProvider()
     private val onRowActionProcessor: FlowableProcessor<RowAction> = mock()
-    private val focusProcessor: FlowableProcessor<HashMap<String, Boolean>> = mock()
+    private val focusProcessor: FlowableProcessor<Pair<String, Boolean>> = PublishProcessor.create()
 
 
     @Before
@@ -89,23 +91,22 @@ class EventCaptureFormPresenterTest {
         )
         presenter.init()
 
-        verify(activityPresenter, times(1)).setLastUpdatedUid("")
         verify(activityPresenter, times(1)).nextCalculation(true)
     }
 
     @Test
     fun `Should not ask for new calculation if value saved did not changed`() {
+        val subject = BehaviorSubject.create<List<FieldViewModel>>()
         whenever(onRowActionProcessor.onBackpressureBuffer()) doReturn mock()
         whenever(
             onRowActionProcessor.onBackpressureBuffer().distinctUntilChanged()
         ) doReturn Flowable.just(RowAction.create("testUid", "testValue"))
-        whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
+        whenever(activityPresenter.formFieldsFlowable()) doReturn subject
         whenever(valueStore.save("testUid", "testValue")) doReturn Flowable.just(
             StoreResult("testUid", ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED)
         )
         presenter.init()
 
-        verify(activityPresenter, times(0)).setLastUpdatedUid("testUid")
         verify(activityPresenter, times(0)).nextCalculation(true)
     }
 

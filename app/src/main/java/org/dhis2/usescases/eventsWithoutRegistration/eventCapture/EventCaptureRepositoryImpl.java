@@ -447,10 +447,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     @Override
-    public void setLastUpdated(String lastUpdatedUid) {
-    }
-
-    @Override
     public Flowable<EventStatus> eventStatus() {
         return Flowable.just(d2.eventModule().events().uid(eventUid).blockingGet())
                 .map(Event::status);

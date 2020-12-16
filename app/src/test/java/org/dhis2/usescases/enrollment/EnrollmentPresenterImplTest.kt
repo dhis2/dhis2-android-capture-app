@@ -14,6 +14,7 @@ import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
@@ -54,7 +55,7 @@ class EnrollmentPresenterImplTest {
     private val valueStore: ValueStore = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
     private val onRowActionProcessor: FlowableProcessor<RowAction> = mock()
-    private val focusProcessor: FlowableProcessor<HashMap<String, Boolean>> = mock()
+    private val focusProcessor: FlowableProcessor<Pair<String, Boolean>> = mock()
     private val sectionProcessor: FlowableProcessor<String> = mock()
 
     @Before

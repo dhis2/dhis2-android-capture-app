@@ -108,8 +108,6 @@ public class EventCaptureContract {
 
         void refreshTabCounters();
 
-        void setLastUpdatedUid(@NotNull String lastUpdatedUid);
-
         void hideProgress();
 
         void showProgress();
@@ -152,8 +150,6 @@ public class EventCaptureContract {
         Observable<String> programStage();
 
         boolean getAccessDataWrite();
-
-        void setLastUpdated(String lastUpdatedUid);
 
         boolean isEnrollmentCancelled();
 

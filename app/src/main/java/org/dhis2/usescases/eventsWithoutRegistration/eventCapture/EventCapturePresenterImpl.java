@@ -757,11 +757,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void setLastUpdatedUid(@NonNull String lastUpdatedUid) {
-        eventCaptureRepository.setLastUpdated(lastUpdatedUid);
-    }
-
-    @Override
     public void hideProgress() {
         view.hideProgress();
     }
