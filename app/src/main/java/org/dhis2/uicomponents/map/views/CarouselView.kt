@@ -44,13 +44,13 @@ class CarouselView @JvmOverloads constructor(
                     mapManager.mapLayerManager.selectFeature(null)
                     val features = mapManager.findFeatures(currentItem())
                     if (features != null && features.isNotEmpty() && features.size > 1) {
-                        mapManager.map.centerCameraOnFeatures(features)
+                        mapManager.map?.centerCameraOnFeatures(features)
                     } else {
                         val feature = mapManager.findFeature(currentItem())
                         if (feature == null) {
                             callback.invoke()
                         } else {
-                            mapManager.map.centerCameraOnFeature(feature)
+                            mapManager.map?.centerCameraOnFeature(feature)
                         }
                     }
                 }

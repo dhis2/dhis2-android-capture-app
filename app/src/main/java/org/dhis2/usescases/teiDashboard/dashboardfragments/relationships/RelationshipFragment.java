@@ -93,7 +93,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
         relationshipMapManager = new RelationshipMapManager(binding.mapView);
         relationshipMapManager.setOnMapClickListener(this);
-        relationshipMapManager.init(() -> {
+        relationshipMapManager.init(() -> Unit.INSTANCE, (permissionManager) -> {
+            permissionManager.requestLocationPermissions(activity);
             return Unit.INSTANCE;
         });
 
@@ -112,6 +113,13 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         });
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (binding.mapView.getVisibility() == View.VISIBLE && relationshipMapManager.getPermissionsManager() != null) {
+            relationshipMapManager.getPermissionsManager().onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 
     @Override

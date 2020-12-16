@@ -7,13 +7,10 @@ import android.content.Context
 import android.content.Intent
 import android.text.TextUtils.isEmpty
 import android.widget.RemoteViews
-import org.dhis2.App
+import org.dhis2.Bindings.app
 import org.dhis2.R
 import org.dhis2.usescases.splash.SplashActivity
 
-/**
- * Implementation of App Widget functionality.
- */
 class DhisCustomLauncher : AppWidgetProvider() {
 
     override fun onUpdate(
@@ -51,13 +48,13 @@ class DhisCustomLauncher : AppWidgetProvider() {
             appWidgetId: Int
         ) {
             var widgetImage = ""
-            if ((context.applicationContext as App).serverComponent != null) {
-                val d2 = (context.applicationContext as App).serverComponent.userManager().d2
+            if (context.app().serverComponent != null) {
+                val d2 = context.app().serverComponent.userManager().d2
                 if (d2 != null) {
                     val isLoggedIn = d2.userModule().isLogged.blockingGet()
-                    val systemSettingsValue = if (isLoggedIn) {
-                        val flag = d2.systemSettingModule().systemSetting().flag().blockingGet()
-                        if (flag != null) flag.value() else ""
+                    widgetImage = if (isLoggedIn) {
+                        val flag = d2.settingModule().systemSetting().flag().blockingGet()
+                        flag.value() ?: ""
                     } else {
                         ""
                     }
