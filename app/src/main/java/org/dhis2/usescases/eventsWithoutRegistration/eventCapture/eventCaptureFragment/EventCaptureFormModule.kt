@@ -25,7 +25,7 @@ class EventCaptureFormModule(
         valueStore: ValueStore,
         schedulerProvider: SchedulerProvider,
         onFieldActionProcessor: FlowableProcessor<RowAction>,
-        focusProcessor: FlowableProcessor<HashMap<String, Boolean>>
+        focusProcessor: FlowableProcessor<Pair<String, Boolean>>
     ): EventCaptureFormPresenter {
         return EventCaptureFormPresenter(
             view,

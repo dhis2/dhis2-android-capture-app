@@ -37,7 +37,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             description: String?,
             style: ObjectStyle,
             processor: FlowableProcessor<RowAction>?,
-            focusProcessor: FlowableProcessor<HashMap<String, Boolean>>,
+            focusProcessor: FlowableProcessor<Pair<String, Boolean>>,
             options: List<Option>,
             numberOfColumns: Int
         ): MatrixOptionSetModel {
@@ -185,7 +185,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
         )
     }
 
-    override fun withFocus(): FieldViewModel {
+    override fun withFocus(isFocused: Boolean): FieldViewModel {
         return AutoValue_MatrixOptionSetModel(
             uid(),
             label(),
@@ -203,7 +203,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             dataEntryViewType(),
             processor(),
             focusProcessor(),
-            true,
+            isFocused,
             options(),
             numberOfColumns()
         )

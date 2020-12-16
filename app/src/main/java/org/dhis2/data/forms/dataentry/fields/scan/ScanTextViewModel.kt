@@ -73,7 +73,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             isBackgroundTransparent: Boolean,
             isSearchMode: Boolean,
             processor: FlowableProcessor<RowAction>,
-            focusProcessor: FlowableProcessor<HashMap<String, Boolean>>
+            focusProcessor: FlowableProcessor<Pair<String, Boolean>>
         ): FieldViewModel =
             AutoValue_ScanTextViewModel(
                 id,
@@ -225,7 +225,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             isSearchMode()
         )
 
-    override fun withFocus(): FieldViewModel =
+    override fun withFocus(isFocused: Boolean): FieldViewModel =
         AutoValue_ScanTextViewModel(
             uid(),
             label(),
@@ -243,7 +243,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             DataEntryViewHolderTypes.SCAN_CODE,
             processor(),
             focusProcessor(),
-            true,
+            isFocused,
             fieldRendering,
             hint,
             isBackgroundTransparent(),
@@ -259,6 +259,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
     abstract fun isSearchMode(): Boolean
 
     fun onScanSelected(value: String?) {
-        processor()?.onNext(RowAction.create(uid(), value, adapterPosition))
+        processor()?.onNext(RowAction.create(uid(), value))
     }
 }

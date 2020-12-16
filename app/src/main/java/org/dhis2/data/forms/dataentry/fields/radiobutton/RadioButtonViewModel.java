@@ -13,10 +13,10 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
-import java.util.HashMap;
 import java.util.Locale;
 
 import io.reactivex.processors.FlowableProcessor;
+import kotlin.Pair;
 
 /**
  * QUADRAM. Created by frodriguez on 1/24/2018.
@@ -69,7 +69,7 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
     @NonNull
     public static RadioButtonViewModel fromRawValue(@NonNull String id, @NonNull String label, @NonNull ValueType type,
                                                     @NonNull Boolean mandatory, @Nullable String value, @Nullable String section,
-                                                    Boolean editable, @Nullable String description, ObjectStyle objectStyle, ValueTypeRenderingType renderingType, Boolean isBackgroundTransparent, FlowableProcessor<RowAction> processor, FlowableProcessor<HashMap<String, Boolean>> focusProcessor, boolean isSearchMode) {
+                                                    Boolean editable, @Nullable String description, ObjectStyle objectStyle, ValueTypeRenderingType renderingType, Boolean isBackgroundTransparent, FlowableProcessor<RowAction> processor, FlowableProcessor<Pair<String, Boolean>> focusProcessor, boolean isSearchMode) {
         if (value == null) {
             return new AutoValue_RadioButtonViewModel(id, label, null, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, processor, focusProcessor, false, mandatory, type, renderingType, isBackgroundTransparent, isSearchMode);
         } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED.toString())) {
@@ -114,8 +114,8 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
 
     @NonNull
     @Override
-    public FieldViewModel withFocus() {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, processor(), focusProcessor(), true, mandatory(), valueType(), renderingType(), isBackgroundTransparent(), isSearchMode());
+    public FieldViewModel withFocus(boolean isFocused) {
+        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.YES_NO, processor(), focusProcessor(), isFocused, mandatory(), valueType(), renderingType(), isBackgroundTransparent(), isSearchMode());
     }
 
     @Override
@@ -145,7 +145,7 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
 
         if (processor() == null) return;
 
-        processor().onNext(RowAction.create(uid(), result, getAdapterPosition()));
+        processor().onNext(RowAction.create(uid(), result));
     }
 
     public abstract boolean isBackgroundTransparent();

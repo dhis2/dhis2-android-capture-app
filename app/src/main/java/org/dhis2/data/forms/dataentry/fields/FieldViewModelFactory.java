@@ -11,13 +11,12 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
-import autovalue.shaded.org.checkerframework$.checker.nullness.qual.$NonNull;
-
-import java.util.HashMap;
 import java.util.List;
 
+import autovalue.shaded.org.checkerframework$.checker.nullness.qual.$NonNull;
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
+import kotlin.Pair;
 
 public interface FieldViewModelFactory {
 
@@ -39,7 +38,7 @@ public interface FieldViewModelFactory {
                           @Nullable String fieldMask,
                           FlowableProcessor<RowAction> processor,
                           List<Option> options,
-                          FlowableProcessor<HashMap<String, Boolean>> focusProcessor);
+                          FlowableProcessor<Pair<String, Boolean>> focusProcessor);
 
     @Nullable
     FieldViewModel createForAttribute(@$NonNull TrackedEntityAttribute trackedEntityAttribute,

@@ -13,10 +13,10 @@ import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.option.Option;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.processors.FlowableProcessor;
+import kotlin.Pair;
 
 @AutoValue
 public abstract class OptionSetViewModel extends FieldViewModel {
@@ -83,7 +83,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                                             String renderType,
                                             ValueTypeDeviceRendering fieldRendering,
                                             FlowableProcessor<RowAction> processor,
-                                            FlowableProcessor<HashMap<String, Boolean>> focusProcessor) {
+                                            FlowableProcessor<Pair<String, Boolean>> focusProcessor) {
 
         return new AutoValue_OptionSetViewModel(
                 id,
@@ -278,7 +278,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
 
     @NonNull
     @Override
-    public OptionSetViewModel withFocus() {
+    public OptionSetViewModel withFocus(boolean isFocused) {
         return new AutoValue_OptionSetViewModel(
                 uid(),
                 label(),
@@ -296,7 +296,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 processor(),
                 focusProcessor(),
-                true,
+                isFocused,
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),

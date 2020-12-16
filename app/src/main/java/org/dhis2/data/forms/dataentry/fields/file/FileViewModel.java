@@ -2,17 +2,16 @@ package org.dhis2.data.forms.dataentry.fields.file;
 
 import androidx.annotation.NonNull;
 
+import com.google.auto.value.AutoValue;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 
-import com.google.auto.value.AutoValue;
-
-import java.util.HashMap;
-
 import io.reactivex.processors.FlowableProcessor;
+import kotlin.Pair;
 
 @AutoValue
 public abstract class FileViewModel extends FieldViewModel {
@@ -21,7 +20,7 @@ public abstract class FileViewModel extends FieldViewModel {
                 true, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.BUTTON, null, null, false);
     }
 
-    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, String description, ObjectStyle objectStyle, FlowableProcessor<RowAction> processor, FlowableProcessor<HashMap<String, Boolean>> focusProcessor) {
+    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, String description, ObjectStyle objectStyle, FlowableProcessor<RowAction> processor, FlowableProcessor<Pair<String, Boolean>> focusProcessor) {
         return new AutoValue_FileViewModel(id, label, mandatory, value, section, null,
                 true, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.BUTTON, processor, focusProcessor, false);
     }
@@ -62,9 +61,9 @@ public abstract class FileViewModel extends FieldViewModel {
 
     @NonNull
     @Override
-    public FieldViewModel withFocus() {
+    public FieldViewModel withFocus(boolean isFocused) {
         return new AutoValue_FileViewModel(uid(), label(), mandatory(), value(), programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.BUTTON, processor(), focusProcessor(), true);
+                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.BUTTON, processor(), focusProcessor(), isFocused);
     }
 
 

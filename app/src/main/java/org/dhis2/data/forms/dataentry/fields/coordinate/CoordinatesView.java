@@ -193,7 +193,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                     }
                 }
             } else {
-                viewModel.onItemClick();
+                onItemClick();
             }
         });
 
@@ -212,7 +212,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                     }
                 }
             } else {
-                viewModel.onItemClick();
+                onItemClick();
             }
         });
     }
@@ -299,7 +299,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     @Override
     public void onClick(View view) {
-        viewModel.onItemClick();
+        onItemClick();
         switch (view.getId()) {
             case R.id.location1:
                 getLocation();
@@ -376,7 +376,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (hasFocus) {
-            viewModel.onItemClick();
+            onItemClick();
             latitude.performClick();
         }
     }
@@ -521,6 +521,11 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         setEditable(viewModel.editable());
     }
 
+    private void onItemClick() {
+        if (viewModel != null) {
+            viewModel.onItemClick();
+        }
+    }
 
     private void subscribe() {
         ((ActivityResultObservable) getContext()).subscribe(this);

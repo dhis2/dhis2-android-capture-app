@@ -13,9 +13,9 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.Date;
-import java.util.HashMap;
 
 import io.reactivex.processors.FlowableProcessor;
+import kotlin.Pair;
 
 /**
  * QUADRAM. Created by frodriguez on 1/24/2018.
@@ -33,7 +33,7 @@ public abstract class DateTimeViewModel extends FieldViewModel {
         return new AutoValue_DateTimeViewModel(id, label, mandatory, value, section, allowFutureDates, editable, null, null, null, description, objectStyle, null, provideDataEntryViewHolderType(type), null, null, false, isBackgroundTransparent, type, isSearchMode);
     }
 
-    public static FieldViewModel create(String id, String label, Boolean mandatory, ValueType type, String value, String section, Boolean allowFutureDates, Boolean editable, String description, ObjectStyle objectStyle, boolean isBackgroundTransparent, boolean isSearchMode, FlowableProcessor<RowAction> processor, FlowableProcessor<HashMap<String, Boolean>> focusProcessor) {
+    public static FieldViewModel create(String id, String label, Boolean mandatory, ValueType type, String value, String section, Boolean allowFutureDates, Boolean editable, String description, ObjectStyle objectStyle, boolean isBackgroundTransparent, boolean isSearchMode, FlowableProcessor<RowAction> processor, FlowableProcessor<Pair<String, Boolean>> focusProcessor) {
         return new AutoValue_DateTimeViewModel(id, label, mandatory, value, section, allowFutureDates, editable, null, null, null, description, objectStyle, null, provideDataEntryViewHolderType(type), processor, focusProcessor, false, isBackgroundTransparent, type, isSearchMode);
     }
 
@@ -73,9 +73,9 @@ public abstract class DateTimeViewModel extends FieldViewModel {
 
     @NonNull
     @Override
-    public FieldViewModel withFocus() {
+    public FieldViewModel withFocus(boolean isFocused) {
         return new AutoValue_DateTimeViewModel(uid(), label(), mandatory(), value(), programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), processor(), focusProcessor(), true, isBackgroundTransparent(), valueType(), isSearchMode());
+                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, provideDataEntryViewHolderType(valueType()), processor(), focusProcessor(), isFocused, isBackgroundTransparent(), valueType(), isSearchMode());
     }
 
     private static DataEntryViewHolderTypes provideDataEntryViewHolderType(ValueType type) {
@@ -120,7 +120,7 @@ public abstract class DateTimeViewModel extends FieldViewModel {
                     dateFormatted = DateUtils.timeFormat().format(date);
             }
         }
-        RowAction rowAction = RowAction.create(uid(), date != null ? dateFormatted : null, getAdapterPosition());
+        RowAction rowAction = RowAction.create(uid(), date != null ? dateFormatted : null);
         processor().onNext(rowAction);
     }
 

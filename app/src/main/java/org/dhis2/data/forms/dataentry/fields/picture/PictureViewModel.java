@@ -10,9 +10,8 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 
-import java.util.HashMap;
-
 import io.reactivex.processors.FlowableProcessor;
+import kotlin.Pair;
 
 @AutoValue
 public abstract class PictureViewModel extends FieldViewModel {
@@ -23,7 +22,7 @@ public abstract class PictureViewModel extends FieldViewModel {
         return new AutoValue_PictureViewModel(id, label, mandatory, value, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.PICTURE, null, null, false, isBackgroundTransparent);
     }
 
-    public static PictureViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle, FlowableProcessor<RowAction> processor, FlowableProcessor<HashMap<String, Boolean>> focusProcessor, boolean isBackgroundTransparent) {
+    public static PictureViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle, FlowableProcessor<RowAction> processor, FlowableProcessor<Pair<String, Boolean>> focusProcessor, boolean isBackgroundTransparent) {
         return new AutoValue_PictureViewModel(id, label, mandatory, value, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.PICTURE, processor, focusProcessor, false, isBackgroundTransparent);
     }
 
@@ -58,8 +57,8 @@ public abstract class PictureViewModel extends FieldViewModel {
 
     @NonNull
     @Override
-    public PictureViewModel withFocus() {
-        return new AutoValue_PictureViewModel(uid(), label(), mandatory(), value(), programStageSection(), null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.PICTURE, processor(), focusProcessor(), true, isBackgroundTransparent());
+    public PictureViewModel withFocus(boolean isFocused) {
+        return new AutoValue_PictureViewModel(uid(), label(), mandatory(), value(), programStageSection(), null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.PICTURE, processor(), focusProcessor(), isFocused, isBackgroundTransparent());
     }
 
     @Override
@@ -68,6 +67,6 @@ public abstract class PictureViewModel extends FieldViewModel {
     }
 
     public void onClearValue() {
-        processor().onNext(RowAction.create(uid(), null, getAdapterPosition()));
+        processor().onNext(RowAction.create(uid(), null));
     }
 }

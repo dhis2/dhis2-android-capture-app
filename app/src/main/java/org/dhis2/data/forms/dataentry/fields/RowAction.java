@@ -23,38 +23,36 @@ public abstract class RowAction {
     @Nullable
     public abstract String optionName();
 
-    public abstract Integer lastFocusPosition();
+//    public abstract Integer lastFocusPosition();
 
     @Nullable
     public abstract String extraData();
 
+    @Nullable
+    public abstract String error();
+
     @NonNull
     public static RowAction create(@NonNull String id, @Nullable String value) {
-        return new AutoValue_RowAction(id, value, false, null, null, -1, null);
+        return new AutoValue_RowAction(id, value, false, null, null, null, null);
     }
 
     @NonNull
-    public static RowAction create(@NonNull String id, @Nullable String value,@Nullable String extraData) {
-        return new AutoValue_RowAction(id, value, false, null, null, -1, extraData);
-    }
-
-    @NonNull
-    public static RowAction create(@NonNull String id, @Nullable String value, int lastFocusPosition) {
-        return new AutoValue_RowAction(id, value, false, null, null, lastFocusPosition, null);
-    }
-
-    @NonNull
-    public static RowAction create(@NonNull String id, @Nullable String value, int lastFocusPosition,String extraData) {
-        return new AutoValue_RowAction(id, value, false, null, null, lastFocusPosition, extraData);
+    public static RowAction create(@NonNull String id, @Nullable String value, @Nullable String extraData) {
+        return new AutoValue_RowAction(id, value, false, null, null, extraData, null);
     }
 
     @NonNull
     public static RowAction create(@NonNull String id, @Nullable String value, @NonNull Boolean requieresExactMatch) {
-        return new AutoValue_RowAction(id, value, requieresExactMatch, null, null, -1, null);
+        return new AutoValue_RowAction(id, value, requieresExactMatch, null, null, null, null);
     }
 
     @NonNull
-    public static RowAction create(@NonNull String id, @Nullable String value, @NonNull Boolean requieresExactMatch, @NonNull String code, @NonNull String name, int lastAdapterPosition) {
-        return new AutoValue_RowAction(id, value, requieresExactMatch, code, name, lastAdapterPosition, null);
+    public static RowAction create(@NonNull String id, @Nullable String value, @NonNull Boolean requieresExactMatch, @NonNull String code, @NonNull String name) {
+        return new AutoValue_RowAction(id, value, requieresExactMatch, code, name, null, null);
+    }
+
+    @NonNull
+    public static RowAction create(@NonNull String id, @Nullable String value, @Nullable String extraData, @Nullable String error) {
+        return new AutoValue_RowAction(id, value, false, null, null, extraData, error);
     }
 }

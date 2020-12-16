@@ -139,26 +139,30 @@ public class CustomTextView extends FieldLayout {
             if (hasFocus && viewModel.isSearchMode()) {
                 sendAction();
             } else {
-                if (validate()) {
-                    if (valueHasChanged()) {
-                        sendAction();
+                if (valueHasChanged()) {
+                    if (validate()) {
+                        inputLayout.setError(null);
                     }
+                    sendAction();
                     validateRegex();
                 }
             }
         });
 
         editText.setOnEditorActionListener((v, actionId, event) -> {
-            if (validate()) {
-                if (viewModel.valueType() != ValueType.LONG_TEXT) {
-                    viewModel.onNext();
-                    return true;
-                } else {
-                    return false;
+            if (viewModel.valueType() != ValueType.LONG_TEXT) {
+                if (valueHasChanged()) {
+                    if (validate()) {
+                        inputLayout.setError(null);
+                    }
+                    sendAction();
+                    validateRegex();
                 }
+                viewModel.onNext();
+                return true;
+            } else {
+                return false;
             }
-
-            return true;
         });
 
         if (isLongText) {
@@ -519,11 +523,11 @@ public class CustomTextView extends FieldLayout {
     private void sendAction() {
         if (!isEmpty(getEditText().getText())) {
             checkAutocompleteRendering();
-            viewModel.withValue(getEditText().getText().toString());
             String value = ValidationUtils.validate(viewModel.valueType(), getEditText().getText().toString());
-            viewModel.onTextFilled(value);
+            String error = (String) inputLayout.getError();
+            viewModel.onTextFilled(value, error);
         } else {
-            viewModel.onTextFilled(null);
+            viewModel.onTextFilled(null, null);
         }
     }
 

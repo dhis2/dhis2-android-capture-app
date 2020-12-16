@@ -13,9 +13,9 @@ import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 
 import java.util.Date;
-import java.util.HashMap;
 
 import io.reactivex.processors.FlowableProcessor;
+import kotlin.Pair;
 
 @AutoValue
 public abstract class AgeViewModel extends FieldViewModel {
@@ -30,7 +30,7 @@ public abstract class AgeViewModel extends FieldViewModel {
         return new AutoValue_AgeViewModel(id, label, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.AGE_VIEW, null, null, false, mandatory, value, isBackgroundTransparent, isSearchMode);
     }
 
-    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle, boolean isBackgroundTransparent, boolean isSearchMode, FlowableProcessor<RowAction> processor, FlowableProcessor<HashMap<String, Boolean>> focusProcessor) {
+    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle, boolean isBackgroundTransparent, boolean isSearchMode, FlowableProcessor<RowAction> processor, FlowableProcessor<Pair<String, Boolean>> focusProcessor) {
         return new AutoValue_AgeViewModel(id, label, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.AGE_VIEW, processor, focusProcessor, false, mandatory, value, isBackgroundTransparent, isSearchMode);
     }
 
@@ -65,8 +65,8 @@ public abstract class AgeViewModel extends FieldViewModel {
 
     @NonNull
     @Override
-    public FieldViewModel withFocus() {
-        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null,  DataEntryViewHolderTypes.AGE_VIEW, processor(), focusProcessor(), true, mandatory(), value(), isBackgroundTransparent(), isSearchMode());
+    public FieldViewModel withFocus(boolean isFocused) {
+        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null,  DataEntryViewHolderTypes.AGE_VIEW, processor(), focusProcessor(), isFocused, mandatory(), value(), isBackgroundTransparent(), isSearchMode());
     }
 
     @Override
@@ -78,7 +78,7 @@ public abstract class AgeViewModel extends FieldViewModel {
 
     public void onAgeSet(Date ageDate) {
         if (processor() == null) return;
-        processor().onNext(RowAction.create(uid(), ageDate == null ? null : DateUtils.oldUiDateFormat().format(ageDate), getAdapterPosition()));
+        processor().onNext(RowAction.create(uid(), ageDate == null ? null : DateUtils.oldUiDateFormat().format(ageDate)));
     }
 
     public abstract boolean isSearchMode();

@@ -10,9 +10,8 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 
-import java.util.HashMap;
-
 import io.reactivex.processors.FlowableProcessor;
+import kotlin.Pair;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/03/2018.
@@ -28,7 +27,7 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
         return new AutoValue_OrgUnitViewModel(id, label, mandatory, value, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.ORG_UNIT, null, null, false, isBackgroundTransparent, renderType);
     }
 
-    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle, boolean isBackgroundTransparent, String renderType, FlowableProcessor<RowAction> processor, FlowableProcessor<HashMap<String, Boolean>> focusProcessor) {
+    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle, boolean isBackgroundTransparent, String renderType, FlowableProcessor<RowAction> processor, FlowableProcessor<Pair<String, Boolean>> focusProcessor) {
         return new AutoValue_OrgUnitViewModel(id, label, mandatory, value, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.ORG_UNIT, processor, focusProcessor, false, isBackgroundTransparent, renderType);
     }
 
@@ -68,9 +67,9 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
 
     @NonNull
     @Override
-    public FieldViewModel withFocus() {
+    public FieldViewModel withFocus(boolean isFocused) {
         return new AutoValue_OrgUnitViewModel(uid(), label(), mandatory(), value(), programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, processor(), focusProcessor(), true, isBackgroundTransparent(), renderType());
+                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, processor(), focusProcessor(), isFocused, isBackgroundTransparent(), renderType());
     }
 
     @Override
@@ -79,6 +78,6 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
     }
 
     public void onDataChange(String data) {
-        processor().onNext(RowAction.create(uid(), data, getAdapterPosition()));
+        processor().onNext(RowAction.create(uid(), data));
     }
 }

@@ -52,6 +52,7 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.processors.FlowableProcessor;
+import kotlin.Pair;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -70,9 +71,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private final HashMap<String, ProgramStageDataElement> stageDataElementsMap;
     private RuleEvent.Builder eventBuilder;
     private List<FieldViewModel> sectionFields;
-    private FlowableProcessor<HashMap<String, Boolean>> focusProcessor;
+    private FlowableProcessor<Pair<String, Boolean>> focusProcessor;
 
-    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2, FlowableProcessor<HashMap<String, Boolean>> focusProcessor) {
+    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2, FlowableProcessor<Pair<String, Boolean>> focusProcessor) {
         this.eventUid = eventUid;
         this.formRepository = formRepository;
         this.d2 = d2;

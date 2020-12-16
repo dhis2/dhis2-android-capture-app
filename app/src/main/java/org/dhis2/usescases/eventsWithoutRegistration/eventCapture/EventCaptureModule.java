@@ -22,12 +22,11 @@ import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
-import java.util.HashMap;
-
 import dagger.Module;
 import dagger.Provides;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+import kotlin.Pair;
 
 @PerActivity
 @Module
@@ -54,7 +53,7 @@ public class EventCaptureModule {
                                                     FlowableProcessor<RowAction> onFieldActionProcessor,
                                                     FieldViewModelFactory fieldFactory) {
         return new EventCapturePresenterImpl(view, eventUid, eventCaptureRepository, ruleUtils, valueStore, schedulerProvider,
-                preferences, getNextVisibleSection, fieldMapper,  onFieldActionProcessor, fieldFactory.sectionProcessor());
+                preferences, getNextVisibleSection, fieldMapper, onFieldActionProcessor, fieldFactory.sectionProcessor());
     }
 
     @Provides
@@ -68,7 +67,7 @@ public class EventCaptureModule {
     EventCaptureContract.EventCaptureRepository provideRepository(FieldViewModelFactory fieldFactory,
                                                                   FormRepository formRepository,
                                                                   D2 d2,
-                                                                  FlowableProcessor<HashMap<String, Boolean>> focusProcessor
+                                                                  FlowableProcessor<Pair<String, Boolean>> focusProcessor
     ) {
         return new EventCaptureRepositoryImpl(fieldFactory, formRepository, eventUid, d2, focusProcessor);
     }
@@ -113,7 +112,7 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    FlowableProcessor<HashMap<String, Boolean>> getFocusProcessor() {
+    FlowableProcessor<Pair<String, Boolean>> getFocusProcessor() {
         return PublishProcessor.create();
     }
 }

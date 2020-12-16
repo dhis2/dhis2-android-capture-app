@@ -11,9 +11,8 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 
-import java.util.HashMap;
-
 import io.reactivex.processors.FlowableProcessor;
+import kotlin.Pair;
 
 @AutoValue
 public abstract class DisplayViewModel extends FieldViewModel {
@@ -22,7 +21,7 @@ public abstract class DisplayViewModel extends FieldViewModel {
         return new AutoValue_DisplayViewModel(id, label, false, value, null, null, false, null, null, null, description, ObjectStyle.builder().build(), null, DataEntryViewHolderTypes.DISPLAY,null, null, false);
     }
 
-    public static DisplayViewModel create(String id, String label, String value, String description, FlowableProcessor<RowAction> processor, FlowableProcessor<HashMap<String, Boolean>> focusProcessor) {
+    public static DisplayViewModel create(String id, String label, String value, String description, FlowableProcessor<RowAction> processor, FlowableProcessor<Pair<String, Boolean>> focusProcessor) {
         return new AutoValue_DisplayViewModel(id, label, false, value, null, null, false, null, null, null, description, ObjectStyle.builder().build(), null, DataEntryViewHolderTypes.DISPLAY, processor, focusProcessor, false);
     }
 
@@ -57,8 +56,8 @@ public abstract class DisplayViewModel extends FieldViewModel {
 
     @NonNull
     @Override
-    public FieldViewModel withFocus() {
-        return new AutoValue_DisplayViewModel(uid(), label(), mandatory(), value(), null, null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.DISPLAY, processor(), focusProcessor(), true);
+    public FieldViewModel withFocus(boolean isFocused) {
+        return new AutoValue_DisplayViewModel(uid(), label(), mandatory(), value(), null, null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.DISPLAY, processor(), focusProcessor(), isFocused);
     }
 
     @Override

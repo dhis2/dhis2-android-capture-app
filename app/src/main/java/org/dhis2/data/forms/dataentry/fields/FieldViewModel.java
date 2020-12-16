@@ -8,9 +8,10 @@ import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
+import java.util.Objects;
 
 import io.reactivex.processors.FlowableProcessor;
+import kotlin.Pair;
 
 public abstract class FieldViewModel implements FieldUiModel {
 
@@ -62,7 +63,7 @@ public abstract class FieldViewModel implements FieldUiModel {
     public abstract FieldViewModel withEditMode(boolean isEditable);
 
     @NonNull
-    public abstract FieldViewModel withFocus();
+    public abstract FieldViewModel withFocus(boolean isFocused);
 
     @NonNull
     public abstract ObjectStyle objectStyle();
@@ -76,7 +77,7 @@ public abstract class FieldViewModel implements FieldUiModel {
     public abstract FlowableProcessor<RowAction> processor();
 
     @Nullable
-    public abstract FlowableProcessor<HashMap<String, Boolean>> focusProcessor();
+    public abstract FlowableProcessor<Pair<String, Boolean>> focusProcessor();
 
     public int adapterPosition = -1;
 
@@ -164,18 +165,16 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Override
     public void onItemClick() {
         if (focusProcessor() != null) {
-            HashMap<String, Boolean> map = new HashMap<>();
-            map.put(uid(), false);
-            focusProcessor().onNext(map);
+            Pair<String, Boolean> pair = new Pair<>(uid(), false);
+            Objects.requireNonNull(focusProcessor()).onNext(pair);
         }
     }
 
     @Override
     public void onNext() {
         if (focusProcessor() != null) {
-            HashMap<String, Boolean> map = new HashMap<>();
-            map.put(uid(), true);
-            focusProcessor().onNext(map);
+            Pair<String, Boolean> item = new Pair<>(uid(), true);
+            Objects.requireNonNull(focusProcessor()).onNext(item);
         }
     }
 }

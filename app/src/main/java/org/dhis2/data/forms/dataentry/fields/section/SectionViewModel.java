@@ -235,7 +235,7 @@ public abstract class SectionViewModel extends FieldViewModel {
 
     @NonNull
     @Override
-    public FieldViewModel withFocus() {
+    public FieldViewModel withFocus(boolean isFocused) {
         return this;
     }
 
