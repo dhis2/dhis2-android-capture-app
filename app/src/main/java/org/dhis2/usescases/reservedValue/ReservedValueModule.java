@@ -4,6 +4,7 @@ import android.content.Context;
 
 import org.dhis2.R;
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.core.D2;
 
@@ -29,8 +30,8 @@ public class ReservedValueModule {
 
     @PerActivity
     @Provides
-    ReservedValueRepository provideRepository(D2 d2, ReservedValueMapper mapper) {
-        return new ReservedValueRepositoryImpl(d2, mapper);
+    ReservedValueRepository provideRepository(D2 d2, ReservedValueMapper mapper, PreferenceProvider preferenceProvider) {
+        return new ReservedValueRepositoryImpl(d2, preferenceProvider, mapper);
     }
 
     @PerActivity
