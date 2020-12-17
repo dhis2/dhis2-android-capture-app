@@ -6,46 +6,48 @@ import org.hisp.dhis.android.core.period.PeriodType
 data class Graph(
     val title: String,
     val isOnline: Boolean,
-    val coordinates: List<GraphPoint>,
+    val coordinates: List<List<GraphPoint>>,
     val periodToDisplay: String,
     val eventPeriodType: PeriodType,
-    val periodStep: Long
+    val periodStep: Long,
+    val chartType: ChartType? = ChartType.LINE_CHART
 ) {
     fun numberOfStepsToDate(date: Date): Float {
-        return if (coordinates.isEmpty()) {
+        return if (coordinates.first().isEmpty()) {
             return 0f
         } else {
-            ((date.time - coordinates.first().eventDate.time) / periodStep).toFloat()
+            ((date.time - coordinates.first().first().eventDate.time) / periodStep).toFloat()
         }
     }
 
     fun numberOfStepsToLastDate(): Float {
-        return if (coordinates.isEmpty()) {
+        return if (coordinates.first().isEmpty()) {
             return 0f
         } else {
-            numberOfStepsToDate(coordinates.last().eventDate)
+            numberOfStepsToDate(coordinates.first().last().eventDate)
         }
     }
 
     fun dateFromSteps(numberOfSteps: Long): Date? {
-        return if (coordinates.isEmpty()) {
+        return if (coordinates.first().isEmpty()) {
             return null
         } else {
-            Date(coordinates.first().eventDate.time + numberOfSteps * periodStep)
+            Date(coordinates.first().first().eventDate.time + numberOfSteps * periodStep)
         }
     }
 
-    fun maxValue(): GraphPoint? {
-        return coordinates.maxBy { it.fieldValue }
+    fun maxValue(): Float {
+        return coordinates.map {points-> points.map { it.fieldValue }.max()?:0f }.max()?:0f
     }
 
-    fun minValue(): GraphPoint? {
-        return coordinates.minBy { it.fieldValue }
+    fun minValue(): Float {
+        return coordinates.map {points-> points.map { it.fieldValue }.min()?:0f }.min()?:0f
     }
 }
 
 data class GraphPoint(
     val eventDate: Date,
+    val position: Int? = -1,
     val fieldValue: Float
 )
 

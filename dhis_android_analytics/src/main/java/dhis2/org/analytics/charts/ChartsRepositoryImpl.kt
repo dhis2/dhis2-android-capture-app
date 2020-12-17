@@ -1,12 +1,15 @@
 package dhis2.org.analytics.charts
 
+import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.GraphPoint
-import java.text.SimpleDateFormat
-import java.util.Date
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.period.PeriodType
+import org.hisp.dhis.rules.functions.ZScoreTable
+import org.hisp.dhis.rules.functions.ZScoreTableKey
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class ChartsRepositoryImpl(private val d2: D2) : ChartsRepository {
 
@@ -29,13 +32,47 @@ class ChartsRepositoryImpl(private val d2: D2) : ChartsRepository {
                 Graph(
                     "${period.name}-${dataElement.displayFormName()}",
                     false,
-                    coordinates,
+                    listOf(coordinates),
                     "",
                     programStage.periodType() ?: PeriodType.Daily,
                     periodStep(programStage.periodType())
                 )
             }
-        }.flatten()
+        }.flatten().toMutableList().apply {
+            add(
+                Graph(
+                    "WFA - Boy",
+                    false,
+                    getNutritionData(ZScoreTable.getZscoreWFATableBoy()),
+                    "",
+                    PeriodType.Yearly,
+                    periodStep(PeriodType.Yearly),
+                    ChartType.NUTRITION
+                )
+            )
+            add(
+                Graph(
+                    "HFA - Boy",
+                    false,
+                    getNutritionData(ZScoreTable.getZscoreHFATableBoy()),
+                    "",
+                    PeriodType.Yearly,
+                    periodStep(PeriodType.Yearly),
+                    ChartType.NUTRITION
+                )
+            )
+            add(
+                Graph(
+                    "WFH - Boy",
+                    false,
+                    getNutritionData(ZScoreTable.getZscoreWFHTableBoy()),
+                    "",
+                    PeriodType.Yearly,
+                    periodStep(PeriodType.Yearly),
+                    ChartType.NUTRITION
+                )
+            )
+        }
     }
 
     private fun getCoordinatesSortedByDate(
@@ -55,8 +92,8 @@ class ChartsRepositoryImpl(private val d2: D2) : ChartsRepository {
             .mapNotNull { lineListResponse ->
                 lineListResponse.values.first().value?.let { value ->
                     GraphPoint(
-                        formattedDate(lineListResponse.date),
-                        value.toFloat()
+                        eventDate = formattedDate(lineListResponse.date),
+                        fieldValue = value.toFloat()
                     )
                 }
             }
@@ -114,5 +151,30 @@ class ChartsRepositoryImpl(private val d2: D2) : ChartsRepository {
                 0
             ).startDate()?.time ?: 0L
         return currentPeriodDate - initialPeriodDate
+    }
+
+    private fun getNutritionData(zscoreWFATableBoy: MutableMap<ZScoreTableKey, MutableMap<Float, Int>>): List<List<GraphPoint>> {
+        val numberOfData = zscoreWFATableBoy.values.first().size
+        val nutritionData = mutableListOf<MutableList<GraphPoint>>().apply {
+            for (i in 0 until numberOfData) {
+                add(mutableListOf())
+            }
+        }
+
+        zscoreWFATableBoy.toSortedMap(compareBy { it.parameter })
+            .values.forEachIndexed { i, map ->
+                val values = map.keys.sorted()
+                for(dataIndex in 0 until numberOfData){
+                    nutritionData[dataIndex].add(
+                        GraphPoint(
+                            eventDate = Date(),
+                            position = i,
+                            fieldValue = values[dataIndex]
+                        )
+                    )
+                }
+            }
+
+        return nutritionData
     }
 }

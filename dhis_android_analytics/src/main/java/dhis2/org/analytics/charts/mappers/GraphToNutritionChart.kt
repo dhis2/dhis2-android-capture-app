@@ -6,21 +6,12 @@ import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import dhis2.org.analytics.charts.data.Graph
+import dhis2.org.analytics.charts.formatters.AgeInMonthLabelFormatter
 import dhis2.org.analytics.charts.formatters.DateLabelFormatter
 
-const val DEFAULT_VALUE = 0f
-const val VALUE_PADDING = 50f
-const val DEFAULT_GRID_LINE_LENGTH = 10f
-const val DEFAULT_GRID_SPACE_LENGTH = 10f
-const val DEFAULT_GRIP_PHASE = 0f
-const val DEFAULT_ANIM_TIME = 1500
-const val DEFAULT_GRANULARITY = 1f
-const val X_AXIS_DEFAULT_MIN = -1f
-const val DEFAULT_CHART_HEIGHT = 500
-
-class GraphToLineChart {
+class GraphToNutritionChart {
     fun map(context: Context, graph: Graph): LineChart {
-        val lineData = GraphToLineData().map(graph)
+        val lineData = GraphToNutritionData().map(graph)
         return LineChart(context).apply {
             description.isEnabled = false
             isDragEnabled = true
@@ -36,10 +27,10 @@ class GraphToLineChart {
                 )
                 setDrawLimitLinesBehindData(true)
                 position = XAxis.XAxisPosition.BOTTOM
-                valueFormatter = DateLabelFormatter { graph.dateFromSteps(it) }
+                valueFormatter = AgeInMonthLabelFormatter()
                 granularity = DEFAULT_GRANULARITY
-                axisMinimum = X_AXIS_DEFAULT_MIN
-                axisMaximum = graph.numberOfStepsToLastDate() + 1f
+                axisMinimum = 0f
+                axisMaximum = graph.coordinates.first().size + 1f
             }
 
             axisLeft.apply {
@@ -48,8 +39,8 @@ class GraphToLineChart {
                     DEFAULT_GRID_SPACE_LENGTH,
                     DEFAULT_GRIP_PHASE
                 )
-                axisMaximum = graph.maxValue() + VALUE_PADDING
-                axisMinimum = graph.minValue() - VALUE_PADDING
+                axisMaximum = graph.maxValue()
+                axisMinimum = graph.minValue()
                 setDrawLimitLinesBehindData(true)
             }
             axisRight.isEnabled = false
