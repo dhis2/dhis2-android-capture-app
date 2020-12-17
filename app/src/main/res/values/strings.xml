@@ -778,4 +778,6 @@
     <string name="navigation_notes">Notes</string>
     <string name="navigation_data_entry">Data entry</string>
     <string name="navigation_tei_data">Details</string>
+    <string name="show_bar_graph">Analytics as Bar</string>
+    <string name="show_line_graph">Analytics as Line</string>
 </resources>
