@@ -226,7 +226,6 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         requestFocus();
         viewModel.onItemClick();
         closeKeyboard(v);
-//        setSelectedBackground(isSearchMode);
         OptionSetDialog dialog = new OptionSetDialog();
         dialog.create(getContext());
         dialog.setOptionSet(viewModel);

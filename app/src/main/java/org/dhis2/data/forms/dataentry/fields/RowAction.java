@@ -23,8 +23,6 @@ public abstract class RowAction {
     @Nullable
     public abstract String optionName();
 
-//    public abstract Integer lastFocusPosition();
-
     @Nullable
     public abstract String extraData();
 
