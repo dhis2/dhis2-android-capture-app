@@ -99,7 +99,7 @@ class DataEntryAdapter :
     }
 
     fun isSection(position: Int): Boolean {
-        return if (position <= itemCount) {
+        return if (position < itemCount) {
             getItemViewType(position) == DataEntryViewHolderTypes.SECTION.ordinal
         } else {
             false
