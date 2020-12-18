@@ -67,7 +67,7 @@
     <string name="YEARLY">Йиллик</string>
     <string name="clear_filters">Фильтрларни тозалаш</string>
     <string name="action_accept">Қабул қилинг</string>
-    <string name="action_share_zero_items">Баҳам кўриш</string>
+    <string name="action_share_zero_items">Улашиш</string>
     <string name="action_share_single_item">Элемент уланиши %d</string>
     <string name="action_share_multiple_item">Элементлар уланиши %d</string>
 
@@ -333,7 +333,7 @@
     <string name="select_all">ҳаммасини белгилаш</string>
     <string name="clear_all">аниқ танлов</string>
     <string name="empty_program_list">Танланган фильтрлар учун маълумот йўқ. Илтимос, уларни ўзгартириб кўринг.</string>
-    <string name="share">Баҳам кўриш</string>
+    <string name="share">Улашиш</string>
     <string name="share_qr">QR ни улашиш</string>
     <string name="teiType_search_online">Онлайн қидирувда турлар бўйича қидириш мумкин эмас. \n Илтимос, дастурни рўйхатдан танланг.</string>
     <string name="max">Максимум</string>
@@ -495,7 +495,7 @@
     <string name="delete_local_data_done">Локал маълумотларни ўчириш муваффақиятли якунланди.</string>
     <string name="org_unit_selection_warning">Камида битта ташкилий бўлим танланиши керак</string>
     <string name="send_user_name_title">аълумотларни юборинг</string>
-    <string name="send_user_name_mesage">DHIS2 да фойдаланувчи идентификаторлари билан боғлиқ хатоликлар журналларини баҳам кўриш орқали ушбу дастурни яхшилашга ёрдам бериш.</string>
+    <string name="send_user_name_mesage">DHIS2 да фойдаланувчи идентификаторлари билан боғлиқ хатоликлар журналларини улашиш орқали ушбу дастурни яхшилашга ёрдам бериш.</string>
     <string name="check_mandatory_field">Майдонларни белгилаш</string>
     <string name="error_no_network_during_sync">Конфигурацияни синхронлаштириш пайтида сизнинг интернет алоқангизда узилиш юз берди. Илтимос, кейинроқ қайта уриниб кўринг</string>
     <string name="action_agree">Розиман</string>
