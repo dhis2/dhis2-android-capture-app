@@ -48,7 +48,7 @@
     <!-- Login -->
     <string name="url_hint">Сервер URLи</string>
     <string name="user_hint">Фойдаланувчи исми</string>
-    <string name="password_hint">Парол</string>
+    <string name="password_hint">Пароль</string>
     <string name="log_in_button">Кириш</string>
     <string name="unlock_button">Сессия очиш</string>
     <string name="syncing_configuration">Конфигурациянгиз синхронлашмоқда</string>
@@ -98,9 +98,9 @@
     <string name="event_approved">Тадбир тасдиқланди</string>
     <string name="event_inactive">Тадбир нофаол</string>
     <string name="read_only">Фақат ўқиш учун</string>
-    <string name="complete">Тўлиқ</string>
-    <string name="finish_and_complete">Тайёр ва тўлиқ</string>
-    <string name="completed">Бажарилди</string>
+    <string name="complete">Тўлдириш</string>
+    <string name="finish_and_complete">Якунлаш ва тўлдириш</string>
+    <string name="completed">Тўлдирилди</string>
     <string name="cancelled">Бекор қилинди</string>
     <string name="re_open">қайта очиш</string>
     <string name="activate">Фаоллаштириш</string>
@@ -110,7 +110,7 @@
     <string name="state_synced">Синхронлаш</string>
     <string name="state_to_post">Юбориш учун</string>
     <string name="state_to_update">Янгилаш учун</string>
-    <string name="state_to_delete">Ўчириш учун</string>
+    <string name="state_to_delete">Ўчириб ташлаш учун</string>
     <string name="state_error">Хатолик</string>
     <string name="action_sync">СИНХРОНЛАШ</string>
     <string name="action_send">ЮБОРИШ</string>
@@ -149,10 +149,10 @@
     <string name="cat_combo">Категория комбинацияси</string>
     <string name="date_default">КК/ОО/ЙЙЙЙ</string>
     <string name="cancel">Бекор қилиш</string>
-    <string name="delete">Ўчириш</string>
-    <string name="delete_event">Тадбирни ўчиринг</string>
-    <string name="confirm_delete_event">Ҳақиқатдан ҳам ушбу ҳодиса/тадбирни ўчирмоқчимисиз?</string>
-    <string name="event_was_deleted">Тадбир муваффақиятли ўчирилди</string>
+    <string name="delete">Ўчириб ташлаш</string>
+    <string name="delete_event">Ҳодиса/Тадбирни ўчириб ташлаш</string>
+    <string name="confirm_delete_event">Ҳақиқатдан ҳам ушбу ҳодиса/тадбирни ўчириб ташламоқчимисиз?</string>
+    <string name="event_was_deleted">Тадбир муваффақиятли ўчириб ташланди</string>
     <string name="total">Жами</string>
     <string name="most_recent_event_date">Охирги тадбир санаси</string>
 
@@ -236,8 +236,8 @@
     <string name="settingsReservedValues_descr">Бу ерда сиз оффлайн режимда мавжуд бўлган қийматлар сонини кўришингиз ва янгиларини захиралашингиз мумкин.</string>
     <string name="settingsErrorLog">Синхронлашдаги хатолар журналини очинг</string>
     <string name="settingsErrorLog_descr">Ушбу журналда маълумотлар ва МетаМаълумотларни синхронлашда вужудга келган барча хатоликлар қайд этилган</string>
-    <string name="settingsDeleteLocalData">Локал маълумотларни ўчириш</string>
-    <string name="settingsDeleteLocalData_descr">Қурилмангизда сақланган барча Кузатув-Назорат иловаси маълумотлари ўчирилади. Сервер билан синхронланмаган маълумотлар йўқотилади.</string>
+    <string name="settingsDeleteLocalData">Локал маълумотларни ўчириб ташлаш</string>
+    <string name="settingsDeleteLocalData_descr">Қурилмангизда сақланган барча Кузатув-Назорат иловаси маълумотлари ўчириб ташланади. Сервер билан синхронланмаган маълумотлар йўқотилади.</string>
     <string name="settingsReset">Илова маълумотларининг асл стандарт ҳолатини тиклаш; конфигурация</string>
     <string name="settingsReset_descr">Қурилмангизда сақланган конфигурация ва Илова маълумотлари ўчирилади. Сиздан қайта тизимга кириш сўралади. Сервер билан синхронланмаган маълумотлар йўқотилади.</string>
     <string name="settingsSms">СМС созламалари</string>
@@ -264,7 +264,7 @@
     <string name="title_delete_go_back">Маълумотингиз сақланмади</string>
     <string name="delete_go_back">Агарда ҳозир орқага қайтсангиз, барча киритилган маълумотлар ўчирилади.</string>
     <string name="missing_mandatory_fields_events_2.0">Баъзи мажбурий майдонлар қолдириб кетилган: \n   %sда\n. Ҳозир орқага қайта оласиз, аммо бу ҳолда ҳодиса/тадбирни якунлаб бўлмайди.</string>
-    <string name="missing_mandatory_fields_go_back">Ўчириб, орқага қайтиш</string>
+    <string name="missing_mandatory_fields_go_back">Ўчириб ташлаш ва орқага қайтиш</string>
     <string name="error_fields">Баъзи маълумотларда хатоликлар мавжуд: \n%s\. Илтимос, уларни текширинг.</string>
     <string name="missing_mandatory_fields_finish">Баъзи мажбурий майдонлар қолдириб кетилган. Сиз маълумотларни киритишни якунлаб чиқишингиз мумкин. Аммо бу ҳолда ҳодиса/тадбирни якунлаб бўлмайди.</string>
     <string name="enrollment_coordinates">Рўйхатдан ўтиш координаталари</string>
@@ -411,7 +411,7 @@
     <string name="tuto_settings_reserved">Қанча захира қийматлари қолганлигини текширинг ва бошқаринг</string>
     <string name="tuto_settings_errors">Серверга уланиш амалга ошмаганлигини текширинг</string>
     <string name="tuto_settings_reset">Дискда жой бўшатинг</string>
-    <string name="tuto_settings_4">...ёки бошидан бошлаш учун ҳамма нарсани ўчириб ташланг.</string>
+    <string name="tuto_settings_4">...ёки бошидан бошлаш учун ҳамма нарсани ўчириб ташлаш.</string>
     <string name="tuto_search_1_v2">Ўзингизнинг қурилмангизни ҳам локал ҳам серверда топинг.</string>
     <string name="tuto_search_2">Сизга бошқа дастурларга ўтишингиз мумкин</string>
     <string name="tuto_search_3_v2">Янги объектларни қидириш ёки қўшиш. Сиз аввал қидиришингиз зарур, янгисини қўшишдан олдин!</string>
@@ -424,7 +424,7 @@
     <string name="tuto_dashboard_6">Бу ерда сиз барча ҳодиса/тадбирларни кўрасиз. Ҳодиса/тадбир тафсилотларини кўриш учун босинг.</string>
     <string name="tuto_dashboard_7">Ўзаро муносабатларни қўшиш, кўрсатгичларни кўриш ёки ёзувларни ёзиш учун меню бўйлаб ҳаракатлананинг.</string>
     <string name="tuto_dashboard_8">Ташкилотингиз томонидан барча қайд қилинганларни кўриш ёки янгисини яратиш учун, босинг</string>
-    <string name="tuto_tei_event_1">Ушбу ҳодиса/тадбирни ўчириш учун, босинг. Ушбу ҳаракат қайтариб бўлмайди.</string>
+    <string name="tuto_tei_event_1">Ушбу ҳодиса/тадбирни ўчириб ташлаш учун босинг. Ушбу ҳаракат қайтмас.</string>
     <string name="tuto_tei_event_2">Ҳодиса/тадбирни якунлаш.</string>
     <string name="tuto_program_event_1">Ушбу дастур билан боғлиқ барча ҳодиса/тадбирлар бу ерда келтирилган.</string>
     <string name="tuto_program_event_2">Янги ҳодиса/тадбир қўшиш учун, босинг</string>
@@ -443,7 +443,7 @@
     <string name="qr_data_values">Маълумотларнинг қийматлари</string>
     <string name="info">Ахборот</string>
     <string name="qr_no_id_error">ID ўқиб бўлмади</string>
-    <string name="delete_local_data">Локал маълумотларни ўчириш</string>
+    <string name="delete_local_data">Локал маълумотларни ўчириб ташлаш</string>
     <string name="dashboard_overview">Қисқача кўздан кечириш</string>
     <string name="dashboard_relationships">Ўзаро алоқалар</string>
     <string name="dashboard_indicators">Кўрсатгичлар</string>
@@ -529,10 +529,10 @@
     <string name="sync_setting">Синхронизация созланмаси: %s</string>
     <string name="relationship_without_enrollment">Сиз кириб кўрмоқчи бўлган ёзув қайд этилмаган. Сиз бошқарув панелига кира олмайсиз</string>
     <string name="formatting_error">Форматлашда хатолик</string>
-    <string name="dashboard_menu_delete_tei">TEI ни ўчириш</string>
-    <string name="dashboard_menu_delete_enrollment">Фақат қайдларни ўчириш</string>
-    <string name="delete_authority_error">Ушбу ёзувни ўчириш ҳуқуқига эга эмассиз</string>
-    <string name="record_marked_for_deletion">Ушбу ёзув ўчириш учун белгилаб қўйилган. Сизда кириб кўриш ҳуқуқи мавжуд эмас.</string>
+    <string name="dashboard_menu_delete_tei">TEI ни ўчириб ташлаш</string>
+    <string name="dashboard_menu_delete_enrollment">Фақат қайдларни ўчириб ташлаш</string>
+    <string name="delete_authority_error">Ушбу ёзувни ўчириб ташлаш ҳуқуқига эга эмассиз</string>
+    <string name="record_marked_for_deletion">Ушбу ёзув ўчириб ташлаш учун белгилаб қўйилган. Сизда кириб кўриш ҳуқуқи мавжуд эмас.</string>
     <string name="validation_url">Бу ҳақиқий URL эмас</string>
     <string name="uncomplete_authority_error">Ушбу ҳодиса/тадбирни қайта очишга ваколатингиз йўқ</string>
     <string name="adjusting_form">Шакл созланмоқда...</string>
