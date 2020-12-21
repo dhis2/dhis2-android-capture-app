@@ -33,7 +33,7 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
     private var hidden = false
     private val currentItemIndicator: View by lazy { initCurrentItemIndicator() }
 
-    private val currentItemIndicatorColor: Int
+    private var currentItemIndicatorColor: Int
     private val itemIndicatorSize: Float
     private val itemIndicatorDrawable: Drawable?
     private var currentItemId: Int = -1
@@ -62,23 +62,7 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
                 }
             }
         }
-        val iconsColorStates =
-            ColorStateList(
-                arrayOf(
-                    intArrayOf(android.R.attr.state_checked),
-                    intArrayOf(-android.R.attr.state_checked)
-                ),
-                intArrayOf(
-                    currentItemIndicatorColor,
-                    Color.argb(
-                        114,
-                        currentItemIndicatorColor.red,
-                        currentItemIndicatorColor.green,
-                        currentItemIndicatorColor.blue
-                    )
-                )
-            )
-        itemIconTintList = iconsColorStates
+       setIconsColor(currentItemIndicatorColor)
     }
 
     fun hide() {
@@ -165,6 +149,30 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
                 }
             }
             selectedItemId = get(position)
+        }
+    }
+
+    fun setIconsColor(color: Int) {
+        currentItemIndicatorColor = color
+        val iconsColorStates =
+            ColorStateList(
+                arrayOf(
+                    intArrayOf(android.R.attr.state_checked),
+                    intArrayOf(-android.R.attr.state_checked)
+                ),
+                intArrayOf(
+                    currentItemIndicatorColor,
+                    Color.argb(
+                        114,
+                        currentItemIndicatorColor.red,
+                        currentItemIndicatorColor.green,
+                        currentItemIndicatorColor.blue
+                    )
+                )
+            )
+        itemIconTintList = iconsColorStates
+        itemIndicatorDrawable?.let {
+            DrawableCompat.setTint(DrawableCompat.wrap(it), currentItemIndicatorColor)
         }
     }
 }

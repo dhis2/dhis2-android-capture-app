@@ -473,6 +473,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         if (programTheme != -1) {
             presenter.saveProgramTheme(programTheme);
             binding.toolbar.setBackgroundColor(programColor);
+            binding.navigationBar.setIconsColor(programColor);
         } else {
             presenter.removeProgramTheme();
             int colorPrimary;
@@ -492,6 +493,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     break;
             }
             binding.toolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
+            binding.navigationBar.setIconsColor(ContextCompat.getColor(this, colorPrimary));
         }
 
         binding.executePendingBindings();
