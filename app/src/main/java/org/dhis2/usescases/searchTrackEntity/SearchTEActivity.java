@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.databinding.BindingMethod;
 import androidx.databinding.BindingMethods;
 import androidx.databinding.DataBindingUtil;
@@ -211,6 +212,23 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             return true;
         });
 
+        if (binding.navigationBar != null) {
+            binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.navigation_list_view:
+                        showMap(false);
+                        break;
+                    case R.id.navigation_map_view:
+                        if (backDropActive) {
+                            closeFilters();
+                        }
+                        showMap(true);
+                        break;
+                }
+                return false;
+            });
+        }
+
         filtersAdapter.addEnrollmentStatus();
         filtersAdapter.addEventStatus();
         try {
@@ -284,7 +302,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.mapCarousel.setAdapter(carouselAdapter);
 
         binding.executePendingBindings();
-        showHideFilter();
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            setFabVisibility(false);
+        }
 
         if (savedInstanceState != null) {
             presenter.restoreQueryData((HashMap<String, String>) savedInstanceState.getSerializable(Constants.QUERY_DATA));
@@ -457,34 +477,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
         popupMenu.getMenuInflater().inflate(R.menu.search_menu, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.showHelp:
-                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
-                    showTutorial(false);
-                    break;
-                case R.id.menu_list:
-                    showMap(false);
-                    break;
-                case R.id.menu_map:
-                    if (backDropActive) {
-                        closeFilters();
-                    }
-                    showMap(true);
-                    break;
-                default:
-                    break;
+            if (item.getItemId() == R.id.showHelp) {
+                analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
+                showTutorial(false);
             }
             return false;
         });
 
-        boolean messageIsVisible = binding.messageContainer.getVisibility() == View.VISIBLE;
         boolean progressIsVisible = binding.progressLayout.getVisibility() == View.VISIBLE;
-        boolean mapIsVisible = binding.mapView.getVisibility() == View.VISIBLE;
-        boolean teiListIsVisible = binding.scrollView.getVisibility() == View.VISIBLE;
 
-
-        popupMenu.getMenu().getItem(0).setVisible(!messageIsVisible && !mapIsVisible && featureType != FeatureType.NONE);
-        popupMenu.getMenu().getItem(1).setVisible(!messageIsVisible && !teiListIsVisible && featureType != FeatureType.NONE);
         if (!progressIsVisible)
             popupMenu.show();
     }
@@ -496,7 +497,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private void showMap(boolean showMap) {
         binding.scrollView.setVisibility(showMap ? View.GONE : View.VISIBLE);
-        binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
+        binding.mapViewLayout.setVisibility(showMap ? View.VISIBLE : View.GONE);
         binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : View.GONE);
 
         if (showMap) {
@@ -644,18 +645,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 if (pos > 0) {
                     analyticsHelper().setEvent(CHANGE_PROGRAM, CLICK, CHANGE_PROGRAM);
                     Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
-                    updateMapVisibility(selectedProgram);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((Program) adapterView.getItemAtPosition(pos - 1));
                     String enrollmentDateLabel = selectedProgram.enrollmentDateLabel();
                     filtersAdapter.addEnrollmentDate(enrollmentDateLabel != null ? enrollmentDateLabel : getString(R.string.enrollment_date));
                 } else if (programs.size() == 1 && pos != 0) {
-                    updateMapVisibility(programs.get(0));
                     presenter.setProgram(programs.get(0));
                     String enrollmentDateLabel = programs.get(0).enrollmentDateLabel();
                     filtersAdapter.addEnrollmentDate(enrollmentDateLabel != null ? enrollmentDateLabel : getString(R.string.enrollment_date));
                 } else {
-                    updateMapVisibility(null);
                     presenter.setProgram(null);
                     filtersAdapter.removeEnrollmentDate();
                 }
@@ -714,9 +712,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         if (programTheme != -1) {
             prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
-            binding.enrollmentButton.setBackgroundTintList(ColorStateList.valueOf(programColor));
+            binding.enrollmentButton.setSupportImageTintList(ColorStateList.valueOf(programColor));
             binding.mainToolbar.setBackgroundColor(programColor);
             binding.backdropLayout.setBackgroundColor(programColor);
+            binding.navigationBar.setIconsColor(programColor);
         } else {
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
             int colorPrimary;
@@ -734,9 +733,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     colorPrimary = R.color.colorPrimary;
                     break;
             }
-            binding.enrollmentButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, colorPrimary)));
+            binding.enrollmentButton.setSupportImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, colorPrimary)));
             binding.mainToolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
             binding.backdropLayout.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
+            binding.navigationBar.setIconsColor(ContextCompat.getColor(this, colorPrimary));
         }
 
         setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
@@ -835,12 +835,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         initSet.clone(binding.backdropLayout);
 
         if (backDropActive) {
-            initSet.connect(R.id.mainLayout, ConstraintSet.TOP, general ? R.id.filterRecyclerLayout : R.id.form_recycler, ConstraintSet.BOTTOM, 50);
+            initSet.connect(R.id.mainLayout, ConstraintSet.TOP, general ? R.id.filterRecyclerLayout : R.id.form_recycler, ConstraintSet.BOTTOM, general ? 50 : 0);
         } else {
             initSet.connect(R.id.mainLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
         }
 
-        setFabVisibility(backDropActive);
+        setFabVisibility(backDropActive && !general);
         setCarouselVisibility(backDropActive);
 
         initSet.applyTo(binding.backdropLayout);
@@ -977,7 +977,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public boolean isMapVisible() {
-        return binding.mapView.getVisibility() == View.VISIBLE;
+        return binding.mapViewLayout.getVisibility() == View.VISIBLE;
     }
 
 
