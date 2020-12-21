@@ -206,6 +206,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 v.requestFocus();
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
+                hideKeyboard();
                 v.clearFocus();
                 v.performClick();
             }
