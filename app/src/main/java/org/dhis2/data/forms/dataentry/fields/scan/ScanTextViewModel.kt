@@ -65,7 +65,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             hint
         )
 
-    override fun withError(error: String): FieldViewModel =
+    override fun withError(error: String?): FieldViewModel =
         AutoValue_ScanTextViewModel(
             uid(),
             label(),
