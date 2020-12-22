@@ -62,7 +62,7 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
                 }
             }
         }
-       setIconsColor(currentItemIndicatorColor)
+        setIconsColor(currentItemIndicatorColor)
     }
 
     fun hide() {
