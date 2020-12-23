@@ -23,7 +23,6 @@ class TeiFlowRobot : BaseRobot() {
         val enrollmentDate = registrationModel.enrollmentDate
 
         searchTeiRobot {
-            clickOnSearchFilter()
             typeAttributeAtPosition(registrationModel.name, 0)
             typeAttributeAtPosition(registrationModel.lastName, 1)
             clickOnDateField()

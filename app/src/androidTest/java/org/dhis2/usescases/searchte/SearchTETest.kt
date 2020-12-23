@@ -113,7 +113,6 @@ class SearchTETest : BaseTest() {
         prepareTestAdultWomanProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
-            clickOnSearchFilter()
             typeAttributeAtPosition(displayInListData.name, namePosition)
             typeAttributeAtPosition(displayInListData.lastName, lastNamePosition)
             clickOnDateField()
