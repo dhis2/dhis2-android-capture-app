@@ -213,22 +213,20 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             return true;
         });
 
-        if (binding.navigationBar != null) {
-            binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
-                switch (item.getItemId()) {
-                    case R.id.navigation_list_view:
-                        showMap(false);
-                        break;
-                    case R.id.navigation_map_view:
-                        if (backDropActive) {
-                            closeFilters();
-                        }
-                        showMap(true);
-                        break;
-                }
-                return false;
-            });
-        }
+        binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.navigation_list_view:
+                    showMap(false);
+                    break;
+                case R.id.navigation_map_view:
+                    if (backDropActive) {
+                        closeFilters();
+                    }
+                    showMap(true);
+                    break;
+            }
+            return false;
+        });
 
         filtersAdapter.addEnrollmentStatus();
         filtersAdapter.addEventStatus();
@@ -569,6 +567,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (!fromRelationship) {
             liveData.observe(this, searchTeiModels -> {
                 Trio<PagedList<SearchTeiModel>, String, Boolean> data = presenter.getMessage(searchTeiModels);
+                if (!data.val0().isEmpty() && !data.val2()) {
+                    showHideFilter();
+                }
                 presenter.checkFilters(data.val1().isEmpty());
                 if (data.val1().isEmpty()) {
                     binding.messageContainer.setVisibility(View.GONE);
@@ -850,7 +851,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private void setFabVisibility(boolean backDropActive) {
         binding.enrollmentButton.animate()
                 .setDuration(500)
-                .translationX(backDropActive ? 0 : 500)
+                .translationX(backDropActive || !needsSearch.get() ? 0 : 500)
+                .translationY(backDropActive || needsSearch.get() ? 0 : -64)
                 .start();
     }
 
