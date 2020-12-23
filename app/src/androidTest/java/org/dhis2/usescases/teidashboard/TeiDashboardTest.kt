@@ -338,7 +338,6 @@ class TeiDashboardTest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
         searchTeiRobot {
-            closeSearchForm()
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -352,7 +351,6 @@ class TeiDashboardTest : BaseTest() {
         }
 
         searchTeiRobot {
-            closeSearchForm()
             clickOnTEI(relationshipName, relationshipLastName)
         }
 
@@ -370,7 +368,6 @@ class TeiDashboardTest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
         searchTeiRobot {
-            closeSearchForm()
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -393,7 +390,6 @@ class TeiDashboardTest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
         searchTeiRobot {
-            closeSearchForm()
             clickOnTEI(teiName, teiLastName)
         }
 
