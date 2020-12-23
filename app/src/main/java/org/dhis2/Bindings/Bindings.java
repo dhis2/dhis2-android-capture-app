@@ -536,7 +536,7 @@ public class Bindings {
     public static void setFabIcoin(FloatingActionButton fab, boolean needSearch) {
         Drawable drawable;
         if (needSearch) {
-            drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_search);
+            drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_search_add);
         } else {
             drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_add_accent);
         }

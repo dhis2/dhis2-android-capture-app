@@ -165,7 +165,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/search_filter_general"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_search"
+                app:srcCompat="@drawable/ic_search_add"
                 tools:ignore="ContentDescription"
                 app:tint="@color/white" />
 
