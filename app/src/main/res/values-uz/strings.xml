@@ -177,7 +177,7 @@
 
     <!--DONE TASKS-->
     <string name="events">ҳодиса/тадбирлар</string>
-    <string name="done_task">Уй</string>
+    <string name="done_task">Бош саҳифа</string>
     <string name="app_info">Илова ҳақида маълумот</string>
     <string name="log_out">Чиқиш</string>
     <string name="block_session">Сессияни блоклаш</string>
@@ -401,7 +401,7 @@
     <string name="complete_enrollment_message">Ҳақиқатдан ҳам рўйхатдан ўтишни тугатмоқчимисиз?</string>
     <string name="check_event">Текширинг</string>
 
-    <string name="menu_home">Уй</string>
+    <string name="menu_home">Бош саҳифа</string>
     <string name="appwidget_text">МИСОЛ</string>
     <string name="add_widget">Виджет қўшиш</string>
     <string name="showHelp">Ёрдам беринг</string>
