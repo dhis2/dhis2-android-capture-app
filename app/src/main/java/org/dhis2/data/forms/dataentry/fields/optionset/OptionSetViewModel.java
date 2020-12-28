@@ -6,6 +6,7 @@ import com.google.auto.value.AutoValue;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
+import org.dhis2.data.forms.dataentry.fields.ActionType;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -16,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.processors.FlowableProcessor;
-import kotlin.Pair;
 
 @AutoValue
 public abstract class OptionSetViewModel extends FieldViewModel {
@@ -61,7 +61,6 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 null,
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 null,
-                null,
                 false,
                 isBackgroundTransparent,
                 renderType,
@@ -82,8 +81,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                                             boolean isBackgroundTransparent,
                                             String renderType,
                                             ValueTypeDeviceRendering fieldRendering,
-                                            FlowableProcessor<RowAction> processor,
-                                            FlowableProcessor<Pair<String, Boolean>> focusProcessor) {
+                                            FlowableProcessor<RowAction> processor) {
 
         return new AutoValue_OptionSetViewModel(
                 id,
@@ -101,7 +99,6 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 null,
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 processor,
-                focusProcessor,
                 false,
                 isBackgroundTransparent,
                 renderType,
@@ -128,7 +125,6 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 processor(),
-                focusProcessor(),
                 activated(),
                 isBackgroundTransparent(),
                 renderType(),
@@ -156,7 +152,6 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 processor(),
-                focusProcessor(),
                 activated(),
                 isBackgroundTransparent(),
                 renderType(),
@@ -184,7 +179,6 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 processor(),
-                focusProcessor(),
                 activated(),
                 isBackgroundTransparent(),
                 renderType(),
@@ -212,7 +206,6 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 processor(),
-                focusProcessor(),
                 activated(),
                 isBackgroundTransparent(),
                 renderType(),
@@ -239,7 +232,6 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 processor(),
-                focusProcessor(),
                 activated(),
                 isBackgroundTransparent(),
                 renderType(),
@@ -267,7 +259,6 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 processor(),
-                focusProcessor(),
                 activated(),
                 isBackgroundTransparent(),
                 renderType(),
@@ -295,7 +286,6 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 fieldMask(),
                 DataEntryViewHolderTypes.OPTION_SET_SELECT,
                 processor(),
-                focusProcessor(),
                 isFocused,
                 isBackgroundTransparent(),
                 renderType(),
@@ -333,6 +323,14 @@ public abstract class OptionSetViewModel extends FieldViewModel {
     public void onOptionSelected(String optionCode) {
         onItemClick();
 
-        processor().onNext(RowAction.create(uid(), optionCode));
+        processor().onNext(new RowAction(
+                uid(),
+                optionCode,
+                false,
+                null,
+                null,
+                null,
+                null,
+                ActionType.ON_SAVE));
     }
 }

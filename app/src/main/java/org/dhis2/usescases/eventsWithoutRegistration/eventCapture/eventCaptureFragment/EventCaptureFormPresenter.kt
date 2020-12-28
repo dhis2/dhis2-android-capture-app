@@ -2,11 +2,11 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureF
 
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.BiFunction
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.data.forms.dataentry.fields.ActionType
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.schedulers.SchedulerProvider
@@ -20,43 +20,50 @@ class EventCaptureFormPresenter(
     val d2: D2,
     val valueStore: ValueStore,
     val schedulerProvider: SchedulerProvider,
-    private val onFieldActionProcessor: FlowableProcessor<RowAction>,
-    private val focusProcessor: FlowableProcessor<Pair<String, Boolean>>
+    private val onFieldActionProcessor: FlowableProcessor<RowAction>
 ) {
     private var selectedSection: String? = null
     var disposable: CompositeDisposable = CompositeDisposable()
-    private var focusedItem: Pair<String, Boolean> = Pair("", false)
+    private var focusedItem: RowAction? = null
     private var itemList: List<FieldViewModel>? = null
     private val itemsWithError = mutableListOf<RowAction>()
 
     fun init() {
         disposable.add(
-            Flowable.combineLatest<RowAction, Pair<String, Boolean>, RowAction>(
-                onFieldActionProcessor.onBackpressureBuffer().distinctUntilChanged(),
-                focusProcessor.startWith(focusedItem),
-                BiFunction { action, focusedItem ->
-                    this.focusedItem = focusedItem
-                    action
-                }
-            )
+            onFieldActionProcessor.onBackpressureBuffer().distinctUntilChanged()
                 .doOnNext { activityPresenter.showProgress() }
                 .observeOn(schedulerProvider.io())
-                .switchMap { action ->
-                    if (action.error() != null) {
-                        if (itemsWithError.find { it.id() == action.id() } == null) {
-                            itemsWithError.add(action)
+                .switchMap { rowAction ->
+
+                    when (rowAction.type) {
+                        ActionType.ON_SAVE -> {
+                            if (rowAction.error != null) {
+                                if (itemsWithError.find { it.id == rowAction.id } == null) {
+                                    itemsWithError.add(rowAction)
+                                }
+                                Flowable.just(
+                                    StoreResult(
+                                        rowAction.id,
+                                        ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                                    )
+                                )
+                            } else {
+                                itemsWithError.find { it.id == rowAction.id }?.let {
+                                    itemsWithError.remove(it)
+                                }
+                                valueStore.save(rowAction.id, rowAction.value)
+                            }
                         }
-                        Flowable.just(
-                            StoreResult(
-                                action.id(),
-                                ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                        ActionType.ON_FOCUS, ActionType.ON_NEXT -> {
+                            this.focusedItem = rowAction
+
+                            Flowable.just(
+                                StoreResult(
+                                    rowAction.id,
+                                    ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                                )
                             )
-                        )
-                    } else {
-                        itemsWithError.find { it.id() == action.id() }?.let {
-                            itemsWithError.remove(it)
                         }
-                        valueStore.save(action.id(), action.value())
                     }
                 }
                 .subscribeOn(schedulerProvider.io())
@@ -104,8 +111,8 @@ class EventCaptureFormPresenter(
         fieldsWithError: MutableList<RowAction>
     ): List<FieldViewModel> {
         return list.map { item ->
-            fieldsWithError.find { it.id() == item.uid() }?.let { action ->
-                item.withValue(action.value()).withError(action.error())
+            fieldsWithError.find { it.id == item.uid() }?.let { action ->
+                item.withValue(action.value).withError(action.error)
             } ?: item
         }
     }
@@ -130,11 +137,11 @@ class EventCaptureFormPresenter(
         return null
     }
 
-    private fun setFocusedItem(list: List<FieldViewModel>) = focusedItem.let {
-        val uid = if (it.second) {
-            getNextItem(it.first)
+    private fun setFocusedItem(list: List<FieldViewModel>) = focusedItem?.let {
+        val uid = if (it.type == ActionType.ON_NEXT) {
+            getNextItem(it.id)
         } else {
-            it.first
+            it.id
         }
 
         list.find { item ->
@@ -142,7 +149,7 @@ class EventCaptureFormPresenter(
         }?.let { item ->
             list.updated(list.indexOf(item), item.withFocus(true))
         } ?: list
-    }
+    } ?: list
 
     fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =
         mapIndexed { i, existing -> if (i == index) elem else existing }

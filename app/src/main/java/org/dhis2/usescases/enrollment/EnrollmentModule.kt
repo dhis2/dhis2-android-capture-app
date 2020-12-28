@@ -63,8 +63,7 @@ class EnrollmentModule(
         d2: D2,
         dhisEnrollmentUtils: DhisEnrollmentUtils,
         onRowActionProcessor: FlowableProcessor<RowAction>,
-        modelFactory: FieldViewModelFactory,
-        focusProcessor: FlowableProcessor<Pair<String, Boolean>>
+        modelFactory: FieldViewModelFactory
     ): EnrollmentRepository {
         val enrollmentDataSectionLabel = context.getString(R.string.enrollment_data_section_label)
         val singleSectionLabel = context.getString(R.string.enrollment_single_section_label)
@@ -88,8 +87,7 @@ class EnrollmentModule(
             reservedValueWarning,
             enrollmentDateDefaultLabel,
             incidentDateDefaultLabel,
-            onRowActionProcessor,
-            focusProcessor
+            onRowActionProcessor
         )
     }
 
@@ -113,8 +111,7 @@ class EnrollmentModule(
         valueStore: ValueStore,
         analyticsHelper: AnalyticsHelper,
         onRowActionProcessor: FlowableProcessor<RowAction>,
-        fieldViewModelFactory: FieldViewModelFactory,
-        focusProcessor: FlowableProcessor<Pair<String, Boolean>>
+        fieldViewModelFactory: FieldViewModelFactory
     ): EnrollmentPresenterImpl {
         return EnrollmentPresenterImpl(
             enrollmentView,
@@ -129,20 +126,13 @@ class EnrollmentModule(
             analyticsHelper,
             context.getString(R.string.field_is_mandatory),
             onRowActionProcessor,
-            fieldViewModelFactory.sectionProcessor(),
-            focusProcessor
+            fieldViewModelFactory.sectionProcessor()
         )
     }
 
     @Provides
     @PerActivity
     fun provideOnRowActionProcessor(): FlowableProcessor<RowAction> {
-        return PublishProcessor.create()
-    }
-
-    @Provides
-    @PerActivity
-    fun provideFocusProcessor(): FlowableProcessor<Pair<String, Boolean>> {
         return PublishProcessor.create()
     }
 

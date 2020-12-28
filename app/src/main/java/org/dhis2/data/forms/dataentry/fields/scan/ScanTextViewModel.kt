@@ -4,6 +4,7 @@ import com.google.auto.value.AutoValue
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
+import org.dhis2.data.forms.dataentry.fields.ActionType
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.hisp.dhis.android.core.common.ObjectStyle
@@ -49,7 +50,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
                 null,
                 DataEntryViewHolderTypes.SCAN_CODE,
                 null,
-                null,
                 false,
                 fieldRendering,
                 hint,
@@ -72,8 +72,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             hint: String?,
             isBackgroundTransparent: Boolean,
             isSearchMode: Boolean,
-            processor: FlowableProcessor<RowAction>,
-            focusProcessor: FlowableProcessor<Pair<String, Boolean>>
+            processor: FlowableProcessor<RowAction>
         ): FieldViewModel =
             AutoValue_ScanTextViewModel(
                 id,
@@ -91,7 +90,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
                 null,
                 DataEntryViewHolderTypes.SCAN_CODE,
                 processor,
-                focusProcessor,
                 false,
                 fieldRendering,
                 hint,
@@ -117,7 +115,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
             processor(),
-            focusProcessor(),
             activated(),
             fieldRendering,
             hint,
@@ -142,7 +139,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
             processor(),
-            focusProcessor(),
             activated(),
             fieldRendering,
             hint,
@@ -167,7 +163,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
             processor(),
-            focusProcessor(),
             activated(),
             fieldRendering,
             hint,
@@ -192,7 +187,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
             processor(),
-            focusProcessor(),
             activated(),
             fieldRendering,
             hint,
@@ -217,7 +211,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
             processor(),
-            focusProcessor(),
             activated(),
             fieldRendering,
             hint,
@@ -242,7 +235,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             fieldMask(),
             DataEntryViewHolderTypes.SCAN_CODE,
             processor(),
-            focusProcessor(),
             isFocused,
             fieldRendering,
             hint,
@@ -259,6 +251,12 @@ abstract class ScanTextViewModel : FieldViewModel() {
     abstract fun isSearchMode(): Boolean
 
     fun onScanSelected(value: String?) {
-        processor()?.onNext(RowAction.create(uid(), value))
+        processor()?.onNext(
+            RowAction(
+                id = uid(),
+                value = value,
+                type = ActionType.ON_SAVE
+            )
+        )
     }
 }

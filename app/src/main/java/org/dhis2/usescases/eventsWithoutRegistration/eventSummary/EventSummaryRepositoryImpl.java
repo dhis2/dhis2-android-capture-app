@@ -164,7 +164,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                 ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
                 programStageSection, allowFurureDates,
                 eventStatus == EventStatus.ACTIVE,
-                null, description, fieldRendering, optionCount, objectStyle, dataElement.fieldMask(), null,null, null);
+                null, description, fieldRendering, optionCount, objectStyle, dataElement.fieldMask(), null, null);
     }
 
     @NonNull

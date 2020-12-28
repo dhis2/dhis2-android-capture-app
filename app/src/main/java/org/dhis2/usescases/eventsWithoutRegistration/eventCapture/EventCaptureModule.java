@@ -26,7 +26,6 @@ import dagger.Module;
 import dagger.Provides;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-import kotlin.Pair;
 
 @PerActivity
 @Module
@@ -66,10 +65,9 @@ public class EventCaptureModule {
     @PerActivity
     EventCaptureContract.EventCaptureRepository provideRepository(FieldViewModelFactory fieldFactory,
                                                                   FormRepository formRepository,
-                                                                  D2 d2,
-                                                                  FlowableProcessor<Pair<String, Boolean>> focusProcessor
+                                                                  D2 d2
     ) {
-        return new EventCaptureRepositoryImpl(fieldFactory, formRepository, eventUid, d2, focusProcessor);
+        return new EventCaptureRepositoryImpl(fieldFactory, formRepository, eventUid, d2);
     }
 
     @Provides
@@ -107,12 +105,6 @@ public class EventCaptureModule {
     @Provides
     @PerActivity
     FlowableProcessor<RowAction> getProcessor() {
-        return PublishProcessor.create();
-    }
-
-    @Provides
-    @PerActivity
-    FlowableProcessor<Pair<String, Boolean>> getFocusProcessor() {
         return PublishProcessor.create();
     }
 }

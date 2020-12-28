@@ -209,20 +209,20 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribe(data -> {
                             Map<String, String> queryDataBU = new HashMap<>(queryData);
                             view.setFabIcon(true);
-                            if (!DhisTextUtils.Companion.isEmpty(data.value())) {
-                                queryData.put(data.id(), data.value());
-                                if (data.requiresExactMatch())
-                                    if (data.value().equals("null_os_null"))
-                                        queryData.remove(data.id());
+                            if (!DhisTextUtils.Companion.isEmpty(data.getValue())) {
+                                queryData.put(data.getId(), data.getValue());
+                                if (data.getRequiresExactMatch())
+                                    if (data.getValue().equals("null_os_null"))
+                                        queryData.remove(data.getId());
                             } else {
-                                queryData.remove(data.id());
+                                queryData.remove(data.getId());
                             }
 
                             if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
-                                if (!DhisTextUtils.Companion.isEmpty(data.value()))
-                                    queryData.put(data.id(), data.value());
+                                if (!DhisTextUtils.Companion.isEmpty(data.getValue()))
+                                    queryData.put(data.getId(), data.getValue());
                                 else
-                                    queryData.remove(data.id());
+                                    queryData.remove(data.getId());
                             }
                         },
                         Timber::d)

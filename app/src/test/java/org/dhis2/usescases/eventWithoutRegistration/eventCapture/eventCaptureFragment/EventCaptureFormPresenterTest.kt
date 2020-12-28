@@ -7,11 +7,11 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.processors.FlowableProcessor
-import io.reactivex.processors.PublishProcessor
 import io.reactivex.subjects.BehaviorSubject
 import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.data.forms.dataentry.fields.ActionType
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
@@ -32,7 +32,6 @@ class EventCaptureFormPresenterTest {
     private val valueStore: ValueStore = mock()
     private val schedulerProvider = TrampolineSchedulerProvider()
     private val onRowActionProcessor: FlowableProcessor<RowAction> = mock()
-    private val focusProcessor: FlowableProcessor<Pair<String, Boolean>> = PublishProcessor.create()
 
     @Before
     fun setUp() {
@@ -42,8 +41,7 @@ class EventCaptureFormPresenterTest {
             d2,
             valueStore,
             schedulerProvider,
-            onRowActionProcessor,
-            focusProcessor
+            onRowActionProcessor
         )
     }
 
@@ -52,7 +50,7 @@ class EventCaptureFormPresenterTest {
         whenever(onRowActionProcessor.onBackpressureBuffer()) doReturn mock()
         whenever(
             onRowActionProcessor.onBackpressureBuffer().distinctUntilChanged()
-        ) doReturn Flowable.just(RowAction.create("", ""))
+        ) doReturn Flowable.just(RowAction("", "", type = ActionType.ON_SAVE))
         whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
         presenter.init()
 
@@ -71,7 +69,7 @@ class EventCaptureFormPresenterTest {
         whenever(onRowActionProcessor.onBackpressureBuffer()) doReturn mock()
         whenever(
             onRowActionProcessor.onBackpressureBuffer().distinctUntilChanged()
-        ) doReturn Flowable.just(RowAction.create("testUid", "testValue"))
+        ) doReturn Flowable.just(RowAction("testUid", "testValue", type = ActionType.ON_SAVE))
         whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
         presenter.init()
 
@@ -83,7 +81,7 @@ class EventCaptureFormPresenterTest {
         whenever(onRowActionProcessor.onBackpressureBuffer()) doReturn mock()
         whenever(
             onRowActionProcessor.onBackpressureBuffer().distinctUntilChanged()
-        ) doReturn Flowable.just(RowAction.create("testUid", "testValue"))
+        ) doReturn Flowable.just(RowAction("testUid", "testValue", type = ActionType.ON_SAVE))
         whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
         whenever(valueStore.save("testUid", "testValue")) doReturn Flowable.just(
             StoreResult("testUid", ValueStoreImpl.ValueStoreResult.VALUE_CHANGED)
@@ -99,7 +97,7 @@ class EventCaptureFormPresenterTest {
         whenever(onRowActionProcessor.onBackpressureBuffer()) doReturn mock()
         whenever(
             onRowActionProcessor.onBackpressureBuffer().distinctUntilChanged()
-        ) doReturn Flowable.just(RowAction.create("testUid", "testValue"))
+        ) doReturn Flowable.just(RowAction("testUid", "testValue", type = ActionType.ON_SAVE))
         whenever(activityPresenter.formFieldsFlowable()) doReturn subject
         whenever(valueStore.save("testUid", "testValue")) doReturn Flowable.just(
             StoreResult("testUid", ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED)
@@ -114,7 +112,7 @@ class EventCaptureFormPresenterTest {
         whenever(onRowActionProcessor.onBackpressureBuffer()) doReturn mock()
         whenever(
             onRowActionProcessor.onBackpressureBuffer().distinctUntilChanged()
-        ) doReturn Flowable.just(RowAction.create("", ""))
+        ) doReturn Flowable.just(RowAction("", "", type = ActionType.ON_SAVE))
         whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
         presenter.init()
         activityPresenter.formFieldsFlowable().onNext(mutableListOf())
@@ -126,7 +124,7 @@ class EventCaptureFormPresenterTest {
         whenever(onRowActionProcessor.onBackpressureBuffer()) doReturn mock()
         whenever(
             onRowActionProcessor.onBackpressureBuffer().distinctUntilChanged()
-        ) doReturn Flowable.just(RowAction.create("", ""))
+        ) doReturn Flowable.just(RowAction("", "", type = ActionType.ON_SAVE))
         whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
         presenter.init()
         presenter.onDetach()

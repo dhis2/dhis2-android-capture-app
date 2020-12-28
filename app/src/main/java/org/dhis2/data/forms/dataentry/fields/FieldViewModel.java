@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 import io.reactivex.processors.FlowableProcessor;
-import kotlin.Pair;
 
 public abstract class FieldViewModel implements FieldUiModel {
 
@@ -75,9 +74,6 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     @Nullable
     public abstract FlowableProcessor<RowAction> processor();
-
-    @Nullable
-    public abstract FlowableProcessor<Pair<String, Boolean>> focusProcessor();
 
     public int adapterPosition = -1;
 
@@ -164,17 +160,35 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     @Override
     public void onItemClick() {
-        if (focusProcessor() != null) {
-            Pair<String, Boolean> pair = new Pair<>(uid(), false);
-            Objects.requireNonNull(focusProcessor()).onNext(pair);
+        if (processor() != null) {
+            RowAction action = new RowAction(
+                    uid(),
+                    value(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null,
+                    ActionType.ON_FOCUS
+            );
+            Objects.requireNonNull(processor()).onNext(action);
         }
     }
 
     @Override
     public void onNext() {
-        if (focusProcessor() != null) {
-            Pair<String, Boolean> item = new Pair<>(uid(), true);
-            Objects.requireNonNull(focusProcessor()).onNext(item);
+        if (processor() != null) {
+            RowAction action = new RowAction(
+                    uid(),
+                    value(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null,
+                    ActionType.ON_NEXT
+            );
+            Objects.requireNonNull(processor()).onNext(action);
         }
     }
 }

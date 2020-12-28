@@ -52,7 +52,6 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.processors.FlowableProcessor;
-import kotlin.Pair;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -71,13 +70,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private final HashMap<String, ProgramStageDataElement> stageDataElementsMap;
     private RuleEvent.Builder eventBuilder;
     private List<FieldViewModel> sectionFields;
-    private FlowableProcessor<Pair<String, Boolean>> focusProcessor;
 
-    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2, FlowableProcessor<Pair<String, Boolean>> focusProcessor) {
+    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2) {
         this.eventUid = eventUid;
         this.formRepository = formRepository;
         this.d2 = d2;
-        this.focusProcessor = focusProcessor;
 
         currentEvent = d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).blockingGet();
         currentStage = d2.programModule().programStages().uid(currentEvent.programStage()).blockingGet();
@@ -328,7 +325,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                         valueType, mandatory, optionSet, dataValue,
                                         programStageSection != null ? programStageSection.uid() : null, allowFutureDates,
                                         isEventEditable,
-                                        renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(), processor, options, focusProcessor);
+                                        renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(), processor, options);
 
                         if (!error.isEmpty()) {
                             return fieldViewModel.withError(error);

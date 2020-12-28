@@ -16,7 +16,6 @@ import java.util.List;
 import autovalue.shaded.org.checkerframework$.checker.nullness.qual.$NonNull;
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
-import kotlin.Pair;
 
 public interface FieldViewModelFactory {
 
@@ -37,8 +36,7 @@ public interface FieldViewModelFactory {
                           @NonNull ObjectStyle objectStyle,
                           @Nullable String fieldMask,
                           FlowableProcessor<RowAction> processor,
-                          List<Option> options,
-                          FlowableProcessor<Pair<String, Boolean>> focusProcessor);
+                          List<Option> options);
 
     @Nullable
     FieldViewModel createForAttribute(@$NonNull TrackedEntityAttribute trackedEntityAttribute,

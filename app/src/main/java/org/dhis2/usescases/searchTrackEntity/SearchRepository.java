@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
@@ -23,7 +22,6 @@ import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.processors.FlowableProcessor;
 
 public interface SearchRepository {
 

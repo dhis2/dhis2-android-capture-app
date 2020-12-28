@@ -36,7 +36,6 @@ import autovalue.shaded.org.checkerframework$.checker.nullness.qual.$NonNull;
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-import kotlin.Pair;
 
 import static org.dhis2.data.forms.dataentry.EnrollmentRepository.SINGLE_SECTION_UID;
 import static org.dhis2.utils.Preconditions.isNull;
@@ -85,7 +84,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 trackedEntityAttribute.style() != null ? trackedEntityAttribute.style() : ObjectStyle.builder().build(),
                 trackedEntityAttribute.fieldMask(),
                 fieldProcessor,
-                null,
                 null);
     }
 
@@ -94,25 +92,25 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     public FieldViewModel create(@NonNull String id, @NonNull String label, @NonNull ValueType type,
                                  @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value,
                                  @Nullable String section, @Nullable Boolean allowFutureDates, @NonNull Boolean editable, @Nullable ProgramStageSectionRenderingType renderingType,
-                                 @Nullable String description, @Nullable ValueTypeDeviceRendering fieldRendering, @Nullable Integer optionCount, ObjectStyle objectStyle, @Nullable String fieldMask, @NonNull FlowableProcessor<RowAction> processor, List<Option> options, FlowableProcessor<Pair<String, Boolean>> focusProcessor) {
+                                 @Nullable String description, @Nullable ValueTypeDeviceRendering fieldRendering, @Nullable Integer optionCount, ObjectStyle objectStyle, @Nullable String fieldMask, @NonNull FlowableProcessor<RowAction> processor, List<Option> options) {
         isNull(type, "type must be supplied");
         if (DhisTextUtils.Companion.isNotEmpty(optionSet)) {
             if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING) {
                 if (fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
-                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, fieldRendering, valueTypeHintMap.get(type), !searchMode, searchMode, processor, focusProcessor);
+                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, fieldRendering, valueTypeHintMap.get(type), !searchMode, searchMode, processor);
                 } else if (fieldRendering != null && type == ValueType.TEXT && optionSetTextRenderings.contains(fieldRendering.type())) {
-                    return OptionSetViewModel.create(id, label, mandatory, optionSet, value, section, editable, description, objectStyle, true, ProgramStageSectionRenderingType.LISTING.toString(), fieldRendering, processor, focusProcessor);
+                    return OptionSetViewModel.create(id, label, mandatory, optionSet, value, section, editable, description, objectStyle, true, ProgramStageSectionRenderingType.LISTING.toString(), fieldRendering, processor);
                 } else {
-                    return SpinnerViewModel.create(id, label, valueTypeHintMap.get(type), mandatory, optionSet, value, section, editable, description, objectStyle, !searchMode, ProgramStageSectionRenderingType.LISTING.toString(), processor, focusProcessor);
+                    return SpinnerViewModel.create(id, label, valueTypeHintMap.get(type), mandatory, optionSet, value, section, editable, description, objectStyle, !searchMode, ProgramStageSectionRenderingType.LISTING.toString(), processor);
                 }
             } else {
-                return MatrixOptionSetModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, processor, focusProcessor, options, renderingType == ProgramStageSectionRenderingType.MATRIX ? 2 : 1);
+                return MatrixOptionSetModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, processor, options, renderingType == ProgramStageSectionRenderingType.MATRIX ? 2 : 1);
             }
         }
 
         switch (type) {
             case AGE:
-                return AgeViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, !searchMode, searchMode, processor, focusProcessor);
+                return AgeViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, !searchMode, searchMode, processor);
             case TEXT:
             case EMAIL:
             case LETTER:
@@ -127,30 +125,30 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case UNIT_INTERVAL:
             case URL:
                 if (fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
-                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, fieldRendering, valueTypeHintMap.get(type), !searchMode, searchMode, processor, focusProcessor);
+                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, fieldRendering, valueTypeHintMap.get(type), !searchMode, searchMode, processor);
                 } else {
-                    return EditTextViewModel.create(id, label, mandatory, value, valueTypeHintMap.get(type), 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask, ProgramStageSectionRenderingType.LISTING.toString(), !searchMode, searchMode, processor, focusProcessor);
+                    return EditTextViewModel.create(id, label, mandatory, value, valueTypeHintMap.get(type), 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask, ProgramStageSectionRenderingType.LISTING.toString(), !searchMode, searchMode, processor);
                 }
             case IMAGE:
-                return PictureViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, processor, focusProcessor, !searchMode);
+                return PictureViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, processor, !searchMode);
             case TIME:
             case DATE:
             case DATETIME:
-                return DateTimeViewModel.create(id, label, mandatory, type, value, section, allowFutureDates, editable, description, objectStyle, !searchMode, searchMode, processor, focusProcessor);
+                return DateTimeViewModel.create(id, label, mandatory, type, value, section, allowFutureDates, editable, description, objectStyle, !searchMode, searchMode, processor);
             case COORDINATE:
-                return CoordinateViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, FeatureType.POINT, !searchMode, searchMode, processor, focusProcessor);
+                return CoordinateViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, FeatureType.POINT, !searchMode, searchMode, processor);
             case BOOLEAN:
             case TRUE_ONLY:
                 return RadioButtonViewModel.fromRawValue(id, label, type, mandatory, value, section, editable, description, objectStyle,
-                        fieldRendering != null ? fieldRendering.type() : ValueTypeRenderingType.DEFAULT, !searchMode, processor, focusProcessor, searchMode);
+                        fieldRendering != null ? fieldRendering.type() : ValueTypeRenderingType.DEFAULT, !searchMode, processor, searchMode);
             case ORGANISATION_UNIT:
-                return OrgUnitViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, !searchMode, ProgramStageSectionRenderingType.LISTING.toString(), processor, focusProcessor);
+                return OrgUnitViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, !searchMode, ProgramStageSectionRenderingType.LISTING.toString(), processor);
             case FILE_RESOURCE:
             case TRACKER_ASSOCIATE:
             case USERNAME:
-                return UnsupportedViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, processor, focusProcessor);
+                return UnsupportedViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, processor);
             default:
-                return EditTextViewModel.create(id, label, mandatory, value, valueTypeHintMap.get(type), 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask, ProgramStageSectionRenderingType.LISTING.toString(), !searchMode, searchMode, processor, focusProcessor);
+                return EditTextViewModel.create(id, label, mandatory, value, valueTypeHintMap.get(type), 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask, ProgramStageSectionRenderingType.LISTING.toString(), !searchMode, searchMode, processor);
         }
     }
 
