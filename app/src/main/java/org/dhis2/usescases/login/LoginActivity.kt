@@ -172,11 +172,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        NetworkUtils.isGooglePlayServicesAvailable(this)
-    }
-
     override fun onPause() {
         presenter.onDestroy()
         super.onPause()
