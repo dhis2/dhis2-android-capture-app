@@ -44,7 +44,6 @@ class ReservedValuePresenter(
                     {
                         Timber.d("Reserved value manager: %s".format(it.percentage()))
                         updateProcessor.onNext(true)
-
                     },
                     {
                         onReservedValuesError(it)
