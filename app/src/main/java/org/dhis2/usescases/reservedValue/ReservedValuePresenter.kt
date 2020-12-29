@@ -31,16 +31,24 @@ class ReservedValuePresenter(
         )
 
         disposable.add(
-            refillFlowable.onBackpressureBuffer()
+            refillFlowable
+                .onBackpressureBuffer()
+                .parallel()
+                .runOn(schedulerProvider.io())
                 .flatMap {
                     repository.refillReservedValues(it)
                         .toFlowable(BackpressureStrategy.BUFFER)
                 }
-                .defaultSubscribe(
-                    schedulerProvider,
-                    { Timber.d("Reserved value manager: %s".format(it.percentage())) },
-                    { onReservedValuesError(it) },
-                    { updateProcessor.onNext(true) }
+                .sequential()
+                .subscribe(
+                    {
+                        Timber.d("Reserved value manager: %s".format(it.percentage()))
+                        updateProcessor.onNext(true)
+
+                    },
+                    {
+                        onReservedValuesError(it)
+                    }
                 )
         )
     }
