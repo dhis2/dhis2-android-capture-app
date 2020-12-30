@@ -90,11 +90,7 @@ class EventCaptureFormPresenter(
                 .subscribe(
                     { fields ->
                         itemList = fields
-                        val list = mergeListWithErrorFields(
-                            fields,
-                            itemsWithError
-                        )
-                        view.showFields(setFocusedItem(list).toMutableList())
+                        composeList()
                         activityPresenter.hideProgress()
                         selectedSection ?: fields
                             .mapNotNull { it.programStageSection() }
@@ -104,6 +100,11 @@ class EventCaptureFormPresenter(
                     { Timber.e(it) }
                 )
         )
+    }
+
+    private fun composeList() = itemList?.let {
+        val listWithErrors = mergeListWithErrorFields(it, itemsWithError)
+        view.showFields(setFocusedItem(listWithErrors).toMutableList())
     }
 
     private fun mergeListWithErrorFields(

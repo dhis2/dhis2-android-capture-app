@@ -325,11 +325,9 @@ class EnrollmentPresenterImpl(
         }
     }
 
-    private fun composeList() {
-        itemList?.let {
-            val listWithErrors = mergeListWithErrorFields(it, itemsWithError)
-            view.showFields(setFocusedItem(listWithErrors))
-        }
+    private fun composeList() = itemList?.let {
+        val listWithErrors = mergeListWithErrorFields(it, itemsWithError)
+        view.showFields(setFocusedItem(listWithErrors))
     }
 
     private fun mergeListWithErrorFields(
