@@ -563,7 +563,6 @@ class EnrollmentPresenterImpl(
             .applyRuleEffects(fieldMap, result, this)
 
         fieldMap.values.forEachIndexed { index, fieldViewModel ->
-            fieldViewModel.setAdapterPosition(index)
             if (fieldViewModel is SpinnerViewModel) {
                 fieldViewModel.setOptionsToHide(
                     optionsToHide[fieldViewModel.uid()] ?: emptyList(),

@@ -75,8 +75,6 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Nullable
     public abstract FlowableProcessor<RowAction> processor();
 
-    public int adapterPosition = -1;
-
     public Callback callback;
 
     @NonNull
@@ -148,14 +146,6 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Override
     public void setCallback(@NotNull Callback callback) {
         this.callback = callback;
-    }
-
-    public void setAdapterPosition(int index) {
-        this.adapterPosition = index;
-    }
-
-    protected int getAdapterPosition() {
-        return adapterPosition;
     }
 
     @Override
