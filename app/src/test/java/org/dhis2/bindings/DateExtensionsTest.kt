@@ -4,15 +4,15 @@ import android.content.Context
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import org.dhis2.Bindings.toDateSpan
 import org.dhis2.Bindings.toUiText
 import org.dhis2.R
 import org.junit.Ignore
 import org.junit.Test
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 
 class DateExtensionsTest {
 
