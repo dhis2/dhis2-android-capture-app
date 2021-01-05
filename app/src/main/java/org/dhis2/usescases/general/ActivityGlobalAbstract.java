@@ -319,23 +319,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     public void showInfoDialog(String title, String message) {
         if (getActivity() != null) {
             showInfoDialog(title, message, null);
-           /* AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-
-            //TITLE
-            final View titleView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_title, null);
-            ((TextView) titleView.findViewById(R.id.dialogTitle)).setText(title);
-            alertDialog.setCustomTitle(titleView);
-
-            //BODY
-            final View msgView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_body, null);
-            ((TextView) msgView.findViewById(R.id.dialogBody)).setText(message);
-            msgView.findViewById(R.id.dialogAccept).setOnClickListener(view -> alertDialog.dismiss());
-            msgView.findViewById(R.id.dialogCancel).setOnClickListener(view -> alertDialog.dismiss());
-            alertDialog.setView(msgView);
-
-
-            alertDialog.show();*/
-
         }
     }
 
@@ -344,31 +327,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         if (getActivity() != null) {
             showInfoDialog(title, message, getString(R.string.button_ok), getString(R.string.cancel), clickListener);
         }
-
-            /*AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-
-            //TITLE
-            final View titleView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_title, null);
-            ((TextView) titleView.findViewById(R.id.dialogTitle)).setText(title);
-            alertDialog.setCustomTitle(titleView);
-
-            //BODY
-            final View msgView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_body, null);
-            ((TextView) msgView.findViewById(R.id.dialogBody)).setText(message);
-            msgView.findViewById(R.id.dialogAccept).setOnClickListener(view -> {
-                clickListener.onPositiveClick(alertDialog);
-                alertDialog.dismiss();
-            });
-            msgView.findViewById(R.id.dialogCancel).setOnClickListener(view -> {
-                clickListener.onNegativeClick(alertDialog);
-                alertDialog.dismiss();
-            });
-            alertDialog.setView(msgView);
-
-            return alertDialog;
-
-        } else
-            return null;*/
     }
 
     @Override
@@ -376,6 +334,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         if (getActivity() != null) {
             new MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
                     .setTitle(title)
+                    .setCancelable(false)
                     .setMessage(message)
                     .setPositiveButton(positiveButtonText, (dialogInterface, i) -> clickListener.onPositiveClick())
                     .setNegativeButton(negativeButtonText, (dialogInterface, i) -> clickListener.onNegativeClick())
