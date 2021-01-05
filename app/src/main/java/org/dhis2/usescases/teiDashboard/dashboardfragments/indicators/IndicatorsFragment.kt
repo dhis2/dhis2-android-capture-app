@@ -20,7 +20,7 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
     lateinit var presenter: IndicatorsPresenter
 
     private lateinit var binding: FragmentIndicatorsBinding
-    private lateinit var adapter: AnalyticsAdapter
+    private val adapter: AnalyticsAdapter by lazy { AnalyticsAdapter(requireContext()) }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -46,7 +46,6 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
             inflater,
             R.layout.fragment_indicators, container, false
         )
-        adapter = AnalyticsAdapter(requireContext())
         binding.indicatorsRecycler.adapter = adapter
         return binding.root
     }
