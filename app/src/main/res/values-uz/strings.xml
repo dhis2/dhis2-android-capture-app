@@ -511,7 +511,7 @@
     <string name="no_conflicts_message">Ушбу дастур учун ҳеч қандай низолар мавжуд эмас</string>
     <string name="network_unavailable_sms">Интернетга уланиш узилган, лекин телефон хизматлари мавжудга ўхшайди - сиз СМС дан фойдаланишингиз мумкин.</string>
     <string name="network_unavailable">Интернетга уланиш узилган.</string>
-    <string name="action_close">Ёпиш</string>
+    <string name="action_close">Ёпмоқ</string>
     <string name="tuto_main_11">Энди сиз шу тугмага босиш орқали синхронизация маълумотларини текширишингиз мумкин</string>
     <string name="no_conflicts_update_message">Ушбу маълумотлар фақат сизнинг қурилмангизда сақланади, сервер билан синхронлаштирилмайди.</string>
     <string name="no_conflicts_synced_message">Сизнинг ҳолатингиз долзарб! Сизнинг барча маълумотларингиз серверга юборилади.</string>
@@ -746,7 +746,7 @@
     <string name="customactivityoncrash_error_activity_close_app">Иловани ёпиш</string>
     <string name="customactivityoncrash_error_activity_error_details">Батафсил маълумот</string>
     <string name="customactivityoncrash_error_activity_error_details_title">Батафсил маълумот</string>
-    <string name="customactivityoncrash_error_activity_error_details_close">Ёпиш</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">Ёпмоқ</string>
     <string name="customactivityoncrash_error_activity_error_details_copy">Буферга нусха олиш</string>
     <string name="customactivityoncrash_error_activity_error_details_copied">Буферга нусха олинди</string>
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Хатто ҳақида маълумот</string>
