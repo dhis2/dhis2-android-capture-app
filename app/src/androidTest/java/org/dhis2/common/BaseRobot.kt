@@ -28,7 +28,7 @@ open class BaseRobot {
     }
 
     fun acceptGenericDialog() {
-        onView(withId(R.id.dialogAccept)).perform(ViewActions.click())
+        onView(withId(android.R.id.button1)).perform(ViewActions.click())
     }
 
     fun closeKeyboard() {

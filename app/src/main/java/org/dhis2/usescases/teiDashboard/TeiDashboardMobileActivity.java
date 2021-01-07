@@ -95,6 +95,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     private MutableLiveData<Boolean> filtersShowing;
     private MutableLiveData<String> currentEnrollment;
     private MutableLiveData<Boolean> relationshipMap;
+    private MutableLiveData<Boolean> lineChart; // For testing purposes
     private float elevation = 0f;
 
     public static Intent intent(Context context,
@@ -131,6 +132,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         currentEnrollment = new MutableLiveData<>();
         relationshipMap = new MutableLiveData<>(false);
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
+
+        // For testing purposes
+        lineChart = new MutableLiveData<>(true);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
         binding.setPresenter(presenter);
@@ -473,6 +477,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         if (programTheme != -1) {
             presenter.saveProgramTheme(programTheme);
             binding.toolbar.setBackgroundColor(programColor);
+            binding.navigationBar.setIconsColor(programColor);
         } else {
             presenter.removeProgramTheme();
             int colorPrimary;
@@ -492,6 +497,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     break;
             }
             binding.toolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
+            binding.navigationBar.setIconsColor(ContextCompat.getColor(this, colorPrimary));
         }
 
         binding.executePendingBindings();
@@ -547,6 +553,15 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             }
         }
 
+        // For testing purposes
+        if (lineChart.getValue()) {
+            popupMenu.getMenu().findItem(R.id.showBarGraph).setVisible(true);
+            popupMenu.getMenu().findItem(R.id.showLineGraph).setVisible(false);
+        } else {
+            popupMenu.getMenu().findItem(R.id.showLineGraph).setVisible(true);
+            popupMenu.getMenu().findItem(R.id.showBarGraph).setVisible(false);
+        }
+
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
@@ -568,6 +583,14 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 case R.id.showTimeline:
                     groupByStage.setValue(false);
                     break;
+                // For testing purposes
+                case R.id.showBarGraph:
+                    lineChart.setValue(false);
+                    break;
+                case R.id.showLineGraph:
+                    lineChart.setValue(true);
+                    break;
+                // For testing purposes
                 case R.id.complete:
                     presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.COMPLETED);
                     break;
@@ -650,5 +673,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     public void onRelationshipMapLoaded() {
         binding.toolbarProgress.hide();
+    }
+
+    // For testing purposes
+    public LiveData<Boolean> getChartType() {
+        return lineChart;
     }
 }

@@ -40,5 +40,8 @@ class Preference {
         const val GROUPING = "GROUPING"
 
         const val CURRENT_ORG_UNIT = "CURRENT_ORG_UNIT"
+
+        const val FLAG = "FLAG"
+        const val THEME = "THEME"
     }
 }
