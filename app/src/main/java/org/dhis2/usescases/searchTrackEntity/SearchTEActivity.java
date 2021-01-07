@@ -225,7 +225,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     showMap(true);
                     break;
             }
-            return false;
+            return true;
         });
 
         filtersAdapter.addEnrollmentStatus();
