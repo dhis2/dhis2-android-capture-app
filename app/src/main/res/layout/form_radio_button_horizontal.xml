@@ -6,7 +6,6 @@
     <data>
 
         <import type="android.view.View" />
-        <import type="org.dhis2.R"/>
 
         <import type="org.hisp.dhis.android.core.common.ValueType" />
 
