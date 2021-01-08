@@ -36,7 +36,7 @@ public class AbstractActivityContracts {
 
         void showInfoDialog(String title, String message);
 
-        AlertDialog showInfoDialog(String title, String message, OnDialogClickListener dialogListener);
+        void showInfoDialog(String title, String message, OnDialogClickListener dialogListener);
 
         void setTutorial();
 
@@ -46,7 +46,7 @@ public class AbstractActivityContracts {
 
         void showToast(String message);
 
-        AlertDialog showInfoDialog(String title, String message, String possitiveButtonText, String negativeButtonText, OnDialogClickListener clickListener);
+        void showInfoDialog(String title, String message, String possitiveButtonText, String negativeButtonText, OnDialogClickListener clickListener);
 
         void showDescription(String description);
 

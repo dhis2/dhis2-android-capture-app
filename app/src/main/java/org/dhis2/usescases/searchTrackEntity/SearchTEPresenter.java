@@ -530,6 +530,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
             List<String> optionSetIds = new ArrayList<>();
             view.updateFiltersSearch(queryData.entrySet().size());
+
             for (Map.Entry<String, String> entry : queryData.entrySet()) {
                 if (entry.getValue().equals("null_os_null"))
                     optionSetIds.add(entry.getKey());
@@ -548,6 +549,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 view.setFabIcon(true);
                 queryProcessor.onNext(new HashMap<>());
             }
+            view.closeFilters();
         }
     }
 

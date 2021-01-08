@@ -18,8 +18,10 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.D2ErrorUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.Calendar;
 
@@ -27,6 +29,8 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
+import static org.dhis2.data.service.SyncOutputKt.METADATA_MESSAGE;
+import static org.dhis2.data.service.SyncOutputKt.METADATA_STATE;
 import static org.dhis2.utils.analytics.AnalyticsConstants.METADATA_TIME;
 
 public class SyncMetadataWorker extends Worker {
@@ -61,6 +65,7 @@ public class SyncMetadataWorker extends Worker {
 
             boolean isMetaOk = true;
             boolean noNetwork = false;
+            String message = "";
 
             long init = System.currentTimeMillis();
             try {
@@ -73,6 +78,13 @@ public class SyncMetadataWorker extends Worker {
                 isMetaOk = false;
                 if (!NetworkUtils.isOnline(getApplicationContext()))
                     noNetwork = true;
+                if (e instanceof D2Error) {
+                    message = D2ErrorUtils.getErrorMessage(getApplicationContext(), e);
+                } else if(e.getCause() instanceof D2Error){
+                    message = D2ErrorUtils.getErrorMessage(getApplicationContext(), e.getCause());
+                }else {
+                    message = e.toString();
+                }
             } finally {
                 presenter.logTimeToFinish(System.currentTimeMillis() - init, METADATA_TIME);
             }
@@ -86,21 +98,22 @@ public class SyncMetadataWorker extends Worker {
             cancelNotification();
 
             if (!isMetaOk)
-                return Result.failure(createOutputData(false));
+                return Result.failure(createOutputData(false, message));
 
             presenter.updateProyectAnalytics();
 
             presenter.startPeriodicMetaWork();
 
-            return Result.success(createOutputData(true));
+            return Result.success(createOutputData(true, message));
         } else {
-            return Result.failure(createOutputData(false));
+            return Result.failure(createOutputData(false, getApplicationContext().getString(R.string.error_init_session)));
         }
     }
 
-    private Data createOutputData(boolean state) {
+    private Data createOutputData(boolean state, String message) {
         return new Data.Builder()
-                .putBoolean("METADATA_STATE", state)
+                .putBoolean(METADATA_STATE, state)
+                .putString(METADATA_MESSAGE, message)
                 .build();
     }
 

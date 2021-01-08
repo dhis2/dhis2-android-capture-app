@@ -43,10 +43,10 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
+            clickOnSearchFilter()
             typeAttributeAtPosition(firstName, firstNamePosition)
             clickOnFab()
             checkFilterCount(filterCount)
-            closeSearchForm()
             checkListOfSearchTEI(firstName, "")
         }
     }
@@ -61,10 +61,10 @@ class SearchTETest : BaseTest() {
         prepareTestProgramRulesProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
+            clickOnSearchFilter()
             typeAttributeAtPosition(firstName, firstNamePosition)
             clickOnFab()
             checkFilterCount(filterCount)
-            closeSearchForm()
             checkNoSearchResult(firstName, noResultMessage)
         }
     }
@@ -80,11 +80,11 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
+            clickOnSearchFilter()
             typeAttributeAtPosition(firstName, firstNamePosition)
             typeAttributeAtPosition(lastName, lastNamePosition)
             clickOnFab()
             checkFilterCount(filterCount)
-            closeSearchForm()
             checkListOfSearchTEI(firstName, lastName)
         }
     }
@@ -120,7 +120,6 @@ class SearchTETest : BaseTest() {
             acceptDate()
             clickOnFab()
             checkFilterCount(filterCount)
-            closeSearchForm()
             checkFieldsFromDisplayList(displayInListData)
         }
     }
@@ -255,7 +254,6 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
-            closeSearchForm()
             clickOnTEI(teiName, teiLastName)
         }
 

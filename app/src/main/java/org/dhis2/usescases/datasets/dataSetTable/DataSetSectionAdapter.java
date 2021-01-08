@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import org.dhis2.R;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetDetail.DataSetDetailFragment;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionFragment;
 
@@ -51,6 +52,17 @@ public final class DataSetSectionAdapter extends FragmentStateAdapter {
             return sections.get(position - 1);
         } else {
             return "";
+        }
+    }
+
+    public int getNavigationPagePosition(int itemId) {
+        switch (itemId) {
+            case R.id.navigation_details:
+                return 0;
+            case R.id.navigation_data_entry:
+                return 1;
+            default:
+                return 2;
         }
     }
 }
