@@ -122,9 +122,16 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_table);
         binding.setPresenter(presenter);
+        ViewExtensionsKt.clipWithRoundedCorners(binding.container,ExtensionsKt.getDp(16));
         binding.BSLayout.bottomSheetLayout.setVisibility(View.GONE);
         setViewPager();
         presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
+        binding.navigationView.setOnNavigationItemSelectedListener(item -> {
+            int pagePosition = viewPagerAdapter.getNavigationPagePosition(item.getItemId());
+            binding.tabLayout.setVisibility(pagePosition == 0 ? View.GONE : View.VISIBLE);
+            binding.viewPager.setCurrentItem(pagePosition);
+            return true;
+        });
     }
 
     @Override
@@ -146,6 +153,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> {
             if (position == 0) {
                 tab.setText(R.string.dataset_overview);
+                tab.view.setVisibility(View.GONE);
             } else {
                 tab.setText(viewPagerAdapter.getSectionTitle(position));
             }
@@ -160,6 +168,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
             sections.add(getString(R.string.dataset_data));
         }
         viewPagerAdapter.swapData(sections);
+        binding.navigationView.selectItemAt(1);
         binding.viewPager.setCurrentItem(1);
     }
 
@@ -425,7 +434,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                 .translationY(-ExtensionsKt.getDp(48))
                 .start();
     }
-
 
 
     public void showMoreOptions(View view) {

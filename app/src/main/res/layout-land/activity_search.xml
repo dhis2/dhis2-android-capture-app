@@ -165,9 +165,9 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/search_filter_general"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_search"
-                tools:ignore="ContentDescription"
-                app:tint="@color/white" />
+                app:srcCompat="@drawable/ic_search_add"
+                app:tint="@color/white"
+                tools:ignore="ContentDescription" />
 
             <ImageView
                 android:id="@+id/moreOptions"
@@ -237,6 +237,7 @@
                 android:id="@+id/filterRecyclerLayout"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toStartOf="@id/backdropGuideDiv"
                 app:layout_constraintStart_toStartOf="parent"
@@ -249,13 +250,13 @@
                 android:focusableInTouchMode="true"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toStartOf="@id/backdropGuideDiv"
-                app:layout_constraintStart_toStartOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/mainLayout"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:background="@drawable/ic_front_backdrop_bg_landscape"
+                android:background="@drawable/ic_front_backdrop_bg"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/backdropGuideDiv">
 
@@ -290,11 +291,11 @@
                         android:layout_height="match_parent"
                         android:layout_marginEnd="16dp"
                         android:layout_marginBottom="8dp"
+                        android:onClick="@{()->presenter.closeFilterClick()}"
                         app:layout_constraintBottom_toTopOf="@+id/view"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@drawable/ic_arrow_up"
-                        android:visibility="gone"
                         app:tint="?colorPrimary" />
 
                     <View
@@ -312,67 +313,74 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:clipToPadding="false"
-                    android:paddingBottom="100dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="56dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/progressLayout" />
+                    app:layout_constraintTop_toBottomOf="@id/progressLayout"
+                    tools:listitem="@layout/item_search_tracked_entity" />
 
-                <com.mapbox.mapboxsdk.maps.MapView
-                    android:id="@+id/mapView"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/mapViewLayout"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:background="@drawable/ic_front_backdrop_bg_landscape"
+                    android:layout_marginBottom="30dp"
                     android:visibility="gone"
-                    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+                    app:cardCornerRadius="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/filterOpen" />
+                    app:layout_constraintTop_toBottomOf="@id/filterOpen"
+                    tools:visibility="visible">
 
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/mapNavigateFab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="64dp"
-                    android:layout_marginEnd="16dp"
-                    android:visibility="gone"
-                    app:backgroundTint="?colorPrimary"
-                    app:fabSize="mini"
-                    app:srcCompat="@drawable/ic_map_navigate"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/map_carousel"
-                    app:layout_constraintBottom_toTopOf="@id/map_carousel" />
+                    <com.mapbox.mapboxsdk.maps.MapView
+                        android:id="@+id/mapView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
-                <org.dhis2.uicomponents.map.views.CarouselView
-                    android:id="@+id/map_carousel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="16dp"
-                    android:clipToPadding="false"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    app:layout_constraintBottom_toBottomOf="@id/mapView"
-                    app:layout_constraintStart_toStartOf="@id/mapView"
-                    tools:listitem="@layout/item_carousel_tei" />
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/mapNavigateFab"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="64dp"
+                        android:layout_marginEnd="16dp"
+                        android:visibility="gone"
+                        app:backgroundTint="?colorPrimary"
+                        app:fabSize="mini"
+                        app:layout_constraintBottom_toTopOf="@id/map_carousel"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/map_carousel"
+                        app:srcCompat="@drawable/ic_map_navigate" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/mapLayerButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="10dp"
-                    android:padding="5dp"
-                    android:text="@string/map_layers"
-                    android:textAllCaps="true"
-                    android:textColor="?colorAccent"
-                    android:visibility="gone"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/mapView" />
+                    <org.dhis2.uicomponents.map.views.CarouselView
+                        android:id="@+id/map_carousel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:clipToPadding="false"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="34dp"
+                        tools:listitem="@layout/item_carousel_tei" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/mapLayerButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"
+                        android:text="@string/map_layers"
+                        android:textAllCaps="true"
+                        android:textColor="?colorAccent"
+                        android:visibility="gone" />
+                </androidx.cardview.widget.CardView>
 
                 <RelativeLayout
                     android:id="@+id/messageContainer"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/filterOpen">
@@ -388,23 +396,31 @@
 
                 </RelativeLayout>
 
-            <RelativeLayout
-                android:id="@+id/progressLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_front_backdrop_bg_landscape"
-                android:visibility="visible"
-                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-                app:layout_constraintTop_toBottomOf="@id/filterOpen">
-
-                <ProgressBar
-                    android:id="@+id/progress"
+                <RelativeLayout
+                    android:id="@+id/progressLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_margin="5dp"
-                    app:progressColor="@{@color/colorPrimary}" />
-            </RelativeLayout>
+                    android:background="@drawable/ic_front_backdrop_bg"
+                    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+                    app:layout_constraintTop_toBottomOf="@id/filterOpen">
+
+                    <ProgressBar
+                        android:id="@+id/progress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_margin="5dp"
+                        app:progressColor="@{@color/colorPrimary}" />
+                </RelativeLayout>
+
+                <org.dhis2.utils.customviews.DhisBottomNavigationBar
+                    android:id="@+id/navigationBar"
+                    style="@style/DhisBottomNavigationView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:elevation="12dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:menu="@menu/navigation_search_menu" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -419,14 +435,14 @@
                 android:layout_marginBottom="8dp"
                 android:focusableInTouchMode="true"
                 android:onClick="@{(view)->presenter.onFabClick(needsSearch)}"
-                android:tint="@color/white"
-                app:backgroundTint="?attr/colorPrimary"
+                app:backgroundTint="@color/white"
                 app:elevation="12dp"
                 app:fabSize="normal"
                 app:layout_behavior="org.dhis2.utils.FixedBottomViewBehavior"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:searchOrAdd='@{ needsSearch }' />
+                app:layout_constraintEnd_toEndOf="@id/backdropGuideDiv"
+                app:searchOrAdd='@{ needsSearch }'
+                app:tint="?attr/colorPrimary" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </RelativeLayout>
