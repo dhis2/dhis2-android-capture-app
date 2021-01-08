@@ -8,6 +8,7 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.ActionType;
+import org.dhis2.data.forms.dataentry.fields.FieldUiModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -15,12 +16,10 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import io.reactivex.processors.FlowableProcessor;
 
-/**
- * QUADRAM. Created by frodriguez on 1/24/2018.
- */
 @AutoValue
 public abstract class RadioButtonViewModel extends FieldViewModel {
 
@@ -48,23 +47,6 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
 
     @Nullable
     public abstract ValueTypeRenderingType renderingType();
-
-    @NonNull
-    public static RadioButtonViewModel fromRawValue(@NonNull String id, @NonNull String label, @NonNull ValueType type,
-                                                    @NonNull Boolean mandatory, @Nullable String value, @Nullable String section,
-                                                    Boolean editable, @Nullable String description, ObjectStyle objectStyle, ValueTypeRenderingType renderingType, Boolean isBackgroundTransparent, boolean isSearchMode) {
-        if (value == null) {
-            return new AutoValue_RadioButtonViewModel(id, label, null, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, null, false, mandatory, type, renderingType, isBackgroundTransparent, isSearchMode);
-        } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED.toString())) {
-            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED.toString(), section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, null, false, mandatory, type, renderingType, isBackgroundTransparent, isSearchMode);
-        } else if (value.toLowerCase(Locale.US).equals(Value.UNCHECKED.toString())) {
-            return new AutoValue_RadioButtonViewModel(id, label, Value.UNCHECKED.toString(), section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, null, false, mandatory, type, renderingType, isBackgroundTransparent, isSearchMode);
-        } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED_NO.toString())) {
-            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED_NO.toString(), section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, null, false, mandatory, type, renderingType, isBackgroundTransparent, isSearchMode);
-        } else {
-            throw new IllegalArgumentException("Unsupported value: " + value);
-        }
-    }
 
     @NonNull
     public static RadioButtonViewModel fromRawValue(@NonNull String id, @NonNull String label, @NonNull ValueType type,
@@ -143,7 +125,7 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
             result = String.valueOf(value);
         }
 
-        if (processor() == null) return;
+        if (processor() == null || Objects.equals(result, value())) return;
 
         processor().onNext(new RowAction(
                 uid(),
@@ -178,5 +160,17 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
 
     public void onDescriptionClick() {
         callback.showDialog(label(), description());
+    }
+
+    @Override
+    public boolean equals(FieldUiModel o) {
+        if (o instanceof RadioButtonViewModel) {
+            RadioButtonViewModel oRadioButton = (RadioButtonViewModel) o;
+            return super.equals(o) &&
+                    this.valueType() == oRadioButton.valueType() &&
+                    this.renderingType() == oRadioButton.renderingType();
+        } else {
+            return super.equals(o);
+        }
     }
 }

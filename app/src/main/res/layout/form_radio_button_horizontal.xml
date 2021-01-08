@@ -6,6 +6,7 @@
     <data>
 
         <import type="android.view.View" />
+        <import type="org.dhis2.R"/>
 
         <import type="org.hisp.dhis.android.core.common.ValueType" />
 
@@ -107,6 +108,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:orientation="@{item.renderingType() == ValueTypeRenderingType.VERTICAL_RADIOBUTTONS ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL}"
+                        app:checkListener="@{item}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/clearSelection"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -118,8 +120,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="16dp"
-                            android:checked="@{item.isAffirmativeChecked}"
-                            android:onClick="@{v -> item.onValueChanged(true)}"
                             android:text="@string/yes"
                             app:setTextColor="@{item.backgroundTransparent}"
                             android:textSize="@dimen/form_edit_text_size"
@@ -131,8 +131,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="25dp"
-                            android:checked="@{item.isNegativeChecked()}"
-                            android:onClick="@{v -> item.onValueChanged(false)}"
                             android:text="@string/no"
                             app:setTextColor="@{item.backgroundTransparent}"
                             android:textSize="@dimen/form_edit_text_size"

@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -31,6 +32,7 @@ import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
 import org.dhis2.utils.ColorUtils;
@@ -647,5 +649,24 @@ public class Bindings {
         } else {
             editText.clearFocus();
         }
+    }
+
+    @BindingAdapter("checkListener")
+    public static void checkListener(RadioGroup radioGroup, RadioButtonViewModel viewModel){
+        radioGroup.setOnCheckedChangeListener(null);
+        if(viewModel.isAffirmativeChecked()){
+            radioGroup.check(R.id.yes);
+        }else if(viewModel.isNegativeChecked()){
+            radioGroup.check(R.id.no);
+        }else{
+            radioGroup.clearCheck();
+        }
+        radioGroup.setOnCheckedChangeListener((radioGroup1, checkedId) -> {
+            if(checkedId == R.id.yes){
+                viewModel.onValueChanged(true);
+            }else if(checkedId == R.id.no){
+                viewModel.onValueChanged(false);
+            }
+        });
     }
 }
