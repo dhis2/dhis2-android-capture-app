@@ -539,11 +539,14 @@ public class Bindings {
     public static void setFabIcoin(FloatingActionButton fab, boolean needSearch) {
         Drawable drawable;
         if (needSearch) {
-            drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_search);
+            drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_search_add);
         } else {
             drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_add_accent);
         }
-        fab.setColorFilter(Color.WHITE);
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = fab.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
+        int colorPrimary = a.getColor(0, 0);
+        fab.setColorFilter(colorPrimary);
         fab.setImageDrawable(drawable);
     }
 

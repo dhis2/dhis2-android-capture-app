@@ -22,7 +22,6 @@
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
             android:background="?colorPrimary"
-            android:elevation="8dp"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
@@ -109,29 +108,36 @@
                 app:layout_constraintTop_toBottomOf="@id/guideline"
                 tools:visibility="visible" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/eventTabLayout"
-            style="@style/DhisTabLayout"
+        <View
+            android:id="@+id/top_dummy_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:elevation="8dp"
-            app:layout_constraintTop_toBottomOf="@id/activityToolbar"
-            app:tabGravity="fill"
-            app:tabMaxWidth="0dp"
-            app:tabMode="fixed"
-            app:tabPaddingEnd="16dp"
-            app:tabPaddingStart="16dp"
-            app:tabTextAppearance="@style/DhisTabText"
-            tools:visibility="visible" />
+            android:layout_height="0dp"
+            android:background="?colorPrimary"
+            app:layout_constraintBottom_toTopOf="@id/bottom_dummy_view"
+            app:layout_constraintTop_toBottomOf="@id/activityToolbar" />
+
+        <View
+            android:id="@+id/bottom_dummy_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/form_field_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/top_dummy_view" />
 
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/eventViewPager"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/navigationBar"
+            app:layout_constraintTop_toBottomOf="@id/activityToolbar" />
+
+        <org.dhis2.utils.customviews.DhisBottomNavigationBar
+            android:id="@+id/navigationBar"
+            style="@style/DhisBottomNavigationView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/eventTabLayout" />
+            app:menu="@menu/navigation_event_menu" />
 
         <include
             android:id="@+id/calculationIndicator"

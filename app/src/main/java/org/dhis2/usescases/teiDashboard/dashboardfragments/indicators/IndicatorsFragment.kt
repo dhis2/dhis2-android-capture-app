@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import dhis2.org.analytics.charts.data.ChartType
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
@@ -21,10 +23,14 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
 
     private lateinit var binding: FragmentIndicatorsBinding
     private lateinit var adapter: AnalyticsAdapter
+    // For testing purposes
+    private lateinit var activity: TeiDashboardMobileActivity
+    private lateinit var chartType: ChartType
+    // For testing purposes
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        val activity = context as TeiDashboardMobileActivity
+        activity = context as TeiDashboardMobileActivity // For testing purposes
         if (((context.applicationContext) as App).dashboardComponent() != null) {
             ((context.applicationContext) as App).dashboardComponent()!!
                 .plus(
@@ -48,6 +54,19 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
         )
         adapter = AnalyticsAdapter(requireContext())
         binding.indicatorsRecycler.adapter = adapter
+        // For testing purposes
+        activity.chartType.observe(
+            this,
+            Observer { isLineChart: Boolean ->
+                chartType = if (isLineChart) {
+                    ChartType.LINE_CHART
+                } else {
+                    ChartType.BAR_CHART
+                }
+                adapter.notifyDataSetChanged()
+            }
+        )
+        // For testing purposes
         return binding.root
     }
 
@@ -72,4 +91,7 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
             binding.emptyIndicators.visibility = View.VISIBLE
         }
     }
+
+    // For testing purposes
+    override fun getChartType() = chartType
 }
