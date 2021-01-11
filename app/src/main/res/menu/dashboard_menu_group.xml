@@ -20,6 +20,16 @@
         android:id="@+id/showTimeline"
         android:icon="@drawable/ic_list_view"
         android:title="@string/show_events_timeline"/>
+    <!-- // For testing purposes -->
+    <item
+        android:id="@+id/showBarGraph"
+        android:icon="@drawable/ic_list_view"
+        android:title="@string/show_bar_graph"/>
+    <item
+        android:id="@+id/showLineGraph"
+        android:icon="@drawable/ic_list_view"
+        android:title="@string/show_line_graph"/>
+    <!-- // For testing purposes -->
     <item
         android:id="@+id/complete"
         android:icon="@drawable/ic_lock_menu"

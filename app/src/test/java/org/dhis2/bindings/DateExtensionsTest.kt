@@ -90,7 +90,7 @@ class DateExtensionsTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("When the year has changed, is creating different behavior than expected by the test")
     fun `Should return dd MMM format when date is same year of current date`() {
         val date: Date? = currentCalendar().apply {
             add(Calendar.MONTH, -2)

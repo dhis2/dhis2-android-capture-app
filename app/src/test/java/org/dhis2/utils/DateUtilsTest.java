@@ -652,9 +652,9 @@ public class DateUtilsTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("When the year has changed, is creating different behavior than expected by the test")
     public void shouldSubtractYearsToDateWithPositiveInteger() throws ParseException{
-        int years = 4;
+        int years = 5;
 
         Date currentDate = DateUtils.oldUiDateFormat().parse("2020-07-15");
         Date beforeDate = DateUtils.yearsBeforeNow(years);
@@ -670,9 +670,9 @@ public class DateUtilsTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("When the year has changed, is creating different behavior than expected by the test")
     public void shouldSubtractYearsToDateWithNegativeInteger() throws ParseException{
-        int years = -4;
+        int years = -5;
 
         Date currentDate = DateUtils.oldUiDateFormat().parse("2020-07-15");
         Date beforeDate = DateUtils.yearsBeforeNow(years);
@@ -688,7 +688,7 @@ public class DateUtilsTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("When the year has changed, is creating different behavior than expected by the test")
     public void shouldAddYearsToDate() throws ParseException{
         int years = 1;
 
