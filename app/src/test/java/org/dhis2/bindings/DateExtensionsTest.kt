@@ -11,6 +11,7 @@ import java.util.Locale
 import org.dhis2.Bindings.toDateSpan
 import org.dhis2.Bindings.toUiText
 import org.dhis2.R
+import org.junit.Ignore
 import org.junit.Test
 
 class DateExtensionsTest {
@@ -89,6 +90,7 @@ class DateExtensionsTest {
     }
 
     @Test
+    @Ignore
     fun `Should return dd MMM format when date is same year of current date`() {
         val date: Date? = currentCalendar().apply {
             add(Calendar.MONTH, -2)
