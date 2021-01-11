@@ -308,30 +308,37 @@
                         android:layout_height="match_parent"
                         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
-                    <com.google.android.material.floatingactionbutton.FloatingActionButton
-                        android:id="@+id/mapNavigateFab"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="64dp"
-                        android:layout_marginEnd="16dp"
-                        android:visibility="gone"
-                        app:backgroundTint="?colorPrimary"
-                        app:fabSize="normal"
-                        app:layout_constraintBottom_toTopOf="@id/map_carousel"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/map_carousel"
-                        app:srcCompat="@drawable/ic_map_navigate" />
-
-                    <org.dhis2.uicomponents.map.views.CarouselView
-                        android:id="@+id/map_carousel"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:clipToPadding="false"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:paddingBottom="34dp"
-                        tools:listitem="@layout/item_carousel_tei" />
+                        android:orientation="vertical">
+
+                        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                            android:id="@+id/mapNavigateFab"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:layout_marginTop="64dp"
+                            android:layout_marginEnd="16dp"
+                            android:visibility="gone"
+                            app:backgroundTint="?colorPrimary"
+                            app:fabSize="normal"
+                            app:layout_constraintBottom_toTopOf="@id/map_carousel"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/map_carousel"
+                            app:srcCompat="@drawable/ic_map_navigate" />
+
+                        <org.dhis2.uicomponents.map.views.CarouselView
+                            android:id="@+id/map_carousel"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clipToPadding="false"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingBottom="34dp"
+                            tools:listitem="@layout/item_carousel_tei" />
+                    </LinearLayout>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/mapLayerButton"
