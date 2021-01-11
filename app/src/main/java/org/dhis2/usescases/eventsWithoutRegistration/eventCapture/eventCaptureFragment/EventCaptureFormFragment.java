@@ -27,6 +27,7 @@ import javax.inject.Inject;
 
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 public class EventCaptureFormFragment extends FragmentGlobalAbstract implements EventCaptureFormView {
 
@@ -61,18 +62,14 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.section_selector_fragment, container, false);
         binding.setPresenter(activity.getPresenter());
-
         binding.actionButton.setOnClickListener(view -> {
             view.requestFocus();
             ViewExtensionsKt.closeKeyboard(view);
             presenter.onActionButtonClick();
         });
-
-        binding.formView.setScrollCallback(new Function0<Unit>() {
-            @Override
-            public Unit invoke() {
-                return null;
-            }
+        binding.formView.setScrollCallback(isSectionVisible -> {
+            animateFabButton(isSectionVisible);
+            return Unit.INSTANCE;
         });
         binding.formView.init(this);
 

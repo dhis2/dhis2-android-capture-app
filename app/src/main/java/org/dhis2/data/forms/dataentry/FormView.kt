@@ -1,15 +1,12 @@
 package org.dhis2.data.forms.dataentry
 
-import android.app.Activity
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.inputmethod.InputMethodManager
 import android.widget.RelativeLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.LifecycleOwner
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.R
@@ -28,7 +25,7 @@ class FormView @JvmOverloads constructor(
     private val headerContainer: RelativeLayout
     private val dataEntryHeaderHelper: DataEntryHeaderHelper
     private lateinit var adapter: DataEntryAdapter
-    var scrollCallback: ((Boolean)->Unit)? = null
+    var scrollCallback: ((Boolean) -> Unit)? = null
 
     init {
         val params = LayoutParams(MATCH_PARENT, MATCH_PARENT)
@@ -61,22 +58,23 @@ class FormView @JvmOverloads constructor(
         }
         recyclerView.adapter = adapter
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M){
-            recyclerView.setOnScrollChangeListener({ v, scrollX, scrollY, oldScrollX, oldScrollY -> {
-                checkLastItem()
-            }})
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            recyclerView.setOnScrollChangeListener { _, _, _, _, _ ->
+                val hasToShowFab = checkLastItem()
+                scrollCallback?.invoke(hasToShowFab)
+            }
         } else {
             recyclerView.setOnScrollListener(object :
-                RecyclerView.OnScrollListener() {
-                override fun onScrolled(
-                    recyclerView: RecyclerView,
-                    dx: Int,
-                    dy: Int
-                ) {
-                    val hasToShowFab = checkLastItem()
-                    scrollCallback?.invoke(hasToShowFab)
-                }
-            })
+                    RecyclerView.OnScrollListener() {
+                    override fun onScrolled(
+                        recyclerView: RecyclerView,
+                        dx: Int,
+                        dy: Int
+                    ) {
+                        val hasToShowFab = checkLastItem()
+                        scrollCallback?.invoke(hasToShowFab)
+                    }
+                })
         }
     }
 
@@ -100,63 +98,12 @@ class FormView @JvmOverloads constructor(
     }
 
     private fun checkLastItem(): Boolean {
-
+        val layoutManager =
+            recyclerView.layoutManager as LinearLayoutManager
+        val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
+        return lastVisiblePosition != -1 && (
+            lastVisiblePosition == adapter.itemCount - 1 ||
+                adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
+            )
     }
 }
-
-/*binding.formRecycler.addOnScrollListener(object :
-    RecyclerView.OnScrollListener() {
-    override fun onScrollStateChanged(
-        recyclerView: RecyclerView,
-        newState: Int
-    ) {
-        if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-            dataEntryAdapter.setLastFocusItem(null)
-            val imm =
-                getContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(recyclerView.windowToken, 0)
-            binding.dummyFocusView.requestFocus()
-        }
-    }
-
-    override fun onScrolled(
-        recyclerView: RecyclerView,
-        dx: Int,
-        dy: Int
-    ) {
-        dataEntryHeaderHelper.checkSectionHeader(recyclerView)
-    }
-})
-
-if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M){
-    binding.formRecycler.setOnScrollChangeListener({ v, scrollX, scrollY, oldScrollX, oldScrollY -> checkLastItem() })
-} else {
-    binding.formRecycler.setOnScrollListener(object :
-        RecyclerView.OnScrollListener() {
-        override fun onScrolled(
-            recyclerView: RecyclerView,
-            dx: Int,
-            dy: Int
-        ) {
-            checkLastItem()
-        }
-    })
-}
-}
-
-private open fun checkLastItem() {
-    val layoutManager =
-        binding.formRecycler.getLayoutManager() as GridLayoutManager
-    val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
-    val shouldShowFab =
-        lastVisiblePosition != -1 && (lastVisiblePosition == dataEntryAdapter.getItemCount() - 1 ||
-            dataEntryAdapter.getItemViewType(lastVisiblePosition) == 17)
-    animateFabButton(shouldShowFab)
-}
-
-private open fun animateFabButton(sectionIsVisible: Boolean) {
-    binding.actionButton.animate()
-        .translationX(if (sectionIsVisible) 0 else 1000)
-        .setDuration(500)
-        .start()
-} */
