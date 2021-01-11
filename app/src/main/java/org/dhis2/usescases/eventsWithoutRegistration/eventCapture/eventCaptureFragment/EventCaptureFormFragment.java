@@ -25,6 +25,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
+
 public class EventCaptureFormFragment extends FragmentGlobalAbstract implements EventCaptureFormView {
 
     @Inject
@@ -65,6 +68,12 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             presenter.onActionButtonClick();
         });
 
+        binding.formView.setScrollCallback(new Function0<Unit>() {
+            @Override
+            public Unit invoke() {
+                return null;
+            }
+        });
         binding.formView.init(this);
 
         presenter.init();
@@ -91,5 +100,12 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void showFields(@NonNull List<FieldViewModel> updates) {
         binding.formView.render(updates);
+    }
+
+    private void animateFabButton(boolean sectionIsVisible) {
+        int translationX = 1000;
+        if (sectionIsVisible) translationX = 0;
+
+        binding.actionButton.animate().translationX(translationX).setDuration(500).start();
     }
 }
