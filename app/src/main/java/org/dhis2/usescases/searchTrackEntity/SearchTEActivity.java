@@ -32,7 +32,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.databinding.BindingMethod;
 import androidx.databinding.BindingMethods;
 import androidx.databinding.DataBindingUtil;
@@ -85,7 +84,6 @@ import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
-import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -296,6 +294,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                             return Unit.INSTANCE;
                         }
                 )
+                .addOnNavigateClickListener(
+                        uuid -> {
+                            navigateToMap(teiMapManager.findFeature(uuid));
+                            return Unit.INSTANCE;
+                        }
+                )
                 .addProgram(presenter.getProgram())
                 .build();
         binding.mapCarousel.setAdapter(carouselAdapter);
@@ -318,11 +322,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.mapCarousel.attachToMapManager(teiMapManager, (feature, found) -> {
 
             if (found && feature != null && FeatureExtensionsKt.isPoint(feature)) {
-                binding.mapNavigateFab.show();
-                binding.mapNavigateFab.setOnClickListener( fab -> navigateToMap(feature));
+                binding.mapCarousel.showNavigateTo();
             } else {
-                binding.mapNavigateFab.hide();
-                binding.mapNavigateFab.setOnClickListener(null);
+                binding.mapCarousel.hideNavigateTo();
             }
             return true;
         });
@@ -505,7 +507,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //region SearchForm
 
     private void showMap(boolean showMap) {
-        binding.mapNavigateFab.hide();
         binding.scrollView.setVisibility(showMap ? View.GONE : View.VISIBLE);
         binding.mapViewLayout.setVisibility(showMap ? View.VISIBLE : View.GONE);
         binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : View.GONE);

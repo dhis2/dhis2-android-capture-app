@@ -12,6 +12,7 @@ import org.dhis2.uicomponents.map.camera.centerCameraOnFeature
 import org.dhis2.uicomponents.map.camera.centerCameraOnFeatures
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.carousel.CarouselLayoutManager
+import org.dhis2.uicomponents.map.carousel.CarouselTeiHolder
 import org.dhis2.uicomponents.map.managers.MapManager
 
 class CarouselView @JvmOverloads constructor(
@@ -69,7 +70,7 @@ class CarouselView @JvmOverloads constructor(
         })
     }
 
-    fun currentItem(): String {
+    private fun getVisiblePosition(): Int {
         var visiblePosition =
             (layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
         if (visiblePosition == -1) {
@@ -78,7 +79,11 @@ class CarouselView @JvmOverloads constructor(
         if (visiblePosition == -1) {
             visiblePosition = 0
         }
-        return carouselAdapter.getUidProperty(visiblePosition)
+        return visiblePosition
+    }
+
+    fun currentItem(): String {
+        return carouselAdapter.getUidProperty(getVisiblePosition())
     }
 
     fun scrollToFeature(feature: Feature) {
@@ -111,5 +116,15 @@ class CarouselView @JvmOverloads constructor(
     fun setEnabledStatus(enabled: Boolean) {
         this.carouselEnabled = enabled
         (layoutManager as CarouselLayoutManager).setEnabled(enabled)
+    }
+
+    fun showNavigateTo() {
+        val holder = findViewHolderForAdapterPosition(getVisiblePosition())
+        (holder as CarouselTeiHolder).showNavigateButton()
+    }
+
+    fun hideNavigateTo() {
+        val holder = findViewHolderForAdapterPosition(getVisiblePosition())
+        (holder as CarouselTeiHolder).hideNavigateButton()
     }
 }
