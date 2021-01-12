@@ -321,8 +321,10 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     private Observable<Boolean> programAccess(String programUid) {
         return Observable.fromCallable(() -> {
                     boolean programAccess = d2.programModule().programs().uid(programUid).blockingGet().access().data().write();
-                    boolean stageAccess =
-                            d2.programModule().programStages().uid(stageUid).blockingGet().access().data().write();
+                    boolean stageAccess = true;
+                    if (stageUid != null) {
+                        stageAccess = d2.programModule().programStages().uid(stageUid).blockingGet().access().data().write();
+                    }
                     return programAccess && stageAccess;
                 }
         );
