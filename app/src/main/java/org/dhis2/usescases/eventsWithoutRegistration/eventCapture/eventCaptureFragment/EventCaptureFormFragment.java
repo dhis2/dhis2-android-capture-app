@@ -25,6 +25,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
+
 public class EventCaptureFormFragment extends FragmentGlobalAbstract implements EventCaptureFormView {
 
     @Inject
@@ -58,13 +62,15 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.section_selector_fragment, container, false);
         binding.setPresenter(activity.getPresenter());
-
         binding.actionButton.setOnClickListener(view -> {
             view.requestFocus();
             ViewExtensionsKt.closeKeyboard(view);
             presenter.onActionButtonClick();
         });
-
+        binding.formView.setScrollCallback(isSectionVisible -> {
+            animateFabButton(isSectionVisible);
+            return Unit.INSTANCE;
+        });
         binding.formView.init(this);
 
         presenter.init();
@@ -91,5 +97,12 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void showFields(@NonNull List<FieldViewModel> updates) {
         binding.formView.render(updates);
+    }
+
+    private void animateFabButton(boolean sectionIsVisible) {
+        int translationX = 1000;
+        if (sectionIsVisible) translationX = 0;
+
+        binding.actionButton.animate().translationX(translationX).setDuration(500).start();
     }
 }
