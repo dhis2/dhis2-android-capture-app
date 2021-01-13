@@ -251,18 +251,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                 getString(R.string.relationship_without_enrollment),
                 getString(R.string.button_ok),
                 getString(R.string.no),
-                new OnDialogClickListener() {
-                    @Override
-                    public void onPossitiveClick(AlertDialog alertDialog) {
-                        //NotUsed
-                    }
-
-                    @Override
-                    public void onNegativeClick(AlertDialog alertDialog) {
-                        //NotUsed
-                    }
-                })
-                .show();
+                null);
     }
 
     @Override
@@ -274,18 +263,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                 getString(R.string.relationship_not_found_message),
                 getString(R.string.button_ok),
                 getString(R.string.no),
-                new OnDialogClickListener() {
-                    @Override
-                    public void onPossitiveClick(AlertDialog alertDialog) {
-                        //NotUsed
-                    }
-
-                    @Override
-                    public void onNegativeClick(AlertDialog alertDialog) {
-                        //NotUsed
-                    }
-                })
-                .show();
+                null);
     }
 
     @Override
