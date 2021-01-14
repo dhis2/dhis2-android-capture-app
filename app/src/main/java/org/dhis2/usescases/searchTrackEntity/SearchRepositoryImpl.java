@@ -56,7 +56,6 @@ import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipItem;
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
-import org.hisp.dhis.android.core.systeminfo.DHISVersion;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
@@ -434,36 +433,34 @@ public class SearchRepositoryImpl implements SearchRepository {
 
             String relationshipTEIUid;
             RelationshipViewModel.RelationshipDirection direction;
-            if (relationship.from().trackedEntityInstance() != null && relationship.to().trackedEntityInstance() == null) {
-                if (!searchTeiModel.getTei().uid().equals(relationship.from().trackedEntityInstance().trackedEntityInstance())) {
-                    relationshipTEIUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
-                    direction = RelationshipViewModel.RelationshipDirection.FROM;
-                } else {
-                    relationshipTEIUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
-                    direction = RelationshipViewModel.RelationshipDirection.TO;
-                }
-
-                String fromTeiUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
-                String toTeiUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
-
-                TrackedEntityInstance fromTei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(fromTeiUid).blockingGet();
-                TrackedEntityInstance toTei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(toTeiUid).blockingGet();
-
-                relationshipViewModels.add(RelationshipViewModel.create(
-                        relationship,
-                        relationshipType,
-                        direction,
-                        relationshipTEIUid,
-                        getTrackedEntityAttributesForRelationship(fromTei, selectedProgram),
-                        getTrackedEntityAttributesForRelationship(toTei, selectedProgram),
-                        fromTei.geometry(),
-                        toTei.geometry(),
-                        ExtensionsKt.profilePicturePath(fromTei, d2, selectedProgram.uid()),
-                        ExtensionsKt.profilePicturePath(toTei, d2, selectedProgram.uid()),
-                        getTeiDefaultRes(fromTei),
-                        getTeiDefaultRes(toTei)
-                ));
+            if (!searchTeiModel.getTei().uid().equals(relationship.from().trackedEntityInstance().trackedEntityInstance())) {
+                relationshipTEIUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
+                direction = RelationshipViewModel.RelationshipDirection.FROM;
+            } else {
+                relationshipTEIUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
+                direction = RelationshipViewModel.RelationshipDirection.TO;
             }
+
+            String fromTeiUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
+            String toTeiUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
+
+            TrackedEntityInstance fromTei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(fromTeiUid).blockingGet();
+            TrackedEntityInstance toTei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(toTeiUid).blockingGet();
+
+            relationshipViewModels.add(RelationshipViewModel.create(
+                    relationship,
+                    relationshipType,
+                    direction,
+                    relationshipTEIUid,
+                    getTrackedEntityAttributesForRelationship(fromTei, selectedProgram),
+                    getTrackedEntityAttributesForRelationship(toTei, selectedProgram),
+                    fromTei.geometry(),
+                    toTei.geometry(),
+                    ExtensionsKt.profilePicturePath(fromTei, d2, selectedProgram.uid()),
+                    ExtensionsKt.profilePicturePath(toTei, d2, selectedProgram.uid()),
+                    getTeiDefaultRes(fromTei),
+                    getTeiDefaultRes(toTei)
+            ));
         }
 
         searchTeiModel.setRelationships(relationshipViewModels);
