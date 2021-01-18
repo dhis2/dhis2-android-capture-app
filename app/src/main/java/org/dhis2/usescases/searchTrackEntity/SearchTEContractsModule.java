@@ -7,12 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
-import com.mapbox.geojson.BoundingBox;
-import com.mapbox.geojson.FeatureCollection;
-
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.data.tuples.Trio;
-import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage;
 import org.dhis2.uicomponents.map.model.EventUiComponentModel;
 import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.general.AbstractActivityContracts;
@@ -140,7 +135,7 @@ public class SearchTEContractsModule {
 
         String getProgramColor(String uid);
 
-        Trio<PagedList<SearchTeiModel>, String, Boolean> getMessage(PagedList<SearchTeiModel> list);
+        org.dhis2.data.tuples.Pair<String, Boolean> getMessage(List<SearchTeiModel> list);
 
         HashMap<String, String> getQueryData();
 
