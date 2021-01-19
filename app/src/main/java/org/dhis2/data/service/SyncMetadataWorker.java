@@ -65,7 +65,7 @@ public class SyncMetadataWorker extends Worker {
 
             boolean isMetaOk = true;
             boolean noNetwork = false;
-            String message = "";
+            StringBuilder message = new StringBuilder("");
 
             long init = System.currentTimeMillis();
             try {
@@ -79,11 +79,15 @@ public class SyncMetadataWorker extends Worker {
                 if (!NetworkUtils.isOnline(getApplicationContext()))
                     noNetwork = true;
                 if (e instanceof D2Error) {
-                    message = D2ErrorUtils.getErrorMessage(getApplicationContext(), e);
+                    message.append(D2ErrorUtils.getErrorMessage(getApplicationContext(), e))
+                    .append("\n")
+                    .append(e.toString());
                 } else if(e.getCause() instanceof D2Error){
-                    message = D2ErrorUtils.getErrorMessage(getApplicationContext(), e.getCause());
+                    message.append(D2ErrorUtils.getErrorMessage(getApplicationContext(), e.getCause()))
+                            .append("\n")
+                            .append(e.toString());
                 }else {
-                    message = e.toString();
+                    message.append(e.toString());
                 }
             } finally {
                 presenter.logTimeToFinish(System.currentTimeMillis() - init, METADATA_TIME);
@@ -98,11 +102,11 @@ public class SyncMetadataWorker extends Worker {
             cancelNotification();
 
             if (!isMetaOk)
-                return Result.failure(createOutputData(false, message));
+                return Result.failure(createOutputData(false, message.toString()));
 
             presenter.startPeriodicMetaWork();
 
-            return Result.success(createOutputData(true, message));
+            return Result.success(createOutputData(true, message.toString()));
         } else {
             return Result.failure(createOutputData(false, getApplicationContext().getString(R.string.error_init_session)));
         }
