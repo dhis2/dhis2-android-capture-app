@@ -56,14 +56,10 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
         binding.indicatorsRecycler.adapter = adapter
         // For testing purposes
         activity.chartType.observe(
-            this,
-            Observer { isLineChart: Boolean ->
-                chartType = if (isLineChart) {
-                    ChartType.LINE_CHART
-                } else {
-                    ChartType.BAR_CHART
-                }
-                adapter.notifyDataSetChanged()
+            viewLifecycleOwner,
+            Observer { chartType: ChartType ->
+                this.chartType = chartType
+                presenter.init()
             }
         )
         // For testing purposes

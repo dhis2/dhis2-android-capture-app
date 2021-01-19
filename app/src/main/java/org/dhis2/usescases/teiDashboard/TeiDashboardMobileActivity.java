@@ -25,8 +25,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.material.tabs.TabLayout;
-
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
@@ -49,6 +47,7 @@ import java.lang.reflect.Method;
 
 import javax.inject.Inject;
 
+import dhis2.org.analytics.charts.data.ChartType;
 import timber.log.Timber;
 
 import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM;
@@ -95,7 +94,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     private MutableLiveData<Boolean> filtersShowing;
     private MutableLiveData<String> currentEnrollment;
     private MutableLiveData<Boolean> relationshipMap;
-    private MutableLiveData<Boolean> lineChart; // For testing purposes
+    private MutableLiveData<ChartType> charType; // For testing purposes
     private float elevation = 0f;
 
     public static Intent intent(Context context,
@@ -134,7 +133,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
 
         // For testing purposes
-        lineChart = new MutableLiveData<>(true);
+        charType = new MutableLiveData<>(ChartType.LINE_CHART);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
         binding.setPresenter(presenter);
@@ -554,12 +553,18 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         }
 
         // For testing purposes
-        if (lineChart.getValue()) {
-            popupMenu.getMenu().findItem(R.id.showBarGraph).setVisible(true);
-            popupMenu.getMenu().findItem(R.id.showLineGraph).setVisible(false);
-        } else {
-            popupMenu.getMenu().findItem(R.id.showLineGraph).setVisible(true);
+        if (charType.getValue() == ChartType.BAR_CHART) {
             popupMenu.getMenu().findItem(R.id.showBarGraph).setVisible(false);
+            popupMenu.getMenu().findItem(R.id.showLineGraph).setVisible(true);
+            popupMenu.getMenu().findItem(R.id.showTableGraph).setVisible(true);
+        } else if (charType.getValue() == ChartType.LINE_CHART){
+            popupMenu.getMenu().findItem(R.id.showLineGraph).setVisible(false);
+            popupMenu.getMenu().findItem(R.id.showBarGraph).setVisible(true);
+            popupMenu.getMenu().findItem(R.id.showTableGraph).setVisible(true);
+        } else {
+            popupMenu.getMenu().findItem(R.id.showTableGraph).setVisible(false);
+            popupMenu.getMenu().findItem(R.id.showLineGraph).setVisible(true);
+            popupMenu.getMenu().findItem(R.id.showBarGraph).setVisible(true);
         }
 
         popupMenu.setOnMenuItemClickListener(item -> {
@@ -585,10 +590,13 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     break;
                 // For testing purposes
                 case R.id.showBarGraph:
-                    lineChart.setValue(false);
+                    charType.setValue(ChartType.BAR_CHART);
                     break;
                 case R.id.showLineGraph:
-                    lineChart.setValue(true);
+                    charType.setValue(ChartType.LINE_CHART);
+                    break;
+                case R.id.showTableGraph:
+                    charType.setValue(ChartType.TABLE);
                     break;
                 // For testing purposes
                 case R.id.complete:
@@ -676,7 +684,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     // For testing purposes
-    public LiveData<Boolean> getChartType() {
-        return lineChart;
+    public LiveData<ChartType> getChartType() {
+        return charType;
     }
 }
