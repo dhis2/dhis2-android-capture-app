@@ -6,10 +6,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.R;
+import org.dhis2.data.filter.TeiWorkingListScope;
 import org.dhis2.utils.filters.cat_opt_comb.CatOptCombFilterAdapter;
 import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.filters.sorting.SortingStatus;
-import org.dhis2.utils.filters.workingLists.EventWorkingListItem;
 import org.dhis2.utils.filters.workingLists.TeiWorkingListItem;
 import org.dhis2.utils.filters.workingLists.WorkingListItem;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -79,6 +79,10 @@ public class FilterManager implements Serializable {
     private ObservableField<Integer> eventStatusFiltersApplied;
     private ObservableField<Integer> enrollmentStatusFiltersApplied;
     private ObservableField<Integer> assignedToMeApplied;
+
+    private ObservableField<TeiWorkingListScope> currentWorkingListScope = new ObservableField<>(
+            new TeiWorkingListScope(null, null, null, null, null)
+    );
 
     private FlowableProcessor<FilterManager> filterProcessor;
     private FlowableProcessor<Boolean> ouTreeProcessor;
@@ -480,6 +484,7 @@ public class FilterManager implements Serializable {
         if (currentWorkingList != null) {
             currentWorkingList = null;
             workingList.set(null);
+            currentWorkingListScope.set(new TeiWorkingListScope(null, null, null, null, null));
         }
         filterProcessor.onNext(this);
     }
@@ -532,7 +537,7 @@ public class FilterManager implements Serializable {
         return assignedFilter;
     }
 
-    public ObservableField<Boolean> observeAssignedToMe(){
+    public ObservableField<Boolean> observeAssignedToMe() {
         return observableAssignedToMe;
     }
 
@@ -562,11 +567,10 @@ public class FilterManager implements Serializable {
         if (workingListItem != null) {
             this.currentWorkingList = workingListItem;
             this.workingList.set(currentWorkingList);
-            applyWorkingListFilters();
         } else {
-            clearAllFilters();
             this.currentWorkingList = null;
             this.workingList.set(null);
+            this.currentWorkingListScope.set(null);
         }
         filterProcessor.onNext(this);
     }
@@ -580,49 +584,12 @@ public class FilterManager implements Serializable {
         return currentWorkingList != null;
     }
 
-    private void applyWorkingListFilters() {
-        if (currentWorkingList instanceof TeiWorkingListItem) {
-            applyTeiWorkingList();
-        } else {
-            applyEventWorkingList();
-        }
-
+    public void setWorkingListScope(TeiWorkingListScope scope) {
+        currentWorkingListScope.set(scope);
     }
 
-    private void applyTeiWorkingList() {
-        TeiWorkingListItem teiWorkingList = (TeiWorkingListItem) currentWorkingList;
-        if (teiWorkingList.getEnrollentStatus() != null) {
-            addEnrollmentStatus(false, teiWorkingList.getEnrollentStatus());
-        } else {
-            clearEnrollmentStatus();
-        }
-        if (teiWorkingList.getAssignedToMe() != null) {
-            setAssignedToMe(teiWorkingList.getAssignedToMe());
-        }else{
-            clearAssignToMe();
-        }
-    }
-
-    private void applyEventWorkingList() {
-        EventWorkingListItem eventWorkingListItem = (EventWorkingListItem) currentWorkingList;
-        if (eventWorkingListItem.getAssignedToMe() != null) {
-            setAssignedToMe(eventWorkingListItem.getAssignedToMe());
-        } else {
-            clearAssignToMe();
-        }
-        if (eventWorkingListItem.getEventDatePeriod() != null) {
-
-        } else {
-        }
-        if (eventWorkingListItem.getEventStatus() != null) {
-            addEventStatus(false, eventWorkingListItem.getEventStatus());
-        } else {
-            clearEventStatus();
-        }
-        if (eventWorkingListItem.getOrgUnit() != null) {
-
-        } else {
-        }
+    public ObservableField<TeiWorkingListScope> observeWorkingListScope() {
+        return currentWorkingListScope;
     }
 
     public boolean isFilterActiveForWorkingList(Filters filterType) {

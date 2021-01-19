@@ -12,15 +12,18 @@
 
         <variable
             name="workingListFilter"
-            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.workingLists.TeiWorkingListItem&gt;" />
+            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.workingLists.WorkingListItem&gt;" />
+
+        <variable
+            name="workingListScope"
+            type="androidx.databinding.ObservableField&lt;org.dhis2.data.filter.TeiWorkingListScope&gt;" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:alpha="@{workingListFilter.assignedToMe!=null ? 0.65f : 1.0f}">
-
+        android:alpha="@{workingListScope.isAssignedToMeActive() ? 0.65f : 1.0f}">
         <include
             android:id="@+id/filterLayout"
             layout="@layout/item_header_filter"
@@ -35,6 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:checked="@{filterItem.observeAssignedToMe()}"
+            android:enabled="@{!workingListScope.isAssignedToMeActive()}"
             android:onCheckedChanged="@{(switch, checked)->filterItem.activate(checked)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

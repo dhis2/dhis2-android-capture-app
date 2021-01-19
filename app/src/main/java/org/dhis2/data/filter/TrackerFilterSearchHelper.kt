@@ -1,10 +1,10 @@
 package org.dhis2.data.filter
 
-import javax.inject.Inject
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
+import javax.inject.Inject
 
 class TrackerFilterSearchHelper @Inject constructor(
     private val filterRepository: FilterRepository,
@@ -31,6 +31,7 @@ class TrackerFilterSearchHelper @Inject constructor(
         repository: TrackedEntityInstanceQueryCollectionRepository
     ): TrackedEntityInstanceQueryCollectionRepository {
         return repository
+            .withFilter { applyWorkingList(it) }
             .withFilter { applyEnrollmentStatusFilter(it) }
             .withFilter { applyEventStatusFilter(it) }
             .withFilter { applyOrgUnitFilter(it) }
@@ -39,6 +40,23 @@ class TrackerFilterSearchHelper @Inject constructor(
             .withFilter { applyEnrollmentDateFilter(it) }
             .withFilter { applyAssignedToMeFilter(it) }
             .withFilter { applySorting(it) }
+    }
+
+    private fun applyWorkingList(
+        teiQuery: TrackedEntityInstanceQueryCollectionRepository
+    ): TrackedEntityInstanceQueryCollectionRepository {
+        return if (filterManager.workingListActive()) {
+            filterRepository.applyWorkingList(
+                teiQuery,
+                filterManager.currentWorkingList()
+            ).also {
+                filterManager.setWorkingListScope(
+                    it.scope.mapToWorkingListScope(filterRepository.resources)
+                )
+            }
+        } else {
+            teiQuery
+        }
     }
 
     private fun applyEnrollmentStatusFilter(

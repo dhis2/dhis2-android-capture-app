@@ -6,7 +6,8 @@ import org.hisp.dhis.android.core.event.EventStatus
 
 sealed class WorkingListItem(
     open val uid: String,
-    open val label: String
+    open val label: String,
+    open val assignedToMe: Boolean?
 ) {
     private var isActive: Boolean = false
 
@@ -41,14 +42,14 @@ data class TeiWorkingListItem(
     override val uid: String,
     override val label: String,
     val enrollentStatus: EnrollmentStatus?,
-    val assignedToMe: Boolean?
-) : WorkingListItem(uid, label)
+    override val assignedToMe: Boolean?
+) : WorkingListItem(uid, label, assignedToMe)
 
 data class EventWorkingListItem(
     override val uid: String,
     override val label: String,
-    val assignedToMe: Boolean?,
+    override val assignedToMe: Boolean?,
     val eventDatePeriod: String?,
     val eventStatus: EventStatus?,
     val orgUnit: String?
-) : WorkingListItem(uid, label)
+) : WorkingListItem(uid, label, assignedToMe)

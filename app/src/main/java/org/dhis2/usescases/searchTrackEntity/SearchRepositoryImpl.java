@@ -149,6 +149,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (!searchParametersModel.equals(savedSearchParameters) || !FilterManager.getInstance().sameFilters(savedFilters)) {
             trackedEntityInstanceQuery = getFilteredRepository(searchParametersModel);
         } else {
+            getFilteredRepository(searchParametersModel);
             allowCache = true;
         }
 

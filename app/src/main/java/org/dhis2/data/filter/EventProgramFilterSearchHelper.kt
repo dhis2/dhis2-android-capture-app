@@ -1,10 +1,10 @@
 package org.dhis2.data.filter
 
-import javax.inject.Inject
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
 import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.program.Program
+import javax.inject.Inject
 
 class EventProgramFilterSearchHelper @Inject constructor(
     private val filterRepository: FilterRepository,
@@ -23,11 +23,22 @@ class EventProgramFilterSearchHelper @Inject constructor(
         repository: EventCollectionRepository
     ): EventCollectionRepository {
         return repository
+            .withFilter { applyWorkingList(it) }
             .withFilter { applyOrgUnitFilter(it) }
             .withFilter { applyStateFilter(it) }
             .withFilter { applyDateFilter(it) }
             .withFilter { applyAssignedToMeFilter(it) }
             .withFilter { applySorting(it) }
+    }
+
+    private fun applyWorkingList(
+        eventRepository: EventCollectionRepository
+    ): EventCollectionRepository {
+        return if (filterManager.workingListActive()) {
+            filterRepository.applyWorkingList(eventRepository, filterManager.currentWorkingList())
+        } else {
+            eventRepository
+        }
     }
 
     private fun applyOrgUnitFilter(

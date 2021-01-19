@@ -18,6 +18,7 @@ import org.dhis2.utils.filters.WorkingListFilter
 import org.dhis2.utils.filters.sorting.SortingItem
 import org.dhis2.utils.filters.workingLists.EventWorkingListItem
 import org.dhis2.utils.filters.workingLists.TeiWorkingListItem
+import org.dhis2.utils.filters.workingLists.WorkingListItem
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -36,7 +37,7 @@ import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQuer
 
 class FilterRepository @Inject constructor(
     private val d2: D2,
-    private val resources: ResourceManager
+    val resources: ResourceManager
 ) {
 
     private val observableSortingInject = ObservableField<SortingItem>()
@@ -478,7 +479,12 @@ class FilterRepository @Inject constructor(
         return mutableListOf<FilterItem>().apply {
             val workingLists =
                 d2.eventModule().eventFilters().byProgram().eq(program.uid()).blockingGet().map {
-                    EventWorkingListItem(it.uid(), it.displayName() ?: "", false, null, null, null)
+                    EventWorkingListItem(it.uid(),
+                        it.displayName() ?: "",
+                        it.eventQueryCriteria()?.assignedUserMode() == AssignedUserMode.CURRENT,
+                        null,
+                        it.eventQueryCriteria()?.eventStatus(),
+                        it.eventQueryCriteria()?.organisationUnit())
                 }
             if (workingLists.isNotEmpty()) {
                 add(
@@ -552,5 +558,24 @@ class FilterRepository @Inject constructor(
                 )
             }
         }
+    }
+
+    fun applyWorkingList(
+        teiQuery: TrackedEntityInstanceQueryCollectionRepository,
+        currentWorkingList: WorkingListItem?
+    ): TrackedEntityInstanceQueryCollectionRepository {
+        return currentWorkingList?.let {
+            teiQuery.byTrackedEntityInstanceFilter().eq(it.uid)
+        }?:teiQuery
+    }
+
+    fun applyWorkingList(
+        eventQuery: EventCollectionRepository,
+        currentWorkingList: WorkingListItem?
+    ):EventCollectionRepository {
+        return currentWorkingList?.let {
+            //TODO: Should be EventQueryCollectionRepository?
+            eventQuery
+        }?:eventQuery
     }
 }

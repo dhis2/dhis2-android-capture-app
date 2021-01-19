@@ -47,7 +47,6 @@ import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.workingLists.TeiFilterToWorkingListItemMapper;
-import org.dhis2.utils.filters.workingLists.WorkingListItem;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
 import org.hisp.dhis.android.core.D2;
