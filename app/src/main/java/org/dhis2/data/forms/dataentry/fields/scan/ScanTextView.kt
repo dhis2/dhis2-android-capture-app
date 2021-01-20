@@ -58,9 +58,11 @@ class ScanTextView @JvmOverloads constructor(
     }
 
     fun setLayoutData(isBgTransparent: Boolean) {
-        binding = when {
-            isBgTransparent -> ScanTextViewBinding.inflate(inflater, this, true)
-            else -> ScanTextViewAccentBinding.inflate(inflater, this, true)
+        if (!::binding.isInitialized) {
+            binding = when {
+                isBgTransparent -> ScanTextViewBinding.inflate(inflater, this, true)
+                else -> ScanTextViewAccentBinding.inflate(inflater, this, true)
+            }
         }
 
         this.editText = binding.root.findViewById(R.id.input_editText)
@@ -216,7 +218,6 @@ class ScanTextView @JvmOverloads constructor(
 
     fun setViewModel(viewModel: ScanTextViewModel) {
         this.viewModel = viewModel
-
         setLayoutData(viewModel.isBackgroundTransparent())
 
         viewModel.apply {
