@@ -25,8 +25,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.material.tabs.TabLayout;
-
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
@@ -49,6 +47,7 @@ import java.lang.reflect.Method;
 
 import javax.inject.Inject;
 
+import dhis2.org.analytics.charts.data.ChartType;
 import timber.log.Timber;
 
 import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM;
@@ -473,6 +472,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         if (programTheme != -1) {
             presenter.saveProgramTheme(programTheme);
             binding.toolbar.setBackgroundColor(programColor);
+            binding.navigationBar.setIconsColor(programColor);
         } else {
             presenter.removeProgramTheme();
             int colorPrimary;
@@ -492,6 +492,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     break;
             }
             binding.toolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
+            binding.navigationBar.setIconsColor(ContextCompat.getColor(this, colorPrimary));
         }
 
         binding.executePendingBindings();

@@ -25,16 +25,14 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         val activity = context as TeiDashboardMobileActivity
-        if (((context.applicationContext) as App).dashboardComponent() != null) {
-            ((context.applicationContext) as App).dashboardComponent()!!
-                .plus(
-                    IndicatorsModule(
-                        activity.programUid,
-                        activity.teiUid, this
-                    )
+        ((context.applicationContext) as App).dashboardComponent()!!
+            .plus(
+                IndicatorsModule(
+                    activity.programUid,
+                    activity.teiUid, this
                 )
-                .inject(this)
-        }
+            )
+            .inject(this)
     }
 
     override fun onCreateView(

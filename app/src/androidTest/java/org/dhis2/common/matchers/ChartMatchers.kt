@@ -3,6 +3,8 @@ package org.dhis2.common.matchers
 import android.view.View
 import androidx.annotation.NonNull
 import androidx.test.espresso.matcher.BoundedMatcher
+import com.evrencoskun.tableview.TableView
+import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import dhis2.org.analytics.charts.data.ChartType
 import org.hamcrest.Description
@@ -21,6 +23,8 @@ class ChartMatchers {
                 override fun matchesSafely(view: View): Boolean {
                     return when (chartType){
                         ChartType.LINE_CHART -> view is LineChart
+                        ChartType.BAR_CHART -> view is BarChart
+                        ChartType.TABLE -> view is TableView
                     }
                 }
             }

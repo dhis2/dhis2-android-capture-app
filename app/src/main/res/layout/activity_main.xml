@@ -150,16 +150,27 @@
                 <FrameLayout
                     android:id="@+id/fragment_container"
                     android:layout_width="0dp"
-                    tools:layout="@layout/fragment_program"
                     android:layout_height="0dp"
                     android:clipToPadding="false"
                     android:elevation="1dp"
+                    android:background="@drawable/ic_front_home_backdrop_bg"
+                    android:paddingBottom="56dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/toolbar"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintVertical_bias="0.0"
+                    tools:layout="@layout/fragment_program" />
+
+                <org.dhis2.utils.customviews.DhisBottomNavigationBar
+                    android:id="@+id/navigationBar"
+                    style="@style/DhisBottomNavigationView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:menu="@menu/navigation_home_menu" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!--End of Main Content-->
