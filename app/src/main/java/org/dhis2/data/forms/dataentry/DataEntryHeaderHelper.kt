@@ -89,6 +89,10 @@ class DataEntryHeaderHelper(
             dataEntryAdapter.getSectionPosition(section.uid())?.let {
                 loadHeader(dataEntryAdapter.getSectionForPosition(it))
             }
+        } ?: run {
+            if (dataEntryAdapter.getSectionSize() > 1) {
+                loadHeader(dataEntryAdapter.getSectionForPosition(0))
+            }
         }
     }
 }
