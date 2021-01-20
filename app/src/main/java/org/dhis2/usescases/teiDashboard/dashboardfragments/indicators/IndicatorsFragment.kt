@@ -6,8 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
-import dhis2.org.analytics.charts.data.ChartType
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
@@ -23,24 +21,18 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
 
     private lateinit var binding: FragmentIndicatorsBinding
     private lateinit var adapter: AnalyticsAdapter
-    // For testing purposes
-    private lateinit var activity: TeiDashboardMobileActivity
-    private lateinit var chartType: ChartType
-    // For testing purposes
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        activity = context as TeiDashboardMobileActivity // For testing purposes
-        if (((context.applicationContext) as App).dashboardComponent() != null) {
-            ((context.applicationContext) as App).dashboardComponent()!!
-                .plus(
-                    IndicatorsModule(
-                        activity.programUid,
-                        activity.teiUid, this
-                    )
+        val activity = context as TeiDashboardMobileActivity
+        ((context.applicationContext) as App).dashboardComponent()!!
+            .plus(
+                IndicatorsModule(
+                    activity.programUid,
+                    activity.teiUid, this
                 )
-                .inject(this)
-        }
+            )
+            .inject(this)
     }
 
     override fun onCreateView(
@@ -54,15 +46,6 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
         )
         adapter = AnalyticsAdapter(requireContext())
         binding.indicatorsRecycler.adapter = adapter
-        // For testing purposes
-        activity.chartType.observe(
-            viewLifecycleOwner,
-            Observer { chartType: ChartType ->
-                this.chartType = chartType
-                presenter.init()
-            }
-        )
-        // For testing purposes
         return binding.root
     }
 
@@ -87,7 +70,4 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
             binding.emptyIndicators.visibility = View.VISIBLE
         }
     }
-
-    // For testing purposes
-    override fun getChartType() = chartType
 }

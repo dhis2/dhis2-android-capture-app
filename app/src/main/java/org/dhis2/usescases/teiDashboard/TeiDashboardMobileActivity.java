@@ -94,7 +94,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     private MutableLiveData<Boolean> filtersShowing;
     private MutableLiveData<String> currentEnrollment;
     private MutableLiveData<Boolean> relationshipMap;
-    private MutableLiveData<ChartType> charType; // For testing purposes
     private float elevation = 0f;
 
     public static Intent intent(Context context,
@@ -131,9 +130,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         currentEnrollment = new MutableLiveData<>();
         relationshipMap = new MutableLiveData<>(false);
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
-
-        // For testing purposes
-        charType = new MutableLiveData<>(ChartType.LINE_CHART);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
         binding.setPresenter(presenter);
@@ -552,21 +548,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             }
         }
 
-        // For testing purposes
-        if (charType.getValue() == ChartType.BAR_CHART) {
-            popupMenu.getMenu().findItem(R.id.showBarGraph).setVisible(false);
-            popupMenu.getMenu().findItem(R.id.showLineGraph).setVisible(true);
-            popupMenu.getMenu().findItem(R.id.showTableGraph).setVisible(true);
-        } else if (charType.getValue() == ChartType.LINE_CHART){
-            popupMenu.getMenu().findItem(R.id.showLineGraph).setVisible(false);
-            popupMenu.getMenu().findItem(R.id.showBarGraph).setVisible(true);
-            popupMenu.getMenu().findItem(R.id.showTableGraph).setVisible(true);
-        } else {
-            popupMenu.getMenu().findItem(R.id.showTableGraph).setVisible(false);
-            popupMenu.getMenu().findItem(R.id.showLineGraph).setVisible(true);
-            popupMenu.getMenu().findItem(R.id.showBarGraph).setVisible(true);
-        }
-
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
@@ -588,17 +569,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 case R.id.showTimeline:
                     groupByStage.setValue(false);
                     break;
-                // For testing purposes
-                case R.id.showBarGraph:
-                    charType.setValue(ChartType.BAR_CHART);
-                    break;
-                case R.id.showLineGraph:
-                    charType.setValue(ChartType.LINE_CHART);
-                    break;
-                case R.id.showTableGraph:
-                    charType.setValue(ChartType.TABLE);
-                    break;
-                // For testing purposes
                 case R.id.complete:
                     presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.COMPLETED);
                     break;
@@ -681,10 +651,5 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     public void onRelationshipMapLoaded() {
         binding.toolbarProgress.hide();
-    }
-
-    // For testing purposes
-    public LiveData<ChartType> getChartType() {
-        return charType;
     }
 }
