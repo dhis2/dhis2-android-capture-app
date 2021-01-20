@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.work.Data;
@@ -23,6 +24,9 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Calendar;
 
 import javax.inject.Inject;
@@ -80,14 +84,18 @@ public class SyncMetadataWorker extends Worker {
                     noNetwork = true;
                 if (e instanceof D2Error) {
                     message.append(D2ErrorUtils.getErrorMessage(getApplicationContext(), e))
-                    .append("\n")
-                    .append(e.toString());
-                } else if(e.getCause() instanceof D2Error){
+                            .append("\n\n")
+                            .append(errorStackTrace(((D2Error) e).originalException()).split("\n\t")[0])
+                            .append("\n\n")
+                            .append(errorStackTrace(e).split("\n\t")[0]);
+                } else if (e.getCause() instanceof D2Error) {
                     message.append(D2ErrorUtils.getErrorMessage(getApplicationContext(), e.getCause()))
-                            .append("\n")
-                            .append(e.toString());
-                }else {
-                    message.append(e.toString());
+                            .append("\n\n")
+                            .append(errorStackTrace(((D2Error) e.getCause()).originalException()).split("\n\t")[0])
+                            .append("\n\n")
+                            .append(e.toString().split("\n\t")[0]);
+                } else {
+                    message.append(e.toString().split("\n\t")[0]);
                 }
             } finally {
                 presenter.logTimeToFinish(System.currentTimeMillis() - init, METADATA_TIME);
@@ -117,6 +125,14 @@ public class SyncMetadataWorker extends Worker {
                 .putBoolean(METADATA_STATE, state)
                 .putString(METADATA_MESSAGE, message)
                 .build();
+    }
+
+    private String errorStackTrace(@Nullable Exception exception){
+        if(exception == null)
+            return "";
+        Writer writer = new StringWriter();
+        exception.printStackTrace(new PrintWriter(writer));
+        return writer.toString();
     }
 
 
