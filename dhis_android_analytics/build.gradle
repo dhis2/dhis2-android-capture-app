@@ -64,6 +64,8 @@ dependencies {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
 
+    implementation project(':tableview')
+
     //Graphs
     api 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 

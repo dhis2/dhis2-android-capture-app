@@ -159,6 +159,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void init(String trackedEntityType) {
         this.trackedEntityType = trackedEntityType;
         this.trackedEntity = searchRepository.getTrackedEntityType(trackedEntityType).blockingFirst();
+        initAssignmentFilter();
         compositeDisposable.add(
                 searchRepository.programsWithRegistration(trackedEntityType)
                         .subscribeOn(schedulerProvider.io())
@@ -792,23 +793,19 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void downloadTei(String teiUid, String enrollmentUid) {
-        compositeDisposable.add(
-                d2.trackedEntityModule().trackedEntityInstanceDownloader()
-                        .byUid().in(Collections.singletonList(teiUid))
-                        .overwrite(true)
-                        .download()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                view.downloadProgress(),
-                                Timber::d,
-                                () -> {
-                                    if (d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingExists()) {
-                                        openDashboard(teiUid, enrollmentUid);
-                                    } else {
-                                        view.couldNotDownload(trackedEntity.displayName());
-                                    }
-                                })
+        compositeDisposable.add(searchRepository.downloadTei(teiUid)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                        view.downloadProgress(),
+                        Timber::d,
+                        () -> {
+                            if (d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingExists()) {
+                                openDashboard(teiUid, enrollmentUid);
+                            } else {
+                                view.couldNotDownload(trackedEntity.displayName());
+                            }
+                        })
         );
     }
 
