@@ -28,6 +28,7 @@ class ChartsRepositoryImpl(private val d2: D2) : ChartsRepository {
                 Graph(
                     "${period.name}-${dataElement.displayFormName()}",
                     false,
+                    dataElement.displayFormName()?:dataElement.uid(),
                     coordinates,
                     "",
                     programStage.periodType() ?: PeriodType.Daily,
