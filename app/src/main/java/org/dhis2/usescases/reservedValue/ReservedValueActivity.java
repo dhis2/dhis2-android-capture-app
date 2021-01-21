@@ -10,6 +10,7 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.hisp.dhis.android.core.trackedentity.ReservedValueSummary;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ import javax.inject.Inject;
 
 import androidx.databinding.DataBindingUtil;
 
-public class ReservedValueActivity extends ActivityGlobalAbstract implements ReservedValueContracts.View {
+public class ReservedValueActivity extends ActivityGlobalAbstract implements ReservedValueView {
 
     private ActivityReservedValueBinding reservedBinding;
     private ReservedValueAdapter adapter;
@@ -32,15 +33,15 @@ public class ReservedValueActivity extends ActivityGlobalAbstract implements Res
 
         reservedBinding = DataBindingUtil.setContentView(this, R.layout.activity_reserved_value);
         reservedBinding.setVariable(BR.presenter, presenter);
-        adapter = new ReservedValueAdapter(presenter);
+        adapter = new ReservedValueAdapter();
     }
 
     @Override
-    public void setReservedValues(List<ReservedValueSummary> reservedValueModels) {
+    public void setReservedValues(@NotNull List<ReservedValueModel> reservedValueModels) {
         if (reservedBinding.recycler.getAdapter() == null) {
             reservedBinding.recycler.setAdapter(adapter);
         }
-        adapter.setDataElements(reservedValueModels);
+        adapter.submitList(reservedValueModels);
     }
 
     @Override
