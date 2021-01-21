@@ -20,12 +20,13 @@ class ChartViewHolder(
                 inflate(R.menu.chart_menu)
                 setOnMenuItemClickListener {
                     loadChart(
-                        chart,
-                        when (it.itemId) {
-                            R.id.showBarGraph -> ChartType.BAR_CHART
-                            R.id.showTableGraph -> ChartType.TABLE
-                            R.id.showTableValue -> ChartType.SINGLE_VALUE
-                            else -> ChartType.LINE_CHART
+                        chart.apply {
+                            chartType = when (it.itemId) {
+                                R.id.showBarGraph -> ChartType.BAR_CHART
+                                R.id.showTableGraph -> ChartType.TABLE
+                                R.id.showTableValue -> ChartType.SINGLE_VALUE
+                                else -> ChartType.LINE_CHART
+                            }
                         }
                     )
                     true
@@ -33,21 +34,18 @@ class ChartViewHolder(
                 show()
             }
         }
-        loadChart(chart, ChartType.LINE_CHART)
+        loadChart(chart)
     }
 
-    private fun loadChart(
-        chart: ChartModel,
-        chartType: ChartType
-    ) {
-        if (chartType == ChartType.SINGLE_VALUE) {
-            binding.chartTitle.visibility = View.INVISIBLE
+    private fun loadChart(chart: ChartModel) {
+        binding.chartTitle.visibility = if (chart.shouldDisplayTitle()) {
+            View.VISIBLE
         } else {
-            binding.chartTitle.visibility = View.VISIBLE
+            View.INVISIBLE
         }
 
         val chartView = chart.graph.toChartBuilder()
-            .withType(chartType)
+            .withType(chart.chartType)
             .withGraphData(chart.graph)
             .build().getChartView(binding.root.context)
         binding.chartContainer.removeAllViews()
