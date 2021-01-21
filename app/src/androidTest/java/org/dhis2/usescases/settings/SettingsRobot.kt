@@ -12,7 +12,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
-import org.dhis2.usescases.reservedValue.ReservedValueViewHolder
+import org.dhis2.usescases.reservedValue.ReservedValueAdapter
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 
@@ -97,7 +97,7 @@ class SettingsRobot : BaseRobot() {
                 .perform(click())
                 .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, click()))*/
         onView(allOf(withId(R.id.recycler), hasDescendant(withId(R.id.refill))))
-            .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, click()))
+            .perform(actionOnItemAtPosition<ReservedValueAdapter.ReservedValueViewHolder>(position, click()))
     }
 
     fun checkReservedValuesWasRefill(position: Int) {
