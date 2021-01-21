@@ -26,6 +26,8 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
 
 import org.dhis2.App;
+import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
@@ -47,7 +49,6 @@ import java.lang.reflect.Method;
 
 import javax.inject.Inject;
 
-import dhis2.org.analytics.charts.data.ChartType;
 import timber.log.Timber;
 
 import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM;
@@ -182,21 +183,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         });
     }
 
-    private void setBadgeColors() {
-        /*if (tab.getPosition() == getLastTabPosition()) {
-            BadgeDrawable badge = tab.getOrCreateBadge();
-            if (badge.hasNumber() && badge.getNumber() > 0) {
-                badge.setBackgroundColor(Color.WHITE);
-            }
-        }*/
-        /*if (tab.getPosition() == getLastTabPosition()) {
-            BadgeDrawable badge = tab.getOrCreateBadge();
-            if (badge.hasNumber() && badge.getNumber() > 0) {
-                badge.setBackgroundColor(ContextCompat.getColor(TeiDashboardMobileActivity.this, R.color.unselected_tab_badge_color));
-            }
-        }*/
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -208,7 +194,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             }
         }
         currentOrientation = OrientationUtilsKt.isLandscape() ? 1 : 0;
-
 
         if (adapter == null) {
             restoreAdapter(programUid);

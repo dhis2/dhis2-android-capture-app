@@ -10,6 +10,7 @@ import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.usescases.teiDashboard.DashboardRepository
+import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 
 @PerFragment
@@ -27,7 +28,8 @@ class IndicatorsModule(
         dashboardRepository: DashboardRepository,
         ruleEngineRepository: RuleEngineRepository,
         schedulerProvider: SchedulerProvider,
-        charts: Charts?
+        charts: Charts?,
+        resourceManager: ResourceManager
     ): IndicatorsPresenter {
         return IndicatorsPresenter(
             d2,
@@ -35,7 +37,8 @@ class IndicatorsModule(
             dashboardRepository,
             ruleEngineRepository,
             schedulerProvider, view,
-            charts
+            charts,
+            resourceManager
         )
     }
 
