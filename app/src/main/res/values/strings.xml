@@ -764,8 +764,6 @@
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Error information</string>
     <string name="metada_first_sync_error">We found an error when syncing with your server. Share the error with your system administrator if possible.</string>
     <string name="error_init_session">We could not init the session with your user</string>
-    <string name="metada_first_sync_error">We found an error when syncing with your server. Share the error with your system administrator if possible.</string>
-    <string name="error_init_session">We could not init the session with your user</string>
     <string name="enrollment_date_edition_warning">There are planned events that won\'t be re-scheduled</string>
     <string name="jira_issue_sent">Issue Sent</string>
     <string name="jira_issue_sent_error">Error sending issue</string>
