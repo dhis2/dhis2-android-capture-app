@@ -177,17 +177,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 }, Timber::d
                         ));
 
-        compositeDisposable.add(
-                searchRepository.getTrackedEntityType(trackedEntityType)
-                        .map(teiType -> teiType.featureType() != null ? teiType.featureType() : FeatureType.NONE)
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                view.featureType(),
-                                Timber::d
-                        )
-        );
-
         compositeDisposable.add(currentProgram
                 .flatMap(programUid -> {
                     if (programUid.isEmpty())
