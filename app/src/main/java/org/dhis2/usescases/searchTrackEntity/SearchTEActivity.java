@@ -933,7 +933,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         org.dhis2.data.tuples.Pair<String, Boolean> data = presenter.getMessage(trackerMapData.getTeiModels());
         if (data.val0().isEmpty()) {
             binding.messageContainer.setVisibility(View.GONE);
-            binding.mapViewLayout.setVisibility(View.VISIBLE);
+            binding.mapView.setVisibility(View.VISIBLE);
 
             List<CarouselItemModel> allItems = new ArrayList<>();
             allItems.addAll(trackerMapData.getTeiModels());
@@ -955,7 +955,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         } else {
             binding.messageContainer.setVisibility(View.VISIBLE);
             binding.message.setText(data.val0());
-            binding.mapViewLayout.setVisibility(View.GONE);
+            binding.mapView.setVisibility(View.GONE);
         }
         if (!trackerMapData.getTeiModels().isEmpty() && !data.val1()) {
             showHideFilter();
