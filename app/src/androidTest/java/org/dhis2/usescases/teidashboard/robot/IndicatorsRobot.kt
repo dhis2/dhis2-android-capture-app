@@ -53,7 +53,7 @@ class IndicatorsRobot : BaseRobot() {
                 allOf(
                     isDisplayed(), isNotEmpty(),
                     atPosition(
-                        1,
+                        2,
                         hasDescendant(
                             allOf(
                                 withText(weightIndicator),
