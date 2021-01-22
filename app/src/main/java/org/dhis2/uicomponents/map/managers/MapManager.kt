@@ -15,6 +15,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
+import org.dhis2.Bindings.dp
 import org.dhis2.R
 import org.dhis2.uicomponents.map.camera.initCameraToViewAllElements
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
@@ -63,10 +64,11 @@ abstract class MapManager(val mapView: MapView) {
         }
     }
 
-    private fun setUi(){
+    private fun setUi() {
         map?.apply {
             ContextCompat.getDrawable(mapView.context, R.drawable.ic_compass)?.let {
                 uiSettings.setCompassImage(it)
+                uiSettings.setCompassMargins(8.dp, 56.dp, 7.dp, 0.dp)
             }
         }
     }
