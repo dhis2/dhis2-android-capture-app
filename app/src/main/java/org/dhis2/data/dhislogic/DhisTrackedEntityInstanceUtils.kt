@@ -14,10 +14,10 @@ class DhisTrackedEntityInstanceUtils @Inject constructor(val d2: D2) {
             .byTrackedEntityInstanceUids(trackedEntityInstanceUids)
             .byProgramUid().eq(program.uid())
 
-        return programEventsRepository
+        return !programEventsRepository
             .byStatus().eq(EventStatus.OVERDUE)
             .blockingIsEmpty() ||
-            programEventsRepository
+            !programEventsRepository
                 .byStatus().eq(EventStatus.SCHEDULE)
                 .byDueDate().before(Date())
                 .blockingIsEmpty()

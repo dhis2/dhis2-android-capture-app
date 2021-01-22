@@ -69,7 +69,7 @@ public interface AppComponent {
     CrashReportController injectCrashReportController();
 
     PreferenceProvider preferenceProvider();
-  
+
     WorkManagerController workManagerController();
 
     MatomoAnalyticsController matomoController();
