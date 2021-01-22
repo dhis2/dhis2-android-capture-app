@@ -12,8 +12,6 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 
-import javax.annotation.Nonnull;
-
 /**
  * QUADRAM. Created by frodriguez on 1/24/2018.
  */
@@ -65,7 +63,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
                 fieldRendering(), colorByLegend());
     }
 
-    @Nonnull
+   @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),

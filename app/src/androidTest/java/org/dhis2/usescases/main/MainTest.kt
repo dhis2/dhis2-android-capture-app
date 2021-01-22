@@ -3,8 +3,8 @@ package org.dhis2.usescases.main
 import android.Manifest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.common.filters.filterRobot
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.login.loginRobot
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -24,7 +24,7 @@ class MainTest : BaseTest() {
         super.setUp()
     }
 
-    @Test
+  @Test
     fun checkHomeScreenRecyclerviewHasElements() {
         startActivity()
         homeRobot {
@@ -35,22 +35,53 @@ class MainTest : BaseTest() {
     @Test
     fun shouldRedirectToLoginIfClickOnLogOut() {
         setupCredentials()
-        enableIntents()
         startActivity()
+        enableIntents()
 
         homeRobot {
             clickOnNavigationDrawerMenu()
             clickOnLogout()
             checkLogInIsLaunched()
         }
+    }
 
-        loginRobot {
-            checkUsernameFieldIsClear()
-            checkPasswordFieldIsClear()
+    @Test
+    fun shouldNavigateToHomeWhenBackPressed() {
+        setupCredentials()
+        startActivity()
+
+        homeRobot {
+            clickOnNavigationDrawerMenu()
+            clickOnSettings()
+            pressBack()
+            checkHomeIsDisplayed()
         }
     }
 
-    fun startActivity() {
+    @Test
+    fun checkDateFilterSetInitialDateWhenOpenedAgain(){
+        setupCredentials()
+        startActivity()
+
+        homeRobot {
+            openFilters()
+        }
+
+        filterRobot {
+            openDateFilter()
+            clickOnFromToDateOption()
+            selectDate(2020,6,15)
+            acceptDateSelected()
+            selectDate(2020,11,7)
+            acceptDateSelected()
+            clickOnFromToDateOption()
+            checkDate(2020,6,15)
+            acceptDateSelected()
+            checkDate(2020,11,7)
+        }
+    }
+
+    private fun startActivity() {
         rule.launchActivity(null)
     }
 }

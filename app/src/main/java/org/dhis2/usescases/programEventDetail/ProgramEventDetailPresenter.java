@@ -4,10 +4,14 @@ import androidx.annotation.NonNull;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
+import org.dhis2.data.prefs.Preference;
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.filters.FilterManager;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Unit;
+import org.hisp.dhis.android.core.program.Program;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -25,23 +29,26 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     private final ProgramEventDetailRepository eventRepository;
     private final SchedulerProvider schedulerProvider;
     private final FilterManager filterManager;
+    private final PreferenceProvider preferences;
     private ProgramEventDetailContract.View view;
     CompositeDisposable compositeDisposable;
     private FlowableProcessor<Unit> listDataProcessor;
 
     //Search fields
-    FlowableProcessor<Pair<String, LatLng>> eventInfoProcessor;
+    FlowableProcessor<String> eventInfoProcessor;
     FlowableProcessor<Unit> mapProcessor;
 
     public ProgramEventDetailPresenter(
             ProgramEventDetailContract.View view,
             @NonNull ProgramEventDetailRepository programEventDetailRepository,
             SchedulerProvider schedulerProvider,
-            FilterManager filterManager) {
+            FilterManager filterManager,
+            PreferenceProvider preferenceProvider) {
         this.view = view;
         this.eventRepository = programEventDetailRepository;
         this.schedulerProvider = schedulerProvider;
         this.filterManager = filterManager;
+        this.preferences = preferenceProvider;
         eventInfoProcessor = PublishProcessor.create();
         mapProcessor = PublishProcessor.create();
         compositeDisposable = new CompositeDisposable();
@@ -178,12 +185,11 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
         compositeDisposable.add(
                 eventInfoProcessor
-                        .flatMap(eventInfo -> eventRepository.getInfoForEvent(eventInfo.val0())
-                                .map(eventData -> Pair.create(eventData, eventInfo.val1())))
+                        .flatMap(eventRepository::getInfoForEvent)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                view::setEventInfo,
+                                view::updateEventCarouselItem,
                                 throwable -> view.renderError(throwable.getMessage())
                         ));
 
@@ -237,8 +243,11 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
-    public void getEventInfo(String eventUid, LatLng latLng) {
-        eventInfoProcessor.onNext( Pair.create(eventUid, latLng));
+    public void getEventInfo(String eventUid) {
+        if(preferences.getBoolean(Preference.EVENT_COORDINATE_CHANGED,false)){
+            getMapData();
+        }
+        eventInfoProcessor.onNext(eventUid);
     }
 
     @Override
@@ -288,6 +297,18 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void filterCatOptCombo(String selectedCatOptionCombo) {
+        FilterManager.getInstance().addCatOptCombo(
+                eventRepository.getCatOptCombo(selectedCatOptionCombo)
+        );
+    }
 
+    @Override
+    public Program getProgram() {
+        return eventRepository.program().blockingFirst();
+    }
+
+    @Override
+    public FeatureType getFeatureType(){
+        return eventRepository.featureType().blockingGet();
     }
 }

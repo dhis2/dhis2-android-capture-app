@@ -15,11 +15,13 @@ import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.databinding.ActivityEventScheduledBinding
 import org.dhis2.databinding.WidgetDatepickerBinding
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
+import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.DateUtils
+import org.dhis2.utils.EventCreationType
+import org.dhis2.utils.EventMode
 import org.dhis2.utils.customviews.PeriodDialog
-import org.hisp.dhis.android.core.category.CategoryCombo
-import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.PeriodType
@@ -52,7 +54,8 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                 ScheduledEventModule(
                     intent.extras!!.getString(
                         EXTRA_EVENT_UID
-                    )!!
+                    )!!,
+                    this
                 )
             )
             ).inject(this)
@@ -63,7 +66,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
 
     override fun onResume() {
         super.onResume()
-        presenter.init(this)
+        presenter.init()
     }
 
     override fun onPause() {
@@ -292,37 +295,33 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
         datePickerDialog.show()
     }
 
-    override fun setCatCombo(
-        catCombo: CategoryCombo,
-        selectedOptions: HashMap<String, CategoryOption>
-    ) {
-        binding.catComboLayout.removeAllViews()
+    override fun openInitialActivity() {
+        val bundle = EventInitialActivity.getBundle(
+            program.uid(),
+            event.uid(),
+            EventCreationType.DEFAULT.name,
+            presenter.getEventTei(),
+            stage.periodType(),
+            presenter.getEnrollment().organisationUnit(),
+            stage.uid(),
+            event.enrollment(),
+            stage.standardInterval() ?: 0,
+            presenter.getEnrollment().status()
+        )
+        startActivity(Intent(this, EventInitialActivity::class.java).apply { putExtras(bundle) })
+        finish()
+    }
 
-        /*for (category in catCombo.categories()!!) {
-            val catSelectorBinding = CategorySelectorBinding.inflate(LayoutInflater.from(this))
-            catSelectorBinding.catCombLayout.setHint(category.displayName())
-            catSelectorBinding.catCombo.setOnClickListener(
-                    { view ->
-                        CategoryOptionPopUp.getInstance()
-                                .setCategory(category)
-                                .setDate(event.dueDate())
-                                .setOnClick { item ->
-                                    if (item != null)
-                                        selectedOptions[category.uid()] = item
-                                    else
-                                        selectedOptions.remove(category.uid())
-                                    catSelectorBinding.catCombo.setText(item?.displayName())
-                                    if (selectedOptions.size == catCombo.categories()!!.size)
-                                        presenter.setCatOptionCombo(catCombo.uid(), ArrayList(selectedOptions.values))
-                                }
-                                .show(this, catSelectorBinding.getRoot())
-                    }
-            )
-
-            if (selectedOptions[category.uid()] != null)
-                catSelectorBinding.catCombo.setText(selectedOptions[category.uid()]!!.displayName())
-
-            binding.catComboLayout.addView(catSelectorBinding.getRoot())
-        }*/
+    override fun openFormActivity() {
+        val bundle = EventCaptureActivity.getActivityBundle(
+            event.uid(),
+            program.uid(),
+            EventMode.CHECK
+        )
+        Intent(activity, EventCaptureActivity::class.java).apply {
+            putExtras(bundle)
+            startActivity(this)
+            finish()
+        }
     }
 }

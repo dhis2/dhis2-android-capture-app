@@ -70,6 +70,10 @@ public class EventCaptureContract {
         void showLoopWarning();
 
         void goBack();
+
+        void showProgress();
+
+        void hideProgress();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -115,6 +119,10 @@ public class EventCaptureContract {
         void refreshTabCounters();
 
         void setLastUpdatedUid(@NotNull String lastUpdatedUid);
+
+        void hideProgress();
+
+        void showProgress();
     }
 
     public interface EventCaptureRepository {

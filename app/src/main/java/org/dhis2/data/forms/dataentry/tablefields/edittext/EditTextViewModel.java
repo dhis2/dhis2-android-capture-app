@@ -11,12 +11,6 @@ import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
-/**
- * QUADRAM. Created by frodriguez on 1/24/2018.
- */
-
 @AutoValue
 public abstract class EditTextViewModel extends EditTextModel<String> {
 
@@ -56,7 +50,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
                 value(), programStageSection(), null, editable(), null, description(), dataElement(),listCategoryOption(), storeBy(),row(), column(), categoryOptionCombo(),catCombo(),hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error());
     }
 
-    @Nonnull
+   @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),

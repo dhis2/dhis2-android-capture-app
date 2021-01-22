@@ -29,6 +29,7 @@ class EventCapturePresenterTest {
     private val schedulers = TrampolineSchedulerProvider()
     private val preferences: PreferenceProvider = mock()
     private val getNextVisibleSection: GetNextVisibleSection = GetNextVisibleSection()
+    private val eventFieldMapper: EventFieldMapper = mock()
 
     @Before
     fun setUp() {
@@ -41,7 +42,8 @@ class EventCapturePresenterTest {
             valueStore,
             schedulers,
             preferences,
-            getNextVisibleSection
+            getNextVisibleSection,
+            eventFieldMapper
         )
     }
 

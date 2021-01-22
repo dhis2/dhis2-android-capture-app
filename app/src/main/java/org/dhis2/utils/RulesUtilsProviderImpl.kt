@@ -256,6 +256,12 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         val model = fieldViewModels[mandatoryField.field()]
         if (model != null) {
             fieldViewModels[mandatoryField.field()] = model.setMandatory()
+        } else {
+            fieldViewModels.filterKeys {
+                it.startsWith(mandatoryField.field())
+            }.forEach { (key, value) ->
+                fieldViewModels[key] = value.setMandatory()
+            }
         }
     }
 

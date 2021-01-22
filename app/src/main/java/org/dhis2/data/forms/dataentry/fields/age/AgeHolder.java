@@ -60,6 +60,8 @@ public class AgeHolder extends FormViewHolder {
             binding.customAgeview.setWarning(ageViewModel.warning());
         else if (ageViewModel.error() != null)
             binding.customAgeview.setError(ageViewModel.error());
+        else
+            binding.customAgeview.clearErrors();
 
         binding.customAgeview.setEditable(ageViewModel.editable());
 

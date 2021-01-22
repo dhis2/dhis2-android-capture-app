@@ -8,8 +8,8 @@
         <import type="android.view.View" />
 
         <variable
-            name="isConnected"
-            type="Boolean" />
+            name="reservedValue"
+            type="org.dhis2.usescases.reservedValue.ReservedValueModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,7 +24,8 @@
             android:id="@+id/displayName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/text_black_DE3"
+            android:text="@{reservedValue.attributeName}"
+            android:textColor="@color/textPrimary"
             android:textSize="14sp"
             app:layout_constraintEnd_toStartOf="@id/refill"
             app:layout_constraintStart_toStartOf="parent"
@@ -35,8 +36,9 @@
             android:id="@+id/orgUnit"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/text_black_DE3"
+            android:textColor="@color/textPrimary"
             android:textSize="12sp"
+            android:visibility="@{reservedValue.hasOrgUnit() ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toStartOf="@id/refill"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/displayName"
@@ -46,7 +48,8 @@
             android:id="@+id/reservedValue"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/text_black_8A3"
+            android:text="@{reservedValue.valuesLeft()}"
+            android:textColor="@color/textSecondary"
             android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@id/refill"
             app:layout_constraintStart_toStartOf="parent"
@@ -58,12 +61,13 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="@{()->reservedValue.refill()}"
             android:text="@string/refill_reserved_values"
             android:textColor="?colorPrimary"
-            android:visibility="@{isConnected ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:networkVisibility="@{true}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

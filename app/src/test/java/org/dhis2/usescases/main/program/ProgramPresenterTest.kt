@@ -1,6 +1,5 @@
 package org.dhis2.usescases.main.program
 
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -41,9 +40,9 @@ class ProgramPresenterTest {
         whenever(filterManager.asFlowable()) doReturn mock()
         whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
-        whenever(homeRepository.programModels(any(), any(), any(), any())) doReturn programsFlowable
+        whenever(homeRepository.programModels()) doReturn programsFlowable
         whenever(
-            homeRepository.aggregatesModels(any(), any(), any(), any())
+            homeRepository.aggregatesModels()
         ) doReturn Flowable.empty()
 
         presenter.init()
@@ -60,17 +59,11 @@ class ProgramPresenterTest {
         whenever(filterManager.asFlowable()) doReturn mock()
         whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
         whenever(
-            homeRepository.programModels(
-                any(), any(),
-                any(), any()
-            )
+            homeRepository.programModels()
         ) doReturn Flowable.error(Exception(""))
         whenever(
-            homeRepository.aggregatesModels(
-                any(), any(),
-                any(), any()
-            )
-        )doReturn mock()
+            homeRepository.aggregatesModels()
+        ) doReturn mock()
 
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
 

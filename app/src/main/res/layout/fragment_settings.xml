@@ -84,7 +84,7 @@
                             android:lineSpacingExtra="0sp"
                             android:text="@string/settings_sync_period"
                             android:textAppearance="@style/settingsHint"
-                            android:textColor="@color/text_black_DE3"
+                            android:textColor="@color/textPrimary"
                             app:layout_constraintStart_toStartOf="@id/dataPeriods"
                             app:layout_constraintTop_toTopOf="@id/dataPeriods" />
 
@@ -107,7 +107,7 @@
                             android:layout_marginTop="8dp"
                             android:layout_marginEnd="16dp"
                             android:text="@string/syncing_period_not_editable"
-                            android:textColor="@color/text_black_DE3"
+                            android:textColor="@color/textPrimary"
                             android:textSize="12sp"
                             app:layout_constraintTop_toBottomOf="@id/dataPeriods" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -190,7 +190,7 @@
                             android:lineSpacingExtra="0sp"
                             android:text="@string/settings_sync_period"
                             android:textAppearance="@style/settingsHint"
-                            android:textColor="@color/text_black_DE3"
+                            android:textColor="@color/textPrimary"
                             app:layout_constraintStart_toStartOf="@id/metadataPeriods"
                             app:layout_constraintTop_toTopOf="@id/metadataPeriods" />
 
@@ -213,7 +213,7 @@
                             android:layout_marginTop="8dp"
                             android:layout_marginEnd="16dp"
                             android:text="@string/syncing_period_not_editable"
-                            android:textColor="@color/text_black_DE3"
+                            android:textColor="@color/textPrimary"
                             android:textSize="12sp"
                             app:layout_constraintTop_toBottomOf="@id/metadataPeriods" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -300,7 +300,7 @@
                             android:lineSpacingExtra="0sp"
                             android:text="@string/settings_limit_scope"
                             android:textAppearance="@style/settingsHint"
-                            android:textColor="@color/text_black_DE3"
+                            android:textColor="@color/textPrimary"
                             app:layout_constraintStart_toStartOf="@id/downloadLimitScope"
                             app:layout_constraintTop_toTopOf="@id/downloadLimitScope" />
 
@@ -373,7 +373,7 @@
                             android:layout_marginBottom="8dp"
                             android:layout_marginEnd="16dp"
                             android:text="@string/sync_parameters_not_editable"
-                            android:textColor="@color/text_black_DE3"
+                            android:textColor="@color/textPrimary"
                             android:textSize="12sp"
                             app:layout_constraintTop_toBottomOf="@id/teiInputLayout"
                             app:layout_constraintBottom_toTopOf="@id/specificSettingsText"/>
@@ -481,7 +481,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="16dp"
                         android:text="@string/rv_no_editable"
-                        android:textColor="@color/text_black_DE3"
+                        android:textColor="@color/textPrimary"
                         android:textSize="12sp"
                         app:layout_constraintTop_toBottomOf="@id/reservedValuesInputLayout" />
 

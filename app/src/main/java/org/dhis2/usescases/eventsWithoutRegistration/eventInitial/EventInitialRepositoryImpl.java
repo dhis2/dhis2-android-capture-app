@@ -24,7 +24,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -42,9 +41,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     private final String eventUid;
     private final D2 d2;
+    private final String stageUid;
 
-    EventInitialRepositoryImpl(String eventUid, D2 d2) {
+    EventInitialRepositoryImpl(String eventUid, String stageUid, D2 d2) {
         this.eventUid = eventUid;
+        this.stageUid = stageUid;
         this.d2 = d2;
     }
 
@@ -96,21 +97,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public Observable<CategoryCombo> catCombo(String programUid) {
         return d2.programModule().programs().uid(programUid).get()
-                .flatMap(program ->
-                        d2.categoryModule().categoryCombos().withCategories().withCategoryOptionCombos().uid(program.categoryComboUid()).get())
-                .map(categoryCombo -> {
-                    List<Category> fullCategories = new ArrayList<>();
-                    List<CategoryOptionCombo> fullOptionCombos = new ArrayList<>();
-                    for (Category category : categoryCombo.categories()) {
-                        fullCategories.add(d2.categoryModule().categories().withCategoryOptions().uid(category.uid()).blockingGet());
-                    }
-                    List<CategoryOptionCombo> catOptionCombos = d2.categoryModule().categoryOptionCombos()
-                            .byCategoryComboUid().eq(categoryCombo.uid())
-                            .blockingGet();
-                    for (CategoryOptionCombo categoryOptionCombo : catOptionCombos)
-                        fullOptionCombos.add(d2.categoryModule().categoryOptionCombos().withCategoryOptions().uid(categoryOptionCombo.uid()).blockingGet());
-                    return categoryCombo.toBuilder().categories(fullCategories).categoryOptionCombos(fullOptionCombos).build();
-                }).toObservable();
+                .flatMap(program -> d2.categoryModule().categoryCombos()
+                        .withCategories()
+                        .withCategoryOptionCombos()
+                        .uid(program.categoryComboUid()
+                        ).get()).toObservable();
     }
 
     @Override
@@ -127,9 +118,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                             if (!categoryCombo.isDefault() && event.attributeOptionCombo() != null) {
                                 List<CategoryOption> selectedCatOptions = d2.categoryModule().categoryOptionCombos().withCategoryOptions().uid(event.attributeOptionCombo()).blockingGet().categoryOptions();
                                 for (Category category : categoryCombo.categories()) {
-                                    for (CategoryOption categoryOption : selectedCatOptions)
-                                        if (category.categoryOptions().contains(categoryOption))
+                                    for (CategoryOption categoryOption : selectedCatOptions) {
+                                        List<CategoryOption> categoryOptions = d2.categoryModule().categoryOptions().byCategoryUid(category.uid()).blockingGet();
+                                        if (categoryOptions.contains(categoryOption))
                                             map.put(category.uid(), categoryOption);
+                                    }
                                 }
                             }
 
@@ -326,10 +319,14 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
     private Observable<Boolean> programAccess(String programUid) {
-        return Observable.fromCallable(() ->
-                d2.programModule().programStages().byProgramUid().eq(programUid).one().blockingGet().access().data().write() &&
-                        d2.programModule().programs().uid(programUid).blockingGet().access().data().write()
-
+        return Observable.fromCallable(() -> {
+                    boolean programAccess = d2.programModule().programs().uid(programUid).blockingGet().access().data().write();
+                    boolean stageAccess = true;
+                    if (stageUid != null) {
+                        stageAccess = d2.programModule().programStages().uid(stageUid).blockingGet().access().data().write();
+                    }
+                    return programAccess && stageAccess;
+                }
         );
     }
 
@@ -404,5 +401,12 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .byCategoryUid(uid)
                 .byAccessDataWrite().isTrue()
                 .blockingCount();
+    }
+
+    @Override
+    public List<CategoryOption> getCategoryOptions(String categoryUid) {
+        return d2.categoryModule().categoryOptions()
+                .byCategoryUid(categoryUid)
+                .blockingGet();
     }
 }

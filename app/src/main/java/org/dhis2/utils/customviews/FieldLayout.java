@@ -59,12 +59,38 @@ public abstract class FieldLayout extends RelativeLayout {
             activationListener.onActivation();
     }
 
-    public void setActivationListener(OnActivation onActivationListener){
+    public void setActivationListener(OnActivation onActivationListener) {
         this.activationListener = onActivationListener;
     }
 
     public interface OnActivation {
         void onActivation();
+    }
+
+    public void setEditable(boolean editable, View... views) {
+        for (View view : views) {
+            if(view!=null) {
+                view.setAlpha(editable ? 1 : 0.5f);
+            }
+        }
+    }
+
+    protected void updateDeleteVisibility(View clearButton) {
+        if (clearButton != null) {
+            if(hasValue() && isEditable()){
+                clearButton.setVisibility(View.VISIBLE);
+            }else{
+                clearButton.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    protected boolean hasValue(){
+        return false;
+    }
+
+    protected boolean isEditable(){
+        return false;
     }
 }
 

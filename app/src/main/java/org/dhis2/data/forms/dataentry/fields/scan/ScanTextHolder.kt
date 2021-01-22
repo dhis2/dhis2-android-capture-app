@@ -29,9 +29,9 @@ class ScanTextHolder(
             setText(model.value())
             setRenderingType(model.fieldRendering?.type())
             setLabel(model.label(), model.mandatory())
+            setHint(model.hint)
             setDescription(model.description())
             setAlert(model.warning(), model.error())
-            setObjectStyle(model.objectStyle())
             updateEditable(model.editable() ?: false)
             optionSet = model.optionSet()
             setOnScannerListener { value ->

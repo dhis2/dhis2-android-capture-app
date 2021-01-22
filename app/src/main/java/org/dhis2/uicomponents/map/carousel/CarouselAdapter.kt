@@ -13,6 +13,7 @@ import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelations
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.layer.MapLayer
+import org.dhis2.uicomponents.map.layer.MapLayerManager
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiEventMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
@@ -30,7 +31,11 @@ class CarouselAdapter private constructor(
     private val onSyncClickListener: (String) -> Boolean,
     private val onTeiClickListener: (String, String?, Boolean) -> Boolean,
     private val onRelationshipClickListener: (relationshipTeiUid: String) -> Boolean,
-    private val onEventClickListener: (teiUid: String?, enrollmentUid: String?) -> Boolean,
+    private val onEventClickListener: (
+        uid: String?,
+        enrollmentUid: String?,
+        eventUid: String?
+    ) -> Boolean,
     private val onProfileImageClick: (String) -> Unit,
     private val allItems: MutableList<CarouselItemModel>
 ) :
@@ -88,7 +93,10 @@ class CarouselAdapter private constructor(
                         parent,
                         false
                     ),
-                    onEventClickListener
+                    onEventClickListener,
+                    { item ->
+                        (items.first { it == item } as ProgramEventViewModel).toggleAttributeList()
+                    }
                 )
         }
     }
@@ -149,15 +157,28 @@ class CarouselAdapter private constructor(
         notifyDataSetChanged()
     }
 
-    fun updateAllData(data: List<CarouselItemModel>) {
+    fun updateAllData(data: List<CarouselItemModel>, mapLayerManager: MapLayerManager) {
+        allItems.clear()
+        allItems.addAll(data)
         items.clear()
-        items.addAll(data)
-        notifyDataSetChanged()
+        mapLayerManager.mapLayers.forEach { (sourceId, mapLayer) ->
+            update(sourceId, mapLayer, mapLayer.visible)
+        }
     }
 
     fun removeItems(data: List<CarouselItemModel>) {
         items.removeAll(data)
         notifyDataSetChanged()
+    }
+
+    fun updateItem(carouselItem: CarouselItemModel) {
+        allItems.takeIf { it.isNotEmpty() }?.indexOfFirst { it.uid() == carouselItem.uid() }?.let {
+            allItems[it] = carouselItem
+        }
+        items.indexOfFirst { it.uid() == carouselItem.uid() }.let {
+            items[it] = carouselItem
+            notifyItemChanged(it)
+        }
     }
 
     fun indexOfFeature(feature: Feature): Int {
@@ -211,8 +232,8 @@ class CarouselAdapter private constructor(
         var onTeiClickListener: (String, String?, Boolean) -> Boolean =
             { _: String, _: String?, _: Boolean -> true },
         var onRelationshipClickListener: (relationshipTeiUid: String) -> Boolean = { false },
-        var onEventClickListener: (String?, String?) -> Boolean =
-            { _: String?, _: String? -> false },
+        var onEventClickListener: (String?, String?, String?) -> Boolean =
+            { _: String?, _: String?, _: String? -> false },
         var onProfileImageClick: (String) -> Unit = { },
         var items: MutableList<CarouselItemModel> = arrayListOf(),
         var program: Program? = null
@@ -248,7 +269,11 @@ class CarouselAdapter private constructor(
         }
 
         fun addOnEventClickListener(
-            onEventClickListener: (teiUid: String?, enrollmentUid: String?) -> Boolean
+            onEventClickListener: (
+                uid: String?,
+                enrollmentUid: String?,
+                eventUid: String?
+            ) -> Boolean
         ) = apply {
             this.onEventClickListener = onEventClickListener
         }
@@ -259,7 +284,7 @@ class CarouselAdapter private constructor(
             this.onProfileImageClick = onProfileImageClick
         }
 
-        fun addProgram(program: Program) = apply {
+        fun addProgram(program: Program?) = apply {
             this.program = program
         }
 

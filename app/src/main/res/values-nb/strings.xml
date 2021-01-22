@@ -5,6 +5,10 @@
     <string name="logo_number">2</string>
     <!-- Warnings and error messages -->
     <string name="error">Feil</string>
+    <plurals name="error_message">
+        <item quantity="one">Feil</item>
+        <item quantity="other">Feil</item>
+    </plurals>
     <string name="error_wrong_server_url">Feil server URL</string>
     <string name="error_wrong_credentials">Feil opplysninger</string>
     <string name="error_unexpected_error">Uventet feil</string>
@@ -15,6 +19,7 @@
     <string name="no_reserved_values">Det er ingen flere reserverte verdier. Kontakt din systemadministrator</string>
     <string name="no_reserved_values_connection">Det er ingen flere reserverte verdier. Koble til nettverket for å fylle på dem</string>
     <string name="errors">feil</string>
+    <string name="something_wrong">Noe gikk galt</string>
     <!-- SyncService strings: -->
     <string name="sync_now">Synkroniser nå</string>
     <string name="sync_text">Synkroniserer med server</string>
@@ -100,6 +105,7 @@
     <string name="cancelled">Kansellert</string>
     <string name="re_open">Åpne igjen</string>
     <string name="activate">Aktiver</string>
+    <string name="active">Aktiv</string>
 
     <!-- State -->
     <string name="state_synced">Synk</string>
@@ -108,6 +114,7 @@
     <string name="state_to_delete">Å slette</string>
     <string name="state_error">Feil</string>
     <string name="action_sync">SYNK</string>
+    <string name="action_send">SEND</string>
     <string name="action_sync_sms">SYNK SMS</string>
 
     <!--Completion-->
@@ -134,6 +141,7 @@
     <string name="cat_option">Kat alternativ</string>
     <string name="field_required">Hvis du setter en verdi, så trenger hele raden alle verdier for å fullføre datasettet.</string>
     <string name="field_mandatory">Noen verdier som er påkrevd mangler. Du må sette obligatoriske verdier for å fullføre datasettet.</string>
+    <string name="field_mandatory_v2">Det mangler obligatoriske felt. Vennligst fyll dem for å fullføre datasettet.</string>
     <string name="datavalue_saved">Verdien er lagret!</string>
     <string name="there_is_no_available_period">Det er ingen tilgjengelige perioder å velge.</string>
     <!--Event Detail-->
@@ -147,6 +155,7 @@
     <string name="confirm_delete_event">Er du sikker på at du vil slette denne hendelsen?</string>
     <string name="event_was_deleted">Hendelsen ble slettet.</string>
     <string name="total">Totalt</string>
+    <string name="most_recent_event_date">Siste hendelsesdato</string>
 
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Registreringsliste</string>
@@ -351,9 +360,9 @@
     <string name="about_sdk">SDK versjon: %s</string>
     <string name="about_connected">Koblet til: %s</string>
     <string name="about_user">Gjeldende bruker: %s</string>
-    <string name="about_more">Mer om denne appen: les<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">her </a>hva som er støttet og hva som ikke er støttet</string>
+    <string name="about_more">Mer om denne appen: les <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">her </a>hva som er støttet og hva som ikke er støttet</string>
     <string name="about_git">Denne og tidligere versjoner av denne applikasjonen, samt kildekoden er tilgjengelig på <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. DHIS2 Android Capture er lisensiert under betingelsene i GNU General Public License som utgitt av Free Software Foundation - se <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
-    <string name="about_dev">Utviklet og vedlikeholdt av <a href="https://www.dhis2.org/">DHIS2</a>prosjektet, del av Universitetet i Oslo, <a href="https://www.mn.uio.no/ifi/english/">avdeling for informatikk</a>.</string>
+    <string name="about_dev">Utviklet og vedlikeholdt av <a href="https://www.dhis2.org/">DHIS2</a>-prosjektet, del av Universitetet i Oslo, <a href="https://www.mn.uio.no/ifi/english/">Institutt for informatikk</a>.</string>
     <string name="about_contact">For mer informasjon eller spørsmål om denne applikasjonen, vennligst skriv til<a href="mailto:android@dhis2.org">android@dhis2.org</a></string>
 
     <string name="login_error_null_pass">Passord mangler. Vennligst fyll det feltet</string>
@@ -509,6 +518,7 @@
     <string name="no_conflicts_synced_message">Du er oppdatert! Alle dataene dine er sendt til serveren.</string>
     <string name="relationship_error_recursive">Du kan ikke relatere en oppføring med seg selv</string>
     <string name="unblock_session">Fjern blokkering på sesjonen</string>
+    <string name="data_set_complete">Fullfør</string>
     <string name="data_set_open">Åpne</string>
     <string name="unsupported_value_type">Verditypen er ikke støttet</string>
     <string name="change_calendar_view">Endre kalendervisning</string>
@@ -590,6 +600,7 @@
     <string name="filters_disabled">Ingen filter brukt</string>
     <string name="filters_title_period">Periode</string>
     <string name="filters_title_org_unit">Org. Enhet</string>
+    <string name="filters_title_sorting">Sorterer</string>
     <string name="filters_title_status">Status</string>
     <string name="filters_title_state">Synk</string>
     <string name="filters_title_assigned">Tildelt til meg</string>
@@ -671,6 +682,7 @@
     <string name="sync_parameters_not_editable">Synkparametre kan ikke endres</string>
     <string name="rv_no_editable">Antall reserverte verdier lastet ned kan ikke redigeres</string>
     <string name="dialog_layer_satellite">Vis satelittvisning</string>
+    <string name="dialog_layer_event">Vis hendelser</string>
     <string name="dialog_layer_tei_coordinates">Vis tei koordinater</string>
     <string name="dialog_layer_enrollment_coordinates">Vis registreringskoordinater</string>
     <string name="dialog_layer_heatmap">Vis varmekartlag</string>
@@ -679,4 +691,53 @@
     <string name="filter_sync_not_synced">Ikke synkronisert</string>
     <string name="filter_sync_error">Synkroniseringsfeil</string>
     <string name="filter_sync_sms">SMS synkronisert</string>
+    <string name="dataset_overview">Detaljer</string>
+    <string name="dataset_comments">Kommentarer</string>
+    <string name="saved">Lagret!</string>
+    <string name="run_validation_rules">Vil du sjekke datakvaliteten?</string>
+    <string name="validation_success_title">Alt ser bra ut</string>
+    <string name="mark_dataset_complete">Vil du også fullføre datasettet?</string>
+    <string name="dataset_completed">Merk som fullført</string>
+    <string name="name">Navn</string>
+    <string name="formula">Formel</string>
+    <string name="complete_anyway">Fullfør likevel</string>
+    <string name="fk_message">Mangler %s%sfra %s%s</string>
+    <string name="filters_title_event_status">Hendelsesstatus</string>
+    <string name="filters_title_enrollment_status">Registreringsstatus</string>
+    <string name="enrollment_date">Registreringsdato</string>
+    <string name="action_apply">Bruk</string>
+    <string name="dataset_empty_list_can_create">Det er ingen data. Klikk på \"+\" for å legge til en ny oppføring</string>
+    <string name="dataset_emtpy_list_can_not_create">Det er ingen data. Du har ikke tillatelse til å legge til nye oppføringer.</string>
+    <string name="validation_rules_empty_description">Ingen beskrivelse eller instruksjon gitt</string>
+    <string name="validation_rules_data_to_review">Data til gjennomgang</string>
+    <string name="dataset_saved_completed">Lagret og fullført!</string>
+    <string name="status_change_error_active_exist">Det er allerede en aktiv registrering</string>
+    <string name="enrollment_status_active">Åpne</string>
+    <string name="enrollment_status_completed">Fullfør</string>
+    <string name="enrollment_status_cancelled">Kansellert</string>
+    <string name="no_data">Ingen data</string>
+    <string name="no_coordinates_item">Denne %shar ingen koordinater</string>
+    <string name="event_data">Data</string>
+    <string name="download_tei_error">Den valgte %s kunne ikke lastes ned</string>
+    <string name="completed_by">Fullført av %s: %s</string>
+    <string name="updated_time">Oppdatert: %s</string>
+    <string name="action_done">Fullført!</string>
+    <string name="validation_internal_error_datasets">Vi kunne ikke sjekke datakvaliteten. Kontakt administratoren din</string>
+    <string name="are_you_sure">Er du sikker?</string>
+    <string name="reopen_question">Vil du åpne datasettet på nytt?</string>
+    <string name="group_events_by_stage">Grupper hendelser per fase</string>
+    <string name="show_events_timeline">Vis tidslinjen for hendelser</string>
+    <string name="filters_title_date">Dato</string>
+    <string name="filters_title_event_date">Hendelsesdato</string>
+    <string name="dataset_data">Data</string>
+    <string name="tei_type_has_no_attributes">%shar ingen offentlige attributter. Velg et program</string>
+    <string name="privacy_policy_title">Personvernregler</string>
+    <string name="open_privacy_policy">Klikk her for å sjekke<a href="">personvernreglene</a> våre</string>
+    <string name="coordinates_error">Koordinatverdiene er ikke gyldige</string>
+    <string name="break_glass_error">Du kan ikke registrere enheter fra andre organisasjonsenheter i dette programmet fordi det er beskyttet. Kontakt administratoren din.</string>
+    <string name="add_image">Legg til bilde</string>
+    <string name="security_debugger_message">Av sikkerhetsgrunner, så er denne versjonen av appen ikke tillatt til å bli brukt med adb. Vennligst bruk treningsversjonen.</string>
+
+    <string name="customactivityoncrash_error_activity_restart_app">Gå tilbake</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">Lukk</string>
 </resources>

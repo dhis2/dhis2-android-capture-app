@@ -45,6 +45,7 @@ import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponentFlavor;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
+import org.dhis2.utils.analytics.matomo.TrackerController;
 import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
@@ -137,9 +138,11 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         }
         setUpServerComponent();
         setUpRxPlugin();
-//        initAcra();
+        initAcra();
         initCustomCrashActivity();
-        TrackHelper.track().download().identifier(new DownloadTracker.Extra.ApkChecksum(this)).with(getTracker());
+        if (getTracker() != null) {
+            TrackHelper.track().download().identifier(new DownloadTracker.Extra.ApkChecksum(this)).with(getTracker());
+        }
     }
 
     private void initCustomCrashActivity() {
@@ -147,10 +150,10 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .errorDrawable(R.drawable.ic_dhis)
                 .apply();
     }
-    
+
     public synchronized Tracker getTracker() {
-        if (matomoTracker == null){
-            matomoTracker = TrackerBuilder.createDefault(BuildConfig.MATOMO_URL, BuildConfig.MATOMO_ID).build(Matomo.getInstance(this));
+        if (matomoTracker == null) {
+            matomoTracker = TrackerController.Companion.generateTracker(this);
         }
         return matomoTracker;
     }
@@ -355,6 +358,10 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         fromBackGround = true;
     }
 
+    public void disableBackGroundFlag() {
+        fromBackGround = false;
+    }
+
     public boolean isSessionBlocked() {
         boolean shouldShowPinDialog = fromBackGround && appComponent().preferenceProvider().getBoolean(Preference.SESSION_LOCKED, false);
         fromBackGround = false;
@@ -374,12 +381,12 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
             if ((e instanceof NullPointerException) || (e instanceof IllegalArgumentException)) {
                 Timber.d("Error in app");
                 Thread.currentThread().getUncaughtExceptionHandler()
-                        .uncaughtException(Thread.currentThread(),e);
+                        .uncaughtException(Thread.currentThread(), e);
             }
             if (e instanceof IllegalStateException) {
                 Timber.d("Error in RxJava");
                 Thread.currentThread().getUncaughtExceptionHandler()
-                        .uncaughtException(Thread.currentThread(),e);
+                        .uncaughtException(Thread.currentThread(), e);
             }
             Timber.d(e);
         });

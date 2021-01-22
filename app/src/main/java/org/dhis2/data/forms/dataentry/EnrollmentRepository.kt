@@ -48,6 +48,25 @@ class EnrollmentRepository(
     private val enrollmentRepository: EnrollmentObjectRepository =
         d2.enrollmentModule().enrollments().uid(enrollmentUid)
 
+    private val canEditAttributes: Boolean
+
+    init {
+        canEditAttributes = getAttributeAccess()
+    }
+
+    private fun getAttributeAccess(): Boolean {
+        val selectedProgram = d2.programModule().programs().uid(
+            enrollmentRepository.blockingGet().program()
+        ).blockingGet()
+        val programAccess =
+            selectedProgram.access().data().write() != null && selectedProgram.access().data()
+                .write()
+        val teTypeAccess = d2.trackedEntityModule().trackedEntityTypes().uid(
+            selectedProgram.trackedEntityType()?.uid()
+        ).blockingGet().access().data().write()
+        return programAccess && teTypeAccess
+    }
+
     override fun enrollmentSectionUids(): Flowable<MutableList<String>> {
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
             .flatMap { enrollment ->
@@ -187,6 +206,21 @@ class EnrollmentRepository(
             }
         }
 
+        val conflicts = d2.importModule().trackerImportConflicts()
+            .byEnrollmentUid().eq(enrollmentUid)
+            .blockingGet()
+
+        val conflict = conflicts
+            .find { it.trackedEntityAttribute() == attribute.uid() }
+
+        val error = conflict?.let {
+            if (it.value() == dataValue) {
+                it.displayDescription()
+            } else {
+                null
+            }
+        }
+
         if (valueType == ValueType.ORGANISATION_UNIT && !DhisTextUtils.isEmpty(dataValue)) {
             dataValue = attrValueRepository.blockingGet().value() + "_ou_" + dataValue
         }
@@ -200,7 +234,7 @@ class EnrollmentRepository(
             dataValue,
             sectionUid,
             programTrackedEntityAttribute.allowFutureDate() ?: false,
-            !generated,
+            !generated && canEditAttributes,
             null,
             attribute.displayDescription(),
             programTrackedEntityAttribute.renderType()?.mobile(),
@@ -210,7 +244,9 @@ class EnrollmentRepository(
             null
         )
 
-        return if (warning != null) {
+        return if (!error.isNullOrEmpty()) {
+            fieldViewModel.withError(error)
+        } else if (warning != null) {
             fieldViewModel.withWarning(warning)
         } else {
             fieldViewModel

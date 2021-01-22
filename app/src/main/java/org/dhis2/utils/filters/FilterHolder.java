@@ -21,7 +21,7 @@ import org.dhis2.utils.filters.FiltersAdapter.ProgramType;
 
 import java.util.List;
 
-abstract class FilterHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public abstract class FilterHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     protected final View filterArrow;
     protected final ImageView filterIcon;
     protected final TextView filterTitle;

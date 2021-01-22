@@ -2,9 +2,9 @@
 title: 'DHIS 2 Android App Configuration Guide'
 author: 'DHIS 2'
 year: 2020
-month: July
+month: October
 keywords: [DHIS2, Android]
-applicable_txt: 'Applicable to version 2.2'
+applicable_txt: 'Applicable to version 2.3'
 ---
 <!--DHIS2-SECTION-ID:index-->
 

@@ -3,20 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:rippleColor="@color/rippleColor"
+        app:cardElevation="0dp"
         tools:background="@color/form_field_background">
-
-        <ImageView
-            android:id="@+id/shadow_bottom"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="fitXY"
-            android:src="@drawable/inner_shadow_bottom"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/stageCard"
@@ -46,7 +38,7 @@
                 android:layout_marginEnd="16dp"
                 android:gravity="bottom"
                 android:lines="1"
-                android:textColor="@color/text_black_DE3"
+                android:textColor="@color/textPrimary"
                 android:textSize="14sp"
                 android:ellipsize="end"
                 android:translationY="3.71sp"
@@ -61,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="5dp"
-                android:textColor="@color/text_black_8A3"
+                android:textColor="@color/textSecondary"
                 android:textSize="12sp"
                 app:layout_constraintStart_toEndOf="@id/programStageIcon"
                 app:layout_constraintTop_toBottomOf="@id/programStageName"
@@ -83,7 +75,7 @@
                 style="@style/ActionIcon"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:tint="?colorPrimaryLight"
+                android:tint="?colorPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -91,15 +83,5 @@
 
             </ImageButton>
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <ImageView
-            android:id="@+id/shadow_top"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="fitXY"
-            android:src="@drawable/inner_shadow_top"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/stageCard"
-            tools:visibility="visible" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 </layout>

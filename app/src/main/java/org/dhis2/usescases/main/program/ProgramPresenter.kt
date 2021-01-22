@@ -26,32 +26,19 @@ class ProgramPresenter internal constructor(
 
         disposable.add(
             applyFiler
-                .doOnNext { Timber.tag("INIT DATA").d("NEW FILTER") }
-                .switchMap { filterManager ->
-                    homeRepository.programModels(
-                        filterManager.periodFilters,
-                        filterManager.orgUnitUidsFilters,
-                        filterManager.stateFilters,
-                        filterManager.assignedFilter
-                    ).onErrorReturn { t ->
+                .switchMap {
+                    homeRepository.programModels().onErrorReturn {
                         arrayListOf()
                     }
                         .mergeWith(
-                            homeRepository.aggregatesModels(
-                                filterManager.periodFilters,
-                                filterManager.orgUnitUidsFilters,
-                                filterManager.stateFilters,
-                                filterManager.assignedFilter
-                            ).onErrorReturn { t ->
+                            homeRepository.aggregatesModels().onErrorReturn {
                                 arrayListOf()
                             }
                         )
-                        .doOnNext { Timber.tag("INIT DATA").d("LIST READY TO BE SORTED SORTED") }
                         .flatMapIterable { data -> data }
                         .sorted { p1, p2 -> p1.title().compareTo(p2.title(), ignoreCase = true) }
                         .toList().toFlowable()
                         .subscribeOn(schedulerProvider.io())
-                        .doOnNext { Timber.tag("INIT DATA").d("LIST SORTED") }
                         .onErrorReturn { arrayListOf() }
                 }
                 .subscribeOn(schedulerProvider.io())

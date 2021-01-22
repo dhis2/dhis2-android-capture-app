@@ -159,7 +159,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
-                    tools:visibility="visible"
+                    tools:visibility="gone"
                     android:paddingTop="8dp"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -173,7 +173,7 @@
                         android:layout_marginEnd="36dp"
                         android:layout_marginBottom="8dp"
                         android:onClick="@{()->presenter.clearFilterClick()}"
-                        android:tint="?colorPrimary"
+                        app:tint="?colorPrimary"
                         app:layout_constraintBottom_toTopOf="@+id/view"
                         app:layout_constraintEnd_toStartOf="@id/close_filter"
                         app:layout_constraintTop_toTopOf="parent"
@@ -186,7 +186,7 @@
                         android:layout_marginEnd="16dp"
                         android:layout_marginBottom="8dp"
                         android:onClick="@{()->presenter.showFilter()}"
-                        android:tint="?colorPrimary"
+                        app:tint="?colorPrimary"
                         app:layout_constraintBottom_toTopOf="@+id/view"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -219,11 +219,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:clipToPadding="false"
+                    android:paddingTop="16dp"
                     android:paddingBottom="100dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/progressLayout"
-                    tools:listitem="@layout/item_program_event" />
+                    tools:listitem="@layout/item_event" />
 
                 <com.mapbox.mapboxsdk.maps.MapView
                     android:id="@+id/mapView"

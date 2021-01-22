@@ -2,9 +2,9 @@
 title: 'DHIS 2 Android App Implementation Guidelines'
 author: 'DHIS 2'
 year: 2020
-month: July
+month: October
 keywords: [DHIS2, Android]
-applicable_txt: 'Applicable to version 2.2'
+applicable_txt: 'Applicable to version 2.3'
 ---
 <!--DHIS2-SECTION-ID:index-->
 
@@ -15,6 +15,7 @@ applicable_txt: 'Applicable to version 2.2'
 !INCLUDE "content/implementation-guide/dhis2-server-requirements.md"
 !INCLUDE "content/implementation-guide/data-security-and-privacy.md"
 !INCLUDE "content/implementation-guide/mobile-device-specs.md"
+!INCLUDE "content/implementation-guide/SMS-for-reporting.md"
 !INCLUDE "content/implementation-guide/dhis2-configuration-for-android.md"
 !INCLUDE "content/implementation-guide/installing-the-app.md"
 !INCLUDE "content/implementation-guide/testing.md"

@@ -7,7 +7,9 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.util.AttributeSet
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.ViewDataBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -20,6 +22,7 @@ import org.dhis2.R
 import org.dhis2.databinding.ScanTextViewAccentBinding
 import org.dhis2.databinding.ScanTextViewBinding
 import org.dhis2.usescases.qrScanner.ScanActivity
+import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
@@ -38,6 +41,7 @@ class ScanTextView @JvmOverloads constructor(
     private lateinit var onScanClick: OnScanClick
     private lateinit var onScanResult: (String?) -> Unit
     private lateinit var qrIcon: ImageView
+    private lateinit var labelText: TextView
     var optionSet: String? = null
     private var renderingType: ValueTypeRenderingType? = null
 
@@ -56,6 +60,7 @@ class ScanTextView @JvmOverloads constructor(
         this.iconView = binding.root.findViewById(R.id.renderImage)
         this.inputLayout = binding.root.findViewById(R.id.input_layout)
         this.descriptionLabel = binding.root.findViewById(R.id.descriptionLabel)
+        this.labelText = binding.root.findViewById(R.id.label)
 
         qrIcon.setOnClickListener {
             checkCameraPermission()
@@ -107,6 +112,14 @@ class ScanTextView @JvmOverloads constructor(
         when {
             !isEditable -> delete.visibility = View.GONE
         }
+
+        setEditable(
+            isEditable,
+            editText,
+            labelText,
+            descriptionLabel,
+            qrIcon
+        )
     }
 
     fun setText(text: String?) {
@@ -116,6 +129,10 @@ class ScanTextView @JvmOverloads constructor(
             null -> View.GONE
             else -> View.VISIBLE
         }
+    }
+
+    fun setHint(hint: String?) {
+        inputLayout.hint = hint
     }
 
     fun setAlert(warning: String?, error: String?) {
@@ -155,9 +172,28 @@ class ScanTextView @JvmOverloads constructor(
             ValueTypeRenderingType.QR_CODE -> {
                 descIcon.setImageResource(R.drawable.ic_form_qr)
             }
-            else -> {}
+            else -> {
+            }
         }
     }
+
+    override fun dispatchSetActivated(activated: Boolean) {
+        super.dispatchSetActivated(activated)
+        labelText.setTextColor(
+            when {
+                activated -> ColorUtils.getPrimaryColor(
+                    context,
+                    ColorUtils.ColorType.PRIMARY
+                )
+                else -> ResourcesCompat.getColor(
+                    resources,
+                    R.color.textPrimary,
+                    null
+                )
+            }
+        )
+    }
+
     interface OnScanClick {
         fun onsScanClicked(intent: Intent, scanTextView: ScanTextView)
     }

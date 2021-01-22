@@ -9,11 +9,12 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
@@ -22,9 +23,12 @@ import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.button.MaterialButton;
 
+import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.FileExtensionsKt;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -37,6 +41,7 @@ import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
 import java.io.File;
 
 import io.reactivex.processors.FlowableProcessor;
+import kotlin.Pair;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -46,15 +51,15 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     private String uid;
     private TextView errorView;
     private ImageView image;
-    private LinearLayout layout;
-    private TextInputEditText formLabel;
+    private MaterialButton addImageBtn;
     private OnIntentSelected onIntentSelected;
     private String primaryUid;
     private OnPictureSelected imageListener;
     private Boolean isEditable;
-    private View clearButton;
+    private ImageButton clearButton;
     private String currentValue;
     private FragmentManager fm;
+    private CardView imageCard;
 
     public PictureView(Context context) {
         super(context);
@@ -73,10 +78,8 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     @Override
     public void onClick(View v) {
-        if (isEditable && (v == layout || v == formLabel)) {
+        if (isEditable && v == addImageBtn) {
             selectImage();
-        } else if (v == image && currentValue != null) {
-
         }
     }
 
@@ -94,15 +97,14 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
         errorView = findViewById(R.id.errorMessage);
         image = findViewById(R.id.image);
         image.setOnClickListener(view -> showFullPicture());
-        layout = findViewById(R.id.layout);
-        layout.setOnClickListener(this);
-        formLabel = findViewById(R.id.formLabel);
-        formLabel.setOnClickListener(this);
+        addImageBtn = findViewById(R.id.addImageBtn);
+        imageCard = findViewById(R.id.imageCard);
+        addImageBtn.setOnClickListener(this);
         clearButton = findViewById(R.id.clear);
         clearButton.setOnClickListener(view -> {
                     if (isEditable && removeFile()) {
-                        setTextSelected(null);
-                        image.setVisibility(View.GONE);
+                        addImageBtn.setVisibility(VISIBLE);
+                        imageCard.setVisibility(View.GONE);
                         Glide.with(this).clear(image);
                         imageListener.onSelected(null, null, uid);
                     }
@@ -120,13 +122,6 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
             ((FormPictureBinding) binding).setLabel(label);
         else
             ((FormPictureAccentBinding) binding).setLabel(label);
-    }
-
-    public void setTextSelected(String text) {
-        if (binding instanceof FormPictureBinding)
-            ((FormPictureBinding) binding).setSelected(text);
-        else
-            ((FormPictureAccentBinding) binding).setLabel(text);
     }
 
     public void setDescription(String description) {
@@ -169,21 +164,24 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
         if (!isEmpty(value)) {
 
             Glide.with(image).clear(image);
-            clearButton.setVisibility(View.VISIBLE);
 
             File file = new File(value);
 
             if (file.exists()) {
+                Pair<Integer, Integer> dimensions = FileExtensionsKt.widthAndHeight(file, ExtensionsKt.getDp(200));
                 currentValue = value;
-                setTextSelected(getContext().getString(R.string.image_selected));
-                image.setVisibility(View.VISIBLE);
+                addImageBtn.setVisibility(GONE);
+                imageCard.setVisibility(View.VISIBLE);
                 Glide.with(image)
                         .load(file)
                         .apply(new RequestOptions().centerCrop())
                         .apply(RequestOptions.skipMemoryCacheOf(true))
                         .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
+                        .apply(RequestOptions.bitmapTransform(new RoundedCorners(ExtensionsKt.getDp(6))))
+                        .apply(RequestOptions.overrideOf(dimensions.component1(), dimensions.component2()))
                         .skipMemoryCache(true)
                         .into(image);
+                clearButton.setVisibility(VISIBLE);
             }
         } else
             clearButton.setVisibility(View.GONE);
@@ -239,13 +237,8 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     }
 
     private void showFullPicture() {
-        new ImageDetailBottomDialog(
-                label,
-                new File(currentValue)
-        ).show(
-                fm,
-                ImageDetailBottomDialog.TAG
-        );
+        new ImageDetailBottomDialog(label, new File(currentValue))
+                .show(fm, ImageDetailBottomDialog.TAG);
     }
 
     public void setOnImageListener(OnPictureSelected onImageListener) {
@@ -254,6 +247,13 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     public void setEditable(Boolean editable) {
         isEditable = editable;
+        addImageBtn.setEnabled(editable);
+        setEditable(editable,
+                findViewById(R.id.label),
+                findViewById(R.id.descriptionLabel),
+                addImageBtn,
+                clearButton
+        );
     }
 
     public void setFragmentManager(FragmentManager fm) {
@@ -267,7 +267,6 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     public interface OnIntentSelected {
         void intentSelected(String uuid, Intent intent, int request, OnPictureSelected onPictureSelected);
     }
-
 
     public void setOnIntentSelected(OnIntentSelected onIntentSelected) {
         this.onIntentSelected = onIntentSelected;

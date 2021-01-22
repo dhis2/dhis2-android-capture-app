@@ -33,33 +33,35 @@
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layout_constraintTop_toTopOf="@id/sectionNumber"
                 app:layout_constraintBottom_toBottomOf="@id/sectionNumber"
-                app:layout_constraintStart_toStartOf="@id/sectionNumber"
                 app:layout_constraintEnd_toEndOf="@id/sectionNumber"
+                app:layout_constraintStart_toStartOf="@id/sectionNumber"
+                app:layout_constraintTop_toTopOf="@id/sectionNumber"
                 app:srcCompat="@drawable/ic_circle"
-                android:tint="?colorPrimary"/>
+                app:tint="?colorPrimary" />
 
             <TextView
-                style="@style/dataInputTextAccent"
                 android:id="@+id/sectionNumber"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
+                style="@style/dataInputTextAccent"
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:gravity="center"
-                tools:text="99"
+                android:textColor="?colorAccent"
                 android:textSize="9sp"
-                android:textColor="?colorAccent"/>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="99" />
 
-            
+
             <TextView
                 android:id="@+id/sectionName"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:textColor="@color/text_black_DE3"
                 android:layout_marginStart="8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/textPrimary"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/descriptionIcon"
@@ -72,26 +74,78 @@
                 style="@style/ActionIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/sectionName"
-                app:layout_constraintEnd_toStartOf="@id/sectionFieldsInfo"
+                app:layout_constraintEnd_toStartOf="@id/sectionInfoLayout"
                 app:layout_constraintTop_toTopOf="@id/sectionName"
                 app:srcCompat="@drawable/ic_info_outline"
-                app:tint="?colorPrimary" />
+                app:tint="?colorPrimary"
+                tools:ignore="ContentDescription"
+                tools:visibility="visible" />
 
-            <TextView
-                android:id="@+id/sectionFieldsInfo"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/sectionInfoLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="1dp"
-                android:padding="4dp"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:textColor="@color/placeholder"
-                android:textSize="12sp"
+                android:layout_marginEnd="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/openIndicator"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="2/6" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/sectionFieldsInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="1dp"
+                    android:padding="4dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:textColor="@color/placeholder"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="2/6" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/sectionFieldsWarningInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    app:chipBackgroundColor="@color/section_warning_color"
+                    app:chipIcon="@drawable/ic_menu_info"
+                    app:chipIconTint="@color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="2" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/sectionFieldsErrorInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    app:chipBackgroundColor="@color/section_error_color"
+                    app:chipIcon="@drawable/ic_menu_info"
+                    app:chipIconTint="@color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="2" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/sectionFieldsWarningErrorInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    app:chipBackgroundColor="@color/section_error_color"
+                    app:chipIcon="@drawable/ic_menu_info"
+                    app:chipIconTint="@color/white"
+                    app:layout_constraintEnd_toStartOf="@id/sectionFieldsWarningInfo"
+                    app:layout_constraintStart_toStartOf="@id/sectionFieldsWarningInfo"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="2" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ImageView
                 android:id="@+id/openIndicator"

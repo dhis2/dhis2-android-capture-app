@@ -1,6 +1,5 @@
 package org.dhis2.data.forms.dataentry.fields.picture;
 
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.CustomFormPictureBinding;
@@ -12,7 +11,6 @@ public class PictureHolder extends FormViewHolder {
 
     private final FlowableProcessor<RowAction> processor;
     private CustomFormPictureBinding binding;
-    private PictureViewModel model;
 
     public PictureHolder(
             PictureView.OnIntentSelected onIntentSelected,
@@ -23,15 +21,12 @@ public class PictureHolder extends FormViewHolder {
         this.binding = binding;
         this.binding.formPictures.setOnIntentSelected(onIntentSelected);
         this.binding.formPictures.setOnImageListener((file, value, uid) -> {
-            if (value != null)
-                this.binding.formPictures.setTextSelected(binding.getRoot().getContext().getString(R.string.image_selected));
             processor.onNext(
                     RowAction.create(uid, file != null ? file.getPath() : null, getAdapterPosition()));
         });
     }
 
     void update(PictureViewModel pictureViewModel) {
-        this.model = pictureViewModel;
         binding.formPictures.setProcessor(
                 pictureViewModel.uid().contains("_") ? pictureViewModel.uid().split("_")[0] : pictureViewModel.uid(),
                 pictureViewModel.uid().contains("_") ? pictureViewModel.uid().split("_")[1] : pictureViewModel.uid(),

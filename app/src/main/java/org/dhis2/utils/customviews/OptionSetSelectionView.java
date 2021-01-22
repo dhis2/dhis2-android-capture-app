@@ -3,17 +3,13 @@ package org.dhis2.utils.customviews;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.databinding.ViewDataBinding;
-
-import com.google.android.material.checkbox.MaterialCheckBox;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
@@ -104,6 +100,14 @@ public class OptionSetSelectionView extends FieldLayout {
             delete.setEnabled(isEditable);
             delete.setVisibility(isEditable ? View.VISIBLE : View.GONE);
         }
+
+        setEditable(isEditable,
+                labelView,
+                descriptionLabel,
+                delete,
+                radioGroup,
+                checkGroup
+        );
     }
 
     public void setOptionsToShow(List<String> optionsToHide, List<String> optionsToShow) {
@@ -202,9 +206,9 @@ public class OptionSetSelectionView extends FieldLayout {
     private boolean canShowOption(String optionUid) {
         boolean inOptionsToShow = optionsToShow.contains(optionUid);
         boolean inOptionsToHide = optionsToHide.contains(optionUid);
-        if(!optionsToShow.isEmpty()){
+        if (!optionsToShow.isEmpty()) {
             return inOptionsToShow;
-        }else{
+        } else {
             return !inOptionsToHide;
         }
     }

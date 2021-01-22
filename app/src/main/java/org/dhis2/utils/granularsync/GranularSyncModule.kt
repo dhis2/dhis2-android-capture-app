@@ -25,10 +25,13 @@
 
 package org.dhis2.utils.granularsync
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
+import org.dhis2.R
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.hisp.dhis.android.core.D2
 
 @Module
@@ -42,6 +45,7 @@ class GranularSyncModule(
 
     @Provides
     fun providesPresenter(
+        context: Context,
         d2: D2,
         schedulerProvider: SchedulerProvider,
         workManagerController: WorkManagerController
@@ -53,7 +57,8 @@ class GranularSyncModule(
             dvOrgUnit,
             dvAttrCombo,
             dvPeriodId,
-            workManagerController
+            workManagerController,
+            ErrorModelMapper(context.getString(R.string.fk_message))
         )
     }
 }

@@ -12,5 +12,15 @@ data class EventViewModel(
     val lastUpdate: Date?,
     val isSelected: Boolean,
     val canAddNewEvent: Boolean,
-    val orgUnitName: String
-)
+    val orgUnitName: String,
+    val catComboName: String?,
+    val dataElementValues: List<Pair<String, String?>>?,
+    val groupedByStage: Boolean? = false,
+    var valueListIsOpen: Boolean = false,
+    val showTopShadow: Boolean = false,
+    val showBottomShadow: Boolean = false
+) {
+    fun toggleValueList() {
+        this.valueListIsOpen = !valueListIsOpen
+    }
+}

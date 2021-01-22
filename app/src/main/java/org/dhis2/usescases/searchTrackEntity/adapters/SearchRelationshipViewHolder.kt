@@ -10,6 +10,7 @@ class SearchRelationshipViewHolder(
     override fun itemConfiguration() {
         binding.sortingFieldName.visibility = View.GONE
         binding.sortingFieldValue.visibility = View.GONE
+        binding.syncState.visibility = View.GONE
     }
     override fun itemViewClick() {
         itemView.setOnClickListener {

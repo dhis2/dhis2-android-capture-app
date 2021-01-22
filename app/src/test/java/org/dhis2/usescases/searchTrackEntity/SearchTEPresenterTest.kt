@@ -2,6 +2,7 @@ package org.dhis2.usescases.searchTrackEntity
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
@@ -22,7 +23,7 @@ import org.mockito.Mockito
 
 class SearchTEPresenterTest {
 
-    lateinit var presenter: SearchTEPresenter
+    lateinit var presenter: SearchTEContractsModule.Presenter
 
     private val view: SearchTEContractsModule.View = mock()
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
@@ -43,6 +44,7 @@ class SearchTEPresenterTest {
             )
                 .displayFrontPageList(true)
                 .minAttributesRequiredToSearch(0).build()
+
         presenter = SearchTEPresenter(
             view,
             d2,
@@ -55,6 +57,69 @@ class SearchTEPresenterTest {
             eventToEventUiComponent,
             preferenceProvider
         )
+    }
+
+    @Test
+    fun `Should ignore initial program spinner selection`() {
+        val program = Program.builder()
+            .uid("uid")
+            .displayFrontPageList(true)
+            .minAttributesRequiredToSearch(1)
+            .build()
+
+        presenter.setProgramForTesting(program)
+
+        presenter.program = program
+
+        verify(view, never()).clearList(program.uid())
+        verify(view, never()).setFabIcon(true)
+        verify(view, never()).clearData()
+    }
+
+    @Test
+    fun `Should clear data, fab and list when another program is selected`() {
+        val program = Program.builder()
+            .uid("uid")
+            .displayFrontPageList(true)
+            .minAttributesRequiredToSearch(1)
+            .build()
+
+        val newSelectedProgram = Program.builder()
+            .uid("uid2")
+            .displayFrontPageList(true)
+            .minAttributesRequiredToSearch(1)
+            .build()
+
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq(newSelectedProgram.uid())
+        ) doReturn mock()
+
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq(newSelectedProgram.uid())
+                .byEnableUserAssignment()
+        ) doReturn mock()
+
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq(newSelectedProgram.uid())
+                .byEnableUserAssignment().isTrue
+        ) doReturn mock()
+
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq(newSelectedProgram.uid())
+                .byEnableUserAssignment().isTrue
+                .blockingIsEmpty()
+        ) doReturn false
+
+        presenter.setProgramForTesting(program)
+        presenter.program = newSelectedProgram
+
+        verify(view).clearList(newSelectedProgram.uid())
+        verify(view).setFabIcon(true)
+        verify(view).clearData()
     }
 
     @Test

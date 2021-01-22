@@ -12,12 +12,10 @@ import android.view.View
 import android.view.WindowManager
 import android.webkit.URLUtil
 import android.widget.ArrayAdapter
-import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import co.infinum.goldfinger.Goldfinger
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.BufferedReader
@@ -128,6 +126,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
         binding.clearPassButton.setOnClickListener { binding.userPassEdit.text = null }
         binding.clearUserNameButton.setOnClickListener { binding.userNameEdit.text = null }
+        binding.clearUrl.setOnClickListener { binding.serverUrlEdit.text = null }
 
         setTestingCredentials()
         setAutocompleteAdapters()
@@ -257,7 +256,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             getString(R.string.send_user_name_title), getString(R.string.send_user_name_mesage),
             getString(R.string.action_agree), getString(R.string.cancel),
             object : OnDialogClickListener {
-                override fun onPossitiveClick(alertDialog: AlertDialog) {
+                override fun onPositiveClick() {
                     sharedPreferences.edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true)
                         .apply()
                     sharedPreferences.edit()
@@ -266,13 +265,13 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                     showLoginProgress(true)
                 }
 
-                override fun onNegativeClick(alertDialog: AlertDialog) {
+                override fun onNegativeClick() {
                     sharedPreferences.edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true)
                         .apply()
                     showLoginProgress(true)
                 }
             }
-        )?.show()
+        )
     }
 
     override fun onUnlockClick(android: View) {
@@ -325,7 +324,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                     getString(R.string.biometrics_security_title),
                     getString(R.string.biometrics_security_text),
                     object : OnDialogClickListener {
-                        override fun onPossitiveClick(alertDialog: AlertDialog) {
+                        override fun onPositiveClick() {
                             presenter.saveUserCredentials(
                                 binding.serverUrlEdit.text.toString(),
                                 binding.userNameEdit.text.toString(),
@@ -334,11 +333,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                             goToNextScreen()
                         }
 
-                        override fun onNegativeClick(alertDialog: AlertDialog) {
+                        override fun onNegativeClick() {
                             goToNextScreen()
                         }
                     }
-                )?.show()
+                )
             } else {
                 presenter.saveUserCredentials(
                     binding.serverUrlEdit.text.toString(),
@@ -395,14 +394,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         val intent = Intent(this, WebViewActivity::class.java)
         intent.putExtra(WEB_VIEW_URL, binding.serverUrlEdit.text.toString() + ACCOUNT_RECOVERY)
         startActivity(intent)
-    }
-
-    override fun displayAlertDialog() {
-        MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-            .setTitle(R.string.login_server_info_title)
-            .setMessage(R.string.login_server_info_message)
-            .setPositiveButton(R.string.action_accept, null)
-            .show()
     }
 
     override fun navigateToQRActivity() {

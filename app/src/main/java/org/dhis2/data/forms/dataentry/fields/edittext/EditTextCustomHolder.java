@@ -26,6 +26,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
 import org.dhis2.utils.ValidationUtils;
 import org.dhis2.utils.customviews.TextInputAutoCompleteTextView;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
@@ -68,11 +69,14 @@ public class EditTextCustomHolder extends FormViewHolder {
             validateRegex();
         });
         binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
-            selectedFieldUid = null;
-            binding.customEdittext.getEditText().clearFocus();
-            sendAction();
-            closeKeyboard(binding.customEdittext.getEditText());
-            return true;
+            if(editTextModel.valueType() != ValueType.LONG_TEXT) {
+                selectedFieldUid = null;
+                binding.customEdittext.getEditText().clearFocus();
+                closeKeyboard(binding.customEdittext.getEditText());
+                return true;
+            }else{
+                return false;
+            }
         });
 
         binding.customEdittext.setActivationListener(() -> {

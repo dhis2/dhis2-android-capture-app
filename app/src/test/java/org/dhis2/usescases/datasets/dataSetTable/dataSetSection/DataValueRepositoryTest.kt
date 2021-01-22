@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import java.util.UUID
+import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -519,13 +520,14 @@ class DataValueRepositoryTest {
         val orgUnit = "orgUnit"
         val period = "period"
         val attributeOptionCombo = "attributeOptionCombo"
-        val dataApproval = DataApproval.builder()
-            .state(DataApprovalState.APPROVED_HERE)
-            .organisationUnit(orgUnit)
-            .period(period)
-            .attributeOptionCombo(attributeOptionCombo)
-            .workflow("workflow")
-            .build()
+        val approvalStates = listOf(
+            DataApprovalState.APPROVED_ELSEWHERE,
+            DataApprovalState.APPROVED_ABOVE,
+            DataApprovalState.APPROVED_HERE,
+            DataApprovalState.ACCEPTED_ELSEWHERE,
+            DataApprovalState.ACCEPTED_HERE
+        )
+
         whenever(
             d2.dataSetModule().dataApprovals()
                 .byOrganisationUnitUid()
@@ -563,20 +565,31 @@ class DataValueRepositoryTest {
                 .byAttributeOptionComboUid().eq(attributeOptionCombo)
                 .one()
         ) doReturn mock()
-        whenever(
-            d2.dataSetModule().dataApprovals()
-                .byOrganisationUnitUid().eq(orgUnit)
-                .byPeriodId().eq(period)
-                .byAttributeOptionComboUid().eq(attributeOptionCombo)
-                .one().blockingGet()
-        ) doReturn dataApproval
 
-        val testObserver = repository.isApproval(orgUnit, period, attributeOptionCombo).test()
+        approvalStates.forEach { dataApprovalState ->
+            val dataApproval = DataApproval.builder()
+                .state(dataApprovalState)
+                .organisationUnit(orgUnit)
+                .period(period)
+                .attributeOptionCombo(attributeOptionCombo)
+                .workflow("workflow")
+                .build()
 
-        testObserver.assertNoErrors()
-        testObserver.assertValue(true)
+            whenever(
+                d2.dataSetModule().dataApprovals()
+                    .byOrganisationUnitUid().eq(orgUnit)
+                    .byPeriodId().eq(period)
+                    .byAttributeOptionComboUid().eq(attributeOptionCombo)
+                    .one().blockingGet()
+            ) doReturn dataApproval
 
-        testObserver.dispose()
+            val testObserver = repository.isApproval(orgUnit, period, attributeOptionCombo).test()
+
+            testObserver.assertNoErrors()
+            testObserver.assertValue(true)
+
+            testObserver.dispose()
+        }
     }
 
     @Test
@@ -584,13 +597,7 @@ class DataValueRepositoryTest {
         val orgUnit = "orgUnit"
         val period = "period"
         val attributeOptionCombo = "attributeOptionCombo"
-        val dataApproval = DataApproval.builder()
-            .state(DataApprovalState.UNAPPROVED_ABOVE)
-            .organisationUnit(orgUnit)
-            .period(period)
-            .attributeOptionCombo(attributeOptionCombo)
-            .workflow("workflow")
-            .build()
+
         whenever(
             d2.dataSetModule().dataApprovals()
                 .byOrganisationUnitUid()
@@ -628,20 +635,40 @@ class DataValueRepositoryTest {
                 .byAttributeOptionComboUid().eq(attributeOptionCombo)
                 .one()
         ) doReturn mock()
-        whenever(
-            d2.dataSetModule().dataApprovals()
-                .byOrganisationUnitUid().eq(orgUnit)
-                .byPeriodId().eq(period)
-                .byAttributeOptionComboUid().eq(attributeOptionCombo)
-                .one().blockingGet()
-        ) doReturn dataApproval
 
-        val testObserver = repository.isApproval(orgUnit, period, attributeOptionCombo).test()
+        val approvalStates = listOf(
+            DataApprovalState.APPROVED_ELSEWHERE,
+            DataApprovalState.APPROVED_ABOVE,
+            DataApprovalState.APPROVED_HERE,
+            DataApprovalState.ACCEPTED_ELSEWHERE,
+            DataApprovalState.ACCEPTED_HERE
+        )
+        val unapprovedStates = DataApprovalState.values().filter { !approvalStates.contains(it) }
 
-        testObserver.assertNoErrors()
-        testObserver.assertValue(false)
+        unapprovedStates.forEach { dataApprovalState ->
+            val dataApproval = DataApproval.builder()
+                .state(dataApprovalState)
+                .organisationUnit(orgUnit)
+                .period(period)
+                .attributeOptionCombo(attributeOptionCombo)
+                .workflow("workflow")
+                .build()
 
-        testObserver.dispose()
+            whenever(
+                d2.dataSetModule().dataApprovals()
+                    .byOrganisationUnitUid().eq(orgUnit)
+                    .byPeriodId().eq(period)
+                    .byAttributeOptionComboUid().eq(attributeOptionCombo)
+                    .one().blockingGet()
+            ) doReturn dataApproval
+
+            val testObserver = repository.isApproval(orgUnit, period, attributeOptionCombo).test()
+
+            testObserver.assertNoErrors()
+            testObserver.assertValue(false)
+
+            testObserver.dispose()
+        }
     }
 
     @Test
@@ -680,6 +707,19 @@ class DataValueRepositoryTest {
                 .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
                 .get()
         ) doReturn Single.just(listOf(categoryOptionCombo))
+        whenever(
+            d2.userModule().authorities()
+                .byName()
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD)
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD)
+                .blockingIsEmpty()
+        ) doReturn false
 
         val testObserver = repository.canWriteAny().test()
 
@@ -725,6 +765,19 @@ class DataValueRepositoryTest {
                 .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
                 .get()
         ) doReturn Single.just(listOf(categoryOptionCombo))
+        whenever(
+            d2.userModule().authorities()
+                .byName()
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD)
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD)
+                .blockingIsEmpty()
+        ) doReturn false
 
         val testObserver = repository.canWriteAny().test()
 
@@ -778,6 +831,85 @@ class DataValueRepositoryTest {
                     OrganisationUnit.Scope.SCOPE_DATA_CAPTURE
                 ).blockingGet()
         ) doReturn listOf(OrganisationUnit.builder().uid(UUID.randomUUID().toString()).build())
+        whenever(
+            d2.userModule().authorities()
+                .byName()
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD)
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD)
+                .blockingIsEmpty()
+        ) doReturn false
+
+        val testObserver = repository.canWriteAny().test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValue(false)
+
+        testObserver.dispose()
+    }
+
+    @Test
+    fun `Should return user don't have data value authority`() {
+        val dataSet = dummyDataSet()
+        val categoryOption = CategoryOption.builder()
+            .uid(UUID.randomUUID().toString())
+            .access(Access.create(false, false, DataAccess.create(false, false)))
+            .build()
+        val categoryOptionCombo = CategoryOptionCombo.builder()
+            .uid(UUID.randomUUID().toString())
+            .categoryOptions(listOf(categoryOption))
+            .build()
+
+        whenever(
+            d2.dataSetModule().dataSets().uid(dataSetUid).get()
+        ) doReturn Single.just(dataSet)
+
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
+                .get()
+        ) doReturn Single.just(listOf(categoryOptionCombo))
+
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+                .byDataSetUids(listOf(dataSetUid))
+                .byOrganisationUnitScope(
+                    OrganisationUnit.Scope.SCOPE_DATA_CAPTURE
+                ).blockingGet()
+        ) doReturn listOf(OrganisationUnit.builder().uid(UUID.randomUUID().toString()).build())
+        whenever(
+            d2.userModule().authorities()
+                .byName()
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD)
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD)
+                .blockingIsEmpty()
+        ) doReturn true
 
         val testObserver = repository.canWriteAny().test()
 

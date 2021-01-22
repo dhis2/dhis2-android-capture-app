@@ -8,6 +8,7 @@ import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
 import org.dhis2.utils.filters.sorting.SortingItem;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -28,7 +29,7 @@ import kotlin.Triple;
 public interface ProgramEventDetailRepository {
 
     @NonNull
-    LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(
+    LiveData<PagedList<EventViewModel>> filteredProgramEvents(
             List<DatePeriod> dateFilter,
             List<String> orgUnitFilter,
             List<CategoryOptionCombo> catOptionComboUid,

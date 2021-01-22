@@ -1,9 +1,11 @@
 package org.dhis2.data.forms.dataentry;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
@@ -47,13 +49,14 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.tuples.Trio;
-import org.dhis2.databinding.FormSectionBinding;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
@@ -79,10 +82,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
     private static final int PICTURE = 15;
     private static final int SCAN_CODE = 16;
     private static final int OPTION_SET_SELECT = 18;
-
-
-    @NonNull
-    private final List<FieldViewModel> viewModels;
+    private SectionHandler sectionHandler = new SectionHandler();
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
@@ -102,12 +102,13 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
     private String lastFocusItem;
     private int nextFocusPosition = -1;
 
-    List<Integer> sectionPositions;
+    Map<String, Integer> sectionPositions = new LinkedHashMap<>();
     private String rendering = ProgramStageSectionRenderingType.LISTING.name();
     private Integer totalFields = 0;
     private int openSectionPos = 0;
-    private boolean sectionAlreadyOpen = false;
     private String lastOpenedSectionUid = "";
+
+    private String openSection;
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
@@ -115,7 +116,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         super(new DataEntryDiff());
         setHasStableIds(true);
         rows = new ArrayList<>();
-        viewModels = new ArrayList<>();
         processor = PublishProcessor.create();
         sectionProcessor = PublishProcessor.create();
         imageSelector = new ObservableField<>("");
@@ -153,7 +153,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         super(new DataEntryDiff());
         setHasStableIds(true);
         rows = new ArrayList<>();
-        viewModels = new ArrayList<>();
         this.processor = processor;
         this.sectionProcessor = sectionProcessor;
         imageSelector = new ObservableField<>("");
@@ -198,14 +197,20 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         if (!(holder instanceof SectionHolder)) {
             if (!(holder instanceof ImageHolder)) {
                 holder.itemView.setBackgroundResource(R.color.form_field_background);
+                holder.itemView.setActivated(false);
             }
         } else {
-            ((SectionHolder) holder).setBottomShadow(
-                    position > 0 && getItemViewType(position - 1) != SECTION);
-            ((SectionHolder) holder).setLastSectionHeight(
-                    position == getItemCount() - 1 && getItemViewType(position - 1) != SECTION);
-            ((SectionHolder) holder).setSectionNumber(getSectionNumber(position));
+            updateSectionData((SectionHolder) holder, position, false);
         }
+    }
+
+    public void updateSectionData(SectionHolder holder, int position, boolean isHeader) {
+        holder.setBottomShadow(!isHeader && position > 0 && getItemViewType(position - 1) != SECTION);
+        if (position > 0) {
+            holder.setLastSectionHeight(
+                    position == getItemCount() - 1 && getItemViewType(position - 1) != SECTION);
+        }
+        holder.setSectionNumber(getSectionNumber(position));
     }
 
     private int getSectionNumber(int sectionPosition) {
@@ -283,12 +288,12 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
     }
 
     public void swap(@NonNull List<FieldViewModel> updates, Runnable commitCallback) {
-        sectionPositions = new ArrayList<>();
+        sectionPositions = new LinkedHashMap<>();
         rendering = null;
         int imageFields = 0;
         for (FieldViewModel fieldViewModel : updates) {
             if (fieldViewModel instanceof SectionViewModel) {
-                sectionPositions.add(viewModels.indexOf(fieldViewModel));
+                sectionPositions.put(fieldViewModel.uid(), updates.indexOf(fieldViewModel));
                 if (((SectionViewModel) fieldViewModel).isOpen()) {
                     rendering = ((SectionViewModel) fieldViewModel).rendering();
                     totalFields = ((SectionViewModel) fieldViewModel).totalFields();
@@ -302,7 +307,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         }
 
         totalFields = imageFields;
-
 
         submitList(updates, () -> {
             int currentFocusPosition = -1;
@@ -330,8 +334,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
 
             commitCallback.run();
         });
-
-
     }
 
     public void setLastFocusItem(String lastFocusItem) {
@@ -342,7 +344,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
 
     public int getItemSpan(int position) {
 
-        if (getItemViewType(position) == SECTION || getItemViewType(position) == DISPLAY || rendering == null) {
+        if (position >= getItemCount() || getItemViewType(position) == SECTION || getItemViewType(position) == DISPLAY || rendering == null) {
             return 2;
         } else {
             switch (ProgramStageSectionRenderingType.valueOf(rendering)) {
@@ -356,17 +358,13 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         }
     }
 
-    public SectionViewModel getSectionAt(int position) {
-        return (SectionViewModel) getItem(position);
-    }
-
     public String setCurrentSection(String currentSection) {
         selectedSection.set(currentSection);
         return selectedSection.get();
     }
 
-    public SectionHolder createHeader(FormSectionBinding headerBinding) {
-        return new SectionHolder(headerBinding, selectedSection, sectionProcessor);
+    public void saveOpenedSection(String openSectionUid) {
+        this.openSection = openSectionUid;
     }
 
     public int sectionViewType() {
@@ -375,15 +373,47 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
 
     private void setOpenSectionPos(int sectionOpened, String openSectionUid) {
         lastOpenedSectionUid = openSectionUid;
-        sectionAlreadyOpen = openSectionPos == sectionOpened;
         openSectionPos = sectionOpened;
     }
 
-    public int getOpenSectionPos() {
-        return openSectionPos;
+    public int getSavedPosition() {
+        if (TextUtils.isEmpty(openSection))
+            return -1;
+        else {
+            return sectionPositions.get(openSection);
+        }
     }
 
-    public boolean isSectionAlreadyOpen() {
-        return sectionAlreadyOpen;
+    public int getSectionSize() {
+        return sectionPositions.size();
+    }
+
+    @Nullable
+    public SectionViewModel getSectionForPosition(int visiblePos) {
+        int sectionPosition = sectionHandler.getSectionPositionFromVisiblePosition(
+                visiblePos,
+                isSection(visiblePos),
+                new ArrayList<>(sectionPositions.values()));
+        if (sectionPosition != -1) {
+            return (SectionViewModel) getItem(sectionPosition);
+        } else {
+            return null;
+        }
+    }
+
+    public Row<SectionHolder, SectionViewModel> getRowSection() {
+        return rows.get(SECTION);
+    }
+
+    public int getSectionPosition(String sectionUid) {
+        return sectionPositions.get(sectionUid);
+    }
+
+    public boolean isSection(int position) {
+        if (position <= getItemCount()) {
+            return getItemViewType(position) == SECTION;
+        } else {
+            return false;
+        }
     }
 }

@@ -50,8 +50,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
+
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static android.app.Activity.RESULT_OK;
 import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.RELATIONSHIP_UID;
@@ -95,10 +97,11 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_relationships, container, false);
         relationshipAdapter = new RelationshipAdapter(presenter);
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
-
-        relationshipMapManager = new RelationshipMapManager();
-        relationshipMapManager.init(binding.mapView);
+        relationshipMapManager = new RelationshipMapManager(binding.mapView);
         relationshipMapManager.setOnMapClickListener(this);
+        relationshipMapManager.init(() -> {
+            return Unit.INSTANCE;
+        });
 
         TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) getContext();
         activity.relationshipMap().observe(this, showMap -> {
@@ -250,16 +253,15 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                 getString(R.string.no),
                 new OnDialogClickListener() {
                     @Override
-                    public void onPossitiveClick(AlertDialog alertDialog) {
-                        //NotUsed
+                    public void onPositiveClick() {
+
                     }
 
                     @Override
-                    public void onNegativeClick(AlertDialog alertDialog) {
-                        //NotUsed
+                    public void onNegativeClick() {
+
                     }
-                })
-                .show();
+                });
     }
 
     @Override
@@ -273,27 +275,25 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                 getString(R.string.no),
                 new OnDialogClickListener() {
                     @Override
-                    public void onPossitiveClick(AlertDialog alertDialog) {
-                        //NotUsed
+                    public void onPositiveClick() {
+
                     }
 
                     @Override
-                    public void onNegativeClick(AlertDialog alertDialog) {
-                        //NotUsed
+                    public void onNegativeClick() {
+
                     }
-                })
-                .show();
+                });
     }
 
     @Override
     public void setFeatureCollection(
-            @Nonnull String currentTei,
-            @Nonnull List<RelationshipUiComponentModel> relationships,
+           @NonNull String currentTei,
+           @NonNull List<RelationshipUiComponentModel> relationships,
             @NotNull kotlin.Pair<? extends Map<String, FeatureCollection>, ? extends BoundingBox> map) {
         relationshipMapManager.update(
                 map.getFirst(),
-                map.getSecond(),
-                FeatureType.POINT
+                map.getSecond()
         );
         this.sources = map.getFirst().keySet();
 

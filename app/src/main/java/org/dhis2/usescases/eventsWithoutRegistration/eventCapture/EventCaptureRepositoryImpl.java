@@ -31,6 +31,7 @@ import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.legendset.Legend;
 import org.hisp.dhis.android.core.legendset.LegendSet;
 import org.hisp.dhis.android.core.maintenance.D2Error;
@@ -55,6 +56,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -248,9 +250,19 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                     renderList.add(fieldFactory.create(
                             fieldViewModel.uid() + "." + option.uid(),
-                            option.displayName() + ImageViewModel.NAME_CODE_DELIMITATOR + option.code(), ValueType.TEXT, false,
-                            fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                            fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, options.size(), objectStyle, fieldViewModel.fieldMask() ,null));
+                            fieldViewModel.label() + ImageViewModel.NAME_CODE_DELIMITATOR + option.displayName() + ImageViewModel.NAME_CODE_DELIMITATOR + option.code(),
+                            ValueType.TEXT,
+                            fieldViewModel.mandatory(),
+                            fieldViewModel.optionSet(),
+                            fieldViewModel.value(),
+                            fieldViewModel.programStageSection(),
+                            fieldViewModel.allowFutureDate(),
+                            fieldViewModel.editable() == null ? false : fieldViewModel.editable(),
+                            renderingType, fieldViewModel.description(),
+                            fieldRendering,
+                            options.size(),
+                            objectStyle,
+                            fieldViewModel.fieldMask(),null));
 
                 }
             } else if (fieldViewModel instanceof OptionSetViewModel) {
@@ -289,6 +301,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             }
                         }
 
+                        String error = checkConflicts(uid, valueRepository.blockingExists() ? valueRepository.blockingGet().value() : null);
+
                         boolean editable = fieldViewModel.editable() != null ? fieldViewModel.editable() : true;
                         fieldViewModel = fieldViewModel
                                 .withValue(value)
@@ -302,6 +316,10 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             String colorByLegend = getColorByLegend(rawValue, uid);
                             fieldViewModel = ((SpinnerViewModel)fieldViewModel)
                                     .withColorByLegend(colorByLegend);
+                        }
+
+                        if (!error.isEmpty()) {
+                            fieldViewModel.withError(error);
                         }
 
                         return fieldViewModel;
@@ -353,7 +371,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         String rawValue = dataValue;
                         String friendlyValue = dataValue != null ? ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2) : null;
 
-                        boolean allowFurureDates = programStageDataElement.allowFutureDate() != null ? programStageDataElement.allowFutureDate() : false;
+                        boolean allowFutureDates = programStageDataElement.allowFutureDate() != null ? programStageDataElement.allowFutureDate() : false;
                         String formName = de.displayFormName();
                         String description = de.displayDescription();
 
@@ -372,6 +390,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                         ObjectStyle objectStyle = de.style() != null ? de.style() : ObjectStyle.builder().build();
 
+                        String error = checkConflicts(de.uid(), dataValue);
+
                         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
                             dataValue = dataValue + "_ou_" + friendlyValue;
                         } else {
@@ -383,16 +403,42 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         ProgramStageSectionRenderingType renderingType = programStageSection != null && programStageSection.renderType() != null &&
                                 programStageSection.renderType().mobile() != null ?
                                 programStageSection.renderType().mobile().type() : null;
-                        return fieldFactory.create(uid,formName  == null ? displayName : formName,
-                                valueType, mandatory, optionSet, dataValue,
-                                programStageSection != null ? programStageSection.uid() : null, allowFurureDates,
-                                isEventEditable,
-                                renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(), colorByLegend);
+
+                        FieldViewModel fieldViewModel =
+                                fieldFactory.create(uid, formName == null ? displayName : formName,
+                                        valueType, mandatory, optionSet, dataValue,
+                                        programStageSection != null ? programStageSection.uid() : null, allowFutureDates,
+                                        isEventEditable,
+                                        renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(),colorByLegend);
+
+                        if (!error.isEmpty()) {
+                            return fieldViewModel.withError(error);
+                        } else {
+                            return fieldViewModel;
+                        }
+
                     })
                     .toList().toFlowable()
                     .map(data -> sectionFields = data)
                     .map(this::checkRenderType);
         }
+    }
+
+    private String checkConflicts(String dataElementUid, String value) {
+        List<TrackerImportConflict> conflicts =
+                d2.importModule().trackerImportConflicts()
+                        .byEventUid().eq(eventUid)
+                        .blockingGet();
+        String error = "";
+        for (TrackerImportConflict conflict : conflicts) {
+            if (conflict.event() != null && conflict.event().equals(eventUid) &&
+                    conflict.dataElement() != null && conflict.dataElement().equals(dataElementUid)) {
+                if (Objects.equals(conflict.value(), value)) {
+                    error = conflict.displayDescription();
+                }
+            }
+        }
+        return error;
     }
 
     private String getColorByLegend(String value, String dataElementUid) {
