@@ -73,14 +73,12 @@ class CarouselTeiHolder(
                 attributeVisibilityCallback(this)
             }
             if (tei.geometry() == null) {
-                binding.mapNavigateFab.hide()
                 binding.noCoordinatesLabel.root.visibility = View.VISIBLE
                 binding.noCoordinatesLabel.noCoordinatesMessage.text =
                     itemView.context.getString(R.string.no_coordinates_item)
                         .format(teTypeName.toLowerCase(Locale.ROOT))
             } else {
                 binding.noCoordinatesLabel.root.visibility = View.GONE
-                binding.mapNavigateFab.show()
             }
             binding.sortingFieldName.text = data.sortingKey
             binding.sortingFieldValue.text = data.sortingValue
@@ -136,11 +134,9 @@ class CarouselTeiHolder(
 
     fun showNavigateButton() {
         binding.mapNavigateFab.show()
-        binding.mapNavigateFab.visibility = View.VISIBLE
     }
 
     fun hideNavigateButton() {
         binding.mapNavigateFab.hide()
-        binding.mapNavigateFab.visibility = View.GONE
     }
 }
