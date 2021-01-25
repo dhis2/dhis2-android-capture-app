@@ -8,6 +8,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import org.dhis2.data.analytics.AnalyticsModel
 import org.dhis2.data.analytics.IndicatorModel
+import org.dhis2.data.analytics.LOCATION_INDICATOR_WIDGET
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.hisp.dhis.android.core.program.ProgramIndicator
@@ -60,7 +61,8 @@ class IndicatorsPresenterTest {
                 ProgramIndicator.builder().uid("indicator_uid")
                     .displayInForm(true).build(),
                 "indicator_value",
-                "#ffffff"
+                "#ffffff",
+                LOCATION_INDICATOR_WIDGET
             )
         )
 }
