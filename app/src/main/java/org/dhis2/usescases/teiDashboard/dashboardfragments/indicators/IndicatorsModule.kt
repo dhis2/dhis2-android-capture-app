@@ -50,24 +50,4 @@ class IndicatorsModule(
             )
         }
     }
-
-    /*@Provides
-    @PerFragment
-    fun ruleEngineRepository(
-        @NonNull formRepository: FormRepository,
-        d2: D2
-    ): RuleEngineRepository {
-        return if (visualizationType == VisualizationType.TRACKER) {
-            var enrollmentRepository = d2.enrollmentModule()
-                .enrollments().byTrackedEntityInstance().eq(recordUid)
-            if (programUid.isNotEmpty()) {
-                enrollmentRepository = enrollmentRepository.byProgram().eq(programUid)
-            }
-
-            val uid = enrollmentRepository.one().blockingGet().uid()
-            EnrollmentRuleEngineRepository(formRepository, uid, d2)
-        } else {
-            EventRuleEngineRepository(d2, formRepository, recordUid)
-        }
-    }*/
 }
