@@ -1,7 +1,6 @@
 package org.dhis2.animations
 
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.Transformation
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton.decrement
@@ -40,7 +39,8 @@ fun View.collapse(callback: () -> Unit) {
     startAnimation(a)
 }
 
-fun View.expand() {
+fun View.expand(callback: () -> Unit) {
+    callback.invoke()
     val matchParentMeasureSpec = View.MeasureSpec.makeMeasureSpec(
         (parent as View).width,
         View.MeasureSpec.EXACTLY
@@ -57,11 +57,7 @@ fun View.expand() {
     visibility = View.VISIBLE
     val a: Animation = object : Animation() {
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-            layoutParams.height = if (interpolatedTime == 1f) {
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            } else {
-                (targetHeight * interpolatedTime).toInt()
-            }
+            layoutParams.height = (targetHeight * interpolatedTime).toInt()
             requestLayout()
         }
 
@@ -76,6 +72,7 @@ fun View.expand() {
 
         override fun onAnimationEnd(animation: Animation) {
             decrement()
+            callback.invoke()
         }
 
         override fun onAnimationRepeat(animation: Animation) {}
