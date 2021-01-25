@@ -7,11 +7,15 @@ import io.reactivex.functions.Function3
 import org.dhis2.data.analytics.AnalyticsModel
 import org.dhis2.data.analytics.ChartModel
 import org.dhis2.data.analytics.IndicatorModel
+import org.dhis2.data.analytics.LOCATION_FEEDBACK_WIDGET
+import org.dhis2.data.analytics.LOCATION_INDICATOR_WIDGET
+import org.dhis2.data.analytics.SectionTitle
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.tuples.Pair
 import org.dhis2.data.tuples.Trio
 import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.Result
+import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.program.ProgramIndicator
@@ -26,7 +30,8 @@ class TrackerAnalyticsRepository(
     val ruleEngineRepository: RuleEngineRepository,
     val charts: Charts?,
     val programUid: String,
-    val teiUid: String
+    val teiUid: String,
+    val resourceManager: ResourceManager
 ) : IndicatorRepository {
 
     val enrollmentUid: String
@@ -56,17 +61,31 @@ class TrackerAnalyticsRepository(
                 charts?.getCharts(enrollmentUid)?.map { ChartModel(it) }
             ),
             Function3 { indicators, ruleIndicators, charts ->
-                val indicatorsMutable = indicators.toMutableList()
-                for (indicator in ruleIndicators) {
-                    if (!indicators.contains(indicator)) {
-                        indicatorsMutable.add(indicator)
+                mutableListOf<AnalyticsModel>().apply {
+                    val feedbackList = ruleIndicators.filter {
+                        it is IndicatorModel && it.location == LOCATION_FEEDBACK_WIDGET
+                    }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
+                    if (feedbackList.isNotEmpty()) {
+                        add(SectionTitle(resourceManager.sectionFeedback()))
+                        addAll(feedbackList)
+                    }
+                    val indicatorList = indicators.toMutableList().apply {
+                        addAll(
+                            ruleIndicators.filter {
+                                it is IndicatorModel &&
+                                    it.location == LOCATION_INDICATOR_WIDGET
+                            }
+                        )
+                    }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
+                    if (indicatorList.isNotEmpty()) {
+                        add(SectionTitle(resourceManager.sectionIndicators()))
+                        addAll(indicatorList)
+                    }
+                    if (charts.isNotEmpty()) {
+                        add(SectionTitle(resourceManager.sectionCharts()))
+                        addAll(charts)
                     }
                 }
-                val finalList =
-                    indicatorsMutable.sortedBy {
-                        (it as IndicatorModel).programIndicator?.displayName()
-                    }.toMutableList()
-                finalList.apply { addAll(charts) }
             }
         )
     }
@@ -96,7 +115,7 @@ class TrackerAnalyticsRepository(
                     .flatMap {
                         getLegendColorForIndicator(it.val0(), it.val1())
                     }.map {
-                        IndicatorModel(it.val0(), it.val1(), it.val2())
+                        IndicatorModel(it.val0(), it.val1(), it.val2(), LOCATION_INDICATOR_WIDGET)
                     }
                     .toList()
             }.flatMap { it.toFlowable() }
@@ -151,17 +170,15 @@ class TrackerAnalyticsRepository(
                         .flatMap { ruleEngineRepository.reCalculate() }
                         .map { effects ->
                             // Restart rule engine to take into account value changes
-                            applyRuleEffects(effects).map {
-                                IndicatorModel(it.val0(), it.val1(), it.val2())
-                            }
+                            applyRuleEffects(effects)
                         }
                 }
             }
 
     private fun applyRuleEffects(
         calcResult: Result<RuleEffect>
-    ): List<Trio<ProgramIndicator, String, String>> {
-        val indicators = arrayListOf<Trio<ProgramIndicator, String, String>>()
+    ): List<IndicatorModel> {
+        val indicators = arrayListOf<IndicatorModel>()
 
         if (calcResult.error() != null) {
             Timber.e(calcResult.error())
@@ -172,19 +189,23 @@ class TrackerAnalyticsRepository(
             val ruleAction = ruleEffect.ruleAction()
             if (!ruleEffect.data().contains("#{")) {
                 if (ruleAction is RuleActionDisplayKeyValuePair) {
-                    val indicator = Trio.create(
+                    val indicator = IndicatorModel(
                         ProgramIndicator.builder()
                             .uid((ruleAction).content())
                             .displayName((ruleAction).content())
                             .build(),
-                        ruleEffect.data(), ""
+                        ruleEffect.data(),
+                        "",
+                        ruleAction.location()
                     )
 
                     indicators.add(indicator)
                 } else if (ruleAction is RuleActionDisplayText) {
-                    val indicator: Trio<ProgramIndicator, String, String> = Trio.create(
+                    val indicator = IndicatorModel(
                         null,
-                        ruleAction.content() + ruleEffect.data(), ""
+                        ruleAction.content() + ruleEffect.data(),
+                        "",
+                        ruleAction.location()
                     )
 
                     indicators.add(indicator)

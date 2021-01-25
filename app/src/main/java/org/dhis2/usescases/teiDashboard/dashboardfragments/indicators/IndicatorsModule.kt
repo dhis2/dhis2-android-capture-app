@@ -6,7 +6,6 @@ import dhis2.org.analytics.charts.Charts
 import org.dhis2.data.dagger.PerFragment
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 
@@ -42,14 +41,16 @@ class IndicatorsModule(
                 ruleEngineRepository,
                 charts,
                 programUid,
-                recordUid
+                recordUid,
+                resourceManager
             )
         } else {
             EventIndicatorRepository(
                 d2,
                 ruleEngineRepository,
                 programUid,
-                recordUid
+                recordUid,
+                resourceManager
             )
         }
     }

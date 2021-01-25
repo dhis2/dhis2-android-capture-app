@@ -5,10 +5,14 @@ import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import org.dhis2.data.analytics.AnalyticsModel
 import org.dhis2.data.analytics.IndicatorModel
+import org.dhis2.data.analytics.LOCATION_FEEDBACK_WIDGET
+import org.dhis2.data.analytics.LOCATION_INDICATOR_WIDGET
+import org.dhis2.data.analytics.SectionTitle
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.tuples.Pair
 import org.dhis2.data.tuples.Trio
 import org.dhis2.utils.Result
+import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.program.ProgramIndicator
@@ -22,7 +26,8 @@ class EventIndicatorRepository(
     val d2: D2,
     val ruleEngineRepository: RuleEngineRepository,
     val programUid: String,
-    val eventUid: String
+    val eventUid: String,
+    val resourceManager: ResourceManager
 ) : IndicatorRepository {
 
     override fun fetchData(): Flowable<List<AnalyticsModel>> {
@@ -32,15 +37,27 @@ class EventIndicatorRepository(
             getIndicators(),
             getRulesIndicators(),
             BiFunction { indicators, ruleIndicators ->
-                val indicatorsMutable = indicators.toMutableList()
-                for (indicator in ruleIndicators) {
-                    if (!indicators.contains(indicator)) {
-                        indicatorsMutable.add(indicator)
+                mutableListOf<AnalyticsModel>().apply {
+                    val feedbackList = ruleIndicators.filter {
+                        it is IndicatorModel && it.location == LOCATION_FEEDBACK_WIDGET
+                    }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
+                    if (feedbackList.isNotEmpty()) {
+                        add(SectionTitle(resourceManager.sectionFeedback()))
+                        addAll(feedbackList)
+                    }
+                    val indicatorList = indicators.toMutableList().apply {
+                        addAll(
+                            ruleIndicators.filter {
+                                it is IndicatorModel &&
+                                    it.location == LOCATION_INDICATOR_WIDGET
+                            }
+                        )
+                    }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
+                    if (indicatorList.isNotEmpty()) {
+                        add(SectionTitle(resourceManager.sectionIndicators()))
+                        addAll(indicatorList)
                     }
                 }
-                indicatorsMutable.sortedBy {
-                    (it as IndicatorModel).programIndicator?.displayName()
-                }.toMutableList()
             }
         )
     }
@@ -70,7 +87,7 @@ class EventIndicatorRepository(
                     .flatMap {
                         getLegendColorForIndicator(it.val0(), it.val1())
                     }.map {
-                        IndicatorModel(it.val0(), it.val1(), it.val2())
+                        IndicatorModel(it.val0(), it.val1(), it.val2(), LOCATION_INDICATOR_WIDGET)
                     }
                     .toList()
             }.flatMap { it.toFlowable() }
@@ -125,17 +142,15 @@ class EventIndicatorRepository(
                         .flatMap { ruleEngineRepository.reCalculate() }
                         .map { effects ->
                             // Restart rule engine to take into account value changes
-                            applyRuleEffects(effects).map {
-                                IndicatorModel(it.val0(), it.val1(), it.val2())
-                            }
+                            applyRuleEffects(effects)
                         }
                 }
             }
 
     private fun applyRuleEffects(
         calcResult: Result<RuleEffect>
-    ): List<Trio<ProgramIndicator, String, String>> {
-        val indicators = arrayListOf<Trio<ProgramIndicator, String, String>>()
+    ): List<AnalyticsModel> {
+        val indicators = arrayListOf<IndicatorModel>()
 
         if (calcResult.error() != null) {
             Timber.e(calcResult.error())
@@ -146,19 +161,23 @@ class EventIndicatorRepository(
             val ruleAction = ruleEffect.ruleAction()
             if (!ruleEffect.data().contains("#{")) {
                 if (ruleAction is RuleActionDisplayKeyValuePair) {
-                    val indicator = Trio.create(
+                    val indicator = IndicatorModel(
                         ProgramIndicator.builder()
                             .uid((ruleAction).content())
                             .displayName((ruleAction).content())
                             .build(),
-                        ruleEffect.data(), ""
+                        ruleEffect.data(),
+                        "",
+                        ruleAction.location()
                     )
 
                     indicators.add(indicator)
                 } else if (ruleAction is RuleActionDisplayText) {
-                    val indicator: Trio<ProgramIndicator, String, String> = Trio.create(
+                    val indicator = IndicatorModel(
                         null,
-                        ruleAction.content() + ruleEffect.data(), ""
+                        ruleAction.content() + ruleEffect.data(),
+                        "",
+                        ruleAction.location()
                     )
 
                     indicators.add(indicator)
