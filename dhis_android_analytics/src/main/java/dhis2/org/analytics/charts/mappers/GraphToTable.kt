@@ -22,7 +22,7 @@ class GraphToTable {
         tableView.headerCount = 1
         tableAdapter.setAllItems(
             listOf(graph.coordinates.map { DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate) }),
-            listOf(graph.title),
+            listOf(graph.fieldName),
             listOf(graph.coordinates.map { it.fieldValue.toInt().toString() }),
             false
         )

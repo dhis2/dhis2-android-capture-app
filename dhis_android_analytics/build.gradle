@@ -20,6 +20,7 @@ android {
         versionCode 1
         versionName "1.0"
 
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -35,6 +36,10 @@ android {
     }
 
     flavorDimensions "default"
+
+    buildFeatures {
+        dataBinding true
+    }
 
     productFlavors {
         dhis {
@@ -58,6 +63,8 @@ android {
 
 dependencies {
 
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     debugImplementation project(':core')
 
     releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
