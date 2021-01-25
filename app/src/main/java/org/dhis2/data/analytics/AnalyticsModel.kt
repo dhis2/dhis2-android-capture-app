@@ -16,5 +16,9 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
 data class IndicatorModel(
     val programIndicator: ProgramIndicator?,
     val value: String?,
-    val color: String?
+    val color: String?,
+    val location: String
 ) : AnalyticsModel()
+
+const val LOCATION_FEEDBACK_WIDGET = "feedback"
+const val LOCATION_INDICATOR_WIDGET = "indicators"

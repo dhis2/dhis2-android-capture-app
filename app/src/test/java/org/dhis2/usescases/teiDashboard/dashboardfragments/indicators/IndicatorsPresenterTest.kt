@@ -15,6 +15,7 @@ import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.tuples.Trio
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.utils.Result
+import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.ProgramIndicator
@@ -40,6 +41,7 @@ class IndicatorsPresenterTest {
     private val view: IndicatorsView = mock()
     private val charts: Charts = mock()
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
+    private val resourceManager: ResourceManager = mock()
     private lateinit var presenter: IndicatorsPresenter
 
     @Before
@@ -86,7 +88,7 @@ class IndicatorsPresenterTest {
 
         presenter = IndicatorsPresenter(
             d2, "program_uid", "tei_uid",
-            dashboardRepository, ruleEngineRepository, schedulers, view, charts
+            dashboardRepository, ruleEngineRepository, schedulers, view, charts, resourceManager
         )
     }
 
