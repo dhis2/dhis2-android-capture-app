@@ -133,6 +133,8 @@ abstract class MapManager(val mapView: MapView) {
         return source
     }
 
+    open fun markFeatureAsSelected(point: LatLng, layer: String? = null): Feature? { return null }
+
     @SuppressLint("MissingPermission")
     private fun enableLocationComponent(
         style: Style,
