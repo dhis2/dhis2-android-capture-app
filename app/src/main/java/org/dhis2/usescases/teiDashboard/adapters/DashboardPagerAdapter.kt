@@ -51,7 +51,11 @@ class DashboardPagerAdapter(
                 TEIDataFragment.newInstance(currentProgram, teiUid, enrollmentUid)
             ANALYTICS_PORTRAIT_POSITION -> {
                 if (indicatorsFragment == null) {
-                    indicatorsFragment = IndicatorsFragment()
+                    indicatorsFragment = IndicatorsFragment().apply {
+                        arguments = Bundle().apply {
+                            putString(VISUALIZATION_TYPE, VisualizationType.TRACKER.name)
+                        }
+                    }
                 }
                 indicatorsFragment!!
             }
