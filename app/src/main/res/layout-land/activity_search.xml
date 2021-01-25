@@ -321,46 +321,39 @@
                     app:layout_constraintTop_toBottomOf="@id/progressLayout"
                     tools:listitem="@layout/item_search_tracked_entity" />
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/mapViewLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginBottom="30dp"
+
+                <com.mapbox.mapboxsdk.maps.MapView
+                    android:id="@+id/mapView"
                     android:visibility="gone"
-                    app:cardCornerRadius="16dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/filterOpen"
-                    tools:visibility="visible">
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="48dp"
+                    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
-                    <com.mapbox.mapboxsdk.maps.MapView
-                        android:id="@+id/mapView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+                <org.dhis2.uicomponents.map.views.CarouselView
+                    android:id="@+id/map_carousel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    app:layout_constraintBottom_toBottomOf="@id/mapView"
+                    android:paddingBottom="34dp"
+                    tools:listitem="@layout/item_carousel_tei" />
 
-                    <org.dhis2.uicomponents.map.views.CarouselView
-                        android:id="@+id/map_carousel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom"
-                        android:clipToPadding="false"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:paddingBottom="34dp"
-                        tools:listitem="@layout/item_carousel_tei" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/mapLayerButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="10dp"
-                        android:padding="5dp"
-                        android:text="@string/map_layers"
-                        android:textAllCaps="true"
-                        android:textColor="?colorAccent"
-                        android:visibility="gone" />
-                </androidx.cardview.widget.CardView>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/mapLayerButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="10dp"
+                    android:padding="5dp"
+                    android:text="@string/map_layers"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:textAllCaps="true"
+                    android:textColor="?colorAccent"
+                    android:visibility="gone" />
 
                 <RelativeLayout
                     android:id="@+id/messageContainer"

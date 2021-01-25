@@ -11,7 +11,6 @@ import org.hisp.dhis.android.core.period.PeriodType
 class ChartsRepositoryImpl(private val d2: D2) : ChartsRepository {
 
     override fun getAnalyticsForEnrollment(enrollmentUid: String): List<Graph> {
-
         val enrollment = getEnrollment(enrollmentUid)
 
         return getRepeatableProgramStages(enrollment.program()).map { programStage ->

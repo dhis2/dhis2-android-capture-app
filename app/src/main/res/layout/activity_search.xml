@@ -28,7 +28,8 @@
     <RelativeLayout
         android:id="@+id/root"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="?colorPrimary">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/mainToolbar"
@@ -138,11 +139,11 @@
                 android:id="@+id/search_filter"
                 style="@style/ActionIcon"
                 android:onClick="@{()->presenter.showFilter()}"
+                app:tint="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/search_filter_general"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_search_add"
-                app:tint="@color/white"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -218,15 +219,15 @@
                 android:layout_height="0dp"
                 android:focusableInTouchMode="true"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop" />
+                app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/mainLayout"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:background="@drawable/ic_front_backdrop_bg"
+                android:background="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/backdropGuideTop">
 
@@ -291,46 +292,41 @@
                     app:layout_constraintTop_toBottomOf="@id/progressLayout"
                     tools:listitem="@layout/item_search_tracked_entity" />
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/mapViewLayout"
+
+                <com.mapbox.mapboxsdk.maps.MapView
+                    android:id="@+id/mapView"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginBottom="30dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="48dp"
                     android:visibility="gone"
-                    app:cardCornerRadius="16dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/filterOpen"
-                    tools:visibility="visible">
+                    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
-                    <com.mapbox.mapboxsdk.maps.MapView
-                        android:id="@+id/mapView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+                <org.dhis2.uicomponents.map.views.CarouselView
+                    android:id="@+id/map_carousel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:clipToPadding="false"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="34dp"
+                    app:layout_constraintBottom_toBottomOf="@id/mapView"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:listitem="@layout/item_carousel_tei" />
 
-                    <org.dhis2.uicomponents.map.views.CarouselView
-                        android:id="@+id/map_carousel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom"
-                        android:clipToPadding="false"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:paddingBottom="34dp"
-                        tools:listitem="@layout/item_carousel_tei" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/mapLayerButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="10dp"
-                        android:padding="5dp"
-                        android:text="@string/map_layers"
-                        android:textAllCaps="true"
-                        android:textColor="?colorAccent"
-                        android:visibility="gone" />
-                </androidx.cardview.widget.CardView>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/mapLayerButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="10dp"
+                    android:padding="5dp"
+                    android:text="@string/map_layers"
+                    android:textAllCaps="true"
+                    android:textColor="?colorAccent"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/mapView" />
 
 
                 <RelativeLayout
@@ -384,12 +380,7 @@
                 android:id="@+id/enrollmentButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:layout_gravity="end|bottom"
-                android:layout_margin="15dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
+                android:layout_margin="16dp"
                 android:focusableInTouchMode="true"
                 android:onClick="@{(view)->presenter.onFabClick(needsSearch)}"
                 app:backgroundTint="@color/white"

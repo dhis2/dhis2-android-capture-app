@@ -61,10 +61,7 @@ class IndicatorsPresenter(
                 getIndicators(),
                 getRulesIndicators(),
                 Flowable.just(
-                    // For testing purposes
-                    // charts?.getCharts(enrollmentUid)?.map { ChartModel(it) }
-                    charts?.getCharts(enrollmentUid)?.map { ChartModel(it, view.getChartType()) }
-                        ?: emptyList()
+                    charts?.getCharts(enrollmentUid)?.map { ChartModel(it) }
                 ),
                 Function3 { indicators, ruleIndicators, charts ->
                     val indicatorsMutable = indicators.toMutableList()

@@ -3,7 +3,6 @@ package dhis2.org.analytics.charts.mappers
 import android.content.Context
 import android.view.ViewGroup
 import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import dhis2.org.analytics.charts.data.Graph
@@ -42,16 +41,20 @@ class GraphToBarChart {
                     DEFAULT_GRID_SPACE_LENGTH,
                     DEFAULT_GRIP_PHASE
                 )
-                axisMaximum = (graph.maxValue()?.let { it ->
-                    it.fieldValue + X_AXIS_MAX_PADDING_WITH_VALUE
-                } ?: DEFAULT_VALUE + X_AXIS_MAX_PADDING)
-                axisMinimum = (graph.minValue()?.let { it ->
-                    if (it.fieldValue < 0f) {
-                        it.fieldValue + X_AXIS_MIN_PADDING
-                    } else {
-                        DEFAULT_VALUE
-                    }
-                } ?: DEFAULT_VALUE)
+                axisMaximum = (
+                    graph.maxValue()?.let { it ->
+                        it.fieldValue + X_AXIS_MAX_PADDING_WITH_VALUE
+                    } ?: DEFAULT_VALUE + X_AXIS_MAX_PADDING
+                    )
+                axisMinimum = (
+                    graph.minValue()?.let { it ->
+                        if (it.fieldValue < 0f) {
+                            it.fieldValue + X_AXIS_MIN_PADDING
+                        } else {
+                            DEFAULT_VALUE
+                        }
+                    } ?: DEFAULT_VALUE
+                    )
                 setDrawLimitLinesBehindData(true)
             }
             axisRight.isEnabled = false
