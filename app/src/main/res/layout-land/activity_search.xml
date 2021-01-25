@@ -324,10 +324,10 @@
 
                 <com.mapbox.mapboxsdk.maps.MapView
                     android:id="@+id/mapView"
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="48dp"
+                    android:visibility="gone"
                     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
                 <org.dhis2.uicomponents.map.views.CarouselView
@@ -337,23 +337,21 @@
                     android:clipToPadding="false"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
-                    app:layout_constraintBottom_toBottomOf="@id/mapView"
                     android:paddingBottom="34dp"
+                    app:layout_constraintBottom_toBottomOf="@id/mapView"
                     tools:listitem="@layout/item_carousel_tei" />
 
-                <com.google.android.material.button.MaterialButton
+                <ImageView
                     android:id="@+id/mapLayerButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="10dp"
                     android:padding="5dp"
-                    android:text="@string/map_layers"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:textAllCaps="true"
-                    android:textColor="?colorAccent"
-                    android:visibility="gone" />
+                    app:srcCompat="@drawable/ic_layers" />
 
                 <RelativeLayout
                     android:id="@+id/messageContainer"
