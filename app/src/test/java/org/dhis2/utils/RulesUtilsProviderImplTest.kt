@@ -157,7 +157,7 @@ class RulesUtilsProviderImplTest {
     }
 
     @Test
-    fun `RuleActionDisplayText Should add new DisplayViewModel`() {
+    fun `RuleActionDisplayText Should not add new DisplayViewModel`() {
         testRuleEffects.add(
             RuleEffect.create(
                 RuleActionDisplayText.createForFeedback("content", "action data"),
@@ -173,14 +173,12 @@ class RulesUtilsProviderImplTest {
             actionCallbacks
         )
 
-        Assert.assertTrue(testFieldViewModels.size == testFieldViewModelSize + 1)
-        Assert.assertTrue(testFieldViewModels.containsKey("content"))
-        Assert.assertTrue(testFieldViewModels["content"] is DisplayViewModel)
-        Assert.assertEquals(testFieldViewModels["content"]!!.value(), "content data")
+        Assert.assertTrue(testFieldViewModels.size == testFieldViewModelSize)
+        Assert.assertTrue(!testFieldViewModels.containsKey("content"))
     }
 
     @Test
-    fun `RuleActionDisplayKeyValuePair should add new DisplayViewModel`() {
+    fun `RuleActionDisplayKeyValuePair should not add new DisplayViewModel`() {
         testRuleEffects.add(
             RuleEffect.create(
                 RuleActionDisplayKeyValuePair.createForIndicators("content", "action data"),
@@ -196,13 +194,8 @@ class RulesUtilsProviderImplTest {
             actionCallbacks
         )
 
-        Assert.assertTrue(testFieldViewModels.size == testFieldViewModelSize + 1)
-        Assert.assertTrue(testFieldViewModels.containsKey("content"))
-        Assert.assertTrue(testFieldViewModels["content"] is DisplayViewModel)
-        Assert.assertEquals(testFieldViewModels["content"]!!.label(), "content")
-        Assert.assertEquals(testFieldViewModels["content"]!!.value(), "data")
-
-        verify(actionCallbacks, times(1)).setDisplayKeyValue("content", "data")
+        Assert.assertTrue(testFieldViewModels.size == testFieldViewModelSize)
+        Assert.assertTrue(!testFieldViewModels.containsKey("content"))
     }
 
     @Test

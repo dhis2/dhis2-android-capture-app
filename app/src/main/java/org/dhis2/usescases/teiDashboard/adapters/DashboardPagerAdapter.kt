@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard.adapters
 
+import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -7,6 +8,8 @@ import java.lang.IllegalStateException
 import org.dhis2.R
 import org.dhis2.usescases.notes.NotesFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment
+import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VISUALIZATION_TYPE
+import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VisualizationType
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment
 import org.dhis2.utils.isLandscape
@@ -31,7 +34,11 @@ class DashboardPagerAdapter(
 
     private fun createLandscapeFragment(position: Int): Fragment {
         return when (position) {
-            ANALYTICS_LANDSCAPE_POSITION -> IndicatorsFragment()
+            ANALYTICS_LANDSCAPE_POSITION -> IndicatorsFragment().apply {
+                arguments = Bundle().apply {
+                    putString(VISUALIZATION_TYPE, VisualizationType.TRACKER.name)
+                }
+            }
             RELATIONSHIPS_LANDSCAPE_POSITION -> RelationshipFragment()
             NOTES_LANDSCAPE_POSITION -> NotesFragment.newTrackerInstance(currentProgram!!, teiUid)
             else -> throw IllegalStateException("Fragment not supported")
