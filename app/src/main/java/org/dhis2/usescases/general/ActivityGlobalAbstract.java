@@ -302,7 +302,17 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     @Override
     public void showInfoDialog(String title, String message) {
         if (getActivity() != null) {
-            showInfoDialog(title, message, null);
+            showInfoDialog(title, message, new OnDialogClickListener() {
+                @Override
+                public void onPositiveClick() {
+
+                }
+
+                @Override
+                public void onNegativeClick() {
+
+                }
+            });
         }
     }
 

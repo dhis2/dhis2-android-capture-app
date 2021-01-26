@@ -18,6 +18,7 @@ class CarouselTeiHolder(
     val binding: ItemCarouselTeiBinding,
     val onClick: (teiUid: String, enrollmentUid: String?, isOnline: Boolean) -> Boolean,
     val onSyncClick: (String) -> Boolean,
+    val onNavigate: (teiUid: String) -> Unit,
     val profileImagePreviewCallback: (String) -> Unit,
     val attributeVisibilityCallback: (SearchTeiModel) -> Unit
 ) :
@@ -105,6 +106,10 @@ class CarouselTeiHolder(
                 data.isOnline
             )
         }
+
+        binding.mapNavigateFab.setOnClickListener {
+            onNavigate(data.tei.uid())
+        }
     }
 
     private fun showAttributeList() {
@@ -125,5 +130,13 @@ class CarouselTeiHolder(
         binding.entityAttribute2.visibility = View.VISIBLE
         binding.entityAttribute3.visibility = View.VISIBLE
         binding.sortingFieldValue.visibility = View.VISIBLE
+    }
+
+    fun showNavigateButton() {
+        binding.mapNavigateFab.show()
+    }
+
+    fun hideNavigateButton() {
+        binding.mapNavigateFab.hide()
     }
 }

@@ -37,6 +37,7 @@ import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdap
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
@@ -589,6 +590,13 @@ public class Bindings {
         else
             DrawableCompat.setTint(mutableDrawable, ContextCompat.getColor(view.getContext(), R.color.text_black_333));
 
+    }
+
+    @BindingAdapter("networkVisibility")
+    public static void setNetworkVisibility(View view, boolean checkNetwork) {
+        if (checkNetwork) {
+            view.setVisibility(NetworkUtils.isOnline(view.getContext()) ? View.VISIBLE : View.GONE);
+        }
     }
 
     @BindingAdapter("setTextColor")

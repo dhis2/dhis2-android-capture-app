@@ -100,7 +100,6 @@
     <string name="table">Tabel</string>
     <string name="state_warning">Peringatan</string>
     <string name="action_close">Tutup</string>
-    <string name="data_set_open">Buka</string>
     <string name="data_every_day">Harian</string>
     <string name="data_every_week">Mingguan</string>
     <string name="period_week">Minggu</string>

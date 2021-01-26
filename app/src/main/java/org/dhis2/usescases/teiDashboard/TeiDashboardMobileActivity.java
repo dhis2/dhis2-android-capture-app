@@ -25,9 +25,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.material.tabs.TabLayout;
-
 import org.dhis2.App;
+import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
@@ -95,7 +95,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     private MutableLiveData<Boolean> filtersShowing;
     private MutableLiveData<String> currentEnrollment;
     private MutableLiveData<Boolean> relationshipMap;
-    private MutableLiveData<Boolean> lineChart; // For testing purposes
     private float elevation = 0f;
 
     public static Intent intent(Context context,
@@ -132,9 +131,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         currentEnrollment = new MutableLiveData<>();
         relationshipMap = new MutableLiveData<>(false);
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
-
-        // For testing purposes
-        lineChart = new MutableLiveData<>(true);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
         binding.setPresenter(presenter);
@@ -187,21 +183,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         });
     }
 
-    private void setBadgeColors() {
-        /*if (tab.getPosition() == getLastTabPosition()) {
-            BadgeDrawable badge = tab.getOrCreateBadge();
-            if (badge.hasNumber() && badge.getNumber() > 0) {
-                badge.setBackgroundColor(Color.WHITE);
-            }
-        }*/
-        /*if (tab.getPosition() == getLastTabPosition()) {
-            BadgeDrawable badge = tab.getOrCreateBadge();
-            if (badge.hasNumber() && badge.getNumber() > 0) {
-                badge.setBackgroundColor(ContextCompat.getColor(TeiDashboardMobileActivity.this, R.color.unselected_tab_badge_color));
-            }
-        }*/
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -213,7 +194,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             }
         }
         currentOrientation = OrientationUtilsKt.isLandscape() ? 1 : 0;
-
 
         if (adapter == null) {
             restoreAdapter(programUid);
@@ -553,15 +533,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             }
         }
 
-        // For testing purposes
-        if (lineChart.getValue()) {
-            popupMenu.getMenu().findItem(R.id.showBarGraph).setVisible(true);
-            popupMenu.getMenu().findItem(R.id.showLineGraph).setVisible(false);
-        } else {
-            popupMenu.getMenu().findItem(R.id.showLineGraph).setVisible(true);
-            popupMenu.getMenu().findItem(R.id.showBarGraph).setVisible(false);
-        }
-
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
@@ -583,14 +554,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 case R.id.showTimeline:
                     groupByStage.setValue(false);
                     break;
-                // For testing purposes
-                case R.id.showBarGraph:
-                    lineChart.setValue(false);
-                    break;
-                case R.id.showLineGraph:
-                    lineChart.setValue(true);
-                    break;
-                // For testing purposes
                 case R.id.complete:
                     presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.COMPLETED);
                     break;
@@ -673,10 +636,5 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     public void onRelationshipMapLoaded() {
         binding.toolbarProgress.hide();
-    }
-
-    // For testing purposes
-    public LiveData<Boolean> getChartType() {
-        return lineChart;
     }
 }

@@ -418,7 +418,7 @@ class TeiDashboardTest : BaseTest() {
         }
 
         analyticsRobot {
-            checkGraphType(0, ChartType.LINE_CHART)
+            checkGraphType(1, ChartType.LINE_CHART)
         }
     }
 

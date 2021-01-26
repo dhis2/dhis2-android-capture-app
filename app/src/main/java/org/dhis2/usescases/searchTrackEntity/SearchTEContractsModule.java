@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.uicomponents.map.model.EventUiComponentModel;
@@ -76,8 +77,6 @@ public class SearchTEContractsModule {
 
         void updateFiltersSearch(int totalFilters);
 
-        Consumer<FeatureType> featureType();
-
         void setMap(TrackerMapData trackerMapData);
 
         Consumer<D2Progress> downloadProgress();
@@ -129,7 +128,7 @@ public class SearchTEContractsModule {
 
         String getProgramColor(String uid);
 
-        Trio<PagedList<SearchTeiModel>, String, Boolean> getMessage(PagedList<SearchTeiModel> list);
+        org.dhis2.data.tuples.Pair<String, Boolean> getMessage(List<SearchTeiModel> list);
 
         HashMap<String, String> getQueryData();
 

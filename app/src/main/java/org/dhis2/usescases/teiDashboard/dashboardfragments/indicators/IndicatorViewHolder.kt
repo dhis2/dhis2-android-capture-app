@@ -22,7 +22,7 @@ class IndicatorViewHolder(
             binding.guideline.layoutParams = params
         } else {
             val params = binding.guideline.layoutParams as ConstraintLayout.LayoutParams
-            params.guidePercent = 0.6F
+            params.guidePercent = 0.95F
             binding.guideline.layoutParams = params
             binding.label = programIndicatorModel.programIndicator.displayName()
             binding.description = programIndicatorModel.programIndicator.displayDescription()

@@ -64,8 +64,9 @@ class CarouselProgramEventHolder(
                     initValues(false, programEventModel.eventDisplayData())
                 }
             } else {
-                initValues(true, programEventModel.eventDisplayData())
-                binding.dataElementList.expand()
+                binding.dataElementList.expand {
+                    initValues(true, programEventModel.eventDisplayData())
+                }
             }
             toggleList.invoke()
         }

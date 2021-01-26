@@ -58,7 +58,13 @@ class MapTeisToFeatureCollection(
                     mapRelationshipToRelationshipMapModel.mapList(searchTeiModel.relationships)
                 val relationshipsFeatureCollections =
                     mapRelationshipsToFeatureCollection.map(relationshipModels)
-                featureCollectionMap.putAll(relationshipsFeatureCollections.first)
+                relationshipsFeatureCollections.first.forEach { (key, featureCollection) ->
+                    featureCollectionMap[key]?.features()?.addAll(
+                        featureCollection.features() ?: listOf()
+                    ) ?: run {
+                        featureCollectionMap[key] = featureCollection
+                    }
+                }
             }
         }
 

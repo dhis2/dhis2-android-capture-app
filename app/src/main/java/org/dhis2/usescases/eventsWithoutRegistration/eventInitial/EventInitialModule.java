@@ -27,13 +27,16 @@ import dagger.Provides;
 public class EventInitialModule {
 
     private final EventInitialContract.View view;
+    private final String stageUid;
     @Nullable
     private String eventUid;
 
     public EventInitialModule(@NonNull EventInitialContract.View view,
-                              @Nullable String eventUid) {
+                              @Nullable String eventUid,
+                              String stageUid) {
         this.view = view;
         this.eventUid = eventUid;
+        this.stageUid = stageUid;
     }
 
     @Provides
@@ -79,6 +82,6 @@ public class EventInitialModule {
     @Provides
     @PerActivity
     EventInitialRepository eventDetailRepository(D2 d2) {
-        return new EventInitialRepositoryImpl(eventUid, d2);
+        return new EventInitialRepositoryImpl(eventUid, stageUid, d2);
     }
 }
