@@ -84,8 +84,6 @@ public class SearchTEContractsModule {
 
         void updateFiltersSearch(int totalFilters);
 
-        Consumer<FeatureType> featureType();
-
         void setMap(TrackerMapData trackerMapData);
 
         Consumer<D2Progress> downloadProgress();
