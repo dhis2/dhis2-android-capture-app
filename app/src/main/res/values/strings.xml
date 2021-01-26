@@ -784,4 +784,5 @@
     <string name="show_line_graph">View as Line</string>
     <string name="show_table_graph">View as Table</string>
     <string name="show_table_value">View as Value</string>
+    <string name="value">Value</string>
 </resources>

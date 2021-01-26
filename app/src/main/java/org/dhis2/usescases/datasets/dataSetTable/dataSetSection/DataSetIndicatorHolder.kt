@@ -1,4 +1,4 @@
-package dhis2.org.analytics.charts.table
+package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
 import android.content.res.ColorStateList
 import android.view.View
@@ -8,7 +8,7 @@ import androidx.core.view.ViewCompat
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 import dhis2.org.R
 
-class GraphTableHolder(itemView: View) : AbstractViewHolder(itemView) {
+class DataSetIndicatorHolder(itemView: View) : AbstractViewHolder(itemView) {
     fun bind(text: String, isHeader: Boolean) {
         itemView.findViewById<TextView>(R.id.text).let {
             it.text = text
