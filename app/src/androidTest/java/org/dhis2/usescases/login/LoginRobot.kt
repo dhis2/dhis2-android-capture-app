@@ -70,7 +70,7 @@ class LoginRobot : BaseRobot() {
     }
 
     fun checkAuthErrorAlertIsVisible() {
-        onView(withId(R.id.dialogTitle)).check(matches(withText(containsString(LOGIN_ERROR_TITLE))))
+        onView(withText(LOGIN_ERROR_TITLE)).check(matches(isDisplayed()))
     }
 
     fun checkUnblockSessionViewIsVisible() {

@@ -151,6 +151,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void init(String trackedEntityType) {
         this.trackedEntityType = trackedEntityType;
         this.trackedEntity = searchRepository.getTrackedEntityType(trackedEntityType).blockingFirst();
+        initAssignmentFilter();
         compositeDisposable.add(
                 searchRepository.programsWithRegistration(trackedEntityType)
                         .subscribeOn(schedulerProvider.io())
@@ -288,8 +289,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         NetworkUtils.isOnline(view.getContext())))
                         .map(teis -> new kotlin.Pair<>(teis, searchRepository.getEventsForMap(teis)))
                         .map(teis -> {
-                                    List<EventUiComponentModel> eventsUi = eventToEventUiComponent.mapList(teis.component2(), teis.component1());
-                                    kotlin.Pair<HashMap<String, FeatureCollection>, BoundingBox> teisFeatCollection = mapTeisToFeatureCollection.map(teis.component1());
+                                    List<EventUiComponentModel> eventsUi = selectedProgram != null ? eventToEventUiComponent.mapList(teis.component2(), teis.component1()) : Collections.emptyList();
+                                    kotlin.Pair<HashMap<String, FeatureCollection>, BoundingBox> teisFeatCollection = mapTeisToFeatureCollection.map(teis.component1(), selectedProgram != null);
                                     EventsByProgramStage events = mapTeiEventsToFeatureCollection.map(eventsUi).component1();
                                     return Quartet.create(teis.component1(), teisFeatCollection, events, eventsUi);
                                 }
@@ -767,23 +768,19 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void downloadTei(String teiUid, String enrollmentUid) {
-        compositeDisposable.add(
-                d2.trackedEntityModule().trackedEntityInstanceDownloader()
-                        .byUid().in(Collections.singletonList(teiUid))
-                        .overwrite(true)
-                        .download()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                view.downloadProgress(),
-                                Timber::d,
-                                () -> {
-                                    if (d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingExists()) {
-                                        openDashboard(teiUid, enrollmentUid);
-                                    } else {
-                                        view.couldNotDownload(trackedEntity.displayName());
-                                    }
-                                })
+        compositeDisposable.add(searchRepository.downloadTei(teiUid)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                        view.downloadProgress(),
+                        Timber::d,
+                        () -> {
+                            if (d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingExists()) {
+                                openDashboard(teiUid, enrollmentUid);
+                            } else {
+                                view.couldNotDownload(trackedEntity.displayName());
+                            }
+                        })
         );
     }
 
@@ -883,9 +880,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         if (teiType.style() != null && teiType.style().icon() != null) {
             return
-                    ObjectStyleUtils.getIconResource(view.getContext(), teiType.style().icon(), R.drawable.mapbox_marker_icon_default);
+                    ObjectStyleUtils.getIconResource(view.getContext(), teiType.style().icon(), R.drawable.ic_default_icon);
         } else
-            return AppCompatResources.getDrawable(view.getContext(), R.drawable.mapbox_marker_icon_default);
+            return AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_default_icon);
     }
 
     @Override

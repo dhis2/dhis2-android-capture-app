@@ -45,6 +45,7 @@ import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
+import org.dhis2.utils.analytics.matomo.TrackerController;
 import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
@@ -139,7 +140,9 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         setUpRxPlugin();
         initAcra();
         initCustomCrashActivity();
-        TrackHelper.track().download().identifier(new DownloadTracker.Extra.ApkChecksum(this)).with(getTracker());
+        if (getTracker() != null) {
+            TrackHelper.track().download().identifier(new DownloadTracker.Extra.ApkChecksum(this)).with(getTracker());
+        }
     }
 
     private void initCustomCrashActivity() {
@@ -150,7 +153,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     public synchronized Tracker getTracker() {
         if (matomoTracker == null) {
-            matomoTracker = TrackerBuilder.createDefault(BuildConfig.MATOMO_URL, BuildConfig.MATOMO_ID).build(Matomo.getInstance(this));
+            matomoTracker = TrackerController.Companion.generateTracker(this);
         }
         return matomoTracker;
     }

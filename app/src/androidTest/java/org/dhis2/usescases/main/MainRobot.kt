@@ -64,6 +64,10 @@ class MainRobot : BaseRobot() {
             .check(matches(isDisplayed()))
     }
 
+    fun openFilters(){
+        onView(withId(R.id.filterActionButton)).perform(click())
+    }
+
     fun filterByPeriodToday() {
         onView(withId(R.id.filter)).perform(click())
         onView(withId(R.id.filterLayout))

@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import de.adorsys.android.securestoragelibrary.SecurePreferences
+import de.adorsys.android.securestoragelibrary.SecureStorageException
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.SECURE_CREDENTIALS
 import org.dhis2.utils.Constants.SECURE_PASS
@@ -110,10 +111,16 @@ open class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
     }
 
     override fun saveUserCredentials(serverUrl: String, userName: String, pass: String) {
-        SecurePreferences.setValue(context, SECURE_CREDENTIALS, true)
-        SecurePreferences.setValue(context, SECURE_SERVER_URL, serverUrl)
-        SecurePreferences.setValue(context, SECURE_USER_NAME, userName)
-        SecurePreferences.setValue(context, SECURE_PASS, pass)
+        try {
+            SecurePreferences.setValue(context, SECURE_CREDENTIALS, true)
+            SecurePreferences.setValue(context, SECURE_SERVER_URL, serverUrl)
+            SecurePreferences.setValue(context, SECURE_USER_NAME, userName)
+            if (pass.isNotEmpty()) {
+                SecurePreferences.setValue(context, SECURE_PASS, pass)
+            }
+        } catch (e: SecureStorageException) {
+            e.printStackTrace()
+        }
     }
 
     override fun areCredentialsSet(): Boolean {

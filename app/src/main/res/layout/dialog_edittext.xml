@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:textCursorDrawable="@null"
         android:textSize="16sp"
+        android:maxHeight="280dp"
         app:backgroundTint="@color/greyish"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

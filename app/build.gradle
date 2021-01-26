@@ -59,7 +59,7 @@ android {
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
         buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"pk.eyJ1Ijoib3Jpa2dnIiwiYSI6ImNqdWpqb24zYTFsOXo0M2xwcXRseGx3aXkifQ.6N9aqvpqdrrSBwO9GyfjUw\""
         buildConfigField "String", "ACRA_URL", "\"$acraUrl\""
-        buildConfigField "String", "MATOMO_URL", "\"https://dhis2android.matomo.cloud/matomo.php\""
+        buildConfigField "String", "MATOMO_URL", "\"https://127.0.0.1:8080/matomo.php\""
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -210,7 +210,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0-rc02'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation "androidx.multidex:multidex:${libraries.multidex}"
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycle}"
     implementation "androidx.work:work-runtime:2.2.0"
     implementation "androidx.work:work-rxjava2:2.2.0"

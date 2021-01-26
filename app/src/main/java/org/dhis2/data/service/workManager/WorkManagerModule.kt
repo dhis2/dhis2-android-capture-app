@@ -36,7 +36,7 @@ import javax.inject.Singleton
 
 @Module
 @Singleton
-class WorkManagerModule {
+open class WorkManagerModule {
 
     @Provides
     @Singleton
@@ -46,7 +46,7 @@ class WorkManagerModule {
 
     @Provides
     @Singleton
-    fun providesWorkManagerController(workManager: WorkManager): WorkManagerController {
+    open fun providesWorkManagerController(workManager: WorkManager): WorkManagerController {
         return WorkManagerControllerImpl(workManager)
     }
 }
