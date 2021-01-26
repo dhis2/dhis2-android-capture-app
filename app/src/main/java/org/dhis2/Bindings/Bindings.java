@@ -31,6 +31,7 @@ import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdap
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
@@ -536,11 +537,14 @@ public class Bindings {
     public static void setFabIcoin(FloatingActionButton fab, boolean needSearch) {
         Drawable drawable;
         if (needSearch) {
-            drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_search);
+            drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_search_add);
         } else {
             drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_add_accent);
         }
-        fab.setColorFilter(Color.WHITE);
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = fab.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
+        int colorPrimary = a.getColor(0, 0);
+        fab.setColorFilter(colorPrimary);
         fab.setImageDrawable(drawable);
     }
 
@@ -581,5 +585,12 @@ public class Bindings {
         else
             DrawableCompat.setTint(mutableDrawable, ContextCompat.getColor(view.getContext(), R.color.text_black_333));
 
+    }
+
+    @BindingAdapter("networkVisibility")
+    public static void setNetworkVisibility(View view, boolean checkNetwork) {
+        if (checkNetwork) {
+            view.setVisibility(NetworkUtils.isOnline(view.getContext()) ? View.VISIBLE : View.GONE);
+        }
     }
 }

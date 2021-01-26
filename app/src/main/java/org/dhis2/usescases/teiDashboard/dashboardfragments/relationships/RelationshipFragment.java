@@ -253,7 +253,17 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                 getString(R.string.relationship_without_enrollment),
                 getString(R.string.button_ok),
                 getString(R.string.no),
-                null);
+                new OnDialogClickListener() {
+                    @Override
+                    public void onPositiveClick() {
+
+                    }
+
+                    @Override
+                    public void onNegativeClick() {
+
+                    }
+                });
     }
 
     @Override
@@ -265,7 +275,17 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                 getString(R.string.relationship_not_found_message),
                 getString(R.string.button_ok),
                 getString(R.string.no),
-                null);
+                new OnDialogClickListener() {
+                    @Override
+                    public void onPositiveClick() {
+
+                    }
+
+                    @Override
+                    public void onNegativeClick() {
+
+                    }
+                });
     }
 
     @Override
@@ -296,7 +316,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                         })
                         .build();
         binding.mapCarousel.setAdapter(carouselAdapter);
-        binding.mapCarousel.attachToMapManager(relationshipMapManager, () -> true);
+        binding.mapCarousel.attachToMapManager(relationshipMapManager, (feature, found) -> true);
         carouselAdapter.addItems(relationships);
 
         animations.endMapLoading(binding.mapCarousel);

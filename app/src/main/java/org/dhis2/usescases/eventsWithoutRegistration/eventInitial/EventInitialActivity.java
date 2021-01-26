@@ -180,7 +180,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         initVariables();
         ((App) getApplicationContext()).userComponent().plus(
                 new EventInitialModule(this,
-                        eventUid)
+                        eventUid,
+                        programStageUid)
         ).inject(this);
         setScreenName(this.getLocalClassName());
         super.onCreate(savedInstanceState);
@@ -559,12 +560,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
                     if (stringCategoryOptionMap != null && stringCategoryOptionMap.get(category.uid()) != null)
                         catSelectorBinding.catCombo.setText(stringCategoryOptionMap.get(category.uid()).displayName());
-
+                    catSelectorBinding.getRoot().setEnabled(accessData);
                     binding.catComboLayout.addView(catSelectorBinding.getRoot());
                 }
             else if (catCombo.isDefault())
                 catOptionComboUid = categoryOptionCombos.get(0).uid();
 
+            checkActionButtonVisibility();
         });
     }
 

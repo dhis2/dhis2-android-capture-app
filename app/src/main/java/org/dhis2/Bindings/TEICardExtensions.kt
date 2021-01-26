@@ -188,7 +188,7 @@ fun SearchTeiModel.setTeiImage(
             )
         )
     } else if (isOnline && attributeValues.isNotEmpty() &&
-        ArrayList(attributeValues.values)[0].value() != ""
+        !ArrayList(attributeValues.values).first().value().isNullOrEmpty()
     ) {
         teiImageView.setImageDrawable(null)
         teiTextImageView.visibility = View.VISIBLE
