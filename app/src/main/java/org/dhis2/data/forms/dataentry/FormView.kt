@@ -25,6 +25,7 @@ class FormView @JvmOverloads constructor(
     private val headerContainer: RelativeLayout
     private val dataEntryHeaderHelper: DataEntryHeaderHelper
     private lateinit var adapter: DataEntryAdapter
+    var scrollCallback: ((Boolean) -> Unit)? = null
 
     init {
         val params = LayoutParams(MATCH_PARENT, MATCH_PARENT)
@@ -56,6 +57,25 @@ class FormView @JvmOverloads constructor(
             ).show()
         }
         recyclerView.adapter = adapter
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            recyclerView.setOnScrollChangeListener { _, _, _, _, _ ->
+                val hasToShowFab = checkLastItem()
+                scrollCallback?.invoke(hasToShowFab)
+            }
+        } else {
+            recyclerView.setOnScrollListener(object :
+                    RecyclerView.OnScrollListener() {
+                    override fun onScrolled(
+                        recyclerView: RecyclerView,
+                        dx: Int,
+                        dy: Int
+                    ) {
+                        val hasToShowFab = checkLastItem()
+                        scrollCallback?.invoke(hasToShowFab)
+                    }
+                })
+        }
     }
 
     fun render(items: List<FieldViewModel>) {
@@ -75,5 +95,15 @@ class FormView @JvmOverloads constructor(
             }
         )
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
+    }
+
+    private fun checkLastItem(): Boolean {
+        val layoutManager =
+            recyclerView.layoutManager as LinearLayoutManager
+        val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
+        return lastVisiblePosition != -1 && (
+            lastVisiblePosition == adapter.itemCount - 1 ||
+                adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
+            )
     }
 }

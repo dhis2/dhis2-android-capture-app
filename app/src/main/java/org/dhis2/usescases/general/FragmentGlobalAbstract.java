@@ -74,8 +74,8 @@ public abstract class FragmentGlobalAbstract extends Fragment implements Abstrac
     }
 
     @Override
-    public AlertDialog showInfoDialog(String title, String message, String possitiveButtonText, String negativeButtonText, OnDialogClickListener clickListener) {
-        return getAbstractActivity().showInfoDialog(title, message, possitiveButtonText, negativeButtonText, clickListener);
+    public void showInfoDialog(String title, String message, String possitiveButtonText, String negativeButtonText, OnDialogClickListener clickListener) {
+        getAbstractActivity().showInfoDialog(title, message, possitiveButtonText, negativeButtonText, clickListener);
     }
 
     @Override
@@ -84,8 +84,8 @@ public abstract class FragmentGlobalAbstract extends Fragment implements Abstrac
     }
 
     @Override
-    public AlertDialog showInfoDialog(String title, String message, OnDialogClickListener clickListener) {
-        return getAbstractActivity().showInfoDialog(title, message, clickListener);
+    public void showInfoDialog(String title, String message, OnDialogClickListener clickListener) {
+        getAbstractActivity().showInfoDialog(title, message, clickListener);
     }
 
     @Override
