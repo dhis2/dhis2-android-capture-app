@@ -316,7 +316,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                         })
                         .build();
         binding.mapCarousel.setAdapter(carouselAdapter);
-        binding.mapCarousel.attachToMapManager(relationshipMapManager, () -> true);
+        binding.mapCarousel.attachToMapManager(relationshipMapManager, (feature, found) -> true);
         carouselAdapter.addItems(relationships);
 
         animations.endMapLoading(binding.mapCarousel);

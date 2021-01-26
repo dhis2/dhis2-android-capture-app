@@ -8,13 +8,16 @@ import io.reactivex.functions.Function3
 import org.dhis2.data.analytics.AnalyticsModel
 import org.dhis2.data.analytics.ChartModel
 import org.dhis2.data.analytics.IndicatorModel
+import org.dhis2.data.analytics.LOCATION_FEEDBACK_WIDGET
+import org.dhis2.data.analytics.LOCATION_INDICATOR_WIDGET
+import org.dhis2.data.analytics.SectionTitle
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.tuples.Pair
-import org.dhis2.data.tuples.Trio
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.Result
+import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.program.ProgramIndicator
@@ -32,7 +35,8 @@ class IndicatorsPresenter(
     private val ruleEngineRepository: RuleEngineRepository,
     val schedulerProvider: SchedulerProvider,
     val view: IndicatorsView,
-    val charts: Charts?
+    val charts: Charts?,
+    val resources: ResourceManager
 ) {
 
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -64,17 +68,31 @@ class IndicatorsPresenter(
                     charts?.getCharts(enrollmentUid)?.map { ChartModel(it) }
                 ),
                 Function3 { indicators, ruleIndicators, charts ->
-                    val indicatorsMutable = indicators.toMutableList()
-                    for (indicator in ruleIndicators) {
-                        if (!indicators.contains(indicator)) {
-                            indicatorsMutable.add(indicator)
+                    mutableListOf<AnalyticsModel>().apply {
+                        val feedbackList = ruleIndicators.filter {
+                            it is IndicatorModel && it.location == LOCATION_FEEDBACK_WIDGET
+                        }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
+                        if (feedbackList.isNotEmpty()) {
+                            add(SectionTitle("Feedback"))
+                            addAll(feedbackList)
+                        }
+                        val indicatorList = indicators.toMutableList().apply {
+                            addAll(
+                                ruleIndicators.filter {
+                                    it is IndicatorModel &&
+                                        it.location == LOCATION_INDICATOR_WIDGET
+                                }
+                            )
+                        }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
+                        if (indicatorList.isNotEmpty()) {
+                            add(SectionTitle("Indicators"))
+                            addAll(indicatorList)
+                        }
+                        if (charts.isNotEmpty()) {
+                            add(SectionTitle("Charts"))
+                            addAll(charts)
                         }
                     }
-                    val finalList =
-                        indicatorsMutable.sortedBy {
-                            (it as IndicatorModel).programIndicator?.displayName()
-                        }.toMutableList()
-                    finalList.apply { addAll(charts) }
                 }
             )
                 .subscribeOn(schedulerProvider.io())
@@ -110,7 +128,12 @@ class IndicatorsPresenter(
                         dashboardRepository
                             .getLegendColorForIndicator(it.val0(), it.val1())
                     }.map {
-                        IndicatorModel(it.val0(), it.val1(), it.val2())
+                        IndicatorModel(
+                            it.val0(),
+                            it.val1(),
+                            it.val2(),
+                            LOCATION_INDICATOR_WIDGET
+                        )
                     }
                     .toList()
             }.flatMap { it.toFlowable() }
@@ -136,48 +159,48 @@ class IndicatorsPresenter(
                         .flatMap { ruleEngineRepository.reCalculate() }
                         .map { effects ->
                             // Restart rule engine to take into account value changes
-                            applyRuleEffects(effects).map {
-                                IndicatorModel(it.val0(), it.val1(), it.val2())
-                            }
+                            applyRuleEffects(effects)
                         }
                 }
             }
 
-    private fun applyRuleEffects(calcResult: Result<RuleEffect>):
-        List<Trio<ProgramIndicator, String, String>> {
-            val indicators = arrayListOf<Trio<ProgramIndicator, String, String>>()
+    private fun applyRuleEffects(calcResult: Result<RuleEffect>): List<IndicatorModel> {
+        val indicators = arrayListOf<IndicatorModel>()
 
-            if (calcResult.error() != null) {
-                Timber.e(calcResult.error())
-                return arrayListOf()
-            }
+        if (calcResult.error() != null) {
+            Timber.e(calcResult.error())
+            return arrayListOf()
+        }
 
-            for (ruleEffect in calcResult.items()) {
-                val ruleAction = ruleEffect.ruleAction()
-                if (!ruleEffect.data().contains("#{")) {
-                    if (ruleAction is RuleActionDisplayKeyValuePair) {
-                        val indicator = Trio.create(
-                            ProgramIndicator.builder()
-                                .uid((ruleAction).content())
-                                .displayName((ruleAction).content())
-                                .build(),
-                            ruleEffect.data(), ""
-                        )
+        for (ruleEffect in calcResult.items()) {
+            val ruleAction = ruleEffect.ruleAction()
+            if (!ruleEffect.data().contains("#{")) {
+                if (ruleAction is RuleActionDisplayKeyValuePair) {
+                    val indicator = IndicatorModel(
+                        ProgramIndicator.builder()
+                            .uid((ruleAction).content())
+                            .displayName((ruleAction).content())
+                            .build(),
+                        ruleEffect.data(),
+                        "",
+                        ruleAction.location()
+                    )
 
-                        indicators.add(indicator)
-                    } else if (ruleAction is RuleActionDisplayText) {
-                        val indicator: Trio<ProgramIndicator, String, String> = Trio.create(
-                            null,
-                            ruleAction.content() + ruleEffect.data(), ""
-                        )
-
-                        indicators.add(indicator)
-                    }
+                    indicators.add(indicator)
+                } else if (ruleAction is RuleActionDisplayText) {
+                    val indicator = IndicatorModel(
+                        null,
+                        ruleAction.content() + ruleEffect.data(),
+                        "",
+                        ruleAction.location()
+                    )
+                    indicators.add(indicator)
                 }
             }
-
-            return indicators
         }
+
+        return indicators
+    }
 
     fun onDettach() = compositeDisposable.clear()
 

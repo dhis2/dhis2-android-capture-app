@@ -5,6 +5,7 @@ import android.view.View
 import dhis2.org.analytics.charts.mappers.GraphToBarChart
 import dhis2.org.analytics.charts.mappers.GraphToLineChart
 import dhis2.org.analytics.charts.mappers.GraphToTable
+import dhis2.org.analytics.charts.mappers.GraphToValue
 
 class Chart private constructor(
     private val chartType: ChartType,
@@ -13,12 +14,14 @@ class Chart private constructor(
     private val graphToLineChartMapper: GraphToLineChart by lazy { GraphToLineChart() }
     private val graphToBarChartMapper: GraphToBarChart by lazy { GraphToBarChart() }
     private val graphToTableMapper: GraphToTable by lazy { GraphToTable() }
+    private val graphToValueMapper: GraphToValue by lazy { GraphToValue() }
 
     fun getChartView(context: Context): View {
         return when (chartType) {
             ChartType.LINE_CHART -> graphToLineChartMapper.map(context, graphData)
             ChartType.BAR_CHART -> graphToBarChartMapper.map(context, graphData)
             ChartType.TABLE -> graphToTableMapper.map(context, graphData)
+            ChartType.SINGLE_VALUE -> graphToValueMapper.map(context, graphData)
         }
     }
 

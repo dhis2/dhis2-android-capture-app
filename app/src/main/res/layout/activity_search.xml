@@ -139,11 +139,11 @@
                 android:id="@+id/search_filter"
                 style="@style/ActionIcon"
                 android:onClick="@{()->presenter.showFilter()}"
-                app:tint="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/search_filter_general"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_search_add"
+                app:tint="@color/white"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -314,20 +314,17 @@
                     app:layout_constraintStart_toStartOf="parent"
                     tools:listitem="@layout/item_carousel_tei" />
 
-                <com.google.android.material.button.MaterialButton
+                <ImageView
+                    app:srcCompat="@drawable/ic_layers"
                     android:id="@+id/mapLayerButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
                     android:padding="5dp"
-                    android:text="@string/map_layers"
-                    android:textAllCaps="true"
-                    android:textColor="?colorAccent"
                     android:visibility="gone"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/mapView" />
-
 
                 <RelativeLayout
                     android:id="@+id/messageContainer"

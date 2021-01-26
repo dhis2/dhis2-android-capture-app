@@ -30,7 +30,7 @@ public class DisplayHolder extends FormViewHolder {
             binding.guideline.setLayoutParams(params);
         }else {
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.guideline.getLayoutParams();
-            params.guidePercent = 0.6f;
+            params.guidePercent = 0.95f;
             binding.guideline.setLayoutParams(params);
             binding.setVariable(BR.label, viewModel.label());
         }
