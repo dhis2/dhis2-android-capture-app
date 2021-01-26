@@ -20,7 +20,6 @@ import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
-import org.dhis2.utils.filters.ProgramType;
 import org.dhis2.utils.filters.workingLists.EventFilterToWorkingListItemMapper;
 import org.hisp.dhis.android.core.D2;
 
@@ -52,10 +51,12 @@ public class ProgramEventDetailModule {
             @NonNull ProgramEventDetailRepository programEventDetailRepository, SchedulerProvider schedulerProvider, FilterManager filterManager,
             PreferenceProvider preferenceProvider,
             EventFilterToWorkingListItemMapper eventWorkingListMapper,
-            FilterRepository filterRepository) {
+            FilterRepository filterRepository,
+            FilterPresenter filterPresenter) {
         return new ProgramEventDetailPresenter(view, programEventDetailRepository, schedulerProvider, filterManager, preferenceProvider,
                 eventWorkingListMapper,
-                filterRepository);
+                filterRepository,
+                filterPresenter);
     }
 
     @Provides
@@ -85,11 +86,13 @@ public class ProgramEventDetailModule {
 
     @Provides
     @PerActivity
-    ProgramEventDetailRepository eventDetailRepository(D2 d2, ProgramEventMapper mapper,
+    ProgramEventDetailRepository eventDetailRepository(D2 d2,
+                                                       ProgramEventMapper mapper,
                                                        MapEventToFeatureCollection mapEventToFeatureCollection,
                                                        MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
-                                                       DhisMapUtils dhisMapUtils) {
-        return new ProgramEventDetailRepositoryImpl(programUid, d2, mapper, mapEventToFeatureCollection, mapCoordinateFieldToFeatureCollection, dhisMapUtils);
+                                                       DhisMapUtils dhisMapUtils,
+                                                       FilterPresenter filterPresenter) {
+        return new ProgramEventDetailRepositoryImpl(programUid, d2, mapper, mapEventToFeatureCollection, mapCoordinateFieldToFeatureCollection, dhisMapUtils, filterPresenter);
     }
 
     @Provides

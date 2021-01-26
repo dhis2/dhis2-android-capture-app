@@ -2,6 +2,7 @@ package org.dhis2.usescases.programEventDetail;
 
 import androidx.annotation.NonNull;
 
+import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
@@ -21,10 +22,6 @@ import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
-
-/**
- * QUADRAM. Created by Cristian on 13/02/2018.
- */
 
 public class ProgramEventDetailPresenter implements ProgramEventDetailContract.Presenter {
 
@@ -48,7 +45,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
             SchedulerProvider schedulerProvider,
             FilterManager filterManager,
             PreferenceProvider preferenceProvider,
-            EventFilterToWorkingListItemMapper workingListMapper, FilterRepository filterRepository) {
+            EventFilterToWorkingListItemMapper workingListMapper, FilterRepository filterRepository, FilterPresenter filterPresenter) {
         this.view = view;
         this.eventRepository = programEventDetailRepository;
         this.schedulerProvider = schedulerProvider;
@@ -67,13 +64,13 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
         compositeDisposable.add(
                 FilterManager.getInstance().asFlowable()
-                .map(filters->filterRepository.programFilters(getProgram().uid()))
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                        view::setFilterItems,
-                        Timber::e
-                )
+                        .map(filters -> filterRepository.programFilters(getProgram().uid()))
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                view::setFilterItems,
+                                Timber::e
+                        )
         );
 
         compositeDisposable.add(FilterManager.getInstance().getCatComboRequest()
@@ -155,15 +152,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
         compositeDisposable.add(
                 listDataProcessor
-                        .map(next -> eventRepository.filteredProgramEvents(
-                                filterManager.getPeriodFilters(),
-                                filterManager.getOrgUnitUidsFilters(),
-                                filterManager.getCatOptComboFilters(),
-                                filterManager.getEventStatusFilters(),
-                                filterManager.getStateFilters(),
-                                filterManager.getSortingItem(),
-                                filterManager.getAssignedFilter()
-                        ))
+                        .map(next -> eventRepository.filteredProgramEvents())
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
@@ -178,14 +167,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                 filterManager.asFlowable()
                                         .startWith(FilterManager.getInstance())
                                         .filter(data -> view.isMapVisible())
-                                        .flatMap(filterManager -> eventRepository.filteredEventsForMap(
-                                                filterManager.getPeriodFilters(),
-                                                filterManager.getOrgUnitUidsFilters(),
-                                                filterManager.getCatOptComboFilters(),
-                                                filterManager.getEventStatusFilters(),
-                                                filterManager.getStateFilters(),
-                                                filterManager.getAssignedFilter()
-                                        )))
+                                        .flatMap(filterManager -> eventRepository.filteredEventsForMap()))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(

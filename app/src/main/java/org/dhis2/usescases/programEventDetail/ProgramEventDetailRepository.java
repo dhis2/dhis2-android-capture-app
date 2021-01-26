@@ -30,23 +30,10 @@ import kotlin.Triple;
 public interface ProgramEventDetailRepository {
 
     @NonNull
-    LiveData<PagedList<EventViewModel>> filteredProgramEvents(
-            List<DatePeriod> dateFilter,
-            List<String> orgUnitFilter,
-            List<CategoryOptionCombo> catOptionComboUid,
-            List<EventStatus> eventStatus,
-            List<State> states,
-            SortingItem sortingItem,
-            boolean assignedToUser);
+    LiveData<PagedList<EventViewModel>> filteredProgramEvents();
 
     @NonNull
-    Flowable<ProgramEventMapData> filteredEventsForMap(
-            List<DatePeriod> dateFilter,
-            List<String> orgUnitFilter,
-            List<CategoryOptionCombo> catOptionComboUid,
-            List<EventStatus> eventStatus,
-            List<State> states,
-            boolean assignedToUser);
+    Flowable<ProgramEventMapData> filteredEventsForMap();
 
     @NonNull
     Observable<Program> program();

@@ -6,7 +6,6 @@ import org.dhis2.utils.filters.workingLists.RelativePeriodToStringMapper
 import org.hisp.dhis.android.core.common.DateFilterPeriod
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
-import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryEventFilter
 
 class FilterResources(val context: Context) {
     fun defaultWorkingListLabel(): String = context.getString(R.string.working_list_default_label)
@@ -64,9 +63,12 @@ class FilterResources(val context: Context) {
     fun enrollmentStatusToText(enrollmentStatusList: List<EnrollmentStatus>): List<String> =
         enrollmentStatusList.map {
             when (it) {
-                EnrollmentStatus.ACTIVE -> context.getString(R.string.enrollment_status_active)
-                EnrollmentStatus.COMPLETED -> context.getString(R.string.enrollment_status_completed)
-                EnrollmentStatus.CANCELLED -> context.getString(R.string.enrollment_status_cancelled)
+                EnrollmentStatus.ACTIVE ->
+                    context.getString(R.string.enrollment_status_active)
+                EnrollmentStatus.COMPLETED ->
+                    context.getString(R.string.enrollment_status_completed)
+                EnrollmentStatus.CANCELLED ->
+                    context.getString(R.string.enrollment_status_cancelled)
             }
         }
 
@@ -80,14 +82,15 @@ class FilterResources(val context: Context) {
 
     fun eventStatusToText(eventStatusList: List<EventStatus>) =
         eventStatusList.map {
-            when(it){
-                EventStatus.ACTIVE-> context.getString(R.string.filter_event_status_open)
-                EventStatus.COMPLETED -> context.getString(R.string.filter_event_status_completed)
-                EventStatus.SCHEDULE -> context.getString(R.string.filter_event_status_schedule)
-                EventStatus.SKIPPED -> context.getString(R.string.filter_event_status_skipped)
-                EventStatus.VISITED -> context.getString(R.string.filter_event_status_visited)
-                EventStatus.OVERDUE -> context.getString(R.string.filter_event_status_overdue)
-            }
+            eventStatusToText(it)
         }
-
+    fun eventStatusToText(eventStatus: EventStatus): String =
+        when (eventStatus) {
+            EventStatus.ACTIVE -> context.getString(R.string.filter_event_status_open)
+            EventStatus.COMPLETED -> context.getString(R.string.filter_event_status_completed)
+            EventStatus.SCHEDULE -> context.getString(R.string.filter_event_status_schedule)
+            EventStatus.SKIPPED -> context.getString(R.string.filter_event_status_skipped)
+            EventStatus.VISITED -> context.getString(R.string.filter_event_status_visited)
+            EventStatus.OVERDUE -> context.getString(R.string.filter_event_status_overdue)
+        }
 }

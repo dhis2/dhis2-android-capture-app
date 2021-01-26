@@ -22,6 +22,7 @@ import org.dhis2.utils.filters.workingLists.WorkingListItem
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.AssignedUserMode
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSetInstanceSummaryCollectionRepository
@@ -83,6 +84,22 @@ class FilterRepository @Inject constructor(
         return repository.byEventStatus().`in`(eventStatuses)
             .byEventStartDate().eq(fromDate)
             .byEventEndDate().eq(toDate)
+    }
+
+    fun applyEventStatusFilter(
+        repository: EventCollectionRepository,
+        eventStatuses: List<EventStatus>
+    ): EventCollectionRepository {
+        return repository.byStatus().`in`(eventStatuses)
+    }
+
+    fun applyCategoryOptionComboFilter(
+        repository: EventCollectionRepository,
+        categoryOptionCombos: List<CategoryOptionCombo>
+    ): EventCollectionRepository {
+        return repository.byAttributeOptionComboUid().`in`(
+            categoryOptionCombos.map { it.uid() }
+        )
     }
 
     fun applyOrgUnitFilter(
@@ -479,12 +496,14 @@ class FilterRepository @Inject constructor(
         return mutableListOf<FilterItem>().apply {
             val workingLists =
                 d2.eventModule().eventFilters().byProgram().eq(program.uid()).blockingGet().map {
-                    EventWorkingListItem(it.uid(),
+                    EventWorkingListItem(
+                        it.uid(),
                         it.displayName() ?: "",
                         it.eventQueryCriteria()?.assignedUserMode() == AssignedUserMode.CURRENT,
                         null,
                         it.eventQueryCriteria()?.eventStatus(),
-                        it.eventQueryCriteria()?.organisationUnit())
+                        it.eventQueryCriteria()?.organisationUnit()
+                    )
                 }
             if (workingLists.isNotEmpty()) {
                 add(
@@ -566,16 +585,16 @@ class FilterRepository @Inject constructor(
     ): TrackedEntityInstanceQueryCollectionRepository {
         return currentWorkingList?.let {
             teiQuery.byTrackedEntityInstanceFilter().eq(it.uid)
-        }?:teiQuery
+        } ?: teiQuery
     }
 
     fun applyWorkingList(
         eventQuery: EventCollectionRepository,
         currentWorkingList: WorkingListItem?
-    ):EventCollectionRepository {
+    ): EventCollectionRepository {
         return currentWorkingList?.let {
-            //TODO: Should be EventQueryCollectionRepository?
+            // TODO: Should be EventQueryCollectionRepository?
             eventQuery
-        }?:eventQuery
+        } ?: eventQuery
     }
 }

@@ -66,7 +66,8 @@ class ProgramEventDetailPresenterTest {
             filterManager,
             preferenceProvider,
             workingListMapper,
-            filterRepository
+            filterRepository,
+            filterPresenter
         )
     }
 

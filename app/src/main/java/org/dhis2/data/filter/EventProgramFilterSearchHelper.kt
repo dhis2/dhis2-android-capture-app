@@ -1,10 +1,10 @@
 package org.dhis2.data.filter
 
+import javax.inject.Inject
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
 import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.program.Program
-import javax.inject.Inject
 
 class EventProgramFilterSearchHelper @Inject constructor(
     private val filterRepository: FilterRepository,
@@ -24,10 +24,12 @@ class EventProgramFilterSearchHelper @Inject constructor(
     ): EventCollectionRepository {
         return repository
             .withFilter { applyWorkingList(it) }
+            .withFilter { applyDateFilter(it) }
             .withFilter { applyOrgUnitFilter(it) }
             .withFilter { applyStateFilter(it) }
-            .withFilter { applyDateFilter(it) }
+            .withFilter { applyEventStatus(it) }
             .withFilter { applyAssignedToMeFilter(it) }
+            .withFilter { applyCategoryOptionComboFilter(it) }
             .withFilter { applySorting(it) }
     }
 
@@ -35,7 +37,38 @@ class EventProgramFilterSearchHelper @Inject constructor(
         eventRepository: EventCollectionRepository
     ): EventCollectionRepository {
         return if (filterManager.workingListActive()) {
-            filterRepository.applyWorkingList(eventRepository, filterManager.currentWorkingList())
+            filterRepository.applyWorkingList(
+                eventRepository,
+                filterManager.currentWorkingList()
+            ).also {
+                // TODO: Scope from event
+            }
+        } else {
+            eventRepository
+        }
+    }
+
+    private fun applyEventStatus(
+        eventRepository: EventCollectionRepository
+    ): EventCollectionRepository {
+        return if (filterManager.eventStatusFilters.isNotEmpty()) {
+            filterRepository.applyEventStatusFilter(
+                eventRepository,
+                filterManager.eventStatusFilters
+            )
+        } else {
+            eventRepository
+        }
+    }
+
+    private fun applyCategoryOptionComboFilter(
+        eventRepository: EventCollectionRepository
+    ): EventCollectionRepository {
+        return if (filterManager.catOptComboFilters.isNotEmpty()) {
+            filterRepository.applyCategoryOptionComboFilter(
+                eventRepository,
+                filterManager.catOptComboFilters
+            )
         } else {
             eventRepository
         }
