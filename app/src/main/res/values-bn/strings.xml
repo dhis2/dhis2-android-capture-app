@@ -1,0 +1,16 @@
+<resources>
+    <string name="add">যোগ করুন</string>
+    <string name="completed">সম্পন্ন</string>
+    <string name="date">তারিখ</string>
+    <string name="due_date">নির্ধারিত তারিখ</string>
+    <!--endregion-->
+
+    <string name="enrollmment_date">নিবন্ধনের তারিখ</string>
+
+    <!--FORM FRAGMENT-->
+    <string name="report_date">পরিদর্শনের তারিখ</string>
+    <string name="dashboard_notes">মন্তব্য</string>
+    <string name="event_notes">মন্তব্য</string>
+    <string name="sms_completed">সম্পন্ন</string>
+    <string name="filters_title_status">অবস্থা</string>
+    </resources>
