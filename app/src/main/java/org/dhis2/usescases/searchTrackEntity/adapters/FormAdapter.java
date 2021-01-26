@@ -135,7 +135,7 @@ public class FormAdapter extends RecyclerView.Adapter {
             case LONG_TEXT:
                 viewModel = EditTextViewModel.create(attr.uid(), label, false,
                         queryData.get(attr.uid()), hint, 1, attr.valueType(), null, true,
-                        attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask());
+                        attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask(),null);
                 break;
             case BUTTON:
                 viewModel = FileViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, attr.displayDescription(), ObjectStyle.builder().build());
@@ -145,7 +145,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                 viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), label, attr.valueType(), false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build(), ValueTypeRenderingType.DEFAULT);
                 break;
             case SPINNER:
-                viewModel = SpinnerViewModel.create(attr.uid(), label, "", false, attr.optionSet().uid(), queryData.get(attr.uid()), null, true, attr.displayDescription(), 20, ObjectStyle.builder().build());
+                viewModel = SpinnerViewModel.create(attr.uid(), label, "", false, attr.optionSet().uid(), queryData.get(attr.uid()), null, true, attr.displayDescription(), 20, ObjectStyle.builder().build(),null);
                 break;
             case COORDINATES:
                 viewModel = CoordinateViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build(), FeatureType.POINT);
@@ -175,7 +175,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                         .errorDescription("Unsupported viewType source type: " + holder.getItemViewType())
                         .build();
                 crashReportController.logException(error);
-                viewModel = EditTextViewModel.create(attr.uid(), "UNSUPPORTED", false, null, "UNSUPPORTED", 1, attr.valueType(), null, false, attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask());
+                viewModel = EditTextViewModel.create(attr.uid(), "UNSUPPORTED", false, null, "UNSUPPORTED", 1, attr.valueType(), null, false, attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask(),null);
                 break;
         }
         rows.get(holder.getItemViewType()).onBind(holder, viewModel);

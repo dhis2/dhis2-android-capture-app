@@ -242,7 +242,8 @@ class EnrollmentRepository(
             programTrackedEntityAttribute.renderType()?.mobile(),
             optionCount,
             attribute.style(),
-            attribute.fieldMask()
+            attribute.fieldMask(),
+            null
         )
 
         return if (!error.isNullOrEmpty()) {

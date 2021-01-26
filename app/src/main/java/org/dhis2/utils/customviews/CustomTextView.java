@@ -19,6 +19,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
@@ -430,5 +431,9 @@ public class CustomTextView extends FieldLayout {
     @Override
     protected boolean isEditable(){
         return editText.isEnabled();
+    }
+
+    public void setBackgroundColor(@ColorInt int color) {
+        inputLayout.setBackgroundColor(color);
     }
 }

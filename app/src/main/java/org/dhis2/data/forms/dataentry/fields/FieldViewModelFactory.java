@@ -25,5 +25,6 @@ public interface FieldViewModelFactory {
                           @Nullable ValueTypeDeviceRendering fieldRendering,
                           @Nullable Integer optionCount,
                           @NonNull ObjectStyle objectStyle,
-                          @Nullable String fieldMask);
+                          @Nullable String fieldMask,
+                          @Nullable String colorByLegend);
 }
