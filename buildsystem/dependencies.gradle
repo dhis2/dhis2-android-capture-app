@@ -1,6 +1,6 @@
 ext {
     versions = [
-            sdk   : 28,
+            sdk   : 29,
             tools : "29.0.2",
             minSdk: 19,
             vCode: 93,
