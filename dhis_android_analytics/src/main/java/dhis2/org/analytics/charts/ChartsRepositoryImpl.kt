@@ -2,12 +2,12 @@ package dhis2.org.analytics.charts
 
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.GraphPoint
+import java.text.SimpleDateFormat
+import java.util.Date
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramIndicator
-import java.text.SimpleDateFormat
-import java.util.Date
 
 class ChartsRepositoryImpl(private val d2: D2) : ChartsRepository {
 
@@ -25,7 +25,6 @@ class ChartsRepositoryImpl(private val d2: D2) : ChartsRepository {
                     enrollment.trackedEntityInstance(),
                     dataElement.uid()
                 )
-
 
                 Graph(
                     "${period.name}-${dataElement.displayFormName()}",
