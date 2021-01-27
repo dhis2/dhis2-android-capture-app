@@ -18,6 +18,7 @@ import io.reactivex.Single
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
 import junit.framework.Assert.assertTrue
+import org.dhis2.data.filter.FilterPresenter
 import org.dhis2.data.filter.FilterRepository
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
@@ -54,6 +55,8 @@ class ProgramEventDetailPresenterTest {
     private val filterManager: FilterManager = FilterManager.getInstance()
     private val preferenceProvider: PreferenceProvider = mock()
     private val workingListMapper: EventFilterToWorkingListItemMapper = mock()
+    private val filterPresenter: FilterPresenter = mock()
+
 
     @Before
     fun setUp() {
@@ -118,10 +121,10 @@ class ProgramEventDetailPresenterTest {
         whenever(repository.program()) doReturn Observable.just(program)
         whenever(repository.catOptionCombos()) doReturn Single.just(catOptionComboPair)
         whenever(
-            repository.filteredProgramEvents(any(), any(), any(), any(), any(), anyOrNull(), any())
+            repository.filteredProgramEvents()
         ) doReturn events
         whenever(
-            repository.filteredEventsForMap(any(), any(), any(), any(), any(), any())
+            repository.filteredEventsForMap()
         ) doReturn Flowable.just(mapData)
         presenter.init()
         verify(view).setFeatureType(FeatureType.POINT)

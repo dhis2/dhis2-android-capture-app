@@ -73,7 +73,7 @@ class EventProgramFilterSearchHelperTest {
         verify(filterRepository, times(0))
             .applyStateFilter(any<EventCollectionRepository>(), any())
         verify(filterRepository, times(0))
-            .applyEventStatusFilter(any(), any())
+            .applyEventStatusFilter(any<EventCollectionRepository>(), any())
         verify(filterRepository, times(0))
             .applyDateFilter(any<EventCollectionRepository>(), any())
         verify(filterRepository, times(0))

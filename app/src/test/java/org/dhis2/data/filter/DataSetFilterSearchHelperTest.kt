@@ -9,8 +9,8 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
-import java.util.Date
 import org.dhis2.utils.filters.FilterManager
+import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSetInstanceSummaryCollectionRepository
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -19,6 +19,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.Date
 
 class DataSetFilterSearchHelperTest {
 
@@ -28,10 +29,12 @@ class DataSetFilterSearchHelperTest {
 
     private lateinit var dataSetFilterSearchHelper: DataSetFilterSearchHelper
     private val filterRepository: FilterRepository = mock()
-    private val filterManager: FilterManager = FilterManager.getInstance()
+    private val resourceManager: ResourceManager = mock()
+    private val filterManager: FilterManager = FilterManager.initWith(resourceManager)
 
     @Before
     fun setUp() {
+        whenever(resourceManager.getString(any())) doReturn "text"
         RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
         dataSetFilterSearchHelper = DataSetFilterSearchHelper(
             filterRepository,
