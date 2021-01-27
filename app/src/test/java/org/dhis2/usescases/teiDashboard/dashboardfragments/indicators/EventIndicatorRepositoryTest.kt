@@ -157,8 +157,8 @@ class EventIndicatorRepositoryTest {
         testObserver.assertNoErrors()
         testObserver.assertValue {
             it.size == 5 &&
-                    it[0] is SectionTitle && (it[0] as SectionTitle).title == "Feedback" &&
-                    it[2] is SectionTitle && (it[2] as SectionTitle).title == "Indicators"
+                it[0] is SectionTitle && (it[0] as SectionTitle).title == "Feedback" &&
+                it[2] is SectionTitle && (it[2] as SectionTitle).title == "Indicators"
         }
     }
 
