@@ -1,20 +1,10 @@
 package org.dhis2.data.filter
 
 import javax.inject.Inject
-import org.dhis2.Bindings.toDate
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
-import org.hisp.dhis.android.core.arch.repositories.scope.internal.RepositoryMode
-import org.hisp.dhis.android.core.common.AssignedUserMode
-import org.hisp.dhis.android.core.common.DateFilterPeriod
-import org.hisp.dhis.android.core.common.DatePeriodType
-import org.hisp.dhis.android.core.common.RelativePeriod
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
-import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryEventFilter
-import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryRepositoryScope
 
 class TrackerFilterSearchHelper @Inject constructor(
     private val filterRepository: FilterRepository,
