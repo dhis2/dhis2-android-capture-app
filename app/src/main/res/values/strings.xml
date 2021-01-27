@@ -765,6 +765,8 @@
     <string name="customactivityoncrash_error_activity_error_details_copy">Copy to clipboard</string>
     <string name="customactivityoncrash_error_activity_error_details_copied">Copied to clipboard</string>
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Error information</string>
+    <string name="metada_first_sync_error">We found an error when syncing with your server. Share the error with your system administrator if possible.</string>
+    <string name="error_init_session">We could not init the session with your user</string>
     <string name="enrollment_date_edition_warning">There are planned events that won\'t be re-scheduled</string>
     <string name="jira_issue_sent">Issue Sent</string>
     <string name="jira_issue_sent_error">Error sending issue</string>
@@ -781,6 +783,10 @@
     <string name="navigation_notes">Notes</string>
     <string name="navigation_data_entry">Data entry</string>
     <string name="navigation_tei_data">Details</string>
+    <string name="show_bar_graph">View as Bar</string>
+    <string name="show_line_graph">View as Line</string>
+    <string name="show_table_graph">View as Table</string>
+    <string name="show_table_value">View as Value</string>
     <string name="working_list_default_label">Working list %s</string>
     <string name="filter_period_last_n_days">Last %d days</string>
     <string name="filter_period_this_year">This year</string>

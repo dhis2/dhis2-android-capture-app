@@ -20,21 +20,19 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
     lateinit var presenter: IndicatorsPresenter
 
     private lateinit var binding: FragmentIndicatorsBinding
-    private lateinit var adapter: AnalyticsAdapter
+    private val adapter: AnalyticsAdapter by lazy { AnalyticsAdapter(requireContext()) }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         val activity = context as TeiDashboardMobileActivity
-        if (((context.applicationContext) as App).dashboardComponent() != null) {
-            ((context.applicationContext) as App).dashboardComponent()!!
-                .plus(
-                    IndicatorsModule(
-                        activity.programUid,
-                        activity.teiUid, this
-                    )
+        ((context.applicationContext) as App).dashboardComponent()!!
+            .plus(
+                IndicatorsModule(
+                    activity.programUid,
+                    activity.teiUid, this
                 )
-                .inject(this)
-        }
+            )
+            .inject(this)
     }
 
     override fun onCreateView(
@@ -46,7 +44,6 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
             inflater,
             R.layout.fragment_indicators, container, false
         )
-        adapter = AnalyticsAdapter(requireContext())
         binding.indicatorsRecycler.adapter = adapter
         return binding.root
     }

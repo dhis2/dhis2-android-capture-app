@@ -1,0 +1,116 @@
+<resources>
+    <!-- Warnings and error messages -->
+    <string name="error">غلطی</string>
+    <string name="sync_metadata">میٹا ڈیٹا</string>
+    <string name="sync_events">تقریبات</string>
+    <string name="add_new">نیا شامل</string>
+    <string name="add">اضافہ</string>
+    <string name="schedule_new">نیا شیڈول</string>
+    <string name="referral">حوالہ دیتے ہیں</string>
+
+    <string name="user_hint">ØµØ§Ø±Ù Ú©Ø§ ÙØ§Ù</string>
+    <string name="password_hint">پاسورڈ</string>
+    <string name="account_recovery">اکاؤنٹ بحالی</string>
+
+    <!--PERIOD-->
+    <string name="DAILY">روزانہ</string>
+    <string name="WEEKLY">ہفتہ وار</string>
+    <string name="MONTHLY">ماہانہ</string>
+    <string name="YEARLY">سالانہ</string>
+    <string name="action_share_zero_items">بانٹیں</string>
+    <!-- Input hints -->
+    <string name="search">تلاش کریں</string>
+    <string name="event_open">کھلا</string>
+    <string name="read_only">صرف دیکھنے کی حد تک</string>
+    <string name="complete">مکمل</string>
+    <string name="completed">مکمل</string>
+    <string name="cancelled">منسوخ</string>
+    <string name="state_error">غلطی</string>
+    <!--Completion-->
+    <string name="completion">پروگرام کا مرحلہ</string>
+
+    <!--Event initial-->
+    <string name="create">تخلیق</string>
+    <string name="update">اپڈیٹ</string>
+    <string name="date">تاریخ</string>
+    <string name="category_option">اختیاری قسم</string>
+    <string name="latitude">طول</string>
+    <string name="longitude">لمبائی</string>
+    <string name="new_event">نئی تقریب</string>
+    <!--Event Detail-->
+    <string name="event_date">واقعہ کی تاریخ</string>
+    <string name="due_date">اخری تاریخ</string>
+    <string name="cancel">منسوخ</string>
+    <string name="delete">حذف</string>
+    <string name="total">کُل</string>
+    <string name="active_programs">فعال پروگرام</string>
+    <string name="enroll">اندراج کریں</string>
+    <string name="deactivate">غیر فعال</string>
+    <string name="done_task">گھر</string>
+    <string name="wipe_data_no">منسوخ</string>
+    <string name="SYNC_MANAGER">ØªØ±ØªÛØ¨Ø§Øª</string>
+    <!--endregion-->
+
+    <string name="enrollmment_date">اندراج کی تاریخ</string>
+
+    <!-- SEARCH OPTION SET -->
+    <string name="search_optionset">تلاش کریں</string>
+    <!--FORM FRAGMENT-->
+    <string name="report_date">رپورٹ کی تاریخ</string>
+    <string name="add_note">نوٹ شامل</string>
+    <!--AGE CUSTOM VIEW-->
+    <string name="hint_day">دن</string>
+    <string name="hint_month">مہینے</string>
+    <string name="hint_year">سال</string>
+    <string name="week">ہفتوں</string>
+    <string name="incident_date">واقعات کی تاریخ</string>
+    <string name="date_dialog_clear">کلیئر</string>
+    <string name="period">مدت</string>
+    <string name="next">اگلہ</string>
+    <string name="SAVE">محفوظ</string>
+    <string name="button_ok">ٹھیک</string>
+    <string name="qr_attributes">خصوصیات</string>
+    <string name="qr_events">تقریبات</string>
+    <string name="qr_relationships">تعلقات</string>
+    <string name="about">متعلق</string>
+    <string name="share">بانٹیں</string>
+    <string name="max">زیادہ سے زیادہ</string>
+    <string name="current">موجودہ</string>
+    <string name="warning_on_complete_title">وارنگ</string>
+    <string name="error_on_complete_title">غلطی</string>
+    <string name="save">محفوظ</string>
+    <string name="menu_home">گھر</string>
+    <string name="qr_data_values">ڈیٹا اقدار</string>
+    <string name="dashboard_relationships">تعلقات</string>
+    <string name="dashboard_indicators">اشارے</string>
+    <string name="dashboard_notes">نوٹس</string>
+    <string name="event_overview">تفصیلات</string>
+    <string name="event_event">تقریب</string>
+    <string name="event_indicators">اشارے</string>
+    <string name="event_notes">نوٹس</string>
+    <string name="please_wait">انتظار کیجئے</string>
+    <string name="skip">چھوڑ دو</string>
+    <string name="reschedule">تجزیہ کریں</string>
+    <string name="event_overdue">زیادہ سے زیادہ</string>
+    <string name="table">ٹیبل</string>
+    <string name="state_warning">وارنگ</string>
+    <string name="action_close">بند</string>
+    <string name="unsupported_value_type">غیر قابل قدر قیمت کی قسم</string>
+    <string name="data_every_day">روزانہ</string>
+    <string name="data_every_week">ہفتہ وار</string>
+    <string name="period_week">ہفتہ</string>
+    <string name="sms_completed">مکمل</string>
+    <string name="sms_bar_state_sending">کام جاری ہے</string>
+    <string name="sms_bar_state_failed">ناکام</string>
+
+    <string name="polygon">کثیر زبان</string>
+    <string name="filters_title_period">مدت</string>
+    <string name="filters_title_status">حالت</string>
+    <string name="filter_period_today">آج</string>
+    <string name="filter_period_yesterday">کل</string>
+    <string name="filter_period_this_week">اس ہفتے</string>
+    <string name="filter_period_last_week">آخری ہفتہ</string>
+    <string name="filter_period_this_month">اس مہینے</string>
+    <string name="filter_period_last_month">آخری ماہ</string>
+    <string name="filter_period_other">Ø¯ÛÚ¯Ø±</string>
+    </resources>

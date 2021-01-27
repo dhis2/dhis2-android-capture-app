@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -16,22 +15,20 @@ import android.widget.PopupMenu;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
 
 import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
@@ -92,44 +89,51 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture);
         binding.setPresenter(presenter);
         eventMode = (EventMode) getIntent().getSerializableExtra(Constants.EVENT_MODE);
+        setUpViewPagerAdapter();
+        setUpNavigationBar();
+        presenter.initNoteCounter();
+        presenter.init();
+    }
 
-        binding.eventTabLayout.setupWithViewPager(binding.eventViewPager);
-        binding.eventTabLayout.setTabMode(TabLayout.MODE_FIXED);
+    private void setUpViewPagerAdapter() {
         binding.eventViewPager.setAdapter(new EventCapturePagerAdapter(
                 getSupportFragmentManager(),
                 getContext(),
                 getIntent().getStringExtra(PROGRAM_UID),
                 getIntent().getStringExtra(Constants.EVENT_UID)
         ));
-
-        binding.eventTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        ViewExtensionsKt.clipWithRoundedCorners(binding.eventViewPager, ExtensionsKt.getDp(16));
+        binding.eventViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getPosition() ==  binding.eventTabLayout.getTabCount() - 1) {
-                    BadgeDrawable badge = tab.getOrCreateBadge();
-                    if (badge.hasNumber() && badge.getNumber() > 0) {
-                        badge.setBackgroundColor(Color.WHITE);
-                    }
-                }
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
             }
 
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                if (tab.getPosition() == binding.eventTabLayout.getTabCount() - 1) {
-                    BadgeDrawable badge = tab.getOrCreateBadge();
-                    if (badge.hasNumber() && badge.getNumber() > 0) {
-                        badge.setBackgroundColor(ContextCompat.getColor(EventCaptureActivity.this, R.color.unselected_tab_badge_color));
-                    }
-                }
+            public void onPageSelected(int position) {
+                binding.navigationBar.selectItemAt(position);
             }
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                /**/
+            public void onPageScrollStateChanged(int state) {
+
             }
         });
-        presenter.initNoteCounter();
-        presenter.init();
+    }
+
+    private void setUpNavigationBar() {
+        binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.navigation_data_entry:
+                    binding.eventViewPager.setCurrentItem(0);
+                    break;
+                case R.id.navigation_notes:
+                    binding.eventViewPager.setCurrentItem(1);
+                    break;
+            }
+
+            return true;
+        });
     }
 
     @Override
@@ -224,7 +228,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldViewModel> emptyMandatoryFields) {
-        if (binding.eventTabLayout.getSelectedTabPosition() == 0) {
+        if (binding.navigationBar.getSelectedItemId() == R.id.navigation_data_entry) {
             FormBottomDialog.getInstance()
                     .setAccessDataWrite(presenter.canWrite())
                     .setIsEnrollmentOpen(presenter.isEnrollmentOpen())
@@ -501,16 +505,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void updateNoteBadge(int numberOfNotes) {
-        BadgeDrawable badge = binding.eventTabLayout.getTabAt(binding.eventTabLayout.getTabCount() - 1).getOrCreateBadge();
-        badge.setVisible(numberOfNotes > 0);
-        if (NOTES_TAB_POSITION == binding.eventViewPager.getCurrentItem()) {
-            badge.setBackgroundColor(Color.WHITE);
-        } else {
-            badge.setBackgroundColor(ContextCompat.getColor(this, R.color.unselected_tab_badge_color));
-        }
-        badge.setBadgeTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
-        badge.setNumber(numberOfNotes);
-        badge.setMaxCharacterCount(3);
+        binding.navigationBar.updateBadge(R.id.navigation_notes, numberOfNotes);
     }
 
     @Override
