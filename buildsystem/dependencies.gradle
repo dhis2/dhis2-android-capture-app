@@ -4,7 +4,7 @@ ext {
             tools : "29.0.2",
             minSdk: 19,
             vCode: 93,
-            vName: "2.3.1"
+            vName: "2.4-development"
     ]
 
     libraries = [
