@@ -514,6 +514,9 @@
     <string name="relationship_not_found_message">The record you are trying to access is not available. Would you like to search for it?</string>
     <string name="sync_by_sms">Synced by SMS</string>
     <string name="state_warning">Warning</string>
+    <string name="state_uploading">Uploading</string>
+    <string name="state_relationship">Relationship</string>
+    <string name="sent_by_sms">Sent by sms</string>
     <string name="no_conflicts_message">There are no conflicts for this program</string>
     <string name="network_unavailable_sms">Network connection is not available, but it looks like there is phone services - you can use SMS.</string>
     <string name="network_unavailable">Network connection is not available.</string>

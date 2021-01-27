@@ -611,6 +611,26 @@ public class FilterManager implements Serializable {
         if (isFilterActiveForWorkingList(filterType)) {
             return currentWorkingListScope.get().value(filterType);
         } else {
+            switch (filterType){
+                case PERIOD:
+                    break;
+                case ORG_UNIT:
+                    break;
+                case SYNC_STATE:
+                    break;
+                case CAT_OPT_COMB:
+                    break;
+                case EVENT_STATUS:
+                    break;
+                case ASSIGNED_TO_ME:
+                    break;
+                case ENROLLMENT_DATE:
+                    break;
+                case ENROLLMENT_STATUS:
+                    break;
+                case WORKING_LIST:
+                    break;
+            }
             return defaultValue;
         }
     }
