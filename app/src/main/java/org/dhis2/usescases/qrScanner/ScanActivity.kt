@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -124,7 +125,11 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
                 ) {
                     initScanner()
                 } else {
-                    finish()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.camera_permission_denied),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
