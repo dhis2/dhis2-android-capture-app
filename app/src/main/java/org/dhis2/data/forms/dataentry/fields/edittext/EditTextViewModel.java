@@ -86,6 +86,6 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 value(), programStageSection(), null, editable(), null,
                 description(), objectStyle(), fieldMask(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
-                fieldRendering(), colorByLegend());
+                fieldRendering(), colorByLegend);
     }
 }
