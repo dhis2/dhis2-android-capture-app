@@ -5,8 +5,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.CompoundButton
 import android.widget.FrameLayout
-import java.util.Calendar
-import java.util.Date
 import org.dhis2.R
 import org.dhis2.databinding.FilterPeriodBinding
 import org.dhis2.utils.DateUtils
@@ -16,6 +14,8 @@ import org.dhis2.utils.filters.FilterItem
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.PeriodFilter
 import org.hisp.dhis.android.core.period.DatePeriod
+import java.util.Calendar
+import java.util.Date
 
 class FilterPeriodView @JvmOverloads constructor(
     context: Context,
@@ -24,8 +24,6 @@ class FilterPeriodView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr), CompoundButton.OnCheckedChangeListener {
     private val binding =
         FilterPeriodBinding.inflate(LayoutInflater.from(context), this, true)
-    private var enrollmentFilterItem: EnrollmentDateFilter? = null
-    private var periodFilterItem: PeriodFilter? = null
     private var periodRequest: (FilterManager.PeriodRequest, Int) -> Unit =
         { _, _ -> }
     private var onPeriodSelected: (List<DatePeriod>, Int) -> Unit = { _, _ -> }

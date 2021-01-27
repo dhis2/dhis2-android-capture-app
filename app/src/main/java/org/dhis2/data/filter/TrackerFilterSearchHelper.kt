@@ -1,10 +1,20 @@
 package org.dhis2.data.filter
 
-import javax.inject.Inject
+import org.dhis2.Bindings.toDate
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
+import org.hisp.dhis.android.core.arch.repositories.scope.internal.RepositoryMode
+import org.hisp.dhis.android.core.common.AssignedUserMode
+import org.hisp.dhis.android.core.common.DateFilterPeriod
+import org.hisp.dhis.android.core.common.DatePeriodType
+import org.hisp.dhis.android.core.common.RelativePeriod
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
+import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryEventFilter
+import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryRepositoryScope
+import javax.inject.Inject
 
 class TrackerFilterSearchHelper @Inject constructor(
     private val filterRepository: FilterRepository,
@@ -51,12 +61,45 @@ class TrackerFilterSearchHelper @Inject constructor(
                 filterManager.currentWorkingList()
             ).also {
                 filterManager.setWorkingListScope(
-                    it.scope.mapToWorkingListScope(filterRepository.resources)
+//                    it.scope.mapToWorkingListScope(filterRepository.resources)
+                    testingScope().mapToWorkingListScope(filterRepository.resources)
                 )
             }
         } else {
             teiQuery
         }
+    }
+
+    //TODO: FOR TESTING
+    private fun testingScope(): TrackedEntityInstanceQueryRepositoryScope {
+        return TrackedEntityInstanceQueryRepositoryScope.builder()
+            .mode(RepositoryMode.OFFLINE_FIRST)
+            .orgUnits(arrayListOf("org_unit_1"))
+            .programDate(
+                DateFilterPeriod.builder().type(DatePeriodType.ABSOLUTE)
+                    .startDate("2020-01-01".toDate())
+                    .endDate("2021-01-01".toDate())
+                    .build()
+            )
+            .enrollmentStatus(arrayListOf(EnrollmentStatus.COMPLETED, EnrollmentStatus.CANCELLED))
+            .eventFilters(
+                arrayListOf(
+                    TrackedEntityInstanceQueryEventFilter.builder()
+                        .eventDate(
+                            DateFilterPeriod.builder().type(DatePeriodType.RELATIVE)
+                                .period(RelativePeriod.LAST_3_DAYS).build()
+                        )
+                        .assignedUserMode(AssignedUserMode.CURRENT)
+                        .eventStatus(
+                            arrayListOf(
+                                EventStatus.OVERDUE,
+                                EventStatus.SCHEDULE
+                            )
+                        )
+                        .build()
+                )
+            )
+            .build()
     }
 
     private fun applyEnrollmentStatusFilter(

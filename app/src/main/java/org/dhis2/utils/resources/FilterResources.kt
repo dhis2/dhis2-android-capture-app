@@ -1,6 +1,7 @@
 package org.dhis2.utils.resources
 
 import android.content.Context
+import org.dhis2.Bindings.toUiText
 import org.dhis2.R
 import org.dhis2.utils.filters.workingLists.RelativePeriodToStringMapper
 import org.hisp.dhis.android.core.common.DateFilterPeriod
@@ -77,13 +78,17 @@ class FilterResources(val context: Context) {
             RelativePeriodToStringMapper(this).map(dateFilterPeriod.period())
         } else {
             RelativePeriodToStringMapper(this).span()
-                .format(dateFilterPeriod.startDate(), dateFilterPeriod.endDate())
+                .format(
+                    dateFilterPeriod.startDate().toUiText(context),
+                    dateFilterPeriod.endDate().toUiText(context)
+                )
         }
 
     fun eventStatusToText(eventStatusList: List<EventStatus>) =
         eventStatusList.map {
             eventStatusToText(it)
         }
+
     fun eventStatusToText(eventStatus: EventStatus): String =
         when (eventStatus) {
             EventStatus.ACTIVE -> context.getString(R.string.filter_event_status_open)

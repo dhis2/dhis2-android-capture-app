@@ -9,10 +9,6 @@ class FilterHolder(val binding: ViewDataBinding) : RecyclerView.ViewHolder(bindi
         binding.apply {
             setVariable(BR.filterItem, filterItem)
             setVariable(
-                BR.workingListFilter,
-                FilterManager.getInstance().observeWorkingListFilter()
-            )
-            setVariable(
                 BR.workingListScope,
                 FilterManager.getInstance().observeWorkingListScope()
             )

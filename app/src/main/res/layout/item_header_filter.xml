@@ -95,14 +95,15 @@
                 android:layout_marginEnd="16dp"
                 android:ellipsize="end"
                 android:fontFamily="@font/rubik_light"
+                android:text="@{filterItem.observeCount() > 0 ? filterItem.getFilterValue(@string/filters_active) : @string/filters_disabled}"
                 android:maxLines="1"
-                android:text="@{filterItem.observeCount() > 0 ? @string/filters_active : @string/filters_disabled}"
                 android:textColor="@color/white"
                 android:textSize="10sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/filterIcon"
                 tools:text="Applied filter" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView

@@ -8,18 +8,18 @@
         <import type="android.view.View" />
 
         <variable
-            name="workingListFilter"
-            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.workingLists.TeiWorkingListItem&gt;" />
-        <variable
             name="filterItem"
             type="org.dhis2.utils.filters.EnrollmentStatusFilter" />
+        <variable
+            name="workingListScope"
+            type="androidx.databinding.ObservableField&lt;org.dhis2.data.filter.WorkingListScope&gt;" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:alpha="@{workingListFilter.enrollentStatus!=null ? 0.65f : 1.0f}"
+        android:alpha="@{workingListScope.isEnrollmentStatusActive() ? 0.65f : 1.0f}"
         tools:background="@color/red_060">
 
         <include

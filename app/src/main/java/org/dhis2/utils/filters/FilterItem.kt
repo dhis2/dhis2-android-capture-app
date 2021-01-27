@@ -39,29 +39,31 @@ sealed class FilterItem(
         return FilterManager.getInstance().observeField(type)
     }
 
+    fun getFilterValue(defaultValue: String): String {
+        return FilterManager.getInstance().getFilterStringValue(type, defaultValue)
+    }
+
     fun onSortingClick() {
-        if (!FilterManager.getInstance().isFilterActiveForWorkingList(type)) {
-            val sortItem = create(type)
-            if (sortingItem.get() != null &&
-                sortingItem.get()?.filterSelectedForSorting == sortItem.filterSelectedForSorting
-            ) {
-                when {
-                    sortingItem.get()?.sortingStatus === SortingStatus.ASC -> {
-                        sortItem.sortingStatus = SortingStatus.DESC
-                    }
-                    sortingItem.get()?.sortingStatus === SortingStatus.DESC -> {
-                        sortItem.sortingStatus = SortingStatus.NONE
-                    }
-                    else -> {
-                        sortItem.sortingStatus = SortingStatus.ASC
-                    }
+        val sortItem = create(type)
+        if (sortingItem.get() != null &&
+            sortingItem.get()?.filterSelectedForSorting == sortItem.filterSelectedForSorting
+        ) {
+            when {
+                sortingItem.get()?.sortingStatus === SortingStatus.ASC -> {
+                    sortItem.sortingStatus = SortingStatus.DESC
                 }
-            } else {
-                sortItem.sortingStatus = SortingStatus.ASC
+                sortingItem.get()?.sortingStatus === SortingStatus.DESC -> {
+                    sortItem.sortingStatus = SortingStatus.NONE
+                }
+                else -> {
+                    sortItem.sortingStatus = SortingStatus.ASC
+                }
             }
-            sortingItem.set(sortItem)
-            FilterManager.getInstance().sortingItem = sortingItem.get()
+        } else {
+            sortItem.sortingStatus = SortingStatus.ASC
         }
+        sortingItem.set(sortItem)
+        FilterManager.getInstance().sortingItem = sortingItem.get()
     }
 
     fun onClick() {
@@ -265,6 +267,7 @@ data class WorkingListFilter(
     override val filterLabel: String
 ) : FilterItem(Filters.WORKING_LIST, programType, sortingItem, openFilter, filterLabel) {
     fun onChecked(checkedId: Int) {
+        openFilter.set(null)
         workingLists.firstOrNull { it.hashCode() == checkedId }?.let {
             if (!it.isSelected()) {
                 it.select()

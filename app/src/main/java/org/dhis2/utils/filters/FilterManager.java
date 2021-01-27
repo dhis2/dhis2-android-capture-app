@@ -6,11 +6,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.R;
-import org.dhis2.data.filter.TeiWorkingListScope;
+import org.dhis2.data.filter.EmptyWorkingList;
+import org.dhis2.data.filter.WorkingListScope;
 import org.dhis2.utils.filters.cat_opt_comb.CatOptCombFilterAdapter;
 import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.filters.sorting.SortingStatus;
-import org.dhis2.utils.filters.workingLists.TeiWorkingListItem;
 import org.dhis2.utils.filters.workingLists.WorkingListItem;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -49,7 +49,6 @@ public class FilterManager implements Serializable {
 
     private int periodIdSelected = R.id.anytime;
     private int enrollmentPeriodIdSelected;
-    private int totalSearchTeiFilter = 0;
 
     private CatOptCombFilterAdapter catComboAdapter;
 
@@ -80,8 +79,8 @@ public class FilterManager implements Serializable {
     private ObservableField<Integer> enrollmentStatusFiltersApplied;
     private ObservableField<Integer> assignedToMeApplied;
 
-    private ObservableField<TeiWorkingListScope> currentWorkingListScope = new ObservableField<>(
-            new TeiWorkingListScope(null, null, null, null, null)
+    private ObservableField<WorkingListScope> currentWorkingListScope = new ObservableField<>(
+            new EmptyWorkingList()
     );
 
     private FlowableProcessor<FilterManager> filterProcessor;
@@ -90,7 +89,6 @@ public class FilterManager implements Serializable {
     private FlowableProcessor<String> catOptComboRequestProcessor;
 
     private WorkingListItem currentWorkingList;
-    private ObservableField<WorkingListItem> workingList;
 
     private static FilterManager instance;
 
@@ -129,8 +127,6 @@ public class FilterManager implements Serializable {
         eventStatusFiltersApplied = new ObservableField<>(0);
         enrollmentStatusFiltersApplied = new ObservableField<>(0);
         assignedToMeApplied = new ObservableField<>(0);
-
-        workingList = new ObservableField<>(null);
 
         filterProcessor = PublishProcessor.create();
         ouTreeProcessor = PublishProcessor.create();
@@ -307,10 +303,6 @@ public class FilterManager implements Serializable {
         }
     }
 
-    public ObservableField<WorkingListItem> observeWorkingListFilter() {
-        return workingList;
-    }
-
     public FlowableProcessor<Boolean> getOuTreeProcessor() {
         return ouTreeProcessor;
     }
@@ -349,18 +341,15 @@ public class FilterManager implements Serializable {
         int catComboApplying = catOptComboFilters.isEmpty() ? 0 : 1;
         int assignedApplying = assignedFilter ? 1 : 0;
         int sortingIsActive = sortingItem != null ? 1 : 0;
+        int workingListFilters = getTotalFilterCounterForWorkingList(currentWorkingListScope.get());
         return ouIsApplying + stateIsApplying + periodIsApplying +
                 eventStatusApplying + catComboApplying +
                 assignedApplying + enrollmentPeriodIsApplying + enrollmentStatusApplying +
-                sortingIsActive;
+                sortingIsActive + workingListFilters;
     }
 
     public List<DatePeriod> getPeriodFilters() {
         return periodFilters != null ? periodFilters : new ArrayList<>();
-    }
-
-    public ObservableField<List<DatePeriod>> observePeriodFilter() {
-        return observablePeriodFilters;
     }
 
     public List<DatePeriod> getEnrollmentPeriodFilters() {
@@ -483,8 +472,7 @@ public class FilterManager implements Serializable {
     public void clearWorkingList() {
         if (currentWorkingList != null) {
             currentWorkingList = null;
-            workingList.set(null);
-            currentWorkingListScope.set(new TeiWorkingListScope(null, null, null, null, null));
+            setWorkingListScope(new EmptyWorkingList());
         }
         filterProcessor.onNext(this);
     }
@@ -525,14 +513,6 @@ public class FilterManager implements Serializable {
             filterProcessor.onNext(this);
     }
 
-    public int getTotalSearchTeiFilter() {
-        return totalSearchTeiFilter;
-    }
-
-    public void setTotalSearchTeiFilter(int totalSearchTeiFilter) {
-        this.totalSearchTeiFilter = totalSearchTeiFilter;
-    }
-
     public boolean getAssignedFilter() {
         return assignedFilter;
     }
@@ -566,11 +546,9 @@ public class FilterManager implements Serializable {
     public void currentWorkingList(WorkingListItem workingListItem) {
         if (workingListItem != null) {
             this.currentWorkingList = workingListItem;
-            this.workingList.set(currentWorkingList);
         } else {
             this.currentWorkingList = null;
-            this.workingList.set(null);
-            this.currentWorkingListScope.set(null);
+            setWorkingListScope(new EmptyWorkingList());
         }
         filterProcessor.onNext(this);
     }
@@ -584,20 +562,56 @@ public class FilterManager implements Serializable {
         return currentWorkingList != null;
     }
 
-    public void setWorkingListScope(TeiWorkingListScope scope) {
+    public void setWorkingListScope(WorkingListScope scope) {
         currentWorkingListScope.set(scope);
+        setFilterCountersForWorkingList(scope);
     }
 
-    public ObservableField<TeiWorkingListScope> observeWorkingListScope() {
+    private void setFilterCountersForWorkingList(WorkingListScope scope) {
+        periodFiltersApplied.set(scope.eventDateCount());
+        enrollmentPeriodFiltersApplied.set(scope.enrollmentDateCount());
+        enrollmentStatusFiltersApplied.set(scope.enrollmentStatusCount());
+        eventStatusFiltersApplied.set(scope.eventStatusCount());
+        assignedToMeApplied.set(scope.assignCount());
+    }
+
+    private int getTotalFilterCounterForWorkingList(WorkingListScope scope) {
+        int eventDateCount = scope.eventDateCount() != 0 ? 1 : 0;
+        int enrollmentDateCount = scope.enrollmentDateCount() != 0 ? 1 : 0;
+        int enrollmentStatusCount = scope.enrollmentStatusCount() != 0 ? 1 : 0;
+        int eventStatusCount = scope.eventStatusCount() != 0 ? 1 : 0;
+        int eventAssignedToMeCount = scope.assignCount() != 0 ? 1 : 0;
+        int total = eventDateCount + enrollmentDateCount + enrollmentStatusCount + eventStatusCount + eventAssignedToMeCount;
+        int workingListTotalFilters = total == 0 ? total : total + 1;
+        return workingListTotalFilters;
+    }
+
+    public ObservableField<WorkingListScope> observeWorkingListScope() {
         return currentWorkingListScope;
     }
 
     public boolean isFilterActiveForWorkingList(Filters filterType) {
         switch (filterType) {
+            case ENROLLMENT_DATE:
+                return currentWorkingListScope.get().isPeriodActive(Filters.ENROLLMENT_DATE);
+            case PERIOD:
+                return currentWorkingListScope.get().isPeriodActive(Filters.PERIOD);
             case ENROLLMENT_STATUS:
-                return currentWorkingList() != null && currentWorkingList() instanceof TeiWorkingListItem && ((TeiWorkingListItem) currentWorkingList()).getEnrollentStatus() != null;
+                return currentWorkingListScope.get().isEnrollmentStatusActive();
+            case EVENT_STATUS:
+                return currentWorkingListScope.get().isEventStatusActive();
+            case ASSIGNED_TO_ME:
+                return currentWorkingListScope.get().isAssignedToMeActive();
             default:
                 return false;
+        }
+    }
+
+    public String getFilterStringValue(Filters filterType, String defaultValue) {
+        if (isFilterActiveForWorkingList(filterType)) {
+            return currentWorkingListScope.get().value(filterType);
+        } else {
+            return defaultValue;
         }
     }
 }

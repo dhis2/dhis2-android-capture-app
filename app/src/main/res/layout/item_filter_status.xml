@@ -14,12 +14,17 @@
         <variable
             name="filterItem"
             type="org.dhis2.utils.filters.EventStatusFilter" />
+
+        <variable
+            name="workingListScope"
+            type="androidx.databinding.ObservableField&lt;org.dhis2.data.filter.WorkingListScope&gt;" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:alpha="@{workingListScope.isEventStatusActive() ? 0.65f : 1.0f}"
         tools:background="?colorPrimary">
 
         <include
