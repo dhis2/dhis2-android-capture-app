@@ -1,5 +1,6 @@
 package org.dhis2.data.filter
 
+import javax.inject.Inject
 import org.dhis2.Bindings.toDate
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
@@ -14,7 +15,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryEventFilter
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryRepositoryScope
-import javax.inject.Inject
 
 class TrackerFilterSearchHelper @Inject constructor(
     private val filterRepository: FilterRepository,
@@ -70,7 +70,7 @@ class TrackerFilterSearchHelper @Inject constructor(
         }
     }
 
-    //TODO: FOR TESTING
+    // TODO: FOR TESTING
     private fun testingScope(): TrackedEntityInstanceQueryRepositoryScope {
         return TrackedEntityInstanceQueryRepositoryScope.builder()
             .mode(RepositoryMode.OFFLINE_FIRST)

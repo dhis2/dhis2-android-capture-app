@@ -19,12 +19,12 @@ class FilterModule {
     @Provides
     @Singleton
     fun eventWorkingListMapper(resourceManager: ResourceManager):
-            EventFilterToWorkingListItemMapper {
-        return EventFilterToWorkingListItemMapper(
-            resourceManager.filterResources.defaultWorkingListLabel(),
-            RelativePeriodToStringMapper(resourceManager.filterResources)
-        )
-    }
+        EventFilterToWorkingListItemMapper {
+            return EventFilterToWorkingListItemMapper(
+                resourceManager.filterResources.defaultWorkingListLabel(),
+                RelativePeriodToStringMapper(resourceManager.filterResources)
+            )
+        }
 
     @Provides
     @Singleton
