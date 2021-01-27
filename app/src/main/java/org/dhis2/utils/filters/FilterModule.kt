@@ -12,19 +12,19 @@ import org.dhis2.utils.resources.ResourceManager
 class FilterModule {
     @Provides
     @Singleton
-    fun filterManager(): FilterManager {
-        return FilterManager.getInstance()
+    fun filterManager(resourceManager: ResourceManager): FilterManager {
+        return FilterManager.initWith(resourceManager)
     }
 
     @Provides
     @Singleton
     fun eventWorkingListMapper(resourceManager: ResourceManager):
-        EventFilterToWorkingListItemMapper {
-            return EventFilterToWorkingListItemMapper(
-                resourceManager.filterResources.defaultWorkingListLabel(),
-                RelativePeriodToStringMapper(resourceManager.filterResources)
-            )
-        }
+            EventFilterToWorkingListItemMapper {
+        return EventFilterToWorkingListItemMapper(
+            resourceManager.filterResources.defaultWorkingListLabel(),
+            RelativePeriodToStringMapper(resourceManager.filterResources)
+        )
+    }
 
     @Provides
     @Singleton

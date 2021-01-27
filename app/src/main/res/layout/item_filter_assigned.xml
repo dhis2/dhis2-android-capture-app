@@ -19,7 +19,7 @@
         android:id="@+id/root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:alpha="@{workingListScope.isAssignedToMeActive() ? 0.65f : 1.0f}">
+        android:alpha="@{workingListScope.isAssignedActive() ? 0.65f : 1.0f}">
         <include
             android:id="@+id/filterLayout"
             layout="@layout/item_header_filter"
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:checked="@{filterItem.observeAssignedToMe() || workingListScope.assignedToMeActive}"
-            android:enabled="@{!workingListScope.isAssignedToMeActive()}"
+            android:enabled="@{!workingListScope.isAssignedActive()}"
             android:onCheckedChanged="@{(switch, checked)->filterItem.activate(checked)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

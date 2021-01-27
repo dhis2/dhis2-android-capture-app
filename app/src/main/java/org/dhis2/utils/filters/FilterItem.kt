@@ -24,10 +24,6 @@ sealed class FilterItem(
     open val openFilter: ObservableField<Filters>,
     open val filterLabel: String
 ) {
-    open fun filterValue(): ObservableField<String> {
-        return ObservableField("Hello there!")
-    }
-
     @DrawableRes
     abstract fun icon(): Int
 
@@ -87,9 +83,6 @@ data class PeriodFilter(
     override val filterLabel: String
 ) : FilterItem(Filters.PERIOD, programType, sortingItem, openFilter, filterLabel) {
     private val currentValue = ObservableField("No filters applied")
-    override fun filterValue(): ObservableField<String> {
-        return currentValue
-    }
 
     fun setSelectedPeriod(periods: List<DatePeriod>, checkedId: Int) {
         if (checkedId != FilterManager.getInstance().periodIdSelected) {

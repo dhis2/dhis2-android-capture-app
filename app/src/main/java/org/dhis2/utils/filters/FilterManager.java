@@ -7,11 +7,13 @@ import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.R;
 import org.dhis2.data.filter.EmptyWorkingList;
+import org.dhis2.data.filter.FilterStateExtensionsKt;
 import org.dhis2.data.filter.WorkingListScope;
 import org.dhis2.utils.filters.cat_opt_comb.CatOptCombFilterAdapter;
 import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.filters.sorting.SortingStatus;
 import org.dhis2.utils.filters.workingLists.WorkingListItem;
+import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
@@ -30,6 +32,7 @@ import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import kotlin.Pair;
+import kotlin.collections.CollectionsKt;
 
 public class FilterManager implements Serializable {
 
@@ -79,6 +82,8 @@ public class FilterManager implements Serializable {
     private ObservableField<Integer> enrollmentStatusFiltersApplied;
     private ObservableField<Integer> assignedToMeApplied;
 
+    private List<String> stateValues = new ArrayList<>();
+
     private ObservableField<WorkingListScope> currentWorkingListScope = new ObservableField<>(
             new EmptyWorkingList()
     );
@@ -90,12 +95,25 @@ public class FilterManager implements Serializable {
 
     private WorkingListItem currentWorkingList;
 
+    private ResourceManager resourceManager;
+
     private static FilterManager instance;
 
     public static FilterManager getInstance() {
         if (instance == null)
             instance = new FilterManager();
         return instance;
+    }
+
+    public static FilterManager initWith(ResourceManager resourceManager) {
+        if (instance == null)
+            instance = new FilterManager(resourceManager);
+        return instance;
+    }
+
+    private FilterManager(ResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
+        reset();
     }
 
     private FilterManager() {
@@ -179,11 +197,16 @@ public class FilterManager implements Serializable {
 //    region STATE FILTERS
 
     public void addState(boolean remove, State... states) {
+        stateValues = new ArrayList<>();
         for (State stateToAdd : states) {
-            if (remove)
+            String value = FilterStateExtensionsKt.toStringValue(stateToAdd, resourceManager);
+            if (remove) {
                 stateFilters.remove(stateToAdd);
-            else if (!stateFilters.contains(stateToAdd))
+                stateValues.remove(value);
+            } else if (!stateFilters.contains(stateToAdd)) {
                 stateFilters.add(stateToAdd);
+                stateValues.add(value);
+            }
         }
         observableStates.set(stateFilters);
 
@@ -508,6 +531,8 @@ public class FilterManager implements Serializable {
         ouFiltersApplied.set(ouFilters.size());
         periodFiltersApplied.set(0);
         assignedToMeApplied.set(0);
+        this.currentWorkingList = null;
+        setWorkingListScope(new EmptyWorkingList());
 
         if (!workingListActive())
             filterProcessor.onNext(this);
@@ -601,7 +626,7 @@ public class FilterManager implements Serializable {
             case EVENT_STATUS:
                 return currentWorkingListScope.get().isEventStatusActive();
             case ASSIGNED_TO_ME:
-                return currentWorkingListScope.get().isAssignedToMeActive();
+                return currentWorkingListScope.get().isAssignedActive();
             default:
                 return false;
         }
@@ -611,27 +636,20 @@ public class FilterManager implements Serializable {
         if (isFilterActiveForWorkingList(filterType)) {
             return currentWorkingListScope.get().value(filterType);
         } else {
-            switch (filterType){
-                case PERIOD:
-                    break;
-                case ORG_UNIT:
-                    break;
+            switch (filterType) {
                 case SYNC_STATE:
-                    break;
+                    return CollectionsKt.joinToString(stateValues, ", ", "", "", -1, "", null);
+                case PERIOD:
+                case ORG_UNIT:
                 case CAT_OPT_COMB:
-                    break;
                 case EVENT_STATUS:
-                    break;
                 case ASSIGNED_TO_ME:
-                    break;
                 case ENROLLMENT_DATE:
-                    break;
                 case ENROLLMENT_STATUS:
-                    break;
                 case WORKING_LIST:
-                    break;
+                default:
+                    return defaultValue;
             }
-            return defaultValue;
         }
     }
 }

@@ -30,14 +30,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.R;
-import org.dhis2.animations.ViewAnimationsKt;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
 import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.filters.CatOptionComboFilter;
-import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.Filters;
 import org.dhis2.utils.filters.cat_opt_comb.CatOptCombFilterAdapter;
 import org.dhis2.utils.filters.sorting.SortingItem;
@@ -58,8 +56,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
 import timber.log.Timber;
 
 /**

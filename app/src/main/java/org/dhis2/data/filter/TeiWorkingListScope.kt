@@ -7,6 +7,7 @@ import org.hisp.dhis.android.core.event.search.EventQueryRepositoryScope
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryRepositoryScope
 
 sealed class WorkingListScope {
+    abstract fun isAssignedActive(): Boolean
     abstract fun isAssignedToMeActive(): Boolean
     abstract fun isEnrollmentStatusActive(): Boolean
     abstract fun isPeriodActive(filterType: Filters): Boolean
@@ -22,6 +23,7 @@ sealed class WorkingListScope {
 }
 
 data class EmptyWorkingList(val defaultMessage: String? = null) : WorkingListScope() {
+    override fun isAssignedActive(): Boolean = false
     override fun isAssignedToMeActive(): Boolean = false
     override fun isEnrollmentStatusActive(): Boolean = false
     override fun isPeriodActive(filterType: Filters): Boolean = false
@@ -41,7 +43,10 @@ data class TeiWorkingListScope(
     val eventDateList: List<String>?,
     val assignedToMe: List<AssignedUserMode>?
 ) : WorkingListScope() {
-    override fun isAssignedToMeActive(): Boolean = assignedToMe?.isNotEmpty() == true
+    override fun isAssignedActive(): Boolean = assignedToMe?.isNotEmpty() == true
+    override fun isAssignedToMeActive(): Boolean =
+        assignedToMe?.isNotEmpty() == true && assignedToMe.any { it == AssignedUserMode.CURRENT }
+
     override fun isEnrollmentStatusActive(): Boolean = enrollmentStatusList?.isNotEmpty() == true
     override fun isPeriodActive(filterType: Filters): Boolean = when (filterType) {
         Filters.PERIOD -> eventDateList?.isNotEmpty() == true
@@ -72,7 +77,8 @@ data class EventWorkingListScope(
     val eventStatus: String?,
     val assignedToMe: AssignedUserMode?
 ) : WorkingListScope() {
-    override fun isAssignedToMeActive(): Boolean = assignedToMe != null
+    override fun isAssignedActive(): Boolean = assignedToMe != null
+    override fun isAssignedToMeActive(): Boolean = assignedToMe == AssignedUserMode.CURRENT
     override fun isEnrollmentStatusActive(): Boolean = false
     override fun isPeriodActive(filterType: Filters): Boolean = eventDate != null
     override fun isEventStatusActive(): Boolean = eventStatus != null

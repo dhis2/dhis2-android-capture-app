@@ -2,6 +2,7 @@ package org.dhis2.data.filter
 
 import androidx.annotation.StringRes
 import org.dhis2.R
+import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.common.State
 
 enum class StateFilter(@StringRes val stateName: Int) {
@@ -16,16 +17,20 @@ enum class StateFilter(@StringRes val stateName: Int) {
     SYNCED_VIA_SMS(R.string.sync_by_sms)
 }
 
-fun State.toStringResource():Int {
+fun State.toStringResource(): Int {
     return when (this) {
         State.TO_POST -> StateFilter.TO_POST.stateName
-        State.TO_UPDATE -> TODO()
-        State.ERROR -> TODO()
-        State.SYNCED -> TODO()
-        State.WARNING -> TODO()
-        State.UPLOADING -> TODO()
-        State.RELATIONSHIP -> TODO()
-        State.SENT_VIA_SMS -> TODO()
-        State.SYNCED_VIA_SMS -> TODO()
+        State.TO_UPDATE -> StateFilter.TO_UPDATE.stateName
+        State.ERROR -> StateFilter.ERROR.stateName
+        State.SYNCED -> StateFilter.SYNCED.stateName
+        State.WARNING -> StateFilter.WARNING.stateName
+        State.UPLOADING -> StateFilter.UPLOADING.stateName
+        State.RELATIONSHIP -> StateFilter.RELATIONSHIP.stateName
+        State.SENT_VIA_SMS -> StateFilter.SENT_VIA_SMS.stateName
+        State.SYNCED_VIA_SMS -> StateFilter.SYNCED_VIA_SMS.stateName
     }
+}
+
+fun State.toStringValue(resourceManager: ResourceManager): String {
+    return resourceManager.getString(toStringResource())
 }
