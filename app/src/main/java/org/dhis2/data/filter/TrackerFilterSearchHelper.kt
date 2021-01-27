@@ -61,8 +61,8 @@ class TrackerFilterSearchHelper @Inject constructor(
                 filterManager.currentWorkingList()
             ).also {
                 filterManager.setWorkingListScope(
-//                    it.scope.mapToWorkingListScope(filterRepository.resources)
-                    testingScope().mapToWorkingListScope(filterRepository.resources)
+                    it.scope.mapToWorkingListScope(filterRepository.resources)
+//                    testingScope().mapToWorkingListScope(filterRepository.resources)
                 )
             }
         } else {
@@ -70,8 +70,8 @@ class TrackerFilterSearchHelper @Inject constructor(
         }
     }
 
-    // TODO: FOR TESTING
-    private fun testingScope(): TrackedEntityInstanceQueryRepositoryScope {
+    // TODO: FOR TESTING. Uncomment code and set required methods public
+    /*private fun testingScope(): TrackedEntityInstanceQueryRepositoryScope {
         return TrackedEntityInstanceQueryRepositoryScope.builder()
             .mode(RepositoryMode.OFFLINE_FIRST)
             .orgUnits(arrayListOf("org_unit_1"))
@@ -100,7 +100,7 @@ class TrackerFilterSearchHelper @Inject constructor(
                 )
             )
             .build()
-    }
+    }*/
 
     private fun applyEnrollmentStatusFilter(
         teiQuery: TrackedEntityInstanceQueryCollectionRepository
