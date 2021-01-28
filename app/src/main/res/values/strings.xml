@@ -790,4 +790,32 @@
     <string name="working_list_default_label">Working list %s</string>
     <string name="filter_period_last_n_days">Last %d days</string>
     <string name="filter_period_this_year">This year</string>
+    <string name="filter_period_this_bimonth">This bimonth</string>
+    <string name="filter_period_last_bimonth">Last bimonth</string>
+    <string name="filter_period_this_quarter">This quarter</string>
+    <string name="filter_period_last_quarter">Last quarter</string>
+    <string name="filter_period_six_months">This six months</string>
+    <string name="filter_period_last_six_months">Last six months</string>
+    <string name="filter_period_last_n_years">Last %d years</string>
+    <string name="filter_period_last_n_months">Last %d months</string>
+    <string name="filter_period__last_n_weeks">Last %d weeks</string>
+    <string name="filter_period_weeks_this_year">Weeks this year</string>
+    <string name="filter_period_months_this_year">Months this year</string>
+    <string name="filter_period_bimonths_this_year">Bimonths this year</string>
+    <string name="filter_period_quarters_this_year">Quarters this year</string>
+    <string name="filter_period_months_last_year">Months last year</string>
+    <string name="filter_period_quarters_last_year">Quarters las years</string>
+    <string name="filter_period_last_year">Last year</string>
+    <string name="filter_period_this_week">This week</string>
+    <string name="filter_period_last_week">Last week</string>
+    <string name="filter_period_this_biweek">This biweek</string>
+    <string name="filter_period_last_biweek">Last biweek</string>
+    <string name="filter_period_last_n_bimonths">Last %d bimonths</string>
+    <string name="filter_period_last_n_quarters">Last %d quarters</string>
+    <string name="last_n_months">Last %d months</string>
+    <string name="filter_period_this_financial_year">This financial year</string>
+    <string name="filter_period_last_financial_year">Last financial year</string>
+    <string name="filter_period_last_n_financial_years">Last %d financial years</string>
+    <string name="filter_period_last_n_biweeks">Last %d biweeks</string>
+    <string name="filter_period_from_to" translatable="false">%s - %s</string>
 </resources>
