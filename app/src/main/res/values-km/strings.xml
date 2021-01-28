@@ -341,7 +341,6 @@
     <string name="local_data_accept">ទទួលយក</string>
     <string name="login_server_info_title">អាសយដ្ឋានរបស់ម៉ាស៊ីនមេ</string>
     <string name="action_close">បិទ</string>
-    <string name="data_set_open">បើក</string>
     <string name="data_every_day">រាល់​ថ្ងៃ</string>
     <string name="data_every_week">រាល់​សប្ដាហ៍</string>
     <string name="sms_completed">បានបញ្ចប់</string>

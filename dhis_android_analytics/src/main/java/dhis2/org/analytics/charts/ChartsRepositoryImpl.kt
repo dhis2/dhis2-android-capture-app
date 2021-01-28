@@ -2,11 +2,12 @@ package dhis2.org.analytics.charts
 
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.GraphPoint
-import java.text.SimpleDateFormat
-import java.util.Date
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.period.PeriodType
+import org.hisp.dhis.android.core.program.ProgramIndicator
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class ChartsRepositoryImpl(private val d2: D2) : ChartsRepository {
 
@@ -14,6 +15,8 @@ class ChartsRepositoryImpl(private val d2: D2) : ChartsRepository {
         val enrollment = getEnrollment(enrollmentUid)
 
         return getRepeatableProgramStages(enrollment.program()).map { programStage ->
+
+            val period = programStage.periodType() ?: PeriodType.Daily
 
             getNumericDataElements(programStage.uid()).map { dataElement ->
 
@@ -23,19 +26,58 @@ class ChartsRepositoryImpl(private val d2: D2) : ChartsRepository {
                     dataElement.uid()
                 )
 
-                val period = programStage.periodType() ?: PeriodType.Daily
 
                 Graph(
                     "${period.name}-${dataElement.displayFormName()}",
                     false,
+                    dataElement.displayFormName() ?: dataElement.uid(),
                     coordinates,
                     "",
                     programStage.periodType() ?: PeriodType.Daily,
                     periodStep(programStage.periodType())
                 )
-            }
+            }.union(
+                getStageIndicators(enrollment.program()).map { programIndicator ->
+                    val coordinates = getIndicatorsCoordinatesSortedByDate(
+                        programStage.uid(),
+                        enrollment.trackedEntityInstance(),
+                        programIndicator.uid()
+                    )
+
+                    Graph(
+                        "${period.name}-${programIndicator.displayName()}",
+                        false,
+                        programIndicator.displayName() ?: programIndicator.uid(),
+                        coordinates,
+                        "",
+                        programStage.periodType() ?: PeriodType.Daily,
+                        periodStep(programStage.periodType())
+                    )
+                }
+            )
         }.flatten()
     }
+
+    private fun getIndicatorsCoordinatesSortedByDate(
+        programStageUid: String,
+        trackedEntityInstance: String?,
+        programIndicatorUid: String
+    ) =
+        d2.analyticsModule()
+            .eventLineList()
+            .byProgramStage().eq(programStageUid)
+            .byTrackedEntityInstance().eq(trackedEntityInstance)
+            .withProgramIndicator(programIndicatorUid)
+            .blockingEvaluate()
+            .sortedBy { it.date }
+            .mapNotNull { lineListResponse ->
+                lineListResponse.values.first().value?.let { value ->
+                    GraphPoint(
+                        formattedDate(lineListResponse.date),
+                        value.toFloat()
+                    )
+                }
+            }
 
     private fun getCoordinatesSortedByDate(
         programStageUid: String,
@@ -96,6 +138,12 @@ class ChartsRepositoryImpl(private val d2: D2) : ChartsRepository {
                     it.dataElement()?.uid()
                 ).blockingGet()
             }
+    }
+
+    private fun getStageIndicators(programUid: String?): List<ProgramIndicator> {
+        return d2.programModule().programIndicators()
+            .byProgramUid().eq(programUid)
+            .blockingGet()
     }
 
     private fun periodStep(periodType: PeriodType?): Long {

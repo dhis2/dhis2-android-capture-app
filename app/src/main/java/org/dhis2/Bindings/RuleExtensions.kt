@@ -25,6 +25,7 @@
 
 package org.dhis2.Bindings
 
+import org.dhis2.data.analytics.LOCATION_FEEDBACK_WIDGET
 import org.dhis2.data.forms.RuleActionUnsupported
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
@@ -125,15 +126,30 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
 
     return when (programRuleActionType()) {
         ProgramRuleActionType.HIDEFIELD -> RuleActionHideField.create(content(), field)
-        ProgramRuleActionType.DISPLAYTEXT -> RuleActionDisplayText.createForFeedback(
-            content(),
-            data()
-        )
+        ProgramRuleActionType.DISPLAYTEXT ->
+            if (location() == LOCATION_FEEDBACK_WIDGET) {
+                RuleActionDisplayText.createForFeedback(
+                    content(),
+                    data()
+                )
+            } else {
+                RuleActionDisplayText.createForIndicators(
+                    content(),
+                    data()
+                )
+            }
         ProgramRuleActionType.DISPLAYKEYVALUEPAIR ->
-            RuleActionDisplayKeyValuePair.createForIndicators(
-                content(),
-                data()
-            )
+            if (location() == LOCATION_FEEDBACK_WIDGET) {
+                RuleActionDisplayKeyValuePair.createForFeedback(
+                    content(),
+                    data()
+                )
+            } else {
+                RuleActionDisplayKeyValuePair.createForIndicators(
+                    content(),
+                    data()
+                )
+            }
         ProgramRuleActionType.HIDESECTION ->
             programStageSection()?.let {
                 RuleActionHideSection.create(it.uid())

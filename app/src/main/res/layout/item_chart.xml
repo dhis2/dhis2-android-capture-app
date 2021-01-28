@@ -18,7 +18,7 @@
             app:layout_constraintEnd_toStartOf="@id/chartVisualizationButton"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_margin="16dp"
+            android:layout_marginTop="16dp"
             tools:text="Chart title" />
 
         <ImageButton
@@ -26,10 +26,10 @@
             app:srcCompat="@drawable/ic_more"
             app:tint="?colorPrimary"
             style="@style/ActionIconNoPadding"
+            android:layout_marginTop="16dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/chart_title"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/chart_title"
-            android:layout_marginEnd="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
@@ -38,8 +38,6 @@
             android:id="@+id/chart_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
             android:layout_marginTop="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -11,8 +11,7 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.graphics.PointF;
-import android.graphics.RectF;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -56,6 +55,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
+import org.dhis2.uicomponents.map.geometry.FeatureExtensionsKt;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.TeiMapManager;
 import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
@@ -103,7 +103,6 @@ import kotlin.Pair;
 import kotlin.Unit;
 import timber.log.Timber;
 
-import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.RELATIONSHIP_UID;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CHANGE_PROGRAM;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
@@ -284,6 +283,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                             return Unit.INSTANCE;
                         }
                 )
+                .addOnNavigateClickListener(
+                        uuid -> {
+                            navigateToMap(teiMapManager.findFeature(uuid));
+                            return Unit.INSTANCE;
+                        }
+                )
                 .addProgram(presenter.getProgram())
                 .build();
         binding.mapCarousel.setAdapter(carouselAdapter);
@@ -303,7 +308,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         teiMapManager.setCarouselAdapter(carouselAdapter);
         teiMapManager.setOnMapClickListener(this);
 
-        binding.mapCarousel.attachToMapManager(teiMapManager, () -> true);
+        binding.mapCarousel.attachToMapManager(teiMapManager, (feature, found) -> {
+
+            if (found && feature != null && FeatureExtensionsKt.isPoint(feature)) {
+                binding.mapCarousel.showNavigateTo();
+            } else {
+                binding.mapCarousel.hideNavigateTo();
+            }
+            return true;
+        });
     }
 
     @Override
@@ -985,31 +998,23 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
-        PointF pointf = teiMapManager.getMap().getProjection().toScreenLocation(point);
-        RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
-
-        Pair<List<String>, List<String[]>> sourcesAndLayer = teiMapManager.getSourcesAndLayersForSearch();
-        return findFeature(rectF, sourcesAndLayer.component1(), sourcesAndLayer.component2(), 0);
+        Feature featureFound = teiMapManager.markFeatureAsSelected(point, null);
+        if (featureFound != null) {
+            binding.mapCarousel.scrollToFeature(featureFound);
+            return true;
+        }
+        return false;
     }
 
-    private boolean findFeature(RectF rectF, List<String> sources, List<String[]> layers, int count) {
-        String source = sources.get(count);
-        String[] layersToSearch = layers.get(count);
-        List<Feature> features = teiMapManager.getMap().queryRenderedFeatures(rectF, layersToSearch);
-        if (!features.isEmpty()) {
-            teiMapManager.mapLayerManager.selectFeature(null);
-            Feature selectedFeature = features.get(0);
-            if (source.contains("RELATIONSHIP")) {
-                selectedFeature = teiMapManager.findFeature(source, RELATIONSHIP_UID, selectedFeature.getStringProperty(RELATIONSHIP_UID));
-            }
-            teiMapManager.mapLayerManager.getLayer(source, true).setSelectedItem(selectedFeature);
-            binding.mapCarousel.scrollToFeature(selectedFeature);
-            return true;
-        } else if (count < sources.size() - 1) {
-            return findFeature(rectF, sources, layers, count + 1);
-        } else {
-            return false;
-        }
+    private void navigateToMap(Feature feature) {
+        LatLng point = FeatureExtensionsKt.getPointLatLng(feature);
+        String longitude = String.valueOf(point.getLongitude());
+        String latitude = String.valueOf(point.getLatitude());
+        String location = "geo:0,0?q=" + latitude + "," + longitude + "";
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(location));
+        startActivity(intent);
     }
 
     /*endregion*/

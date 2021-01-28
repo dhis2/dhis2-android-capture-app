@@ -1,0 +1,109 @@
+<resources>
+    <!-- Warnings and error messages -->
+    <string name="error">Помилка</string>
+    <string name="sync_events">Події</string>
+    <string name="add_new">Додати нове</string>
+    <string name="add">Додати</string>
+    <string name="schedule_new">Запланувати нове</string>
+    <string name="referral">Направлення</string>
+
+    <string name="user_hint">Ім\'я користувача</string>
+    <string name="password_hint">Пароль</string>
+    <string name="account_recovery">Відновлення облікового запису</string>
+
+    <!--PERIOD-->
+    <string name="DAILY">Щодня</string>
+    <string name="WEEKLY">Щотижня</string>
+    <string name="MONTHLY">Щомісячно</string>
+    <string name="YEARLY">Щорічно</string>
+    <string name="action_share_zero_items">Поділитися</string>
+    <!-- Input hints -->
+    <string name="search">Пошук</string>
+    <string name="event_open">Відкрити</string>
+    <string name="read_only">Тільки читати</string>
+    <string name="complete">Завершене</string>
+    <string name="completed">Завершено</string>
+    <string name="cancelled">Скасовано</string>
+    <string name="state_error">Помилка</string>
+    <!--Event initial-->
+    <string name="create">Створити</string>
+    <string name="update">Оновити</string>
+    <string name="date">Дата</string>
+    <string name="category_option">Опція категорії</string>
+    <string name="latitude">Широта</string>
+    <string name="longitude">Довгота</string>
+    <string name="new_event">Нова подія</string>
+    <!--Event Detail-->
+    <string name="event_date">Дата події</string>
+    <string name="due_date">Дата виконання</string>
+    <string name="cancel">Скасувати</string>
+    <string name="delete">Видалити</string>
+    <string name="total">Підсумок</string>
+    <string name="active_programs">Активні програми</string>
+    <string name="enroll">Зареєструвати</string>
+    <string name="deactivate">Деактивувати</string>
+    <string name="done_task">Головна</string>
+    <string name="wipe_data_no">Скасувати</string>
+    <string name="SYNC_MANAGER">Налаштування</string>
+    <!--endregion-->
+
+    <string name="enrollmment_date">Дата реєстрації</string>
+
+    <!-- SEARCH OPTION SET -->
+    <string name="search_optionset">Пошук</string>
+    <!--FORM FRAGMENT-->
+    <string name="report_date">Дата звіту</string>
+    <string name="add_note">Додати нотатку</string>
+    <!--AGE CUSTOM VIEW-->
+    <string name="hint_day">Дні</string>
+    <string name="hint_month">Місяці</string>
+    <string name="hint_year">Роки</string>
+    <string name="week">Тижні</string>
+    <string name="incident_date">Дата інциденту</string>
+    <string name="date_dialog_clear">Очистити</string>
+    <string name="period">Період</string>
+    <string name="next">Наступне</string>
+    <string name="SAVE">Зберегти</string>
+    <string name="button_ok">ОК</string>
+    <string name="qr_events">Події</string>
+    <string name="qr_relationships">Зв\'язки</string>
+    <string name="about">Про</string>
+    <string name="share">Поділитися</string>
+    <string name="max">Макс</string>
+    <string name="current">Поточний</string>
+    <string name="warning_on_complete_title">Попередження</string>
+    <string name="error_on_complete_title">Помилка</string>
+    <string name="save">Зберегти</string>
+    <string name="select_option">Обрати опцію</string>
+    <string name="menu_home">Головна</string>
+    <string name="dashboard_relationships">Зв\'язки</string>
+    <string name="dashboard_indicators">Показники</string>
+    <string name="dashboard_notes">Нотатки</string>
+    <string name="event_overview">Деталі</string>
+    <string name="event_event">Подія</string>
+    <string name="event_indicators">Показники</string>
+    <string name="event_notes">Нотатки</string>
+    <string name="please_wait">Будь ласка, почекайте</string>
+    <string name="skip">Пропустити</string>
+    <string name="reschedule">Перепланувати</string>
+    <string name="event_overdue">Прострочене</string>
+    <string name="table">Таблиця</string>
+    <string name="state_warning">Попередження</string>
+    <string name="action_close">Закрити</string>
+    <string name="unsupported_value_type">Тип значення, що не підтримується</string>
+    <string name="data_every_day">Щодня</string>
+    <string name="data_every_week">Щотижня</string>
+    <string name="period_week">Тиждень</string>
+    <string name="sms_completed">Завершено</string>
+    <string name="sms_bar_state_sending">Виконується</string>
+    <string name="polygon_captured">Зафіксовано багатокутник</string>
+    <string name="filters_title_period">Період</string>
+    <string name="filters_title_status">Статус</string>
+    <string name="filter_period_today">Сьогодні</string>
+    <string name="filter_period_yesterday">Вчора</string>
+    <string name="filter_period_this_week">Поточний тиждень</string>
+    <string name="filter_period_last_week">Минулий тиждень</string>
+    <string name="filter_period_this_month">Поточний місяць</string>
+    <string name="filter_period_last_month">Останній місяць</string>
+    <string name="filter_period_other">Інше</string>
+    </resources>

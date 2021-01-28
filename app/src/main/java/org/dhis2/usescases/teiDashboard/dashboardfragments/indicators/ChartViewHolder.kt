@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 
+import android.view.View
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import dhis2.org.analytics.charts.data.ChartType
@@ -19,11 +20,13 @@ class ChartViewHolder(
                 inflate(R.menu.chart_menu)
                 setOnMenuItemClickListener {
                     loadChart(
-                        chart,
-                        when (it.itemId) {
-                            R.id.showBarGraph -> ChartType.BAR_CHART
-                            R.id.showTableGraph -> ChartType.TABLE
-                            else -> ChartType.LINE_CHART
+                        chart.apply {
+                            chartType = when (it.itemId) {
+                                R.id.showBarGraph -> ChartType.BAR_CHART
+                                R.id.showTableGraph -> ChartType.TABLE
+                                R.id.showTableValue -> ChartType.SINGLE_VALUE
+                                else -> ChartType.LINE_CHART
+                            }
                         }
                     )
                     true
@@ -31,15 +34,18 @@ class ChartViewHolder(
                 show()
             }
         }
-        loadChart(chart, ChartType.LINE_CHART)
+        loadChart(chart)
     }
 
-    private fun loadChart(
-        chart: ChartModel,
-        chartType: ChartType
-    ) {
+    private fun loadChart(chart: ChartModel) {
+        binding.chartTitle.visibility = if (chart.shouldDisplayTitle()) {
+            View.VISIBLE
+        } else {
+            View.INVISIBLE
+        }
+
         val chartView = chart.graph.toChartBuilder()
-            .withType(chartType)
+            .withType(chart.chartType)
             .withGraphData(chart.graph)
             .build().getChartView(binding.root.context)
         binding.chartContainer.removeAllViews()

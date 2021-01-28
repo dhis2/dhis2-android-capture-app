@@ -37,6 +37,7 @@ class CarouselAdapter private constructor(
         eventUid: String?
     ) -> Boolean,
     private val onProfileImageClick: (String) -> Unit,
+    private val onNavigateListener: (String) -> Unit,
     private val allItems: MutableList<CarouselItemModel>
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -58,6 +59,7 @@ class CarouselAdapter private constructor(
                     ),
                     onTeiClickListener,
                     onSyncClickListener,
+                    onNavigateListener,
                     onProfileImageClick,
                     { item ->
                         (items.first { it == item } as SearchTeiModel).toggleAttributeList()
@@ -166,7 +168,7 @@ class CarouselAdapter private constructor(
         }
     }
 
-    fun removeItems(data: List<CarouselItemModel>) {
+    private fun removeItems(data: List<CarouselItemModel>) {
         items.removeAll(data)
         notifyDataSetChanged()
     }
@@ -235,6 +237,7 @@ class CarouselAdapter private constructor(
         var onEventClickListener: (String?, String?, String?) -> Boolean =
             { _: String?, _: String?, _: String? -> false },
         var onProfileImageClick: (String) -> Unit = { },
+        var onNavigateClickListener: (String) -> Unit = { },
         var items: MutableList<CarouselItemModel> = arrayListOf(),
         var program: Program? = null
     ) {
@@ -292,6 +295,12 @@ class CarouselAdapter private constructor(
             this.items = items
         }
 
+        fun addOnNavigateClickListener(
+            onNavigateClick: (String) -> Unit
+        ) = apply {
+            this.onNavigateClickListener = onNavigateClick
+        }
+
         fun build() = CarouselAdapter(
             currentTei,
             program,
@@ -301,6 +310,7 @@ class CarouselAdapter private constructor(
             onRelationshipClickListener,
             onEventClickListener,
             onProfileImageClick,
+            onNavigateClickListener,
             items
         )
     }
