@@ -12,6 +12,8 @@ import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.Section;
 import org.hisp.dhis.android.core.period.Period;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -21,8 +23,6 @@ import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 public interface DataValueRepository {
-    Completable updateValue(DataSetTableModel dataValue);
-
     Flowable<DataSet> getDataSet();
 
     Flowable<List<CategoryCombo>> getCatCombo(String section);
@@ -56,4 +56,6 @@ public interface DataValueRepository {
     List<CategoryOption> getCatOptionFromCatOptionCombo(CategoryOptionCombo categoryOptionCombo);
 
     Flowable<Boolean> canWriteAny();
+
+    @NotNull List<CategoryOptionCombo> getCatOptionComboFrom(@Nullable String catComboUid, List<List<CategoryOption>> catOptions);
 }

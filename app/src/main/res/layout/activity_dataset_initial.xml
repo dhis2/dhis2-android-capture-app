@@ -148,8 +148,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
-            android:onClick="@{()->presenter.onActionButtonClick()}"
-            android:text="@string/create"
+            android:onClick="@{() -> presenter.onActionButtonClick(dataSetModel.periodType())}"
+            android:text="@string/next"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

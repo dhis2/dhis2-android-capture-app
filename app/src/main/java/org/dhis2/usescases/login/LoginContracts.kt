@@ -36,10 +36,6 @@ class LoginContracts {
 
         fun showCrashlyticsDialog()
 
-        fun showFingerprintDialog()
-
-        fun hideFingerprintDialog()
-
         fun navigateToQRActivity()
 
         @UiThread
@@ -51,11 +47,12 @@ class LoginContracts {
 
         fun openAccountRecovery()
 
-        fun displayAlertDialog()
         fun alreadyAuthenticated()
         fun showCredentialsData(type: Goldfinger.Type, vararg args: String)
         fun showEmptyCredentialsMessage()
         fun setTestingCredentials()
-        fun setUpFingerPrintDialog()
+        fun getDefaultServerProtocol(): String
+        fun getPromptParams(): Goldfinger.PromptParams
+        fun isNetworkAvailable(): Boolean
     }
 }

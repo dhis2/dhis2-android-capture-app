@@ -66,9 +66,4 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
     public void onBind(@NonNull CoordinateHolder viewHolder, @NonNull CoordinateViewModel viewModel) {
         viewHolder.update(viewModel);
     }
-
-    @Override
-    public void deAttach(@NonNull CoordinateHolder viewHolder) {
-        viewHolder.dispose();
-    }
 }

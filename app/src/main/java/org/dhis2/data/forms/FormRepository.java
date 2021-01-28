@@ -26,79 +26,9 @@ import io.reactivex.functions.Consumer;
 
 public interface FormRepository {
 
-    @NonNull
-    Flowable<String> title();
-
-    @NonNull
-    Flowable<Pair<Program, String>> reportDate();
-
-    Flowable<Pair<Program, String>> incidentDate();
-
-    Flowable<Program> getAllowDatesInFuture();
-
     Flowable<RuleEngine> restartRuleEngine();
 
     @NonNull
     Flowable<RuleEngine> ruleEngine();
-
-    @NonNull
-    Consumer<String> storeReportDate();
-
-    @NonNull
-    Observable<Long> saveReportDate(String date);
-
-    @NonNull
-    Consumer<String> storeIncidentDate();
-
-    @NonNull
-    Observable<Long> saveIncidentDate(String date);
-
-    @NonNull
-    Consumer<Geometry> storeCoordinates();
-
-    @NonNull
-    Flowable<ReportStatus> reportStatus();
-
-    @NonNull
-    Flowable<List<FormSectionViewModel>> sections();
-
-    @NonNull
-    Consumer<ReportStatus> storeReportStatus();
-
-    @Nullable
-    Observable<Trio<String, String, String>> useFirstStageDuringRegistration();
-
-    @Nullable
-    Observable<String> autoGenerateEvents(String enrollmentUid);
-
-    @NonNull
-    Observable<List<FieldViewModel>> fieldValues();
-
-    void deleteTrackedEntityAttributeValues(@NonNull String trackedEntityInstanceId);
-
-    void deleteEnrollment(@NonNull String trackedEntityInstanceId);
-
-    void deleteEvent();
-
-    void deleteTrackedEntityInstance(@NonNull String trackedEntityInstanceId);
-
-    @NonNull
-    Observable<String> getTrackedEntityInstanceUid();
-
-    Observable<Trio<Boolean, CategoryCombo, List<CategoryOptionCombo>>> getProgramCategoryCombo(String eventUid);
-
-    void saveCategoryOption(CategoryOptionCombo selectedOption);
-
-    Observable<FeatureType> captureCoodinates();
-
-    Observable<OrganisationUnit> getOrgUnitDates();
-
-    Flowable<ProgramStage> getProgramStage(String eventUid);
-
-    Single<TrackedEntityType> captureTeiCoordinates();
-
-    Consumer<Geometry> storeTeiCoordinates();
-
-    Consumer<Unit> clearCoordinates();
 
 }

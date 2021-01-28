@@ -1,13 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
@@ -30,27 +24,28 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 
-import android.content.Context;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
-/**
- * QUADRAM. Created by Cristian on 22/03/2018.
- */
-
 public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     private final String eventUid;
     private final D2 d2;
+    private final String stageUid;
 
-    EventInitialRepositoryImpl(String eventUid, D2 d2) {
+    EventInitialRepositoryImpl(String eventUid, String stageUid, D2 d2) {
         this.eventUid = eventUid;
+        this.stageUid = stageUid;
         this.d2 = d2;
     }
 
@@ -63,27 +58,30 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId, String parentId) {
-        if (date == null)
-            return parentId == null ? orgUnits(programId) : orgUnits(programId, parentId);
-        else
-            return (parentId == null ? orgUnits(programId) : orgUnits(programId, parentId))
-                    .map(organisationUnits -> {
-                        Iterator<OrganisationUnit> iterator = organisationUnits.iterator();
-                        while (iterator.hasNext()) {
-                            OrganisationUnit organisationUnit = iterator.next();
-                            if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.uiDateFormat().parse(date))
-                                    || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(DateUtils.uiDateFormat().parse(date)))
-                                iterator.remove();
-                        }
+        return (parentId == null ? orgUnits(programId) : orgUnits(programId, parentId))
+                .map(organisationUnits -> {
+                    if (date == null) {
                         return organisationUnits;
-                    });
+                    }
+                    Iterator<OrganisationUnit> iterator = organisationUnits.iterator();
+                    while (iterator.hasNext()) {
+                        OrganisationUnit organisationUnit = iterator.next();
+                        if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.databaseDateFormat().parse(date))
+                                || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(DateUtils.databaseDateFormat().parse(date)))
+                            iterator.remove();
+                    }
+                    return organisationUnits;
+                });
     }
 
     @NonNull
     @Override
     public Observable<List<OrganisationUnit>> orgUnits(String programId) {
-        return d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .byProgramUids(Collections.singletonList(programId)).get().toObservable();
+        return d2.organisationUnitModule().organisationUnits()
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .byProgramUids(Collections.singletonList(programId))
+                .get()
+                .toObservable();
     }
 
     public Observable<List<OrganisationUnit>> orgUnits(String programId, String parentUid) {
@@ -99,25 +97,15 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public Observable<CategoryCombo> catCombo(String programUid) {
         return d2.programModule().programs().uid(programUid).get()
-                .flatMap(program ->
-                        d2.categoryModule().categoryCombos().withCategories().withCategoryOptionCombos().uid(program.categoryComboUid()).get())
-                .map(categoryCombo -> {
-                    List<Category> fullCategories = new ArrayList<>();
-                    List<CategoryOptionCombo> fullOptionCombos = new ArrayList<>();
-                    for (Category category : categoryCombo.categories()) {
-                        fullCategories.add(d2.categoryModule().categories().withCategoryOptions().uid(category.uid()).blockingGet());
-                    }
-                    List<CategoryOptionCombo> catOptionCombos = d2.categoryModule().categoryOptionCombos()
-                            .byCategoryComboUid().eq(categoryCombo.uid())
-                            .blockingGet();
-                    for (CategoryOptionCombo categoryOptionCombo : catOptionCombos)
-                        fullOptionCombos.add(d2.categoryModule().categoryOptionCombos().withCategoryOptions().uid(categoryOptionCombo.uid()).blockingGet());
-                    return categoryCombo.toBuilder().categories(fullCategories).categoryOptionCombos(fullOptionCombos).build();
-                }).toObservable();
+                .flatMap(program -> d2.categoryModule().categoryCombos()
+                        .withCategories()
+                        .withCategoryOptionCombos()
+                        .uid(program.categoryComboUid()
+                        ).get()).toObservable();
     }
 
     @Override
-    public Observable<List<CategoryOptionCombo>> catOptionCombos(String catOptionComboUid){
+    public Observable<List<CategoryOptionCombo>> catOptionCombos(String catOptionComboUid) {
         return d2.categoryModule().categoryOptionCombos().byCategoryComboUid().eq(catOptionComboUid).get().toObservable();
     }
 
@@ -130,9 +118,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                             if (!categoryCombo.isDefault() && event.attributeOptionCombo() != null) {
                                 List<CategoryOption> selectedCatOptions = d2.categoryModule().categoryOptionCombos().withCategoryOptions().uid(event.attributeOptionCombo()).blockingGet().categoryOptions();
                                 for (Category category : categoryCombo.categories()) {
-                                    for (CategoryOption categoryOption : selectedCatOptions)
-                                        if (category.categoryOptions().contains(categoryOption))
+                                    for (CategoryOption categoryOption : selectedCatOptions) {
+                                        List<CategoryOption> categoryOptions = d2.categoryModule().categoryOptions().byCategoryUid(category.uid()).blockingGet();
+                                        if (categoryOptions.contains(categoryOption))
                                             map.put(category.uid(), categoryOption);
+                                    }
                                 }
                             }
 
@@ -168,7 +158,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<String> createEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
-                                          @NonNull Context context, @NonNull String programUid,
+                                          @NonNull String programUid,
                                           @NonNull String programStage, @NonNull Date date,
                                           @NonNull String orgUnitUid, @Nullable String categoryOptionsUid,
                                           @Nullable String categoryOptionComboUid, @NonNull Geometry geometry) {
@@ -195,8 +185,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             eventRepository.setEventDate(cal.getTime());
             if (d2.programModule().programStages().uid(eventRepository.blockingGet().programStage()).blockingGet().featureType() != null)
                 switch (d2.programModule().programStages().uid(eventRepository.blockingGet().programStage()).blockingGet().featureType()) {
-                    case NONE:
-                        break;
                     case POINT:
                     case POLYGON:
                     case MULTI_POLYGON:
@@ -211,7 +199,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<String> scheduleEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
-                                            @NonNull Context context, @NonNull String programUid, @NonNull String programStage,
+                                            @NonNull String programUid, @NonNull String programStage,
                                             @NonNull Date dueDate, @NonNull String orgUnitUid, @Nullable String categoryOptionsUid,
                                             @Nullable String categoryOptionComboUid, @NonNull Geometry geometry) {
         Calendar cal = Calendar.getInstance();
@@ -237,8 +225,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             eventRepository.setStatus(EventStatus.SCHEDULE);
             if (d2.programModule().programStages().uid(eventRepository.blockingGet().programStage()).blockingGet().featureType() != null)
                 switch (d2.programModule().programStages().uid(eventRepository.blockingGet().programStage()).blockingGet().featureType()) {
-                    case NONE:
-                        break;
                     case POINT:
                     case POLYGON:
                     case MULTI_POLYGON:
@@ -333,10 +319,14 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
     private Observable<Boolean> programAccess(String programUid) {
-        return Observable.fromCallable(() ->
-                d2.programModule().programStages().byProgramUid().eq(programUid).one().blockingGet().access().data().write() &&
-                        d2.programModule().programs().uid(programUid).blockingGet().access().data().write()
-
+        return Observable.fromCallable(() -> {
+                    boolean programAccess = d2.programModule().programs().uid(programUid).blockingGet().access().data().write();
+                    boolean stageAccess = true;
+                    if (stageUid != null) {
+                        stageAccess = d2.programModule().programStages().uid(stageUid).blockingGet().access().data().write();
+                    }
+                    return programAccess && stageAccess;
+                }
         );
     }
 
@@ -358,8 +348,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<Program> getProgramWithId(String programUid) {
-        return d2.programModule().programs().withProgramIndicators().withProgramRuleVariables().withProgramSections()
-            .withProgramTrackedEntityAttributes().withTrackedEntityType().byUid().eq(programUid).one().get().toObservable();
+        return d2.programModule().programs()
+                .withTrackedEntityType().byUid().eq(programUid).one().get().toObservable();
     }
 
     @Override
@@ -375,15 +365,48 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<ObjectStyle> getObjectStyle(String uid) {
-        return d2.programModule().programStages().byUid().eq(uid).one().get().toObservable()
-                .map(programStage -> (programStage.style() != null) ? programStage.style() : ObjectStyle.builder().build());
+        return d2.programModule().programStages().uid(uid).get()
+                .map(programStage -> {
+                    Program program = d2.programModule().programs().uid(programStage.program().uid()).blockingGet();
+                    ObjectStyle programStyle = program.style() != null ? program.style() : ObjectStyle.builder().build();
+                    if (programStage.style() != null) {
+                        programStage.style().icon();
+                        programStage.style().color();
+                        return ObjectStyle.builder()
+                                .icon(programStage.style().icon() != null ? programStage.style().icon() : programStyle.icon())
+                                .color(programStage.style().color() != null ? programStage.style().color() : programStyle.color())
+                                .build();
+                    } else {
+                        return programStyle;
+                    }
+                }).toObservable();
     }
 
     @Override
-    public String getCategoryOptionCombo(String categoryComboUid, List<String> categoryOptionsUid){
+    public String getCategoryOptionCombo(String categoryComboUid, List<String> categoryOptionsUid) {
         return d2.categoryModule().categoryOptionCombos()
                 .byCategoryComboUid().eq(categoryComboUid)
                 .byCategoryOptions(categoryOptionsUid)
                 .one().blockingGet().uid();
+    }
+
+    @Override
+    public CategoryOption getCatOption(String selectedOption) {
+        return d2.categoryModule().categoryOptions().uid(selectedOption).blockingGet();
+    }
+
+    @Override
+    public int getCatOptionSize(String uid) {
+        return d2.categoryModule().categoryOptions()
+                .byCategoryUid(uid)
+                .byAccessDataWrite().isTrue()
+                .blockingCount();
+    }
+
+    @Override
+    public List<CategoryOption> getCategoryOptions(String categoryUid) {
+        return d2.categoryModule().categoryOptions()
+                .byCategoryUid(categoryUid)
+                .blockingGet();
     }
 }

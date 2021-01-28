@@ -35,6 +35,10 @@ abstract class ProgramViewModel : BaseObservable(), Serializable {
 
     abstract fun state(): String
 
+    abstract fun translucent(): Boolean
+
+    abstract fun hasOverdue(): Boolean
+
     companion object {
 
         fun create(
@@ -48,37 +52,10 @@ abstract class ProgramViewModel : BaseObservable(), Serializable {
             programType: String,
             description: String?,
             onlyEnrollOnce: Boolean,
-            accessDataWrite: Boolean
-        ): ProgramViewModel {
-            return AutoValue_ProgramViewModel(
-                uid,
-                displayName,
-                color,
-                icon,
-                count,
-                type,
-                typeName,
-                programType,
-                description,
-                onlyEnrollOnce,
-                accessDataWrite,
-                State.SYNCED.name
-            )
-        }
-
-        fun create(
-            uid: String,
-            displayName: String,
-            color: String?,
-            icon: String?,
-            count: Int,
-            type: String?,
-            typeName: String,
-            programType: String,
-            description: String?,
-            onlyEnrollOnce: Boolean,
             accessDataWrite: Boolean,
-            state: String
+            state: String,
+            hasOverdueEvent: Boolean = false,
+            filtersAreActive: Boolean = false
         ): ProgramViewModel {
             return AutoValue_ProgramViewModel(
                 uid,
@@ -92,7 +69,9 @@ abstract class ProgramViewModel : BaseObservable(), Serializable {
                 description,
                 onlyEnrollOnce,
                 accessDataWrite,
-                state
+                state,
+                filtersAreActive && count == 0,
+                hasOverdueEvent
             )
         }
     }

@@ -1,5 +1,7 @@
 package org.dhis2.utils.optionset
 
+import androidx.paging.DataSource
+import androidx.paging.LivePagedListBuilder
 import io.reactivex.disposables.CompositeDisposable
 import java.util.concurrent.TimeUnit
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
@@ -8,6 +10,7 @@ import org.dhis2.data.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.common.ObjectWithUid
+import org.hisp.dhis.android.core.option.Option
 import timber.log.Timber
 
 class OptionSetPresenter(
@@ -47,7 +50,7 @@ class OptionSetPresenter(
         getOptions()
     }
 
-    fun getOptions() {
+    private fun getOptions() {
         disposable.add(
             view.searchSource()
                 .debounce(500, TimeUnit.MILLISECONDS, schedulerProvider.io())
@@ -101,7 +104,18 @@ class OptionSetPresenter(
                         optionRepository = optionRepository.byDisplayName().like("%$textToSearch%")
                     }
 
-                    optionRepository.getPaged(20)
+                    val dataSource = optionRepository
+                        .dataSource
+                        .mapByPage { it.sortedWith(compareBy { option -> option.sortOrder() }) }
+
+                    LivePagedListBuilder(
+                        object : DataSource.Factory<Option, Option>() {
+                            override fun create(): DataSource<Option, Option> {
+                                return dataSource
+                            }
+                        },
+                        20
+                    ).build()
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())

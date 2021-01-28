@@ -12,5 +12,4 @@ class CategoryComboDialogModule(val categoryCombo: CategoryCombo) {
     fun providesPresenter(d2: D2): CategoryComboDialogPresenter {
         return CategoryComboDialogPresenter(d2, categoryCombo.uid())
     }
-
 }

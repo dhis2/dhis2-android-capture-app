@@ -1,10 +1,15 @@
 package org.dhis2.utils.customviews;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.util.Patterns;
@@ -15,6 +20,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
@@ -22,8 +29,11 @@ import androidx.databinding.ViewDataBinding;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.BR;
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.validation.ValueTypeValidatorFactoryKt;
+import org.dhis2.utils.ColorUtils;
+import org.dhis2.utils.ObjectStyleUtils;
+import org.dhis2.utils.Validator;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
@@ -36,7 +46,7 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by frodriguez on 1/17/2018.
  */
 
-public class CustomTextView extends FieldLayout implements View.OnFocusChangeListener {
+public class CustomTextView extends FieldLayout {
 
     String urlStringPattern = "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$";
     Pattern urlPattern = Pattern.compile(urlStringPattern);
@@ -48,14 +58,16 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     private String label;
     private ValueType valueType;
     private ViewDataBinding binding;
+    private Validator validator;
 
-    private OnFocusChangeListener listener;
+    private OnFocusChangeListener focusListener;
 
     private LayoutInflater inflater;
     private TextInputLayout inputLayout;
     private boolean isLongText;
     private View descriptionLabel;
     private View dummy;
+    private TextView labelText;
 
     public CustomTextView(Context context) {
         super(context);
@@ -76,6 +88,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         inflater = LayoutInflater.from(context);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void setLayout() {
         if (isBgTransparent && !isLongText)
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view, this, true);
@@ -91,48 +104,63 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         icon = findViewById(R.id.renderImage);
         descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
         dummy = findViewById(R.id.dummyFocusView);
+        labelText = findViewById(R.id.label);
 
-        editText.setOnClickListener(v -> {
-            activate();
-        });
         descIcon = findViewById(R.id.descIcon);
 
-        editText.setOnFocusChangeListener(this);
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                activate();
+            } else if (focusListener != null && validate()) {
+                focusListener.onFocusChange(v, hasFocus);
+            }
+        });
+
+        if(isLongText){
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    updateDeleteVisibility(findViewById(R.id.clear_button));
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+
+                }
+            });
+        }
     }
 
     public void setDescription(String description) {
-        descriptionLabel.setVisibility(label.length() > 16 || description != null ? View.VISIBLE : View.GONE);
+        descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
     }
 
     private void configureViews() {
 
         editText.setFilters(new InputFilter[]{});
-
-        TextInputLayout.LayoutParams lp = new TextInputLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.weight = 1f;
-        inputLayout.setLayoutParams(lp);
         editText.setMaxLines(1);
         editText.setVerticalScrollBarEnabled(false);
+        descIcon.setVisibility(View.GONE);
 
         if (valueType != null)
             switch (valueType) {
                 case PHONE_NUMBER:
                     editText.setInputType(InputType.TYPE_CLASS_PHONE);
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_number);
                     break;
                 case EMAIL:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT |
                             InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                    descIcon.setVisibility(GONE);
                     break;
                 case TEXT:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT);
                     editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(50000)});
                     editText.setLines(1);
                     editText.setEllipsize(TextUtils.TruncateAt.END);
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_text);
                     break;
                 case LONG_TEXT:
                     editText.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -144,7 +172,10 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     editText.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
                     editText.setSingleLine(false);
                     editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
-                    descIcon.setVisibility(GONE);
+                    findViewById(R.id.clear_button).setOnClickListener(v -> {
+                        editText.getText().clear();
+                        updateDeleteVisibility(findViewById(R.id.clear_button));
+                    });
                     break;
                 case LETTER:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
@@ -157,26 +188,18 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                                     return source;
                                 return "";
                             }});
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_letter);
                     break;
                 case NUMBER:
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER |
                             InputType.TYPE_NUMBER_FLAG_DECIMAL |
                             InputType.TYPE_NUMBER_FLAG_SIGNED);
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_number);
                     break;
                 case INTEGER_NEGATIVE:
                 case INTEGER:
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_number);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
                     break;
                 case INTEGER_ZERO_OR_POSITIVE:
                 case INTEGER_POSITIVE:
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_number);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                     editText.setKeyListener(DigitsKeyListener.getInstance(false, false));
                     break;
@@ -189,8 +212,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                     break;
                 case URL:
-                    descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_i_url);
                     editText.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);
                     break;
                 default:
@@ -208,14 +229,29 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     public void setValueType(ValueType valueType) {
         this.valueType = valueType;
+        this.validator = ValueTypeValidatorFactoryKt.getValidator(valueType);
+
         configureViews();
     }
 
     public void setEditable(Boolean editable) {
-        editText.setFocusable(false);
-        editText.setFocusableInTouchMode(false);
+        editText.setFocusable(editable);
+        editText.setFocusableInTouchMode(editable);
         editText.setClickable(editable);
         editText.setEnabled(editable);
+        editText.setTextColor(
+                !isBgTransparent && !isLongText ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
+        );
+
+        if (findViewById(R.id.clear_button) != null) {
+            findViewById(R.id.clear_button).setVisibility(editable ? View.VISIBLE : View.GONE);
+        }
+
+        setEditable(editable, labelText,
+                inputLayout, descIcon, descriptionLabel, findViewById(R.id.clear_button));
+
+        updateDeleteVisibility(findViewById(R.id.clear_button));
     }
 
     public void setWarning(String warning, String error) {
@@ -223,11 +259,10 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
             inputLayout.setErrorTextAppearance(R.style.error_appearance);
             inputLayout.setError(error);
             inputLayout.setErrorTextColor(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.error_color, null)));
-            editText.requestFocus();
         } else if (!isEmpty(warning)) {
             inputLayout.setErrorTextAppearance(R.style.warning_appearance);
-            inputLayout.setErrorTextColor(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.warning_color, null)));
             inputLayout.setError(warning);
+            inputLayout.setErrorTextColor(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.warning_color, null)));
         } else
             inputLayout.setError(null);
     }
@@ -236,6 +271,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         editText.setText(text);
         editText.setSelection(editText.getText() == null ?
                 0 : editText.getText().length());
+        updateDeleteVisibility(findViewById(R.id.clear_button));
     }
 
     public void setLabel(String label, boolean mandatory) {
@@ -244,9 +280,13 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
             if (mandatory)
                 labelBuilder.append("*");
             this.label = labelBuilder.toString();
-            inputLayout.setHint(this.label);
+            inputLayout.setHint(null);
             binding.setVariable(BR.label, this.label);
         }
+    }
+
+    public void setHint(String hint) {
+        binding.setVariable(BR.fieldHint, hint);
     }
 
     public TextInputAutoCompleteTextView getEditText() {
@@ -258,16 +298,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     }
 
     public void setFocusChangedListener(OnFocusChangeListener listener) {
-        this.listener = listener;
-    }
-
-    @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-        if (listener != null && validate()) {
-            if(!hasFocus)
-                dummy.requestFocus();
-            listener.onFocusChange(v, hasFocus);
-        }
+        this.focusListener = listener;
     }
 
     private boolean validate() {
@@ -288,22 +319,21 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                         return false;
                     }
                 case INTEGER_NEGATIVE:
-                    if (Float.valueOf(editText.getText().toString()) < 0)
+                    if (validator.validate(editText.getText().toString()))
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_negative_number));
                         return false;
                     }
                 case INTEGER_ZERO_OR_POSITIVE:
-                    if (editText.getText() != null &&
-                            Float.valueOf(editText.getText().toString()) >= 0)
+                    if (validator.validate(editText.getText().toString()))
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
                         return false;
                     }
                 case INTEGER_POSITIVE:
-                    if (Float.valueOf(editText.getText().toString()) > 0)
+                    if (validator.validate(editText.getText().toString()))
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive));
@@ -331,6 +361,14 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                         inputLayout.setError(getContext().getString(R.string.validation_url));
                         return false;
                     }
+                case INTEGER:
+                case NUMBER:
+                    if (validator.validate(editText.getText().toString()))
+                        return true;
+                    else {
+                        inputLayout.setError(editText.getContext().getString(R.string.formatting_error));
+                        return false;
+                    }
                 default:
                     return true;
             }
@@ -352,12 +390,43 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     }
 
 
-    public void setObjectSyle(ObjectStyle objectStyle) {
-        Bindings.setObjectStyle(icon, this, objectStyle);
+    public void setObjectStyle(ObjectStyle objectStyle) {
+        Drawable styleIcon = ObjectStyleUtils.getIconResource(editText.getContext(), objectStyle.icon(), -1);
+        icon.setImageDrawable(styleIcon);
+        int colorResource = ObjectStyleUtils.getColorResource(
+                editText.getContext(),
+                objectStyle.color(),
+                isBgTransparent ? R.color.default_field_icon_color : R.color.colorAccent
+        );
+        descIcon.setColorFilter(colorResource);
     }
 
-    public void setOnLongActionListener(View.OnLongClickListener listener){
-        if(!editText.isFocusable())
+    public void setOnLongActionListener(View.OnLongClickListener listener) {
+        if (!editText.isFocusable())
             editText.setOnLongClickListener(listener);
+    }
+
+    @Override
+    public void dispatchSetActivated(boolean activated) {
+        super.dispatchSetActivated(activated);
+        if (activated) {
+            labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+        } else {
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
+        }
+    }
+
+    @Override
+    protected boolean hasValue(){
+        return editText.getText()!=null && !editText.getText().toString().isEmpty();
+    }
+
+    @Override
+    protected boolean isEditable(){
+        return editText.isEnabled();
+    }
+
+    public void setBackgroundColor(@ColorInt int color) {
+        inputLayout.setBackgroundColor(color);
     }
 }

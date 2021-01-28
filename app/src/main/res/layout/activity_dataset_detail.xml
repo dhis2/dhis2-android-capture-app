@@ -14,7 +14,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.datasets.datasetDetail.DataSetDetailContract.Presenter" />
+            type="org.dhis2.usescases.datasets.datasetDetail.DataSetDetailPresenter" />
 
         <variable
             name="totalFilters"
@@ -192,12 +192,11 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <TextView
-                    android:id="@+id/empty_teis"
+                    android:id="@+id/emptyData"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:gravity="center"
                     android:padding="42dp"
-                    android:text="@string/empty_tei_add"
                     android:textSize="@dimen/primaryTextSize"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"

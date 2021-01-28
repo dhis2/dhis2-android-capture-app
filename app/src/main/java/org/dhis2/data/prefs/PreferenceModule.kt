@@ -6,11 +6,11 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class PreferenceModule {
+open class PreferenceModule {
 
     @Provides
     @Singleton
-    fun preferenceProvider(context: Context): PreferenceProvider {
+    open fun preferenceProvider(context: Context): PreferenceProvider {
         return PreferenceProviderImpl(context)
     }
 }

@@ -14,77 +14,73 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
 import org.dhis2.App;
+import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityDatasetDetailBinding;
+import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.orgunitselector.OUTreeActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.processors.PublishProcessor;
 
+public class DataSetDetailActivity extends ActivityGlobalAbstract implements DataSetDetailView {
 
-public class DataSetDetailActivity extends ActivityGlobalAbstract implements DataSetDetailContract.View {
+    private static String FRAGMENT_TAG = "SYNC";
 
     private ActivityDatasetDetailBinding binding;
-    private ArrayList<Date> chosenDateWeek = new ArrayList<>();
-    private ArrayList<Date> chosenDateMonth = new ArrayList<>();
-    private ArrayList<Date> chosenDateYear = new ArrayList<>();
     private String dataSetUid;
     private Boolean accessWriteData;
 
     @Inject
-    DataSetDetailContract.Presenter presenter;
+    DataSetDetailPresenter presenter;
 
-    private static PublishProcessor<Integer> currentPage;
+    @Inject
+    FilterManager filterManager;
+
+    @Inject
+    FiltersAdapter filtersAdapter;
+
     DataSetDetailAdapter adapter;
-    private FiltersAdapter filtersAdapter;
     private boolean backDropActive;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(new DataSetDetailModule(getIntent().getStringExtra("DATASET_UID"))).inject(this);
-        super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_detail);
-
-        chosenDateWeek.add(new Date());
-        chosenDateMonth.add(new Date());
-        chosenDateYear.add(new Date());
-
         dataSetUid = getIntent().getStringExtra("DATASET_UID");
+        ((App) getApplicationContext()).userComponent().plus(new DataSetDetailModule(this, dataSetUid)).inject(this);
+        super.onCreate(savedInstanceState);
+
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_detail);
         binding.setName(getIntent().getStringExtra(Constants.DATA_SET_NAME));
         accessWriteData = Boolean.valueOf(getIntent().getStringExtra(Constants.ACCESS_DATA));
         binding.setPresenter(presenter);
 
         adapter = new DataSetDetailAdapter(presenter);
 
-        filtersAdapter = new FiltersAdapter();
-
+        ViewExtensionsKt.clipWithRoundedCorners(binding.recycler, ExtensionsKt.getDp(16));
         binding.filterLayout.setAdapter(filtersAdapter);
-
-        currentPage = PublishProcessor.create();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this, dataSetUid);
+        presenter.init();
         binding.addDatasetButton.setEnabled(true);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         filtersAdapter.notifyDataSetChanged();
-
     }
 
     @Override
@@ -100,13 +96,13 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
             binding.recycler.setAdapter(adapter);
             binding.recycler.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         }
-        if(datasets.size() == 0){
-            binding.emptyTeis.setVisibility(View.VISIBLE);
+        if (datasets.size() == 0) {
+            binding.emptyData.setVisibility(View.VISIBLE);
             binding.recycler.setVisibility(View.GONE);
         } else {
-            binding.emptyTeis.setVisibility(View.GONE);
+            binding.emptyData.setVisibility(View.GONE);
             binding.recycler.setVisibility(View.VISIBLE);
-            adapter.setDatasets(datasets);
+            adapter.setDataSets(datasets);
         }
     }
 
@@ -114,7 +110,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
             filtersAdapter.notifyDataSetChanged();
-            updateFilters(FilterManager.getInstance().getTotalFilters());
+            updateFilters(filterManager.getTotalFilters());
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -129,8 +125,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         initSet.clone(binding.backdropLayout);
         if (backDropActive) {
             initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.filterLayout, ConstraintSet.BOTTOM, 50);
-        }
-        else {
+        } else {
             initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
         }
         initSet.applyTo(binding.backdropLayout);
@@ -158,12 +153,13 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Override
     public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().showFromToSelector(this, FilterManager.getInstance()::addPeriod);
+            DateUtils.getInstance().showFromToSelector(this, datePeriods -> filterManager.addPeriod(datePeriods));
         } else {
-            DateUtils.getInstance().showPeriodDialog(this, datePeriods -> {
-                        FilterManager.getInstance().addPeriod(datePeriods);
-                    },
-                    true);
+            DateUtils.getInstance().showPeriodDialog(
+                    this,
+                    datePeriods -> filterManager.addPeriod(datePeriods),
+                    true
+            );
         }
     }
 
@@ -175,17 +171,10 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @SuppressLint("RestrictedApi")
     @Override
     public void setWritePermission(Boolean canWrite) {
+        binding.emptyData.setText(
+                canWrite ? getString(R.string.dataset_empty_list_can_create) : getString(R.string.dataset_emtpy_list_can_not_create)
+        );
         binding.addDatasetButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
-    }
-
-    @Override
-    public String dataSetUid() {
-        return dataSetUid;
-    }
-
-    @Override
-    public Boolean accessDataWrite() {
-        return accessWriteData;
     }
 
     @Override
@@ -193,6 +182,55 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         binding.addDatasetButton.setEnabled(false);
         Bundle bundle = new Bundle();
         bundle.putString(Constants.DATA_SET_UID, dataSetUid);
-        startActivity(DataSetInitialActivity.class,bundle,false,false,null);
+        startActivity(DataSetInitialActivity.class, bundle, false, false, null);
+    }
+
+    @Override
+    public void openDataSet(DataSetDetailModel dataSet) {
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.ORG_UNIT, dataSet.orgUnitUid());
+        bundle.putString(Constants.ORG_UNIT_NAME, dataSet.nameOrgUnit());
+        bundle.putString(Constants.PERIOD_TYPE_DATE, dataSet.namePeriod());
+        bundle.putString(Constants.PERIOD_TYPE, dataSet.periodType());
+        bundle.putString(Constants.PERIOD_ID, dataSet.periodId());
+        bundle.putString(Constants.CAT_COMB, dataSet.catOptionComboUid());
+        bundle.putString(Constants.DATA_SET_UID, dataSetUid);
+        bundle.putBoolean(Constants.ACCESS_DATA, accessWriteData);
+        startActivity(DataSetTableActivity.class, bundle, false, false, null);
+
+    }
+
+    @Override
+    public void showSyncDialog(DataSetDetailModel dataSet) {
+        SyncStatusDialog dialog = new SyncStatusDialog.Builder()
+                .setConflictType(SyncStatusDialog.ConflictType.DATA_VALUES)
+                .setUid(dataSetUid)
+                .setOrgUnit(dataSet.orgUnitUid())
+                .setAttributeOptionCombo(dataSet.catOptionComboUid())
+                .setPeriodId(dataSet.periodId())
+                .onDismissListener(hasChanged -> {
+                    if (hasChanged) {
+                        presenter.updateFilters();
+                    }
+                }).build();
+
+        dialog.show(getSupportFragmentManager(), FRAGMENT_TAG);
+    }
+
+    @Override
+    public void showCatOptComboDialog(String catComboUid) {
+        new CategoryDialog(
+                CategoryDialog.Type.CATEGORY_OPTION_COMBO,
+                catComboUid,
+                false,
+                null,
+                selectedCatOptionCombo -> {
+                    presenter.filterCatOptCombo(selectedCatOptionCombo);
+                    return null;
+                }
+        ).show(
+                getSupportFragmentManager(),
+                CategoryDialog.Companion.getTAG()
+        );
     }
 }

@@ -2,26 +2,33 @@ package org.dhis2.usescases.programEventDetail;
 
 import androidx.annotation.NonNull;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
+import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.filter.FilterPresenter;
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
+import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
+import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
+import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
+import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * Created by Cristian on 13/02/2018.
- */
 @PerActivity
 @Module
 public class ProgramEventDetailModule {
 
 
     private final String programUid;
+    private ProgramEventDetailContract.View view;
 
-    public ProgramEventDetailModule(String programUid) {
+    public ProgramEventDetailModule(ProgramEventDetailContract.View view, String programUid) {
+        this.view = view;
         this.programUid = programUid;
     }
 
@@ -34,19 +41,40 @@ public class ProgramEventDetailModule {
     @Provides
     @PerActivity
     ProgramEventDetailContract.Presenter providesPresenter(
-                                                           @NonNull ProgramEventDetailRepository programEventDetailRepository, SchedulerProvider schedulerProvider) {
-        return new ProgramEventDetailPresenter(programUid,programEventDetailRepository, schedulerProvider);
+            @NonNull ProgramEventDetailRepository programEventDetailRepository, SchedulerProvider schedulerProvider, FilterManager filterManager,
+            PreferenceProvider preferenceProvider) {
+        return new ProgramEventDetailPresenter(view, programEventDetailRepository, schedulerProvider, filterManager, preferenceProvider);
     }
 
     @Provides
     @PerActivity
-    ProgramEventDetailAdapter provideProgramEventDetailAdapter(ProgramEventDetailContract.Presenter presenter) {
-        return new ProgramEventDetailAdapter(presenter);
+    MapGeometryToFeature provideMapGeometryToFeature(){
+        return new MapGeometryToFeature(new MapPointToFeature(), new MapPolygonToFeature());
     }
 
     @Provides
     @PerActivity
-    ProgramEventDetailRepository eventDetailRepository(BriteDatabase briteDatabase, D2 d2) {
-        return new ProgramEventDetailRepositoryImpl(programUid,briteDatabase, d2);
+    MapEventToFeatureCollection provideMapEventToFeatureCollection(MapGeometryToFeature mapGeometryToFeature){
+        return new MapEventToFeatureCollection(mapGeometryToFeature,
+                new BoundsGeometry(0.0,0.0,0.0,0.0));
+    }
+
+    @Provides
+    @PerActivity
+    ProgramEventDetailRepository eventDetailRepository(D2 d2, ProgramEventMapper mapper,
+                                                       MapEventToFeatureCollection mapEventToFeatureCollection){
+        return new ProgramEventDetailRepositoryImpl(programUid, d2, mapper, mapEventToFeatureCollection);
+    }
+
+    @Provides
+    @PerActivity
+    CarouselViewAnimations animations(){
+        return new CarouselViewAnimations();
+    }
+
+    @Provides
+    @PerActivity
+    FiltersAdapter provideFiltersAdapter(FilterPresenter filterPresenter) {
+        return new FiltersAdapter(FiltersAdapter.ProgramType.EVENT, filterPresenter);
     }
 }

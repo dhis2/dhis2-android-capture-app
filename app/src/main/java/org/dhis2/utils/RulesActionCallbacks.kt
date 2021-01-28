@@ -25,7 +25,7 @@ interface RulesActionCallbacks {
 
     fun setHideProgramStage(programStageUid: String)
 
-    fun setOptionToHide(optionUid: String)
+    fun setOptionToHide(optionUid: String, field: String)
 
-    fun setOptionGroupToHide(optionGroupUid: String, toHide: Boolean, field: String = "")
+    fun setOptionGroupToHide(optionGroupUid: String, toHide: Boolean, field: String)
 }

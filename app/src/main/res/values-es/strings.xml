@@ -1,10 +1,14 @@
 <resources>
     <!--GENERAL-->
-    <string name="app_name">Dhis2</string>
-    <string name="logo_text">dhis</string>
+    <string name="app_name">DHIS 2</string>
+    <string name="logo_text">DHIS</string>
     <string name="logo_number">2</string>
     <!-- Warnings and error messages -->
     <string name="error">Error</string>
+    <plurals name="error_message">
+        <item quantity="one">Error</item>
+        <item quantity="other">Errores</item>
+    </plurals>
     <string name="error_wrong_server_url">URL incorrecta</string>
     <string name="error_wrong_credentials">Credenciales incorrectas</string>
     <string name="error_unexpected_error">Error desconocido</string>
@@ -12,9 +16,10 @@
     <string name="yes">sí</string>
     <string name="no">no</string>
     <string name="no_value">sin valor</string>
-    <string name="no_reserved_values">No quedan valores reservados. Contacta el administrador.</string>
+    <string name="no_reserved_values">No quedan valores reservados. Contacta con el administrador del sistema.</string>
     <string name="no_reserved_values_connection">No quedan valores reservados. Conéctate a internet para recargarlos.</string>
-
+    <string name="errors">errores</string>
+    <string name="something_wrong">Algo ha ido mal</string>
     <!-- SyncService strings: -->
     <string name="sync_now">Sincronizar ahora</string>
     <string name="sync_text">Sincronizando con el servidor</string>
@@ -29,7 +34,7 @@
 
     <string name="sync_error_title">Error en sincronizacion</string>
     <string name="sync_error_text">La sincronizacion ha fallado. Intentelo de nuevo.</string>
-    <string name="metadata_sync_error">ERROR: algo ha ido mal al sincronizar. Si tienes Internet, prueba de nuevo. Si sigue fallando, contacta al administrador.</string>
+    <string name="metadata_sync_error">ERROR: algo ha ido mal al sincronizar. Si tienes Internet, prueba de nuevo. Si sigue fallando, contacta al administrador del sistema.</string>
     <string name="data_sync_warning">WARNING: la mayoría de tus datos se han sincronizado, pero algunos generaron conflictos. Sincroniza tu configuración y prueba otra vez. Para revisar el estado de sincronización: los programas, TEIs y events con conflictos tienen el icono @ </string>
     <string name="data_sync_warning_program">WARNING: la mayoría de tus datos se han sincronizado, pero algunos generaron conflictos. Sincroniza tu configuración y prueba otra vez. Si el error persiste, revisa el estado de sincronización: los programas, TEIs y events con conflictos tienen el icono @</string>
     <string name="data_sync_error">ERROR: algunos de tus datos fallaron al sincronizar. Revisa su estado de sincronización: los programas con errores están marcados como @, TEIs y eventos como $  </string>
@@ -82,9 +87,9 @@
 
     <!-- Status -->
     <string name="program_completed">Programa Completado</string>
-    <string name="program_inactive">Programo suspendido</string>
+    <string name="program_inactive">Programa suspendido</string>
 
-    <string name="event_open">Abierto</string>
+    <string name="event_open">Abrir</string>
     <string name="event_completed">Evento completado</string>
     <string name="event_skipped">Evento Omitido</string>
     <string name="event_schedule">Evento Programado</string>
@@ -94,20 +99,22 @@
     <string name="event_approved">Evento aprobado</string>
     <string name="event_inactive">Evento inactivo</string>
     <string name="read_only">Sólo lectura</string>
-    <string name="complete">Completar</string>
+    <string name="complete">Completo</string>
     <string name="finish_and_complete">Acabar y completar</string>
     <string name="completed">Completado</string>
     <string name="cancelled">Cancelar</string>
     <string name="re_open">Reabrir</string>
     <string name="activate">Activar</string>
+    <string name="active">Activo</string>
 
     <!-- State -->
     <string name="state_synced">Sincronizado</string>
-    <string name="state_to_post">Para enviar</string>
+    <string name="state_to_post">Por enviar</string>
     <string name="state_to_update">Para actualizar</string>
     <string name="state_to_delete">Para borrar</string>
     <string name="state_error">Error</string>
     <string name="action_sync">Sincronizar</string>
+    <string name="action_send">ENVIAR</string>
     <string name="action_sync_sms">Sincronizar SMS</string>
 
     <!--Completion-->
@@ -119,11 +126,11 @@
     <string name="date">Fecha</string>
     <string name="org_unit">Unidad Organizativa</string>
     <string name="no_org_units">No hay Unidades Organizativas abiertas para la fecha seleccionada. Seleccione otra fecha u otra Unidad Organizativa.</string>
-    <string name="category_option">Category option</string>
+    <string name="category_option">Opcion de categoria</string>
     <string name="latitude">Latitud</string>
     <string name="longitude">Longitud</string>
     <string name="new_event">Evento nuevo</string>
-    <string name="failed_insert_event">Error/Falla al crear un nuevo evento</string>
+    <string name="failed_insert_event">Error/Fallo al crear un nuevo evento</string>
     <string name="event_created">Evento creado</string>
     <string name="event_updated">Evento actualizado</string>
     <string name="one_time">Una vez</string>
@@ -132,17 +139,23 @@
     <!--DataSet initial-->
     <string name="report_period">Periodo de presentacion de informe</string>
     <string name="cat_option">Opción de categoría</string>
+    <string name="field_required">Si introduces un valor, tendrás que completar toda la fila para poder marcar como Completado el Data Set.</string>
+    <string name="field_mandatory">Hay campos obligatorios vacíos. Deben tener valor para poder marcar como Completado el Data Set.</string>
+    <string name="field_mandatory_v2">Hay campos obligatorios vacíos. Por favor, rellénalos para poder completar el set de datos.</string>
+    <string name="datavalue_saved">Guardado!</string>
+    <string name="there_is_no_available_period">No hay periodos disponibles.</string>
     <!--Event Detail-->
     <string name="event_date">Fecha de evento</string>
     <string name="due_date">Fecha de vencimiento</string>
     <string name="cat_combo">Cat Combo</string>
     <string name="date_default">DD/MM/YYYY</string>
     <string name="cancel">Cancelar</string>
-    <string name="delete">Eliminar</string>
+    <string name="delete">Borrar</string>
     <string name="delete_event">Eliminar evento</string>
     <string name="confirm_delete_event">¿Estás seguro de querer eliminar este evento?</string>
     <string name="event_was_deleted">Evento eliminado</string>
     <string name="total">Total</string>
+    <string name="most_recent_event_date">Fecha de evento más reciente</string>
 
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Listado de admisiones</string>
@@ -176,8 +189,11 @@
     <!-- SYNC -->
     <string name="a_minute">1 minuto</string>
     <string name="fifteen_minute">15 minutos</string>
+    <string name="thirty_minutes">30 minutos</string>
     <string name="a_hour">1 hora</string>
+    <string name="every_6_hours">6h</string>
     <string name="a_day">1 día (por defecto)</string>
+    <string name="every_12_hours">12h</string>
     <string name="Automatic_Sync_Data">Sincronizacion de datos automatica cada:</string>
     <string name="Manual">Manual</string>
     <string name="Automatic_Sync_Metadata">Sincronizacion de configuracion automatica cada:</string>
@@ -193,6 +209,25 @@
     <string name="last_data_sync_date">Última sincronización: %s</string>
     <string name="last_metadata_sync_date">Última sincronización: %s</string>
     <string name="refill_reserved_values">Recargar</string>
+    <string name="settings_sms_module_title">Modulo SMS:</string>
+    <string name="settings_sms_receiver_number">SMS gateway</string>
+    <string name="settings_sms_result_sender_number">Emisor del SMS de resultado</string>
+    <string name="settings_sms_result_timeout">Tiempo límite de respuesta</string>
+    <string name="settings_sms_result_timeout_hint">segundos</string>
+    <string name="settings_sms_result_sender_hint">numero</string>
+    <string name="settings_sms_receiver_number_hint">numero</string>
+    <string name="settings_sms_module_switch">Permitir envío por SMS</string>
+    <string name="settings_sms_response_wait_switch">Esperar confirmación por SMS</string>
+    <plurals name="settings_specific_programs">
+        <item quantity="one">Hay %s programa con una configuración específica</item>
+        <item quantity="other">Hay %s programas con configuraciones específicas</item>
+    </plurals>
+    <string name="settings_sync_period">Periodo de sincronización</string>
+    <string name="settings_limit_scope">Configuración limitada</string>
+    <string name="settings_limit_globally">Globalmente</string>
+    <string name="settings_limit_program">por programa</string>
+    <string name="settings_limit_ou">por unidad organizativa</string>
+    <string name="settings_limit_ou_program">por unid. org. y programa</string>
     <!-- SEARCH TRACK ENTITY -->
 
     <!--region SETTINCS-->
@@ -203,10 +238,12 @@
     <string name="settingsReservedValues_descr">Aquí puedes ver el numero de valores disponibles offline y reservar nuevos</string>
     <string name="settingsErrorLog">Ver errores de sincronización</string>
     <string name="settingsErrorLog_descr">Aquí están todos los errores encontrados durante la sincronización de datos y metadatos.</string>
-    <string name="settingsDeleteLocalData">Borrar datos</string>
+    <string name="settingsDeleteLocalData">Borrar datos locales</string>
     <string name="settingsDeleteLocalData_descr">Se borrarán todos los datos guardados por la App. Los datos que no se hayan enviado al servidor se perderán.</string>
     <string name="settingsReset">Reiniciar app</string>
     <string name="settingsReset_descr">Se borrará la configuración y todos los datos guardados por la App. Tendrá que iniciar sesión de nuevo y los datos que no se hayan enviado al servidor se perderán.</string>
+    <string name="settingsSms">Configuración SMS</string>
+    <string name="settingsSms_descr">Verifique los parámetros relacionados con la SMS gateway</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Fecha de inscripción</string>
@@ -232,6 +269,9 @@
     <string name="missing_mandatory_fields_go_back">Borrar y salir.</string>
     <string name="error_fields">Algunos campos tienen errores:\n%s\nRevíselos, por favor.</string>
     <string name="missing_mandatory_fields_finish">Algunos campos obligatorios están vacíos. Puedes terminar la entrada de datos y salir, pero el evento no podrá ser completado.</string>
+    <string name="enrollment_coordinates">Coordenadas de admisión </string>
+    <string name="tei_coordinates">Coordenadas para</string>
+
     <!--EVENT SUMMARY-->
     <string name="section_list">Lista de secciones</string>
     <string name="event_summary_header" formatted="false">%s preguntas de %s completadas</string>
@@ -286,12 +326,12 @@
     <string name="qr_no_data">sin datos</string>
     <string name="qr_error_id">Código QR no válido</string>
     <string name="qr_error_attr">Este atributo no puede ser añadido</string>
-    <string name="qr_error_enrollment">Esta admisión no puede ser añadido</string>
+    <string name="qr_error_enrollment">Esta admisión no puede ser añadida</string>
     <string name="qr_error_event">Este evento no puede ser añadido</string>
 
     <string name="jira_report">Reportar problema en Jira</string>
     <string name="about">Acerca de</string>
-    <string name="programs_to_enroll">Programas disponibles para inscripción</string>
+    <string name="programs_to_enroll">Programas disponibles para admisión</string>
     <string name="select_all">Selecionar todo</string>
     <string name="clear_all">Borrar selección</string>
     <string name="empty_program_list">No hay información para los filtros seleccionados. Prueba modificándolos.</string>
@@ -301,6 +341,7 @@
     <string name="max">Máx</string>
     <string name="current">En uso</string>
     <string name="tei">TEI</string>
+    <string name="teis">TEIs</string>
     <string name="limit_by_organisation_unit">Limitar por unid. organizativa</string>
     <string name="limit_by_program">Limitado por programa</string>
     <string name="programs_list">Listado de programas</string>
@@ -312,7 +353,7 @@
     <string name="save">Guardar</string>
     <string name="reserved_value">Valores Reservados</string>
 
-    <string name="downloaded_confirm">Quieres añadir más información de los QRs?</string>
+    <string name="downloaded_confirm">Quieres añadir más información de códigos QR?</string>
 
     <!--ABOUT-->
     <string name="about_app">Versión de la app: %s</string>
@@ -368,7 +409,7 @@
     <string name="showHelp">Ver ayuda</string>
     <string name="tuto_settings_1">Sincroniza tus datos</string>
     <string name="tuto_settings_2">Sincroniza tu configuracion</string>
-    <string name="tuto_settings_3">configura el almacenamiento local</string>
+    <string name="tuto_settings_3">Configura el almacenamiento local</string>
     <string name="tuto_settings_reserved">Ver y gestionar cuantos valores reservados quedan</string>
     <string name="tuto_settings_errors">Compruebe si la conexión con el servidor ha fallado</string>
     <string name="tuto_settings_reset">Liberar memoria</string>
@@ -379,7 +420,7 @@
     <string name="tuto_search_4_v2">Click aquí para limpiar los campos y reiniciar la búsqueda.</string>
     <string name="tuto_dashboard_1">Este es el Dashboard de entidad</string>
     <string name="tuto_dashboard_2">Puedes ver la información de perfil</string>
-    <string name="tuto_dashboard_3">Compartir información via QR</string>
+    <string name="tuto_dashboard_3">Compartir información via QR o SMS</string>
     <string name="tuto_dashboard_4">O marcar una entidad para seguimiento</string>
     <string name="tuto_dashboard_5">Puedes crear o programar un evento, o referir a otra Org. Unit</string>
     <string name="tuto_dashboard_6">Aquí estan todos los eventos. Pulsa para ver los detalles.</string>
@@ -429,9 +470,10 @@
     <string name="finish_add_new"><![CDATA[Acabar y añadir]]></string>
     <string name="finish">Acabar</string>
     <string name="error_fields_title">Campos con errores</string>
-    <string name="error_fields_events">Algunos campos tienen errores. No se han guardado, revíselos.</string>
+    <string name="error_fields_events">Algunos campos presentan errores. No se han guardado. Revíselos por favor.</string>
     <string name="event_reopened">Ahora puede editar este evento</string>
     <string name="unique_warning">El valor debe ser único, se ha encontrado una coincidencia. El campo no se ha guardado, revíselo.</string>
+    <string name="unique_coincidence_found">Se ha encontrado una coincidencia en un campo único. Por favor compruebe el formulario para guardar el registro.</string>
     <string name="please_wait">Por favor, espere</string>
     <string name="skip">Omitir</string>
     <string name="reschedule">Reprogramar</string>
@@ -445,6 +487,7 @@
     <string name="biometrics_first_use_text">Para poder iniciar sesión por huella dactilar debe entrar primero por el modo normal</string>
     <string name="biometrics_security_title">Seguridad biométrica</string>
     <string name="biometrics_security_text">Usar huella dactilar para acceder con este usuario?</string>
+    <string name="tab_tables">Tablas</string>
     <string name="table">Tabla</string>
     <string name="login_https">https://</string>
     <string name="delete_local_data_message">Los datos no sincronizados se perderán. Continuar?</string>
@@ -475,46 +518,235 @@
     <string name="no_conflicts_synced_message">¡Estas al día! Todos tus datos se han enviado al servidor.</string>
     <string name="relationship_error_recursive">No se puede relacionar un registro con el mismo</string>
     <string name="unblock_session">Desbloquear sesión</string>
-    <string name="data_set_closed">Cerrar</string>
-    <string name="data_set_open">Abrir</string>
+    <string name="data_set_complete">Completar</string>
+    <string name="data_set_open">Abierto</string>
     <string name="unsupported_value_type">Tipo de valor no admitido</string>
     <string name="change_calendar_view">Cambiar vista</string>
     <string name="data_every_fifteen_minutes">15 minutos</string>
     <string name="data_every_hour">Cada hora</string>
     <string name="data_every_day">Diario</string>
     <string name="data_every_week">Semanal</string>
+    <string name="period_week">Semana</string>
     <string name="sync_setting">Parámetros de configuración: %s</string>
     <string name="relationship_without_enrollment">Este registro no tiene ninguna inscripción. No se puede acceder al dashboard.</string>
     <string name="formatting_error">Error de formato</string>
     <string name="dashboard_menu_delete_tei">Borrar TEI</string>
-    <string name="dashboard_menu_delete_enrollment">Borrar solo la inscripción </string>
+    <string name="dashboard_menu_delete_enrollment">Borrar solo la admisión </string>
     <string name="delete_authority_error">No tienes permisos para borrar este registro</string>
     <string name="record_marked_for_deletion">Este registro ha sido borrado. No puede acceder a el</string>
     <string name="validation_url">La URL no es válida</string>
     <string name="uncomplete_authority_error">No tiene permisos para abrir este evento</string>
     <string name="adjusting_form">Adaptando el formulario...</string>
 
+    <string name="sms_receiver_number">Numero receptor</string>
+    <string name="sms_amount_question">Quiere enviar %d SMS?</string>
+    <string name="sms_sending">Enviando %1$d/%2$d</string>
+    <string name="sms_waiting_amount_confirm">Esperando confirmación - %d</string>
+    <string name="sms_all_sent">Se han enviado todos los mensajes</string>
+    <string name="sms_submission_completed">Envío completado con éxito</string>
+    <string name="sms_waiting_confirmation">Esperando SMS de confirmación</string>
+    <string name="sms_waiting_timeout">No se ha recibido SMS de confirmación </string>
+    <string name="sms_confirmed">Confirmación recibida</string>
+    <string name="sms_error">Fallo en el envío </string>
+    <string name="sms_error_item_not_ready">Los datos no están listos para envío</string>
+    <string name="sms_error_no_network">No hay red</string>
+    <string name="sms_error_no_check_network_permission">Permiso para comprobar la conexión no concedido</string>
+    <string name="sms_error_no_receive_sms_permission">Permiso para recibir sms no concedido</string>
+    <string name="sms_error_no_send_sms_permission">Permiso para enviar sms no concedido</string>
+    <string name="sms_error_no_gateway_set">Puerta de acceso no definida</string>
+    <string name="sms_error_no_user_login">El usuario no ha iniciado sesión</string>
+    <string name="sms_error_module_disabled">Modulo SMS desabilitado</string>
+    <string name="sms_error_ongoing_sunmission">Se está enviando otro SMS en este momento</string>
+    <string name="sms_metadata_empty">Modulo SMS no inicializado. No se encontraron los metadatos necesarios.</string>
     <string name="sms_completed">Completado</string>
+    <string name="sms_count_error">No se ha aceptado el número de SMS</string>
+    <string name="sms_state_started">Inicio del envío de sms</string>
+    <string name="sms_state_converted">Datos leídos y convertidos. Id de envío: 1%d</string>
+    <string name="sms_general_error">Error al enviar sms</string>
+    <string name="sms_title_enrollment">SMS para registro de TEI</string>
+    <string name="sms_title_event">SMS para evento</string>
+    <string name="sms_title_data_set">SMS para conjunto de datos</string>
+    <string name="sms_bar_state_starting">Iniciando</string>
     <string name="sms_bar_state_sending">En proceso</string>
     <string name="sms_bar_state_sent">Enviado</string>
     <string name="sms_bar_state_failed">Ha fallado</string>
 
+    <string name="start_sync_granular">Iniciando sincronización.</string>
+    <string name="syncing">Sincronizando...</string>
+    <string name="end_sync_granular">Sincronización completada</string>
+    <string name="error_sync">Ocurrió un error en la sincronización</string>
+    <string name="cancel_sync">Cancelar sincronización</string>
+
+    <string name="copied_text">Copiado</string>
+    <string name="image_selected">Imagen seleccionada</string>
+    <string name="show_in_map">Mostrar en el Mapa</string>
+    <string name="show_list">Mostrar lista</string>
+
+    <!--region TRACKER IMPORT CONFLICT MESSAGES-->
+    <string name="value_required_but_not_provided">%s es obligatorio y no tiene valor</string>
+    <string name="polygon_captured">Polígono guardado</string>
     <string name="polygon">Polígono</string>
+    <string name="map_layers">Capas del Mapa</string>
+    <!--endregion-->
+
+    <string name="wrong_pattern">No tiene el formato correcto</string>
+    <string name="fingerprint_title">Huella dactilar</string>
+    <string name="fingerprint_message">Por favor, toque con el dedo el lector de huellas.</string>
+    <string name="security_title">Seguridad</string>
+    <string name="security_rooted_message">Por motivos de seguridad, esta versión de la aplicación no permite su uso en dispositivos root. Por favor use la versión de formación.</string>
+    <string name="fix_error">Hay algunos errores. Por favor corríjalos antes de continuar.</string>
 
     <string name="filters_active">Filtros activos</string>
-    <string name="filters_disabled">No hay filtros activos</string>
+    <string name="filters_disabled">Filtros desactivados</string>
     <string name="filters_title_period">Periodo</string>
+    <string name="filters_title_org_unit">Unidad Org.</string>
+    <string name="filters_title_sorting">Orden</string>
+    <string name="filters_title_status">Estado</string>
+    <string name="filters_title_state">Sincronizado</string>
+    <string name="filters_title_assigned">Asignado a mí</string>
     <string name="filter_period_today">Hoy</string>
     <string name="filter_period_yesterday">Ayer</string>
     <string name="filter_period_tomorrow">Mañana</string>
     <string name="filter_period_this_week">Esta semana</string>
-    <string name="filter_period_last_week">Semana previa</string>
-    <string name="filter_perdior_next_week">Semana siguiente</string>
-    <string name="filter_period_this_month">Mes actual</string>
+    <string name="filter_period_last_week">Última semana</string>
+    <string name="filter_perdior_next_week">La semana que viene</string>
+    <string name="filter_period_this_month">Este mes</string>
     <string name="filter_period_last_month">Mes anterior</string>
     <string name="filter_period_next_month">Mes siguiente</string>
     <string name="filter_period_form_to">Desde - hasta</string>
     <string name="filter_period_other">Otro</string>
-    <string name="filter_period_any">Cualquiera</string>
-    <!--endregion-->
+    <string name="filter_period_any">Cualquier momento</string>
+    <string name="data_values_error_sync_message">La sincronización falló. Comprueba los valores para tratar de resolver el problema e inténtelo otra vez. Si el fallo persiste contacta con su administrador del sistema.</string>
+    <string name="sms_synced_message">Los datos se han enviado al servidor pero no se puede garantizar que se hayan guardado</string>
+    <string name="filter_event_status_open">Abierto</string>
+    <string name="filter_event_status_schedule">Planificado</string>
+    <string name="filter_event_status_overdue">Atrasado</string>
+    <string name="filter_event_status_visited">Visitado</string>
+    <string name="filter_event_status_completed">Completado</string>
+    <string name="filter_event_status_skipped">Omitido</string>
+    <string name="event_tei_limits">Eventos:%smax:%s%sactual:%sEntidades:%smax:%s%sactual:%s</string>
+    <string name="event_tei_limits_v2">Configuración limitada %s\nEventos: %s/%s Entidades: %s/%s</string>
+    <string name="enrollment_data_hide">Ocultar datos de registro</string>
+    <string name="enrollment_data_show">Mostrar datos de registro</string>
+    <string name="enrollment_data_section_label">Datos de registro</string>
+    <string name="sms_enabled">Módulo de SMS activado</string>
+    <string name="sms_disabled">Módulo de SMS desactivado</string>
+    <string name="sms_downloading_data">Descargando datos para el módulo de SMS. Por favor espere.</string>
+    <string name="sms_empty_gateway">El gateway de SMS no puede estar vacío</string>
+    <string name="granular_sync_enrollments_empty">No hay registros que sincronizar</string>
+    <string name="granular_sync_unsupported_task">La conversión elegida no está soportada</string>
+    <string name="disable_pin_locked">No volver a mostrar la pantalla de bloqueo</string>
+    <string name="set_pin">Establecer pin</string>
+    <string name="conflict">Conflicto</string>
+    <string name="event_date_in_future_message">Este evento no puede tener una fecha en el futuro. Por favor cámbiela.</string>
+    <string name="change_event_date">Cambiar fecha</string>
+    <string name="go_back">Ir atrás</string>
+    <string name="data_sets">Sets de datos</string>
+    <string name="no_notes">Sin notas</string>
+    <string name="no_add_notes">No se pueden añadir más notas</string>
+    <string name="new_note">Nueva nota</string>
+    <string name="note_saved">Nota guardada</string>
+    <string name="discard_note">¿Descartar nota?</string>
+    <string name="interval_now">ahora</string>
+    <string name="interval_minute_ago">Hace %d min.</string>
+    <string name="interval_hour_ago">Hace %d horas</string>
+    <string name="interval_yesterday">Ayer</string>
+    <string name="enrollment_single_section_label">Atributos - %s</string>
+    <string name="program_selector">Registros en programas</string>
+    <string name="select_time">Selecciona hora</string>
+    <string name="enter_letter">Introduce una letra</string>
+    <string name="enter_unit_interval">Introduce un número de 0 a 1</string>
+    <string name="enter_percentage">Introduce un porcentaje</string>
+    <string name="enter_phone_number">Introduce número de teléfono</string>
+    <string name="enter_email">Introduce email</string>
+    <string name="choose_ou">Elija unidad organizativa</string>
+    <string name="enter_url">Introduzca url</string>
+    <string name="enter_value">Introduzca valor</string>
+    <string name="choose_image">Elija una imagen</string>
+    <string name="scan_code">Escanear código</string>
+    <string name="choose_option">Elija una opción</string>
+    <string name="reserved_values_hint">Valores reservados descargados por atributo de entidad</string>
+    <string name="settings_reserved_values_message">Valores reservados descargados por atributo de entidad</string>
+    <string name="reserved_values_left">Quedan %s valores reservados</string>
+    <string name="manage_reserved_values_button">Gestionar valores reservados</string>
+    <string name="events_to_download">Eventos a descargar</string>
+    <string name="teis_to_download">Entidades a descargar</string>
+    <string name="program_settings">Configuración de programa</string>
+    <string name="limit_scope_all_ou_trailing">para todas las unidades organizativas</string>
+    <string name="limit_scope_global_trailing">globalmente</string>
+    <string name="limit_scope_ou_trailing">por unidad organizativa</string>
+    <string name="limit_scope_program_trailing">por programa</string>
+    <string name="limit_scope_ou_program_trailing">por unid. org. y programa</string>
+    <string name="activity_program_settings">Configuración de sincronización del programa</string>
+    <string name="syncing_period_not_editable">El periodo de sincronización no es editable</string>
+    <string name="sync_parameters_not_editable">Los parámetros de sincronización no son editables</string>
+    <string name="rv_no_editable">El número de valores reservados a descargar no es editable</string>
+    <string name="dialog_layer_satellite">Mostrar vista satélite</string>
+    <string name="dialog_layer_event">Mostrar eventos</string>
+    <string name="dialog_layer_tei_coordinates">Mostrar coordenadas de la entidad</string>
+    <string name="dialog_layer_enrollment_coordinates">Mostrar coordinadas del registro</string>
+    <string name="dialog_layer_heatmap">Mostrar mapa de calor</string>
+    <string name="downloading">Descargando</string>
+    <string name="filter_sync_synced">Sincronizado</string>
+    <string name="filter_sync_not_synced">No Sincronizado</string>
+    <string name="filter_sync_error">Error en la sincronización</string>
+    <string name="filter_sync_sms">Sincronización de SMS</string>
+    <string name="dataset_overview">Detalles</string>
+    <string name="dataset_comments">Comentarios</string>
+    <string name="saved">¡Guardado!</string>
+    <string name="run_validation_rules">¿Quieres validar la calidad de los datos?</string>
+    <string name="validation_success_title">¡Parece que todo está bien!</string>
+    <string name="mark_dataset_complete">¿Quieres completar también el set de datos?</string>
+    <string name="dataset_completed">Marcar como completado</string>
+    <string name="name">Nombre</string>
+    <string name="formula">Fórmula</string>
+    <string name="complete_anyway">Completar de todas formas</string>
+    <string name="fk_message">No se ha encontrado %s %s en %s %s</string>
+    <string name="filters_title_event_status">Estado del evento</string>
+    <string name="filters_title_enrollment_status">Estado de la inscripción.</string>
+    <string name="enrollment_date">Fecha de inscripción</string>
+    <string name="action_apply">Aplicar</string>
+    <string name="dataset_empty_list_can_create">No hay datos. Pulsa \"+\" para añadir un nuevo registro</string>
+    <string name="dataset_emtpy_list_can_not_create">No hay datos. No tienes permisos para añadir un nuevo registro.</string>
+    <string name="validation_rules_empty_description">No se han proporcionado descripción o instrucciones</string>
+    <string name="validation_rules_data_to_review">Datos a revisar</string>
+    <string name="dataset_saved_completed">¡Guardado y completado!</string>
+    <string name="status_change_error_active_exist">Ya existe un registro activo</string>
+    <string name="enrollment_status_active">Abierto</string>
+    <string name="enrollment_status_completed">Completar</string>
+    <string name="enrollment_status_cancelled">Cancelar</string>
+    <string name="no_data">No hay datos</string>
+    <string name="no_coordinates_item">Este %s no tiene coordenadas.</string>
+    <string name="event_data">Datos</string>
+    <string name="download_tei_error">El %s seleccionado no puede ser descargado.</string>
+    <string name="completed_by">Completado por %s: %s</string>
+    <string name="updated_time">Actualizado: %s</string>
+    <string name="action_done">¡Listo!</string>
+    <string name="validation_internal_error_datasets">No hemos podido verificar la calidad de los datos. Contacta con su administrador</string>
+    <string name="are_you_sure">¿Está seguro?</string>
+    <string name="reopen_question">¿Quieres reabrir este set de datos?</string>
+    <string name="group_events_by_stage">Agrupar eventos por etapa</string>
+    <string name="show_events_timeline">Mostrar eventos por fecha</string>
+    <string name="filters_title_date">Fecha</string>
+    <string name="filters_title_event_date">Fecha de evento</string>
+    <string name="dataset_data">Datos</string>
+    <string name="tei_type_has_no_attributes">%s no tiene atributos públicos. Por favor selecciona un programa</string>
+    <string name="privacy_policy_title">Política de privacidad</string>
+    <string name="open_privacy_policy">Pulsa aquí para comprobar nuestra <a href="">política de privacidad</a></string>
+    <string name="coordinates_error">El valor de las coordenadas no es válido</string>
+    <string name="break_glass_error">No puedes registrar TEIs de otras unidades organizativas en este programa porque está protegido.\nContacte con su administrador.</string>
+    <string name="add_image">Añadir imagen</string>
+    <string name="field_is_mandatory">El campo es obligatorio</string>
+    <string name="security_debugger_message">Por razones de seguridad, esta versión de la app no permite el uso de adb. Por favor use la versión de formación.</string>
+
+    <string name="customactivityoncrash_error_activity_error_occurred_explanation">¡Vaya! Algo no ha ido como estaba previsto.\nVamos a llevarte de nuevo a la acción.</string>
+    <string name="customactivityoncrash_error_activity_restart_app">Ir atrás</string>
+    <string name="customactivityoncrash_error_activity_close_app">Cerrar app</string>
+    <string name="customactivityoncrash_error_activity_error_details">Más detalles</string>
+    <string name="customactivityoncrash_error_activity_error_details_title">Más detalles</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">Cerrar</string>
+    <string name="customactivityoncrash_error_activity_error_details_copy">Copiar al portapapeles</string>
+    <string name="customactivityoncrash_error_activity_error_details_copied">Copiado al portapapeles</string>
+    <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Información del error</string>
+
 </resources>

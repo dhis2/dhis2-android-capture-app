@@ -13,6 +13,7 @@ import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.option.Option;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,9 +23,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-/**
- * QUADRAM. Created by ppajuelo on 20/02/2019.
- */
+
 public class OptionSetPopUp extends PopupMenu {
 
     private final D2 d2;
@@ -43,9 +42,10 @@ public class OptionSetPopUp extends PopupMenu {
         this.optionGroupsToShow = model.getOptionGroupsToShow() != null ? model.getOptionGroupsToShow() : new ArrayList<>();
         setOnDismissListener(menu -> dismiss());
         setOnMenuItemClickListener(item -> {
+            dismiss();
             Option selectedOption = optionsMap.get(item.getTitle().toString());
             optionSetView.onSelectOption(selectedOption);
-            return false;
+            return true;
         });
         disposable = new CompositeDisposable();
 
@@ -96,6 +96,7 @@ public class OptionSetPopUp extends PopupMenu {
 
     public void setOptions(List<Option> options) {
         optionsMap = new HashMap<>();
+        Collections.sort(options, (option1, option2) -> option1.sortOrder().compareTo(option2.sortOrder()));
         for (Option option : options) {
             optionsMap.put(option.displayName(), option);
             getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(option) + 1, option.displayName());

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PSI dhis2</string>
+    <string name="logo_text">PSI dhis2</string>
+    <string name="logo_number"></string>
+    <string name="dashboard_feedback">Feedback</string>
+    <string name="program_type_configuration_error_message">There is a program type configuration error in the current program. Please review the program in the server and to execute sync configuration</string>
+    <string name="unexpected_error_message">An unexpected error has occurred. Review your configuration or contact with your administrator</string>
+    <string name="feedback_show_only_failed">Show only failed</string>
+</resources>

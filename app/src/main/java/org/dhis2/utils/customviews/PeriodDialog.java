@@ -129,6 +129,10 @@ public class PeriodDialog extends DialogFragment {
         binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period, currentDate, Locale.getDefault()));
     }
 
+    public void previousInputPeriod() {
+        currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, -1);
+    }
+
     protected void checkConstraintDates() {
 
         if (minDate != null && minDate.equals(currentDate)) {

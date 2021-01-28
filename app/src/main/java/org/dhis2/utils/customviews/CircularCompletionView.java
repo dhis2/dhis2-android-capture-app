@@ -14,8 +14,8 @@ import org.dhis2.R;
 
 public class CircularCompletionView extends View {
 
-    private float completionPercent = 0;
-    private float secondaryPercent = 0;
+    public float completionPercent = 0;
+    public float secondaryPercent = 0;
     private Paint paint = new Paint();
     private int radius = 100;
     private int strokeSize = 20;
@@ -44,10 +44,10 @@ public class CircularCompletionView extends View {
     private void initialDefaultValues(AttributeSet attrs) {
 
         //Default Colors
-        completionColor = ContextCompat.getColor(getContext(), R.color.green_7ed);
-        secondaryColor = ContextCompat.getColor(getContext(), R.color.gray_814);
-        percentageColor = ContextCompat.getColor(getContext(), R.color.black_de0);
-        circleColor = ContextCompat.getColor(getContext(), R.color.gray_d7d);
+        completionColor = ContextCompat.getColor(getContext(), R.color.completionColor);
+        secondaryColor = ContextCompat.getColor(getContext(), R.color.secondaryColor);
+        percentageColor = ContextCompat.getColor(getContext(), R.color.percentageColor);
+        circleColor = ContextCompat.getColor(getContext(), R.color.circleColor);
 
         if (attrs == null) {
             return;
@@ -65,6 +65,10 @@ public class CircularCompletionView extends View {
             secondaryColor = a.getColor(R.styleable.CircularCompletionView_secondaryColor, secondaryColor);
             percentageColor = a.getColor(R.styleable.CircularCompletionView_percentageColor, percentageColor);
             circleColor = a.getColor(R.styleable.CircularCompletionView_circleColor, circleColor);
+
+            //Initial values
+            completionPercent = a.getFloat(R.styleable.CircularCompletionView_initialPercentage,0f);
+            secondaryPercent = a.getFloat(R.styleable.CircularCompletionView_initialSecondaryPercentage,0f);
 
         } finally {
             a.recycle();
@@ -140,8 +144,9 @@ public class CircularCompletionView extends View {
         paint.setStyle(Paint.Style.FILL);
         paint.setTextSize(textSize);
 
-        canvas.drawText((int) ((completionPercent + secondaryPercent) * 100) + "%", radius, radius+(paint.getTextSize()/2), paint);
-
+        int x = (getWidth() / 2);
+        int y = (int) ((getHeight() / 2) - ((paint.descent() + paint.ascent()) / 2));
+        canvas.drawText((int) ((completionPercent + secondaryPercent) * 100) + "%", x, y, paint);
     }
 
 }

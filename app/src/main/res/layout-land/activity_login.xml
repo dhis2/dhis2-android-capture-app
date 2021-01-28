@@ -32,7 +32,7 @@
             <RelativeLayout
                 android:id="@+id/logo"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="100dp"
                 android:background="?colorPrimary">
 
                 <ImageView
@@ -41,6 +41,18 @@
                     android:layout_height="100dp"
                     android:layout_marginStart="85dp"
                     app:srcCompat="@drawable/ic_dhis_white" />
+
+                <TextView
+                    android:id="@+id/app_build_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="16dp"
+                    android:textColor="?colorAccent"
+                    android:textSize="9sp"
+                    tools:text="hdkgdkhsdfsdfsdj" />
 
             </RelativeLayout>
 
@@ -63,14 +75,12 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton
-                    android:id="@+id/urlInfo"
+                    android:id="@+id/clearUrl"
                     style="@style/ActionIconNoPadding"
-                    android:onClick="@{()-> presenter.onUrlInfoClick()}"
-                    android:tint="#5C5C5C"
                     app:layout_constraintBottom_toBottomOf="@id/server_url"
                     app:layout_constraintStart_toEndOf="@id/server_url"
                     app:layout_constraintTop_toTopOf="@id/server_url"
-                    app:srcCompat="@drawable/ic_info_outline"
+                    app:srcCompat="@drawable/ic_close"
                     tools:ignore="ContentDescription" />
 
                 <ImageView

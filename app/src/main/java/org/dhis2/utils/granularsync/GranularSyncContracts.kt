@@ -28,6 +28,7 @@ package org.dhis2.utils.granularsync
 import androidx.lifecycle.LiveData
 import androidx.work.WorkInfo
 import org.dhis2.usescases.general.AbstractActivityContracts
+import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
@@ -39,16 +40,19 @@ class GranularSyncContracts {
         fun closeDialog()
         fun setState(state: State)
         fun prepareConflictAdapter(conflicts: MutableList<TrackerImportConflict>)
+        fun emptyEnrollmentError(): String
+        fun unsupportedTask(): String
     }
 
     interface Presenter : AbstractActivityContracts.Presenter {
-        fun isSMSEnabled(): Boolean
+        fun isSMSEnabled(isTrackerSync: Boolean): Boolean
         fun configure(view: View)
-        fun initGranularSync(): LiveData<MutableList<WorkInfo>>
+        fun initGranularSync(): LiveData<List<WorkInfo>>
         fun initSMSSync(): LiveData<List<SmsSendingService.SendingStatus>>
         fun reportState(state: SmsSendingService.State, sent: Int, total: Int)
         fun reportError(throwable: Throwable)
         fun sendSMS()
+        fun syncErrors(): List<ErrorViewModel>
     }
 
     interface OnDismissListener {

@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_margin="16dp"
-            android:text="@string/block_session"
+            android:text="@string/set_pin"
             android:textColor="@android:color/black"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -69,6 +69,18 @@
             app:layout_constraintTop_toBottomOf="@id/indicator_dots"
             tools:visibility="visible" />
 
+        <CheckBox
+            android:buttonTint="?colorPrimary"
+            android:checked="true"
+            android:id="@+id/lockPin"
+            android:layout_margin="8dp"
+            android:text="@string/disable_pin_locked"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/forgotCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
         <com.andrognito.pinlockview.PinLockView
             android:id="@+id/pin_lock_view"
             android:layout_width="wrap_content"
@@ -83,7 +95,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/forgotCode"
+            app:layout_constraintTop_toBottomOf="@id/lockPin"
             app:pinLength="4" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

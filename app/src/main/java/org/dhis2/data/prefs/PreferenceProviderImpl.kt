@@ -2,14 +2,17 @@ package org.dhis2.data.prefs
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import de.adorsys.android.securestoragelibrary.SecurePreferences
+import de.adorsys.android.securestoragelibrary.SecureStorageException
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.SECURE_CREDENTIALS
 import org.dhis2.utils.Constants.SECURE_PASS
 import org.dhis2.utils.Constants.SECURE_SERVER_URL
 import org.dhis2.utils.Constants.SECURE_USER_NAME
 
-class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
+open class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
 
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
@@ -108,10 +111,16 @@ class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
     }
 
     override fun saveUserCredentials(serverUrl: String, userName: String, pass: String) {
-        SecurePreferences.setValue(context, SECURE_CREDENTIALS, true)
-        SecurePreferences.setValue(context, SECURE_SERVER_URL, serverUrl)
-        SecurePreferences.setValue(context, SECURE_USER_NAME, userName)
-        SecurePreferences.setValue(context, SECURE_PASS, pass)
+        try {
+            SecurePreferences.setValue(context, SECURE_CREDENTIALS, true)
+            SecurePreferences.setValue(context, SECURE_SERVER_URL, serverUrl)
+            SecurePreferences.setValue(context, SECURE_USER_NAME, userName)
+            if (pass.isNotEmpty()) {
+                SecurePreferences.setValue(context, SECURE_PASS, pass)
+            }
+        } catch (e: SecureStorageException) {
+            e.printStackTrace()
+        }
     }
 
     override fun areCredentialsSet(): Boolean {
@@ -144,4 +153,18 @@ class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
         SecurePreferences.clearAllValues(context)
         sharedPreferences.edit().clear().apply()
     }
+
+    override fun <T> saveAsJson(key: String, objectToSave: T) {
+        setValue(key, Gson().toJson(objectToSave))
+    }
+
+    override fun <T> getObjectFromJson(key: String, typeToken: TypeToken<T>, default: T): T {
+        val mapTypeToken = typeToken.type
+        return if (getString(key, null) == null) {
+            default
+        } else {
+            Gson().fromJson<T>(getString(key), mapTypeToken)
+        }
+    }
+    /*endregion*/
 }

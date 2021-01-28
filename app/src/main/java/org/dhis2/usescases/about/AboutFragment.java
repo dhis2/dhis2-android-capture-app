@@ -1,6 +1,8 @@
 package org.dhis2.usescases.about;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.databinding.FragmentAboutBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.utils.extension.ActivityExtensionKt;
 import org.hisp.dhis.android.core.user.UserCredentials;
 
 import javax.inject.Inject;
@@ -23,10 +26,6 @@ import javax.inject.Inject;
 import timber.log.Timber;
 
 import static org.dhis2.utils.analytics.AnalyticsConstants.ABOUT_FRAGMENT;
-
-/**
- * QUADRAM. Created by ppajuelo on 05/07/2018.
- */
 
 public class AboutFragment extends FragmentGlobalAbstract implements AboutContracts.AboutView {
 
@@ -54,8 +53,14 @@ public class AboutFragment extends FragmentGlobalAbstract implements AboutContra
         aboutBinding.aboutContact.setMovementMethod(LinkMovementMethod.getInstance());
         setAppVersion();
         setSDKVersion();
-
+        setPrivacyPolicy();
         return aboutBinding.getRoot();
+    }
+
+    private void setPrivacyPolicy() {
+        aboutBinding.privacyPolicy.setOnClickListener(v -> {
+            navigateToPrivacyPolicy();
+        });
     }
 
 
@@ -101,5 +106,24 @@ public class AboutFragment extends FragmentGlobalAbstract implements AboutContra
     public void renderServerUrl(String serverUrl) {
         String text = String.format(getString(R.string.about_connected), serverUrl);
         aboutBinding.aboutConnected.setText(text);
+    }
+
+    @Override
+    public String checkCredentials() {
+        return aboutBinding.aboutUser.getText().toString();
+    }
+
+    @Override
+    public String checkUrl() {
+        return aboutBinding.aboutConnected.getText().toString();
+    }
+
+    @Override
+    public void navigateToPrivacyPolicy() {
+        Activity currentActivity = getActivity();
+        if (currentActivity != null){
+            Intent intent = new Intent(currentActivity, PolicyView.class);
+            startActivity(intent);
+        }
     }
 }

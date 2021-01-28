@@ -1,0 +1,56 @@
+{#-
+  This file was automatically generated - do not edit
+-#}
+<nav class="md-nav md-nav--primary" data-md-level="0">
+
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="{{ config.site_url | default(nav.homepage.url, true) | url }}" title="{{ config.site_name }}" class="md-nav__button md-logo">
+      {% if config.theme.logo.icon %}
+        <i class="md-icon">{{ config.theme.logo.icon }}</i>
+      {% else %}
+        <img src="{{ config.theme.logo | url }}" width="48" height="48">
+      {% endif %}
+    </a>
+    {{ config.site_name }}
+  </label>
+
+  <div class="select">
+  <select onChange="window.document.location.href=this.options[this.selectedIndex].value;">
+  		<option value="/{{ config.extra.dhis2_version }}/{{ config.theme.language }}/{{ page.url }}">{{ config.extra.dhis2_version }}</option>
+      {% for ver_item in config.extra.dhis2_versions %}
+        {% if ver_item != config.extra.dhis2_version %}
+          <option value="/{{ ver_item }}/{{ config.extra.dhis2_language }}/{{ page.url }}"><p>{{ ver_item }}</option>
+        {% endif %}
+      {% endfor %}
+  </select>
+  </div>
+
+  <div class="select">
+  <select onChange="window.document.location.href=this.options[this.selectedIndex].value;">
+      {% for key, value in config.extra.dhis2_languages.items() %}
+        {% if key == config.extra.dhis2_language %}
+          <option value="/{{ config.extra.dhis2_version }}/{{ key }}/"><p>{{ value }}</option>
+        {% endif %}
+      {% endfor %}
+
+      {% for key, value in config.extra.dhis2_languages.items() %}
+        {% if key != config.extra.dhis2_language %}
+          <option value="/{{ config.extra.dhis2_version }}/{{ key }}/"><p>{{ value }}</option>
+        {% endif %}
+      {% endfor %}
+  </select>
+  </div>
+
+  {% if config.repo_url %}
+    <div class="md-nav__source">
+      {% include "partials/source.html" %}
+    </div>
+  {% endif %}
+  <ul class="md-nav__list" data-md-scrollfix>
+    {% for nav_item in nav %}
+      {% set path = "nav-" + loop.index | string %}
+      {% set level = 1 %}
+      {% include "partials/nav-item.html" %}
+    {% endfor %}
+  </ul>
+</nav>

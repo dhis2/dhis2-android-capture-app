@@ -63,9 +63,4 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     public void onBind(@NonNull OrgUnitHolder viewHolder, @NonNull OrgUnitViewModel viewModel) {
         viewHolder.update(viewModel);
     }
-
-    @Override
-    public void deAttach(@NonNull OrgUnitHolder viewHolder) {
-        viewHolder.dispose();
-    }
 }

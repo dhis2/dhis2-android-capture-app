@@ -2,11 +2,13 @@ package org.dhis2.data.service;
 
 import android.app.NotificationManager;
 import android.content.Context;
+
 import androidx.annotation.NonNull;
-import androidx.work.WorkManager;
 
 import org.dhis2.data.dagger.PerService;
 import org.dhis2.data.prefs.PreferenceProvider;
+import org.dhis2.data.service.workManager.WorkManagerController;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -25,12 +27,11 @@ public class ReservedValuesWorkerModule {
     @Provides
     @PerService
     SyncPresenter syncPresenter(
-            @NonNull Context context,
             @NonNull D2 d2,
-            @NonNull PreferenceProvider preferences
+            @NonNull PreferenceProvider preferences,
+            @NonNull WorkManagerController workManagerController,
+            @NonNull AnalyticsHelper analyticsHelper
     ) {
-        WorkManager workManager = WorkManager.getInstance(context);
-
-        return new SyncPresenterImpl(d2, preferences, workManager);
+        return new SyncPresenterImpl(d2, preferences, workManagerController, analyticsHelper);
     }
 }

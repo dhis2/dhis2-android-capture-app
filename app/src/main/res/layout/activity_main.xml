@@ -62,6 +62,7 @@
                     <ImageView
                         android:id="@+id/menu"
                         style="@style/ActionIcon"
+                        android:focusable="true"
                         android:onClick="@{()->presenter.onMenuClick()}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -78,12 +79,12 @@
                         android:textColor="@android:color/white"
                         android:textSize="20sp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/filter"
+                        app:layout_constraintEnd_toStartOf="@id/filterActionButton"
                         app:layout_constraintStart_toEndOf="@id/menu"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageView
-                        android:id="@+id/filter"
+                        android:id="@+id/filterActionButton"
                         style="@style/ActionIcon"
                         android:onClick="@{()->presenter.showFilter()}"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -99,8 +100,8 @@
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="24dp"
                         android:padding="2dp"
-                        app:layout_constraintTop_toTopOf="@id/filter"
-                        app:layout_constraintStart_toStartOf="@id/filter">
+                        app:layout_constraintTop_toTopOf="@id/filterActionButton"
+                        app:layout_constraintStart_toStartOf="@id/filterActionButton">
 
                         <TextView
                             android:layout_width="match_parent"
@@ -129,7 +130,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/filterLayout"
+                    android:id="@+id/filterRecycler"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"

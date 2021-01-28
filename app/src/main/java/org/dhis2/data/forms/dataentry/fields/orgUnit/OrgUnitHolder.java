@@ -5,9 +5,6 @@ import androidx.lifecycle.MutableLiveData;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormOrgUnitBinding;
-import org.hisp.dhis.android.core.common.ObjectStyle;
-
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -18,25 +15,18 @@ import static android.text.TextUtils.isEmpty;
 
 public class OrgUnitHolder extends FormViewHolder {
     private final FormOrgUnitBinding binding;
-    private CompositeDisposable compositeDisposable;
     private OrgUnitViewModel model;
 
     OrgUnitHolder(FormOrgUnitBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
         this.binding = binding;
         this.currentUid = currentSelection;
-        compositeDisposable = new CompositeDisposable();
 
         binding.orgUnitView.setListener(orgUnitUid -> {
             processor.onNext(RowAction.create(model.uid(), orgUnitUid, getAdapterPosition()));
         });
 
         binding.orgUnitView.setActivationListener(() -> setSelectedBackground(isSearchMode));
-    }
-
-    @Override
-    public void dispose() {
-        compositeDisposable.clear();
     }
 
     public void update(OrgUnitViewModel viewModel) {
@@ -51,7 +41,6 @@ public class OrgUnitHolder extends FormViewHolder {
             ouName = uid_value_name.split("_ou_")[1];
         }
 
-        binding.orgUnitView.setObjectStyle(viewModel.objectStyle());
         if (model.objectStyle() != null) {
             objectStyle = model.objectStyle();
         }

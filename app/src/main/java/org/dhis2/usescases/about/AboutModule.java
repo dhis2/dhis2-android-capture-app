@@ -3,6 +3,7 @@ package org.dhis2.usescases.about;
 import androidx.annotation.NonNull;
 
 import org.dhis2.data.dagger.PerFragment;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.user.UserRepository;
 import org.hisp.dhis.android.core.D2;
 
@@ -17,7 +18,7 @@ public class AboutModule {
 
     @Provides
     @PerFragment
-    AboutContracts.AboutPresenter providesPresenter(@NonNull D2 d2, @NonNull UserRepository userRepository) {
-        return new AboutPresenterImpl(d2, userRepository);
+    AboutContracts.AboutPresenter providesPresenter(@NonNull D2 d2, SchedulerProvider provider, @NonNull UserRepository userRepository) {
+        return new AboutPresenterImpl(d2, provider, userRepository);
     }
 }

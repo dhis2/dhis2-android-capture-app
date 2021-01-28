@@ -4,15 +4,19 @@ package org.dhis2.data.forms.dataentry.fields.edittext;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.graphics.Color;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -22,7 +26,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
 import org.dhis2.utils.ValidationUtils;
 import org.dhis2.utils.customviews.TextInputAutoCompleteTextView;
-import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
@@ -37,11 +41,7 @@ import static android.text.TextUtils.isEmpty;
 import static java.lang.String.valueOf;
 
 
-/**
- * QUADRAM. Created by frodriguez on 18/01/2018..
- */
-
-final class EditTextCustomHolder extends FormViewHolder {
+public class EditTextCustomHolder extends FormViewHolder {
 
     private final FlowableProcessor<RowAction> processor;
     private final boolean isSearchMode;
@@ -57,28 +57,26 @@ final class EditTextCustomHolder extends FormViewHolder {
         this.currentUid = currentSelection;
 
         binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
-           /* if (hasFocus) {
-                openKeyboard(binding.customEdittext.getEditText());
-                setSelectedBackground(isSearchMode);
-            } else
-                clearBackground(isSearchMode);*/
-           if(!hasFocus){
-               clearBackground(isSearchMode);
-               binding.customEdittext.getEditText().setFocusable(false);
-           }
+            if (!hasFocus) {
+                clearBackground(isSearchMode);
+            }
 
             if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable())) {
-                if(valueHasChanged())
+                if (isSearchMode || valueHasChanged()) {
                     sendAction();
-                else
-                    closeKeyboard(binding.customEdittext.getEditText());
+                }
             }
             validateRegex();
         });
         binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
-            binding.customEdittext.getEditText().clearFocus();
-            sendAction();
-            return true;
+            if(editTextModel.valueType() != ValueType.LONG_TEXT) {
+                selectedFieldUid = null;
+                binding.customEdittext.getEditText().clearFocus();
+                closeKeyboard(binding.customEdittext.getEditText());
+                return true;
+            }else{
+                return false;
+            }
         });
 
         binding.customEdittext.setActivationListener(() -> {
@@ -87,6 +85,9 @@ final class EditTextCustomHolder extends FormViewHolder {
             binding.customEdittext.getEditText().setFocusableInTouchMode(true);
             binding.customEdittext.getEditText().requestFocus();
             openKeyboard(binding.customEdittext.getEditText());
+            if (isSearchMode) {
+                sendAction();
+            }
         });
     }
 
@@ -102,26 +103,29 @@ final class EditTextCustomHolder extends FormViewHolder {
         }
 
         clearBackground(isSearchMode);
-        closeKeyboard(binding.customEdittext.getEditText());
-
     }
 
     public void update(@NonNull FieldViewModel model) {
         this.editTextModel = (EditTextViewModel) model;
         fieldUid = model.uid();
 
+        if (!isSearchMode) {
+            assignBackgroundColorByLegend();
+        }
+
         binding.customEdittext.setValueType(editTextModel.valueType());
 
-        binding.customEdittext.setObjectSyle(model.objectStyle());
+        binding.customEdittext.setObjectStyle(model.objectStyle());
         if (model.objectStyle() != null) {
             objectStyle = model.objectStyle();
         }
         label = new StringBuilder(model.label());
         binding.customEdittext.setLabel(model.label(), model.mandatory());
+        binding.customEdittext.setHint(editTextModel.hint());
         descriptionText = model.description();
         binding.customEdittext.setDescription(descriptionText);
 
-        binding.customEdittext.setText(editTextModel.value());
+        binding.customEdittext.setText(ValueExtensionsKt.withValueTypeCheck(editTextModel.value(), editTextModel.valueType()));
 
         binding.customEdittext.setWarning(model.warning(), model.error());
 
@@ -136,6 +140,15 @@ final class EditTextCustomHolder extends FormViewHolder {
         initFieldFocus();
 
         setLongClick();
+    }
+
+    private void assignBackgroundColorByLegend() {
+        if (editTextModel.colorByLegend() != null && editTextModel.colorByLegend() != ""){
+            binding.customEdittext.setBackgroundColor(Color.parseColor(editTextModel.colorByLegend()));
+        } else {
+            int color = ContextCompat.getColor(binding.customEdittext.getContext(), R.color.form_field_background);
+            binding.customEdittext.setBackgroundColor(color);
+        }
     }
 
     private void checkAutocompleteRendering() {
@@ -183,11 +196,6 @@ final class EditTextCustomHolder extends FormViewHolder {
         }.getType();
 
         return gson.fromJson(json, type);
-    }
-
-
-    public void dispose() {
-
     }
 
     private void setLongClick() {

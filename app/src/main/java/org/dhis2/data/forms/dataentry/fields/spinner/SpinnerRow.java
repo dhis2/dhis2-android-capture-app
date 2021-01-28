@@ -61,10 +61,4 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
     public void onBind(@NonNull SpinnerHolder viewHolder, @NonNull SpinnerViewModel viewModel) {
         viewHolder.update(viewModel);
     }
-
-    @Override
-    public void deAttach(@NonNull SpinnerHolder viewHolder) {
-        viewHolder.dispose();
-    }
-
 }

@@ -22,7 +22,9 @@ import com.google.gson.Gson;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ErrorDialogBinding;
+import org.dhis2.usescases.settings.models.ErrorViewModel;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -41,16 +43,16 @@ import timber.log.Timber;
 public class ErrorDialog extends DialogFragment {
 
     private String title;
-    private List<TrackerImportConflict> data = new ArrayList<>();
+    private List<ErrorViewModel> data = new ArrayList<>();
     private DividerItemDecoration divider;
     public static String TAG = "ERROR_DIALOG";
     private String shareTitle;
     private String shareMessageTitle;
     private ObservableBoolean sharing = new ObservableBoolean(false);
     private CompositeDisposable disposable;
-    private ObservableArrayList<TrackerImportConflict> shareData;
+    private ObservableArrayList<ErrorViewModel> shareData;
 
-    public ErrorDialog setData(List<TrackerImportConflict> data) {
+    public ErrorDialog setData(List<ErrorViewModel> data) {
         this.data = data;
         return this;
     }
@@ -113,7 +115,7 @@ public class ErrorDialog extends DialogFragment {
         return binding.getRoot();
     }
 
-    private void subscribeToErrors(FlowableProcessor<Pair<Boolean, TrackerImportConflict>> pairFlowableProcessor) {
+    private void subscribeToErrors(FlowableProcessor<Pair<Boolean, ErrorViewModel>> pairFlowableProcessor) {
         if (disposable == null)
             disposable = new CompositeDisposable();
         disposable.add(pairFlowableProcessor

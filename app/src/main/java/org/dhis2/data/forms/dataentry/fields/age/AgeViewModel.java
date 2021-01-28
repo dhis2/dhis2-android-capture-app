@@ -5,8 +5,6 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 
-import javax.annotation.Nonnull;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -44,7 +42,7 @@ public abstract class AgeViewModel extends FieldViewModel {
         return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null, mandatory(), value());
     }
 
-    @Nonnull
+   @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), false, optionSet(), warning(), error(), description(), objectStyle(), null, mandatory(), data);

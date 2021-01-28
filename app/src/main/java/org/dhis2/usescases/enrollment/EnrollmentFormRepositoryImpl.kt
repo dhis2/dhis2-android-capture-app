@@ -4,9 +4,11 @@ import android.text.TextUtils.isEmpty
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Function5
-import io.reactivex.schedulers.Schedulers
 import java.util.Calendar
 import java.util.Date
+import org.dhis2.Bindings.blockingGetCheck
+import org.dhis2.Bindings.profilePicturePath
+import org.dhis2.Bindings.toRuleAttributeValue
 import org.dhis2.data.forms.RulesRepository
 import org.dhis2.utils.Constants
 import org.dhis2.utils.DateUtils
@@ -19,6 +21,8 @@ import org.hisp.dhis.android.core.event.EventCreateProjection
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
 import org.hisp.dhis.rules.RuleEngine
 import org.hisp.dhis.rules.RuleEngineContext
 import org.hisp.dhis.rules.RuleExpressionEvaluator
@@ -35,13 +39,15 @@ class EnrollmentFormRepositoryImpl(
     rulesRepository: RulesRepository,
     expressionEvaluator: RuleExpressionEvaluator,
     private val enrollmentRepository: EnrollmentObjectRepository,
-    private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>
+    private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
+    teiRepository: TrackedEntityInstanceObjectRepository
 ) : EnrollmentFormRepository {
 
     private var cachedRuleEngineFlowable: Flowable<RuleEngine>
     private var ruleEnrollmentBuilder: RuleEnrollment.Builder
     private var programUid: String = programRepository.blockingGet().uid()
     private var enrollmentUid: String = enrollmentRepository.blockingGet().uid()!!
+    private val tei: TrackedEntityInstance = teiRepository.blockingGet()
 
     init {
         this.cachedRuleEngineFlowable =
@@ -51,13 +57,15 @@ class EnrollmentFormRepositoryImpl(
                 Map<String, String>,
                 Map<String, List<String>>,
                 RuleEngine>(
-                rulesRepository.rulesNew(programUid).subscribeOn(Schedulers.io()),
-                rulesRepository.ruleVariables(programUid).subscribeOn(Schedulers.io()),
+                rulesRepository.rulesNew(programUid),
+                rulesRepository.ruleVariables(programUid),
                 rulesRepository.enrollmentEvents(
                     enrollmentRepository.blockingGet().uid()
-                ).subscribeOn(Schedulers.io()),
-                rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
-                rulesRepository.supplementaryData().subscribeOn(Schedulers.io()),
+                ),
+                rulesRepository.queryConstants(),
+                rulesRepository.supplementaryData(
+                    enrollmentRepository.blockingGet().organisationUnit()!!
+                ),
                 Function5 { rules, variables, events, constants, supplData ->
                     val builder = RuleEngineContext.builder(expressionEvaluator)
                         .rules(rules)
@@ -108,12 +116,12 @@ class EnrollmentFormRepositoryImpl(
                     checkOpenAfterEnrollment()
                 }
             }.map {
-            if (!isEmpty(it.second)) {
-                checkEventToOpen(it)
-            } else {
-                it
+                if (!isEmpty(it.second)) {
+                    checkEventToOpen(it)
+                } else {
+                    it
+                }
             }
-        }
     }
 
     private fun getFirstStage(): Single<Pair<String, String>> {
@@ -252,45 +260,41 @@ class EnrollmentFormRepositoryImpl(
     private fun queryAttributes(): Flowable<List<RuleAttributeValue>> {
         return programRepository.get()
             .map { program ->
-                program.programTrackedEntityAttributes()!!.filter {
-                    d2.trackedEntityModule().trackedEntityAttributeValues()
-                        .value(
-                            it.trackedEntityAttribute()!!.uid(),
-                            enrollmentRepository.blockingGet().trackedEntityInstance()
-                        )
-                        .blockingExists()
-                }.map {
-                    val value = d2.trackedEntityModule().trackedEntityAttributeValues()
-                        .value(
-                            it.trackedEntityAttribute()!!.uid(),
-                            enrollmentRepository.blockingGet().trackedEntityInstance()
-                        )
-                        .blockingGet()
-                    val attr = d2.trackedEntityModule().trackedEntityAttributes()
-                        .uid(it.trackedEntityAttribute()!!.uid())
-                        .blockingGet()
-                    val variable = d2.programModule().programRuleVariables()
-                        .byProgramUid().eq(programUid)
-                        .byTrackedEntityAttributeUid().eq(attr.uid())
-                        .one()
-                        .blockingGet()
-
-                    val finalValue =
-                        if (variable != null &&
-                            variable.useCodeForOptionSet() != true &&
-                            attr.optionSet() != null
-                        ) {
-                            d2
-                                .optionModule()
-                                .options()
-                                .byOptionSetUid().eq(attr.optionSet()!!.uid())
-                                .byCode().eq(value.value()!!).one().blockingGet().name()!!
-                        } else {
-                            value.value()!!
-                        }
-
-                    RuleAttributeValue.create(attr.uid(), finalValue)
-                }
+                d2.programModule().programTrackedEntityAttributes().byProgram().eq(program.uid())
+                    .blockingGet()
+                    .filter {
+                        d2.trackedEntityModule().trackedEntityAttributeValues()
+                            .value(
+                                it.trackedEntityAttribute()!!.uid(),
+                                enrollmentRepository.blockingGet().trackedEntityInstance()
+                            )
+                            .blockingExists()
+                    }.mapNotNull {
+                        d2.trackedEntityModule().trackedEntityAttributeValues()
+                            .value(
+                                it.trackedEntityAttribute()!!.uid(),
+                                enrollmentRepository.blockingGet().trackedEntityInstance()
+                            )
+                            .blockingGetCheck(d2, it.trackedEntityAttribute()!!.uid())
+                    }.toRuleAttributeValue(d2, program.uid())
             }.toFlowable()
     }
+
+    override fun getOptionsFromGroups(optionGroupUids: ArrayList<String>): List<String> {
+        val optionsFromGroups = arrayListOf<String>()
+        val optionGroups = d2.optionModule().optionGroups()
+            .withOptions()
+            .byUid().`in`(optionGroupUids)
+            .blockingGet()
+        for (optionGroup in optionGroups) {
+            for (option in optionGroup.options()!!) {
+                if (!optionsFromGroups.contains(option.uid())) {
+                    optionsFromGroups.add(option.uid())
+                }
+            }
+        }
+        return optionsFromGroups
+    }
+
+    override fun getProfilePicture() = tei.profilePicturePath(d2, programUid)
 }

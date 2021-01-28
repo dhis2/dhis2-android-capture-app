@@ -1,10 +1,13 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.hisp.dhis.android.core.common.State;
+import org.dhis2.utils.validationrules.Violation;
 import org.hisp.dhis.android.core.dataset.DataSet;
+import org.hisp.dhis.android.core.period.Period;
 
 import java.util.List;
+
+import io.reactivex.Observable;
 
 public class DataSetTableContract {
 
@@ -12,45 +15,76 @@ public class DataSetTableContract {
 
         void setSections(List<String> sections);
 
-        void setDataValue(List<DataSetTableModel> data);
-
         Boolean accessDataWrite();
-
-        void showOptions(boolean open);
 
         String getDataSetUid();
 
         String getOrgUnitName();
 
-        void goToTable(int numTable);
+        void renderDetails(DataSet dataSet, String catcomboName, Period period, boolean isComplete);
 
-        void renderDetails(DataSet dataSet, String catcomboName);
+        Observable<Object> observeSaveButtonClicks();
 
-        void isDataSetOpen(boolean dataSetIsOpen);
+        void showMandatoryMessage(boolean isMandatoryFields);
 
-        void setDataSetState(State state);
+        void showValidationRuleDialog();
 
-        void showSyncDialog();
+        void showSuccessValidationDialog();
+
+        void savedAndCompleteMessage();
+
+        void showErrorsValidationDialog(List<Violation> violations);
+
+        void showCompleteToast();
+
+        void collapseExpandBottom();
+
+        void closeBottomSheet();
+
+        void completeBottomSheet();
+
+        void displayReopenedMessage(boolean done);
+
+        void showInternalValidationError();
+
+        void saveAndFinish();
+
+        boolean isErrorBottomSheetShowing();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
 
         void onBackClick();
-        void onSyncClick();
 
         void init(String orgUnitUid, String periodTypeName, String catCombo, String periodFinalDate, String periodId);
 
         String getOrgUnitUid();
+
         String getPeriodTypeName();
+
         String getPeriodFinalDate();
+
         String getCatCombo();
+
         String getPeriodId();
-        void optionsClick();
 
-        void onClickSelectTable(int numTable);
-        void updateState();
+        void executeValidationRules();
 
-        String getCatOptComboFromOptionList(List<String> catOpts);
+        void completeDataSet();
+
+        void collapseExpandBottomSheet();
+
+        void closeBottomSheet();
+
+        void onCompleteBottomSheet();
+
+        boolean isValidationMandatoryToComplete();
+
+        void reopenDataSet();
+
+        boolean shouldAllowCompleteAnyway();
+
+        boolean isComplete();
     }
 
 }

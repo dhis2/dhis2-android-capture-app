@@ -58,9 +58,4 @@ public class AgeRow implements Row<AgeHolder, AgeViewModel> {
     public void onBind(@NonNull AgeHolder viewHolder, @NonNull AgeViewModel viewModel) {
         viewHolder.update(viewModel);
     }
-
-    @Override
-    public void deAttach(@NonNull AgeHolder viewHolder) {
-        viewHolder.dispose();
-    }
 }
