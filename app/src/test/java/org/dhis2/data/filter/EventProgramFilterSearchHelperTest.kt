@@ -14,6 +14,7 @@ import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
 import org.dhis2.utils.filters.sorting.SortingItem
 import org.dhis2.utils.filters.sorting.SortingStatus
+import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -32,7 +33,8 @@ class EventProgramFilterSearchHelperTest {
 
     private lateinit var eventFilterSearchHelper: EventProgramFilterSearchHelper
     private val filterRepository: FilterRepository = mock()
-    private val filterManager: FilterManager = FilterManager.getInstance()
+    private val resourceManger: ResourceManager = mock()
+    private val filterManager: FilterManager = FilterManager.initWith(resourceManger)
 
     @Before
     fun setUp() {

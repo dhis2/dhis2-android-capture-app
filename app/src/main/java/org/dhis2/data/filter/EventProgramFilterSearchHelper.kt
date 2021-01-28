@@ -135,6 +135,6 @@ class EventProgramFilterSearchHelper @Inject constructor(
                     else -> repository
                 }
             } ?: repository
-        } ?: repository.orderByTimeline(RepositoryScope.OrderByDirection.DESC)
+        } ?: filterRepository.sortByEventDate(repository, RepositoryScope.OrderByDirection.DESC)
     }
 }
