@@ -165,23 +165,27 @@ public class CustomTextView extends FieldLayout {
             }
         });
 
-        if (isLongText) {
-            editText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                }
+            }
 
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                viewModel.onTextChange(charSequence.toString());
+                if (isLongText) {
                     updateDeleteVisibility(findViewById(R.id.clear_button));
                 }
+            }
 
-                @Override
-                public void afterTextChanged(Editable editable) {
+            @Override
+            public void afterTextChanged(Editable editable) {
 
-                }
-            });
+            }
+        });
+
+        if (isLongText) {
             clearButton = findViewById(R.id.clear_button);
         }
     }

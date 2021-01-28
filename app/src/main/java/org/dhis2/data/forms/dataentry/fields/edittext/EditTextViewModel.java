@@ -17,7 +17,6 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 
 import io.reactivex.processors.FlowableProcessor;
-import kotlin.Pair;
 
 /**
  * QUADRAM. Created by frodriguez on 1/24/2018.
@@ -105,6 +104,19 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
             return R.layout.form_long_text_custom;
         }
         return R.layout.form_edit_text_custom;
+    }
+
+    public void onTextChange(String value) {
+        processor().onNext(new RowAction(
+                uid(),
+                value,
+                false,
+                null,
+                null,
+                null,
+                null,
+                ActionType.ON_TEXT_CHANGE
+        ));
     }
 
     public void onTextFilled(String value, String error) {
