@@ -23,9 +23,15 @@ class FilterResources(val context: Context) {
     fun lastQuarter(): String = context.getString(R.string.filter_period_last_quarter)
     fun thisSixMonth(): String = context.getString(R.string.filter_period_six_months)
     fun lastSixMonth(): String = context.getString(R.string.filter_period_last_six_months)
-    fun lastNYears(years: Int): String = context.getString(R.string.filter_period_last_n_years).format(years)
-    fun lastNMonths(months: Int): String = context.getString(R.string.filter_period_last_n_months).format(months)
-    fun lastNWeeks(weeks: Int): String = context.getString(R.string.filter_period__last_n_weeks).format(weeks)
+    fun lastNYears(years: Int): String =
+        context.getString(R.string.filter_period_last_n_years).format(years)
+
+    fun lastNMonths(months: Int): String =
+        context.getString(R.string.filter_period_last_n_months).format(months)
+
+    fun lastNWeeks(weeks: Int): String =
+        context.getString(R.string.filter_period__last_n_weeks).format(weeks)
+
     fun weeksThisYear(): String = context.getString(R.string.filter_period_weeks_this_year)
     fun monthsThisYear(): String = context.getString(R.string.filter_period_months_this_year)
     fun bimonthsThisYear(): String = context.getString(R.string.filter_period_bimonths_this_year)
@@ -38,14 +44,23 @@ class FilterResources(val context: Context) {
     fun lastWeek(): String = context.getString(R.string.filter_period_last_week)
     fun thisBiWeek(): String = context.getString(R.string.filter_period_this_biweek)
     fun lastBiWeek(): String = context.getString(R.string.filter_period_last_biweek)
-    fun lastNBimonths(bimonths: Int): String = context.getString(R.string.filter_period_last_n_bimonths).format(bimonths)
-    fun lastNQuarters(quarters: Int): String = context.getString(R.string.filter_period_last_n_quarters).format(quarters)
-    fun lastNSixMonths(months: Int): String = context.getString(R.string.last_n_months).format(months)
+    fun lastNBimonths(bimonths: Int): String =
+        context.getString(R.string.filter_period_last_n_bimonths).format(bimonths)
+
+    fun lastNQuarters(quarters: Int): String =
+        context.getString(R.string.filter_period_last_n_quarters).format(quarters)
+
+    fun lastNSixMonths(months: Int): String =
+        context.getString(R.string.last_n_months).format(months)
+
     fun thisFinancialYear(): String = context.getString(R.string.filter_period_this_financial_year)
     fun lastFinancialYear(): String = context.getString(R.string.filter_period_last_financial_year)
     fun lastNFinancialYears(financialYears: Int): String =
         context.getString(R.string.filter_period_last_n_financial_years).format(financialYears)
-    fun lastNBiWeeks(biweeks: Int) = context.getString(R.string.filter_period_last_n_biweeks).format(biweeks)
+
+    fun lastNBiWeeks(biweeks: Int) =
+        context.getString(R.string.filter_period_last_n_biweeks).format(biweeks)
+
     fun span(): String = context.getString(R.string.filter_period_from_to)
     fun filterPeriodLabel(): String = context.getString(R.string.filters_title_period)
     fun filterDateLabel(): String = context.getString(R.string.filters_title_date)
