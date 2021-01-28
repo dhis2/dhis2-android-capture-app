@@ -3,6 +3,7 @@ package org.dhis2.data.filter
 import javax.inject.Inject
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.program.Program
 
@@ -134,6 +135,6 @@ class EventProgramFilterSearchHelper @Inject constructor(
                     else -> repository
                 }
             } ?: repository
-        } ?: repository
+        } ?: repository.orderByTimeline(RepositoryScope.OrderByDirection.DESC)
     }
 }
