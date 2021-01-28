@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.CompoundButton
 import android.widget.FrameLayout
+import androidx.databinding.Observable
 import java.util.Calendar
 import java.util.Date
 import org.dhis2.R
@@ -33,6 +34,7 @@ class FilterPeriodView @JvmOverloads constructor(
     }
 
     fun setFilterItem(filterItem: FilterItem) {
+        updateSelection(R.id.anytime)
         if (filterItem is EnrollmentDateFilter) {
             setEnrollmentFilter(filterItem)
         } else if (filterItem is PeriodFilter) {
@@ -41,7 +43,12 @@ class FilterPeriodView @JvmOverloads constructor(
     }
 
     private fun setEnrollmentFilter(filterItem: EnrollmentDateFilter) {
-        updateSelection(filterItem.selectedEnrollmentPeriodId)
+        filterItem.observePeriod()
+            .addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
+                override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+                    updateSelection(filterItem.observePeriod().get() ?: R.id.anytime)
+                }
+            })
         periodRequest = { periodRequest, checkedId ->
             updateSelection(checkedId)
             filterItem.requestPeriod(periodRequest, checkedId)
@@ -52,7 +59,12 @@ class FilterPeriodView @JvmOverloads constructor(
     }
 
     private fun setPeriodFilter(filterItem: PeriodFilter) {
-        updateSelection(filterItem.selectedPeriodId)
+        filterItem.observePeriod()
+            .addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
+                override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+                    updateSelection(filterItem.observePeriod().get() ?: R.id.anytime)
+                }
+            })
         periodRequest = { periodRequest, checkedId ->
             updateSelection(checkedId)
             filterItem.requestPeriod(periodRequest, checkedId)

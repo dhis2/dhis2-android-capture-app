@@ -16,8 +16,6 @@ import org.dhis2.utils.filters.PeriodFilter
 import org.dhis2.utils.filters.SyncStateFilter
 import org.dhis2.utils.filters.WorkingListFilter
 import org.dhis2.utils.filters.sorting.SortingItem
-import org.dhis2.utils.filters.workingLists.EventWorkingListItem
-import org.dhis2.utils.filters.workingLists.TeiWorkingListItem
 import org.dhis2.utils.filters.workingLists.WorkingListItem
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
@@ -263,7 +261,6 @@ class FilterRepository @Inject constructor(
         return mutableListOf<FilterItem>().apply {
             add(
                 PeriodFilter(
-                    FilterManager.getInstance().periodIdSelected,
                     org.dhis2.utils.filters.ProgramType.TRACKER,
                     observableSortingInject,
                     observableOpenFilter,
@@ -281,7 +278,6 @@ class FilterRepository @Inject constructor(
             )
             add(
                 SyncStateFilter(
-                    emptyList(),
                     org.dhis2.utils.filters.ProgramType.TRACKER,
                     observableSortingInject,
                     observableOpenFilter,
@@ -290,7 +286,6 @@ class FilterRepository @Inject constructor(
             )
             add(
                 EnrollmentStatusFilter(
-                    FilterManager.getInstance().enrollmentStatusFilters,
                     org.dhis2.utils.filters.ProgramType.TRACKER,
                     observableSortingInject,
                     observableOpenFilter,
@@ -299,7 +294,6 @@ class FilterRepository @Inject constructor(
             )
             add(
                 EventStatusFilter(
-                    emptyList(),
                     org.dhis2.utils.filters.ProgramType.TRACKER,
                     observableSortingInject,
                     observableOpenFilter,
@@ -313,7 +307,6 @@ class FilterRepository @Inject constructor(
         return mutableListOf<FilterItem>().apply {
             add(
                 PeriodFilter(
-                    FilterManager.getInstance().periodIdSelected,
                     org.dhis2.utils.filters.ProgramType.DATASET,
                     observableSortingInject,
                     observableOpenFilter,
@@ -331,7 +324,6 @@ class FilterRepository @Inject constructor(
             )
             add(
                 SyncStateFilter(
-                    emptyList(),
                     org.dhis2.utils.filters.ProgramType.DATASET,
                     observableSortingInject,
                     observableOpenFilter,
@@ -348,7 +340,6 @@ class FilterRepository @Inject constructor(
                         categoryCombo,
                         d2.categoryModule().categoryOptionCombos().byCategoryComboUid()
                             .eq(categoryCombo.uid()).blockingGet(),
-                        emptyList(),
                         org.dhis2.utils.filters.ProgramType.DATASET,
                         observableSortingInject,
                         observableOpenFilter,
@@ -363,7 +354,6 @@ class FilterRepository @Inject constructor(
         return mutableListOf<FilterItem>().apply {
             add(
                 PeriodFilter(
-                    FilterManager.getInstance().periodIdSelected,
                     org.dhis2.utils.filters.ProgramType.ALL,
                     observableSortingInject, observableOpenFilter,
                     resources.filterResources.filterDateLabel()
@@ -380,7 +370,7 @@ class FilterRepository @Inject constructor(
             )
             add(
                 SyncStateFilter(
-                    emptyList(), org.dhis2.utils.filters.ProgramType.ALL,
+                    org.dhis2.utils.filters.ProgramType.ALL,
                     observableSortingInject, observableOpenFilter,
                     resources.filterResources.filterSyncLabel()
                 )
@@ -407,20 +397,15 @@ class FilterRepository @Inject constructor(
                 .withTrackedEntityInstanceEventFilters()
                 .blockingGet()
                 .map {
-                    TeiWorkingListItem(
+                    WorkingListItem(
                         it.uid(),
-                        it.displayName() ?: "",
-                        it.enrollmentStatus(),
-                        it.eventFilters()?.any { eventFilter ->
-                            eventFilter.assignedUserMode() == AssignedUserMode.CURRENT
-                        }
+                        it.displayName() ?: ""
                     )
                 }
             if (workingLists.isNotEmpty()) {
                 add(
                     WorkingListFilter(
                         workingLists,
-                        null,
                         org.dhis2.utils.filters.ProgramType.TRACKER,
                         observableSortingInject, observableOpenFilter,
                         ""
@@ -429,7 +414,6 @@ class FilterRepository @Inject constructor(
             }
             add(
                 PeriodFilter(
-                    FilterManager.getInstance().periodIdSelected,
                     org.dhis2.utils.filters.ProgramType.TRACKER,
                     observableSortingInject, observableOpenFilter,
                     resources.filterResources.filterEventDateLabel()
@@ -437,7 +421,6 @@ class FilterRepository @Inject constructor(
             )
             add(
                 EnrollmentDateFilter(
-                    FilterManager.getInstance().enrollmentPeriodIdSelected,
                     org.dhis2.utils.filters.ProgramType.TRACKER,
                     observableSortingInject, observableOpenFilter,
                     program.enrollmentDateLabel() ?: resources.filterResources
@@ -455,7 +438,6 @@ class FilterRepository @Inject constructor(
             )
             add(
                 SyncStateFilter(
-                    emptyList(),
                     org.dhis2.utils.filters.ProgramType.TRACKER,
                     observableSortingInject, observableOpenFilter,
                     resources.filterResources.filterSyncLabel()
@@ -463,7 +445,6 @@ class FilterRepository @Inject constructor(
             )
             add(
                 EnrollmentStatusFilter(
-                    FilterManager.getInstance().enrollmentStatusFilters,
                     org.dhis2.utils.filters.ProgramType.TRACKER,
                     observableSortingInject, observableOpenFilter,
                     resources.filterResources.filterEnrollmentStatusLabel()
@@ -471,7 +452,6 @@ class FilterRepository @Inject constructor(
             )
             add(
                 EventStatusFilter(
-                    emptyList(),
                     org.dhis2.utils.filters.ProgramType.TRACKER,
                     observableSortingInject, observableOpenFilter,
                     resources.filterResources.filterEventStatusLabel()
@@ -496,20 +476,15 @@ class FilterRepository @Inject constructor(
         return mutableListOf<FilterItem>().apply {
             val workingLists =
                 d2.eventModule().eventFilters().byProgram().eq(program.uid()).blockingGet().map {
-                    EventWorkingListItem(
+                    WorkingListItem(
                         it.uid(),
-                        it.displayName() ?: "",
-                        it.eventQueryCriteria()?.assignedUserMode() == AssignedUserMode.CURRENT,
-                        null,
-                        it.eventQueryCriteria()?.eventStatus(),
-                        it.eventQueryCriteria()?.organisationUnit()
+                        it.displayName() ?: ""
                     )
                 }
             if (workingLists.isNotEmpty()) {
                 add(
                     WorkingListFilter(
                         workingLists,
-                        null,
                         org.dhis2.utils.filters.ProgramType.EVENT,
                         observableSortingInject, observableOpenFilter,
                         ""
@@ -518,7 +493,6 @@ class FilterRepository @Inject constructor(
             }
             add(
                 PeriodFilter(
-                    FilterManager.getInstance().periodIdSelected,
                     org.dhis2.utils.filters.ProgramType.EVENT,
                     observableSortingInject,
                     observableOpenFilter,
@@ -536,14 +510,13 @@ class FilterRepository @Inject constructor(
             )
             add(
                 SyncStateFilter(
-                    emptyList(), org.dhis2.utils.filters.ProgramType.EVENT,
+                    org.dhis2.utils.filters.ProgramType.EVENT,
                     observableSortingInject, observableOpenFilter,
                     resources.filterResources.filterSyncLabel()
                 )
             )
             add(
                 EventStatusFilter(
-                    emptyList(),
                     org.dhis2.utils.filters.ProgramType.EVENT,
                     observableSortingInject, observableOpenFilter,
                     resources.filterResources.filterEventStatusLabel()
@@ -569,9 +542,9 @@ class FilterRepository @Inject constructor(
                         categoryCombo,
                         d2.categoryModule().categoryOptionCombos().byCategoryComboUid()
                             .eq(categoryCombo.uid()).blockingGet(),
-                        emptyList(),
                         org.dhis2.utils.filters.ProgramType.EVENT,
-                        observableSortingInject, observableOpenFilter,
+                        observableSortingInject,
+                        observableOpenFilter,
                         categoryCombo.displayName() ?: ""
                     )
                 )

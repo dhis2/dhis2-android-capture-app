@@ -9,6 +9,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
+import java.util.Date
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.common.State
@@ -19,7 +20,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.Date
 
 class DataSetFilterSearchHelperTest {
 

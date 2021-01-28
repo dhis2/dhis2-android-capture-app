@@ -601,6 +601,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     setFabIcon(false);
             });
         }
+        updateFilters(FilterManager.getInstance().getTotalFilters());
     }
 
     @Override
@@ -961,6 +962,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
         animations.endMapLoading(binding.mapCarousel);
         binding.toolbarProgress.hide();
+        updateFilters(FilterManager.getInstance().getTotalFilters());
     }
 
     private void updateCarousel(List<CarouselItemModel> allItems) {

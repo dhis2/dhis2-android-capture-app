@@ -76,7 +76,9 @@ class TrackerFilterSearchHelperTest {
     fun `Should not apply any filters if not set`() {
         trackerFilterSearchHelper.getFilteredProgramRepository("programUid")
         verify(filterRepository, times(0)).applyEnrollmentStatusFilter(any(), any())
-        verify(filterRepository, times(0)).applyEventStatusFilter(any<TrackedEntityInstanceQueryCollectionRepository>(), any())
+        verify(filterRepository, times(0)).applyEventStatusFilter(
+            any<TrackedEntityInstanceQueryCollectionRepository>(), any()
+        )
         verify(filterRepository, times(1)).rootOrganisationUnitUids()
         verify(
             filterRepository,
@@ -109,7 +111,12 @@ class TrackerFilterSearchHelperTest {
         }
 
         whenever(filterRepository.applyEnrollmentStatusFilter(any(), any())) doReturn mock()
-        whenever(filterRepository.applyEventStatusFilter(any<TrackedEntityInstanceQueryCollectionRepository>(), any())) doReturn mock()
+        whenever(
+            filterRepository.applyEventStatusFilter(
+                any<TrackedEntityInstanceQueryCollectionRepository>(),
+                any()
+            )
+        ) doReturn mock()
         whenever(filterRepository.applyOrgUnitFilter(any(), any(), any())) doReturn mock()
         whenever(
             filterRepository.applyStateFilter(
@@ -132,7 +139,10 @@ class TrackerFilterSearchHelperTest {
         trackerFilterSearchHelper.getFilteredProgramRepository("programUid")
 
         verify(filterRepository, times(1)).applyEnrollmentStatusFilter(any(), any())
-        verify(filterRepository, times(1)).applyEventStatusFilter(any<TrackedEntityInstanceQueryCollectionRepository>(), any())
+        verify(
+            filterRepository,
+            times(1)
+        ).applyEventStatusFilter(any<TrackedEntityInstanceQueryCollectionRepository>(), any())
         verify(filterRepository, times(1)).applyOrgUnitFilter(
             any(),
             any(),

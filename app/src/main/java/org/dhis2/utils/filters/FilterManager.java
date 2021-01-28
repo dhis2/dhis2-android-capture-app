@@ -50,8 +50,8 @@ public class FilterManager implements Serializable {
         FROM_TO, OTHER
     }
 
-    private int periodIdSelected = R.id.anytime;
-    private int enrollmentPeriodIdSelected;
+    private ObservableField<Integer> periodIdSelected = new ObservableField<>(R.id.anytime);
+    private ObservableField<Integer> enrollmentPeriodIdSelected = new ObservableField<>(R.id.anytime);
 
     private CatOptCombFilterAdapter catComboAdapter;
 
@@ -61,6 +61,7 @@ public class FilterManager implements Serializable {
     private ObservableField<List<State>> observableStates = new ObservableField<>();
     private List<DatePeriod> periodFilters;
     private ObservableField<List<DatePeriod>> observablePeriodFilters = new ObservableField<>();
+    private ObservableField<InternalError> observablePeriodId = new ObservableField<>();
     private List<DatePeriod> enrollmentPeriodFilters;
     private List<CategoryOptionCombo> catOptComboFilters;
     private List<EventStatus> eventStatusFilters;
@@ -178,19 +179,11 @@ public class FilterManager implements Serializable {
                 Objects.equals(filterManager.sortingItem, this.sortingItem);
     }
 
-    public void setPeriodIdSelected(int selected) {
-        this.periodIdSelected = selected;
-    }
-
-    public void setEnrollmentPeriodIdSelected(int selected) {
-        this.enrollmentPeriodIdSelected = selected;
-    }
-
-    public int getPeriodIdSelected() {
+    public ObservableField<Integer> getPeriodIdSelected() {
         return this.periodIdSelected;
     }
 
-    public int getEnrollmentPeriodIdSelected() {
+    public ObservableField<Integer> getEnrollmentPeriodIdSelected() {
         return this.enrollmentPeriodIdSelected;
     }
 
@@ -487,7 +480,7 @@ public class FilterManager implements Serializable {
         if (enrollmentPeriodFilters != null) {
             enrollmentPeriodFilters.clear();
         }
-        enrollmentPeriodIdSelected = 0;
+        enrollmentPeriodIdSelected.set(R.id.anytime);
         enrollmentPeriodFiltersApplied.set(enrollmentPeriodFilters == null ? 0 : enrollmentPeriodFilters.size());
         filterProcessor.onNext(this);
     }
@@ -518,8 +511,8 @@ public class FilterManager implements Serializable {
         periodFilters = new ArrayList<>();
         observablePeriodFilters.set(periodFilters);
         enrollmentPeriodFilters = new ArrayList<>();
-        enrollmentPeriodIdSelected = 0;
-        periodIdSelected = 0;
+        enrollmentPeriodIdSelected.set(R.id.anytime);
+        periodIdSelected.set(R.id.anytime);
         assignedFilter = false;
         observableAssignedToMe.set(false);
         sortingItem = null;

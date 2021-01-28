@@ -52,45 +52,12 @@ class TrackerFilterSearchHelper @Inject constructor(
             ).also {
                 filterManager.setWorkingListScope(
                     it.scope.mapToWorkingListScope(filterRepository.resources)
-//                    testingScope().mapToWorkingListScope(filterRepository.resources)
                 )
             }
         } else {
             teiQuery
         }
     }
-
-    // TODO: FOR TESTING. Uncomment code and set required methods public
-    /*private fun testingScope(): TrackedEntityInstanceQueryRepositoryScope {
-        return TrackedEntityInstanceQueryRepositoryScope.builder()
-            .mode(RepositoryMode.OFFLINE_FIRST)
-            .orgUnits(arrayListOf("org_unit_1"))
-            .programDate(
-                DateFilterPeriod.builder().type(DatePeriodType.ABSOLUTE)
-                    .startDate("2020-01-01".toDate())
-                    .endDate("2021-01-01".toDate())
-                    .build()
-            )
-            .enrollmentStatus(arrayListOf(EnrollmentStatus.COMPLETED, EnrollmentStatus.CANCELLED))
-            .eventFilters(
-                arrayListOf(
-                    TrackedEntityInstanceQueryEventFilter.builder()
-                        .eventDate(
-                            DateFilterPeriod.builder().type(DatePeriodType.RELATIVE)
-                                .period(RelativePeriod.LAST_3_DAYS).build()
-                        )
-                        .assignedUserMode(AssignedUserMode.CURRENT)
-                        .eventStatus(
-                            arrayListOf(
-                                EventStatus.OVERDUE,
-                                EventStatus.SCHEDULE
-                            )
-                        )
-                        .build()
-                )
-            )
-            .build()
-    }*/
 
     private fun applyEnrollmentStatusFilter(
         teiQuery: TrackedEntityInstanceQueryCollectionRepository

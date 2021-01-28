@@ -76,27 +76,28 @@ sealed class FilterItem(
 }
 
 data class PeriodFilter(
-    val selectedPeriodId: Int,
     override val programType: ProgramType,
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
     override val filterLabel: String
 ) : FilterItem(Filters.PERIOD, programType, sortingItem, openFilter, filterLabel) {
-    private val currentValue = ObservableField("No filters applied")
 
     fun setSelectedPeriod(periods: List<DatePeriod>, checkedId: Int) {
-        if (checkedId != FilterManager.getInstance().periodIdSelected) {
-            FilterManager.getInstance().periodIdSelected = checkedId
+        if (checkedId != FilterManager.getInstance().periodIdSelected.get()) {
+            FilterManager.getInstance().periodIdSelected.set(checkedId)
             FilterManager.getInstance().addPeriod(periods)
-            currentValue.set(if (periods.isNotEmpty()) "Filters applying" else "No filters applied")
         }
     }
 
     fun requestPeriod(periodRequest: FilterManager.PeriodRequest, checkedId: Int) {
         FilterManager.getInstance().addPeriodRequest(periodRequest, Filters.PERIOD)
-        if (checkedId != FilterManager.getInstance().periodIdSelected) {
-            FilterManager.getInstance().periodIdSelected = checkedId
+        if (checkedId != FilterManager.getInstance().periodIdSelected.get()) {
+            FilterManager.getInstance().periodIdSelected.set(checkedId)
         }
+    }
+
+    fun observePeriod(): ObservableField<Int> {
+        return FilterManager.getInstance().periodIdSelected
     }
 
     override fun icon(): Int {
@@ -105,33 +106,35 @@ data class PeriodFilter(
 }
 
 data class EnrollmentDateFilter(
-    val selectedEnrollmentPeriodId: Int,
     override val programType: ProgramType,
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
     override val filterLabel: String
 ) : FilterItem(Filters.ENROLLMENT_DATE, programType, sortingItem, openFilter, filterLabel) {
     fun setSelectedPeriod(periods: List<DatePeriod>, checkedId: Int) {
-        if (checkedId != FilterManager.getInstance().enrollmentPeriodIdSelected) {
-            FilterManager.getInstance().enrollmentPeriodIdSelected = checkedId
+        if (checkedId != FilterManager.getInstance().enrollmentPeriodIdSelected.get()) {
+            FilterManager.getInstance().enrollmentPeriodIdSelected.set(checkedId)
             FilterManager.getInstance().addEnrollmentPeriod(periods)
         }
     }
 
     fun requestPeriod(periodRequest: FilterManager.PeriodRequest, checkedId: Int) {
         FilterManager.getInstance().addPeriodRequest(periodRequest, Filters.ENROLLMENT_DATE)
-        if (checkedId != FilterManager.getInstance().enrollmentPeriodIdSelected) {
-            FilterManager.getInstance().enrollmentPeriodIdSelected = checkedId
+        if (checkedId != FilterManager.getInstance().enrollmentPeriodIdSelected.get()) {
+            FilterManager.getInstance().enrollmentPeriodIdSelected.set(checkedId)
         }
     }
 
     override fun icon(): Int {
         return R.drawable.ic_calendar_positive
     }
+
+    fun observePeriod(): ObservableField<Int> {
+        return FilterManager.getInstance().enrollmentPeriodIdSelected
+    }
 }
 
 data class EnrollmentStatusFilter(
-    var selectedEnrollmentStatus: List<EnrollmentStatus>?,
     override val programType: ProgramType,
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
@@ -165,7 +168,6 @@ data class OrgUnitFilter(
 }
 
 data class SyncStateFilter(
-    var selectedSyncStates: List<State>,
     override val programType: ProgramType,
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
@@ -187,7 +189,6 @@ data class SyncStateFilter(
 data class CatOptionComboFilter(
     val catCombo: CategoryCombo,
     val catOptionCombos: List<CategoryOptionCombo>,
-    var selectedCatOptCombos: List<CategoryOptionCombo>,
     override val programType: ProgramType,
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
@@ -211,7 +212,6 @@ data class CatOptionComboFilter(
 }
 
 data class EventStatusFilter(
-    var selectedEventStatus: List<EventStatus>,
     override val programType: ProgramType,
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
@@ -232,14 +232,15 @@ data class EventStatusFilter(
 }
 
 data class AssignedFilter(
-    val assignedToMe: Boolean? = null,
     override val programType: ProgramType,
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
     override val filterLabel: String
 ) : FilterItem(Filters.ASSIGNED_TO_ME, programType, sortingItem, openFilter, filterLabel) {
     fun activate(setActive: Boolean) {
-        FilterManager.getInstance().setAssignedToMe(setActive)
+        if (!FilterManager.getInstance().isFilterActiveForWorkingList(Filters.ASSIGNED_TO_ME)) {
+            FilterManager.getInstance().setAssignedToMe(setActive)
+        }
     }
 
     fun observeAssignedToMe(): ObservableField<Boolean> {
@@ -253,7 +254,6 @@ data class AssignedFilter(
 
 data class WorkingListFilter(
     val workingLists: List<WorkingListItem>,
-    var currentWorkingList: WorkingListItem?,
     override val programType: ProgramType,
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,

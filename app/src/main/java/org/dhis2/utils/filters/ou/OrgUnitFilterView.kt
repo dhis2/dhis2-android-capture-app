@@ -1,6 +1,5 @@
 package org.dhis2.utils.filters.ou
 
-import android.R
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -43,7 +42,7 @@ class OrgUnitFilterView @JvmOverloads constructor(
                             val autoCompleteAdapter =
                                 ArrayAdapter(
                                     context,
-                                    R.layout.simple_dropdown_item_1line,
+                                    android.R.layout.simple_dropdown_item_1line,
                                     filteredOrgUnitResult.names()
                                 )
                             orgUnitSearchEditText.setAdapter(

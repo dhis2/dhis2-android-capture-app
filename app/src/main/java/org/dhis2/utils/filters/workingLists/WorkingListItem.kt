@@ -1,13 +1,10 @@
 package org.dhis2.utils.filters.workingLists
 
 import org.dhis2.utils.filters.FilterManager
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.event.EventStatus
 
-sealed class WorkingListItem(
-    open val uid: String,
-    open val label: String,
-    open val assignedToMe: Boolean?
+data class WorkingListItem(
+    val uid: String,
+    val label: String
 ) {
     private var isActive: Boolean = false
 
@@ -37,19 +34,3 @@ sealed class WorkingListItem(
         return FilterManager.getInstance().currentWorkingList()?.uid == uid
     }
 }
-
-data class TeiWorkingListItem(
-    override val uid: String,
-    override val label: String,
-    val enrollentStatus: EnrollmentStatus?,
-    override val assignedToMe: Boolean?
-) : WorkingListItem(uid, label, assignedToMe)
-
-data class EventWorkingListItem(
-    override val uid: String,
-    override val label: String,
-    override val assignedToMe: Boolean?,
-    val eventDatePeriod: String?,
-    val eventStatus: EventStatus?,
-    val orgUnit: String?
-) : WorkingListItem(uid, label, assignedToMe)

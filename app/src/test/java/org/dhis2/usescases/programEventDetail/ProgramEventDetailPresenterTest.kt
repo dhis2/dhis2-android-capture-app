@@ -6,8 +6,6 @@ import androidx.paging.PagedList
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -56,7 +54,6 @@ class ProgramEventDetailPresenterTest {
     private val preferenceProvider: PreferenceProvider = mock()
     private val workingListMapper: EventFilterToWorkingListItemMapper = mock()
     private val filterPresenter: FilterPresenter = mock()
-
 
     @Before
     fun setUp() {
