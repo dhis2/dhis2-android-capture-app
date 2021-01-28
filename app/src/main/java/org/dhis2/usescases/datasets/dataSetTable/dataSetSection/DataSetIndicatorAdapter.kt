@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
-import dhis2.org.R
+import com.evrencoskun.tableview.R
 
 class DataSetIndicatorAdapter(
     context: Context
@@ -24,7 +24,7 @@ class DataSetIndicatorAdapter(
         parent: ViewGroup,
         viewType: Int
     ): AbstractViewHolder = DataSetIndicatorHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_table_cell, parent, false)
+        LayoutInflater.from(parent.context).inflate(R.layout.item_table_header, parent, false)
     )
 
     override fun onBindColumnHeaderViewHolder(
@@ -32,21 +32,21 @@ class DataSetIndicatorAdapter(
         columnHeaderItemModel: Any?,
         columnPosition: Int
     ) {
-        (holder as DataSetIndicatorHolder).bind(columnHeaderItemModel.toString(), true)
+        (holder as DataSetIndicatorHolder).bind(columnHeaderItemModel.toString())
     }
 
     override fun onCreateRowHeaderViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): AbstractViewHolder = DataSetIndicatorHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_table_cell, parent, false)
+        LayoutInflater.from(parent.context).inflate(R.layout.item_table_header, parent, false)
     )
     override fun onBindRowHeaderViewHolder(
         holder: AbstractViewHolder?,
         rowHeaderItemModel: Any?,
         rowPosition: Int
     ) {
-        (holder as DataSetIndicatorHolder).bind(rowHeaderItemModel.toString(), true)
+        (holder as DataSetIndicatorHolder).bind(rowHeaderItemModel.toString())
     }
 
     override fun onCreateCellViewHolder(
@@ -62,6 +62,6 @@ class DataSetIndicatorAdapter(
         columnPosition: Int,
         rowPosition: Int
     ) {
-        (holder as DataSetIndicatorHolder).bind(cellItemModel.toString(), false)
+        (holder as DataSetIndicatorHolder).bind(cellItemModel.toString())
     }
 }
