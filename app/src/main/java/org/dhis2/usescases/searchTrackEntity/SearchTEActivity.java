@@ -503,6 +503,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 });
             } else {
                 binding.mapLayerButton.setVisibility(View.GONE);
+                binding.clearFilterButton.setVisibility(View.GONE);
             }
 
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -809,6 +810,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             backDropActive = !backDropActive;
         }
         binding.filterOpen.setVisibility(backDropActive ? View.VISIBLE : View.GONE);
+        binding.clearFilterButton.setVisibility(backDropActive && isMapVisible() ? View.VISIBLE : View.GONE);
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
             activeFilter(general);

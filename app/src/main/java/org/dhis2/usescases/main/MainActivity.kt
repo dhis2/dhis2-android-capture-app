@@ -1,11 +1,9 @@
 package org.dhis2.usescases.main
 
-import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
@@ -13,8 +11,6 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableInt
 import androidx.drawerlayout.widget.DrawerLayout
@@ -48,7 +44,6 @@ import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 
 private const val FRAGMENT = "Fragment"
-private const val PERMISSION_REQUEST = 1987
 
 class MainActivity :
     ActivityGlobalAbstract(),
@@ -147,20 +142,6 @@ class MainActivity :
         presenter.init()
         presenter.initFilters()
 
-        if (ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.CAMERA
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA),
-                PERMISSION_REQUEST
-            )
-        }
         binding.totalFilters = FilterManager.getInstance().totalFilters
     }
 
