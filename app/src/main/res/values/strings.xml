@@ -806,7 +806,6 @@
     <string name="filter_period_months_last_year">Months last year</string>
     <string name="filter_period_quarters_last_year">Quarters las years</string>
     <string name="filter_period_last_year">Last year</string>
-    <string name="filter_period_last_week">Last week</string>
     <string name="filter_period_this_biweek">This biweek</string>
     <string name="filter_period_last_biweek">Last biweek</string>
     <string name="filter_period_last_n_bimonths">Last %d bimonths</string>
