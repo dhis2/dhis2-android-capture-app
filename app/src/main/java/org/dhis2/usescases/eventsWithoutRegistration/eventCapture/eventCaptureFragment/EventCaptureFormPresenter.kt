@@ -85,7 +85,8 @@ class EventCaptureFormPresenter(
                 .subscribe(
                     { result ->
                         result.valueStoreResult?.let {
-                            if (result.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
+                            if (result.valueStoreResult
+                                == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
                                 activityPresenter.nextCalculation(true)
                             } else {
                                 itemList?.let { fields ->
