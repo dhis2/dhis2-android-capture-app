@@ -13,8 +13,6 @@ import org.hisp.dhis.android.core.program.ProgramRule;
 import org.hisp.dhis.android.core.program.ProgramRuleAction;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramRuleVariable;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.models.Rule;
 import org.hisp.dhis.rules.models.RuleAttributeValue;
@@ -29,9 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Flowable;
-import timber.log.Timber;
-
-import static android.text.TextUtils.isEmpty;
 
 public final class EnrollmentRuleEngineRepository
         implements
@@ -52,10 +47,6 @@ public final class EnrollmentRuleEngineRepository
 
     private Map<String, List<Rule>> attributeRules = new HashMap<>();
 
-    private String lastUpdatedAttr = null;
-
-    private boolean getIndicators = false;
-
     private List<ProgramRule> mandatoryRules;
 
     public EnrollmentRuleEngineRepository(@NonNull FormRepository formRepository,
@@ -64,7 +55,7 @@ public final class EnrollmentRuleEngineRepository
         this.formRepository = formRepository;
         this.enrollmentUid = enrollmentUid;
 
-        if (enrollmentUid != null ) {
+        if (enrollmentUid != null) {
             initData();
         }
 
@@ -164,17 +155,18 @@ public final class EnrollmentRuleEngineRepository
     @Override
     public Flowable<Result<RuleEffect>> calculate() {
         return queryAttributeValues()
-                .map(ruleAttributeValues -> ruleEnrollmentBuilder.attributeValues(ruleAttributeValues).build())
-                .switchMap(enrollment -> formRepository.ruleEngine().switchMap(ruleEngine -> {
-                    return Flowable.fromCallable(ruleEngine.evaluate(enrollment));
-                }).map(Result::success).onErrorReturn(error -> Result.failure(new Exception(error))));
+                .map(ruleAttributeValues -> ruleEnrollmentBuilder.attributeValues(ruleAttributeValues)
+                        .build())
+                .switchMap(enrollment -> formRepository.ruleEngine()
+                        .switchMap(ruleEngine -> Flowable.fromCallable(ruleEngine.evaluate(enrollment)))
+                        .map(Result::success)
+                        .onErrorReturn(error -> Result.failure(new Exception(error))));
     }
 
     @NonNull
     @Override
     public Flowable<Result<RuleEffect>> reCalculate() {
         initData();
-        getIndicators = true;
         return calculate();
     }
 

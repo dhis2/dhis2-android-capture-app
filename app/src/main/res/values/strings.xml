@@ -817,4 +817,6 @@
     <string name="filter_period_last_n_financial_years">Last %d financial years</string>
     <string name="filter_period_last_n_biweeks">Last %d biweeks</string>
     <string name="filter_period_from_to" translatable="false">%s - %s</string>
+    <string name="section_feedback">Feedback</string>
+    <string name="section_indicators">Indicators</string>
 </resources>
