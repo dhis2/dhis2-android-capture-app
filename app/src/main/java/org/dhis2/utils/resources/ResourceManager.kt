@@ -47,4 +47,7 @@ class ResourceManager(val context: Context) {
     fun defaultTeiLabel(): String = context.getString(R.string.tei)
     fun jiraIssueSentMessage(): String = context.getString(R.string.jira_issue_sent)
     fun jiraIssueSentErrorMessage(): String = context.getString(R.string.jira_issue_sent_error)
+    fun sectionFeedback(): String = context.getString(R.string.section_feedback)
+    fun sectionIndicators(): String = context.getString(R.string.section_indicators)
+    fun sectionCharts(): String = context.getString(R.string.section_charts)
 }

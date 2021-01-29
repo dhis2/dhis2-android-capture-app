@@ -7,6 +7,12 @@
         android:title="@string/navigation_data_entry"/>
 
     <item
+        android:id="@+id/navigation_analytics"
+        android:enabled="true"
+        android:icon="@drawable/ic_navigation_analytics"
+        android:title="@string/navigation_analytics"/>
+
+    <item
         android:id="@+id/navigation_notes"
         android:enabled="true"
         android:icon="@drawable/ic_navigation_notes"

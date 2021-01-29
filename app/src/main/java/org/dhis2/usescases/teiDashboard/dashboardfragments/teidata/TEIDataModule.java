@@ -75,11 +75,11 @@ public class TEIDataModule {
                 enrollmentUid);
     }
 
-    @Provides
+   /* @Provides
     @PerFragment
     RuleEngineRepository ruleEngineRepository(@NonNull FormRepository formRepository, D2 d2) {
         return new EnrollmentRuleEngineRepository(formRepository, enrollmentUid, d2);
-    }
+    }*/
 
     @Provides
     @PerFragment
