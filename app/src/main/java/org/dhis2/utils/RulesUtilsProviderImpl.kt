@@ -174,7 +174,6 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             uid, "",
             displayText.content() + " " + ruleEffect.data(), "Display"
         )
-        fieldViewModels[uid] = displayViewModel
     }
 
     private fun displayKeyValuePair(
@@ -189,8 +188,6 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             uid, displayKeyValuePair.content(),
             ruleEffect.data(), "Display"
         )
-        fieldViewModels[uid] = displayViewModel
-        rulesActionCallbacks.setDisplayKeyValue(displayKeyValuePair.content(), ruleEffect.data())
     }
 
     private fun hideSection(

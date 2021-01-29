@@ -15,9 +15,10 @@ Core has a consumer SMS thread that works with a queue, everytime an SMS is rece
 
 *CompressionSMSListener* verifies that the SMS is in base64, after this it will try to uncompress it using the user metadata. If there are no errors it will continue the flow checking the SubmissionType and then delegating to other specific listeners (aggregate, enrollment, register etc..).
 
-Note: To find out more about the compression/decompression library you can check out these links.
-[https://docs.google.com/document/d/1Gd42V5YXQqYVbI9IMGiRe_4Xg8T4rQpc9pAL5ABjbq8](https://docs.google.com/document/d/1Gd42V5YXQqYVbI9IMGiRe_4Xg8T4rQpc9pAL5ABjbq8)
-[https://github.com/dhis2/sms-compression](https://github.com/dhis2/sms-compression)
+Note: To find out more about the compression/decompression library you can check out these links:
+
+* [https://github.com/dhis2/dhis2-android-capture-app/blob/master/docs/src/commonmark/en/content/tech-guides/SMS-compression.md](https://github.com/dhis2/dhis2-android-capture-app/blob/master/docs/src/commonmark/en/content/tech-guides/SMS-compression.md)
+* [https://github.com/dhis2/sms-compression](https://github.com/dhis2/sms-compression)
 
 ### Sending an SMS to DHIS2 Server: Inbound API
 
@@ -143,6 +144,7 @@ You have multiple ways of testing this feature:
   - **Important**: Everytime the gateway app redirects a SMS, it will send a confirmation SMS to the originator (capture app). Ideally the confirmation SMS would follow a specific format, but due to limitation you will only see a success/fail SMS message in this confirmation.
     - Success message : 200 http code
     - Error message: client and server errors (4xx / 5xx)
+  - **Other considerations**: If you send long SMSs (more than 160 chars) this app does not re-assemble the different parts. 
 - **Manual gateway** Using postman
   - POST sms/inbound/
   - https://docs.dhis2.org/master/en/developer/html/webapi_sms.html
