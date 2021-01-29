@@ -9,6 +9,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.ViewDataBinding
@@ -97,6 +98,12 @@ class ScanTextView @JvmOverloads constructor(
             intent.putExtra(Constants.OPTION_SET, optionSet)
             intent.putExtra(Constants.SCAN_RENDERING_TYPE, renderingType)
             (context as FragmentActivity).startActivityForResult(intent, RQ_QR_SCANNER)
+        } else {
+            Toast.makeText(
+                context,
+                R.string.camera_permission_denied,
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 

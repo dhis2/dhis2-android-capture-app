@@ -6,6 +6,7 @@ import org.dhis2.Bindings.RuleExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.FormSectionViewModel;
+import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -63,32 +64,20 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private final Event currentEvent;
     private final ProgramStage currentStage;
 
-    private final FormRepository formRepository;
+    private final RuleEngineRepository ruleEngineRepository;
     private final D2 d2;
     private boolean isEventEditable;
     private final HashMap<String, ProgramStageSection> sectionMap;
     private final HashMap<String, ProgramStageDataElement> stageDataElementsMap;
-    private RuleEvent.Builder eventBuilder;
     private List<FieldViewModel> sectionFields;
 
-    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2) {
+    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, RuleEngineRepository ruleEngineRepository, String eventUid, D2 d2) {
         this.eventUid = eventUid;
-        this.formRepository = formRepository;
+        this.ruleEngineRepository = ruleEngineRepository;
         this.d2 = d2;
 
         currentEvent = d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).blockingGet();
         currentStage = d2.programModule().programStages().uid(currentEvent.programStage()).blockingGet();
-        OrganisationUnit ou = d2.organisationUnitModule().organisationUnits().uid(currentEvent.organisationUnit()).blockingGet();
-
-        eventBuilder = RuleEvent.builder()
-                .event(currentEvent.uid())
-                .programStage(currentEvent.programStage())
-                .programStageName(currentStage.displayName())
-                .status(RuleEvent.Status.valueOf(currentEvent.status().name()))
-                .eventDate(currentEvent.eventDate())
-                .dueDate(currentEvent.dueDate() != null ? currentEvent.dueDate() : currentEvent.eventDate())
-                .organisationUnit(currentEvent.organisationUnit())
-                .organisationUnitCode(ou.code());
 
         this.fieldFactory = fieldFactory;
 
@@ -362,17 +351,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     @Override
     public Flowable<Result<RuleEffect>> calculate() {
-        return queryDataValues(eventUid)
-                .switchMap(dataValues ->
-                        formRepository.ruleEngine()
-                                .flatMap(ruleEngine ->
-                                        Flowable.fromCallable(
-                                                ruleEngine.evaluate(
-                                                        eventBuilder.dataValues(dataValues).build()
-                                                )))
-                                .map(Result::success)
-                )
-                .doOnError(error -> Result.failure(new Exception(error)));
+        return ruleEngineRepository.calculate();
     }
 
     @Override
@@ -450,13 +429,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     public Flowable<EventStatus> eventStatus() {
         return Flowable.just(d2.eventModule().events().uid(eventUid).blockingGet())
                 .map(Event::status);
-    }
-
-    @NonNull
-    private Flowable<List<RuleDataValue>> queryDataValues(String eventUid) {
-        return d2.eventModule().events().uid(eventUid).get()
-                .flatMap(event -> d2.trackedEntityModule().trackedEntityDataValues().byEvent().eq(eventUid).byValue().isNotNull().get()
-                        .map(values -> RuleExtensionsKt.toRuleDataValue(values, event, d2.dataElementModule().dataElements(), d2.programModule().programRuleVariables(), d2.optionModule().options()))).toFlowable();
     }
 
     @Override
