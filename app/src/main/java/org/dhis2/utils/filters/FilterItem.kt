@@ -261,14 +261,16 @@ data class WorkingListFilter(
 ) : FilterItem(Filters.WORKING_LIST, programType, sortingItem, openFilter, filterLabel) {
     fun onChecked(checkedId: Int) {
         openFilter.set(null)
-        workingLists.firstOrNull { it.hashCode() == checkedId }?.let {
-            if (!it.isSelected()) {
+        workingLists.forEach {
+            if (it.hashCode() == checkedId && !it.isSelected()) {
                 it.select()
+            } else {
+                it.deselect()
             }
-        } ?: workingLists.forEach {
-            it.deselect()
         }.also {
-            FilterManager.getInstance().currentWorkingList(null)
+            if (checkedId == -1) {
+                FilterManager.getInstance().currentWorkingList(null)
+            }
         }
     }
 
