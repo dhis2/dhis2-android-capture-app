@@ -1,16 +1,12 @@
 package org.dhis2.data.forms.dataentry.fields.scan
 
-import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.util.AttributeSet
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.FragmentActivity
@@ -53,6 +49,7 @@ class ScanTextView @JvmOverloads constructor(
     var optionSet: String? = null
     private var renderingType: ValueTypeRenderingType? = null
     private lateinit var viewModel: ScanTextViewModel
+    private var isPermissionRequested = false
 
     init {
         init(context)
@@ -75,7 +72,7 @@ class ScanTextView @JvmOverloads constructor(
 
         qrIcon.setOnClickListener {
             viewModel.onItemClick()
-            checkCameraPermission()
+            goToScanActivity()
         }
 
         editText.setOnFocusChangeListener { _, hasFocus ->
@@ -88,23 +85,12 @@ class ScanTextView @JvmOverloads constructor(
         }
     }
 
-    private fun checkCameraPermission() {
-        if (
-            ContextCompat
-                .checkSelfPermission(context, Manifest.permission.CAMERA) == PERMISSION_GRANTED
-        ) {
-            subscribe()
-            val intent = Intent(context, ScanActivity::class.java)
-            intent.putExtra(Constants.OPTION_SET, optionSet)
-            intent.putExtra(Constants.SCAN_RENDERING_TYPE, renderingType)
-            (context as FragmentActivity).startActivityForResult(intent, RQ_QR_SCANNER)
-        } else {
-            Toast.makeText(
-                context,
-                R.string.camera_permission_denied,
-                Toast.LENGTH_LONG
-            ).show()
-        }
+    private fun goToScanActivity() {
+        subscribe()
+        val intent = Intent(context, ScanActivity::class.java)
+        intent.putExtra(Constants.OPTION_SET, optionSet)
+        intent.putExtra(Constants.SCAN_RENDERING_TYPE, renderingType)
+        (context as FragmentActivity).startActivityForResult(intent, RQ_QR_SCANNER)
     }
 
     fun setOnScannerListener(function: (String?) -> Unit) {
