@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -57,6 +58,10 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
             presenter.changeOnlyFailedFilter(binding.failedCheckBox.isChecked)
         }
 
+        binding.shareFeedbackButton.setOnClickListener {
+            presenter.shareFeedback(binding.failedCheckBox.isChecked)
+        }
+
         return binding.root
     }
 
@@ -79,9 +84,21 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
         return when (state) {
             is FeedbackContentState.Loading -> renderLoading()
             is FeedbackContentState.Loaded -> renderLoaded(state.feedback)
+            is FeedbackContentState.sharingFeedback -> shareFeedback(state.text)
             is FeedbackContentState.NotFound -> renderError(getString(R.string.empty_tei_no_add))
             is FeedbackContentState.UnexpectedError -> renderError(getString(R.string.unexpected_error_message))
         }
+    }
+
+    private fun shareFeedback(text: String) {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, text)
+            type = "text/plain"
+        }
+
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
     }
 
     private fun initFeedbackMode(programType: ProgramType): FeedbackMode {

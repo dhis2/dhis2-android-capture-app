@@ -17,6 +17,7 @@ sealed class FeedbackContentState {
 
     object NotFound : FeedbackContentState()
     object UnexpectedError : FeedbackContentState()
+    data class sharingFeedback(val text: String) : FeedbackContentState()
 }
 
 class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
@@ -49,8 +50,23 @@ class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
         loadFeedback(value)
     }
 
-    fun expand(node: Tree<*>){
-        if (lastLoaded != null && node is Tree.Node){
+    fun shareFeedback(onlyFailedFilter: Boolean) = launch {
+
+        val result = withContext(Dispatchers.IO) {
+            getFeedback(feedbackMode, criticalFilter, onlyFailedFilter)
+        }
+
+        result.fold(
+            { failure -> handleFailure(failure) },
+            { feedback ->
+                val text = nodesToText(feedback.children)
+
+                render(FeedbackContentState.sharingFeedback(text))
+            })
+    }
+
+    fun expand(node: Tree<*>) {
+        if (lastLoaded != null && node is Tree.Node) {
             lastLoaded = lastLoaded!!.copy(feedback = lastLoaded!!.feedback.expand(node))
             render(lastLoaded!!)
         }
@@ -76,7 +92,29 @@ class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
             })
     }
 
-    private fun tryMaintainCurrentExpandedItems(feedback: Tree.Root<*>): Tree.Root<*>{
+    private fun nodesToText(nodes: List<Tree<*>>, level: Int = 0): String {
+        val builder = StringBuffer()
+
+        for (node in nodes) {
+
+            val text = if (node.content is FeedbackItem) {
+                "${node.content.name} ${node.content.value?.data ?: ""}"
+            } else {
+                (node.content as FeedbackHelpItem).text
+            }
+
+            builder.appendln("".padStart(level * 3) + text)
+            builder.appendln()
+
+            if (node is Tree.Node && node.children.isNotEmpty()) {
+                builder.append(nodesToText(node.children, level + 1))
+            }
+        }
+
+        return builder.toString()
+    }
+
+    private fun tryMaintainCurrentExpandedItems(feedback: Tree.Root<*>): Tree.Root<*> {
         val flattedLastFeedback = flatTreeNodes(lastLoaded!!.feedback.children)
         val flattedFeedback = flatTreeNodes(feedback.children)
 
