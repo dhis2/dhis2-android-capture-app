@@ -1,12 +1,11 @@
 package org.dhis2.usescases.programEventDetail
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -14,7 +13,11 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.android.plugins.RxAndroidPlugins
+import io.reactivex.schedulers.Schedulers
 import junit.framework.Assert.assertTrue
+import org.dhis2.data.filter.FilterPresenter
+import org.dhis2.data.filter.FilterRepository
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.tuples.Pair
@@ -24,17 +27,24 @@ import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
 import org.dhis2.utils.filters.sorting.SortingItem
 import org.dhis2.utils.filters.sorting.SortingStatus
+import org.dhis2.utils.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 class ProgramEventDetailPresenterTest {
+    @Rule
+    @JvmField
+    var instantExecutorRule = InstantTaskExecutorRule()
 
+    private val filterRepository: FilterRepository = mock()
     private lateinit var presenter: ProgramEventDetailPresenter
 
     private val view: ProgramEventDetailContract.View = mock()
@@ -42,16 +52,29 @@ class ProgramEventDetailPresenterTest {
     private val scheduler = TrampolineSchedulerProvider()
     private val filterManager: FilterManager = FilterManager.getInstance()
     private val preferenceProvider: PreferenceProvider = mock()
+    private val workingListMapper: EventFilterToWorkingListItemMapper = mock()
+    private val filterPresenter: FilterPresenter = mock()
 
     @Before
     fun setUp() {
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
+
         presenter = ProgramEventDetailPresenter(
             view,
             repository,
             scheduler,
             filterManager,
-            preferenceProvider
+            preferenceProvider,
+            workingListMapper,
+            filterRepository,
+            filterPresenter
         )
+    }
+
+    @After
+    fun clear() {
+        FilterManager.getInstance().clearAllFilters()
+        RxAndroidPlugins.reset()
     }
 
     @Test
@@ -95,10 +118,10 @@ class ProgramEventDetailPresenterTest {
         whenever(repository.program()) doReturn Observable.just(program)
         whenever(repository.catOptionCombos()) doReturn Single.just(catOptionComboPair)
         whenever(
-            repository.filteredProgramEvents(any(), any(), any(), any(), any(), anyOrNull(), any())
+            repository.filteredProgramEvents()
         ) doReturn events
         whenever(
-            repository.filteredEventsForMap(any(), any(), any(), any(), any(), any())
+            repository.filteredEventsForMap()
         ) doReturn Flowable.just(mapData)
         presenter.init()
         verify(view).setFeatureType(FeatureType.POINT)
@@ -166,7 +189,6 @@ class ProgramEventDetailPresenterTest {
     fun `Should clear all filters when reset filter button is clicked`() {
         presenter.clearFilterClick()
         assertTrue(filterManager.totalFilters == 0)
-        verify(view).clearFilters()
     }
 
     private fun dummyCategoryCombo() = CategoryCombo.builder().uid("uid").build()

@@ -20,6 +20,7 @@ import com.mapbox.geojson.FeatureCollection;
 import org.dhis2.R;
 import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
@@ -44,6 +45,7 @@ import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.workingLists.TeiFilterToWorkingListItemMapper;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
 import org.hisp.dhis.android.core.D2;
@@ -92,6 +94,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private final AnalyticsHelper analyticsHelper;
     private final BehaviorSubject<String> currentProgram;
     private final PreferenceProvider preferences;
+    private final TeiFilterToWorkingListItemMapper workingListMapper;
+    private final FilterRepository filterRepository;
     private Program selectedProgram;
 
     private CompositeDisposable compositeDisposable;
@@ -130,6 +134,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
                              EventToEventUiComponent eventToEventUiComponent,
                              PreferenceProvider preferenceProvider,
+                             TeiFilterToWorkingListItemMapper workingListMapper,
+                             FilterRepository filterRepository,
                              Flowable<RowAction> fieldProcessor) {
         this.view = view;
         this.preferences = preferenceProvider;
@@ -143,7 +149,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.mapCoordinateFieldToFeatureCollection = mapCoordinateFieldToFeatureCollection;
         this.fieldProcessor = fieldProcessor;
 
+        this.workingListMapper = workingListMapper;
         this.eventToEventUiComponent = eventToEventUiComponent;
+        this.filterRepository = filterRepository;
         compositeDisposable = new CompositeDisposable();
         queryData = new HashMap<>();
         queryProcessor = PublishProcessor.create();
@@ -162,7 +170,26 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void init(String trackedEntityType) {
         this.trackedEntityType = trackedEntityType;
         this.trackedEntity = searchRepository.getTrackedEntityType(trackedEntityType).blockingFirst();
-        initAssignmentFilter();
+
+        compositeDisposable.add(currentProgram
+                .switchMap(programUid ->
+                        FilterManager.getInstance().asFlowable()
+                                .startWith(FilterManager.getInstance())
+                                .map(filterManager -> {
+                                    if (programUid.isEmpty()) {
+                                        return filterRepository.trackedEntityFilters();
+                                    } else {
+                                        return filterRepository.programFilters(programUid);
+                                    }
+                                }).toObservable())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                        view::setFilters,
+                        Timber::e
+                )
+        );
+
         compositeDisposable.add(
                 searchRepository.programsWithRegistration(trackedEntityType)
                         .subscribeOn(schedulerProvider.io())
@@ -485,7 +512,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             preferences.removeValue(Preference.CURRENT_ORG_UNIT);
             queryData.clear();
         }
-        initAssignmentFilter();
     }
 
     private boolean isPreviousAndCurrentProgramTheSame(Program programSelected, String previousProgramUid, String currentProgramUid) {
@@ -938,19 +964,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             }
         }
         return stagesStyleMap;
-    }
-
-    @Override
-    public void initAssignmentFilter() {
-        boolean hasAssignment = selectedProgram != null && !d2.programModule().programStages()
-                .byProgramUid().eq(selectedProgram.uid())
-                .byEnableUserAssignment().isTrue()
-                .blockingIsEmpty();
-        if (hasAssignment) {
-            view.showAssignmentFilter();
-        } else {
-            view.hideAssignmentFilter();
-        }
     }
 
     @Override

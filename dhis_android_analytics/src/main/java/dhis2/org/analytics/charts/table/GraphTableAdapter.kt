@@ -22,7 +22,7 @@ class GraphTableAdapter(context: Context) : AbstractTableAdapter<String, String,
         parent: ViewGroup,
         viewType: Int
     ): AbstractViewHolder = GraphTableHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_table_cell, parent, false)
+        LayoutInflater.from(parent.context).inflate(R.layout.item_table_header, parent, false)
     )
 
     override fun onBindColumnHeaderViewHolder(
@@ -30,21 +30,21 @@ class GraphTableAdapter(context: Context) : AbstractTableAdapter<String, String,
         columnHeaderItemModel: Any?,
         columnPosition: Int
     ) {
-        (holder as GraphTableHolder).bind(columnHeaderItemModel.toString(), true)
+        (holder as GraphTableHolder).bind(columnHeaderItemModel.toString())
     }
 
     override fun onCreateRowHeaderViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): AbstractViewHolder = GraphTableHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_table_cell, parent, false)
+        LayoutInflater.from(parent.context).inflate(R.layout.item_table_header, parent, false)
     )
     override fun onBindRowHeaderViewHolder(
         holder: AbstractViewHolder?,
         rowHeaderItemModel: Any?,
         rowPosition: Int
     ) {
-        (holder as GraphTableHolder).bind(rowHeaderItemModel.toString(), true)
+        (holder as GraphTableHolder).bind(rowHeaderItemModel.toString())
     }
 
     override fun onCreateCellViewHolder(
@@ -60,6 +60,6 @@ class GraphTableAdapter(context: Context) : AbstractTableAdapter<String, String,
         columnPosition: Int,
         rowPosition: Int
     ) {
-        (holder as GraphTableHolder).bind(cellItemModel.toString(), false)
+        (holder as GraphTableHolder).bind(cellItemModel.toString())
     }
 }

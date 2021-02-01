@@ -2,11 +2,16 @@ package org.dhis2.utils.resources
 
 import android.content.Context
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import org.dhis2.R
 import org.dhis2.utils.ColorUtils
 
 class ResourceManager(val context: Context) {
+
+    val filterResources by lazy { FilterResources(context) }
+
+    fun getString(@StringRes stringResource: Int) = context.getString(stringResource)
 
     fun getObjectStyleDrawableResource(icon: String?, @DrawableRes defaultResource: Int): Int {
         return icon?.let {

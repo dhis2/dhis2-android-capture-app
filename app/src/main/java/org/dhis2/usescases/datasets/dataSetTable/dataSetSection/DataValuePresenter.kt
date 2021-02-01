@@ -64,7 +64,7 @@ class DataValuePresenter(
     private var processorOptionSet: FlowableProcessor<Trio<String, String, Int>>? = null
     private var isApproval: Boolean = false
     private var accessDataWrite: Boolean = true
-    private var sectionName: String? = null
+    private lateinit var sectionName: String
     private var dataSet: DataSet? = null
     private var section: Section? = null
     private var catOptionOrder: List<List<CategoryOption>>? = null
@@ -94,10 +94,10 @@ class DataValuePresenter(
             Flowable.zip<Boolean, DataSet, Section, Period, List<DataInputPeriod>,
                 Boolean, Sextet<Boolean, DataSet, Section, Period, List<DataInputPeriod>, Boolean>>(
                 repository.canWriteAny(),
-                repository.dataSet,
+                repository.getDataSet(),
                 repository.getSectionByDataSet(sectionName),
                 repository.getPeriod(periodId),
-                repository.dataInputPeriod,
+                repository.getDataInputPeriod(),
                 repository.isApproval(orgUnitUid, periodId, attributeOptionCombo),
                 Function6 { canWrite, dataSet, section, period, dataInputPeriod, isApproval ->
                     Sextet.create(
@@ -173,7 +173,7 @@ class DataValuePresenter(
                             sectionName
                         ),
                         repository.getGreyFields(sectionName),
-                        repository.compulsoryDataElements,
+                        repository.getCompulsoryDataElements(),
                         Function6<CategoryCombo,
                             List<DataElement>,
                             Map<String, List<List<Pair<CategoryOption, Category>>>>,
@@ -226,7 +226,20 @@ class DataValuePresenter(
                             quartet.val2(),
                             quartet.val3()
                         )
+                        getDataSetIndicators()
                     },
+                    { Timber.e(it) }
+                )
+        )
+    }
+
+    private fun getDataSetIndicators() {
+        disposable.add(
+            repository.getDataSetIndicators(orgUnitUid!!, periodId!!, attributeOptionCombo!!)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { if (it.isNotEmpty()) view.renderIndicators(it) },
                     { Timber.e(it) }
                 )
         )

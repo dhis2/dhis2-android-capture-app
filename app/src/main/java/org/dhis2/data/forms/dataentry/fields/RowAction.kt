@@ -12,5 +12,5 @@ data class RowAction(
 )
 
 enum class ActionType {
-    ON_NEXT, ON_FOCUS, ON_SAVE
+    ON_NEXT, ON_FOCUS, ON_SAVE, ON_TEXT_CHANGE
 }

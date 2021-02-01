@@ -2,6 +2,7 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
 import android.text.TextUtils
 import io.reactivex.Flowable
+import io.reactivex.Single
 import java.util.ArrayList
 import java.util.HashMap
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
@@ -177,10 +178,10 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
     }
 
     override fun getDataValues(
-        orgUnitUid: String,
-        periodType: String,
-        initPeriodType: String,
-        catOptionComb: String,
+        orgUnitUid: String?,
+        periodType: String?,
+        initPeriodType: String?,
+        catOptionComb: String?,
         sectionName: String
     ): Flowable<List<DataSetTableModel>> {
         val mapDataElementCatCombo: MutableMap<String, String> =
@@ -365,7 +366,7 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
         period: String,
         attributeOptionCombo: String
     ): Flowable<Boolean> {
-        return dataSet.flatMap { dataSet ->
+        return getDataSet().flatMap { dataSet ->
             dataSet.workflow()?.let { workflow ->
                 Flowable.fromCallable {
                     val dataApproval = d2.dataSetModule().dataApprovals()
@@ -483,11 +484,11 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
 
     override fun getCatOptionComboFrom(
         catComboUid: String?,
-        catOptionsList: List<List<CategoryOption>>
+        catOptionsList: List<List<CategoryOption>>?
     ): List<CategoryOptionCombo> {
         val catOptionCombos: MutableList<CategoryOptionCombo> =
             ArrayList()
-        catOptionsList.forEach { catOptions ->
+        catOptionsList?.forEach { catOptions ->
             catOptionCombos.addAll(
                 d2.categoryModule().categoryOptionCombos()
                     .byCategoryOptions(UidsHelper.getUidsList(catOptions))
@@ -496,5 +497,28 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
             )
         }
         return catOptionCombos
+    }
+
+    override fun getDataSetIndicators(
+        orgUnitUid: String,
+        periodUid: String,
+        attributeOptionCombo: String
+    ): Single<HashMap<String?, String>> {
+        return d2.indicatorModule().indicators().byDataSetUid(dataSetUid).get()
+            .map {
+                val dataSetIndicators = hashMapOf<String?, String>()
+                it.forEach { indicator ->
+                    dataSetIndicators[indicator.displayName()] = d2.indicatorModule()
+                        .dataSetIndicatorEngine()
+                        .blockingEvaluate(
+                            indicator.uid(),
+                            dataSetUid,
+                            periodUid,
+                            orgUnitUid,
+                            attributeOptionCombo
+                        ).toInt().toString()
+                }
+                return@map dataSetIndicators
+            }
     }
 }

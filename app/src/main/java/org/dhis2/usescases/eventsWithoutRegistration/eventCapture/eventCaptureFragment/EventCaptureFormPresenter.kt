@@ -64,20 +64,38 @@ class EventCaptureFormPresenter(
                                 )
                             )
                         }
+
+                        ActionType.ON_TEXT_CHANGE -> {
+                            itemList?.let { list ->
+                                list.find { item ->
+                                    item.uid() == rowAction.id
+                                }?.let { item ->
+                                    itemList = list.updated(
+                                        list.indexOf(item),
+                                        item.withValue(rowAction.value).withEditMode(true)
+                                    )
+                                }
+                            }
+                            Flowable.just(StoreResult(rowAction.id))
+                        }
                     }
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    {
-                        if (it.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
-                            activityPresenter.nextCalculation(true)
-                        } else {
-                            itemList?.let { fields ->
-                                activityPresenter.formFieldsFlowable()
-                                    .onNext(fields.toMutableList())
+                    { result ->
+                        result.valueStoreResult?.let {
+                            if (result.valueStoreResult
+                                == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+                            ) {
+                                activityPresenter.nextCalculation(true)
+                            } else {
+                                itemList?.let { fields ->
+                                    activityPresenter.formFieldsFlowable()
+                                        .onNext(fields.toMutableList())
+                                }
                             }
-                        }
+                        } ?: activityPresenter.hideProgress()
                     },
                     Timber::e
                 )

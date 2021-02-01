@@ -3,7 +3,7 @@ package org.dhis2.usescases.main
 import dagger.Module
 import dagger.Provides
 import org.dhis2.data.dagger.PerActivity
-import org.dhis2.data.filter.FilterPresenter
+import org.dhis2.data.filter.FilterRepository
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
@@ -21,7 +21,8 @@ class MainModule(val view: MainView) {
         schedulerProvider: SchedulerProvider,
         preferences: PreferenceProvider,
         workManagerController: WorkManagerController,
-        filterManager: FilterManager
+        filterManager: FilterManager,
+        filterRepository: FilterRepository
     ): MainPresenter {
         return MainPresenter(
             view,
@@ -29,13 +30,14 @@ class MainModule(val view: MainView) {
             schedulerProvider,
             preferences,
             workManagerController,
-            filterManager
+            filterManager,
+            filterRepository
         )
     }
 
     @Provides
     @PerActivity
-    fun provideFiltersAdapter(filterPresenter: FilterPresenter): FiltersAdapter {
-        return FiltersAdapter(FiltersAdapter.ProgramType.ALL, filterPresenter)
+    fun providesNewFilterAdapter(): FiltersAdapter {
+        return FiltersAdapter()
     }
 }
