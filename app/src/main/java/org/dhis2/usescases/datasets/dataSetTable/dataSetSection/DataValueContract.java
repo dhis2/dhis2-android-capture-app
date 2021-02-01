@@ -4,7 +4,9 @@ import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.Section;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class DataValueContract {
@@ -27,5 +29,7 @@ public class DataValueContract {
         void setSection(Section section);
 
         void updateTabLayout(int count);
+
+        void renderIndicators(@NotNull HashMap<String, String> indicators);
     }
 }
