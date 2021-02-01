@@ -15,6 +15,7 @@ import org.dhis2.core.types.Tree
 import org.dhis2.databinding.FragmentFeedbackContentBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import java.net.URL
 import javax.inject.Inject
 
 class FeedbackContentFragment : FragmentGlobalAbstract(),
@@ -71,7 +72,13 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
         val feedbackMode = initFeedbackMode(programType)
         val criticalFilter: Boolean? = initCriticalQuestionFilter(programType)
 
-        presenter.attach(this, feedbackMode, criticalFilter, binding.failedCheckBox.isChecked)
+        presenter.attach(
+            this,
+            activity.enrollmentUid,
+            feedbackMode,
+            criticalFilter,
+            binding.failedCheckBox.isChecked
+        )
         super.onResume()
     }
 
@@ -84,16 +91,28 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
         return when (state) {
             is FeedbackContentState.Loading -> renderLoading()
             is FeedbackContentState.Loaded -> renderLoaded(state.feedback)
-            is FeedbackContentState.sharingFeedback -> shareFeedback(state.text)
+            is FeedbackContentState.SharingFeedback -> shareFeedback(
+                state.feedbackText,
+                state.serverUrl,
+                state.enrollmentUID
+            )
             is FeedbackContentState.NotFound -> renderError(getString(R.string.empty_tei_no_add))
             is FeedbackContentState.UnexpectedError -> renderError(getString(R.string.unexpected_error_message))
         }
     }
 
-    private fun shareFeedback(text: String) {
+    private fun shareFeedback(feedbackText: String, serverUrl: String, enrollmentUID: String) {
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, text)
+
+            val url = URL( serverUrl)
+
+            val feedbackUrl = URL( "https://feedback.psi-mis.org/${url.host}/$enrollmentUID")
+
+            val finalText = "$feedbackText \n  ${getString(R.string.feedback_url)} \n $feedbackUrl"
+
+            putExtra(Intent.EXTRA_TEXT, finalText)
+
             type = "text/plain"
         }
 

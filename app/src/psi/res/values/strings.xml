@@ -7,4 +7,5 @@
     <string name="program_type_configuration_error_message">There is a program type configuration error in the current program. Please review the program in the server and to execute sync configuration</string>
     <string name="unexpected_error_message">An unexpected error has occurred. Review your configuration or contact with your administrator</string>
     <string name="feedback_show_only_failed">Show only failed</string>
+    <string name="feedback_url">"See full feedback at:"</string>
 </resources>

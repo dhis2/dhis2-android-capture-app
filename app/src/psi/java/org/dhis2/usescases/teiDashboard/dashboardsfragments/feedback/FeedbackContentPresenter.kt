@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.core.types.Tree
 import org.dhis2.core.types.expand
+import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.GetSystemInfo
 import timber.log.Timber
 
 sealed class FeedbackContentState {
@@ -17,24 +18,31 @@ sealed class FeedbackContentState {
 
     object NotFound : FeedbackContentState()
     object UnexpectedError : FeedbackContentState()
-    data class sharingFeedback(val text: String) : FeedbackContentState()
+    data class SharingFeedback(val feedbackText: String, val serverUrl:String, val enrollmentUID: String) :
+        FeedbackContentState()
 }
 
-class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
+class FeedbackContentPresenter(
+    private val getFeedback: GetFeedback,
+    private val getSystemInfo: GetSystemInfo
+) :
     CoroutineScope by MainScope() {
 
     private var view: FeedbackContentView? = null
+    private lateinit var enrollmentUid: String
     private lateinit var feedbackMode: FeedbackMode
     private var criticalFilter: Boolean? = null
     private var lastLoaded: FeedbackContentState.Loaded? = null
 
     fun attach(
         view: FeedbackContentView,
+        enrollmentUid: String,
         feedbackMode: FeedbackMode,
         criticalFilter: Boolean?,
         onlyFailedFilter: Boolean
     ) {
         this.view = view
+        this.enrollmentUid = enrollmentUid
         this.feedbackMode = feedbackMode
         this.criticalFilter = criticalFilter
 
@@ -59,9 +67,11 @@ class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
         result.fold(
             { failure -> handleFailure(failure) },
             { feedback ->
-                val text = nodesToText(feedback.children)
+                val feedbackText = nodesToText(feedback.children)
+                val systemInfo = getSystemInfo()
+                val serverUrl = systemInfo.contextPath
 
-                render(FeedbackContentState.sharingFeedback(text))
+                render(FeedbackContentState.SharingFeedback(feedbackText,serverUrl,enrollmentUid))
             })
     }
 
