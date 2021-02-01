@@ -46,7 +46,6 @@ class ScanTextView @JvmOverloads constructor(
     private lateinit var inputLayout: TextInputLayout
     private lateinit var descriptionLabel: ImageView
     private lateinit var binding: ViewDataBinding
-    private lateinit var onScanClick: OnScanClick
     private lateinit var onScanResult: (String?) -> Unit
     private lateinit var qrIcon: ImageView
     private lateinit var labelText: TextView
@@ -86,7 +85,6 @@ class ScanTextView @JvmOverloads constructor(
                 viewModel.onItemClick()
             }
         }
-        onScanClick = context as OnScanClick
     }
 
     private fun checkCameraPermission() {
@@ -98,7 +96,6 @@ class ScanTextView @JvmOverloads constructor(
             val intent = Intent(context, ScanActivity::class.java)
             intent.putExtra(Constants.OPTION_SET, optionSet)
             intent.putExtra(Constants.SCAN_RENDERING_TYPE, renderingType)
-            this.onScanClick.onsScanClicked(intent, this)
         } else {
             Toast.makeText(
                 context,
@@ -252,9 +249,5 @@ class ScanTextView @JvmOverloads constructor(
 
     private fun subscribe() {
         (context as ActivityResultObservable).subscribe(this)
-    }
-
-    interface OnScanClick {
-        fun onsScanClicked(intent: Intent, scanTextView: ScanTextView)
     }
 }
