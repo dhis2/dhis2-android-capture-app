@@ -50,7 +50,10 @@ import java.io.File;
 
 import kotlin.Pair;
 
+import static android.app.Activity.RESULT_OK;
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.Constants.CAMERA_REQUEST;
+import static org.dhis2.utils.Constants.GALLERY_REQUEST;
 
 public class PictureView extends FieldLayout implements View.OnClickListener, ActivityResultObserver {
 
@@ -259,7 +262,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Ac
 
     private void checkPermissions() {
         subscribe();
-        if (ContextCompat.checkSelfPermission(((ActivityGlobalAbstract) getContext()), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED ||
+        if (ContextCompat.checkSelfPermission(((ActivityGlobalAbstract) getContext()), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(((ActivityGlobalAbstract) getContext()), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             selectImage();
         } else if (!isPermissionRequested) {
@@ -274,7 +277,9 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Ac
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        checkPermissions();
+        if (resultCode != RESULT_OK) {
+            checkPermissions();
+        }
     }
 
     @Override
