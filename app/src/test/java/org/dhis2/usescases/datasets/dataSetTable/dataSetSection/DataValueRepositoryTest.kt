@@ -85,7 +85,7 @@ class DataValueRepositoryTest {
                 .dataInputPeriods()
         ) doReturn dataInputPeriods
 
-        val testObserver = repository.dataInputPeriod.test()
+        val testObserver = repository.getDataInputPeriod().test()
 
         testObserver.assertNoErrors()
         testObserver.assertValueCount(1)
@@ -320,7 +320,7 @@ class DataValueRepositoryTest {
             d2.dataSetModule().dataSets().uid(dataSetUid).get()
         ) doReturn Single.just(dataSet)
 
-        val testObserver = repository.dataSet.test()
+        val testObserver = repository.getDataSet().test()
 
         testObserver.assertNoErrors()
         testObserver.assertValueCount(1)

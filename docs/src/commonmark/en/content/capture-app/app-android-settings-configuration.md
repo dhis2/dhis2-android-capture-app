@@ -13,6 +13,12 @@ Please note that in this version of the web app, only users with 'ALL' authority
 
 Includes configurations such as how often the android app will synchronize metadata and data, number of reserved values to download per TEI, and encrypt the device database.
 
+> **Warning**
+> This version includes a **manual** option for metadata and data sync, so admins can decide if the app will synchronize metadata and data only when requested by the android app user (instead of being scheduled).
+>
+> This option is only available from Android App 2.3.0 onward.
+
+
 ![](resources/images/general-settings.png)
 
 **Metadata sync:** Admin users can choose how often the metadata will sync. e.g. Sync metadata every 24 hours.
@@ -29,10 +35,10 @@ Includes configurations such as how often the android app will synchronize metad
 >
 > This is a critical action and will affect the local database of all android devices synchronizing with the server (it won't affect the server DHIS2 database).
 >
-> By default the android app database is not encrypted, but an admin can check the *Encrypt device database* to encrypt the metadata and data stored in every device. Encrypting the database will have an impact on the database volume and performance of the android app. Also note that at the moment of selecting or unselecting this option no data is lost (even if it hasn't been previously synchronized with the server)
+> By default, the android app database is not encrypted, but an admin can check the *Encrypt device database* to encrypt the metadata and data stored in every device. Encrypting the database will have an impact on the database volume and performance of the android app. Also note that at the moment of selecting or unselecting this option no data is lost (even if it hasn't been previously synchronized with the server)
 
  
-**Disable all settings:** By clicking this button the user will remove all android confiuration settings, so no configuration will be applied to the Android Capture app (if this is the case the sync parameters applied are the ones defined in the Android Capture app).
+**Disable all settings:** By clicking this button the user will remove all android configuration settings, so no configuration will be applied to the Android Capture app (if this is the case the sync parameters applied are the ones defined in the Android Capture app).
 
 
 ## Program download sync settings
@@ -42,6 +48,7 @@ It allows admin users to specify the sync parameters for Programs. This section 
 ### Global settings
 
 Global settings apply to all programs that an android user has access to. 
+
 
 ![](resources/images/program-global-settings.png)
 

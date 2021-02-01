@@ -2,11 +2,16 @@ package org.dhis2.utils.resources
 
 import android.content.Context
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import org.dhis2.R
 import org.dhis2.utils.ColorUtils
 
 class ResourceManager(val context: Context) {
+
+    val filterResources by lazy { FilterResources(context) }
+
+    fun getString(@StringRes stringResource: Int) = context.getString(stringResource)
 
     fun getObjectStyleDrawableResource(icon: String?, @DrawableRes defaultResource: Int): Int {
         return icon?.let {
@@ -42,4 +47,7 @@ class ResourceManager(val context: Context) {
     fun defaultTeiLabel(): String = context.getString(R.string.tei)
     fun jiraIssueSentMessage(): String = context.getString(R.string.jira_issue_sent)
     fun jiraIssueSentErrorMessage(): String = context.getString(R.string.jira_issue_sent_error)
+    fun sectionFeedback(): String = context.getString(R.string.section_feedback)
+    fun sectionIndicators(): String = context.getString(R.string.section_indicators)
+    fun sectionCharts(): String = context.getString(R.string.section_charts)
 }

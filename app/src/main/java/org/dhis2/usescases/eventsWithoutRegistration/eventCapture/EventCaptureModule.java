@@ -11,6 +11,7 @@ import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
+import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
@@ -80,6 +81,12 @@ public class EventCaptureModule {
     @PerActivity
     RulesRepository rulesRepository(@NonNull D2 d2) {
         return new RulesRepository(d2);
+    }
+
+    @Provides
+    @PerActivity
+    RuleEngineRepository ruleEngineRepository(D2 d2, FormRepository formRepository) {
+        return new EventRuleEngineRepository(d2, formRepository, eventUid);
     }
 
     @Provides

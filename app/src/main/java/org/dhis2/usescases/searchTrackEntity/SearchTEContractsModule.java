@@ -14,12 +14,16 @@ import org.dhis2.uicomponents.map.model.EventUiComponentModel;
 import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
+import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.Filters;
+import org.dhis2.utils.filters.workingLists.WorkingListItem;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.HashMap;
@@ -48,10 +52,6 @@ public class SearchTEContractsModule {
         void showFilterProgress();
 
         void setTutorial();
-
-        void showAssignmentFilter();
-
-        void hideAssignmentFilter();
 
         void setProgramColor(String data);
 
@@ -92,6 +92,8 @@ public class SearchTEContractsModule {
         void couldNotDownload(String typeName);
 
         void setFormData(List<FieldViewModel> data);
+
+        void setFilters(List<FilterItem> filtersToDisplay);
     }
 
     public interface Presenter {
@@ -157,8 +159,6 @@ public class SearchTEContractsModule {
         int getTEIColor();
 
         int getEnrollmentColor();
-
-        void initAssignmentFilter();
 
         void checkFilters(boolean listResultIsOk);
 

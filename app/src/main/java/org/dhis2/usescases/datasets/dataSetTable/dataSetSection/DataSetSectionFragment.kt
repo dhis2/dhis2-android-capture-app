@@ -19,8 +19,10 @@ import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Flowable
 import io.reactivex.processors.FlowableProcessor
 import java.util.ArrayList
+import java.util.HashMap
 import javax.inject.Inject
 import org.dhis2.Bindings.app
+import org.dhis2.Bindings.calculateWidth
 import org.dhis2.Bindings.maxLengthLabel
 import org.dhis2.Bindings.measureText
 import org.dhis2.R
@@ -84,10 +86,10 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     ): View? {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_dataset_section, container, false)
-        currentTablePosition.observe(this, Observer { loadHeader(it) })
+        currentTablePosition.observe(viewLifecycleOwner, Observer { loadHeader(it) })
         binding.presenter = presenterFragment
         presenter = activity.presenter
-        sectionName = arguments!!.getString(DATA_SET_SECTION) ?: ""
+        sectionName = requireArguments().getString(DATA_SET_SECTION) ?: ""
         presenterFragment.init(
             this,
             presenter.orgUnitUid,
@@ -133,7 +135,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             }
         }
 
-        val tableView = TableView(context!!)
+        val tableView = TableView(requireContext())
         tableView.setHasFixedWidth(true)
 
         val columnHeaders = dataTableModel.header()
@@ -177,14 +179,14 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             }
 
             val (first, second, third) = dataTableModel.rows()!!.measureText(
-                context!!,
+                requireContext(),
                 widthFactor
             )
             adapter.setMaxLabel(first)
             tableView.setRowHeaderWidth(second)
             if (third != 0) {
                 adapter.columnHeaderHeight =
-                    third + context!!.resources.getDimensionPixelSize(R.dimen.padding_5)
+                    third + requireContext().resources.getDimensionPixelSize(R.dimen.padding_5)
             }
             presenterFragment.saveCurrentSectionMeasures(
                 adapter.rowHeaderWidth,
@@ -226,6 +228,23 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         this.dataSet = dataSet
     }
 
+    override fun renderIndicators(indicators: HashMap<String, String>) {
+        val indicatorsTable = TableView(requireContext())
+        val adapter = DataSetIndicatorAdapter(requireContext())
+        indicatorsTable.adapter = adapter
+        indicatorsTable.headerCount = 1
+        indicatorsTable.setRowHeaderWidth(
+            indicators.keys.toList().calculateWidth(requireContext()).second
+        )
+        adapter.setAllItems(
+            listOf(listOf(getString(R.string.value))),
+            indicators.keys.toList(),
+            indicators.values.map { listOf(it) },
+            false
+        )
+        binding.tableLayout.addView(indicatorsTable)
+    }
+
     override fun setSection(section: Section) {
         this.section = section
     }
@@ -264,20 +283,22 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 for (i in 0 until binding.tableLayout.childCount) {
                     if (binding.tableLayout.getChildAt(i) is TableView) {
                         val table = binding.tableLayout.getChildAt(i) as TableView
-                        val adapter = table.adapter as DataSetTableAdapter
-                        adapter.scaleRowWidth(true)
-                        val params = cornerView.layoutParams
-                        params.width = adapter.rowHeaderWidth
-                        cornerView.layoutParams = params
-                        if (i == 0) {
-                            presenterFragment.saveCurrentSectionMeasures(
-                                adapter.rowHeaderWidth,
-                                adapter.columnHeaderHeight
-                            )
-                            val scrollPos = table.scrollHandler.columnPosition
-                            table.scrollToColumnPosition(scrollPos)
-                            for (rv in rvs) {
-                                rv.layoutManager!!.scrollToPosition(scrollPos)
+                        if (table.adapter is DataSetTableAdapter) {
+                            val adapter = table.adapter as DataSetTableAdapter
+                            adapter.scaleRowWidth(true)
+                            val params = cornerView.layoutParams
+                            params.width = adapter.rowHeaderWidth
+                            cornerView.layoutParams = params
+                            if (i == 0) {
+                                presenterFragment.saveCurrentSectionMeasures(
+                                    adapter.rowHeaderWidth,
+                                    adapter.columnHeaderHeight
+                                )
+                                val scrollPos = table.scrollHandler.columnPosition
+                                table.scrollToColumnPosition(scrollPos)
+                                for (rv in rvs) {
+                                    rv.layoutManager!!.scrollToPosition(scrollPos)
+                                }
                             }
                         }
                     }
@@ -287,20 +308,22 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 for (i in 0 until binding.tableLayout.childCount) {
                     if (binding.tableLayout.getChildAt(i) is TableView) {
                         val table = binding.tableLayout.getChildAt(i) as TableView
-                        val adapter = table.adapter as DataSetTableAdapter
-                        adapter.scaleRowWidth(false)
-                        val params = cornerView.layoutParams
-                        params.width = adapter.rowHeaderWidth
-                        cornerView.layoutParams = params
-                        if (i == 0) {
-                            presenterFragment.saveCurrentSectionMeasures(
-                                adapter.rowHeaderWidth,
-                                adapter.columnHeaderHeight
-                            )
-                            val scrollPos = table.scrollHandler.columnPosition
-                            table.scrollToColumnPosition(scrollPos)
-                            for (rv in rvs) {
-                                rv.layoutManager!!.scrollToPosition(scrollPos)
+                        if (table.adapter is DataSetTableAdapter) {
+                            val adapter = table.adapter as DataSetTableAdapter
+                            adapter.scaleRowWidth(false)
+                            val params = cornerView.layoutParams
+                            params.width = adapter.rowHeaderWidth
+                            cornerView.layoutParams = params
+                            if (i == 0) {
+                                presenterFragment.saveCurrentSectionMeasures(
+                                    adapter.rowHeaderWidth,
+                                    adapter.columnHeaderHeight
+                                )
+                                val scrollPos = table.scrollHandler.columnPosition
+                                table.scrollToColumnPosition(scrollPos)
+                                for (rv in rvs) {
+                                    rv.layoutManager!!.scrollToPosition(scrollPos)
+                                }
                             }
                         }
                     }
@@ -385,12 +408,12 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             columnHeader.setBackgroundColor(
                 if (mandatory) {
                     ContextCompat.getColor(
-                        context!!,
+                        requireContext(),
                         R.color.table_view_default_mandatory_background_color
                     )
                 } else {
                     ContextCompat.getColor(
-                        context!!,
+                        requireContext(),
                         R.color.table_view_default_all_required_background_color
                     )
                 }

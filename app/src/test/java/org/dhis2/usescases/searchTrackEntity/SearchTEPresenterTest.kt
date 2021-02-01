@@ -9,6 +9,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.schedulers.TestScheduler
 import junit.framework.TestCase.assertTrue
 import org.dhis2.data.dhislogic.DhisMapUtils
+import org.dhis2.data.filter.FilterRepository
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
@@ -17,6 +18,7 @@ import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFea
 import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.filters.FilterManager
+import org.dhis2.utils.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.Program
 import org.junit.Before
@@ -40,6 +42,8 @@ class SearchTEPresenterTest {
     private val initialProgram = "programUid"
     private val preferenceProvider: PreferenceProvider = mock()
     private val dhisMapUtils: DhisMapUtils = mock()
+    private val workingListMapper: TeiFilterToWorkingListItemMapper = mock()
+    private val filterRepository: FilterRepository = mock()
 
     @Before
     fun setUp() {
@@ -63,6 +67,8 @@ class SearchTEPresenterTest {
             mapCoordinateFieldToFeatureCollection,
             eventToEventUiComponent,
             preferenceProvider,
+            workingListMapper,
+            filterRepository,
             null
         )
     }
@@ -189,82 +195,6 @@ class SearchTEPresenterTest {
         verify(view).clearData()
         verify(view).updateFiltersSearch(0)
         verify(view).setFabIcon(false)
-    }
-
-    @Test
-    fun `Should show assign to me filter`() {
-        presenter.setProgramForTesting(
-            Program.builder()
-                .uid("uid")
-                .displayFrontPageList(true)
-                .minAttributesRequiredToSearch(0)
-                .build()
-        )
-        whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq("uid")
-        ) doReturn mock()
-        whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq("uid")
-                .byEnableUserAssignment()
-        ) doReturn mock()
-        whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq("uid")
-                .byEnableUserAssignment().isTrue
-        ) doReturn mock()
-        whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq("uid")
-                .byEnableUserAssignment().isTrue
-                .blockingIsEmpty()
-        ) doReturn false
-        presenter.initAssignmentFilter()
-        verify(view, times(1)).showAssignmentFilter()
-        verify(view, times(0)).hideAssignmentFilter()
-    }
-
-    @Test
-    fun `Should not show assign to me filter if no stage is configured`() {
-        presenter.setProgramForTesting(
-            Program.builder()
-                .uid("uid")
-                .displayFrontPageList(true)
-                .minAttributesRequiredToSearch(0)
-                .build()
-        )
-        whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq("uid")
-        ) doReturn mock()
-        whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq("uid")
-                .byEnableUserAssignment()
-        ) doReturn mock()
-        whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq("uid")
-                .byEnableUserAssignment().isTrue
-        ) doReturn mock()
-        whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq("uid")
-                .byEnableUserAssignment().isTrue
-                .blockingIsEmpty()
-        ) doReturn true
-        presenter.initAssignmentFilter()
-        verify(view, times(0)).showAssignmentFilter()
-        verify(view, times(1)).hideAssignmentFilter()
-    }
-
-    @Test
-    fun `Should not show assign to me filter if no program selected`() {
-        presenter.setProgramForTesting(null)
-        presenter.initAssignmentFilter()
-        verify(view, times(0)).showAssignmentFilter()
-        verify(view, times(1)).hideAssignmentFilter()
     }
 
     @Test

@@ -514,6 +514,9 @@
     <string name="relationship_not_found_message">The record you are trying to access is not available. Would you like to search for it?</string>
     <string name="sync_by_sms">Synced by SMS</string>
     <string name="state_warning">Warning</string>
+    <string name="state_uploading">Uploading</string>
+    <string name="state_relationship">Relationship</string>
+    <string name="sent_by_sms">Sent by sms</string>
     <string name="no_conflicts_message">There are no conflicts for this program</string>
     <string name="network_unavailable_sms">Network connection is not available, but it looks like there is phone services - you can use SMS.</string>
     <string name="network_unavailable">Network connection is not available.</string>
@@ -784,4 +787,37 @@
     <string name="show_line_graph">View as Line</string>
     <string name="show_table_graph">View as Table</string>
     <string name="show_table_value">View as Value</string>
+    <string name="working_list_default_label">Working list %s</string>
+    <string name="filter_period_last_n_days">Last %d days</string>
+    <string name="filter_period_this_year">This year</string>
+    <string name="filter_period_this_bimonth">This bimonth</string>
+    <string name="filter_period_last_bimonth">Last bimonth</string>
+    <string name="filter_period_this_quarter">This quarter</string>
+    <string name="filter_period_last_quarter">Last quarter</string>
+    <string name="filter_period_six_months">This six months</string>
+    <string name="filter_period_last_six_months">Last six months</string>
+    <string name="filter_period_last_n_years">Last %d years</string>
+    <string name="filter_period_last_n_months">Last %d months</string>
+    <string name="filter_period__last_n_weeks">Last %d weeks</string>
+    <string name="filter_period_weeks_this_year">Weeks this year</string>
+    <string name="filter_period_months_this_year">Months this year</string>
+    <string name="filter_period_bimonths_this_year">Bimonths this year</string>
+    <string name="filter_period_quarters_this_year">Quarters this year</string>
+    <string name="filter_period_months_last_year">Months last year</string>
+    <string name="filter_period_quarters_last_year">Quarters las years</string>
+    <string name="filter_period_last_year">Last year</string>
+    <string name="filter_period_this_biweek">This biweek</string>
+    <string name="filter_period_last_biweek">Last biweek</string>
+    <string name="filter_period_last_n_bimonths">Last %d bimonths</string>
+    <string name="filter_period_last_n_quarters">Last %d quarters</string>
+    <string name="last_n_months">Last %d months</string>
+    <string name="filter_period_this_financial_year">This financial year</string>
+    <string name="filter_period_last_financial_year">Last financial year</string>
+    <string name="filter_period_last_n_financial_years">Last %d financial years</string>
+    <string name="filter_period_last_n_biweeks">Last %d biweeks</string>
+    <string name="filter_period_from_to" translatable="false">%s - %s</string>
+    <string name="section_feedback">Feedback</string>
+    <string name="section_indicators">Indicators</string>
+    <string name="camera_permission_denied">Camera permission is denied.\nYou need to enable it to use this feature.</string>
+    <string name="value">Value</string>
 </resources>
