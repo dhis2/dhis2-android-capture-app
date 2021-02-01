@@ -241,35 +241,53 @@ class EnrollmentPresenterImpl(
                                 )
                             )
                         }
+
+                        ActionType.ON_TEXT_CHANGE -> {
+                            itemList?.let { list ->
+                                list.find { item ->
+                                    item.uid() == rowAction.id
+                                }?.let { item ->
+                                    itemList = list.updated(
+                                        list.indexOf(item),
+                                        item.withValue(rowAction.value).withEditMode(true)
+                                    )
+                                }
+                            }
+
+                            Flowable.just(StoreResult(rowAction.id))
+                        }
                     }
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    {
-                        when (it.valueStoreResult) {
-                            ValueStoreImpl.ValueStoreResult.VALUE_CHANGED -> {
-                                if (shouldShowDateEditionWarning(it.uid)) {
-                                    view.showDateEditionWarning()
+                    { result ->
+                        result.valueStoreResult?.let {
+                            when (it) {
+                                ValueStoreImpl.ValueStoreResult.VALUE_CHANGED -> {
+                                    if (shouldShowDateEditionWarning(result.uid)) {
+                                        view.showDateEditionWarning()
+                                    }
+                                    fieldsFlowable.onNext(true)
                                 }
-                                fieldsFlowable.onNext(true)
+                                ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
+                                    composeList()
+                                    view.hideProgress()
+                                }
+                                ValueStoreImpl.ValueStoreResult.VALUE_NOT_UNIQUE -> {
+                                    view.showInfoDialog(
+                                        view.context.getString(R.string.error),
+                                        view.context.getString(R.string.unique_warning)
+                                    )
+                                    view.hideProgress()
+                                }
+                                ValueStoreImpl.ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
+                                    Timber.tag(TAG)
+                                        .d("${result.uid} is not a data element or attribute")
+                                    view.hideProgress()
+                                }
                             }
-                            ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
-                                composeList()
-                                view.hideProgress()
-                            }
-                            ValueStoreImpl.ValueStoreResult.VALUE_NOT_UNIQUE -> {
-                                view.showInfoDialog(
-                                    view.context.getString(R.string.error),
-                                    view.context.getString(R.string.unique_warning)
-                                )
-                                view.hideProgress()
-                            }
-                            ValueStoreImpl.ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
-                                Timber.tag(TAG).d("${it.uid} is not a data element or attribute")
-                                view.hideProgress()
-                            }
-                        }
+                        } ?: view.hideProgress()
                     },
                     { Timber.tag(TAG).e(it) }
                 )
