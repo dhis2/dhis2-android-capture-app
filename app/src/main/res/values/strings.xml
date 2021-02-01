@@ -787,4 +787,7 @@
     <string name="section_feedback">Feedback</string>
     <string name="section_indicators">Indicators</string>
     <string name="camera_permission_denied">Camera permission is denied.\nYou need to enable it to use this feature.</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="from_gallery">Choose from gallery</string>
+
 </resources>
