@@ -11,9 +11,9 @@ import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
 import org.dhis2.data.filter.FilterPresenter;
+import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
@@ -36,7 +36,6 @@ import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.filters.FiltersAdapter;
-import org.dhis2.utils.filters.ProgramType;
 import org.dhis2.utils.filters.workingLists.TeiFilterToWorkingListItemMapper;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
@@ -83,7 +82,7 @@ public class SearchTEModule {
         return new SearchTEPresenter(view, d2, mapUtils, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapCoordinateFieldToFeatureCollection,
                 new EventToEventUiComponent(), preferenceProvider,
-                teiWorkingListMapper, filterRepository);
+                teiWorkingListMapper, filterRepository, fieldViewModelFactory.fieldProcessor());
     }
 
     @Provides

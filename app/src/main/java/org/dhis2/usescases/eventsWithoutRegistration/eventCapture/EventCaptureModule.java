@@ -65,10 +65,10 @@ public class EventCaptureModule {
     @Provides
     @PerActivity
     EventCaptureContract.EventCaptureRepository provideRepository(FieldViewModelFactory fieldFactory,
-                                                                  FormRepository formRepository,
+                                                                  RuleEngineRepository ruleEngineRepository,
                                                                   D2 d2
     ) {
-        return new EventCaptureRepositoryImpl(fieldFactory, formRepository, eventUid, d2);
+        return new EventCaptureRepositoryImpl(fieldFactory, ruleEngineRepository, eventUid, d2);
     }
 
     @Provides

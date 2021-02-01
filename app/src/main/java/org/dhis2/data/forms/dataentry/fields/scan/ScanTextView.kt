@@ -13,7 +13,6 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.FragmentActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.scan_text_view.view.delete
@@ -47,6 +46,7 @@ class ScanTextView @JvmOverloads constructor(
     private lateinit var inputLayout: TextInputLayout
     private lateinit var descriptionLabel: ImageView
     private lateinit var binding: ViewDataBinding
+    private lateinit var onScanClick: OnScanClick
     private lateinit var onScanResult: (String?) -> Unit
     private lateinit var qrIcon: ImageView
     private lateinit var labelText: TextView
@@ -86,6 +86,7 @@ class ScanTextView @JvmOverloads constructor(
                 viewModel.onItemClick()
             }
         }
+        onScanClick = context as OnScanClick
     }
 
     private fun checkCameraPermission() {
@@ -251,5 +252,9 @@ class ScanTextView @JvmOverloads constructor(
 
     private fun subscribe() {
         (context as ActivityResultObservable).subscribe(this)
+    }
+
+    interface OnScanClick {
+        fun onsScanClicked(intent: Intent, scanTextView: ScanTextView)
     }
 }
