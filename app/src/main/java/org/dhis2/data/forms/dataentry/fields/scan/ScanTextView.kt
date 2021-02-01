@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.ViewDataBinding
+import androidx.fragment.app.FragmentActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.scan_text_view.view.delete
