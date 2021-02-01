@@ -43,14 +43,12 @@ class ScanTextView @JvmOverloads constructor(
     private lateinit var inputLayout: TextInputLayout
     private lateinit var descriptionLabel: ImageView
     private lateinit var binding: ViewDataBinding
-    private lateinit var onScanClick: OnScanClick
     private lateinit var onScanResult: (String?) -> Unit
     private lateinit var qrIcon: ImageView
     private lateinit var labelText: TextView
     var optionSet: String? = null
     private var renderingType: ValueTypeRenderingType? = null
     private lateinit var viewModel: ScanTextViewModel
-    private var isPermissionRequested = false
 
     init {
         init(context)
@@ -84,7 +82,6 @@ class ScanTextView @JvmOverloads constructor(
                 viewModel.onItemClick()
             }
         }
-        onScanClick = context as OnScanClick
     }
 
     private fun goToScanActivity() {
@@ -239,9 +236,5 @@ class ScanTextView @JvmOverloads constructor(
 
     private fun subscribe() {
         (context as ActivityResultObservable).subscribe(this)
-    }
-
-    interface OnScanClick {
-        fun onsScanClicked(intent: Intent, scanTextView: ScanTextView)
     }
 }
