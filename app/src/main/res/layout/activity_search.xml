@@ -211,7 +211,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop"
-                tools:listitem="@layout/item_filter" />
+                tools:listitem="@layout/item_header_filter" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/form_recycler"

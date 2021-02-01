@@ -134,7 +134,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/backdropGuideTop"
-                tools:listitem="@layout/item_filter" />
+                tools:listitem="@layout/item_header_filter" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/eventsLayout"

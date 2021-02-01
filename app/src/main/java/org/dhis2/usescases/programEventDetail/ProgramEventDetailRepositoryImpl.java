@@ -10,6 +10,7 @@ import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.data.dhislogic.DhisMapUtils;
+import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
@@ -28,10 +29,13 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
+import org.hisp.dhis.android.core.event.EventFilter;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +48,7 @@ import io.reactivex.Single;
 public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepository {
 
     private final String programUid;
+    private final FilterPresenter filterPresenter;
     private D2 d2;
     private ProgramEventMapper mapper;
     private MapEventToFeatureCollection mapEventToFeatureCollection;
@@ -51,43 +56,24 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     private DhisMapUtils mapUtils;
 
     ProgramEventDetailRepositoryImpl(String programUid, D2 d2, ProgramEventMapper mapper, MapEventToFeatureCollection mapEventToFeatureCollection, MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
-                                     DhisMapUtils mapUtils) {
+                                     DhisMapUtils mapUtils, FilterPresenter filterPresenter) {
         this.programUid = programUid;
         this.d2 = d2;
         this.mapper = mapper;
         this.mapEventToFeatureCollection = mapEventToFeatureCollection;
         this.mapCoordinateFieldToFeatureCollection = mapCoordinateFieldToFeatureCollection;
         this.mapUtils = mapUtils;
+        this.filterPresenter = filterPresenter;
     }
 
     @NonNull
     @Override
-    public LiveData<PagedList<EventViewModel>> filteredProgramEvents(
-            List<DatePeriod> dateFilter,
-            List<String> orgUnitFilter,
-            List<CategoryOptionCombo> catOptCombList,
-            List<EventStatus> eventStatus,
-            List<State> states,
-            SortingItem sortingItem,
-            boolean assignedToUser) {
+    public LiveData<PagedList<EventViewModel>> filteredProgramEvents() {
 
-        EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid).byDeleted().isFalse();
-        if (!dateFilter.isEmpty())
-            eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
-        if (!orgUnitFilter.isEmpty())
-            eventRepo = eventRepo.byOrganisationUnitUid().in(orgUnitFilter);
-        if (!catOptCombList.isEmpty())
-            eventRepo = eventRepo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptCombList));
-        if (!eventStatus.isEmpty())
-            eventRepo = eventRepo.byStatus().in(eventStatus);
-        if (!states.isEmpty())
-            eventRepo = eventRepo.byState().in(states);
-        if (assignedToUser)
-            eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
-
-        eventRepo = eventRepoSorting(sortingItem, eventRepo);
-
-        DataSource dataSource = eventRepo.withTrackedEntityDataValues().getDataSource().map(event -> mapper.eventToEventViewModel(event));
+        DataSource dataSource =  filterPresenter.filteredEventProgram(program().blockingFirst())
+                .withTrackedEntityDataValues()
+                .getDataSource()
+                .map(event -> mapper.eventToEventViewModel(event));
 
         return new LivePagedListBuilder(new DataSource.Factory() {
             @Override
@@ -99,29 +85,10 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @NonNull
     @Override
-    public Flowable<ProgramEventMapData> filteredEventsForMap(
-            List<DatePeriod> dateFilter,
-            List<String> orgUnitFilter,
-            List<CategoryOptionCombo> catOptCombList,
-            List<EventStatus> eventStatus,
-            List<State> states,
-            boolean assignedToUser
-    ) {
-        EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid).byDeleted().isFalse();
-        if (!dateFilter.isEmpty())
-            eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
-        if (!orgUnitFilter.isEmpty())
-            eventRepo = eventRepo.byOrganisationUnitUid().in(orgUnitFilter);
-        if (!catOptCombList.isEmpty())
-            eventRepo = eventRepo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptCombList));
-        if (!eventStatus.isEmpty())
-            eventRepo = eventRepo.byStatus().in(eventStatus);
-        if (!states.isEmpty())
-            eventRepo = eventRepo.byState().in(states);
-        if (assignedToUser)
-            eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
-
-        return eventRepo.byDeleted().isFalse().withTrackedEntityDataValues().get()
+    public Flowable<ProgramEventMapData> filteredEventsForMap() {
+        return filterPresenter.filteredEventProgram(program().blockingFirst())
+                .withTrackedEntityDataValues()
+                .get()
                 .map(listEvents -> {
                     kotlin.Pair<FeatureCollection, BoundingBox> eventFeatureCollection =
                             mapEventToFeatureCollection.map(listEvents);
@@ -249,6 +216,14 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                     }
                     return hasAccess;
                 });
+    }
+
+    @Override
+    public Single<List<EventFilter>> workingLists() {
+        return d2.eventModule().eventFilters()
+                .withEventDataFilters()
+                .byProgram().eq(programUid)
+                .get();
     }
 
 }

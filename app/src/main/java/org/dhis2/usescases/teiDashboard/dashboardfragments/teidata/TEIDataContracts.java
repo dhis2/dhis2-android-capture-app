@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
+import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -62,6 +63,8 @@ public class TEIDataContracts {
         void openEventCapture(Intent intent);
 
         void showTeiImage(String fileName, String defaultIcon);
+
+        void setFilters(List<FilterItem> filterItems);
 
         Flowable<String> observeStageSelection(Program currentProgram, Enrollment currentEnrollment);
 

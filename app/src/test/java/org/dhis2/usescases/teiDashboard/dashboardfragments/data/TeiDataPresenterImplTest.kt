@@ -8,6 +8,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.schedulers.TestScheduler
+import org.dhis2.data.filter.FilterRepository
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
@@ -39,7 +40,7 @@ class TeiDataPresenterImplTest {
     private val preferences: PreferenceProvider = mock()
     private val analytics: AnalyticsHelper = mock()
     private val filterManager: FilterManager = mock()
-
+    private val filterRepository: FilterRepository = mock()
     private lateinit var teiDataPresenterImpl: TEIDataContracts.Presenter
 
     @Before
@@ -56,7 +57,8 @@ class TeiDataPresenterImplTest {
             schedulers,
             preferences,
             analytics,
-            filterManager
+            filterManager,
+            filterRepository
         )
     }
 

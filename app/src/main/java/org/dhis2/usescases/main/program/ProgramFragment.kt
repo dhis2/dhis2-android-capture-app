@@ -113,7 +113,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
     override fun renderError(message: String) {
         if (isAdded && activity != null) {
-            AlertDialog.Builder(activity!!)
+            AlertDialog.Builder(requireActivity())
                 .setPositiveButton(android.R.string.ok, null)
                 .setTitle(getString(R.string.error))
                 .setMessage(message)
@@ -161,7 +161,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     }
 
     override fun clearFilters() {
-        (activity as MainActivity).adapter?.notifyDataSetChanged()
+        (activity as MainActivity).newAdapter.notifyDataSetChanged()
     }
 
     override fun navigateTo(program: ProgramViewModel) {

@@ -16,6 +16,7 @@ import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.Date;
@@ -25,6 +26,7 @@ import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.

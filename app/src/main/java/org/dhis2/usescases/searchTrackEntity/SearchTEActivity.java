@@ -77,6 +77,7 @@ import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.customviews.ScanTextView;
+import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.Filters;
 import org.dhis2.utils.filters.FiltersAdapter;
@@ -214,12 +215,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             }
             return true;
         });
-
-        filtersAdapter.addEnrollmentStatus();
-        filtersAdapter.addEventStatus();
         try {
             binding.filterRecyclerLayout.setAdapter(filtersAdapter);
-
         } catch (Exception e) {
             Timber.e(e);
         }
@@ -350,7 +347,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         teiMapManager.onResume();
 
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
-        filtersAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -370,6 +366,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         FilterManager.getInstance().clearEnrollmentStatus();
         FilterManager.getInstance().clearEventStatus();
         FilterManager.getInstance().clearEnrollmentDate();
+        FilterManager.getInstance().clearWorkingList();
         FilterManager.getInstance().clearSorting();
 
         super.onDestroy();
@@ -605,6 +602,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     setFabIcon(false);
             });
         }
+        updateFilters(FilterManager.getInstance().getTotalFilters());
     }
 
     @Override
@@ -649,15 +647,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((Program) adapterView.getItemAtPosition(pos - 1));
-                    String enrollmentDateLabel = selectedProgram.enrollmentDateLabel();
-                    filtersAdapter.addEnrollmentDate(enrollmentDateLabel != null ? enrollmentDateLabel : getString(R.string.enrollment_date));
                 } else if (programs.size() == 1 && pos != 0) {
                     presenter.setProgram(programs.get(0));
-                    String enrollmentDateLabel = programs.get(0).enrollmentDateLabel();
-                    filtersAdapter.addEnrollmentDate(enrollmentDateLabel != null ? enrollmentDateLabel : getString(R.string.enrollment_date));
                 } else {
                     presenter.setProgram(null);
-                    filtersAdapter.removeEnrollmentDate();
                 }
             }
 
@@ -692,16 +685,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 binding.programSpinner.setSelection(i + 1);
             }
         }
-    }
-
-    @Override
-    public void showAssignmentFilter() {
-        filtersAdapter.addAssignedToMe();
-    }
-
-    @Override
-    public void hideAssignmentFilter() {
-        filtersAdapter.removeAssignedToMe();
     }
 
     @Override
@@ -852,6 +835,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         initSet.applyTo(binding.backdropLayout);
     }
 
+    @Override
+    public void setFilters(List<FilterItem> filtersToDisplay) {
+        filtersAdapter.submitList(filtersToDisplay);
+    }
+
     private void setFabVisibility(boolean show, boolean onNavBar) {
         binding.enrollmentButton.animate()
                 .setDuration(500)
@@ -878,11 +866,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void clearFilters() {
         if (switchOpenClose == 0) {
-            FilterManager.getInstance().clearAllFilters();
             filtersAdapter.notifyDataSetChanged();
+            FilterManager.getInstance().clearAllFilters();
         } else
             presenter.onClearClick();
-
     }
 
     @Override
@@ -977,6 +964,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
         animations.endMapLoading(binding.mapCarousel);
         binding.toolbarProgress.hide();
+        updateFilters(FilterManager.getInstance().getTotalFilters());
     }
 
     private void updateCarousel(List<CarouselItemModel> allItems) {
