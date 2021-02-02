@@ -26,6 +26,6 @@ class JsonChecker {
     }
 
     private fun isAJson(json: String): Boolean {
-        return json.indexOfAny(charArrayOf('[', ']', '{', '}', '"')) >= 0
+        return json.indexOfAny(charArrayOf('{', '}')) >= 0
     }
 }
