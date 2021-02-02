@@ -677,4 +677,14 @@ public class Bindings {
     public static void setFilterArrow(View view, Filters openFilter, Filters filterType) {
         view.animate().scaleY(openFilter != filterType ? 1 : -1).setDuration(200).start();
     }
+
+    @BindingAdapter(value = {"dataSetStatus"})
+    public static void setDataSetStatusIcon(ImageView view, Boolean isComplete) {
+        view.setImageDrawable(
+                AppCompatResources.getDrawable(
+                        view.getContext(),
+                        isComplete ? R.drawable.ic_event_status_complete : R.drawable.ic_event_status_open
+                )
+        );
+    }
 }
