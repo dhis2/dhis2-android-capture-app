@@ -13,4 +13,5 @@
     <string name="feedback_tab_hnqis_all">"所有"</string>
     <string name="feedback_tab_hnqis_critical">"危急"</string>
     <string name="feedback_tab_hnqis_non_critical">"不重要"</string>
+    <string name="feedback_malformed_error">"**錯誤**：數據元素的反饋格式錯誤 %s"</string>
 </resources>

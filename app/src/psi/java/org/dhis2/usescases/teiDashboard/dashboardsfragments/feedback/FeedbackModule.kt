@@ -28,7 +28,8 @@ import org.hisp.dhis.rules.RuleExpressionEvaluator
 class FeedbackModule(
     private val programUid: String,
     private val teiUid: String,
-    private val enrollmentUid: String
+    private val enrollmentUid: String,
+    private val context: Context
 ) {
     @Provides
     @PerFragment
@@ -77,7 +78,7 @@ class FeedbackModule(
     @Provides
     @PerFragment
     fun provideValuesRepository(d2: D2): ValuesRepository {
-        return ValuesD2Repository(d2)
+        return ValuesD2Repository(d2, context)
     }
 
     @Provides
