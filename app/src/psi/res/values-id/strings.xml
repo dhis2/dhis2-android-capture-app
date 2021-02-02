@@ -13,4 +13,5 @@
     <string name="feedback_tab_hnqis_all">"Semua"</string>
     <string name="feedback_tab_hnqis_critical">"Kritis"</string>
     <string name="feedback_tab_hnqis_non_critical">"Tidak Kritis"</string>
+    <string name="feedback_malformed_error">"**Error**: Masukan salah format untuk elemen data %s"</string>
 </resources>

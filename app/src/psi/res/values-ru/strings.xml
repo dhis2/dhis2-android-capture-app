@@ -13,4 +13,5 @@
     <string name="feedback_tab_hnqis_all">"Все"</string>
     <string name="feedback_tab_hnqis_critical">"Критический"</string>
     <string name="feedback_tab_hnqis_non_critical">"Не критично"</string>
+    <string name="feedback_malformed_error">"**Ошибка**: неверный ответ для элемента данных %s"</string>
 </resources>

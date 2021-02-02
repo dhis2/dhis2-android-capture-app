@@ -13,4 +13,5 @@
     <string name="feedback_tab_hnqis_all">"Všechno"</string>
     <string name="feedback_tab_hnqis_critical">"Kritický"</string>
     <string name="feedback_tab_hnqis_non_critical">"Není kritický"</string>
+    <string name="feedback_malformed_error">"**Chyba**: Poškozený JSON zpětné vazby pro datový prvek %s"</string>
 </resources>

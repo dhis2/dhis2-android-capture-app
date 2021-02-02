@@ -13,4 +13,5 @@
     <string name="feedback_tab_hnqis_all">"Todas"</string>
     <string name="feedback_tab_hnqis_critical">"Críticas"</string>
     <string name="feedback_tab_hnqis_non_critical">"No Críticas"</string>
+    <string name="feedback_malformed_error">"**Error**: json de retroalimentación con formato incorrecto para el elemento de datos %s"</string>
 </resources>

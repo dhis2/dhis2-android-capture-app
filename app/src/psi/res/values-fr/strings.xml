@@ -13,4 +13,5 @@
     <string name="feedback_tab_hnqis_all">"Toute"</string>
     <string name="feedback_tab_hnqis_critical">"Critique"</string>
     <string name="feedback_tab_hnqis_non_critical">"Pas critique"</string>
+    <string name="feedback_malformed_error">"**Erreur**: json de retour incorrect pour l'élément de données %s"</string>
 </resources>

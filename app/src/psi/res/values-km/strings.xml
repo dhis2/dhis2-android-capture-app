@@ -13,4 +13,5 @@
     <string name="feedback_tab_hnqis_all">"ទាំងអស់"</string>
     <string name="feedback_tab_hnqis_critical">"សំខាន់"</string>
     <string name="feedback_tab_hnqis_non_critical">"មិនសំខាន់"</string>
+    <string name="feedback_malformed_error">"**កំហុស**៖ មតិប្រតិកម្មមិនត្រឹមត្រូវសម្រាប់ធាតុទិន្នន័យ %s"</string>
 </resources>

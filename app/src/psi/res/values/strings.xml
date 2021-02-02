@@ -13,5 +13,5 @@
     <string name="feedback_tab_hnqis_all">"All"</string>
     <string name="feedback_tab_hnqis_critical">"Critical"</string>
     <string name="feedback_tab_hnqis_non_critical">"Non Critical"</string>
-
+    <string name="feedback_malformed_error">"**Error** : Malformed feedback json for Data Element %s"</string>
 </resources>

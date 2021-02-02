@@ -13,4 +13,5 @@
     <string name="feedback_tab_hnqis_all">"Todos"</string>
     <string name="feedback_tab_hnqis_critical">"Crítico"</string>
     <string name="feedback_tab_hnqis_non_critical">"Não Crítico"</string>
+    <string name="feedback_malformed_error">"**Erro**: feedback malformado para o elemento de dados %s"</string>
 </resources>
