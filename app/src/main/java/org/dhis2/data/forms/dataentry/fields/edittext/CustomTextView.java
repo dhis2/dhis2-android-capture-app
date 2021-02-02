@@ -237,6 +237,7 @@ public class CustomTextView extends FieldLayout {
                     editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
                     clearButton.setOnClickListener(v -> {
                         editText.getText().clear();
+                        sendAction();
                         updateDeleteVisibility(findViewById(R.id.clear_button));
                     });
                     break;
