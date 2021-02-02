@@ -1,11 +1,9 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
-import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
@@ -22,7 +20,6 @@ import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.Flowable;
-import io.reactivex.Single;
 
 import static org.dhis2.data.dhislogic.AuthoritiesKt.AUTH_DATAVALUE_ADD;
 
@@ -37,18 +34,8 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
     }
 
     @Override
-    public Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos() {
-        return d2.dataSetModule().dataSets().uid(dataSetUid).get()
-                .filter(program -> program.categoryCombo() != null)
-                .flatMapSingle(program -> d2.categoryModule().categoryCombos().uid(program.categoryCombo().uid()).get())
-                .filter(categoryCombo -> !categoryCombo.isDefault())
-                .flatMapSingle(categoryCombo -> Single.zip(
-                        d2.categoryModule().categoryCombos()
-                                .uid(categoryCombo.uid()).get(),
-                        d2.categoryModule().categoryOptionCombos()
-                                .byCategoryComboUid().eq(categoryCombo.uid()).get(),
-                        Pair::create
-                ));
+    public String getDataSetUid() {
+        return dataSetUid;
     }
 
     @Override
@@ -145,7 +132,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
     }
 
-    private boolean hasDataValueAuthority(){
+    private boolean hasDataValueAuthority() {
         return !d2.userModule().authorities().byName().eq(AUTH_DATAVALUE_ADD).blockingIsEmpty();
     }
 

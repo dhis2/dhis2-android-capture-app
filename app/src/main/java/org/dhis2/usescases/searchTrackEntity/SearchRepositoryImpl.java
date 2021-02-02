@@ -33,6 +33,7 @@ import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -59,6 +60,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceCreateProjection;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository;
@@ -148,6 +150,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (!searchParametersModel.equals(savedSearchParameters) || !FilterManager.getInstance().sameFilters(savedFilters)) {
             trackedEntityInstanceQuery = getFilteredRepository(searchParametersModel);
         } else {
+            getFilteredRepository(searchParametersModel);
             allowCache = true;
         }
 
@@ -618,6 +621,17 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .blockingGet();
 
         return new EventViewModel(EventViewModelType.EVENT, stage, event, 0, null, true, true, organisationUnit.displayName(), null, null, false, false, false, false);
+    }
+
+    @Override
+    public Observable<D2Progress> downloadTei(String teiUid) {
+        return Observable.merge(
+                d2.trackedEntityModule().trackedEntityInstanceDownloader()
+                        .byUid().in(Collections.singletonList(teiUid))
+                        .overwrite(true)
+                        .download(),
+                d2.fileResourceModule().download()
+        );
     }
 
     private List<TrackedEntityInstance> filterDeleted(List<TrackedEntityInstance> teis) {

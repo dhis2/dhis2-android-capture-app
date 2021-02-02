@@ -25,9 +25,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.material.tabs.TabLayout;
-
 import org.dhis2.App;
+import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
@@ -183,21 +183,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         });
     }
 
-    private void setBadgeColors() {
-        /*if (tab.getPosition() == getLastTabPosition()) {
-            BadgeDrawable badge = tab.getOrCreateBadge();
-            if (badge.hasNumber() && badge.getNumber() > 0) {
-                badge.setBackgroundColor(Color.WHITE);
-            }
-        }*/
-        /*if (tab.getPosition() == getLastTabPosition()) {
-            BadgeDrawable badge = tab.getOrCreateBadge();
-            if (badge.hasNumber() && badge.getNumber() > 0) {
-                badge.setBackgroundColor(ContextCompat.getColor(TeiDashboardMobileActivity.this, R.color.unselected_tab_badge_color));
-            }
-        }*/
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -209,7 +194,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             }
         }
         currentOrientation = OrientationUtilsKt.isLandscape() ? 1 : 0;
-
 
         if (adapter == null) {
             restoreAdapter(programUid);
@@ -473,6 +457,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         if (programTheme != -1) {
             presenter.saveProgramTheme(programTheme);
             binding.toolbar.setBackgroundColor(programColor);
+            binding.navigationBar.setIconsColor(programColor);
         } else {
             presenter.removeProgramTheme();
             int colorPrimary;
@@ -492,6 +477,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     break;
             }
             binding.toolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
+            binding.navigationBar.setIconsColor(ContextCompat.getColor(this, colorPrimary));
         }
 
         binding.executePendingBindings();

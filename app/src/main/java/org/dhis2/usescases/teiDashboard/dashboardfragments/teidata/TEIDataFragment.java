@@ -42,6 +42,7 @@ import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
+import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
@@ -152,16 +153,12 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
         binding.setPresenter(presenter);
-        activity.observeGrouping().observe(this, group -> {
+        activity.observeGrouping().observe(getViewLifecycleOwner(), group -> {
             binding.setIsGrouping(group);
             presenter.onGroupingChanged(group);
         });
-        activity.observeFilters().observe(this, showFilters -> showHideFilters(showFilters));
-        activity.updatedEnrollment().observe(this, enrollmentUid -> updateEnrollment(enrollmentUid));
-        if (presenter.hasAssignment()) {
-            filtersAdapter.addAssignedToMe();
-        }
-        filtersAdapter.addEventStatus();
+        activity.observeFilters().observe(getViewLifecycleOwner(), showFilters -> showHideFilters(showFilters));
+        activity.updatedEnrollment().observe(getViewLifecycleOwner(), enrollmentUid -> updateEnrollment(enrollmentUid));
 
         try {
             binding.filterLayout.setAdapter(filtersAdapter);
@@ -282,11 +279,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 activity.getPresenter().init();
             }
             if (requestCode == FilterManager.OU_TREE) {
-                filtersAdapter.notifyDataSetChanged();
                 activity.presenter.setTotalFilters();
                 adapter.notifyDataSetChanged();
             }
         }
+    }
+
+    @Override
+    public void setFilters(List<FilterItem> filterItems){
+        filtersAdapter.submitList(filterItems);
     }
 
     @Override

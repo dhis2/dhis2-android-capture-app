@@ -19,7 +19,7 @@ import java.util.Locale;
 public abstract class RadioButtonViewModel extends FieldViewModel {
 
     public enum Value {
-        CHECKED("true"), CHECKED_NO("false"), UNCHECKED("");
+        CHECKED("true"), CHECKED_NO("false"), UNCHECKED(""), NO("no"), YES("yes");
 
         @NonNull
         private final String value;
@@ -50,11 +50,11 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
                                                     Boolean editable, @Nullable String description, ObjectStyle objectStyle, ValueTypeRenderingType renderingType) {
         if (value == null) {
             return new AutoValue_RadioButtonViewModel(id, label, null, section, null, editable, null, null, null, description, objectStyle, null, mandatory, type, renderingType);
-        } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED.toString())) {
+        } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED.toString()) || value.toLowerCase(Locale.US).equals(Value.YES.toString())) {
             return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED.toString(), section, null, editable, null, null, null, description, objectStyle, null, mandatory, type, renderingType);
         } else if (value.toLowerCase(Locale.US).equals(Value.UNCHECKED.toString())) {
             return new AutoValue_RadioButtonViewModel(id, label, Value.UNCHECKED.toString(), section, null, editable, null, null, null, description, objectStyle, null, mandatory, type, renderingType);
-        } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED_NO.toString())) {
+        } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED_NO.toString()) || value.toLowerCase(Locale.US).equals(Value.NO.toString())) {
             return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED_NO.toString(), section, null, editable, null, null, null, description, objectStyle, null, mandatory, type, renderingType);
         } else {
             throw new IllegalArgumentException("Unsupported value: " + value);

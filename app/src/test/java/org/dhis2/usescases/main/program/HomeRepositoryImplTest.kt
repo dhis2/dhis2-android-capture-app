@@ -1,5 +1,6 @@
 package org.dhis2.usescases.main.program
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.doReturnConsecutively
@@ -7,6 +8,8 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Single
+import io.reactivex.android.plugins.RxAndroidPlugins
+import io.reactivex.schedulers.Schedulers
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
 import org.dhis2.data.filter.FilterPresenter
@@ -25,11 +28,15 @@ import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
 
 class HomeRepositoryImplTest {
+    @Rule
+    @JvmField
+    var instantExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var homeRepository: HomeRepository
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
@@ -42,6 +49,8 @@ class HomeRepositoryImplTest {
 
     @Before
     fun setUp() {
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
+
         homeRepository = HomeRepositoryImpl(
             d2,
             filterPresenter,
@@ -86,6 +95,7 @@ class HomeRepositoryImplTest {
     @After
     fun clear() {
         FilterManager.getInstance().clearAllFilters()
+        RxAndroidPlugins.reset()
     }
 
     @Test

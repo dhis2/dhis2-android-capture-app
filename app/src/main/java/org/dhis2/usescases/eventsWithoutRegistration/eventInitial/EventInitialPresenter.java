@@ -102,18 +102,22 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         this.programId = programId;
         this.programStageId = programStageId;
 
+        view.setAccessDataWrite(
+                eventInitialRepository.accessDataWrite(programId).blockingFirst()
+        );
+
         if (eventId != null) {
             compositeDisposable
                     .add(
-                            Flowable
-                                    .zip(eventInitialRepository.event(eventId).toFlowable(BackpressureStrategy.LATEST),
-                                            eventInitialRepository.getProgramWithId(programId)
-                                                    .toFlowable(BackpressureStrategy.LATEST),
-                                            eventInitialRepository.catCombo(programId).toFlowable(BackpressureStrategy.LATEST),
-                                            eventInitialRepository.programStageForEvent(eventId),
-                                            eventInitialRepository.getOptionsFromCatOptionCombo(eventId),
-                                            eventInitialRepository.orgUnits(programId).toFlowable(BackpressureStrategy.LATEST),
-                                            Sextet::create)
+                            Flowable.zip(
+                                    eventInitialRepository.event(eventId).toFlowable(BackpressureStrategy.LATEST),
+                                    eventInitialRepository.getProgramWithId(programId)
+                                            .toFlowable(BackpressureStrategy.LATEST),
+                                    eventInitialRepository.catCombo(programId).toFlowable(BackpressureStrategy.LATEST),
+                                    eventInitialRepository.programStageForEvent(eventId),
+                                    eventInitialRepository.getOptionsFromCatOptionCombo(eventId),
+                                    eventInitialRepository.orgUnits(programId).toFlowable(BackpressureStrategy.LATEST),
+                                    Sextet::create)
                                     .subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui())
                                     .subscribe(sextet -> {
                                         this.program = sextet.val1();
@@ -152,15 +156,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                             organisationUnit -> view.setOrgUnit(organisationUnit.uid(), organisationUnit.displayName()),
                             Timber::d));
         }
-
-        compositeDisposable.add(
-                eventInitialRepository.accessDataWrite(programId)
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                view::setAccessDataWrite,
-                                Timber::e
-                        ));
     }
 
     @VisibleForTesting
@@ -446,9 +441,9 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     @Override
     public void setChangingCoordinates(boolean changingCoordinates) {
-        if(changingCoordinates){
+        if (changingCoordinates) {
             preferences.setValue(Preference.EVENT_COORDINATE_CHANGED, true);
-        }else{
+        } else {
             preferences.removeValue(Preference.EVENT_COORDINATE_CHANGED);
         }
     }

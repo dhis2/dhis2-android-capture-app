@@ -2,9 +2,11 @@ package org.dhis2.usescases.datasets.datasetDetail;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.filters.FilterManager;
 
+import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
 
@@ -14,23 +16,38 @@ public class DataSetDetailPresenter {
     private DataSetDetailRepository dataSetDetailRepository;
     private SchedulerProvider schedulerProvider;
     private FilterManager filterManager;
+    private FilterRepository filterRepository;
 
     CompositeDisposable disposable;
 
     public DataSetDetailPresenter(DataSetDetailView view,
                                   DataSetDetailRepository dataSetDetailRepository,
                                   SchedulerProvider schedulerProvider,
-                                  FilterManager filterManager) {
+                                  FilterManager filterManager,
+                                  FilterRepository filterRepository) {
 
         this.view = view;
         this.dataSetDetailRepository = dataSetDetailRepository;
         this.schedulerProvider = schedulerProvider;
         this.filterManager = filterManager;
+        this.filterRepository = filterRepository;
         disposable = new CompositeDisposable();
     }
 
     public void init() {
         getOrgUnits();
+
+        disposable.add(
+                filterManager.asFlowable().startWith(filterManager)
+                        .flatMap(filterManager -> Flowable.just(filterRepository.dataSetFilters(dataSetDetailRepository.getDataSetUid())))
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(filterItems -> {
+                                    view.setFilters(filterItems);
+                                },
+                                Timber::d
+                        )
+        );
 
         disposable.add(
                 filterManager.asFlowable()
@@ -58,16 +75,6 @@ public class DataSetDetailPresenter {
                                 periodRequest -> view.showPeriodRequest(periodRequest.getFirst()),
                                 Timber::e
                         ));
-
-        disposable.add(
-                dataSetDetailRepository.catOptionCombos()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                catCombos -> view.setCatOptionComboFilter(catCombos),
-                                Timber::e
-                        )
-        );
 
         disposable.add(
                 dataSetDetailRepository.canWriteAny()

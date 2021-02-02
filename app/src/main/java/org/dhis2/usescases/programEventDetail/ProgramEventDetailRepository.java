@@ -14,9 +14,11 @@ import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.event.EventFilter;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter;
 
 import java.util.List;
 
@@ -28,23 +30,10 @@ import kotlin.Triple;
 public interface ProgramEventDetailRepository {
 
     @NonNull
-    LiveData<PagedList<EventViewModel>> filteredProgramEvents(
-            List<DatePeriod> dateFilter,
-            List<String> orgUnitFilter,
-            List<CategoryOptionCombo> catOptionComboUid,
-            List<EventStatus> eventStatus,
-            List<State> states,
-            SortingItem sortingItem,
-            boolean assignedToUser);
+    LiveData<PagedList<EventViewModel>> filteredProgramEvents();
 
     @NonNull
-    Flowable<ProgramEventMapData> filteredEventsForMap(
-            List<DatePeriod> dateFilter,
-            List<String> orgUnitFilter,
-            List<CategoryOptionCombo> catOptionComboUid,
-            List<EventStatus> eventStatus,
-            List<State> states,
-            boolean assignedToUser);
+    Flowable<ProgramEventMapData> filteredEventsForMap();
 
     @NonNull
     Observable<Program> program();
@@ -62,4 +51,6 @@ public interface ProgramEventDetailRepository {
     boolean hasAssignment();
 
     CategoryOptionCombo getCatOptCombo(String selectedCatOptionCombo);
+
+    Single<List<EventFilter>> workingLists();
 }

@@ -144,4 +144,8 @@ class SearchTeiRobot : BaseRobot() {
         onView(withId(R.id.map_carousel))
             .check(matches(hasItem(hasDescendant(withText(firstName)))))
     }
+
+    fun clickOnSearchFilter() {
+        onView(withId(R.id.search_filter)).perform(click())
+    }
 }

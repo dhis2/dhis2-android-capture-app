@@ -12,11 +12,11 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
 import org.dhis2.utils.filters.sorting.SortingItem;
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.Date;
@@ -26,6 +26,7 @@ import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -60,4 +61,6 @@ public interface SearchRepository {
     List<EventViewModel> getEventsForMap(List<SearchTeiModel> teis);
 
     EventViewModel getEventInfo(String enrollmentUid);
+
+    Observable<D2Progress> downloadTei(String teiUid);
 }

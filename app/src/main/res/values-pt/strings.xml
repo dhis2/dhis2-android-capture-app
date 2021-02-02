@@ -15,7 +15,6 @@
     <string name="no_reserved_values">Não há mais valores reservados. Entre em contato com o administrador do sistema</string>
     <string name="no_reserved_values_connection">Não há mais valores reservados. Conecte-se à rede para recarregá-los</string>
     <string name="errors">erros</string>
-    <string name="something_wrong">Ocorreu algo de errado</string>
     <!-- SyncService strings: -->
     <string name="sync_now">Sincronize agora</string>
     <string name="sync_text">Sincronizando com o servidor</string>
@@ -101,8 +100,6 @@
     <string name="cancelled">Cancelado</string>
     <string name="re_open">reabrir</string>
     <string name="activate">Activar</string>
-    <string name="active">Activo</string>
-
     <!-- State -->
     <string name="state_synced">Sincronizar</string>
     <string name="state_to_post">Para enviar</string>
@@ -510,8 +507,6 @@
     <string name="no_conflicts_synced_message">Você esta atualizado! Todos os seus dados são enviados para o servidor.</string>
     <string name="relationship_error_recursive">Você não pode relacionar um registro consigo mesmo</string>
     <string name="unblock_session">Desbloquear sessão</string>
-    <string name="data_set_complete">Completo</string>
-    <string name="data_set_open">Abrir</string>
     <string name="unsupported_value_type">Tipo de valor não suportado</string>
     <string name="change_calendar_view">Alterar visualização da agenda</string>
     <string name="data_every_fifteen_minutes">15 minutos</string>
@@ -592,7 +587,6 @@
     <string name="filters_disabled">Nenhum filtro aplicado</string>
     <string name="filters_title_period">Período</string>
     <string name="filters_title_org_unit">Unidade Org.</string>
-    <string name="filters_title_sorting">Ordem</string>
     <string name="filters_title_status">Estado</string>
     <string name="filters_title_state">Sincronizar</string>
     <string name="filters_title_assigned">Atribuído a mim</string>
@@ -682,23 +676,4 @@
     <string name="filter_sync_not_synced">Não sincronizado</string>
     <string name="filter_sync_error">Erro de Sincronização</string>
     <string name="filter_sync_sms">SMS sincronizado</string>
-    <string name="dataset_overview">Detalhes</string>
-    <string name="dataset_comments">Comentarios</string>
-    <string name="name">Nome</string>
-    <string name="formula">Fórmula</string>
-    <string name="filters_title_event_status">Estado do evento </string>
-    <string name="filters_title_enrollment_status">Status da inscrição</string>
-    <string name="enrollment_date">Data de inscrição</string>
-    <string name="action_apply">Aplicar</string>
-    <string name="enrollment_status_active">Abrir</string>
-    <string name="enrollment_status_completed">Completo</string>
-    <string name="enrollment_status_cancelled">Cancelado</string>
-    <string name="no_data">Não ha dados</string>
-    <string name="event_data">Dados</string>
-    <string name="are_you_sure">Tem certeza?</string>
-    <string name="filters_title_date">Data</string>
-    <string name="filters_title_event_date">Data de incidente</string>
-    <string name="dataset_data">Dados</string>
-    <string name="customactivityoncrash_error_activity_restart_app">Voltar</string>
-    <string name="customactivityoncrash_error_activity_error_details_close">Fechar</string>
-</resources>
+    </resources>
