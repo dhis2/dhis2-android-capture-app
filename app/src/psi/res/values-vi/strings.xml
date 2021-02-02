@@ -8,4 +8,9 @@
     <string name="unexpected_error_message">Một lỗi không mong muốn đã xảy ra. Xem lại cấu hình của bạn hoặc liên hệ với quản trị viên của bạn</string>
     <string name="feedback_show_only_failed">Chỉ hiển thị không thành công</string>
     <string name="feedback_url">"Xem phản hồi đầy đủ tại:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"Bvà chỉ báo"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"Bằng kỹ thuật làa"</string>
+    <string name="feedback_tab_hnqis_all">"Tất cả"</string>
+    <string name="feedback_tab_hnqis_critical">"Bạo kích"</string>
+    <string name="feedback_tab_hnqis_non_critical">"Không quan trọng"</string>
 </resources>

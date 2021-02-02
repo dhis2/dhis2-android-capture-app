@@ -8,4 +8,9 @@
     <string name="unexpected_error_message">"Une erreur imprévue s'est produite. Vérifiez votre configuration ou contactez votre administrateur"</string>
     <string name="feedback_show_only_failed">Afficher seulement échoué</string>
     <string name="feedback_url">"Voir les commentaires complets sur:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"Par indicateur"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"Par domaine technique"</string>
+    <string name="feedback_tab_hnqis_all">"Toute"</string>
+    <string name="feedback_tab_hnqis_critical">"Critique"</string>
+    <string name="feedback_tab_hnqis_non_critical">"Pas critique"</string>
 </resources>

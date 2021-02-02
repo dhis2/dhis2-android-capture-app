@@ -8,4 +8,9 @@
     <string name="unexpected_error_message">發生意外的錯誤。 查看您的配置或與管理員聯繫</string>
     <string name="feedback_show_only_failed">只顯示失敗</string>
     <string name="feedback_url">"查看完整的反饋意見："</string>
+    <string name="feedback_tab_rdqa_by_indicator">"按指標"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"按技術領域"</string>
+    <string name="feedback_tab_hnqis_all">"所有"</string>
+    <string name="feedback_tab_hnqis_critical">"危急"</string>
+    <string name="feedback_tab_hnqis_non_critical">"不重要"</string>
 </resources>

@@ -8,4 +8,9 @@
     <string name="unexpected_error_message">erjadi sebuah kesalahan yang tidak diharapkan. Tinjau konfigurasi atau kontak Anda dengan administrator Anda</string>
     <string name="feedback_show_only_failed">Pertunjukan hanya gagal</string>
     <string name="feedback_url">"Lihat masukan lengkapnya di:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"Dengan indikator"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"Berdasarkan bidang teknis"</string>
+    <string name="feedback_tab_hnqis_all">"Semua"</string>
+    <string name="feedback_tab_hnqis_critical">"Kritis"</string>
+    <string name="feedback_tab_hnqis_non_critical">"Tidak Kritis"</string>
 </resources>
