@@ -3,8 +3,8 @@ package dhis2.org.analytics.charts.providers
 import dhis2.org.analytics.charts.data.GraphPoint
 import dhis2.org.analytics.charts.data.NutritionChartType
 import dhis2.org.analytics.charts.data.SerieData
-import org.hisp.dhis.rules.functions.ZScoreTable
 import java.util.Date
+import org.hisp.dhis.rules.functions.ZScoreTable
 
 class RuleEngineNutritionDataProviderImpl : NutritionDataProvider {
     override fun getNutritionData(nutritionChartType: NutritionChartType): List<SerieData> {
@@ -41,6 +41,5 @@ class RuleEngineNutritionDataProviderImpl : NutritionDataProvider {
         return nutritionData.map {
             SerieData("", it)
         }
-
     }
 }

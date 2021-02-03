@@ -4,14 +4,16 @@ import android.content.Context
 import android.view.ViewGroup
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.components.LegendEntry
 import com.github.mikephil.charting.components.XAxis
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.AgeInMonthLabelFormatter
+import dhis2.org.analytics.charts.providers.NutritionColorsProviderImpl
 import dhis2.org.analytics.charts.renderers.NutritionRenderer
 
 class GraphToNutritionChart {
     fun map(context: Context, graph: Graph): LineChart {
-        val lineData = GraphToNutritionData().map(graph)
+        val lineData = GraphToNutritionData(NutritionColorsProviderImpl()).map(graph)
         return LineChart(context).apply {
             description.isEnabled = false
             isDragEnabled = true
@@ -48,8 +50,23 @@ class GraphToNutritionChart {
             animateX(DEFAULT_ANIM_TIME)
 
             legend.apply {
-                form = Legend.LegendForm.LINE
+                val legendDataSet = lineData.dataSets[lineData.dataSets.size - 1]
+                setCustom(
+                    arrayListOf(
+                        LegendEntry(
+                            legendDataSet.label,
+                            Legend.LegendForm.LINE,
+                            legendDataSet.formSize,
+                            legendDataSet.formLineWidth,
+                            legendDataSet.formLineDashEffect,
+                            legendDataSet.color
+                        ).apply {
+                            horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+                        }
+                    )
+                )
             }
+            extraBottomOffset = 10f
 
             data = lineData
 

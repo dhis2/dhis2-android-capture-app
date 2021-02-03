@@ -66,7 +66,6 @@ class GraphToLineChart {
 
             layoutParams =
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DEFAULT_CHART_HEIGHT)
-
         }
     }
 }

@@ -17,7 +17,8 @@ enum class SectionType {
 sealed class AnalyticsModel
 
 data class SectionTitle(
-    val title: String, val sectionType: SectionType = SectionType.MAIN
+    val title: String,
+    val sectionType: SectionType = SectionType.MAIN
 ) : AnalyticsModel() {
     fun textStyle(): Int {
         return if (sectionType == SectionType.MAIN) {
@@ -42,6 +43,18 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             context = view.context,
             menu = R.menu.chart_menu,
             anchor = view,
+            onMenuInflated = { popupMenu ->
+                val idToHide = when (observableChartType.get()) {
+                    ChartType.LINE_CHART -> R.id.showLineGraph
+                    ChartType.BAR_CHART -> R.id.showBarGraph
+                    ChartType.TABLE -> R.id.showTableGraph
+                    ChartType.SINGLE_VALUE -> R.id.showTableValue
+                    else -> -1
+                }
+                if (idToHide != -1) {
+                    popupMenu.menu.findItem(idToHide).isVisible = false
+                }
+            },
             onMenuItemClicked = { itemId ->
                 observableChartType.set(
                     when (itemId) {

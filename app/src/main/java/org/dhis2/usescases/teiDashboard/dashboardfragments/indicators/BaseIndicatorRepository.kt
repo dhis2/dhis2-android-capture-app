@@ -171,7 +171,7 @@ abstract class BaseIndicatorRepository(
                 addAll(
                     ruleIndicators.filter {
                         it is IndicatorModel &&
-                                it.location == LOCATION_INDICATOR_WIDGET
+                            it.location == LOCATION_INDICATOR_WIDGET
                     }
                 )
             }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }

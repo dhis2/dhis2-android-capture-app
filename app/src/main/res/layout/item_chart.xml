@@ -5,6 +5,10 @@
 
     <data>
 
+        <import type="dhis2.org.analytics.charts.data.ChartType" />
+
+        <import type="android.view.View" />
+
         <variable
             name="chartModel"
             type="org.dhis2.data.analytics.ChartModel" />
@@ -45,6 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{(view)->chartModel.showVisualizationOptions(view)}"
+            android:visibility="@{chartModel.graph.chartType == ChartType.NUTRITION ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="@id/chart_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

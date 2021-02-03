@@ -9,8 +9,8 @@ import dhis2.org.analytics.charts.ChartsRepositoryImpl
 import dhis2.org.analytics.charts.DhisAnalyticCharts
 import dhis2.org.analytics.charts.providers.NutritionDataProvider
 import dhis2.org.analytics.charts.providers.RuleEngineNutritionDataProviderImpl
-import org.hisp.dhis.android.core.D2
 import javax.inject.Singleton
+import org.hisp.dhis.android.core.D2
 
 @Singleton
 @Component(

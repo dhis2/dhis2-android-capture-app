@@ -7,13 +7,13 @@ import dhis2.org.analytics.charts.data.NutritionChartType
 import dhis2.org.analytics.charts.data.SerieData
 import dhis2.org.analytics.charts.data.SettingsAnalyticModel
 import dhis2.org.analytics.charts.providers.NutritionDataProvider
+import java.text.SimpleDateFormat
+import java.util.Date
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramIndicator
-import java.text.SimpleDateFormat
-import java.util.Date
 
 class ChartsRepositoryImpl(
     private val d2: D2,
@@ -142,7 +142,8 @@ class ChartsRepositoryImpl(
                     .toMutableList().apply {
                         add(
                             SerieData(
-                                "zScoreValue", listOf(
+                                "zScoreValue",
+                                listOf(
                                     GraphPoint(Date(), 0, 50f),
                                     GraphPoint(Date(), 10, 65f),
                                     GraphPoint(Date(), 20, 70f),

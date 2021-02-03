@@ -1,7 +1,7 @@
 package dhis2.org.analytics.charts.data
 
-import org.hisp.dhis.android.core.period.PeriodType
 import java.util.Date
+import org.hisp.dhis.android.core.period.PeriodType
 
 data class Graph(
     val title: String,
@@ -13,7 +13,7 @@ data class Graph(
     val chartType: ChartType? = ChartType.LINE_CHART
 ) {
     fun numberOfStepsToDate(date: Date): Float {
-        return if (series.first().coordinates.isEmpty()) {
+        return if (series.isEmpty() || series.first().coordinates.isEmpty()) {
             return 0f
         } else {
             ((date.time - series.first().coordinates.first().eventDate.time) / periodStep).toFloat()
@@ -21,7 +21,7 @@ data class Graph(
     }
 
     fun numberOfStepsToLastDate(): Float {
-        return if (series.first().coordinates.isEmpty()) {
+        return if (series.isEmpty() || series.first().coordinates.isEmpty()) {
             return 0f
         } else {
             numberOfStepsToDate(series.first().coordinates.last().eventDate)
@@ -29,7 +29,7 @@ data class Graph(
     }
 
     fun dateFromSteps(numberOfSteps: Long): Date? {
-        return if (series.first().coordinates.isEmpty()) {
+        return if (series.isEmpty() || series.first().coordinates.isEmpty()) {
             return null
         } else {
             Date(series.first().coordinates.first().eventDate.time + numberOfSteps * periodStep)

@@ -73,11 +73,11 @@ class GraphTest {
         assertTrue(graph.minValue() == 0f)
     }
 
-    private fun mockedGraph(coordinates: List<GraphPoint>? = mockedCoordinates()): Graph {
+    private fun mockedGraph(coordinates: List<GraphPoint> = mockedCoordinates()): Graph {
         return Graph(
             "testGraph",
             false,
-            listOf(coordinates!!),
+            coordinates.map { SerieData("fieldName", coordinates) },
             "periodToDisplay",
             PeriodType.Daily,
             dailyPeriodPeriod

@@ -1,28 +1,19 @@
 package dhis2.org.analytics.charts.mappers
 
-import android.graphics.Color
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.NutritionFillFormatter
+import dhis2.org.analytics.charts.providers.NutritionColorsProvider
 
-class GraphToNutritionData {
+class GraphToNutritionData(private val nutritionColorProvider: NutritionColorsProvider) {
     private val coordinateToEntryMapper by lazy { GraphCoordinatesToEntry() }
-    private val nutritionColors = listOf(
-        Color.parseColor("#ff8a80"),
-        Color.parseColor("#ffd180"),
-        Color.parseColor("#ffff8d"),
-        Color.parseColor("#b9f6ca"),
-        Color.parseColor("#ffff8d"),
-        Color.parseColor("#ffd180"),
-        Color.parseColor("#ff8a80")
-    )
 
     fun map(graph: Graph): LineData {
         val data = dataSet(
             coordinateToEntryMapper.mapNutrition(graph.series.last().coordinates),
-            graph.series.first().fieldName
+            graph.series.last().fieldName
         ).withGlobalStyle()
         val backgroundSeries = graph.series.reversed().subList(1, graph.series.size)
         val backgroundData = backgroundSeries
@@ -30,7 +21,7 @@ class GraphToNutritionData {
                 dataSet(
                     coordinateToEntryMapper.mapNutrition(list.coordinates),
                     list.fieldName
-                ).withNutritionBackgroundGlobalStyle(nutritionColors[index])
+                ).withNutritionBackgroundGlobalStyle(nutritionColorProvider.getColorAt(index))
             }
         backgroundData.reversed().forEachIndexed { index, lineDataSet ->
             if (index > 0) {

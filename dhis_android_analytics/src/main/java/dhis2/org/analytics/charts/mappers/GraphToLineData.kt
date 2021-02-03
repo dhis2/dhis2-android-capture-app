@@ -7,7 +7,6 @@ import dhis2.org.analytics.charts.data.Graph
 class GraphToLineData {
     private val coordinateToEntryMapper by lazy { GraphCoordinatesToEntry() }
     fun map(graph: Graph): LineData {
-
         return LineData(
             graph.series.map {
                 LineDataSet(

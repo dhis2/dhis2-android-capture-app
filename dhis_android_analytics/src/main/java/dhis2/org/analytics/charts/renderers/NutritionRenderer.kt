@@ -23,7 +23,7 @@ class NutritionRenderer(
         trans: Transformer,
         bounds: XBounds
     ) {
-        if(dataSet.fillFormatter is NutritionFillFormatter) {
+        if (dataSet.fillFormatter is NutritionFillFormatter) {
             val filled = mGenerateFilledPathBuffer
 
             val startingIndex = bounds.min
@@ -52,7 +52,7 @@ class NutritionRenderer(
                 }
                 iterations++
             } while (currentStartIndex <= currentEndIndex)
-        }else{
+        } else {
             super.drawLinearFill(c, dataSet, trans, bounds)
         }
     }
@@ -63,10 +63,9 @@ class NutritionRenderer(
         endIndex: Int,
         outputPath: Path
     ) {
-
-        //Call the custom method to retrieve the dataset for other line
+        // Call the custom method to retrieve the dataset for other line
         val boundaryEntry = (dataSet.fillFormatter as NutritionFillFormatter).getFillLineBoundary()
-        if(boundaryEntry.isNotEmpty()) {
+        if (boundaryEntry.isNotEmpty()) {
             val phaseY = mAnimator.phaseY
             val filled: Path = outputPath
             filled.reset()
@@ -87,7 +86,7 @@ class NutritionRenderer(
                 filled.lineTo(currentEntry.x, previousEntry.getY())
             }
 
-            //Draw the path towards the other line
+            // Draw the path towards the other line
             for (x in endIndex downTo startIndex + 1) {
                 previousEntry = boundaryEntry[x]
                 filled.lineTo(previousEntry.getX(), previousEntry.getY() * phaseY)

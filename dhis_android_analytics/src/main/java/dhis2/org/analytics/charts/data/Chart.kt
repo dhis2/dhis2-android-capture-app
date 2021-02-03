@@ -4,16 +4,18 @@ import android.content.Context
 import android.view.View
 import dhis2.org.analytics.charts.mappers.GraphToBarChart
 import dhis2.org.analytics.charts.mappers.GraphToLineChart
+import dhis2.org.analytics.charts.mappers.GraphToNutritionChart
 import dhis2.org.analytics.charts.mappers.GraphToTable
 import dhis2.org.analytics.charts.mappers.GraphToValue
-import dhis2.org.analytics.charts.mappers.GraphToNutritionChart
 
 class Chart private constructor(
     private val chartType: ChartType,
     private val graphData: Graph
 ) {
     private val graphToLineChartMapper: GraphToLineChart by lazy { GraphToLineChart() }
-    private val graphToNutritionChartMapper: GraphToNutritionChart by lazy { GraphToNutritionChart() }
+    private val graphToNutritionChartMapper: GraphToNutritionChart by lazy {
+        GraphToNutritionChart()
+    }
     private val graphToBarChartMapper: GraphToBarChart by lazy { GraphToBarChart() }
     private val graphToTableMapper: GraphToTable by lazy { GraphToTable() }
     private val graphToValueMapper: GraphToValue by lazy { GraphToValue() }
