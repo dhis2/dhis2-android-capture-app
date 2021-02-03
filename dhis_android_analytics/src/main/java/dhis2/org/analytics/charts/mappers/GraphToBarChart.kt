@@ -42,19 +42,19 @@ class GraphToBarChart {
                     DEFAULT_GRIP_PHASE
                 )
                 axisMaximum = (
-                    graph.maxValue()?.let { it ->
-                        it.fieldValue + X_AXIS_MAX_PADDING_WITH_VALUE
-                    } ?: DEFAULT_VALUE + X_AXIS_MAX_PADDING
-                    )
+                        graph.maxValue()?.let { it ->
+                            it + X_AXIS_MAX_PADDING_WITH_VALUE
+                        } ?: DEFAULT_VALUE + X_AXIS_MAX_PADDING
+                        )
                 axisMinimum = (
-                    graph.minValue()?.let { it ->
-                        if (it.fieldValue < 0f) {
-                            it.fieldValue + X_AXIS_MIN_PADDING
-                        } else {
-                            DEFAULT_VALUE
-                        }
-                    } ?: DEFAULT_VALUE
-                    )
+                        graph.minValue()?.let { it ->
+                            if (it < 0f) {
+                                it + X_AXIS_MIN_PADDING
+                            } else {
+                                DEFAULT_VALUE
+                            }
+                        } ?: DEFAULT_VALUE
+                        )
                 setDrawLimitLinesBehindData(true)
             }
             axisRight.isEnabled = false

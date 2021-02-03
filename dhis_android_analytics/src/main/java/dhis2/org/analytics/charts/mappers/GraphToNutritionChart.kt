@@ -7,7 +7,7 @@ import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.AgeInMonthLabelFormatter
-import dhis2.org.analytics.charts.formatters.DateLabelFormatter
+import dhis2.org.analytics.charts.renderers.NutritionRenderer
 
 class GraphToNutritionChart {
     fun map(context: Context, graph: Graph): LineChart {
@@ -30,7 +30,7 @@ class GraphToNutritionChart {
                 valueFormatter = AgeInMonthLabelFormatter()
                 granularity = DEFAULT_GRANULARITY
                 axisMinimum = 0f
-                axisMaximum = graph.coordinates.first().size + 1f
+                axisMaximum = graph.series.first().coordinates.size + 1f
             }
 
             axisLeft.apply {
@@ -55,6 +55,8 @@ class GraphToNutritionChart {
 
             layoutParams =
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DEFAULT_CHART_HEIGHT)
+
+            renderer = NutritionRenderer(this, animator, viewPortHandler)
         }
     }
 }

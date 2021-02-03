@@ -7,6 +7,7 @@ import org.dhis2.data.analytics.IndicatorModel
 import org.dhis2.data.analytics.LOCATION_FEEDBACK_WIDGET
 import org.dhis2.data.analytics.LOCATION_INDICATOR_WIDGET
 import org.dhis2.data.analytics.SectionTitle
+import org.dhis2.data.analytics.SectionType
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.tuples.Pair
 import org.dhis2.data.tuples.Trio
@@ -170,15 +171,19 @@ abstract class BaseIndicatorRepository(
                 addAll(
                     ruleIndicators.filter {
                         it is IndicatorModel &&
-                            it.location == LOCATION_INDICATOR_WIDGET
+                                it.location == LOCATION_INDICATOR_WIDGET
                     }
                 )
             }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
-            if (indicatorList.isNotEmpty()) {
+            if (indicatorList.isNotEmpty() && charts.isNotEmpty()) {
+                add(SectionTitle(resourceManager.sectionChartsAndIndicators()))
+                add(SectionTitle(resourceManager.sectionIndicators(), SectionType.SUBSECTION))
+                addAll(indicatorList)
+                addAll(charts)
+            } else if (indicatorList.isNotEmpty() && charts.isEmpty()) {
                 add(SectionTitle(resourceManager.sectionIndicators()))
                 addAll(indicatorList)
-            }
-            if (charts.isNotEmpty()) {
+            } else if (indicatorList.isEmpty() && charts.isNotEmpty()) {
                 add(SectionTitle(resourceManager.sectionCharts()))
                 addAll(charts)
             }

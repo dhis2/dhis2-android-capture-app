@@ -17,7 +17,7 @@ class GraphCoordinatesToEntryTest {
 
     @Test
     fun `Should return mapped list`() {
-        val result = graphToLineData.map(mockedGraph())
+        val result = graphToLineData.map(mockedGraph(), it.coordinates)
         val expectedEntryPosition = listOf(0f, 1f, 3f, 6f)
         assertTrue(result.size == 4)
         result.forEachIndexed { index, entry ->
@@ -30,7 +30,7 @@ class GraphCoordinatesToEntryTest {
 
     @Test
     fun `Should return empty mapped list`() {
-        val result = graphToLineData.map(mockedGraph(emptyList()))
+        val result = graphToLineData.map(mockedGraph(emptyList()), it.coordinates)
         assertTrue(result.isEmpty())
     }
 

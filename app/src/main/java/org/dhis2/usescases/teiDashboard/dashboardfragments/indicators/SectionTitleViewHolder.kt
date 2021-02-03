@@ -9,6 +9,6 @@ class SectionTitleViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(sectionTitle: SectionTitle) {
-        binding.title = sectionTitle.title
+        binding.sectionModel = sectionTitle
     }
 }

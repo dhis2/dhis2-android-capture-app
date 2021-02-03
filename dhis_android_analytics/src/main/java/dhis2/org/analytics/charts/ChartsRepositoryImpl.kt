@@ -3,20 +3,81 @@ package dhis2.org.analytics.charts
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.GraphPoint
+import dhis2.org.analytics.charts.data.NutritionChartType
+import dhis2.org.analytics.charts.data.SerieData
+import dhis2.org.analytics.charts.data.SettingsAnalyticModel
+import dhis2.org.analytics.charts.providers.NutritionDataProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.dataelement.DataElement
+import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.period.PeriodType
-import org.hisp.dhis.rules.functions.ZScoreTable
-import org.hisp.dhis.rules.functions.ZScoreTableKey
+import org.hisp.dhis.android.core.program.ProgramIndicator
 import java.text.SimpleDateFormat
 import java.util.Date
-import org.hisp.dhis.android.core.program.ProgramIndicator
 
-class ChartsRepositoryImpl(private val d2: D2) : ChartsRepository {
+class ChartsRepositoryImpl(
+    private val d2: D2,
+    private val nutritionDataProvider: NutritionDataProvider
+) : ChartsRepository {
 
     override fun getAnalyticsForEnrollment(enrollmentUid: String): List<Graph> {
         val enrollment = getEnrollment(enrollmentUid)
 
+        val settingsAnalytics = getSettingsAnalytics(enrollment)
+        return if (settingsAnalytics.isNotEmpty()) {
+            settingsAnalytics
+        } else {
+            getDefaultAnalytics(enrollment)
+        }
+    }
+
+//    TODO: [ANDROAPP-3644] https://jira.dhis2.org/browse/ANDROAPP-3644
+    private fun getSettingsAnalytics(enrollment: Enrollment): List<Graph> {
+        return listOf<SettingsAnalyticModel>().map { analyticsSetting ->
+
+            val nutritionCoordinates: List<SerieData> =
+                if (analyticsSetting.type == ChartType.NUTRITION) {
+                    nutritionDataProvider.getNutritionData(NutritionChartType.WHO_HFA_BOY)
+                } else {
+                    emptyList()
+                }
+
+            val dataElementCoordinates = analyticsSetting.dataElements.map {
+                SerieData(
+                    d2.dataElementModule().dataElements().uid(it.dataElementUid).blockingGet()
+                        .displayFormName() ?: it.dataElementUid,
+                    getCoordinatesSortedByDate(
+                        it.stageUid,
+                        enrollment.trackedEntityInstance(),
+                        it.dataElementUid
+                    )
+                )
+            }
+            val indicatorCoordinates = analyticsSetting.indicators.map {
+                SerieData(
+                    d2.programModule().programIndicators().uid(it.indicatorUid).blockingGet()
+                        .displayName() ?: it.indicatorUid,
+                    getIndicatorsCoordinatesSortedByDate(
+                        it.stageUid,
+                        enrollment.trackedEntityInstance(),
+                        it.indicatorUid
+                    )
+                )
+            }.filter { it.coordinates.isNotEmpty() }
+            Graph(
+                analyticsSetting.displayName,
+                false,
+                nutritionCoordinates.union(dataElementCoordinates).union(indicatorCoordinates)
+                    .toList(),
+                "",
+                PeriodType.valueOf(analyticsSetting.period),
+                periodStep(PeriodType.valueOf(analyticsSetting.period)),
+                analyticsSetting.type
+            )
+        }
+    }
+
+    private fun getDefaultAnalytics(enrollment: Enrollment): List<Graph> {
         return getRepeatableProgramStages(enrollment.program()).map { programStage ->
 
             val period = programStage.periodType() ?: PeriodType.Daily
@@ -29,11 +90,21 @@ class ChartsRepositoryImpl(private val d2: D2) : ChartsRepository {
                     dataElement.uid()
                 )
 
+                val serie = if (coordinates.isNotEmpty()) {
+                    listOf(
+                        SerieData(
+                            dataElement.displayFormName() ?: dataElement.uid(),
+                            coordinates
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
+
                 Graph(
                     "${period.name}-${dataElement.displayFormName()}",
                     false,
-                    dataElement.displayFormName() ?: dataElement.uid(),
-                    listOf(coordinates),
+                    serie,
                     "",
                     programStage.periodType() ?: PeriodType.Daily,
                     periodStep(programStage.periodType())
@@ -45,49 +116,51 @@ class ChartsRepositoryImpl(private val d2: D2) : ChartsRepository {
                         enrollment.trackedEntityInstance(),
                         programIndicator.uid()
                     )
-
+                    val serie = if (coordinates.isNotEmpty()) {
+                        listOf(
+                            SerieData(
+                                programIndicator.displayName() ?: programIndicator.uid(),
+                                coordinates
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                     Graph(
                         "${period.name}-${programIndicator.displayName()}",
                         false,
-                        programIndicator.displayName() ?: programIndicator.uid(),
-                        coordinates,
+                        serie,
                         "",
                         programStage.periodType() ?: PeriodType.Daily,
                         periodStep(programStage.periodType())
                     )
                 }
             )
-        }.flatten().toMutableList().apply {
+        }.flatten().filter { it.series.isNotEmpty() }.toMutableList().apply {
+            val series =
+                nutritionDataProvider.getNutritionData(NutritionChartType.WHO_HFA_BOY)
+                    .toMutableList().apply {
+                        add(
+                            SerieData(
+                                "zScoreValue", listOf(
+                                    GraphPoint(Date(), 0, 50f),
+                                    GraphPoint(Date(), 10, 65f),
+                                    GraphPoint(Date(), 20, 70f),
+                                    GraphPoint(Date(), 30, 83f),
+                                    GraphPoint(Date(), 40, 90f),
+                                    GraphPoint(Date(), 55, 110f)
+                                )
+                            )
+                        )
+                    }
             add(
                 Graph(
-                    "WFA - Boy",
+                    "Nutrition test",
                     false,
-                    getNutritionData(ZScoreTable.getZscoreWFATableBoy()),
+                    series,
                     "",
-                    PeriodType.Yearly,
-                    periodStep(PeriodType.Yearly),
-                    ChartType.NUTRITION
-                )
-            )
-            add(
-                Graph(
-                    "HFA - Boy",
-                    false,
-                    getNutritionData(ZScoreTable.getZscoreHFATableBoy()),
-                    "",
-                    PeriodType.Yearly,
-                    periodStep(PeriodType.Yearly),
-                    ChartType.NUTRITION
-                )
-            )
-            add(
-                Graph(
-                    "WFH - Boy",
-                    false,
-                    getNutritionData(ZScoreTable.getZscoreWFHTableBoy()),
-                    "",
-                    PeriodType.Yearly,
-                    periodStep(PeriodType.Yearly),
+                    PeriodType.Monthly,
+                    periodStep(PeriodType.Monthly),
                     ChartType.NUTRITION
                 )
             )
@@ -106,11 +179,18 @@ class ChartsRepositoryImpl(private val d2: D2) : ChartsRepository {
             .withProgramIndicator(programIndicatorUid)
             .blockingEvaluate()
             .sortedBy { it.date }
+            .filter {
+                try {
+                    it.values.first().value?.toFloat() is Float
+                } catch (e: Exception) {
+                    false
+                }
+            }
             .mapNotNull { lineListResponse ->
                 lineListResponse.values.first().value?.let { value ->
                     GraphPoint(
-                        formattedDate(lineListResponse.date),
-                        value.toFloat()
+                        eventDate = formattedDate(lineListResponse.date),
+                        fieldValue = value.toFloat()
                     )
                 }
             }
@@ -197,30 +277,5 @@ class ChartsRepositoryImpl(private val d2: D2) : ChartsRepository {
                 0
             ).startDate()?.time ?: 0L
         return currentPeriodDate - initialPeriodDate
-    }
-
-    private fun getNutritionData(zscoreWFATableBoy: MutableMap<ZScoreTableKey, MutableMap<Float, Int>>): List<List<GraphPoint>> {
-        val numberOfData = zscoreWFATableBoy.values.first().size
-        val nutritionData = mutableListOf<MutableList<GraphPoint>>().apply {
-            for (i in 0 until numberOfData) {
-                add(mutableListOf())
-            }
-        }
-
-        zscoreWFATableBoy.toSortedMap(compareBy { it.parameter })
-            .values.forEachIndexed { i, map ->
-                val values = map.keys.sorted()
-                for(dataIndex in 0 until numberOfData){
-                    nutritionData[dataIndex].add(
-                        GraphPoint(
-                            eventDate = Date(),
-                            position = i,
-                            fieldValue = values[dataIndex]
-                        )
-                    )
-                }
-            }
-
-        return nutritionData
     }
 }

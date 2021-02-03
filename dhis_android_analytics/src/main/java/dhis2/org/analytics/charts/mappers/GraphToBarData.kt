@@ -8,10 +8,12 @@ class GraphToBarData {
     private val coordinateToBarEntryMapper by lazy { GraphCoordinatesToBarEntry() }
     fun map(graph: Graph): BarData {
         return BarData(
-            BarDataSet(
-                coordinateToBarEntryMapper.map(graph),
-                graph.title
-            )
+            graph.series.map {
+                BarDataSet(
+                    coordinateToBarEntryMapper.map(graph, it.coordinates),
+                    it.fieldName
+                )
+            }
         )
     }
 }

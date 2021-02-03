@@ -5,6 +5,7 @@ import android.view.Gravity
 import android.view.View
 import android.widget.PopupMenu
 import androidx.annotation.MenuRes
+import org.dhis2.R
 import timber.log.Timber
 
 class AppMenuHelper private constructor(
@@ -16,7 +17,7 @@ class AppMenuHelper private constructor(
 ) {
 
     fun show() {
-        val popupMenu = PopupMenu(context, anchor, Gravity.BOTTOM)
+        val popupMenu = PopupMenu(context, anchor, Gravity.END, 0, R.style.PopupMenuMarginStyle)
         try {
             val fields = popupMenu.javaClass.declaredFields
             for (field in fields) {

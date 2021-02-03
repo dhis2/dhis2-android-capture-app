@@ -58,12 +58,15 @@ class GraphToLineChart {
 
             legend.apply {
                 form = Legend.LegendForm.LINE
+                horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
             }
+            extraBottomOffset = 10f
 
             data = lineData
 
             layoutParams =
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DEFAULT_CHART_HEIGHT)
+
         }
     }
 }

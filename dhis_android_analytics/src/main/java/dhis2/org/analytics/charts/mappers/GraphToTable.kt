@@ -11,7 +11,7 @@ import org.hisp.dhis.android.core.arch.helpers.DateUtils
 
 class GraphToTable {
     fun map(context: Context, graph: Graph): View {
-        if (graph.coordinates.isEmpty()) {
+        if (graph.series.isEmpty()) {
             return TextView(context).apply {
                 text = context.getString(R.string.no_data)
             }
@@ -20,10 +20,25 @@ class GraphToTable {
         val tableAdapter = GraphTableAdapter(context)
         tableView.adapter = tableAdapter
         tableView.headerCount = 1
+
+        val headers = graph.series.map { it.coordinates }.flatten().sortedBy { it.eventDate }
+        val rows = graph.series.map { it.fieldName }
+        val cells = graph.series.map { serie ->
+            mutableListOf<String>().apply {
+                headers.map { it.eventDate }.forEach { eventDate ->
+                    add(
+                        serie.coordinates.firstOrNull {
+                            it.eventDate == eventDate
+                        }?.fieldValue?.toString()
+                            ?: ""
+                    )
+                }
+            }
+        }
         tableAdapter.setAllItems(
-            listOf(graph.coordinates.map { DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate) }),
-            listOf(graph.fieldName),
-            listOf(graph.coordinates.map { it.fieldValue.toInt().toString() }),
+            listOf(headers.map { DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate) }),
+            rows,
+            cells,
             false
         )
         return tableView
