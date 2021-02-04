@@ -36,7 +36,8 @@ public class RelationshipLiveAdapter extends PagedListAdapter<SearchTeiModel, Se
                     oldItem.getProfilePicturePath().equals(newItem.getProfilePicturePath()) &&
                     oldItem.isAttributeListOpen() == newItem.isAttributeListOpen() &&
                     Objects.equals(oldItem.getSortingKey(), newItem.getSortingKey()) &&
-                    Objects.equals(oldItem.getSortingValue(), newItem.getSortingValue());
+                    Objects.equals(oldItem.getSortingValue(), newItem.getSortingValue()) &&
+                    Objects.equals(oldItem.getEnrolledOrgUnit(), newItem.getEnrolledOrgUnit());
         }
     };
 

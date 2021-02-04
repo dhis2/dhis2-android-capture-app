@@ -278,6 +278,7 @@ class SearchTETest : BaseTest() {
     @Test
     fun shouldSuccessfullySearchAndFilter() {
         val name = "Anna"
+        val lastName = "Jones"
         val namePosition = 0
         val enrollmentStatus = context.getString(R.string.filters_title_enrollment_status)
         val totalCount = "2"
@@ -301,7 +302,7 @@ class SearchTETest : BaseTest() {
         }
 
         searchTeiRobot {
-            checkListOfSearchTEI(name, "")
+            checkListOfSearchTEI(name, lastName)
         }
     }
 

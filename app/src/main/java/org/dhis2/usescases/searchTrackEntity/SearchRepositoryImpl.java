@@ -675,11 +675,13 @@ public class SearchRepositoryImpl implements SearchRepository {
                 for (Enrollment enrollment : possibleEnrollments) {
                     if (enrollment.status() == EnrollmentStatus.ACTIVE) {
                         searchTei.setCurrentEnrollment(enrollment);
+                        //searchTei.setEnrolledOrgUnit(d2.organisationUnitModule().organisationUnits().uid(enrollment.organisationUnit()).blockingGet());
                         break;
                     }
                 }
                 if (searchTei.getSelectedEnrollment() == null) {
                     searchTei.setCurrentEnrollment(possibleEnrollments.get(0));
+                    //searchTei.setEnrolledOrgUnit(d2.organisationUnitModule().organisationUnits().uid(possibleEnrollments.get(0).organisationUnit()).blockingGet());
                 }
                 searchTei.setOnline(false);
             } else {
@@ -699,7 +701,11 @@ public class SearchRepositoryImpl implements SearchRepository {
             if (selectedProgram != null) {
                 setRelationshipsInfo(searchTei, selectedProgram);
             }
-
+            if (searchTei.getEnrollments().size() > 0) {
+                searchTei.setEnrolledOrgUnit(d2.organisationUnitModule().organisationUnits().uid(searchTei.getEnrollments().get(0).organisationUnit()).blockingGet().name());
+            } else {
+                searchTei.setEnrolledOrgUnit("");
+            }
             searchTei.setProfilePicture(profilePicturePath(tei, selectedProgram));
         } else {
             searchTei.setTei(tei);
