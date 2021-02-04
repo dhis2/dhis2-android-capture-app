@@ -16,5 +16,4 @@ class EnrollmentRuleEngineRepositoryTest {
         EnrollmentRuleEngineRepository(formRepository, "", d2)
         verifyZeroInteractions(d2)
     }
-
 }
