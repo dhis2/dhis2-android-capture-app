@@ -14,4 +14,10 @@
     <string name="feedback_tab_hnqis_critical">"Critique"</string>
     <string name="feedback_tab_hnqis_non_critical">"Pas critique"</string>
     <string name="feedback_malformed_error">"**Erreur**: json de retour incorrect pour l'élément de données %s"</string>
+    <string name="feedback_error">"Erreur"</string>
+    <string name="feedback_warning">"Attention"</string>
+    <string name="feedback_order_with_spaces">"Afin de rétroaction avec des espaces dans l'élément de données %s"</string>
+    <string name="feedback_order_invalid">"Afin de rétroaction non valide dans l'élément de données %s"</string>
+    <string name="feedback_order_duplicate">"double rétroaction de l'ordre dans les éléments de données %s"</string>
+    <string name="feedback_order_gap">"étape du programme %s contient des lacunes de commande de rétroaction"</string>
 </resources>

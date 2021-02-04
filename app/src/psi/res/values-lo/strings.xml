@@ -14,4 +14,10 @@
     <string name="feedback_tab_hnqis_critical">"ທີ່ ສຳ ຄັນ"</string>
     <string name="feedback_tab_hnqis_non_critical">"ບໍ່ ສຳ ຄັນ"</string>
     <string name="feedback_malformed_error">"**ຂໍ້ຜິດພາດ**: ຂໍ້ຄິດເຫັນທີ່ບໍ່ຖືກຕ້ອງ ສຳ ລັບອົງປະກອບຂໍ້ມູນ %s"</string>
+    <string name="feedback_error">"ບັກ"</string>
+    <string name="feedback_warning">"ຄໍາເຕືອນ"</string>
+    <string name="feedback_order_with_spaces">"ຄໍາສັ່ງຕໍານິຕິຊົມທີ່ມີຊ່ອງຫວ່າງໃນອົງປະກອບຂໍ້ມູນ %s"</string>
+    <string name="feedback_order_invalid">"ຄໍາສັ່ງຕໍານິຕິຊົມບໍ່ຖືກຕ້ອງໃນອົງປະກອບຂໍ້ມູນ %s"</string>
+    <string name="feedback_order_duplicate">"ຊ້ໍາກັນຕໍານິຕິຊົມສັ່ງຊື້ອົງປະກອບຂໍ້ມູນ %s"</string>
+    <string name="feedback_order_gap">"ໂຄງການຂັ້ນຕອນຂອງການ %s ມີຊ່ອງຫວ່າງເພື່ອຕໍານິຕິຊົມ"</string>
 </resources>

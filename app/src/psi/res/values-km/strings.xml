@@ -14,4 +14,10 @@
     <string name="feedback_tab_hnqis_critical">"សំខាន់"</string>
     <string name="feedback_tab_hnqis_non_critical">"មិនសំខាន់"</string>
     <string name="feedback_malformed_error">"**កំហុស**៖ មតិប្រតិកម្មមិនត្រឹមត្រូវសម្រាប់ធាតុទិន្នន័យ %s"</string>
+    <string name="feedback_error">"កំហុសក្នុងការ"</string>
+    <string name="feedback_warning">"ការព្រមាន"</string>
+    <string name="feedback_order_with_spaces">"មតិអ្នកបញ្ជាទិញដោយចន្លោះក្នុងធាតុទិន្នន័យ %s"</string>
+    <string name="feedback_order_invalid">"គោលបំណងមតិអ្នកប្រើមិនត្រឹមត្រូវនៅក្នុងធាតុទិន្នន័យ %s"</string>
+    <string name="feedback_order_duplicate">"មតិជាលំដាប់នៅក្នុងស្ទួនធាតុទិន្នន័យ %s"</string>
+    <string name="feedback_order_gap">"កម្មវិធីដំណាក់កាល %s បានមានចន្លោះគោលបំណងមតិអ្នកប្រើ"</string>
 </resources>

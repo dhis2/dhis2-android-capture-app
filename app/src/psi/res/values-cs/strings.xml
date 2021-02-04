@@ -14,4 +14,10 @@
     <string name="feedback_tab_hnqis_critical">"Kritický"</string>
     <string name="feedback_tab_hnqis_non_critical">"Není kritický"</string>
     <string name="feedback_malformed_error">"**Chyba**: Poškozený JSON zpětné vazby pro datový prvek %s"</string>
+    <string name="feedback_error">"Chyba"</string>
+    <string name="feedback_warning">"Varování"</string>
+    <string name="feedback_order_with_spaces">"Zpětná vazba, aby se prostory v datovém prvku %s"</string>
+    <string name="feedback_order_invalid">"Neplatný objednat zpětná vazba v datovém prvku %s"</string>
+    <string name="feedback_order_duplicate">"Zpětná vazba pořadí duplicitní v datových prvcích %s"</string>
+    <string name="feedback_order_gap">"fáze programu %s obsahuje mezery zpětná vazba pořadí"</string>
 </resources>

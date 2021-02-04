@@ -14,4 +14,10 @@
     <string name="feedback_tab_hnqis_critical">"Kritisk"</string>
     <string name="feedback_tab_hnqis_non_critical">"Inte kritiskt"</string>
     <string name="feedback_malformed_error">"**Fel**: Felaktig feedback för dataelementet %s"</string>
+    <string name="feedback_error">"Fel"</string>
+    <string name="feedback_warning">"Varning"</string>
+    <string name="feedback_order_with_spaces">"Återkopplings ordning med utrymmen i dataelementet %s"</string>
+    <string name="feedback_order_invalid">"Ogiltigt återkopplings ordning i dataelementet %s"</string>
+    <string name="feedback_order_duplicate">"Återkopplings ordning två exemplar på dataelementen %s"</string>
+    <string name="feedback_order_gap">"Programsteget %s innehåller återkopplingsorder luckor"</string>
 </resources>

@@ -14,4 +14,10 @@
     <string name="feedback_tab_hnqis_critical">"Kritis"</string>
     <string name="feedback_tab_hnqis_non_critical">"Tidak Kritis"</string>
     <string name="feedback_malformed_error">"**Error**: Masukan salah format untuk elemen data %s"</string>
+    <string name="feedback_error">"Kesalahan"</string>
+    <string name="feedback_warning">"Peringatan"</string>
+    <string name="feedback_order_with_spaces">"Umpan balik agar dengan spasi di elemen data %s"</string>
+    <string name="feedback_order_invalid">"Agar umpan balik tidak valid di elemen data %s"</string>
+    <string name="feedback_order_duplicate">"Umpan balik urutan duplikat di elemen data %s"</string>
+    <string name="feedback_order_gap">"Program tahap %s berisi agar umpan balik celah"</string>
 </resources>
