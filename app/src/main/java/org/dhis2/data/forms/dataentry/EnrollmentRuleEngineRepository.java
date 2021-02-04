@@ -28,9 +28,7 @@ import java.util.Map;
 
 import io.reactivex.Flowable;
 
-public final class EnrollmentRuleEngineRepository
-        implements
-        RuleEngineRepository {
+public final class EnrollmentRuleEngineRepository implements RuleEngineRepository {
 
     @NonNull
     private final FormRepository formRepository;
@@ -42,8 +40,6 @@ public final class EnrollmentRuleEngineRepository
 
     @NonNull
     private final D2 d2;
-
-    private Map<String, ProgramRuleVariable> attrRuleVariableMap;
 
     private Map<String, List<Rule>> attributeRules = new HashMap<>();
 
@@ -67,14 +63,6 @@ public final class EnrollmentRuleEngineRepository
                 .blockingGet();
         Program program = d2.programModule().programs().uid(enrollment.program())
                 .blockingGet();
-
-        attrRuleVariableMap = new HashMap<>();
-        List<ProgramRuleVariable> ruleVariables = d2.programModule().programRuleVariables().byProgramUid()
-                .eq(enrollment.program()).blockingGet();
-        for (ProgramRuleVariable ruleVariable : ruleVariables) {
-            if (ruleVariable.trackedEntityAttribute() != null)
-                attrRuleVariableMap.put(ruleVariable.trackedEntityAttribute().uid(), ruleVariable);
-        }
 
         ruleEnrollmentBuilder = RuleEnrollment.builder().enrollment(enrollment.uid())
                 .incidentDate(enrollment.incidentDate() == null ? enrollment.enrollmentDate() : enrollment.incidentDate())
