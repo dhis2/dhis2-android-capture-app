@@ -74,11 +74,12 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             R.id.showBarGraph -> ChartType.BAR_CHART
             R.id.showTableGraph -> ChartType.TABLE
             R.id.showTableValue -> ChartType.SINGLE_VALUE
-            else -> if (graph.chartType != ChartType.NUTRITION) {
-                ChartType.LINE_CHART
-            } else {
-                ChartType.NUTRITION
-            }
+            else ->
+                if (graph.chartType != ChartType.NUTRITION) {
+                    ChartType.LINE_CHART
+                } else {
+                    ChartType.NUTRITION
+                }
         }
     }
 }
