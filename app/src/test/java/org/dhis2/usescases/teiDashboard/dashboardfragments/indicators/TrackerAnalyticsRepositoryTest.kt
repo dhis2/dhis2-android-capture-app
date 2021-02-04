@@ -70,6 +70,9 @@ class TrackerAnalyticsRepositoryTest {
         whenever(
             resourceManager.sectionChartsAndIndicators()
         ) doReturn "Charts and indicators"
+        whenever(
+            resourceManager.defaultIndicatorLabel()
+        ) doReturn "Info"
         repository = TrackerAnalyticsRepository(
             d2,
             ruleEngineRepository,

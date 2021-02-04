@@ -62,7 +62,8 @@ class IndicatorsPresenterTest {
                     .displayInForm(true).build(),
                 "indicator_value",
                 "#ffffff",
-                LOCATION_INDICATOR_WIDGET
+                LOCATION_INDICATOR_WIDGET,
+                "Info"
             )
         )
 }
