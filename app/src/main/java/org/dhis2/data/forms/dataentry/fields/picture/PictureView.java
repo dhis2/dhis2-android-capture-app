@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
@@ -35,19 +36,28 @@ import org.dhis2.R;
 import org.dhis2.databinding.FormPictureAccentBinding;
 import org.dhis2.databinding.FormPictureBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.ActivityResultObservable;
+import org.dhis2.utils.ActivityResultObserver;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
 import kotlin.Pair;
 
+import static android.app.Activity.RESULT_OK;
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.Constants.CAMERA_REQUEST;
+import static org.dhis2.utils.Constants.GALLERY_REQUEST;
 
-public class PictureView extends FieldLayout implements View.OnClickListener {
+public class PictureView extends FieldLayout implements View.OnClickListener, ActivityResultObserver {
+
+    public static final int PERMISSION_REQUEST = 179;
 
     private ViewDataBinding binding;
     private String uid;
@@ -61,6 +71,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener {
     private CardView imageCard;
     private final FragmentManager supportFragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
     private PictureViewModel viewModel;
+    private boolean isPermissionRequested = false;
 
     public PictureView(Context context) {
         super(context);
@@ -81,7 +92,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener {
     public void onClick(View v) {
         if (isEditable && v == addImageBtn) {
             viewModel.onItemClick();
-            selectImage();
+            checkPermissions();
         }
     }
 
@@ -201,42 +212,36 @@ public class PictureView extends FieldLayout implements View.OnClickListener {
 
 
     private void selectImage() {
-        try {
-            PackageManager pm = image.getContext().getPackageManager();
-            int hasPerm = pm.checkPermission(Manifest.permission.CAMERA, image.getContext().getPackageName());
-            if (hasPerm == PackageManager.PERMISSION_GRANTED) {
-                final CharSequence[] options = {"Take Photo", "Choose From Gallery", "Cancel"};
-                AlertDialog.Builder builder = new AlertDialog.Builder(image.getContext());
-                builder.setTitle("Select Option");
-                builder.setItems(options, (dialog, item) -> {
-                    if (options[item].equals("Take Photo")) {
-                        dialog.dismiss();
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        Uri photoUri = FileProvider.getUriForFile(getContext(),
-                                BuildConfig.APPLICATION_ID + ".provider",
-                                new File(FileResourceDirectoryHelper.getFileResourceDirectory(getContext()), "tempFile.png"));
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        ((ActivityGlobalAbstract) getContext()).uuid = uid;
-                        ((FragmentActivity) getContext()).startActivityForResult(intent, Constants.CAMERA_REQUEST);
-                    } else if (options[item].equals("Choose From Gallery")) {
-                        dialog.dismiss();
-                        Intent pickPhoto = new Intent(Intent.ACTION_PICK);
-                        pickPhoto.putExtra("filename", primaryUid.concat("_").concat(uid));
-                        pickPhoto.setType("image/*");
-                        ((ActivityGlobalAbstract) getContext()).uuid = uid;
-                        ((FragmentActivity) getContext()).startActivityForResult(pickPhoto, Constants.GALLERY_REQUEST);
-                    } else if (options[item].equals("Cancel")) {
-                        dialog.dismiss();
-                    }
-                });
-                builder.show();
-            } else
-                Toast.makeText(image.getContext(), "Camera Permission error", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Toast.makeText(image.getContext(), "Camera Permission error", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
+        final CharSequence[] options = {
+                getContext().getString(R.string.take_photo),
+                getContext().getString(R.string.from_gallery),
+                getContext().getString(R.string.cancel)
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(image.getContext());
+        builder.setTitle(getContext().getString(R.string.select_option));
+        builder.setItems(options, (dialog, item) -> {
+            if (options[item].equals( getContext().getString(R.string.take_photo))) {
+                dialog.dismiss();
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                Uri photoUri = FileProvider.getUriForFile(getContext(),
+                        BuildConfig.APPLICATION_ID + ".provider",
+                        new File(FileResourceDirectoryHelper.getFileResourceDirectory(getContext()), "tempFile.png"));
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                ((ActivityGlobalAbstract) getContext()).uuid = uid;
+                ((FragmentActivity) getContext()).startActivityForResult(intent, Constants.CAMERA_REQUEST);
+            } else if (options[item].equals( getContext().getString(R.string.from_gallery))) {
+                dialog.dismiss();
+                Intent pickPhoto = new Intent(Intent.ACTION_PICK);
+                pickPhoto.putExtra("filename", primaryUid.concat("_").concat(uid));
+                pickPhoto.setType("image/*");
+                ((ActivityGlobalAbstract) getContext()).uuid = uid;
+                ((FragmentActivity) getContext()).startActivityForResult(pickPhoto, Constants.GALLERY_REQUEST);
+            } else if (options[item].equals(getContext().getString(R.string.cancel))) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     private void showFullPicture() {
@@ -255,6 +260,39 @@ public class PictureView extends FieldLayout implements View.OnClickListener {
         );
     }
 
+    private void checkPermissions() {
+        subscribe();
+        if (ContextCompat.checkSelfPermission(((ActivityGlobalAbstract) getContext()), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(((ActivityGlobalAbstract) getContext()), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            selectImage();
+        } else if (!isPermissionRequested) {
+            isPermissionRequested = true;
+            ActivityCompat.requestPermissions(((ActivityGlobalAbstract) getContext()),
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA},
+                    PERMISSION_REQUEST);
+        } else {
+            Toast.makeText(getContext(), getContext().getString(R.string.camera_permission_denied), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode != RESULT_OK) {
+            checkPermissions();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
+        if (requestCode == PERMISSION_REQUEST) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                selectImage();
+            }  else {
+                Toast.makeText(getContext(), getContext().getString(R.string.camera_permission_denied), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
     public void setViewModel(PictureViewModel viewModel) {
         this.viewModel = viewModel;
 
@@ -271,4 +309,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener {
         setError(viewModel.error());
     }
 
+    private void subscribe() {
+        ((ActivityResultObservable) getContext()).subscribe(this);
+    }
 }
