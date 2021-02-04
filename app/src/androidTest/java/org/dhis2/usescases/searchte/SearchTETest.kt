@@ -39,6 +39,7 @@ class SearchTETest : BaseTest() {
         val firstName = "Tim"
         val firstNamePosition = 0
         val filterCount = "1"
+        val orgUnit = "Ngelehun CHC"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
@@ -47,7 +48,7 @@ class SearchTETest : BaseTest() {
             typeAttributeAtPosition(firstName, firstNamePosition)
             clickOnFab()
             checkFilterCount(filterCount)
-            checkListOfSearchTEI(firstName, "")
+            checkListOfSearchTEI(firstName, orgUnit)
         }
     }
 
