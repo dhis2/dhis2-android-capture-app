@@ -95,7 +95,7 @@ abstract class BaseIndicatorRepository(
 
         for (ruleEffect in calcResult.items()) {
             val ruleAction = ruleEffect.ruleAction()
-            if (!ruleEffect.data().contains("#{")) {
+            if (ruleEffect.data()?.contains("#{") == false) {
                 if (ruleAction is RuleActionDisplayKeyValuePair) {
                     val indicator = IndicatorModel(
                         ProgramIndicator.builder()
