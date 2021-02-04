@@ -3,25 +3,14 @@ package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 import android.content.Context
 import dagger.Module
 import dagger.Provides
-import org.dhis2.Bindings.valueTypeHintMap
-import org.dhis2.data.dagger.PerActivity
 import org.dhis2.data.dagger.PerFragment
 import org.dhis2.data.dhislogic.DhisEventUtils
-import org.dhis2.data.forms.EventRepository
-import org.dhis2.data.forms.FormRepository
-import org.dhis2.data.forms.RulesRepository
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.EventCaptureRepository
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureRepositoryImpl
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepositoryImpl
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.GetSystemInfo
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.SystemInfoD2Repository
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.SystemInfoRepository
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.rules.RuleExpressionEvaluator
 
 @PerFragment
 @Module
@@ -52,9 +41,10 @@ class FeedbackModule(
     @PerFragment
     fun provideGetFeedback(
         teiDataRepository: TeiDataRepository,
-        valuesRepository: ValuesRepository
+        valuesRepository: ValuesRepository,
+        dataElementRepository: DataElementRepository
     ): GetFeedback {
-        return GetFeedback(teiDataRepository, valuesRepository)
+        return GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
     }
 
     @Provides
@@ -79,6 +69,12 @@ class FeedbackModule(
     @PerFragment
     fun provideValuesRepository(d2: D2): ValuesRepository {
         return ValuesD2Repository(d2, context)
+    }
+
+    @Provides
+    @PerFragment
+    fun provideDataElementRepository(d2: D2): DataElementRepository {
+        return DataElementD2Repository(d2)
     }
 
     @Provides
