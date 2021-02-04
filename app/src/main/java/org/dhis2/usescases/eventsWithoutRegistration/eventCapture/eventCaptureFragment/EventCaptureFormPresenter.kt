@@ -37,6 +37,10 @@ class EventCaptureFormPresenter(
 
                     when (rowAction.type) {
                         ActionType.ON_SAVE -> {
+                            if (rowAction.id == focusedItem?.id &&
+                                focusedItem?.type == ActionType.ON_FOCUS) {
+                                focusedItem = null
+                            }
                             if (rowAction.error != null) {
                                 if (itemsWithError.find { it.id == rowAction.id } == null) {
                                     itemsWithError.add(rowAction)
