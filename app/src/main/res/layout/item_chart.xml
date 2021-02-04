@@ -49,12 +49,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{(view)->chartModel.showVisualizationOptions(view)}"
-            android:visibility="@{chartModel.graph.chartType == ChartType.NUTRITION ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="@id/chart_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_more"
             app:tint="@color/text_black_333" />
+        <!--android:visibility="@{chartModel.graph.chartType == ChartType.NUTRITION ? View.GONE : View.VISIBLE}"-->
 
         <FrameLayout
             android:id="@+id/chart_container"

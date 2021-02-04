@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import dhis2.org.R
+import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.databinding.ItemSingleValueBinding
 
@@ -23,10 +24,15 @@ class GraphToValue {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
-            graph.series.forEach {
+            val series = if(graph.chartType == ChartType.NUTRITION){
+                listOf(graph.series.last())
+            }else{
+                graph.series
+            }
+            series.forEach {
                 addView(
                     ItemSingleValueBinding.inflate(LayoutInflater.from(this.context)).apply {
-                        singleValueTitle.text = graph.title
+                        singleValueTitle.text = it.fieldName
                         singleValue.text = it.coordinates.last().fieldValue.toString()
                     }.root
                 )

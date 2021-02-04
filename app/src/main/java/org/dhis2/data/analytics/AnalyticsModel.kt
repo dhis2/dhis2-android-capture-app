@@ -1,5 +1,6 @@
 package org.dhis2.data.analytics
 
+import android.graphics.Color
 import android.graphics.Typeface
 import android.view.View
 import androidx.databinding.ObservableField
@@ -44,30 +45,41 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             menu = R.menu.chart_menu,
             anchor = view,
             onMenuInflated = { popupMenu ->
-                val idToHide = when (observableChartType.get()) {
-                    ChartType.LINE_CHART -> R.id.showLineGraph
-                    ChartType.BAR_CHART -> R.id.showBarGraph
-                    ChartType.TABLE -> R.id.showTableGraph
-                    ChartType.SINGLE_VALUE -> R.id.showTableValue
-                    else -> -1
-                }
+                val idToHide = idToHide()
                 if (idToHide != -1) {
                     popupMenu.menu.findItem(idToHide).isVisible = false
                 }
             },
             onMenuItemClicked = { itemId ->
-                observableChartType.set(
-                    when (itemId) {
-                        R.id.showBarGraph -> ChartType.BAR_CHART
-                        R.id.showTableGraph -> ChartType.TABLE
-                        R.id.showTableValue -> ChartType.SINGLE_VALUE
-                        else -> ChartType.LINE_CHART
-                    }
-                )
+                observableChartType.set(chartToLoad(itemId))
                 true
             }
         ).build()
             .show()
+    }
+
+    private fun idToHide(): Int {
+        return when (observableChartType.get()) {
+            ChartType.NUTRITION,
+            ChartType.LINE_CHART -> R.id.showLineGraph
+            ChartType.BAR_CHART -> R.id.showBarGraph
+            ChartType.TABLE -> R.id.showTableGraph
+            ChartType.SINGLE_VALUE -> R.id.showTableValue
+            else -> -1
+        }
+    }
+
+    private fun chartToLoad(itemId: Int): ChartType {
+        return when (itemId) {
+            R.id.showBarGraph -> ChartType.BAR_CHART
+            R.id.showTableGraph -> ChartType.TABLE
+            R.id.showTableValue -> ChartType.SINGLE_VALUE
+            else -> if (graph.chartType != ChartType.NUTRITION) {
+                ChartType.LINE_CHART
+            } else {
+                ChartType.NUTRITION
+            }
+        }
     }
 }
 
@@ -76,7 +88,27 @@ data class IndicatorModel(
     val value: String?,
     val color: String?,
     val location: String
-) : AnalyticsModel()
+) : AnalyticsModel() {
+    fun label(): String {
+        return programIndicator?.displayName() ?: "-"
+    }
+
+    fun description(): String? {
+        return programIndicator?.displayDescription()
+    }
+
+    fun color(): Int {
+        return if (color.isNullOrEmpty()) {
+            -1
+        } else {
+            Color.parseColor(color)
+        }
+    }
+
+    fun displayLegend(): Boolean {
+        return programIndicator != null
+    }
+}
 
 const val LOCATION_FEEDBACK_WIDGET = "feedback"
 const val LOCATION_INDICATOR_WIDGET = "indicators"

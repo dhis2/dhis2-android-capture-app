@@ -168,12 +168,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         ruleEffect: RuleEffect,
         fieldViewModels: MutableMap<String, FieldViewModel>
     ) {
-        val uid = displayText.content()
 
-        val displayViewModel = DisplayViewModel.create(
-            uid, "",
-            displayText.content() + " " + ruleEffect.data(), "Display"
-        )
     }
 
     private fun displayKeyValuePair(
@@ -182,12 +177,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         fieldViewModels: MutableMap<String, FieldViewModel>,
         rulesActionCallbacks: RulesActionCallbacks
     ) {
-        val uid = displayKeyValuePair.content()
 
-        val displayViewModel = DisplayViewModel.create(
-            uid, displayKeyValuePair.content(),
-            ruleEffect.data(), "Display"
-        )
     }
 
     private fun hideSection(

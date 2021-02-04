@@ -137,6 +137,7 @@ class ChartsRepositoryImpl(
                 }
             )
         }.flatten().filter { it.series.isNotEmpty() }.toMutableList().apply {
+            //TODO: THIS IS JUST FOR TESTING. REMOVE ONCE IT IS APPOVED
             val series =
                 nutritionDataProvider.getNutritionData(NutritionChartType.WHO_HFA_BOY)
                     .toMutableList().apply {
@@ -144,16 +145,17 @@ class ChartsRepositoryImpl(
                             SerieData(
                                 "zScoreValue",
                                 listOf(
-                                    GraphPoint(Date(), 0, 50f),
-                                    GraphPoint(Date(), 10, 65f),
-                                    GraphPoint(Date(), 20, 70f),
-                                    GraphPoint(Date(), 30, 83f),
-                                    GraphPoint(Date(), 40, 90f),
-                                    GraphPoint(Date(), 55, 110f)
+                                    GraphPoint(Date(2020,0,1), 0, 50f),
+                                    GraphPoint(Date(2020,10,1), 10, 65f),
+                                    GraphPoint(Date(2021,8,1), 20, 70f),
+                                    GraphPoint(Date(2022,6,1), 30, 83f),
+                                    GraphPoint(Date(2023,4,1), 40, 90f),
+                                    GraphPoint(Date(2024,7,1), 55, 110f)
                                 )
                             )
                         )
                     }
+            val periodStep = periodStep(PeriodType.Monthly)
             add(
                 Graph(
                     "Nutrition test",
@@ -161,10 +163,11 @@ class ChartsRepositoryImpl(
                     series,
                     "",
                     PeriodType.Monthly,
-                    periodStep(PeriodType.Monthly),
+                    periodStep,
                     ChartType.NUTRITION
                 )
             )
+            //TODO: THIS IS JUST FOR TESTING. REMOVE ONCE IT IS APPOVED
         }
     }
 

@@ -13,26 +13,26 @@ data class Graph(
     val chartType: ChartType? = ChartType.LINE_CHART
 ) {
     fun numberOfStepsToDate(date: Date): Float {
-        return if (series.isEmpty() || series.first().coordinates.isEmpty()) {
+        return if (baseSeries().isEmpty() || baseSeries().first().coordinates.isEmpty()) {
             return 0f
         } else {
-            ((date.time - series.first().coordinates.first().eventDate.time) / periodStep).toFloat()
+            ((date.time - baseSeries().first().coordinates.first().eventDate.time) / periodStep).toFloat()
         }
     }
 
     fun numberOfStepsToLastDate(): Float {
-        return if (series.isEmpty() || series.first().coordinates.isEmpty()) {
+        return if (baseSeries().isEmpty() || baseSeries().first().coordinates.isEmpty()) {
             return 0f
         } else {
-            numberOfStepsToDate(series.first().coordinates.last().eventDate)
+            numberOfStepsToDate(baseSeries().first().coordinates.last().eventDate)
         }
     }
 
     fun dateFromSteps(numberOfSteps: Long): Date? {
-        return if (series.isEmpty() || series.first().coordinates.isEmpty()) {
+        return if (baseSeries().isEmpty() || baseSeries().first().coordinates.isEmpty()) {
             return null
         } else {
-            Date(series.first().coordinates.first().eventDate.time + numberOfSteps * periodStep)
+            Date(baseSeries().first().coordinates.first().eventDate.time + numberOfSteps * periodStep)
         }
     }
 
@@ -44,6 +44,12 @@ data class Graph(
     fun minValue(): Float {
         return series.map { it.coordinates.map { points -> points.fieldValue }.min() ?: 0f }.min()
             ?: 0f
+    }
+
+    private fun baseSeries():List<SerieData> = if(chartType == ChartType.NUTRITION){
+        listOf(series.last())
+    }else{
+        series
     }
 }
 
