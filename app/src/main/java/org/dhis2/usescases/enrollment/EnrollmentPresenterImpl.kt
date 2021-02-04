@@ -152,7 +152,8 @@ class EnrollmentPresenterImpl(
                     when (rowAction.type) {
                         ActionType.ON_SAVE -> {
                             if (rowAction.id == focusedItem?.id &&
-                                focusedItem?.type == ActionType.ON_FOCUS) {
+                                focusedItem?.type == ActionType.ON_FOCUS
+                            ) {
                                 focusedItem = null
                             }
                             if (rowAction.error != null) {
