@@ -203,9 +203,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         fieldViewModels: MutableMap<String, FieldViewModel>,
         rulesActionCallbacks: RulesActionCallbacks
     ) {
-        if (fieldViewModels[assign.field()] == null) {
-            rulesActionCallbacks.save(assign.field(), ruleEffect.data())
-        } else {
+        if (fieldViewModels[assign.field()] != null) {
             val field = fieldViewModels[assign.field()]!!
 
             val value =
