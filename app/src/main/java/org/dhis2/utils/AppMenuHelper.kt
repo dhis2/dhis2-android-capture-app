@@ -1,6 +1,7 @@
 package org.dhis2.utils
 
 import android.content.Context
+import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.View
 import android.widget.PopupMenu
@@ -17,7 +18,8 @@ class AppMenuHelper private constructor(
 ) {
 
     fun show() {
-        val popupMenu = PopupMenu(context, anchor, Gravity.END, 0, R.style.PopupMenuMarginStyle)
+        val contextWrapper = ContextThemeWrapper(context, R.style.PopupMenuMarginStyle)
+        val popupMenu = PopupMenu(contextWrapper, anchor, Gravity.END)
         try {
             val fields = popupMenu.javaClass.declaredFields
             for (field in fields) {

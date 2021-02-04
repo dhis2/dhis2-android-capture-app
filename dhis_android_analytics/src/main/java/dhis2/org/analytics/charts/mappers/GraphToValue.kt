@@ -24,9 +24,9 @@ class GraphToValue {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
-            val series = if(graph.chartType == ChartType.NUTRITION){
+            val series = if (graph.chartType == ChartType.NUTRITION) {
                 listOf(graph.series.last())
-            }else{
+            } else {
                 graph.series
             }
             series.forEach {

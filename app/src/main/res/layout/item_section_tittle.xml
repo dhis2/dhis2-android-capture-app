@@ -28,7 +28,8 @@
             app:layout_constraintEnd_toStartOf="@id/section_title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_single_value" />
+            app:srcCompat="@drawable/ic_single_value"
+            app:tint="?colorPrimary" />
 
         <TextView
             android:id="@+id/section_title"

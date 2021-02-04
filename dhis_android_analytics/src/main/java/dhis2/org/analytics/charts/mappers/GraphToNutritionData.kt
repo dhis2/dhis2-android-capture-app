@@ -10,7 +10,7 @@ import dhis2.org.analytics.charts.providers.NutritionColorsProvider
 class GraphToNutritionData(private val nutritionColorProvider: NutritionColorsProvider) {
     private val coordinateToEntryMapper by lazy { GraphCoordinatesToEntry() }
 
-    fun map(graph: Graph): LineData {
+    fun map(graph: Graph): Pair<LineData, Int> {
         val data = dataSet(
             coordinateToEntryMapper.mapNutrition(graph.series.last().coordinates),
             graph.series.last().fieldName
@@ -29,13 +29,16 @@ class GraphToNutritionData(private val nutritionColorProvider: NutritionColorsPr
                     NutritionFillFormatter(backgroundData.reversed()[index - 1])
             }
         }
-        return LineData(backgroundData).apply {
-            addDataSet(data)
-        }
+        val dataset = backgroundData.toMutableList().apply { add(data) }.toList()
+        return Pair(LineData(dataset), numberOfValues(dataset))
     }
 
     private fun dataSet(
         entries: List<Entry>,
         label: String
     ) = LineDataSet(entries, label)
+
+    private fun numberOfValues(dataset: List<LineDataSet>): Int {
+        return dataset.map { it.entryCount }.sum()
+    }
 }

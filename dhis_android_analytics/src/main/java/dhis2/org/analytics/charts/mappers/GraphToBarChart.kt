@@ -3,7 +3,6 @@ package dhis2.org.analytics.charts.mappers
 import android.content.Context
 import android.view.ViewGroup
 import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.DateLabelFormatter
@@ -61,10 +60,8 @@ class GraphToBarChart {
 
             animateX(DEFAULT_ANIM_TIME)
 
-            legend.apply {
-                form = Legend.LegendForm.LINE
-            }
-
+            legend.withGlobalStyle()
+            extraBottomOffset = 10f
             data = barData
 
             layoutParams =

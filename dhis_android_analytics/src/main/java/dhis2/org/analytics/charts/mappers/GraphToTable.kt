@@ -22,9 +22,9 @@ class GraphToTable {
         tableView.adapter = tableAdapter
         tableView.headerCount = 1
 
-        val series = if(graph.chartType == ChartType.NUTRITION){
+        val series = if (graph.chartType == ChartType.NUTRITION) {
             listOf(graph.series.last())
-        }else{
+        } else {
             graph.series
         }
 

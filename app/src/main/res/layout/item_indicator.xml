@@ -60,7 +60,6 @@
                 android:layout_height="0dp"
                 android:background="@{indicatorModel.color()!=-1? indicatorModel.color() : @color/gray_e7e}"
                 app:fromResBgColor="@{indicatorModel.color()!=-1? indicatorModel.color() : @color/gray_e7e}"
-                android:visibility="@{indicatorModel.displayLegend() ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

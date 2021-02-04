@@ -88,10 +88,11 @@ data class IndicatorModel(
     val programIndicator: ProgramIndicator?,
     val value: String?,
     val color: String?,
-    val location: String
+    val location: String,
+    val defaultLabel: String
 ) : AnalyticsModel() {
     fun label(): String {
-        return programIndicator?.displayName() ?: "-"
+        return programIndicator?.displayName() ?: defaultLabel
     }
 
     fun description(): String? {
@@ -104,10 +105,6 @@ data class IndicatorModel(
         } else {
             Color.parseColor(color)
         }
-    }
-
-    fun displayLegend(): Boolean {
-        return programIndicator != null
     }
 }
 

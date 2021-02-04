@@ -8,9 +8,9 @@ import dhis2.org.analytics.charts.data.Graph
 class GraphToBarData {
     private val coordinateToBarEntryMapper by lazy { GraphCoordinatesToBarEntry() }
     fun map(graph: Graph): BarData {
-        val series = if(graph.chartType == ChartType.NUTRITION){
+        val series = if (graph.chartType == ChartType.NUTRITION) {
             listOf(graph.series.last())
-        }else{
+        } else {
             graph.series
         }
         return BarData(
@@ -20,6 +20,6 @@ class GraphToBarData {
                     it.fieldName
                 )
             }
-        )
+        ).withGlobalStyle()
     }
 }

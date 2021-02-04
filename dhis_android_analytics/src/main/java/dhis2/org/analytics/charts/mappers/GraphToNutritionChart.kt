@@ -12,15 +12,16 @@ import dhis2.org.analytics.charts.providers.NutritionColorsProviderImpl
 import dhis2.org.analytics.charts.renderers.NutritionRenderer
 
 class GraphToNutritionChart {
+    private val maxValuesThreadhold = 10
     fun map(context: Context, graph: Graph): LineChart {
-        val lineData = GraphToNutritionData(NutritionColorsProviderImpl()).map(graph)
+        val (lineData, totalValues) = GraphToNutritionData(NutritionColorsProviderImpl()).map(graph)
         return LineChart(context).apply {
             description.isEnabled = false
             isDragEnabled = true
             isScaleXEnabled = true
             isScaleYEnabled = false
             setPinchZoom(false)
-
+            setMaxVisibleValueCount(totalValues + maxValuesThreadhold)
             xAxis.apply {
                 enableGridDashedLine(
                     DEFAULT_GRID_LINE_LENGTH,
@@ -72,7 +73,6 @@ class GraphToNutritionChart {
 
             layoutParams =
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DEFAULT_CHART_HEIGHT)
-
             renderer = NutritionRenderer(this, animator, viewPortHandler)
         }
     }

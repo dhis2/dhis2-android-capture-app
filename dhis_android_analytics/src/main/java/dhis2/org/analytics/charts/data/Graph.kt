@@ -16,7 +16,10 @@ data class Graph(
         return if (baseSeries().isEmpty() || baseSeries().first().coordinates.isEmpty()) {
             return 0f
         } else {
-            ((date.time - baseSeries().first().coordinates.first().eventDate.time) / periodStep).toFloat()
+            (
+                (date.time - baseSeries().first().coordinates.first().eventDate.time) /
+                    periodStep
+                ).toFloat()
         }
     }
 
@@ -32,7 +35,10 @@ data class Graph(
         return if (baseSeries().isEmpty() || baseSeries().first().coordinates.isEmpty()) {
             return null
         } else {
-            Date(baseSeries().first().coordinates.first().eventDate.time + numberOfSteps * periodStep)
+            Date(
+                baseSeries().first().coordinates.first().eventDate.time +
+                    numberOfSteps * periodStep
+            )
         }
     }
 
@@ -46,9 +52,9 @@ data class Graph(
             ?: 0f
     }
 
-    private fun baseSeries():List<SerieData> = if(chartType == ChartType.NUTRITION){
+    private fun baseSeries(): List<SerieData> = if (chartType == ChartType.NUTRITION) {
         listOf(series.last())
-    }else{
+    } else {
         series
     }
 }

@@ -55,7 +55,13 @@ abstract class BaseIndicatorRepository(
                     .flatMap {
                         getLegendColorForIndicator(it.val0(), it.val1())
                     }.map {
-                        IndicatorModel(it.val0(), it.val1(), it.val2(), LOCATION_INDICATOR_WIDGET)
+                        IndicatorModel(
+                            it.val0(),
+                            it.val1(),
+                            it.val2(),
+                            LOCATION_INDICATOR_WIDGET,
+                            resourceManager.defaultIndicatorLabel()
+                        )
                     }
                     .toList()
             }.flatMap { it.toFlowable() }
@@ -105,7 +111,8 @@ abstract class BaseIndicatorRepository(
                             .build(),
                         ruleEffect.data(),
                         "",
-                        ruleAction.location()
+                        ruleAction.location(),
+                        resourceManager.defaultIndicatorLabel()
                     )
 
                     indicators.add(indicator)
@@ -114,7 +121,8 @@ abstract class BaseIndicatorRepository(
                         null,
                         ruleAction.content() + ruleEffect.data(),
                         "",
-                        ruleAction.location()
+                        ruleAction.location(),
+                        resourceManager.defaultIndicatorLabel()
                     )
 
                     indicators.add(indicator)
