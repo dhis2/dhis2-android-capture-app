@@ -81,7 +81,8 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                             periodName,
                             state,
                             dataSetReport.periodType().name(),
-                            dataSetOrgUnitNumber > 1);
+                            dataSetOrgUnitNumber > 1,
+                            dscr != null);
                 })
                 .filter(dataSetDetailModel -> stateFilters.isEmpty() || stateFilters.contains(dataSetDetailModel.state()))
                 .toSortedList((dataSet1, dataSet2) -> {
