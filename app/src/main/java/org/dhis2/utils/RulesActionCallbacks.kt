@@ -9,8 +9,6 @@ import org.hisp.dhis.rules.models.RuleActionShowError
 
 interface RulesActionCallbacks {
 
-    fun setCalculatedValue(calculatedValueVariable: String, value: String)
-
     fun setShowError(showError: RuleActionShowError, model: FieldViewModel?)
 
     fun unsupportedRuleAction()

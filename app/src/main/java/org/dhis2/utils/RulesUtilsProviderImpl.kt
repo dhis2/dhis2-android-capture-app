@@ -35,13 +35,13 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                 is RuleActionShowWarning -> showWarning(
                     it.ruleAction() as RuleActionShowWarning,
                     fieldViewModels,
-                    it.data()
+                    it.data() ?: ""
                 )
                 is RuleActionShowError -> showError(
                     it.ruleAction() as RuleActionShowError,
                     fieldViewModels,
                     rulesActionCallbacks,
-                    it.data()
+                    it.data() ?: ""
                 )
                 is RuleActionHideField -> hideField(
                     it.ruleAction() as RuleActionHideField,
@@ -82,13 +82,13 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                     it.ruleAction() as RuleActionWarningOnCompletion,
                     rulesActionCallbacks,
                     fieldViewModels,
-                    it.data()
+                    it.data() ?: ""
                 )
                 is RuleActionErrorOnCompletion -> errorOnCompletion(
                     it.ruleAction() as RuleActionErrorOnCompletion,
                     rulesActionCallbacks,
                     fieldViewModels,
-                    it.data()
+                    it.data() ?: ""
                 )
                 is RuleActionHideProgramStage -> hideProgramStage(
                     it.ruleAction() as RuleActionHideProgramStage,
@@ -203,10 +203,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         fieldViewModels: MutableMap<String, FieldViewModel>,
         rulesActionCallbacks: RulesActionCallbacks
     ) {
-        if (fieldViewModels[assign.field()] == null) {
-            rulesActionCallbacks.setCalculatedValue(assign.content(), ruleEffect.data())
-            rulesActionCallbacks.save(assign.field(), ruleEffect.data())
-        } else {
+        if (fieldViewModels[assign.field()] != null) {
             val field = fieldViewModels[assign.field()]!!
 
             val value =
@@ -223,7 +220,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             }
 
             val valueToShow =
-                if (field.optionSet() != null && ruleEffect.data().isNotEmpty()) {
+                if (field.optionSet() != null && ruleEffect.data()?.isNotEmpty() == true) {
                     d2.optionModule().options().byOptionSetUid().eq(field.optionSet())
                         .byCode().eq(ruleEffect.data())
                         .one().blockingGet().displayName()
