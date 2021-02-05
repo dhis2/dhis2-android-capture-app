@@ -35,7 +35,7 @@ class FeedbackFragment : FragmentGlobalAbstract(), FeedbackPresenter.FeedbackVie
 
         if (((context.applicationContext) as App).dashboardComponent() != null) {
             ((context.applicationContext) as App).dashboardComponent()!!
-                .plus(FeedbackModule(activity.programUid,activity.teiUid,activity.enrollmentUid))
+                .plus(FeedbackModule(activity.programUid, activity.teiUid, activity.enrollmentUid, context))
                 .inject(this)
         }
     }
@@ -69,18 +69,25 @@ class FeedbackFragment : FragmentGlobalAbstract(), FeedbackPresenter.FeedbackVie
             binding.feedbackPager
         ) { tab: TabLayout.Tab, position: Int ->
 
-            if (programType == ProgramType.RDQA) {
-                tab.text = rdqaTabTitles[position]
+            val tabKey = if (programType == ProgramType.RDQA) {
+                rdqaTabTitles[position]
             } else {
-                tab.text = hnqisTabTitles[position]
+                hnqisTabTitles[position]
             }
+
+            tab.text = getString(resources.getIdentifier(tabKey, "string", context?.packageName))
 
         }.attach()
     }
 
     companion object {
-        val rdqaTabTitles = listOf("By indicator", "By technical area")
-        val hnqisTabTitles = listOf("All", "Critical", "Non Critical")
+        val rdqaTabTitles =
+            listOf("feedback_tab_rdqa_by_indicator", "feedback_tab_rdqa_by_technical_area")
+        val hnqisTabTitles = listOf(
+            "feedback_tab_hnqis_all",
+            "feedback_tab_hnqis_critical",
+            "feedback_tab_hnqis_non_critical"
+        )
     }
 
     override fun render(state: FeedbackState) {
