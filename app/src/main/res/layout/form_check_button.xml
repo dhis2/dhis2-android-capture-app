@@ -64,6 +64,7 @@
                 android:layout_height="wrap_content"
                 android:text="@{item.label}"
                 android:visibility="@{label != null ? View.VISIBLE : View.GONE}"
+                android:alpha="@{item.editable() ? 1.0f : 0.5f}"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
                 app:layout_constraintHorizontal_bias="0"
@@ -112,6 +113,8 @@
                         app:layout_constraintEnd_toStartOf="@+id/clearSelection"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
+                        android:enabled="@{item.editable()}"
+                        android:alpha="@{item.editable() ? 1.0f : 0.5f}"
                         tools:visibility="visible">
 
                         <com.google.android.material.checkbox.MaterialCheckBox
@@ -125,6 +128,8 @@
                             android:text="@string/yes"
                             app:setTextColor="@{item.backgroundTransparent}"
                             app:tintCheckboxButton="@{item.backgroundTransparent}"
+                            android:enabled="@{item.editable()}"
+                            android:alpha="@{item.editable() ? 1.0f : 0.5f}"
                             tools:checked="true" />
 
                         <com.google.android.material.checkbox.MaterialCheckBox
@@ -138,6 +143,8 @@
                             app:tintCheckboxButton="@{item.backgroundTransparent}"
                             android:text="@string/no"
                             android:textSize="@dimen/form_edit_text_size"
+                            android:enabled="@{item.editable()}"
+                            android:alpha="@{item.editable() ? 1.0f : 0.5f}"
                             android:visibility="@{item.valueType() == ValueType.TRUE_ONLY ? View.GONE : View.VISIBLE}"
                             />
                     </LinearLayout>
@@ -152,6 +159,8 @@
                         android:padding="10dp"
                         android:visibility="@{item.isClearable() ? View.VISIBLE : View.GONE}"
                         app:layout_constraintEnd_toEndOf="parent"
+                        android:enabled="@{item.editable()}"
+                        android:alpha="@{item.editable() ? 1.0f : 0.5f}"
                         app:srcCompat="@drawable/ic_close" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>

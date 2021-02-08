@@ -63,6 +63,7 @@
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/renderImage"
+                android:alpha="@{item.editable() ? 1.0f : 0.5f}"
                 tools:text="@string/lorem" />
 
             <ImageView
@@ -95,6 +96,8 @@
                 app:switchPadding="10dp"
                 app:thumbTint="@drawable/selector_material_thumb_field"
                 app:trackTint="@drawable/selector_material_track_field"
+                android:enabled="@{item.editable()}"
+                android:alpha="@{item.editable() ? 1.0f : 0.5f}"
                 app:useMaterialThemeColors="false" />
 
             <TextView
