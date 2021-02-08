@@ -3,6 +3,7 @@ package org.dhis2.usescases.login
 import androidx.annotation.UiThread
 import co.infinum.goldfinger.Goldfinger
 import org.dhis2.usescases.general.AbstractActivityContracts
+import org.dhis2.usescases.login.auth.AuthServiceModel
 
 class LoginContracts {
 
@@ -54,5 +55,6 @@ class LoginContracts {
         fun getDefaultServerProtocol(): String
         fun getPromptParams(): Goldfinger.PromptParams
         fun isNetworkAvailable(): Boolean
+        fun showLoginOptions(authServices: List<AuthServiceModel>)
     }
 }

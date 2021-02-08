@@ -5,8 +5,11 @@ import androidx.annotation.RestrictTo
 import androidx.annotation.RestrictTo.Scope
 import androidx.annotation.VisibleForTesting
 import co.infinum.goldfinger.Goldfinger
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.processors.FlowableProcessor
+import io.reactivex.processors.PublishProcessor
 import org.dhis2.App
 import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.data.fingerprint.Type
@@ -15,7 +18,9 @@ import org.dhis2.data.prefs.Preference.Companion.PIN
 import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.data.schedulers.defaultSubscribe
 import org.dhis2.data.server.UserManager
+import org.dhis2.usescases.login.auth.AuthServiceModel
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.utils.Constants.PREFS_URLS
 import org.dhis2.utils.Constants.PREFS_USERS
@@ -37,6 +42,7 @@ import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import retrofit2.Response
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 class LoginPresenter(
     private val view: LoginContracts.View,
@@ -47,6 +53,7 @@ class LoginPresenter(
 ) {
 
     private var userManager: UserManager? = null
+    private val serverUrlFlowable: FlowableProcessor<String> = PublishProcessor.create()
     var disposable: CompositeDisposable = CompositeDisposable()
 
     private var canHandleBiometrics: Boolean? = null
@@ -86,6 +93,15 @@ class LoginPresenter(
                     )
             )
         } ?: view.setUrl(view.getDefaultServerProtocol())
+
+        disposable.add(
+            serverUrlFlowable.debounce(1, TimeUnit.SECONDS, schedulers.io()).flatMap { serverUrl ->
+                Flowable.just(listOf(AuthServiceModel.mocked()))
+            }.defaultSubscribe(
+                schedulers,
+                onNext = { authServices -> view.showLoginOptions(authServices) }
+            )
+        )
     }
 
     fun checkServerInfoAndShowBiometricButton() {
@@ -282,7 +298,7 @@ class LoginPresenter(
 
     fun areSameCredentials(serverUrl: String, userName: String, pass: String): Boolean {
         return preferenceProvider.areCredentialsSet() &&
-            preferenceProvider.areSameCredentials(serverUrl, userName, pass)
+                preferenceProvider.areSameCredentials(serverUrl, userName, pass)
     }
 
     fun saveUserCredentials(serverUrl: String, userName: String, pass: String) {
@@ -295,10 +311,10 @@ class LoginPresenter(
             fingerPrintController.authenticate(view.getPromptParams())
                 .map { result ->
                     if (preferenceProvider.contains(
-                        SECURE_SERVER_URL,
-                        SECURE_USER_NAME,
-                        SECURE_PASS
-                    )
+                            SECURE_SERVER_URL,
+                            SECURE_USER_NAME,
+                            SECURE_PASS
+                        )
                     ) {
                         Result.success(result)
                     } else {
@@ -367,6 +383,14 @@ class LoginPresenter(
     @RestrictTo(Scope.TESTS)
     fun setUserManager(userManager: UserManager) {
         this.userManager = userManager
+    }
+
+    fun discoverLoginOptions(serverUrl: String) {
+        serverUrlFlowable.onNext(serverUrl)
+    }
+
+    fun loginWithToken() {
+        //TODO:ANDROAPP-3310 Use SDK to login
     }
 
     companion object {

@@ -62,6 +62,11 @@ android {
                 includeCompileClasspath true
             }
         }
+
+        manifestPlaceholders = [
+//                appAuthRedirectScheme: 'com.googleusercontent.apps.652593417937-0bpi96sefm1ig0uo7cecjgcbsla7onue'
+                appAuthRedirectScheme: ''
+        ]
     }
 
     testOptions {
@@ -325,6 +330,9 @@ dependencies {
 
     /*region SECURITY*/
     implementation 'com.scottyab:rootbeer-lib:0.0.7'
+
+    /*openId*/
+    implementation 'net.openid:appauth:0.7.1'
 
     //Test
     implementation fileTree(include: ['*.jar'], dir: 'libs')
