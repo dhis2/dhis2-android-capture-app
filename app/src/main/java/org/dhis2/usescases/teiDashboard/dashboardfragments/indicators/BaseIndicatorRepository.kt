@@ -137,21 +137,30 @@ abstract class BaseIndicatorRepository(
         indicator: ProgramIndicator,
         value: String?
     ): Observable<Trio<ProgramIndicator?, String?, String?>?>? {
-        val color = indicator.legendSets()?.let {
-            if (it.isNotEmpty()) {
-                val legends = d2.legendSetModule().legends().byStartValue()
-                    .smallerThan(value?.toDouble() ?: 0.0).byEndValue()
-                    .biggerThan(value?.toDouble() ?: 0.0)
-                    .byLegendSet().eq(it.first().uid()).blockingGet()
-                if (legends.isNotEmpty()) {
-                    legends.first().color() ?: ""
-                } else {
-                    ""
-                }
-            } else {
+        var color: String
+        try {
+            color = if (value?.toFloat()?.isNaN() == true) {
                 ""
+            } else {
+                indicator.legendSets()?.let {
+                    if (it.isNotEmpty()) {
+                        val legends = d2.legendSetModule().legends().byStartValue()
+                            .smallerThan(value?.toDouble() ?: 0.0).byEndValue()
+                            .biggerThan(value?.toDouble() ?: 0.0)
+                            .byLegendSet().eq(it.first().uid()).blockingGet()
+                        if (legends.isNotEmpty()) {
+                            legends.first().color() ?: ""
+                        } else {
+                            ""
+                        }
+                    } else {
+                        ""
+                    }
+                } ?: ""
             }
-        } ?: ""
+        } catch (e: java.lang.Exception) {
+            color = ""
+        }
 
         return Observable.just(
             Trio.create<ProgramIndicator, String, String>(
