@@ -57,6 +57,9 @@ class EventIndicatorRepositoryTest {
         whenever(
             resourceManager.sectionFeedback()
         ) doReturn "Feedback"
+        whenever(
+            resourceManager.defaultIndicatorLabel()
+        )doReturn "Info"
         repository = EventIndicatorRepository(
             d2,
             ruleEngineRepository,

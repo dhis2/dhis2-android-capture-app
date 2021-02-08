@@ -7,6 +7,7 @@ import org.dhis2.data.analytics.IndicatorModel
 import org.dhis2.data.analytics.LOCATION_FEEDBACK_WIDGET
 import org.dhis2.data.analytics.LOCATION_INDICATOR_WIDGET
 import org.dhis2.data.analytics.SectionTitle
+import org.dhis2.data.analytics.SectionType
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.tuples.Pair
 import org.dhis2.data.tuples.Trio
@@ -54,7 +55,13 @@ abstract class BaseIndicatorRepository(
                     .flatMap {
                         getLegendColorForIndicator(it.val0(), it.val1())
                     }.map {
-                        IndicatorModel(it.val0(), it.val1(), it.val2(), LOCATION_INDICATOR_WIDGET)
+                        IndicatorModel(
+                            it.val0(),
+                            it.val1(),
+                            it.val2(),
+                            LOCATION_INDICATOR_WIDGET,
+                            resourceManager.defaultIndicatorLabel()
+                        )
                     }
                     .toList()
             }.flatMap { it.toFlowable() }
@@ -104,7 +111,8 @@ abstract class BaseIndicatorRepository(
                             .build(),
                         ruleEffect.data(),
                         "",
-                        ruleAction.location()
+                        ruleAction.location(),
+                        resourceManager.defaultIndicatorLabel()
                     )
 
                     indicators.add(indicator)
@@ -113,7 +121,8 @@ abstract class BaseIndicatorRepository(
                         null,
                         ruleAction.content() + ruleEffect.data(),
                         "",
-                        ruleAction.location()
+                        ruleAction.location(),
+                        resourceManager.defaultIndicatorLabel()
                     )
 
                     indicators.add(indicator)
@@ -128,21 +137,30 @@ abstract class BaseIndicatorRepository(
         indicator: ProgramIndicator,
         value: String?
     ): Observable<Trio<ProgramIndicator?, String?, String?>?>? {
-        val color = indicator.legendSets()?.let {
-            if (it.isNotEmpty()) {
-                val legends = d2.legendSetModule().legends().byStartValue()
-                    .smallerThan(value?.toDouble() ?: 0.0).byEndValue()
-                    .biggerThan(value?.toDouble() ?: 0.0)
-                    .byLegendSet().eq(it.first().uid()).blockingGet()
-                if (legends.isNotEmpty()) {
-                    legends.first().color() ?: ""
-                } else {
-                    ""
-                }
-            } else {
+        var color: String
+        try {
+            color = if (value?.toFloat()?.isNaN() == true) {
                 ""
+            } else {
+                indicator.legendSets()?.let {
+                    if (it.isNotEmpty()) {
+                        val legends = d2.legendSetModule().legends().byStartValue()
+                            .smallerThan(value?.toDouble() ?: 0.0).byEndValue()
+                            .biggerThan(value?.toDouble() ?: 0.0)
+                            .byLegendSet().eq(it.first().uid()).blockingGet()
+                        if (legends.isNotEmpty()) {
+                            legends.first().color() ?: ""
+                        } else {
+                            ""
+                        }
+                    } else {
+                        ""
+                    }
+                } ?: ""
             }
-        } ?: ""
+        } catch (e: java.lang.Exception) {
+            color = ""
+        }
 
         return Observable.just(
             Trio.create<ProgramIndicator, String, String>(
@@ -174,11 +192,15 @@ abstract class BaseIndicatorRepository(
                     }
                 )
             }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
-            if (indicatorList.isNotEmpty()) {
+            if (indicatorList.isNotEmpty() && charts.isNotEmpty()) {
+                add(SectionTitle(resourceManager.sectionChartsAndIndicators()))
+                add(SectionTitle(resourceManager.sectionIndicators(), SectionType.SUBSECTION))
+                addAll(indicatorList)
+                addAll(charts)
+            } else if (indicatorList.isNotEmpty() && charts.isEmpty()) {
                 add(SectionTitle(resourceManager.sectionIndicators()))
                 addAll(indicatorList)
-            }
-            if (charts.isNotEmpty()) {
+            } else if (indicatorList.isEmpty() && charts.isNotEmpty()) {
                 add(SectionTitle(resourceManager.sectionCharts()))
                 addAll(charts)
             }

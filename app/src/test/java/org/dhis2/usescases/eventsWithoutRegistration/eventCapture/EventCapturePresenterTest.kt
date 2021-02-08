@@ -9,7 +9,6 @@ import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
-import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
@@ -75,15 +74,6 @@ class EventCapturePresenterTest {
         ) doReturn StoreResult("fieldUid", ValueStoreImpl.ValueStoreResult.VALUE_CHANGED)
         presenter.setOptionGroupToHide("optionGroupToHide", false, "field")
         verify(valueStore).deleteOptionValueIfSelectedInGroup("field", "optionGroupToHide", false)
-    }
-
-    @Test
-    fun `Display field should return display section`() {
-        val section = presenter.getFieldSection(
-            DisplayViewModel.create("", "", "", "")
-        )
-
-        assertTrue(section == "display")
     }
 
     @Test
