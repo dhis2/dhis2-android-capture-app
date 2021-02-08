@@ -680,6 +680,16 @@ public class Bindings {
         view.animate().scaleY(openFilter != filterType ? 1 : -1).setDuration(200).start();
     }
 
+    @BindingAdapter(value = {"dataSetStatus"})
+    public static void setDataSetStatusIcon(ImageView view, Boolean isComplete) {
+        view.setImageDrawable(
+                AppCompatResources.getDrawable(
+                        view.getContext(),
+                        isComplete ? R.drawable.ic_event_status_complete : R.drawable.ic_event_status_open
+                )
+        );
+    }
+
     @BindingAdapter("iconResource")
     public static void setIconResource(ImageView imageView, @DrawableRes int iconResource) {
         imageView.setImageResource(iconResource);
