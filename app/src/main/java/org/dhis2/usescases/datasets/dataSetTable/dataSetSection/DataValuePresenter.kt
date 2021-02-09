@@ -235,7 +235,12 @@ class DataValuePresenter(
 
     private fun getDataSetIndicators() {
         disposable.add(
-            repository.getDataSetIndicators(orgUnitUid!!, periodId!!, attributeOptionCombo!!)
+            repository.getDataSetIndicators(
+                orgUnitUid!!,
+                periodId!!,
+                attributeOptionCombo!!,
+                sectionName
+            )
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(

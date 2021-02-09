@@ -5,6 +5,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import java.util.ArrayList
 import java.util.HashMap
+import java.util.SortedMap
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
 import org.dhis2.data.tuples.Pair
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
@@ -502,12 +503,15 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
     override fun getDataSetIndicators(
         orgUnitUid: String,
         periodUid: String,
-        attributeOptionCombo: String
-    ): Single<HashMap<String?, String>> {
-        return d2.indicatorModule().indicators().byDataSetUid(dataSetUid).get()
-            .map {
+        attributeOptionCombo: String,
+        sectionName: String
+    ): Single<SortedMap<String?, String>> {
+        return d2.indicatorModule().indicators()
+            .byDataSetUid(dataSetUid)
+            .bySectionUid(getSectionByDataSet(sectionName).blockingFirst().uid())
+            .get().map { indicators ->
                 val dataSetIndicators = hashMapOf<String?, String>()
-                it.forEach { indicator ->
+                indicators.forEach { indicator ->
                     dataSetIndicators[indicator.displayName()] = d2.indicatorModule()
                         .dataSetIndicatorEngine()
                         .blockingEvaluate(
@@ -518,7 +522,7 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
                             attributeOptionCombo
                         ).toInt().toString()
                 }
-                return@map dataSetIndicators
+                return@map dataSetIndicators.toSortedMap(compareBy { it })
             }
     }
 }
