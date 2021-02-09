@@ -365,7 +365,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         FilterManager.getInstance().clearEnrollmentStatus();
         FilterManager.getInstance().clearEventStatus();
         FilterManager.getInstance().clearEnrollmentDate();
-        FilterManager.getInstance().clearWorkingList();
+        FilterManager.getInstance().clearWorkingList(false);
         FilterManager.getInstance().clearSorting();
 
         super.onDestroy();
@@ -908,7 +908,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void openDashboard(String teiUid, String programUid, String enrollmentUid) {
-        FilterManager.getInstance().clearWorkingList();
+        FilterManager.getInstance().clearWorkingList(true);
         startActivity(TeiDashboardMobileActivity.intent(this, teiUid, enrollmentUid != null ? programUid : null, enrollmentUid));
     }
 
