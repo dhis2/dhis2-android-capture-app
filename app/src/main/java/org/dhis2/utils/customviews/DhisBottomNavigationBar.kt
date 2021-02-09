@@ -54,11 +54,10 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
                 getDrawable(R.styleable.DhisBottomNavigationBar_currentItemSelectorDrawable)
             recycle()
         }
-        addView(currentItemIndicator)
         post {
             menu.forEachIndexed { index, item ->
                 if (index == 0) {
-                    setCurrentItemIndicatorPosition(findViewById<View>(item.itemId))
+                    setCurrentItemIndicatorPosition(findViewById<View>(item.itemId), true)
                 }
             }
         }
@@ -110,13 +109,19 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
         }
     }
 
-    private fun setCurrentItemIndicatorPosition(selectedItemView: View) {
+    private fun setCurrentItemIndicatorPosition(
+        selectedItemView: View,
+        addCurrentSelector: Boolean = false
+    ) {
         currentItemIndicator.apply {
             x = selectedItemView.x +
                 selectedItemView.width / 2f +
                 intrinsicHorizontalMargin() -
                 itemIndicatorSize / 2f
             y = (this@DhisBottomNavigationBar.height - itemIndicatorSize) / 2f
+        }
+        if (addCurrentSelector) {
+            addView(currentItemIndicator)
         }
         invalidate()
     }

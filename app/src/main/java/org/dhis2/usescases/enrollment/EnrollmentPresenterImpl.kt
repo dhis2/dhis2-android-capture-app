@@ -657,10 +657,6 @@ class EnrollmentPresenterImpl(
         view.displayMessage(message)
     }
 
-    override fun setCalculatedValue(calculatedValueVariable: String, value: String) {
-        // not used
-    }
-
     override fun setShowError(showError: RuleActionShowError, model: FieldViewModel?) {
         // not used
     }

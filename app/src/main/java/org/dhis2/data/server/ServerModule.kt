@@ -1,7 +1,6 @@
 package org.dhis2.data.server
 
 import android.content.Context
-import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
@@ -59,13 +58,15 @@ class ServerModule {
         fun getD2Configuration(context: Context): D2Configuration {
             val interceptors: MutableList<Interceptor> =
                 ArrayList()
-            interceptors.add(StethoInterceptor())
+            if ((context as App).flipperInterceptor != null) {
+                interceptors.add(context.flipperInterceptor)
+            }
             interceptors.add(
                 AnalyticsInterceptor(
                     AnalyticsHelper(
                         FirebaseAnalytics.getInstance(context),
                         PreferenceProviderImpl(context),
-                        (context as App).appComponent().matomoController()
+                        context.appComponent().matomoController()
                     )
                 )
             )

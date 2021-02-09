@@ -69,7 +69,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     @Override
     public LiveData<PagedList<EventViewModel>> filteredProgramEvents() {
-
         DataSource dataSource =  filterPresenter.filteredEventProgram(program().blockingFirst())
                 .withTrackedEntityDataValues()
                 .getDataSource()

@@ -36,7 +36,6 @@ class SearchSortingValueSetterTest {
             d2,
             "-",
             "eventLabel",
-            "orgUnitLabel",
             "enrollmentStatusLabel",
             "enrollmentDefaultLabel",
             "d/M/yyyy",
@@ -229,9 +228,7 @@ class SearchSortingValueSetterTest {
         )
 
         result.apply {
-            assertTrue(this != null)
-            assertTrue(this?.first == "orgUnitLabel")
-            assertTrue(this?.second == "EnrollmentOrgUnit")
+            assertTrue(this == null)
         }
     }
 
@@ -251,9 +248,7 @@ class SearchSortingValueSetterTest {
         )
 
         result.apply {
-            assertTrue(this != null)
-            assertTrue(this?.first == "orgUnitLabel")
-            assertTrue(this?.second == "-")
+            assertTrue(this == null)
         }
     }
 
@@ -278,9 +273,7 @@ class SearchSortingValueSetterTest {
         )
 
         result.apply {
-            assertTrue(this != null)
-            assertTrue(this?.first == "orgUnitLabel")
-            assertTrue(this?.second == "teiOrgUnit")
+            assertTrue(this == null)
         }
     }
 
@@ -304,9 +297,7 @@ class SearchSortingValueSetterTest {
         )
 
         result.apply {
-            assertTrue(this != null)
-            assertTrue(this?.first == "orgUnitLabel")
-            assertTrue(this?.second == "-")
+            assertTrue(this == null)
         }
     }
 

@@ -85,15 +85,6 @@ class EventCapturePresenterTest {
     }
 
     @Test
-    fun `Display field should return display section`() {
-        val section = presenter.getFieldSection(
-            DisplayViewModel.create("", "", "", "")
-        )
-
-        assertTrue(section == "display")
-    }
-
-    @Test
     fun `Field with section should return its section`() {
         val section = presenter.getFieldSection(
             SpinnerViewModel.create(

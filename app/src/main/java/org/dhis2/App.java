@@ -14,7 +14,7 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
-import com.facebook.stetho.Stetho;
+import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.security.ProviderInstaller;
@@ -24,6 +24,7 @@ import org.acra.config.CoreConfigurationBuilder;
 import org.acra.config.HttpSenderConfigurationBuilder;
 import org.acra.data.StringFormat;
 import org.acra.sender.HttpSender;
+import org.dhis2.data.appinspector.AppInspector;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerServer;
 import org.dhis2.data.dagger.PerUser;
@@ -45,7 +46,6 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.reporting.CrashReportModule;
-import org.dhis2.utils.analytics.matomo.TrackerController;
 import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
@@ -53,11 +53,6 @@ import org.dhis2.utils.timber.ReleaseTree;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.D2Manager;
 import org.jetbrains.annotations.NotNull;
-import org.matomo.sdk.Matomo;
-import org.matomo.sdk.Tracker;
-import org.matomo.sdk.TrackerBuilder;
-import org.matomo.sdk.extra.DownloadTracker;
-import org.matomo.sdk.extra.TrackHelper;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -110,6 +105,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     private boolean fromBackGround = false;
     private boolean recreated;
+    private AppInspector appInspector;
 
     @Override
     public void onCreate() {
@@ -117,8 +113,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
-        if (BuildConfig.DEBUG)
-            Stetho.initializeWithDefaults(this);
+        appInspector = new AppInspector(this).init();
 
         MapController.Companion.init(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
 
@@ -368,5 +363,9 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
             }
             Timber.d(e);
         });
+    }
+
+    public FlipperOkhttpInterceptor getFlipperInterceptor() {
+        return appInspector.getFlipperInterceptor();
     }
 }

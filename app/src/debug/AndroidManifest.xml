@@ -122,16 +122,9 @@
             android:name="cat.ereza.customactivityoncrash.activity.DefaultErrorActivity"
             android:theme="@style/ErrorActivityTheme"
             android:process=":error_activity" />
-        <service
-            android:name=".data.notifications.DhisFirebaseMessagingService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/default_notification_channel_id" />
+
+        <service android:name="com.facebook.flipper.plugins.leakcanary.RecordLeakService" />
+
     </application>
 
 </manifest>

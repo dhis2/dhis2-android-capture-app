@@ -149,14 +149,12 @@ public class SearchTEModule {
     SearchSortingValueSetter searchSortingValueSetter(Context context, D2 d2, EnrollmentUiDataHelper enrollmentUiDataHelper) {
         String unknownLabel = context.getString(R.string.unknownValue);
         String eventDateLabel = context.getString(R.string.most_recent_event_date);
-        String orgUnitLabel = context.getString(R.string.org_unit);
         String enrollmentStatusLabel = context.getString(R.string.filters_title_enrollment_status);
         String enrollmentDateDefaultLabel = context.getString(R.string.enrollment_date);
         String uiDateFormat = DateUtils.SIMPLE_DATE_FORMAT;
         return new SearchSortingValueSetter(d2,
                 unknownLabel,
                 eventDateLabel,
-                orgUnitLabel,
                 enrollmentStatusLabel,
                 enrollmentDateDefaultLabel,
                 uiDateFormat,

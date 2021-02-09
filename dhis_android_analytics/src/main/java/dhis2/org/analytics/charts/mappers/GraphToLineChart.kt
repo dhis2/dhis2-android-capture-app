@@ -3,7 +3,6 @@ package dhis2.org.analytics.charts.mappers
 import android.content.Context
 import android.view.ViewGroup
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.DateLabelFormatter
@@ -24,8 +23,9 @@ class GraphToLineChart {
         return LineChart(context).apply {
             description.isEnabled = false
             isDragEnabled = true
-            setScaleEnabled(true)
-            setPinchZoom(true)
+            isScaleXEnabled = true
+            isScaleYEnabled = false
+            setPinchZoom(false)
 
             xAxis.apply {
                 enableGridDashedLine(
@@ -47,17 +47,16 @@ class GraphToLineChart {
                     DEFAULT_GRID_SPACE_LENGTH,
                     DEFAULT_GRIP_PHASE
                 )
-                axisMaximum = (graph.maxValue()?.fieldValue ?: DEFAULT_VALUE) + VALUE_PADDING
-                axisMinimum = (graph.minValue()?.fieldValue ?: DEFAULT_VALUE) - VALUE_PADDING
+                axisMaximum = graph.maxValue() + VALUE_PADDING
+                axisMinimum = graph.minValue() - VALUE_PADDING
                 setDrawLimitLinesBehindData(true)
             }
             axisRight.isEnabled = false
 
             animateX(DEFAULT_ANIM_TIME)
 
-            legend.apply {
-                form = Legend.LegendForm.LINE
-            }
+            legend.withGlobalStyle()
+            extraBottomOffset = 10f
 
             data = lineData
 
