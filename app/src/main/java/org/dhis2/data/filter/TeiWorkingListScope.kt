@@ -118,7 +118,7 @@ fun EventQueryRepositoryScope.mapToEventWorkingListScope(
     return EventWorkingListScope(
         programStage(),
         eventDate()?.let { resources.filterResources.dateFilterPeriodToText(it) },
-        eventStatus()?.let { "" },
+        eventStatus()?.let { resources.filterResources.eventStatusToText(it) },
         assignedUserMode()
     )
 }
