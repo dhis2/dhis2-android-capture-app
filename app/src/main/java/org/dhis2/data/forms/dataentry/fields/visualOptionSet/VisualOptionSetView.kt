@@ -5,7 +5,9 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.core.view.setPadding
 import androidx.core.view.updatePadding
 import org.dhis2.Bindings.dp
 import org.dhis2.data.forms.dataentry.fields.image.ImageCustomView
@@ -67,10 +69,16 @@ class VisualOptionSetView @JvmOverloads constructor(
         viewModel?.takeIf {
             it.warning() != null || it.error() != null
         }?.let {
+            val labelView = findViewWithTag<TextView>(viewModel?.labelTag())
             addView(
                 TextView(context).apply {
                     setTextAppearance(context, it.errorAppearance)
                     text = it.errorMessage
+                    layoutParams =
+                        LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
+                            addRule(RelativeLayout.BELOW, labelView.id)
+                            setPadding(16.dp)
+                        }
                 }
             )
         }
