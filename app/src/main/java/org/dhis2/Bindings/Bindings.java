@@ -778,10 +778,9 @@ public class Bindings {
     @BindingAdapter("requestFocus")
     public static void requestFocus(EditText editText, boolean focused) {
         if (focused) {
-            if(!editText.hasFocus()) {
+                editText.setFocusableInTouchMode(true);
                 editText.requestFocus();
                 openKeyboard(editText);
-            }
         } else {
             editText.clearFocus();
         }
