@@ -1,8 +1,8 @@
 package org.dhis2.usescases.login.auth
 
-import android.app.PendingIntent
 import android.content.Intent
 import android.net.Uri
+import net.openid.appauth.AppAuthConfiguration
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
@@ -10,6 +10,8 @@ import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.RegistrationRequest
 import net.openid.appauth.ResponseTypeValues
+import net.openid.appauth.browser.BrowserWhitelist
+import net.openid.appauth.browser.VersionedBrowserMatcher
 
 
 const val RC_AUTH = 2021
@@ -42,23 +44,29 @@ class OpenIdHandler(private val onAuthRequestIntent: OnAuthRequestIntent) {
         if (requestCode == RC_AUTH && data != null) {
             val response = AuthorizationResponse.fromIntent(data)
             val ex = AuthorizationException.fromIntent(data)
-            responseCallback(
-                AuthServiceResponseModel(response?.accessToken, ex?.message)
-            )
+            if (ex != null) {
+                responseCallback(
+                    AuthServiceResponseModel(response?.authorizationCode, ex.message)
+                )
+            } else {
+                authService?.performTokenRequest(
+                    response!!.createTokenExchangeRequest()
+                ) { tokenResponse, tokenEx ->
+                    responseCallback(
+                        AuthServiceResponseModel(tokenResponse?.idToken, tokenEx?.message)
+                    )
+                }
+            }
         }
     }
 
     private fun doAuthorizationWithOpenId(authServiceModel: AuthServiceModel) {
         authService?.let { authService ->
             requestAuthCode(authServiceModel) {
-                authService.performAuthorizationRequest(
-                    it,
-                    onAuthRequestIntent.getPendingIntent()
-                )
-                /*onAuthRequestIntent.startIntent(
+                onAuthRequestIntent.startIntent(
                     Intent(authService.getAuthorizationRequestIntent(it)),
                     RC_AUTH
-                )*/
+                )
             }
         }
     }
@@ -88,7 +96,7 @@ class OpenIdHandler(private val onAuthRequestIntent: OnAuthRequestIntent) {
     ): AuthorizationRequest = AuthorizationRequest.Builder(
         authServiceConfiguration,
         authServiceModel.clientId,
-        ResponseTypeValues.CODE, //TOKEN OR ID_TOKEN
+        ResponseTypeValues.CODE, //CODE, TOKEN OR ID_TOKEN
         authServiceModel.redirectUri!!
     ).apply {
         authServiceModel.scope?.let { setScope(it) }
@@ -129,5 +137,11 @@ class OpenIdHandler(private val onAuthRequestIntent: OnAuthRequestIntent) {
                 AuthServiceResponseModel(response?.registrationAccessToken, ex?.message)
             )
         }
+    }
+
+    fun appAuthConfig(): AppAuthConfiguration {
+        return AppAuthConfiguration.Builder()
+            .setBrowserMatcher(BrowserWhitelist(VersionedBrowserMatcher.CHROME_BROWSER))
+            .build()
     }
 }

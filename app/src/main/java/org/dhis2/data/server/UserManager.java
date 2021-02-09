@@ -14,6 +14,9 @@ public interface UserManager {
     Observable<User> logIn(@NonNull String username, @NonNull String password, @NonNull String serverUrl);
 
     @NonNull
+    Observable<User> logIn(@NonNull String serverUrl, @NonNull String token);
+
+    @NonNull
     Observable<Boolean> isUserLoggedIn();
 
     @NonNull

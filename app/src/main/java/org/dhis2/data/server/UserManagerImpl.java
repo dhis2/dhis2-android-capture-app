@@ -24,6 +24,13 @@ public class UserManagerImpl implements UserManager {
 
     @NonNull
     @Override
+    public Observable<User> logIn(@NonNull String serverUrl, @NonNull String token) {
+        return Observable.defer(() -> d2.userModule().logInOpenIdConnect(serverUrl, token).toObservable());
+    }
+
+
+    @NonNull
+    @Override
     public Observable<Boolean> isUserLoggedIn() {
         return Observable.defer(() -> d2.userModule().isLogged().toObservable());
     }

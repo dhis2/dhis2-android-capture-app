@@ -389,8 +389,46 @@ class LoginPresenter(
         serverUrlFlowable.onNext(serverUrl)
     }
 
-    fun loginWithToken() {
+    fun loginWithToken(serverUrl: String, token: String) {
         //TODO:ANDROAPP-3310 Use SDK to login
+        userManager?.d2?.userModule()?.logInOpenIdConnect(serverUrl, token)
+        disposable.add(
+            Observable.just(
+                (view.abstracContext.applicationContext as App).createServerComponent()
+                    .userManager()
+            )
+                .flatMap { userManager ->
+                    preferenceProvider.setValue(SERVER, "$serverUrl/api")
+                    this.userManager = userManager
+                    userManager.logIn(serverUrl, token)
+                        .map<Response<Any>> { user ->
+                            run {
+                                with(preferenceProvider) {
+                                    setValue(
+                                        USER,
+                                        userManager.d2.userModule()
+                                            .userCredentials()
+                                            .blockingGet()
+                                            .username()
+                                    )
+                                    setValue(SESSION_LOCKED, false)
+                                    setValue(PIN, null)
+                                }
+                                Response.success<Any>(null)
+                            }
+                        }
+                }
+                .subscribeOn(schedulers.io())
+                .observeOn(schedulers.ui())
+                .subscribe(
+                    {
+                        this.handleResponse(it, "", serverUrl)
+                    },
+                    {
+                        this.handleError(it, serverUrl, "", "")
+                    }
+                )
+        )
     }
 
     companion object {

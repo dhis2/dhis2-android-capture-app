@@ -364,8 +364,9 @@ class LoginActivity : AuthActivity(), LoginContracts.View {
         }
     }
 
-    override fun loginWithAuthorization() {
-        presenter.loginWithToken()
+    override fun loginWithAuthorization(token: String) {
+        //TODO: Remove hardcode url
+        presenter.loginWithToken("https://play.dhis2.org/android-dev", token)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

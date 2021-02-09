@@ -1,52 +1,46 @@
 package org.dhis2.usescases.login.auth
 
-import android.app.PendingIntent
 import android.content.Intent
-import android.content.IntentFilter
 import net.openid.appauth.AuthorizationService
 import org.dhis2.usescases.general.ActivityGlobalAbstract
-import org.dhis2.usescases.login.LoginActivity
 
 abstract class AuthActivity : ActivityGlobalAbstract() {
+
+    var isPerformingLogin = false
 
     private val openIdHandler = OpenIdHandler(object : OnAuthRequestIntent {
         override fun startIntent(intent: Intent, requestCode: Int) {
             startActivityForResult(intent, requestCode)
         }
-
-        override fun getPendingIntent(): PendingIntent {
-            val intent = Intent(this@AuthActivity, LoginActivity::class.java)
-            return PendingIntent.getActivity(
-                this@AuthActivity,
-                RC_AUTH,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT
-            )
-        }
     })
 
-    override fun onPause() {
-        openIdHandler.onPause()
-        super.onPause()
+    override fun onStop() {
+        if (!isPerformingLogin) {
+            openIdHandler.onPause()
+        }
+        super.onStop()
     }
 
     fun attemptLogin(authServiceModel: AuthServiceModel) {
-
-        val filter = IntentFilter(Intent.ACTION_VIEW).apply {
-            addCategory(Intent.CATEGORY_DEFAULT)
-            addCategory(Intent.CATEGORY_BROWSABLE)
-            addDataScheme(authServiceModel.redirectUri.toString())
-        }
-        openIdHandler.logIn(authServiceModel, AuthorizationService(this)) { response ->
-            loginWithAuthorization()
+        isPerformingLogin = true
+        openIdHandler.logIn(
+            authServiceModel,
+            AuthorizationService(this/*, openIdHandler.appAuthConfig()*/)
+        ) { response ->
+            response.token?.let {
+                loginWithAuthorization(it)
+            }
         }
     }
 
-    abstract fun loginWithAuthorization()
+    abstract fun loginWithAuthorization(token: String)
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        isPerformingLogin = false
         openIdHandler.handleAuthRequestResult(requestCode, resultCode, data) { response ->
-            loginWithAuthorization()
+            response.token?.let {
+                loginWithAuthorization(it)
+            }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }

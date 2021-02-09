@@ -112,7 +112,7 @@ fun TrackedEntityInstanceQueryRepositoryScope.mapToWorkingListScope(
     )
 }
 
-fun EventQueryRepositoryScope.mapToEventWorkingListScope(
+/*fun EventQueryRepositoryScope.mapToEventWorkingListScope(
     resources: ResourceManager
 ): EventWorkingListScope {
     return EventWorkingListScope(
@@ -121,4 +121,4 @@ fun EventQueryRepositoryScope.mapToEventWorkingListScope(
         eventStatus()?.let { resources.filterResources.eventStatusToText(it) },
         assignedUserMode()
     )
-}
+}*/

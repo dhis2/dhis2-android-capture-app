@@ -5,5 +5,4 @@ import android.content.Intent
 
 interface OnAuthRequestIntent {
     fun startIntent(intent: Intent, requestCode: Int)
-    fun getPendingIntent(): PendingIntent
 }
