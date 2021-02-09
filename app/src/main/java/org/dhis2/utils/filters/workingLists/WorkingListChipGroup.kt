@@ -3,8 +3,12 @@ package org.dhis2.utils.filters.workingLists
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import androidx.databinding.Observable
 import com.google.android.material.chip.ChipGroup
+import org.dhis2.data.filter.EmptyWorkingList
 import org.dhis2.databinding.ItemFilterWorkingListChipBinding
+import org.dhis2.utils.filters.FilterManager
+import org.dhis2.utils.filters.WorkingListFilter
 
 class WorkingListChipGroup @JvmOverloads constructor(
     context: Context,
@@ -28,5 +32,18 @@ class WorkingListChipGroup @JvmOverloads constructor(
                 }.root
             )
         }
+    }
+
+    fun setWorkingFilter(workingListFilter: WorkingListFilter) {
+        workingListFilter.observeScope()
+            .addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
+                override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+                    if (FilterManager.getInstance().observeWorkingListScope()
+                        .get() is EmptyWorkingList && checkedChipId != -1
+                    ) {
+                        clearCheck()
+                    }
+                }
+            })
     }
 }

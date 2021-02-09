@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import org.dhis2.R
+import org.dhis2.data.filter.WorkingListScope
 import org.dhis2.utils.filters.sorting.Sorting
 import org.dhis2.utils.filters.sorting.SortingItem
 import org.dhis2.utils.filters.sorting.SortingItem.Companion.create
@@ -272,6 +273,10 @@ data class WorkingListFilter(
                 FilterManager.getInstance().currentWorkingList(null)
             }
         }
+    }
+
+    fun observeScope(): ObservableField<WorkingListScope> {
+        return FilterManager.getInstance().observeWorkingListScope()
     }
 
     override fun icon(): Int {
