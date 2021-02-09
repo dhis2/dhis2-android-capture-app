@@ -50,4 +50,6 @@ class ResourceManager(val context: Context) {
     fun sectionFeedback(): String = context.getString(R.string.section_feedback)
     fun sectionIndicators(): String = context.getString(R.string.section_indicators)
     fun sectionCharts(): String = context.getString(R.string.section_charts)
+    fun sectionChartsAndIndicators(): String = context.getString(R.string.section_charts_indicators)
+    fun defaultIndicatorLabel(): String = context.getString(R.string.info)
 }

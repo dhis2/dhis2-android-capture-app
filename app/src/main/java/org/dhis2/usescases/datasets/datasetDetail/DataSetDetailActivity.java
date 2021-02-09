@@ -91,7 +91,6 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         binding.programProgress.setVisibility(View.GONE);
         if (binding.recycler.getAdapter() == null) {
             binding.recycler.setAdapter(adapter);
-            binding.recycler.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         }
         if (datasets.size() == 0) {
             binding.emptyData.setVisibility(View.VISIBLE);

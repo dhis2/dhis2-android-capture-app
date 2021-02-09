@@ -1,12 +1,8 @@
 package org.dhis2.data.forms.dataentry.fields.display;
 
 
-import androidx.constraintlayout.widget.ConstraintLayout;
-
-import org.dhis2.BR;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.databinding.ItemIndicatorBinding;
-
 
 
 public class DisplayHolder extends FormViewHolder {
@@ -22,22 +18,6 @@ public class DisplayHolder extends FormViewHolder {
 
     public void update(DisplayViewModel viewModel) {
 
-        this.viewModel = viewModel;
-
-        if(viewModel.label().isEmpty()){
-            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.guideline.getLayoutParams();
-            params.guidePercent = 0;
-            binding.guideline.setLayoutParams(params);
-        }else {
-            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.guideline.getLayoutParams();
-            params.guidePercent = 0.95f;
-            binding.guideline.setLayoutParams(params);
-            binding.setVariable(BR.label, viewModel.label());
-        }
-
-        binding.setVariable(BR.value, viewModel.value());
-        binding.setVariable(BR.colorBg, -1);
-        binding.executePendingBindings();
 
     }
 }
