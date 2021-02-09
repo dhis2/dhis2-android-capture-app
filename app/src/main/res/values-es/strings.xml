@@ -752,8 +752,26 @@
     <string name="customactivityoncrash_error_activity_error_details_copy">Copiar al portapapeles</string>
     <string name="customactivityoncrash_error_activity_error_details_copied">Copiado al portapapeles</string>
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Información del error</string>
+    <string name="metada_first_sync_error">Encontramos un error al sincronizar con su servidor. Comparta el error con el administrador del sistema si es posible.</string>
+    <string name="error_init_session">No pudimos iniciar la sesión con su usuario</string>
     <string name="enrollment_date_edition_warning">Hay eventos planificados que no serán reprogramados</string>
     <string name="jira_issue_sent">Incidencia reportada</string>
     <string name="jira_issue_sent_error">Error al enviar la incidencia</string>
     <string name="section_charts">Gráficas</string>
+    <string name="enable_location_message">La ubicación de su dispositivo está desconectada. Por favor habilítelo para capturar coordenadas. </string>
+    <string name="navigation_list_view">Vista de lista</string>
+    <string name="navigation_table_view">Vista de tabla</string>
+    <string name="navigation_map_view">Vista del mapa</string>
+    <string name="navigation_analytics">Analíticas</string>
+    <string name="navigation_tasks">Tareas</string>
+    <string name="navigation_programs">Programas</string>
+    <string name="navigation_events">Eventos</string>
+    <string name="navigation_relationships">Relaciones</string>
+    <string name="navigation_notes">Notas</string>
+    <string name="navigation_data_entry">Introducción de datos</string>
+    <string name="navigation_tei_data">Detalles</string>
+    <string name="show_bar_graph">Ver como barras</string>
+    <string name="show_line_graph">Ver como líneas</string>
+    <string name="show_table_graph">Ver como tabla</string>
+    <string name="show_table_value">Ver como valor único</string>
     </resources>

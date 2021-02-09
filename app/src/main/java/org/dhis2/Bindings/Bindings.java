@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -13,6 +14,7 @@ import android.os.Build;
 import android.text.method.ScrollingMovementMethod;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -41,11 +43,11 @@ import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
 import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.filters.CatOptionComboFilter;
 import org.dhis2.utils.filters.Filters;
 import org.dhis2.utils.filters.cat_opt_comb.CatOptCombFilterAdapter;
 import org.dhis2.utils.filters.sorting.SortingItem;
-import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -681,6 +683,43 @@ public class Bindings {
     @BindingAdapter(value = {"filterArrow", "filterType"})
     public static void setFilterArrow(View view, Filters openFilter, Filters filterType) {
         view.animate().scaleY(openFilter != filterType ? 1 : -1).setDuration(200).start();
+    }
+
+    @BindingAdapter(value = {"dataSetStatus"})
+    public static void setDataSetStatusIcon(ImageView view, Boolean isComplete) {
+        view.setImageDrawable(
+                AppCompatResources.getDrawable(
+                        view.getContext(),
+                        isComplete ? R.drawable.ic_event_status_complete : R.drawable.ic_event_status_open
+                )
+        );
+    }
+
+    @BindingAdapter("iconResource")
+    public static void setIconResource(ImageView imageView, @DrawableRes int iconResource) {
+        imageView.setImageResource(iconResource);
+    }
+
+    @BindingAdapter("textStyle")
+    public static void setTextStyle(TextView textView, int style) {
+        switch (style) {
+            case Typeface.BOLD:
+                textView.setTypeface(null, Typeface.BOLD);
+                break;
+            default:
+                textView.setTypeface(null, Typeface.NORMAL);
+                break;
+
+        }
+    }
+
+    @BindingAdapter("marginTop")
+    public static void setMarginTop(View view, int marginInDp) {
+        if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            p.setMargins(p.leftMargin, ExtensionsKt.getDp(marginInDp), p.rightMargin, p.bottomMargin);
+            view.requestLayout();
+        }
     }
 
     @BindingAdapter("setTextColor")

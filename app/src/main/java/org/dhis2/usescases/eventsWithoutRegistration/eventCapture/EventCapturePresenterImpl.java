@@ -640,11 +640,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     //region ruleActions
 
     @Override
-    public void setCalculatedValue(@NonNull String calculatedValueVariable, @NonNull String value) {
-
-    }
-
-    @Override
     public void setShowError(@NonNull RuleActionShowError showError, @Nullable FieldViewModel model) {
         canComplete = false;
         errors.put(eventCaptureRepository.getSectionFor(showError.field()), showError.field());

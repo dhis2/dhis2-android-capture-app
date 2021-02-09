@@ -1,5 +1,6 @@
 package org.dhis2.utils
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
@@ -288,7 +289,7 @@ class RulesUtilsProviderImplTest {
             actionCallbacks
         )
 
-        verify(actionCallbacks, times(1)).setCalculatedValue("content", "data")
+        verify(actionCallbacks, times(0)).save(any(), any())
     }
 
     @Test
