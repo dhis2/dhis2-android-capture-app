@@ -250,7 +250,18 @@ class FilterRepository @Inject constructor(
         return d2.programModule().programs().uid(programUid).get()
             .map {
                 if (it.programType() == ProgramType.WITH_REGISTRATION) {
-                    getTrackerFilters(it)
+                    getTrackerFilters(it, true)
+                } else {
+                    getEventFilters(it)
+                }
+            }.blockingGet()
+    }
+
+    fun dashboardFilters(programUid: String): List<FilterItem> {
+        return d2.programModule().programs().uid(programUid).get()
+            .map {
+                if (it.programType() == ProgramType.WITH_REGISTRATION) {
+                    getTrackerFilters(it, false)
                 } else {
                     getEventFilters(it)
                 }
@@ -390,27 +401,29 @@ class FilterRepository @Inject constructor(
         }
     }
 
-    private fun getTrackerFilters(program: Program): List<FilterItem> {
+    private fun getTrackerFilters(program: Program, showWorkingLists: Boolean): List<FilterItem> {
         return mutableListOf<FilterItem>().apply {
-            val workingLists = d2.trackedEntityModule().trackedEntityInstanceFilters()
-                .byProgram().eq(program.uid())
-                .withTrackedEntityInstanceEventFilters()
-                .blockingGet()
-                .map {
-                    WorkingListItem(
-                        it.uid(),
-                        it.displayName() ?: ""
+            if (showWorkingLists) {
+                val workingLists = d2.trackedEntityModule().trackedEntityInstanceFilters()
+                    .byProgram().eq(program.uid())
+                    .withTrackedEntityInstanceEventFilters()
+                    .blockingGet()
+                    .map {
+                        WorkingListItem(
+                            it.uid(),
+                            it.displayName() ?: ""
+                        )
+                    }
+                if (workingLists.isNotEmpty()) {
+                    add(
+                        WorkingListFilter(
+                            workingLists,
+                            org.dhis2.utils.filters.ProgramType.TRACKER,
+                            observableSortingInject, observableOpenFilter,
+                            ""
+                        )
                     )
                 }
-            if (workingLists.isNotEmpty()) {
-                add(
-                    WorkingListFilter(
-                        workingLists,
-                        org.dhis2.utils.filters.ProgramType.TRACKER,
-                        observableSortingInject, observableOpenFilter,
-                        ""
-                    )
-                )
             }
             add(
                 PeriodFilter(
