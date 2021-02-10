@@ -225,6 +225,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
         if (OrientationUtilsKt.isPortrait()) {
             binding.teiPager.setAdapter(null);
+            binding.teiPager.setUserInputEnabled(false);
             binding.teiPager.setAdapter(adapter);
             binding.teiPager.registerOnPageChangeCallback(
                     new ViewPager2.OnPageChangeCallback() {
@@ -255,6 +256,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
         } else {
             binding.teiTablePager.setAdapter(adapter);
+            binding.teiTablePager.setUserInputEnabled(false);
             binding.teiTablePager.registerOnPageChangeCallback(
                     new ViewPager2.OnPageChangeCallback() {
                         @Override
