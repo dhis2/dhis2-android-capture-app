@@ -32,6 +32,8 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType
+import org.hisp.dhis.android.core.settings.FilterConfig
+import org.hisp.dhis.android.core.settings.HomeFilter
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
 
 class FilterRepository @Inject constructor(
@@ -351,43 +353,62 @@ class FilterRepository @Inject constructor(
     }
 
     fun homeFilters(): List<FilterItem> {
-        return mutableListOf<FilterItem>().apply {
-            add(
-                PeriodFilter(
-                    org.dhis2.utils.filters.ProgramType.ALL,
-                    observableSortingInject, observableOpenFilter,
-                    resources.filterResources.filterDateLabel()
-                )
+        val defaultFilters = createDefaultHomeFilters();
+
+        if (webAppIsNotConfigured()) return defaultFilters.values.toList();
+
+        //Fetch Home filters from SDK webapp
+        val homeFiltersWebApp: Map<HomeFilter, FilterConfig> = mapOf()
+        val homeFiltersWebAppKeys = homeFiltersWebApp.filterValues { it.filter() }.keys.toList()
+        val filtersToShow = defaultFilters.filter { homeFiltersWebAppKeys.contains(it.key) }
+
+        if (filtersToShow.isEmpty()) return mutableListOf()
+
+        return filtersToShow.values.toList()
+    }
+
+    private fun mockHomeFilterSDK(): Map<HomeFilter, FilterConfig> {
+        return mapOf()
+    }
+
+    private fun createDefaultHomeFilters(): LinkedHashMap<HomeFilter, FilterItem> {
+
+        val homeFilter = linkedMapOf(
+            HomeFilter.DATE to PeriodFilter(
+                org.dhis2.utils.filters.ProgramType.ALL,
+                observableSortingInject, observableOpenFilter,
+                resources.filterResources.filterDateLabel()
             )
-            add(
-                OrgUnitFilter(
-                    FilterManager.getInstance().observeOrgUnitFilters(),
-                    org.dhis2.utils.filters.ProgramType.ALL,
-                    observableSortingInject,
-                    observableOpenFilter,
-                    resources.filterResources.filterOrgUnitLabel()
-                )
+            , HomeFilter.ORG_UNIT to OrgUnitFilter(
+                FilterManager.getInstance().observeOrgUnitFilters(),
+                org.dhis2.utils.filters.ProgramType.ALL,
+                observableSortingInject,
+                observableOpenFilter,
+                resources.filterResources.filterOrgUnitLabel()
             )
-            add(
-                SyncStateFilter(
-                    org.dhis2.utils.filters.ProgramType.ALL,
-                    observableSortingInject, observableOpenFilter,
-                    resources.filterResources.filterSyncLabel()
-                )
+            , HomeFilter.SYN_STATUS to SyncStateFilter(
+                org.dhis2.utils.filters.ProgramType.ALL,
+                observableSortingInject, observableOpenFilter,
+                resources.filterResources.filterSyncLabel()
             )
-            if (!d2.programModule().programStages()
+        )
+
+        if (!d2.programModule().programStages()
                 .byEnableUserAssignment().eq(true).blockingIsEmpty()
-            ) {
-                add(
-                    AssignedFilter(
-                        programType = org.dhis2.utils.filters.ProgramType.ALL,
-                        sortingItem = observableSortingInject,
-                        openFilter = observableOpenFilter,
-                        filterLabel = resources.filterResources.filterAssignedToMeLabel()
-                    )
-                )
-            }
+        ) {
+            val assignToMeFilter = AssignedFilter(
+                programType = org.dhis2.utils.filters.ProgramType.ALL,
+                sortingItem = observableSortingInject,
+                openFilter = observableOpenFilter,
+                filterLabel = resources.filterResources.filterAssignedToMeLabel()
+            )
+            homeFilter[HomeFilter.ASSIGNED_TO_ME] = assignToMeFilter
         }
+        return homeFilter
+    }
+
+    private fun webAppIsNotConfigured(): Boolean {
+        return true
     }
 
     private fun getTrackerFilters(program: Program): List<FilterItem> {
@@ -458,7 +479,7 @@ class FilterRepository @Inject constructor(
                 )
             )
             if (!d2.programModule().programStages().byProgramUid().eq(program.uid())
-                .byEnableUserAssignment().eq(true).blockingIsEmpty()
+                    .byEnableUserAssignment().eq(true).blockingIsEmpty()
             ) {
                 add(
                     AssignedFilter(
@@ -523,7 +544,7 @@ class FilterRepository @Inject constructor(
                 )
             )
             if (!d2.programModule().programStages().byProgramUid().eq(program.uid())
-                .byEnableUserAssignment().eq(true).blockingIsEmpty()
+                    .byEnableUserAssignment().eq(true).blockingIsEmpty()
             ) {
                 add(
                     AssignedFilter(
