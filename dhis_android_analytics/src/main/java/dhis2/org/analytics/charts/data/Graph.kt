@@ -66,7 +66,7 @@ data class SerieData(
 
 data class GraphPoint(
     val eventDate: Date,
-    val position: Int? = -1,
+    val position: Float? = -1f,
     val fieldValue: Float
 )
 
