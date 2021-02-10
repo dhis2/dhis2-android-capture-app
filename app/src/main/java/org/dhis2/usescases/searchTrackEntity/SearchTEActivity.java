@@ -102,6 +102,7 @@ import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 import kotlin.Unit;
+import kotlin.reflect.jvm.internal.impl.types.KotlinTypeKt;
 import timber.log.Timber;
 
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
@@ -305,15 +306,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         teiMapManager.setCarouselAdapter(carouselAdapter);
         teiMapManager.setOnMapClickListener(this);
 
-        binding.mapCarousel.attachToMapManager(teiMapManager, (feature, found) -> {
-
-            if (found && feature != null && FeatureExtensionsKt.isPoint(feature)) {
-                binding.mapCarousel.showNavigateTo();
-            } else {
-                binding.mapCarousel.hideNavigateTo();
-            }
+        binding.mapCarousel.setCallback((feature, found) -> {
+            showNavFab(feature, found);
             return true;
         });
+        binding.mapCarousel.attachToMapManager(teiMapManager);
     }
 
     @Override
@@ -1005,6 +1002,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(location));
         startActivity(intent);
+    }
+
+    private void showNavFab(Feature feature, Boolean found) {
+        if (found && feature != null && FeatureExtensionsKt.isPoint(feature)) {
+            binding.mapCarousel.showNavigateTo();
+        } else {
+            binding.mapCarousel.hideNavigateTo();
+        }
     }
 
     /*endregion*/
