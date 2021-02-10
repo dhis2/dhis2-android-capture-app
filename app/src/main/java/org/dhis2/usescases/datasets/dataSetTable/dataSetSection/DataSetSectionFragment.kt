@@ -60,6 +60,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     private lateinit var dataSet: DataSet
     private lateinit var section: Section
     private var tablesCount: Int = 0
+    private var indicatorsTable: TableView? = null
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -230,11 +231,12 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     }
 
     override fun renderIndicators(indicators: SortedMap<String, String>) {
-        val indicatorsTable = TableView(requireContext())
+        binding.tableLayout.removeView(indicatorsTable)
+        indicatorsTable = TableView(requireContext())
         val adapter = DataSetIndicatorAdapter(requireContext())
-        indicatorsTable.adapter = adapter
-        indicatorsTable.headerCount = 1
-        indicatorsTable.setRowHeaderWidth(
+        indicatorsTable?.adapter = adapter
+        indicatorsTable?.headerCount = 1
+        indicatorsTable?.setRowHeaderWidth(
             indicators.keys.toList().calculateWidth(requireContext()).second.dp + 16.dp
         )
         adapter.setAllItems(
