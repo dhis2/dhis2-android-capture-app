@@ -189,7 +189,7 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
             val builder = SpannableStringBuilder()
 
             validations.forEach {
-                when(it){
+                when (it) {
                     is Validation.DataElementError -> {
                         val type = getString(R.string.feedback_error)
                         val resStringId = resources.getIdentifier(
@@ -228,14 +228,14 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
             }
 
             val snackbar = Snackbar.make(view!!, builder, Snackbar.LENGTH_LONG)
-            snackbar.setAction(R.string.customactivityoncrash_error_activity_error_details_copy
+            snackbar.setAction(
+                R.string.customactivityoncrash_error_activity_error_details_copy
             ) {
                 val clipboard =
                     binding.root.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
                 val clip = ClipData.newPlainText("copy", builder)
-                clipboard.primaryClip = clip
-
+                clipboard.setPrimaryClip(clip)
             }
 
             val snackbarView: View = snackbar.view
