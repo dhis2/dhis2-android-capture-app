@@ -19,10 +19,11 @@ import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Flowable
 import io.reactivex.processors.FlowableProcessor
 import java.util.ArrayList
-import java.util.HashMap
+import java.util.SortedMap
 import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.Bindings.calculateWidth
+import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.maxLengthLabel
 import org.dhis2.Bindings.measureText
 import org.dhis2.R
@@ -59,6 +60,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     private lateinit var dataSet: DataSet
     private lateinit var section: Section
     private var tablesCount: Int = 0
+    private var indicatorsTable: TableView? = null
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -228,13 +230,14 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         this.dataSet = dataSet
     }
 
-    override fun renderIndicators(indicators: HashMap<String, String>) {
-        val indicatorsTable = TableView(requireContext())
+    override fun renderIndicators(indicators: SortedMap<String, String>) {
+        binding.tableLayout.removeView(indicatorsTable)
+        indicatorsTable = TableView(requireContext())
         val adapter = DataSetIndicatorAdapter(requireContext())
-        indicatorsTable.adapter = adapter
-        indicatorsTable.headerCount = 1
-        indicatorsTable.setRowHeaderWidth(
-            indicators.keys.toList().calculateWidth(requireContext()).second
+        indicatorsTable?.adapter = adapter
+        indicatorsTable?.headerCount = 1
+        indicatorsTable?.setRowHeaderWidth(
+            indicators.keys.toList().calculateWidth(requireContext()).second.dp + 16.dp
         )
         adapter.setAllItems(
             listOf(listOf(getString(R.string.value))),
