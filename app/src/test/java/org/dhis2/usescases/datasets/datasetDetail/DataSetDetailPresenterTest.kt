@@ -34,11 +34,11 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
-import io.reactivex.Single
 import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.TestScheduler
+import org.dhis2.data.filter.FilterRepository
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.dhis2.utils.filters.FilterManager
@@ -58,10 +58,17 @@ class DataSetDetailPresenterTest {
     private val repository: DataSetDetailRepository = mock()
     private val scheduler = TestSchedulerProvider(TestScheduler())
     private val filterManager: FilterManager = mock()
+    private val filterRepository: FilterRepository = mock()
 
     @Before
     fun setUp() {
-        presenter = DataSetDetailPresenter(view, repository, scheduler, filterManager)
+        presenter = DataSetDetailPresenter(
+            view,
+            repository,
+            scheduler,
+            filterManager,
+            filterRepository
+        )
     }
 
     @Test
@@ -79,7 +86,6 @@ class DataSetDetailPresenterTest {
             repository.dataSetGroups(any(), any(), any(), any())
         ) doReturn Flowable.just(dataSets)
         whenever(filterManager.periodRequest) doReturn periodRequest
-        whenever(repository.catOptionCombos()) doReturn Single.just(catOptionComboPair)
         whenever(repository.canWriteAny()) doReturn Flowable.just(true)
         filterProcessor.onNext(filterManager)
         periodRequest.onNext(Pair(PeriodRequest.FROM_TO, null))
@@ -91,7 +97,6 @@ class DataSetDetailPresenterTest {
         verify(view).setData(dataSets)
         verify(view).updateFilters(any())
         verify(view).showPeriodRequest(periodRequest.blockingFirst().first)
-        verify(view).setCatOptionComboFilter(catOptionComboPair)
         verify(view).setWritePermission(true)
     }
 
@@ -186,7 +191,8 @@ class DataSetDetailPresenterTest {
         "",
         State.SYNCED,
         "",
-        true
+        true,
+        false
     )
 
     private fun dummyCategoryCombo() = CategoryCombo.builder().uid("uid").build()

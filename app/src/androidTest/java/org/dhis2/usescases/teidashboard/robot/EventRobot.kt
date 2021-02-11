@@ -14,7 +14,7 @@ import org.dhis2.common.matchers.clickOnTab
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
 import org.dhis2.common.viewactions.typeChildViewWithId
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextCustomHolder
+import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.hamcrest.Matchers
 
@@ -27,7 +27,7 @@ fun eventRobot(eventRobot: EventRobot.() -> Unit) {
 class EventRobot : BaseRobot() {
 
     fun scrollToBottomForm() {
-        onView(withId(R.id.formRecycler)).perform(scrollToBottomRecyclerView())
+        onView(withId(R.id.recyclerView)).perform(scrollToBottomRecyclerView())
     }
 
     fun clickOnFormFabButton() {
@@ -49,7 +49,7 @@ class EventRobot : BaseRobot() {
         var formLength = 0
 
         while (formLength < numberFields) {
-            onView(withId(R.id.formRecycler))
+            onView(withId(R.id.recyclerView))
                 .perform(
                     actionOnItemAtPosition<DashboardProgramViewHolder>(
                         formLength,
@@ -77,9 +77,9 @@ class EventRobot : BaseRobot() {
     }
 
     fun typeOnRequiredEventForm(text: String, position: Int) {
-        onView(withId(R.id.formRecycler))
+        onView(withId(R.id.recyclerView))
             .perform(
-                actionOnItemAtPosition<EditTextCustomHolder>(
+                actionOnItemAtPosition<FormViewHolder>( //EditTextCustomHolder
                     position, typeChildViewWithId(text, R.id.input_editText)
                 )
             )

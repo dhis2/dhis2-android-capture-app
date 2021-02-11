@@ -10,6 +10,7 @@ import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
@@ -81,6 +82,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private CompositeDisposable compositeDisposable;
     private DashboardProgramModel dashboardModel;
     private String currentStage = null;
+    private FilterRepository filterRepository;
 
     public TEIDataPresenterImpl(TEIDataContracts.View view, D2 d2,
                                 DashboardRepository dashboardRepository,
@@ -90,7 +92,8 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                 SchedulerProvider schedulerProvider,
                                 PreferenceProvider preferenceProvider,
                                 AnalyticsHelper analyticsHelper,
-                                FilterManager filterManager) {
+                                FilterManager filterManager,
+                                FilterRepository filterRepository) {
         this.view = view;
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
@@ -105,10 +108,21 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         this.filterManager = filterManager;
         this.compositeDisposable = new CompositeDisposable();
         this.groupingProcessor = BehaviorProcessor.create();
+        this.filterRepository = filterRepository;
     }
 
     @Override
     public void init() {
+        compositeDisposable.add(
+                filterManager.asFlowable().startWith(filterManager)
+                        .flatMap(fManager -> Flowable.just(filterRepository.programFilters(programUid)))
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                view::setFilters,
+                                Timber::e
+                        )
+        );
         compositeDisposable.add(
                 d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).get()
                         .map(tei -> {
@@ -480,7 +494,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public boolean enrollmentOrgUnitInCaptureScope(String enrollmentOrgUnit) {
-        return  !d2.organisationUnitModule().organisationUnits()
+        return !d2.organisationUnitModule().organisationUnits()
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
                 .byUid().eq(enrollmentOrgUnit)
                 .blockingIsEmpty();

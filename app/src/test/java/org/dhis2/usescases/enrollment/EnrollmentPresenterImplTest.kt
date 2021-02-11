@@ -8,12 +8,13 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
+import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
@@ -52,6 +53,8 @@ class EnrollmentPresenterImplTest {
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val valueStore: ValueStore = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
+    private val onRowActionProcessor: FlowableProcessor<RowAction> = mock()
+    private val sectionProcessor: FlowableProcessor<String> = mock()
 
     @Before
     fun setUp() {
@@ -66,7 +69,9 @@ class EnrollmentPresenterImplTest {
             formRepository,
             valueStore,
             analyticsHelper,
-            "This field is mandatory"
+            "This field is mandatory",
+            onRowActionProcessor,
+            sectionProcessor
         )
     }
 
@@ -351,51 +356,6 @@ class EnrollmentPresenterImplTest {
             .build()
     }
 
-    fun getEmptyAndErrorFields(showMandatory: Boolean, showError: Boolean): List<FieldViewModel> {
-        val list = mutableListOf<FieldViewModel>()
-        if (showMandatory) {
-            list.add(
-                EditTextViewModel.create(
-                    "field1",
-                    "field1",
-                    true,
-                    null,
-                    "hint",
-                    1,
-                    ValueType.TEXT,
-                    null,
-                    true,
-                    null,
-                    null,
-                    ObjectStyle.builder().build(),
-                    null,
-                    null
-                )
-            )
-        }
-        if (showError) {
-            list.add(
-                EditTextViewModel.create(
-                    "field1",
-                    "field2",
-                    false,
-                    null,
-                    "hint",
-                    1,
-                    ValueType.TEXT,
-                    null,
-                    true,
-                    null,
-                    null,
-                    ObjectStyle.builder().build(),
-                    null,
-                    null
-                ).withError("error")
-            )
-        }
-        return list
-    }
-
     private fun dummyEditTextViewModel(
         uid: String,
         label: String,
@@ -416,6 +376,10 @@ class EnrollmentPresenterImplTest {
             null,
             ObjectStyle.builder().build(),
             null,
+            null,
+            "any",
+            false,
+            false,
             null
         )
 

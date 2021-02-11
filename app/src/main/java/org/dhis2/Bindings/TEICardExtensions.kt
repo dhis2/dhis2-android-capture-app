@@ -244,6 +244,7 @@ fun LinkedHashMap<String, TrackedEntityAttributeValue>.setAttributeList(
     listIsOpen: Boolean,
     sortingKey: String?,
     sortingValue: String?,
+    orgUnit: String,
     showList: () -> Unit
 ) {
     parentLayout.removeAllViews()
@@ -259,6 +260,13 @@ fun LinkedHashMap<String, TrackedEntityAttributeValue>.setAttributeList(
             itemFieldValueBinding.root.tag = adapterPosition.toString() + "_" + fieldName
             parentLayout.addView(itemFieldValueBinding.root)
         }
+        val orgUnitKey = parentLayout.context.getString(R.string.enrolled_in)
+        val itemFieldValueBinding =
+            ItemFieldValueBinding.inflate(LayoutInflater.from(parentLayout.context))
+        itemFieldValueBinding.name = orgUnitKey
+        itemFieldValueBinding.value = orgUnit
+        itemFieldValueBinding.root.tag = adapterPosition.toString() + "_" + orgUnitKey
+        parentLayout.addView(itemFieldValueBinding.root)
         if (sortingKey != null) {
             val itemFieldValueBinding =
                 ItemFieldValueBinding.inflate(LayoutInflater.from(parentLayout.context))

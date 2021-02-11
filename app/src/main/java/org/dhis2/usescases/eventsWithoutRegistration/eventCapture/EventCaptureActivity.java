@@ -69,6 +69,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     private Boolean isEventCompleted = false;
     private EventMode eventMode;
     public EventCaptureComponent eventCaptureComponent;
+    public String programUid;
+    public String eventUid;
 
     public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid, @NonNull EventMode eventMode) {
         Bundle bundle = new Bundle();
@@ -127,11 +129,14 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 case R.id.navigation_data_entry:
                     binding.eventViewPager.setCurrentItem(0);
                     break;
-                case R.id.navigation_notes:
+                case R.id.navigation_analytics:
                     binding.eventViewPager.setCurrentItem(1);
                     break;
+                case R.id.navigation_notes:
+                default:
+                    binding.eventViewPager.setCurrentItem(2);
+                    break;
             }
-
             return true;
         });
     }
@@ -210,11 +215,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     } else
                         presenter.saveImage(uuid, null);
                     presenter.nextCalculation(true);
-                }
-                break;
-            case Constants.RQ_QR_SCANNER:
-                if (resultCode == RESULT_OK) {
-                    scanTextView.updateScanResult(data.getStringExtra(Constants.EXTRA_DATA));
                 }
                 break;
         }

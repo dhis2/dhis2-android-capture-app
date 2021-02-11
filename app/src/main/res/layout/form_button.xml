@@ -4,8 +4,8 @@
     <data>
 
         <variable
-            name="label"
-            type="java.lang.String" />
+            name="item"
+            type="org.dhis2.data.forms.dataentry.fields.file.FileViewModel" />
 
     </data>
 
@@ -19,7 +19,8 @@
         android:focusableInTouchMode="true"
         android:paddingStart="20dp"
         android:paddingEnd="0dp"
-        android:text="@{label!=null?label:@string/add_file}"
+        android:text="@{item.label() !=null ? item.label() : @string/add_file}"
         android:textAlignment="viewStart"
-        android:textAllCaps="false" />
+        android:textAllCaps="false"
+        android:textColor="@color/colorPrimary" />
 </layout>

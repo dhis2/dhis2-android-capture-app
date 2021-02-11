@@ -3,6 +3,7 @@ package org.dhis2.data.user;
 import androidx.annotation.NonNull;
 
 import org.dhis2.data.dagger.PerUser;
+import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.service.ReservedValuesWorkerComponent;
 import org.dhis2.data.service.ReservedValuesWorkerModule;
 import org.dhis2.data.service.SyncDataWorkerComponent;
@@ -81,6 +82,8 @@ import dagger.Subcomponent;
 @PerUser
 @Subcomponent(modules = UserModule.class)
 public interface UserComponent {
+
+    FilterPresenter filterPresenter();
 
     @NonNull
     MainComponent plus(@NonNull MainModule mainModule);

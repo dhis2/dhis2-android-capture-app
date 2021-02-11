@@ -4,10 +4,6 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.rules.models.RuleEffect
 
-/**
- * QUADRAM. Created by ppajuelo on 13/06/2018.
- */
-
 interface RulesUtilsProvider {
 
     fun applyRuleEffects(
