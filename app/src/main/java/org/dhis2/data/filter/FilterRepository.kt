@@ -19,6 +19,7 @@ import org.dhis2.utils.filters.sorting.SortingItem
 import org.dhis2.utils.filters.workingLists.WorkingListItem
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.api.filters.internal.Filter
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.AssignedUserMode
@@ -32,8 +33,10 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType
+import org.hisp.dhis.android.core.settings.DataSetFilter
 import org.hisp.dhis.android.core.settings.FilterConfig
 import org.hisp.dhis.android.core.settings.HomeFilter
+import org.hisp.dhis.android.core.settings.ProgramFilter
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
 
 class FilterRepository @Inject constructor(
@@ -260,96 +263,103 @@ class FilterRepository @Inject constructor(
     }
 
     fun trackedEntityFilters(): List<FilterItem> {
-        return mutableListOf<FilterItem>().apply {
-            add(
-                PeriodFilter(
-                    org.dhis2.utils.filters.ProgramType.TRACKER,
-                    observableSortingInject,
-                    observableOpenFilter,
-                    resources.filterResources.filterEventDateLabel()
-                )
+        val defaultFilters = createDefaultTrackedEntityFilters()
+        return defaultFilters.values.toList()
+    }
+
+    fun createDefaultTrackedEntityFilters(): LinkedHashMap<ProgramFilter, FilterItem> {
+        return linkedMapOf(
+            ProgramFilter.EVENT_DATE to PeriodFilter(
+                org.dhis2.utils.filters.ProgramType.TRACKER,
+                observableSortingInject,
+                observableOpenFilter,
+                resources.filterResources.filterEventDateLabel()
+            ),
+            ProgramFilter.ORG_UNIT to OrgUnitFilter(
+                FilterManager.getInstance().observeOrgUnitFilters(),
+                org.dhis2.utils.filters.ProgramType.TRACKER,
+                observableSortingInject,
+                observableOpenFilter,
+                resources.filterResources.filterOrgUnitLabel()
+            ),
+            ProgramFilter.SYNC_STATUS to SyncStateFilter(
+                org.dhis2.utils.filters.ProgramType.TRACKER,
+                observableSortingInject,
+                observableOpenFilter,
+                resources.filterResources.filterSyncLabel()
+            ),
+            ProgramFilter.ENROLLMENT_STATUS to EnrollmentStatusFilter(
+                org.dhis2.utils.filters.ProgramType.TRACKER,
+                observableSortingInject,
+                observableOpenFilter,
+                resources.filterResources.filterEnrollmentStatusLabel()
+            ),
+            ProgramFilter.EVENT_STATUS to EventStatusFilter(
+                org.dhis2.utils.filters.ProgramType.TRACKER,
+                observableSortingInject,
+                observableOpenFilter,
+                resources.filterResources.filterEventStatusLabel()
             )
-            add(
-                OrgUnitFilter(
-                    FilterManager.getInstance().observeOrgUnitFilters(),
-                    org.dhis2.utils.filters.ProgramType.TRACKER,
-                    observableSortingInject,
-                    observableOpenFilter,
-                    resources.filterResources.filterOrgUnitLabel()
-                )
-            )
-            add(
-                SyncStateFilter(
-                    org.dhis2.utils.filters.ProgramType.TRACKER,
-                    observableSortingInject,
-                    observableOpenFilter,
-                    resources.filterResources.filterSyncLabel()
-                )
-            )
-            add(
-                EnrollmentStatusFilter(
-                    org.dhis2.utils.filters.ProgramType.TRACKER,
-                    observableSortingInject,
-                    observableOpenFilter,
-                    resources.filterResources.filterEnrollmentStatusLabel()
-                )
-            )
-            add(
-                EventStatusFilter(
-                    org.dhis2.utils.filters.ProgramType.TRACKER,
-                    observableSortingInject,
-                    observableOpenFilter,
-                    resources.filterResources.filterEventStatusLabel()
-                )
-            )
-        }
+        )
     }
 
     fun dataSetFilters(dataSetUid: String): List<FilterItem> {
-        return mutableListOf<FilterItem>().apply {
-            add(
-                PeriodFilter(
-                    org.dhis2.utils.filters.ProgramType.DATASET,
-                    observableSortingInject,
-                    observableOpenFilter,
-                    resources.filterResources.filterPeriodLabel()
-                )
+        val defaultFilters = createDefaultDatasetFilters(dataSetUid)
+
+        if (webAppIsNotConfigured()) return defaultFilters.values.toList()
+
+        val datasetFiltersWebApp: Map<DataSetFilter, FilterConfig> = mapOf() // SDK
+        val datasetFiltersWebAppKeys =
+            datasetFiltersWebApp.filterValues { it.filter() }.keys.toList()
+        val filtersToShow = defaultFilters.filter { datasetFiltersWebAppKeys.contains(it.key) }
+
+        if (filtersToShow.isEmpty()) return mutableListOf()
+
+        return filtersToShow.values.toList()
+    }
+
+    private fun createDefaultDatasetFilters(dataSetUid: String):
+        LinkedHashMap<DataSetFilter, FilterItem> {
+
+        val datasetsFilters = linkedMapOf(
+            DataSetFilter.PERIOD to PeriodFilter(
+                org.dhis2.utils.filters.ProgramType.DATASET,
+                observableSortingInject,
+                observableOpenFilter,
+                resources.filterResources.filterPeriodLabel()
+            ),
+            DataSetFilter.ORG_UNIT to OrgUnitFilter(
+                FilterManager.getInstance().observeOrgUnitFilters(),
+                org.dhis2.utils.filters.ProgramType.DATASET,
+                observableSortingInject,
+                observableOpenFilter,
+                resources.filterResources.filterOrgUnitLabel()
+            ),
+            DataSetFilter.SYN_STATUS to SyncStateFilter(
+                org.dhis2.utils.filters.ProgramType.DATASET,
+                observableSortingInject,
+                observableOpenFilter,
+                resources.filterResources.filterSyncLabel()
             )
-            add(
-                OrgUnitFilter(
-                    FilterManager.getInstance().observeOrgUnitFilters(),
-                    org.dhis2.utils.filters.ProgramType.DATASET,
-                    observableSortingInject,
-                    observableOpenFilter,
-                    resources.filterResources.filterOrgUnitLabel()
-                )
-            )
-            add(
-                SyncStateFilter(
-                    org.dhis2.utils.filters.ProgramType.DATASET,
-                    observableSortingInject,
-                    observableOpenFilter,
-                    resources.filterResources.filterSyncLabel()
-                )
-            )
-            val dataSet = d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet()
-            val categoryCombo =
-                d2.categoryModule().categoryCombos().uid(dataSet.categoryCombo()?.uid())
-                    .blockingGet()
-            if (categoryCombo.isDefault == false) {
-                add(
-                    CatOptionComboFilter(
-                        categoryCombo,
-                        d2.categoryModule().categoryOptionCombos().byCategoryComboUid()
-                            .eq(categoryCombo.uid()).blockingGet(),
-                        org.dhis2.utils.filters.ProgramType.DATASET,
-                        observableSortingInject,
-                        observableOpenFilter,
-                        categoryCombo.displayName() ?: ""
-                    )
-                )
-            }
+        )
+
+        val dataSet = d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet()
+        val categoryCombo =
+            d2.categoryModule().categoryCombos().uid(dataSet.categoryCombo()?.uid())
+                .blockingGet()
+        if (categoryCombo.isDefault == false) {
+            CatOptionComboFilter(
+                categoryCombo,
+                d2.categoryModule().categoryOptionCombos().byCategoryComboUid()
+                    .eq(categoryCombo.uid()).blockingGet(),
+                org.dhis2.utils.filters.ProgramType.DATASET,
+                observableSortingInject,
+                observableOpenFilter,
+                categoryCombo.displayName() ?: ""
+            ).also { datasetsFilters[DataSetFilter.CAT_COMBO] = it }
         }
+
+        return datasetsFilters
     }
 
     fun homeFilters(): List<FilterItem> {
@@ -412,88 +422,101 @@ class FilterRepository @Inject constructor(
     }
 
     private fun getTrackerFilters(program: Program): List<FilterItem> {
-        return mutableListOf<FilterItem>().apply {
-            val workingLists = d2.trackedEntityModule().trackedEntityInstanceFilters()
-                .byProgram().eq(program.uid())
-                .withTrackedEntityInstanceEventFilters()
-                .blockingGet()
-                .map {
-                    WorkingListItem(
-                        it.uid(),
-                        it.displayName() ?: ""
-                    )
-                }
-            if (workingLists.isNotEmpty()) {
-                add(
-                    WorkingListFilter(
-                        workingLists,
-                        org.dhis2.utils.filters.ProgramType.TRACKER,
-                        observableSortingInject, observableOpenFilter,
-                        ""
-                    )
+
+        val defaultFilters = createGetDefaultTrackerFilter(program)
+
+        if (webAppIsNotConfigured()) return defaultFilters.values.toList();
+
+        //Fetch Home filters from SDK webapp
+        val trackerFiltersWebApp: Map<ProgramFilter, FilterConfig> = mapOf()
+        val trackerFiltersWebAppKeys = trackerFiltersWebApp.filterValues { it.filter() }.keys.toList()
+        val filtersToShow = defaultFilters.filter { trackerFiltersWebAppKeys.contains(it.key) }
+
+        val workingLists = d2.trackedEntityModule().trackedEntityInstanceFilters()
+            .byProgram().eq(program.uid())
+            .withTrackedEntityInstanceEventFilters()
+            .blockingGet()
+            .map {
+                WorkingListItem(
+                    it.uid(),
+                    it.displayName() ?: ""
                 )
             }
-            add(
-                PeriodFilter(
+
+        var workingListFilter: WorkingListFilter? = null
+        if (workingLists.isNotEmpty()) {
+               workingListFilter = WorkingListFilter(
+                    workingLists,
                     org.dhis2.utils.filters.ProgramType.TRACKER,
                     observableSortingInject, observableOpenFilter,
-                    resources.filterResources.filterEventDateLabel()
+                    ""
                 )
-            )
-            add(
-                EnrollmentDateFilter(
-                    org.dhis2.utils.filters.ProgramType.TRACKER,
-                    observableSortingInject, observableOpenFilter,
-                    program.enrollmentDateLabel() ?: resources.filterResources
-                        .filterEnrollmentDateLabel()
-                )
-            )
-            add(
-                OrgUnitFilter(
-                    FilterManager.getInstance().observeOrgUnitFilters(),
-                    org.dhis2.utils.filters.ProgramType.TRACKER,
-                    observableSortingInject,
-                    observableOpenFilter,
-                    resources.filterResources.filterOrgUnitLabel()
-                )
-            )
-            add(
-                SyncStateFilter(
-                    org.dhis2.utils.filters.ProgramType.TRACKER,
-                    observableSortingInject, observableOpenFilter,
-                    resources.filterResources.filterSyncLabel()
-                )
-            )
-            add(
-                EnrollmentStatusFilter(
-                    org.dhis2.utils.filters.ProgramType.TRACKER,
-                    observableSortingInject, observableOpenFilter,
-                    resources.filterResources.filterEnrollmentStatusLabel()
-                )
-            )
-            add(
-                EventStatusFilter(
-                    org.dhis2.utils.filters.ProgramType.TRACKER,
-                    observableSortingInject, observableOpenFilter,
-                    resources.filterResources.filterEventStatusLabel()
-                )
-            )
-            if (!d2.programModule().programStages().byProgramUid().eq(program.uid())
-                    .byEnableUserAssignment().eq(true).blockingIsEmpty()
-            ) {
-                add(
-                    AssignedFilter(
-                        programType = org.dhis2.utils.filters.ProgramType.TRACKER,
-                        sortingItem = observableSortingInject,
-                        openFilter = observableOpenFilter,
-                        filterLabel = resources.filterResources.filterAssignedToMeLabel()
-                    )
-                )
+        }
+
+        if (filtersToShow.isEmpty() && workingLists.isEmpty()) return mutableListOf()
+
+        if (workingListFilter != null){
+            return filtersToShow.values.toMutableList().apply {
+                add(0,workingListFilter)
             }
         }
+       return filtersToShow.values.toList()
+    }
+
+    private fun createGetDefaultTrackerFilter(program: Program):
+        LinkedHashMap<ProgramFilter, FilterItem> {
+        val defaultTrackerFilters = linkedMapOf<ProgramFilter, FilterItem>()
+
+        defaultTrackerFilters[ProgramFilter.EVENT_DATE] = PeriodFilter(
+            org.dhis2.utils.filters.ProgramType.TRACKER,
+            observableSortingInject, observableOpenFilter,
+            resources.filterResources.filterEventDateLabel()
+        )
+        defaultTrackerFilters[ProgramFilter.ENROLLMENT_DATE] = EnrollmentDateFilter(
+            org.dhis2.utils.filters.ProgramType.TRACKER,
+            observableSortingInject, observableOpenFilter,
+            program.enrollmentDateLabel() ?: resources.filterResources
+                .filterEnrollmentDateLabel()
+        )
+        defaultTrackerFilters[ProgramFilter.ORG_UNIT] = OrgUnitFilter(
+            FilterManager.getInstance().observeOrgUnitFilters(),
+            org.dhis2.utils.filters.ProgramType.TRACKER,
+            observableSortingInject,
+            observableOpenFilter,
+            resources.filterResources.filterOrgUnitLabel()
+        )
+        defaultTrackerFilters[ProgramFilter.SYNC_STATUS] = SyncStateFilter(
+            org.dhis2.utils.filters.ProgramType.TRACKER,
+            observableSortingInject, observableOpenFilter,
+            resources.filterResources.filterSyncLabel()
+        )
+        defaultTrackerFilters[ProgramFilter.ENROLLMENT_STATUS] = EnrollmentStatusFilter(
+            org.dhis2.utils.filters.ProgramType.TRACKER,
+            observableSortingInject, observableOpenFilter,
+            resources.filterResources.filterEnrollmentStatusLabel()
+        )
+        defaultTrackerFilters[ProgramFilter.EVENT_STATUS] = EventStatusFilter(
+            org.dhis2.utils.filters.ProgramType.TRACKER,
+            observableSortingInject, observableOpenFilter,
+            resources.filterResources.filterEventStatusLabel()
+        )
+
+        if (!d2.programModule().programStages().byProgramUid().eq(program.uid())
+                .byEnableUserAssignment().eq(true).blockingIsEmpty()
+        ) {
+            defaultTrackerFilters[ProgramFilter.ASSIGNED_TO_ME] = AssignedFilter(
+                programType = org.dhis2.utils.filters.ProgramType.TRACKER,
+                sortingItem = observableSortingInject,
+                openFilter = observableOpenFilter,
+                filterLabel = resources.filterResources.filterAssignedToMeLabel()
+            )
+        }
+
+        return defaultTrackerFilters
     }
 
     private fun getEventFilters(program: Program): List<FilterItem> {
+
         return mutableListOf<FilterItem>().apply {
             val workingLists =
                 d2.eventModule().eventFilters().byProgram().eq(program.uid()).blockingGet().map {
@@ -573,13 +596,79 @@ class FilterRepository @Inject constructor(
         }
     }
 
-    fun applyWorkingList(
-        teiQuery: TrackedEntityInstanceQueryCollectionRepository,
-        currentWorkingList: WorkingListItem?
-    ): TrackedEntityInstanceQueryCollectionRepository {
-        return currentWorkingList?.let {
-            teiQuery.byTrackedEntityInstanceFilter().eq(it.uid)
-        } ?: teiQuery
+    private fun createDefaultGetEventFilters(program: Program): LinkedHashMap<ProgramFilter, FilterItem>{
+        /*val workingLists =
+            d2.eventModule().eventFilters().byProgram().eq(program.uid()).blockingGet().map {
+                WorkingListItem(
+                    it.uid(),
+                    it.displayName() ?: ""
+                )
+            }
+        if (workingLists.isNotEmpty()) {
+            add(
+                WorkingListFilter(
+                    workingLists,
+                    org.dhis2.utils.filters.ProgramType.EVENT,
+                    observableSortingInject, observableOpenFilter,
+                    ""
+                )
+            )
+        } */
+            PeriodFilter(
+                org.dhis2.utils.filters.ProgramType.EVENT,
+                observableSortingInject,
+                observableOpenFilter,
+                resources.filterResources.filterDateLabel()
+            )
+            OrgUnitFilter(
+                FilterManager.getInstance().observeOrgUnitFilters(),
+                org.dhis2.utils.filters.ProgramType.EVENT,
+                observableSortingInject,
+                observableOpenFilter,
+                resources.filterResources.filterOrgUnitLabel()
+            )
+            SyncStateFilter(
+                org.dhis2.utils.filters.ProgramType.EVENT,
+                observableSortingInject, observableOpenFilter,
+                resources.filterResources.filterSyncLabel()
+            )
+            EventStatusFilter(
+                org.dhis2.utils.filters.ProgramType.EVENT,
+                observableSortingInject, observableOpenFilter,
+                resources.filterResources.filterEventStatusLabel()
+            )
+        if (!d2.programModule().programStages().byProgramUid().eq(program.uid())
+                .byEnableUserAssignment().eq(true).blockingIsEmpty()
+        ) {
+                AssignedFilter(
+                    programType = org.dhis2.utils.filters.ProgramType.EVENT,
+                    sortingItem = observableSortingInject,
+                    openFilter = observableOpenFilter,
+                    filterLabel = resources.filterResources.filterAssignedToMeLabel()
+                )
+        }
+        val categoryCombo =
+            d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).blockingGet()
+        if (categoryCombo.isDefault == false) {
+                CatOptionComboFilter(
+                    categoryCombo,
+                    d2.categoryModule().categoryOptionCombos().byCategoryComboUid()
+                        .eq(categoryCombo.uid()).blockingGet(),
+                    org.dhis2.utils.filters.ProgramType.EVENT,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    categoryCombo.displayName() ?: ""
+                )
+        }
+    }
+
+fun applyWorkingList(
+    teiQuery: TrackedEntityInstanceQueryCollectionRepository,
+    currentWorkingList: WorkingListItem?
+): TrackedEntityInstanceQueryCollectionRepository {
+    return currentWorkingList?.let {
+        teiQuery.byTrackedEntityInstanceFilter().eq(it.uid)
+    } ?: teiQuery
     }
 
     fun applyWorkingList(
