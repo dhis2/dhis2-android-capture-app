@@ -43,43 +43,6 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                                             ObjectStyle objectStyle,
                                             boolean isBackgroundTransparent,
                                             String renderType,
-                                            ValueTypeDeviceRendering fieldRendering) {
-
-        return new AutoValue_OptionSetViewModel(
-                id,
-                label,
-                mandatory,
-                value,
-                section,
-                false,
-                editable,
-                optionSet,
-                null,
-                null,
-                description,
-                objectStyle,
-                null,
-                DataEntryViewHolderTypes.OPTION_SET_SELECT,
-                null,
-                false,
-                isBackgroundTransparent,
-                renderType,
-                fieldRendering,
-                new ArrayList<>()
-        );
-    }
-
-    public static OptionSetViewModel create(String id,
-                                            String label,
-                                            Boolean mandatory,
-                                            String optionSet,
-                                            String value,
-                                            String section,
-                                            Boolean editable,
-                                            String description,
-                                            ObjectStyle objectStyle,
-                                            boolean isBackgroundTransparent,
-                                            String renderType,
                                             ValueTypeDeviceRendering fieldRendering,
                                             FlowableProcessor<RowAction> processor) {
 

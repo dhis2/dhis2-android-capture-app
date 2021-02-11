@@ -34,15 +34,9 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     public abstract String optionSet();
 
     public static SpinnerViewModel create(String id, String label, String hintFilterOptions, Boolean mandatory,
-                                          String optionSet, String value, String section, Boolean editable, String description, ObjectStyle objectStyle, boolean isBackgroundTransparent, String renderType) {
-        return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, editable, null, null, description, objectStyle, null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, null, false, hintFilterOptions, optionSet, isBackgroundTransparent, renderType);
-    }
-
-    public static SpinnerViewModel create(String id, String label, String hintFilterOptions, Boolean mandatory,
                                           String optionSet, String value, String section, Boolean editable, String description, ObjectStyle objectStyle, boolean isBackgroundTransparent, String renderType, FlowableProcessor<RowAction> processor) {
         return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, editable, null, null, description, objectStyle, null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor, false, hintFilterOptions, optionSet, isBackgroundTransparent, renderType);
     }
-
 
     @Override
     public FieldViewModel setMandatory() {

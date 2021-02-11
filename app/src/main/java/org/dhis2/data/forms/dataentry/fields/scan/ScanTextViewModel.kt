@@ -18,44 +18,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
     abstract val hint: String?
 
     companion object {
-        @JvmStatic
-        fun create(
-            id: String,
-            label: String?,
-            mandatory: Boolean?,
-            value: String?,
-            section: String?,
-            editable: Boolean?,
-            optionSet: String?,
-            description: String?,
-            objectStyle: ObjectStyle?,
-            fieldRendering: ValueTypeDeviceRendering?,
-            hint: String?,
-            isBackgroundTransparent: Boolean,
-            isSearchMode: Boolean
-        ): FieldViewModel =
-            AutoValue_ScanTextViewModel(
-                id,
-                label,
-                mandatory,
-                value,
-                section,
-                null,
-                editable,
-                optionSet,
-                null,
-                null,
-                description,
-                objectStyle,
-                null,
-                DataEntryViewHolderTypes.SCAN_CODE,
-                null,
-                false,
-                fieldRendering,
-                hint,
-                isBackgroundTransparent,
-                isSearchMode
-            )
 
         @JvmStatic
         fun create(
