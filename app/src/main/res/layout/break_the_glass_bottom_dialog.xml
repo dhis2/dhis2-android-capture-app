@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="1dp"
+            android:layout_marginTop="4dp"
             android:layout_marginEnd="14dp"
             android:text="@string/break_glass_dialog_description"
             android:textColor="@color/gray_990"
@@ -67,11 +67,12 @@
             <View
                 android:id="@+id/fieldBackground"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="match_parent"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginBottom="33dp"
                 android:background="@drawable/bottomsheet_bg"
-                app:layout_constraintBottom_toBottomOf="@id/input_layout"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -81,40 +82,36 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:text="@string/break_glass_reason"
-                app:layout_constrainedWidth="true"
-                app:layout_constraintHorizontal_bias="0"
-                app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="@id/fieldBackground"
                 app:layout_constraintTop_toTopOf="@id/fieldBackground" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/input_layout"
-                style="@style/loginInputText"
+
+            <EditText
+                android:id="@+id/input_editText"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="12dp"
-                android:paddingTop="10dp"
-                app:hintEnabled="false"
+                android:layout_height="0dp"
+                android:layout_marginEnd="40dp"
+                android:background="@color/white"
+                android:gravity="start"
+                android:layout_marginTop="4dp"
+                android:hint="@string/break_glass_hint"
+                android:imeOptions="actionNext"
+                android:textAlignment="textStart"
+                android:textColor="@color/textPrimary"
+                android:textIsSelectable="true"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@id/fieldBackground"
                 app:layout_constraintEnd_toEndOf="@id/fieldBackground"
-                app:layout_constraintStart_toStartOf="@id/fieldBackground"
-                app:layout_constraintTop_toBottomOf="@id/label">
+                app:layout_constraintStart_toStartOf="@id/label"
+                app:layout_constraintTop_toBottomOf="@id/label" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/input_editText"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="start"
-                    android:hint="@string/break_glass_hint"
-                    android:imeOptions="actionNext"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="36dp"
-                    android:textAlignment="textStart"
-                    android:textColor="@color/textPrimary"
-                    android:textIsSelectable="true"
-                    android:textSize="@dimen/form_edit_text_size"
-                    tools:text="hello" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+            <View
+                android:id="@+id/selectionView"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="16dp"
+                app:layout_constraintTop_toBottomOf="@id/input_editText"
+                android:background="@color/text_black_8A3"/>
 
             <View
                 android:layout_width="match_parent"
@@ -134,10 +131,10 @@
             <ImageView
                 android:id="@+id/clear_button"
                 style="@style/ActionIcon"
+                android:contentDescription="@string/clear"
                 android:visibility="gone"
                 app:srcCompat="@drawable/ic_clear"
-                app:tint="@color/default_field_icon_color"
-                android:contentDescription="@string/clear" />
+                app:tint="@color/default_field_icon_color" />
         </FrameLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -145,13 +142,14 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="5dp"
+            android:layout_marginTop="11dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:text='@string/cancel'
             android:textSize="14sp"
             app:layout_constraintEnd_toStartOf="@id/positive"
-            app:layout_constraintTop_toBottomOf="@id/reasonContainer" />
+            app:layout_constraintTop_toBottomOf="@id/reasonContainer"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/positive"
@@ -159,14 +157,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginBottom="5dp"
             android:enabled="false"
             android:text='@string/action_accept'
             android:textColor="@color/break_glass_color_selector"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/reasonContainer" />
+            app:layout_constraintTop_toBottomOf="@id/reasonContainer"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

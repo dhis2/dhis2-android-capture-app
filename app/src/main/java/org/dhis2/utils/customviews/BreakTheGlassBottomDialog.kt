@@ -1,6 +1,5 @@
 package org.dhis2.utils.customviews
 
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -56,21 +55,17 @@ class BreakTheGlassBottomDialog : BottomSheetDialogFragment() {
             }
             inputEditText.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
-                    label.setTextColor(
-                        ColorStateList.valueOf(
-                            ColorUtils.getPrimaryColor(
-                                context,
-                                ColorUtils.ColorType.PRIMARY
-                            )
-                        )
-                    )
+                    val focusColor =
+                        ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)
+                    label.setTextColor(focusColor)
+                    selectionView.setBackgroundColor(focusColor)
                 } else {
-                    label.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.text_black_A63
-                        )
+                    val unFocusColor = ContextCompat.getColor(
+                        requireContext(),
+                        R.color.text_black_A63
                     )
+                    label.setTextColor(unFocusColor)
+                    selectionView.setBackgroundColor(unFocusColor)
                 }
             }
             clearButton.setOnClickListener {
