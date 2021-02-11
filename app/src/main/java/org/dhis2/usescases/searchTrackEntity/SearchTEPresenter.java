@@ -173,7 +173,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 .startWith(FilterManager.getInstance())
                                 .map(filterManager -> {
                                     if (programUid.isEmpty()) {
-                                        return filterRepository.trackedEntityFilters();
+                                        return filterRepository.globalTrackedEntityFilters();
                                     } else {
                                         return filterRepository.programFilters(programUid);
                                     }
