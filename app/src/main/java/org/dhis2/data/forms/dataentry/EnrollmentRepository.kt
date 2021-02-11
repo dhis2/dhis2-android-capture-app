@@ -421,7 +421,8 @@ class EnrollmentRepository(
             null,
             ObjectStyle.builder().build(),
             true,
-            ProgramStageSectionRenderingType.LISTING.name
+            ProgramStageSectionRenderingType.LISTING.name,
+            onRowActionProccesor
         )
     }
 
@@ -440,11 +441,13 @@ class EnrollmentRepository(
             false,
             if (tei!!.geometry() != null) tei.geometry()!!.coordinates() else null,
             ENROLLMENT_DATA_SECTION_UID,
-            true, null,
+            true,
+            null,
             ObjectStyle.builder().build(),
             featureType,
             true,
-            false
+            false,
+            onRowActionProccesor
         )
     }
 
@@ -465,7 +468,8 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             featureType,
             true,
-            false
+            false,
+            onRowActionProccesor
         )
     }
 

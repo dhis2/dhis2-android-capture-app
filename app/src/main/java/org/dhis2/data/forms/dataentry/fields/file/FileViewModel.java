@@ -14,10 +14,6 @@ import io.reactivex.processors.FlowableProcessor;
 
 @AutoValue
 public abstract class FileViewModel extends FieldViewModel {
-    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, String description, ObjectStyle objectStyle) {
-        return new AutoValue_FileViewModel(id, label, mandatory, value, section, null,
-                true, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.BUTTON, null, false);
-    }
 
     public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, String description, ObjectStyle objectStyle, FlowableProcessor<RowAction> processor) {
         return new AutoValue_FileViewModel(id, label, mandatory, value, section, null,
