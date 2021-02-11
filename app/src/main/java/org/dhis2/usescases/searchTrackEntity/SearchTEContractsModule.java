@@ -15,14 +15,11 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.Filters;
-import org.dhis2.utils.filters.workingLists.WorkingListItem;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
-import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.HashMap;
@@ -91,6 +88,8 @@ public class SearchTEContractsModule {
 
         void openDashboard(String teiUid, String programUid, String enrollmentUid);
 
+        void showBreakTheGlass(String teiUid, String enrollmentUid);
+
         void goToEnrollment(String enrollmentUid, String programUid);
 
         void onBackClicked();
@@ -127,6 +126,8 @@ public class SearchTEContractsModule {
         void addRelationship(@NonNull String teiUid, @Nullable String relationshipTypeUid, boolean online);
 
         void downloadTei(String teiUid, String enrollmentUid);
+
+        void downloadTeiWithReason(String teiUid, String enrollmentUid, String reason);
 
         void downloadTeiForRelationship(String TEIuid, String relationshipTypeUid);
 

@@ -309,6 +309,13 @@
     <style name="CustomBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
     </style>
+    <style name="BreakTheGlassBottomSheetDialogTheme"  parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="colorControlActivated">?colorPrimary</item>
+        <item name="colorControlHighlight">?colorPrimary</item>
+    </style>
 
     <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@android:color/transparent</item>
@@ -322,4 +329,5 @@
         <item name="android:dropDownHorizontalOffset">-4dp</item>
         <item name="android:dropDownVerticalOffset">4dp</item>
     </style>
+
 </resources>

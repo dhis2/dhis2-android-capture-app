@@ -52,7 +52,6 @@ import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.geometry.FeatureExtensionsKt;
@@ -75,6 +74,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
+import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.customviews.ScanTextView;
 import org.dhis2.utils.filters.FilterItem;
@@ -347,6 +347,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         teiMapManager.onResume();
 
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+
     }
 
     @Override
@@ -915,6 +916,16 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void couldNotDownload(String typeName) {
         displayMessage(getString(R.string.download_tei_error, typeName));
+    }
+
+    @Override
+    public void showBreakTheGlass(String teiUid, String enrollmentUid) {
+        new BreakTheGlassBottomDialog()
+                .setPositiveButton(reason -> {
+                    presenter.downloadTeiWithReason(teiUid, enrollmentUid, reason);
+                    return Unit.INSTANCE;
+                })
+                .show(getSupportFragmentManager(), BreakTheGlassBottomDialog.class.getName());
     }
 
     @Override
