@@ -266,16 +266,16 @@ class FilterRepository @Inject constructor(
     fun globalTrackedEntityFilters(): List<FilterItem> {
         val defaultFilters = createDefaultTrackedEntityFilters()
 
-        if (webAppIsNotConfigured()){
+        if (webAppIsNotConfigured()) {
             return defaultFilters.values.toList()
         }
 
-       /* val globalTrackerFiltersWebApp: Map<ProgramFilter, FilterConfig> = mapOf() // SDK global call
-        val globalTrackerFiltersWebAppKey =
-            globalTrackerFiltersWebApp.filterValues { it.filter() }.keys.toList()
-        val filtersToShow = defaultFilters.filter { globalTrackerFiltersWebAppKey.contains(it.key) }
+        /* val globalTrackerFiltersWebApp: Map<ProgramFilter, FilterConfig> = mapOf() // SDK global call
+         val globalTrackerFiltersWebAppKey =
+             globalTrackerFiltersWebApp.filterValues { it.filter() }.keys.toList()
+         val filtersToShow = defaultFilters.filter { globalTrackerFiltersWebAppKey.contains(it.key) }
 
-        if (filtersToShow.isEmpty()) return mutableListOf() */
+         if (filtersToShow.isEmpty()) return mutableListOf() */
 
         //return filtersToShow.values.toList()
 
@@ -321,7 +321,7 @@ class FilterRepository @Inject constructor(
     fun dataSetFilters(dataSetUid: String): List<FilterItem> {
         val defaultFilters = createDefaultDatasetFilters(dataSetUid)
 
-        if (webAppIsNotConfigured()){
+        if (webAppIsNotConfigured()) {
             return defaultFilters.values.toList()
         }
 
@@ -380,9 +380,9 @@ class FilterRepository @Inject constructor(
     }
 
     fun homeFilters(): List<FilterItem> {
-        val defaultFilters = createDefaultHomeFilters();
+        val defaultFilters = createDefaultHomeFilters()
 
-        if (webAppIsNotConfigured()){
+        if (webAppIsNotConfigured()) {
             return defaultFilters.values.toList()
         }
 
@@ -394,10 +394,6 @@ class FilterRepository @Inject constructor(
         if (filtersToShow.isEmpty()) return mutableListOf()
 
         return filtersToShow.values.toList()
-    }
-
-    private fun mockHomeFilterSDK(): Map<HomeFilter, FilterConfig> {
-        return mapOf()
     }
 
     private fun createDefaultHomeFilters(): LinkedHashMap<HomeFilter, FilterItem> {
