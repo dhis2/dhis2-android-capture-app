@@ -72,6 +72,6 @@ class IndicatorsRobot : BaseRobot() {
     }
 
     fun checkGraphIsRendered(chartName:String){
-        onView(withId(R.id.indicators_recycler)).check(matches(hasItem(withChild(withText(chartName)))))
+        onView(withId(R.id.indicators_recycler)).check(matches(atPosition(1, hasDescendant(withText(chartName)))))
     }
 }
