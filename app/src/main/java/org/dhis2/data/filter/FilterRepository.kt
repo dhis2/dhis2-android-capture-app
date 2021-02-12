@@ -262,8 +262,22 @@ class FilterRepository @Inject constructor(
             }.blockingGet()
     }
 
+
     fun globalTrackedEntityFilters(): List<FilterItem> {
         val defaultFilters = createDefaultTrackedEntityFilters()
+
+        if (webAppIsNotConfigured()){
+            return defaultFilters.values.toList()
+        }
+
+       /* val globalTrackerFiltersWebApp: Map<ProgramFilter, FilterConfig> = mapOf() // SDK global call
+        val globalTrackerFiltersWebAppKey =
+            globalTrackerFiltersWebApp.filterValues { it.filter() }.keys.toList()
+        val filtersToShow = defaultFilters.filter { globalTrackerFiltersWebAppKey.contains(it.key) }
+
+        if (filtersToShow.isEmpty()) return mutableListOf() */
+
+        //return filtersToShow.values.toList()
 
         return defaultFilters.values.toList()
     }
@@ -307,7 +321,9 @@ class FilterRepository @Inject constructor(
     fun dataSetFilters(dataSetUid: String): List<FilterItem> {
         val defaultFilters = createDefaultDatasetFilters(dataSetUid)
 
-        if (webAppIsNotConfigured()) return defaultFilters.values.toList()
+        if (webAppIsNotConfigured()){
+            return defaultFilters.values.toList()
+        }
 
         val datasetFiltersWebApp: Map<DataSetFilter, FilterConfig> = mapOf() // SDK
         val datasetFiltersWebAppKeys =
@@ -366,7 +382,9 @@ class FilterRepository @Inject constructor(
     fun homeFilters(): List<FilterItem> {
         val defaultFilters = createDefaultHomeFilters();
 
-        if (webAppIsNotConfigured()) return defaultFilters.values.toList();
+        if (webAppIsNotConfigured()){
+            return defaultFilters.values.toList()
+        }
 
         //Fetch Home filters from SDK webapp
         val homeFiltersWebApp: Map<HomeFilter, FilterConfig> = mapOf()

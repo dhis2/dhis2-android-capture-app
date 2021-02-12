@@ -181,8 +181,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                        view::setFilters,
-                        Timber::e
+                        filters -> {
+                            if (filters.isEmpty()){
+                                view.hideFilter();
+                            } else {
+                                view.setFilters(filters);
+                            }
+                        }
+                        ,Timber::e
                 )
         );
 

@@ -98,6 +98,8 @@ public class SearchTEContractsModule {
         void couldNotDownload(String typeName);
 
         void setFilters(List<FilterItem> filtersToDisplay);
+
+        void hideFilter();
     }
 
     public interface Presenter {
