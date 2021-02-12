@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
@@ -122,6 +123,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
 
         ViewExtensionsKt.clipWithRoundedCorners(binding.recycler, ExtensionsKt.getDp(16));
+        ViewExtensionsKt.clipWithRoundedCorners(binding.mapView, ExtensionsKt.getDp(16));
         liveAdapter = new ProgramEventDetailLiveAdapter(presenter.getProgram(), presenter);
         binding.recycler.setAdapter(liveAdapter);
 
@@ -279,6 +281,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         ConstraintSet initSet = new ConstraintSet();
         initSet.clone(binding.backdropLayout);
         binding.filterOpen.setVisibility(backDropActive ? View.VISIBLE : View.GONE);
+        ViewCompat.setElevation(binding.eventsLayout, backDropActive ? 20 : 0);
 
         if (backDropActive) {
             initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.filterLayout, ConstraintSet.BOTTOM, 50);

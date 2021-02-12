@@ -109,6 +109,10 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
     override fun showFilterProgress() {
         binding.progressLayout.visibility = View.VISIBLE
+        binding.clearFilter.visibility = when {
+            FilterManager.getInstance().totalFilters > 0 -> View.VISIBLE
+            else -> View.GONE
+        }
     }
 
     override fun renderError(message: String) {
