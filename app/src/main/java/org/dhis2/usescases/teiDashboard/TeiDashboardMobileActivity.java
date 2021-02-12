@@ -637,4 +637,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public void onRelationshipMapLoaded() {
         binding.toolbarProgress.hide();
     }
+
+    public void hideFilter(){
+        binding.searchFilterGeneral.setVisibility(View.GONE);
+    }
 }
