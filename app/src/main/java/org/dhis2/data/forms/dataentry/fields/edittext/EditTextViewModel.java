@@ -10,7 +10,9 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.ActionType;
+import org.dhis2.data.forms.dataentry.fields.FieldUiModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.LegendValue;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -35,7 +37,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public abstract ValueTypeDeviceRendering fieldRendering();
 
     @Nullable
-    public abstract String colorByLegend();
+    public abstract LegendValue legendValue();
 
     @NonNull
     public static EditTextViewModel create(@NonNull String uid, @NonNull String label,
@@ -43,12 +45,11 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
                                            @NonNull Integer lines, @NonNull ValueType valueType, @Nullable String section,
                                            @NonNull Boolean editable, @Nullable String description,
                                            @Nullable ValueTypeDeviceRendering fieldRendering, ObjectStyle objectStyle, @Nullable String fieldMask, String renderType, boolean isBackgroundTransparent,
-                                           boolean isSearchMode, FlowableProcessor<RowAction> processor) {
-                                           @Nullable ValueTypeDeviceRendering fieldRendering, ObjectStyle objectStyle, @Nullable String fieldMask,
-                                           @Nullable String colorByLegend) {
+                                           boolean isSearchMode, FlowableProcessor<RowAction> processor,
+                                           @Nullable LegendValue legendValue) {
         return new AutoValue_EditTextViewModel(uid, label, mandatory,
                 value, section, null, editable, null, description, objectStyle, fieldMask, DataEntryViewHolderTypes.EDIT_TEXT, processor, false, hint, lines,
-                InputType.TYPE_CLASS_TEXT, valueType, null, null, renderType, isBackgroundTransparent, isSearchMode, fieldRendering, colorByLegend);
+                InputType.TYPE_CLASS_TEXT, valueType, null, null, renderType, isBackgroundTransparent, isSearchMode, fieldRendering, legendValue);
     }
 
     @NonNull
@@ -56,7 +57,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public EditTextViewModel withWarning(@NonNull String warning) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 value(), programStageSection(), null, editable(), null,
-                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(), activated(), hint(), maxLines(), inputType(), valueType(), warning, error(), renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering(), colorByLegend());
+                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(), activated(), hint(), maxLines(), inputType(), valueType(), warning, error(), renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering(), legendValue());
     }
 
     @NonNull
@@ -65,7 +66,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 value(), programStageSection(), null, true, null,
                 description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(), activated(), hint(), maxLines(), inputType(), valueType(), warning(), error,
-                renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering(), colorByLegend());
+                renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering(), legendValue());
     }
 
     @NonNull
@@ -74,7 +75,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
         return new AutoValue_EditTextViewModel(uid(), label(), true,
                 value(), programStageSection(), null, editable(), null,
                 description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(), activated(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
-                renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering(), colorByLegend());
+                renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering(), legendValue());
     }
 
     @NonNull
@@ -83,7 +84,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 data, programStageSection(), null, false, null,
                 description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(), activated(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
-                renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering(), colorByLegend());
+                renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering(), legendValue());
     }
 
     @NonNull
@@ -92,15 +93,29 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 value(), programStageSection(), null, isEditable, null,
                 description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(), activated(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
-                renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering());
+                renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering(), legendValue());
     }
 
     @NonNull
     @Override
     public FieldViewModel withFocus(boolean isFocused) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
-                value(), programStageSection(), allowFutureDate(), editable(), optionSet(), description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(), isFocused, hint(), maxLines(),
-                InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(), renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering());
+                value(), programStageSection(), allowFutureDate(), editable(), optionSet(),
+                description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT,
+                processor(), isFocused, hint(), maxLines(),
+                InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(), renderType(),
+                isBackgroundTransparent(), isSearchMode(), fieldRendering(), legendValue());
+    }
+
+
+    @NonNull
+    public FieldViewModel withlegendValue(LegendValue legendValue) {
+        return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
+                value(), programStageSection(), allowFutureDate(), editable(), optionSet(),
+                description(), objectStyle(), fieldMask(), dataEntryViewType(),
+                processor(), activated(), hint(), maxLines(),
+                InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(), renderType(),
+                isBackgroundTransparent(), isSearchMode(), fieldRendering(), legendValue);
     }
 
     @Override
@@ -140,15 +155,10 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public boolean isLongText() {
         return valueType() == ValueType.LONG_TEXT;
     }
-                description(), objectStyle(), fieldMask(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
-                fieldRendering(), colorByLegend());    }
 
-
-    @NonNull
-    public FieldViewModel withColorByLegend(String colorByLegend) {
-        return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
-                value(), programStageSection(), null, editable(), null,
-                description(), objectStyle(), fieldMask(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
-                fieldRendering(), colorByLegend);
+    @Override
+    public boolean equals(FieldUiModel o) {
+        return super.equals(o)
+                && ( o instanceof EditTextViewModel && ((EditTextViewModel)o).legendValue() == legendValue());
     }
 }

@@ -245,9 +245,8 @@ class EnrollmentRepository(
             optionCount,
             attribute.style(),
             attribute.fieldMask(),
+            null,
             onRowActionProccesor,
-            null
-            attribute.fieldMask(),
             null
         )
 

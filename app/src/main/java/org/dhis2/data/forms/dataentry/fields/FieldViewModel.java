@@ -5,6 +5,8 @@ import androidx.annotation.Nullable;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
+import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
+import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.jetbrains.annotations.NotNull;
 
@@ -179,6 +181,20 @@ public abstract class FieldViewModel implements FieldUiModel {
                     ActionType.ON_NEXT
             );
             Objects.requireNonNull(processor()).onNext(action);
+        }
+    }
+
+    public boolean canHaveLegend() {
+        return this instanceof EditTextViewModel || this instanceof SpinnerViewModel;
+    }
+
+    public FieldViewModel withLegend(LegendValue legendValue){
+        if(this instanceof EditTextViewModel){
+            return ((EditTextViewModel)this).withlegendValue(legendValue);
+        }else if(this instanceof SpinnerViewModel){
+            return ((SpinnerViewModel)this).withlegendValue(legendValue);
+        }else {
+            return this;
         }
     }
 }

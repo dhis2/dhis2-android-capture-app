@@ -35,7 +35,7 @@ public interface FieldViewModelFactory {
                           @Nullable Integer optionCount,
                           @NonNull ObjectStyle objectStyle,
                           @Nullable String fieldMask,
-                          @Nullable String colorByLegend,
+                          @Nullable LegendValue legendValue,
                           FlowableProcessor<RowAction> processor,
                           List<Option> options);
 

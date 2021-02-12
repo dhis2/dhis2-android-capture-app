@@ -265,6 +265,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         if (binding == null) {
             setLayoutData(viewModel.isBackgroundTransparent(), viewModel.renderType());
         }
+        binding.setVariable(BR.legend, viewModel.legendValue());
         setOnSelectedOptionListener(viewModel::onOptionSelected);
         updateEditable(viewModel.editable());
         setValue(viewModel.value());

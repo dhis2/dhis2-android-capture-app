@@ -496,6 +496,7 @@ public class CustomTextView extends FieldLayout {
         setLabel(viewModel.label(), viewModel.mandatory());
         setHint(viewModel.hint());
         binding.setVariable(BR.focus, viewModel.activated());
+        binding.setVariable(BR.legend, viewModel.legendValue());
         setDescription(viewModel.description());
         setText(withValueTypeCheck(viewModel.value(), viewModel.valueType()));
         setWarning(viewModel.warning(), viewModel.error());

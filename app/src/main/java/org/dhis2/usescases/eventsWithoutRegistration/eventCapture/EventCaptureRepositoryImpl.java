@@ -2,19 +2,17 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.Bindings.RuleExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
-import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
+import org.dhis2.data.forms.dataentry.fields.LegendValue;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
+import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
@@ -42,9 +40,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository;
-import org.hisp.dhis.rules.models.RuleDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
-import org.hisp.dhis.rules.models.RuleEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,15 +66,21 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private final RuleEngineRepository ruleEngineRepository;
     private final D2 d2;
+    private final ResourceManager resourceManager;
     private boolean isEventEditable;
     private final HashMap<String, ProgramStageSection> sectionMap;
     private final HashMap<String, ProgramStageDataElement> stageDataElementsMap;
     private List<FieldViewModel> sectionFields;
 
-    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, RuleEngineRepository ruleEngineRepository, String eventUid, D2 d2) {
+    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory,
+                                      RuleEngineRepository ruleEngineRepository,
+                                      String eventUid,
+                                      D2 d2,
+                                      ResourceManager resourceManager) {
         this.eventUid = eventUid;
         this.ruleEngineRepository = ruleEngineRepository;
         this.d2 = d2;
+        this.resourceManager = resourceManager;
 
         currentEvent = d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).blockingGet();
         currentStage = d2.programModule().programStages().uid(currentEvent.programStage()).blockingGet();
@@ -235,6 +237,10 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         if (!error.isEmpty()) {
                             fieldViewModel = fieldViewModel.withError(error);
                         }
+                        if (fieldViewModel.canHaveLegend()) {
+                            LegendValue legend = getColorByLegend(rawValue, fieldViewModel.uid());
+                            fieldViewModel = fieldViewModel.withLegend(legend);
+                        }
 
                         return fieldViewModel;
                     }).toList().toFlowable()
@@ -315,7 +321,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             dataValue = friendlyValue;
                         }
 
-                        String colorByLegend = getColorByLegend(rawValue, uid);
+                        LegendValue legendValue = getColorByLegend(rawValue, uid);
 
                         ProgramStageSectionRenderingType renderingType = programStageSection != null && programStageSection.renderType() != null &&
                                 programStageSection.renderType().mobile() != null ?
@@ -326,7 +332,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                         valueType, mandatory, optionSet, dataValue,
                                         programStageSection != null ? programStageSection.uid() : null, allowFutureDates,
                                         isEventEditable,
-                                        renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(), processor, options);
+                                        renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(), legendValue, processor, options);
 
                         if (!error.isEmpty()) {
                             return fieldViewModel.withError(error);
@@ -357,30 +363,42 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return error;
     }
 
-    private String getColorByLegend(String value, String dataElementUid) {
-        String color = "";
-        try{
-
+    private LegendValue getColorByLegend(String value, String dataElementUid) {
+        if(value==null){
+            return null;
+        }
+        try {
             final DataElement dataElement = d2.dataElementModule().dataElements()
                     .byUid().eq(dataElementUid)
                     .withLegendSets()
                     .one().blockingGet();
 
             if (dataElement != null && dataElement.valueType().isNumeric() &&
-                    dataElement.legendSets() != null && !dataElement.legendSets().isEmpty()){
+                    dataElement.legendSets() != null && !dataElement.legendSets().isEmpty()) {
                 LegendSet legendSet = dataElement.legendSets().get(0);
-                List<Legend> legends = d2.legendSetModule().legends().byStartValue().smallerThan(
-                        Double.valueOf(value)).byEndValue().biggerThan(Double.valueOf(value))
-                        .byLegendSet().eq(legendSet.uid()).blockingGet();
+                Legend legend = d2.legendSetModule().legends()
+                        .byStartValue().smallerThan(Double.valueOf(value))
+                        .byEndValue().biggerThan(Double.valueOf(value))
+                        .byLegendSet().eq(legendSet.uid())
+                        .one()
+                        .blockingGet();
+                if(legend == null){
+                    legend = d2.legendSetModule().legends()
+                            .byEndValue().eq(Double.valueOf(value))
+                            .byLegendSet().eq(legendSet.uid())
+                            .one()
+                            .blockingGet();
+                }
 
-                if (legends.size() > 0) {
-                    color = legends.get(0).color();
+                if (legend != null) {
+                    return new LegendValue(
+                            resourceManager.getColorFrom(legend.color()),
+                            legend.displayName());
                 }
             }
-
-            return color;
-        } catch (Exception e){
-            return color;
+            return null;
+        } catch (Exception e) {
+            return null;
         }
     }
 
