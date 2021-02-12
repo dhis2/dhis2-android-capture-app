@@ -447,7 +447,9 @@ class FilterRepository @Inject constructor(
         if (webAppIsNotConfigured()) {
             val workingListFilter = getTrackerWorkingList(program)
             if (workingListFilter != null) {
-                defaultFilters.values.toMutableList().add(0, workingListFilter)
+                return defaultFilters.values.toMutableList().apply {
+                    add(0, workingListFilter)
+                }
             }
             return defaultFilters.values.toList()
         }
@@ -555,9 +557,11 @@ class FilterRepository @Inject constructor(
         if (webAppIsNotConfigured()) {
             val workingListFilter = getEventWorkingList(program)
             if (workingListFilter != null) {
-                defaultFilters.values.toMutableList().add(0, workingListFilter)
+                return defaultFilters.values.toMutableList().apply {
+                    add(0, workingListFilter)
+                }
             }
-            return defaultFilters.values.toList()
+            return defaultFilters.values.toMutableList()
         }
 
         //Fetch Home filters from SDK webapp
