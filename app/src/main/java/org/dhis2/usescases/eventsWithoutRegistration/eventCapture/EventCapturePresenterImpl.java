@@ -14,10 +14,11 @@ import org.dhis2.data.forms.dataentry.StoreResult;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
-import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
+import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
@@ -84,7 +85,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private Map<String, String> errors;
     private EventStatus eventStatus;
     private boolean hasExpired;
-    private final FlowableProcessor<String> sectionProcessor;
+    private final Flowable<String> sectionProcessor;
     private int unsupportedFields;
     private int totalFields;
     private ConnectableFlowable<List<FieldViewModel>> fieldFlowable;
@@ -96,6 +97,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private PreferenceProvider preferences;
     private GetNextVisibleSection getNextVisibleSection;
     private Pair<Boolean, Boolean> showErrors;
+    private FlowableProcessor<RowAction> onFieldActionProcessor;
 
 
     public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
@@ -104,7 +106,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                      ValueStore valueStore, SchedulerProvider schedulerProvider,
                                      PreferenceProvider preferences,
                                      GetNextVisibleSection getNextVisibleSection,
-                                     EventFieldMapper fieldMapper) {
+                                     EventFieldMapper fieldMapper,
+                                     FlowableProcessor<RowAction> onFieldActionProcessor, Flowable<String> sectionProcessor) {
         this.view = view;
         this.eventUid = eventUid;
         this.eventCaptureRepository = eventCaptureRepository;
@@ -123,16 +126,16 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.getNextVisibleSection = getNextVisibleSection;
         this.showErrors = new Pair<>(false, false);
         this.fieldMapper = fieldMapper;
+        this.onFieldActionProcessor = onFieldActionProcessor;
 
         currentSectionPosition = PublishProcessor.create();
-        sectionProcessor = PublishProcessor.create();
+        this.sectionProcessor = sectionProcessor;
         showCalculationProcessor = PublishProcessor.create();
         progressProcessor = PublishProcessor.create();
         sectionAdjustProcessor = PublishProcessor.create();
         formAdjustProcessor = PublishProcessor.create();
         notesCounterProcessor = PublishProcessor.create();
         formFieldsProcessor = BehaviorSubject.createDefault(new ArrayList<>());
-
     }
 
     @Override
@@ -315,7 +318,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 .filter(newCalculation -> newCalculation)
                 .observeOn(schedulerProvider.io())
                 .switchMap(newCalculation -> Flowable.zip(
-                        eventCaptureRepository.list(),
+                        eventCaptureRepository.list(onFieldActionProcessor),
                         eventCaptureRepository.calculate(),
                         this::applyEffects)
                 ).map(fields ->
@@ -323,11 +326,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                             emptyMandatoryFields = new HashMap<>();
                             for (FieldViewModel fieldViewModel : fields) {
                                 if (fieldViewModel.mandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection())) {
-                                    if(fieldViewModel instanceof ImageViewModel && !emptyMandatoryFields.containsKey(((ImageViewModel) fieldViewModel).fieldUid())){
-                                        emptyMandatoryFields.put(((ImageViewModel) fieldViewModel).fieldUid(), fieldViewModel);
-                                    }else if(!(fieldViewModel instanceof  ImageViewModel)){
-                                        emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
-                                    }
+                                    emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
                                 }
                             }
                             return fields;
@@ -389,14 +388,16 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         Iterator<FieldViewModel> fieldIterator = fieldViewModels.values().iterator();
         while (fieldIterator.hasNext()) {
             FieldViewModel field = fieldIterator.next();
-            if (field instanceof ImageViewModel) {
-                ImageViewModel imageField = (ImageViewModel) field;
-                if (optionsToHide.containsKey(imageField.fieldUid()) && optionsToHide.get(imageField.fieldUid()).contains(imageField.optionUid())) {
-                    fieldIterator.remove();
-                } else if (optionsGroupToShow.containsKey(imageField.fieldUid()) &&
-                        !eventCaptureRepository.getOptionsFromGroups(optionsGroupToShow.get(imageField.fieldUid())).contains(imageField.optionUid())) {
-                    fieldIterator.remove();
-                }
+            if (field instanceof MatrixOptionSetModel) {
+                ((MatrixOptionSetModel) field).setOptionsToHide(
+                        optionsToHide.get(field.uid()) != null ? optionsToHide.get(field.uid()) : new ArrayList<>(),
+                        eventCaptureRepository.getOptionsFromGroups(
+                                optionsGroupsToHide.get(field.uid()) != null ? optionsGroupsToHide.get(field.uid()) : new ArrayList<>()
+                        ),
+                        eventCaptureRepository.getOptionsFromGroups(
+                                optionsGroupToShow.get(field.uid()) != null ? optionsGroupToShow.get(field.uid()) : new ArrayList<>()
+                        )
+                );
             } else if (field instanceof SpinnerViewModel) {
                 ((SpinnerViewModel) field).setOptionsToHide(
                         optionsToHide.get(field.uid()) != null ? optionsToHide.get(field.uid()) : new ArrayList<>(),
@@ -486,8 +487,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             case SKIPPED:
                 view.attemptToReschedule();
                 break;
-            case SCHEDULE:
-                break;
             default:
                 break;
         }
@@ -511,11 +510,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public boolean isEnrollmentOpen() {
         return eventCaptureRepository.isEnrollmentOpen();
-    }
-
-    @Override
-    public void goToSection(String sectionUid) {
-        sectionProcessor.onNext(sectionUid);
     }
 
     @Override
@@ -563,7 +557,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                             currentSectionPosition.onNext(0);
                                             view.showSnackBar(R.string.event_reopened);
                                             eventStatus = EventStatus.ACTIVE;
-                                            goToSection(currentSection.get());
                                         }
                                     }
                                 },
@@ -755,11 +748,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void refreshTabCounters() {
         initNoteCounter();
-    }
-
-    @Override
-    public void setLastUpdatedUid(@NonNull String lastUpdatedUid) {
-        eventCaptureRepository.setLastUpdated(lastUpdatedUid);
     }
 
     @Override

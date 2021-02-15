@@ -50,9 +50,9 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
+import org.dhis2.data.forms.dataentry.DataEntryAdapter;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.data.tuples.Trio;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.geometry.FeatureExtensionsKt;
@@ -61,11 +61,9 @@ import org.dhis2.uicomponents.map.managers.TeiMapManager;
 import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.uicomponents.map.model.CarouselItemModel;
 import org.dhis2.uicomponents.map.model.MapStyle;
-import org.dhis2.usescases.coodinates.CoordinatesView;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.orgunitselector.OUTreeActivity;
-import org.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.RelationshipLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
@@ -76,17 +74,13 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
-import org.dhis2.utils.customviews.ScanTextView;
 import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.Filters;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -98,7 +92,6 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
-import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 import kotlin.Unit;
@@ -145,6 +138,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private ObjectAnimator animation = null;
     private String updateTei;
     private String updateEvent;
+    private CarouselAdapter carouselAdapter;
+    private DataEntryAdapter adapter = new DataEntryAdapter();
 
     //---------------------------------------------------------------------------------------------
 
@@ -188,7 +183,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.scrollView.setAdapter(liveAdapter);
         }
 
-        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), this, presenter));
+        binding.formRecycler.setAdapter(adapter);
         binding.enrollmentButton.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 v.requestFocus();
@@ -403,11 +398,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     updateFilters(FilterManager.getInstance().getTotalFilters());
                 }
                 break;
-            case Constants.RQ_QR_SCANNER:
-                if (resultCode == RESULT_OK) {
-                    scanTextView.updateScanResult(data.getStringExtra(Constants.EXTRA_DATA));
-                }
-                break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -421,18 +411,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             initSearchNeeded = false;
         }
 
-    }
-
-    @Override
-    public void onMapPositionClick(CoordinatesView coordinatesView) {
-        initSearchNeeded = false;
-        super.onMapPositionClick(coordinatesView);
-    }
-
-    @Override
-    public void onsScanClicked(Intent intent, @NotNull ScanTextView scanTextView) {
-        initSearchNeeded = false;
-        super.onsScanClicked(intent, scanTextView);
     }
 
     @Override
@@ -513,17 +491,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void setForm(List<TrackedEntityAttribute> trackedEntityAttributes, @Nullable Program program, HashMap<String, String> queryData,
-                        List<ValueTypeDeviceRendering> renderingTypes) {
-        //Form has been set.
-        FormAdapter formAdapter = (FormAdapter) binding.formRecycler.getAdapter();
-        formAdapter.setList(trackedEntityAttributes, program, queryData, renderingTypes);
-        updateFiltersSearch(queryData.size());
-    }
-
-    @NonNull
-    public Flowable<RowAction> rowActionss() {
-        return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowableRA();
+    public void setFormData(List<FieldViewModel> data) {
+        adapter.swap(data, () -> {
+        });
+        updateFiltersSearch(presenter.getQueryData().size());
     }
 
     @Override
