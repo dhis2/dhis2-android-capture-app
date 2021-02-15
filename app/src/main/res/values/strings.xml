@@ -822,4 +822,5 @@
     <string name="value">Value</string>
     <string name="enrolled_in">Enrolled in:</string>
     <string name="section_charts_indicators">Charts and indicators</string>
+    <string name="data_set_quality_check_done">Done!</string>
 </resources>
