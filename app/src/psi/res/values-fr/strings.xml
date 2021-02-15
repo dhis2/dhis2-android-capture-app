@@ -7,4 +7,5 @@
     <string name="program_type_configuration_error_message">Il y a une erreur de configuration du type de programme dans le programme actuel. Veuillez examiner le programme sur le serveur et exécuter la configuration de synchronisation</string>
     <string name="unexpected_error_message">"Une erreur imprévue s'est produite. Vérifiez votre configuration ou contactez votre administrateur"</string>
     <string name="feedback_show_only_failed">Afficher seulement échoué</string>
+    <string name="feedback_url">"Voir les commentaires complets sur:"</string>
 </resources>

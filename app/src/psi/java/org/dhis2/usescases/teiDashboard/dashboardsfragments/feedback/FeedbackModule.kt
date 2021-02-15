@@ -17,6 +17,9 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureCo
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureRepositoryImpl
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepositoryImpl
+import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.GetSystemInfo
+import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.SystemInfoD2Repository
+import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.SystemInfoRepository
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.rules.RuleExpressionEvaluator
 
@@ -37,8 +40,11 @@ class FeedbackModule(
 
     @Provides
     @PerFragment
-    fun provideFeedbackContentPresenter(getFeedback: GetFeedback): FeedbackContentPresenter {
-        return FeedbackContentPresenter(getFeedback)
+    fun provideFeedbackContentPresenter(
+        getFeedback: GetFeedback,
+        getSystemInfo: GetSystemInfo
+    ): FeedbackContentPresenter {
+        return FeedbackContentPresenter(getFeedback, getSystemInfo)
     }
 
     @Provides
@@ -52,19 +58,31 @@ class FeedbackModule(
 
     @Provides
     @PerFragment
+    fun provideGetSystemInfo(systemInfoRepository: SystemInfoRepository): GetSystemInfo {
+        return GetSystemInfo(systemInfoRepository)
+    }
+
+    @Provides
+    @PerFragment
     fun providesFeedbackProgramRepository(d2: D2): FeedbackProgramRepository {
         return D2FeedbackProgramRepository(d2)
     }
 
     @Provides
     @PerFragment
-    fun provideTeiDataRepository(d2: D2,dhisEventUtils: DhisEventUtils): TeiDataRepository {
-        return TeiDataRepositoryImpl(d2, programUid, teiUid, enrollmentUid,dhisEventUtils)
+    fun provideTeiDataRepository(d2: D2, dhisEventUtils: DhisEventUtils): TeiDataRepository {
+        return TeiDataRepositoryImpl(d2, programUid, teiUid, enrollmentUid, dhisEventUtils)
     }
 
     @Provides
     @PerFragment
     fun provideValuesRepository(d2: D2): ValuesRepository {
-        return ValuesD2Repository( d2)
+        return ValuesD2Repository(d2)
+    }
+
+    @Provides
+    @PerFragment
+    fun provideSystemInfoRepository(d2: D2): SystemInfoRepository {
+        return SystemInfoD2Repository(d2)
     }
 }
