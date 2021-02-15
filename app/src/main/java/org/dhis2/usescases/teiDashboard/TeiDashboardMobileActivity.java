@@ -177,10 +177,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     relationshipMap.setValue(showMap);
                 }
         );
-
-        relationshipMap().observe(this, value -> {
-            enablePagerScrolling(!value);
-        });
     }
 
     @Override
@@ -241,10 +237,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                             }
                             if (position == RELATIONSHIPS_POS) {
                                 binding.relationshipMapIcon.setVisibility(View.VISIBLE);
-                                enablePagerScrolling(!relationshipMap().getValue());
                             } else {
                                 binding.relationshipMapIcon.setVisibility(View.GONE);
-                                enablePagerScrolling(true);
                             }
                             binding.navigationBar.selectItemAt(position);
                         }
@@ -281,15 +275,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
         }
     }
-
-    private void enablePagerScrolling(boolean enable) {
-        if (OrientationUtilsKt.isLandscape()) {
-            binding.teiTablePager.setUserInputEnabled(enable);
-        } else {
-            binding.teiPager.setUserInputEnabled(enable);
-        }
-    }
-
 
     @Override
     public void setData(DashboardProgramModel program) {
@@ -601,13 +586,11 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void hideTabsAndDisableSwipe() {
-        enablePagerScrolling(false);
         ViewCompat.setElevation(binding.toolbar, 0);
     }
 
     @Override
     public void showTabsAndEnableSwipe() {
-        enablePagerScrolling(true);
         ViewCompat.setElevation(binding.toolbar, elevation);
     }
 
