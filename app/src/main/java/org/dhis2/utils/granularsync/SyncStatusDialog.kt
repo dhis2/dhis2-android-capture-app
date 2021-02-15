@@ -33,6 +33,7 @@ import org.dhis2.Bindings.checkSMSPermission
 import org.dhis2.Bindings.showSMS
 import org.dhis2.R
 import org.dhis2.databinding.SyncBottomDialogBinding
+import org.dhis2.usescases.settings.ErrorDialog
 import org.dhis2.usescases.sms.InputArguments
 import org.dhis2.usescases.sms.SmsSendingService
 import org.dhis2.usescases.sms.StatusText
@@ -53,6 +54,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
     @Inject
     lateinit var presenter: GranularSyncContracts.Presenter
+
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
@@ -183,7 +185,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.sync_bottom_dialog, container, false)
-        adapter = SyncConflictAdapter(ArrayList())
+        adapter = SyncConflictAdapter(ArrayList()) { showErrorLog() }
         val layoutManager = LinearLayoutManager(context)
         binding!!.synsStatusRecycler.layoutManager = layoutManager
         binding!!.synsStatusRecycler.adapter = adapter
@@ -193,6 +195,12 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         retainInstance = true
 
         return binding!!.root
+    }
+
+    private fun showErrorLog() {
+        ErrorDialog()
+            .setData(presenter.syncErrors())
+            .show(childFragmentManager.beginTransaction(), ErrorDialog.TAG)
     }
 
     override fun showTitle(displayName: String) {
@@ -272,8 +280,14 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
         val listStatusLog = ArrayList<StatusLogItem>()
 
-        for (tracker in conflicts)
-            listStatusLog.add(StatusLogItem.create(tracker.created()!!, tracker.conflict()!!))
+        for (tracker in conflicts) {
+            listStatusLog.add(
+                StatusLogItem.create(
+                    tracker.created()!!,
+                    tracker.displayDescription() ?: tracker.conflict() ?: ""
+                )
+            )
+        }
 
         adapter!!.addItems(listStatusLog)
         setNetworkMessage()
@@ -552,7 +566,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                     adapter!!.addItem(
                         StatusLogItem.create(
                             Calendar.getInstance().time,
-                            getString(R.string.error_sync)
+                            getString(R.string.error_sync_check_logs),
+                            true
                         )
                     )
                 }
@@ -563,7 +578,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 adapter!!.addItem(
                     StatusLogItem.create(
                         Calendar.getInstance().time,
-                        getString(R.string.cancel_sync)
+                        getString(R.string.cancel_sync),
+                        true
                     )
                 )
             else -> {

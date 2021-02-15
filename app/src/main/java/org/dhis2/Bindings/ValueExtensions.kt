@@ -1,5 +1,6 @@
 package org.dhis2.Bindings
 
+import org.dhis2.utils.DateUtils
 import org.dhis2.utils.extension.invoke
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
@@ -105,6 +106,12 @@ fun checkValueTypeValue(d2: D2, valueType: ValueType?, value: String): String {
             } else {
                 ""
             }
+        ValueType.DATE ->
+            DateUtils.uiDateFormat().format(DateUtils.oldUiDateFormat().parse(value))
+        ValueType.DATETIME ->
+            DateUtils.dateTimeFormat().format(DateUtils.databaseDateFormatNoSeconds().parse(value))
+        ValueType.TIME ->
+            DateUtils.timeFormat().format(DateUtils.timeFormat().parse(value))
         else -> value
     }
 }
@@ -167,14 +174,14 @@ fun String?.withValueTypeCheck(valueType: ValueType?): String? {
     return this?.let {
         if (isEmpty()) return this
         when (valueType) {
-            ValueType.UNIT_INTERVAL,
             ValueType.PERCENTAGE,
             ValueType.INTEGER,
             ValueType.INTEGER_POSITIVE,
             ValueType.INTEGER_NEGATIVE,
-            ValueType.INTEGER_ZERO_OR_POSITIVE -> {
-                it.toFloat().toInt().toString()
-            }
+            ValueType.INTEGER_ZERO_OR_POSITIVE -> (
+                it.toIntOrNull() ?: it.toFloat().toInt()
+                ).toString()
+            ValueType.UNIT_INTERVAL -> it.toFloat().toString()
             else -> this
         }
     } ?: this

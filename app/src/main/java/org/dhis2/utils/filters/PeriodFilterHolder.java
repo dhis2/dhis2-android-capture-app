@@ -47,8 +47,6 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
                 break;
         }
 
-        setListeners(localBinding.periodLayout);
-
         switch (FilterManager.getInstance().getPeriodIdSelected()) {
             case R.id.today:
                 localBinding.periodLayout.today.setChecked(true);
@@ -88,6 +86,9 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
             default:
                 localBinding.periodLayout.anytime.setChecked(true);
         }
+
+        setListeners(localBinding.periodLayout);
+
     }
 
     private void setListeners(FilterPeriodBinding periodLayout) {
@@ -173,7 +174,7 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
                 if (dates != null)
                     FilterManager.getInstance().addPeriod(Collections.singletonList(DatePeriod.builder().startDate(dates[0]).endDate(dates[1]).build()));
                 else
-                    FilterManager.getInstance().addPeriod(null);
+                    FilterManager.getInstance().addPeriod(Collections.emptyList());
             }
 
             if (id != FilterManager.getInstance().getPeriodIdSelected()) {

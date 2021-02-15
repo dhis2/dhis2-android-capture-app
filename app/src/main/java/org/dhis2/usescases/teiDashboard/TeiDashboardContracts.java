@@ -78,5 +78,7 @@ public class TeiDashboardContracts {
         EnrollmentStatus getEnrollmentStatus(String enrollmentUid);
 
         void updateEnrollmentStatus(String enrollmentUid, EnrollmentStatus status);
+
+        void setTotalFilters();
     }
 }

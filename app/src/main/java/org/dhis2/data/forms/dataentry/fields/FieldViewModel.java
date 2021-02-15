@@ -2,8 +2,6 @@ package org.dhis2.data.forms.dataentry.fields;
 
 import org.hisp.dhis.android.core.common.ObjectStyle;
 
-import javax.annotation.Nonnull;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -50,7 +48,7 @@ public abstract class FieldViewModel {
     @Nullable
     public abstract String description();
 
-    @Nonnull
+    @NonNull
     public abstract FieldViewModel withValue(String data);
 
     @NonNull
@@ -61,4 +59,26 @@ public abstract class FieldViewModel {
 
     @Nullable
     public abstract String fieldMask();
+
+    public String getFormattedLabel() {
+        if (mandatory()) {
+            return label() + " *";
+        } else {
+            return label();
+        }
+    }
+
+    public boolean shouldShowError() {
+        return warning() != null || error() != null;
+    }
+
+    public String getErrorMessage() {
+        if (error() != null) {
+            return error();
+        } else if (warning() != null) {
+            return warning();
+        } else {
+            return null;
+        }
+    }
 }

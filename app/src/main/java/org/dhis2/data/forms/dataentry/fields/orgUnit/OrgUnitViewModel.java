@@ -7,8 +7,6 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 
-import javax.annotation.Nonnull;
-
 /**
  * QUADRAM. Created by ppajuelo on 19/03/2018.
  */
@@ -39,7 +37,7 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
                 allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null);
     }
 
-    @Nonnull
+   @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_OrgUnitViewModel(uid(), label(), mandatory(), data, programStageSection(),

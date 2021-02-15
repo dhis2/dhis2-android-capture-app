@@ -59,6 +59,9 @@ class MainActivity :
     @Inject
     lateinit var presenter: MainPresenter
 
+    @Inject
+    lateinit var adapter: FiltersAdapter
+
     private var programFragment: ProgramFragment? = null
 
     var activeFragment: FragmentGlobalAbstract? = null
@@ -69,8 +72,6 @@ class MainActivity :
     private var fragId: Int = 0
     private var prefs: SharedPreferences? = null
     private var backDropActive = false
-    var adapter: FiltersAdapter? = null
-        private set
 
     //region LIFECYCLE
 
@@ -107,11 +108,10 @@ class MainActivity :
             Constants.SHARE_PREFS, Context.MODE_PRIVATE
         )
 
-        adapter = FiltersAdapter(FiltersAdapter.ProgramType.ALL)
         if (presenter.hasProgramWithAssignment()) {
-            adapter!!.addAssignedToMe()
+            adapter.addAssignedToMe()
         }
-        binding.filterLayout.adapter = adapter
+        binding.filterRecycler.adapter = adapter
 
         if (BuildConfig.DEBUG) {
             binding.moreOptions.setOnLongClickListener {
@@ -147,7 +147,7 @@ class MainActivity :
             )
         }
         binding.totalFilters = FilterManager.getInstance().totalFilters
-        adapter!!.notifyDataSetChanged()
+        adapter.notifyDataSetChanged()
     }
 
     override fun onPause() {
@@ -181,7 +181,7 @@ class MainActivity :
             initSet.connect(
                 R.id.fragment_container,
                 ConstraintSet.TOP,
-                R.id.filterLayout,
+                R.id.filterRecycler,
                 ConstraintSet.BOTTOM,
                 50
             )
@@ -215,12 +215,15 @@ class MainActivity :
 
     override fun onBackPressed() {
         when {
-            fragId != R.id.menu_home -> changeFragment(R.id.menu_home)
-            isPinLayoutVisible -> {
-                isPinLayoutVisible = false
-            }
+            fragId != R.id.menu_home -> presenter.onNavigateBackToHome()
+            isPinLayoutVisible -> isPinLayoutVisible = false
             else -> super.onBackPressed()
         }
+    }
+
+    override fun goToHome() {
+        changeFragment(R.id.menu_home)
+        initCurrentScreen()
     }
 
     override fun changeFragment(id: Int) {
@@ -263,7 +266,7 @@ class MainActivity :
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
-            adapter!!.notifyDataSetChanged()
+            adapter.notifyDataSetChanged()
             updateFilters(FilterManager.getInstance().totalFilters)
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -298,12 +301,12 @@ class MainActivity :
             R.id.sync_manager -> {
                 activeFragment = SyncManagerFragment()
                 tag = getString(R.string.SYNC_MANAGER)
-                binding.filter.visibility = View.GONE
+                binding.filterActionButton.visibility = View.GONE
             }
             R.id.qr_scan -> {
                 activeFragment = QrReaderFragment()
                 tag = getString(R.string.QR_SCANNER)
-                binding.filter.visibility = View.GONE
+                binding.filterActionButton.visibility = View.GONE
             }
             R.id.nfc_scan -> {
                 val intentNfc = Intent(this, NfcDataWriteActivity::class.java)
@@ -312,12 +315,12 @@ class MainActivity :
             R.id.menu_jira -> {
                 activeFragment = JiraFragment()
                 tag = getString(R.string.jira_report)
-                binding.filter.visibility = View.GONE
+                binding.filterActionButton.visibility = View.GONE
             }
             R.id.menu_about -> {
                 activeFragment = AboutFragment()
                 tag = getString(R.string.about)
-                binding.filter.visibility = View.GONE
+                binding.filterActionButton.visibility = View.GONE
             }
             R.id.block_button -> {
                 analyticsHelper.setEvent(BLOCK_SESSION, CLICK, BLOCK_SESSION)
@@ -331,13 +334,13 @@ class MainActivity :
                 activeFragment = ProgramFragment()
                 programFragment = activeFragment as ProgramFragment?
                 tag = getString(R.string.done_task)
-                binding.filter.visibility = View.VISIBLE
+                binding.filterActionButton.visibility = View.VISIBLE
             }
             else -> {
                 activeFragment = ProgramFragment()
                 programFragment = activeFragment as ProgramFragment?
                 tag = getString(R.string.done_task)
-                binding.filter.visibility = View.VISIBLE
+                binding.filterActionButton.visibility = View.VISIBLE
             }
         }
 
@@ -350,6 +353,7 @@ class MainActivity :
                 R.anim.fragment_enter_left,
                 R.anim.fragment_exit_right
             )
+
             transaction.replace(R.id.fragment_container, activeFragment!!, tag)
                 .commitAllowingStateLoss()
             binding.title.text = tag

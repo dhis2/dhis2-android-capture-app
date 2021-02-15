@@ -69,7 +69,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
             }
 
             if (hasFocus) {
-                tableView.scrollToColumnPosition(getAdapterPosition(),DEFAULT_CELL_OFFSET);
+                tableView.scrollToColumnPosition(getAdapterPosition(), DEFAULT_CELL_OFFSET);
             }
         });
     }
@@ -111,6 +111,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     private void setInputType(ValueType valueType) {
 
         editText.setFilters(new InputFilter[]{});
+        editText.setFocusable(true);
 
 
         if (editTextModel.editable())
@@ -123,12 +124,11 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                             InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                     break;
                 case TEXT:
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT);
+                    break;
                 case LONG_TEXT:
                     editText.setKeyListener(null);
                     editText.setFocusable(false);
-                    editText.setOnClickListener(v -> {
-                        showEditDialog();
-                    });
                     break;
                 case LETTER:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
@@ -289,6 +289,13 @@ final class EditTextCellCustomHolder extends FormViewHolder {
             editText.requestFocus();
             editText.setSelection(editText.getText().length());
             editText.post(() -> openKeyboard(editText));
+        }
+    }
+
+    @Override
+    public void handleClickIfNeeded() {
+        if(editTextModel != null && editTextModel.valueType() == ValueType.LONG_TEXT){
+            showEditDialog();
         }
     }
 }

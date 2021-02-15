@@ -1,65 +1,142 @@
 package org.dhis2.uicomponents.map.carousel
 
-import android.text.Spannable
+import android.text.SpannableString
 import android.text.SpannableStringBuilder
+import android.text.Spanned
 import android.text.style.ForegroundColorSpan
+import android.view.LayoutInflater
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
 import org.dhis2.R
+import org.dhis2.animations.collapse
+import org.dhis2.animations.expand
 import org.dhis2.data.tuples.Pair
 import org.dhis2.databinding.ItemCarouselProgramEventBinding
+import org.dhis2.databinding.ItemFieldValueBinding
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel
 
 class CarouselProgramEventHolder(
     val binding: ItemCarouselProgramEventBinding,
-    val onClick: (eventUid: String?, orgUnitUid: String?) -> Boolean
+    val onClick: (teiUid: String?, orgUnitUid: String?, eventUid: String?) -> Boolean,
+    val attributeVisibilityCallback: (ProgramEventViewModel) -> Unit
 ) :
     RecyclerView.ViewHolder(binding.root),
     CarouselBinder<ProgramEventViewModel> {
 
     override fun bind(data: ProgramEventViewModel) {
-        binding.event = data
-        itemView.setOnClickListener {
-            onClick(data.uid(), data.orgUnitUid())
-        }
+        with(data) {
+            binding.event = this
+            binding.eventInfoCard.setOnClickListener {
+                onClick(uid(), orgUnitUid(), uid())
+            }
 
-        val attributesString = SpannableStringBuilder("")
-        data.eventDisplayData().forEach {
-            attributesString.append(setAttributes(it))
-        }
-        binding.dataValue.text = when {
-            attributesString.isNotEmpty() -> attributesString
-            else -> itemView.context.getString(R.string.no_data)
-        }
+            when {
+                eventDisplayData().isNotEmpty() -> setEventValueLayout(this) {
+                    attributeVisibilityCallback(this)
+                }
+                else -> hideEventValueLayout()
+            }
 
-        if (data.geometry() == null) {
-            binding.noCoordinatesLabel.root.visibility = View.VISIBLE
-            binding.noCoordinatesLabel.noCoordinatesMessage.text =
-                itemView.context.getString(R.string.no_coordinates_item).format(
-                    itemView.context.getString(R.string.event_event)
-                        .toLowerCase(Locale.getDefault())
-                )
-        } else {
-            binding.noCoordinatesLabel.root.visibility = View.INVISIBLE
+            when {
+                geometry() == null -> {
+                    binding.noCoordinatesLabel.root.visibility = View.VISIBLE
+                    binding.noCoordinatesLabel.noCoordinatesMessage.text =
+                        itemView.context.getString(R.string.no_coordinates_item).format(
+                            itemView.context.getString(R.string.event_event)
+                                .toLowerCase(Locale.getDefault())
+                        )
+                }
+                else -> binding.noCoordinatesLabel.root.visibility = View.GONE
+            }
         }
     }
 
-    private fun setAttributes(attribute: Pair<String, String>): SpannableStringBuilder {
-        val attributeValue = if (attribute.val1().isNullOrEmpty()) {
-            "-"
-        } else {
-            attribute.val1()
+    private fun setEventValueLayout(
+        programEventModel: ProgramEventViewModel,
+        toggleList: () -> Unit
+    ) {
+        binding.showValuesButtonContainer.visibility = View.VISIBLE
+        binding.showValuesButtonContainer.setOnClickListener {
+            if (programEventModel.openedAttributeList) {
+                binding.dataElementList.collapse {
+                    initValues(false, programEventModel.eventDisplayData())
+                }
+            } else {
+                initValues(true, programEventModel.eventDisplayData())
+                binding.dataElementList.expand()
+            }
+            toggleList.invoke()
         }
-        return SpannableStringBuilder("${attribute.val0()} $attributeValue  ").apply {
-            setSpan(
-                ForegroundColorSpan(
-                    ContextCompat.getColor(itemView.context, R.color.text_black_8A3)
-                ),
-                0, attribute.val0().length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
+        initValues(programEventModel.openedAttributeList, programEventModel.eventDisplayData())
+    }
+
+    private fun hideEventValueLayout() {
+        binding.showValuesButtonContainer.visibility = View.INVISIBLE
+        binding.dataElementListGuideline.visibility = View.INVISIBLE
+        binding.dataElementList.visibility = View.GONE
+        binding.dataValue.text = itemView.context.getString(R.string.no_data)
+        binding.showValuesButtonContainer.setOnClickListener(null)
+    }
+
+    private fun initValues(
+        valueListIsOpen: Boolean,
+        dataElementValues: MutableList<Pair<String, String>>
+    ) {
+        binding.dataElementList.removeAllViews()
+        binding.dataValue.text = null
+        binding.showValuesButton.scaleY = if (valueListIsOpen) 1f else -1f
+        binding.showValuesButton
+            .animate()
+            .scaleY(if (valueListIsOpen) -1f else 1f)
+            .setDuration(500)
+            .withStartAction { binding.showValuesButton.scaleY = if (valueListIsOpen) 1f else -1f }
+            .withEndAction { binding.showValuesButton.scaleY = if (valueListIsOpen) -1f else 1f }
+            .start()
+        if (valueListIsOpen) {
+            binding.dataElementListGuideline.visibility = View.VISIBLE
+            binding.dataElementList.visibility = View.VISIBLE
+            for (nameValuePair in dataElementValues) {
+                val fieldValueBinding: ItemFieldValueBinding =
+                    ItemFieldValueBinding.inflate(
+                        LayoutInflater.from(binding.dataElementList.context)
+                    )
+                fieldValueBinding.name = nameValuePair.val0()
+                fieldValueBinding.value = nameValuePair.val1()
+                binding.dataElementList.addView(fieldValueBinding.root)
+            }
+        } else {
+            binding.dataElementListGuideline.visibility = View.INVISIBLE
+            binding.dataElementList.visibility = View.GONE
+            val stringBuilder =
+                SpannableStringBuilder()
+            for (nameValuePair in dataElementValues) {
+                if (nameValuePair.val1() != "-") {
+                    val value =
+                        SpannableString(nameValuePair.val1())
+                    val colorToUse =
+                        if (dataElementValues.indexOf(nameValuePair) % 2 == 0) {
+                            ContextCompat.getColor(itemView.context, R.color.textPrimary)
+                        } else {
+                            ContextCompat.getColor(itemView.context, R.color.secondaryColor)
+                        }
+                    value.setSpan(
+                        ForegroundColorSpan(colorToUse),
+                        0,
+                        value.length,
+                        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                    )
+                    stringBuilder.append(value)
+                    if (dataElementValues.indexOf(nameValuePair) != dataElementValues.size - 1) {
+                        stringBuilder.append(" ")
+                    }
+                }
+            }
+            when {
+                stringBuilder.toString().isEmpty() -> hideEventValueLayout()
+                else -> binding.dataValue.text = stringBuilder
+            }
         }
     }
 }

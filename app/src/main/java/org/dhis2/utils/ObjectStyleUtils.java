@@ -9,6 +9,9 @@ import androidx.annotation.ColorRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
+import org.dhis2.R;
+import org.dhis2.utils.resources.ResourceManager;
+
 import static android.text.TextUtils.isEmpty;
 
 public class ObjectStyleUtils {
@@ -20,9 +23,8 @@ public class ObjectStyleUtils {
         Drawable defaultDrawable = AppCompatResources.getDrawable(context, defaultResource);
 
         if (!isEmpty(resourceName)) {
-            Resources resources = context.getResources();
-            String iconName = resourceName.startsWith("ic_") ? resourceName : "ic_" + resourceName;
-            int iconResource = resources.getIdentifier(iconName, "drawable", context.getPackageName());
+            int iconResource = new ResourceManager(context)
+                    .getObjectStyleDrawableResource(resourceName, R.drawable.ic_default_icon);
 
             Drawable drawable = AppCompatResources.getDrawable(context, iconResource);
 

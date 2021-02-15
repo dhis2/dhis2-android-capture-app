@@ -3,13 +3,14 @@ package org.dhis2.usescases.searchTrackEntity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
 
+import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
 import org.dhis2.utils.filters.sorting.SortingItem;
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -18,8 +19,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.annotation.Nonnull;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -36,26 +35,12 @@ public interface SearchRepository {
     Observable<List<Program>> programsWithRegistration(String programTypeId);
 
     @NonNull
-    LiveData searchTrackedEntities(@Nullable Program selectedProgram,
-                                   @NonNull String trackedEntityType,
-                                   @NonNull List<String> orgUnits,
-                                   @Nonnull List<State> states,
-                                   @NonNull List<EventStatus> statuses,
-                                   @Nullable HashMap<String, String> queryData,
-                                   @Nullable SortingItem sortingItem,
-                                   boolean assignedToMe,
-                                   boolean isOnline);
+    LiveData<PagedList<SearchTeiModel>> searchTrackedEntities(SearchParametersModel searchParametersModel, boolean isOnline);
 
     @NonNull
-    Flowable<List<SearchTeiModel>> searchTeiForMap(@Nullable Program selectedProgram,
-                                                   @NonNull String trackedEntityType,
-                                                   @NonNull List<String> orgUnits,
-                                                   @Nonnull List<State> states,
-                                                   @NonNull List<EventStatus> statuses,
-                                                   @Nullable HashMap<String, String> queryData,
-                                                   @Nullable SortingItem sortingItem,
-                                                   boolean assignedToMe,
-                                                   boolean isOnline);
+    Flowable<List<SearchTeiModel>> searchTeiForMap(SearchParametersModel searchParametersModel, boolean isOnline);
+
+    SearchTeiModel getTrackedEntityInfo(String teiUid, Program selectedProgram, SortingItem sortingItem);
 
     @NonNull
     Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam, Date enrollmentDate, @Nullable String fromRelationshipUid);
@@ -69,4 +54,8 @@ public interface SearchRepository {
     Observable<TrackedEntityType> getTrackedEntityType(String trackedEntityUid);
 
     List<EventViewModel> getEventsForMap(List<SearchTeiModel> teis);
+
+    EventViewModel getEventInfo(String enrollmentUid);
+
+    Observable<D2Progress> downloadTei(String teiUid);
 }

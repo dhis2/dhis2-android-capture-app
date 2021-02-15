@@ -11,6 +11,8 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
@@ -19,6 +21,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import org.dhis2.BR;
 import org.dhis2.R;
+import org.dhis2.utils.ColorUtils;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
@@ -30,8 +33,8 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 public class YesNoView extends FieldLayout {
 
     private ViewDataBinding binding;
-
-    private LinearLayout checksLayout;
+    private boolean hasValue;
+    private ConstraintLayout checksLayout;
     private RadioGroup radioGroup;
     private RadioButton yes;
     private RadioButton no;
@@ -271,37 +274,75 @@ public class YesNoView extends FieldLayout {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
     }
 
+    @Override
+    public void dispatchSetActivated(boolean activated) {
+        super.dispatchSetActivated(activated);
+        if (activated) {
+            labelView.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+        } else {
+            labelView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
+        }
+    }
+
     public void setInitialValue(String value) {
         if (value != null && Boolean.valueOf(value)) {
+            hasValue = true;
             radioGroup.check(R.id.yes);
             checkYes.setChecked(true);
             checkNo.setChecked(false);
             yesOnlyToggle.setChecked(true);
         } else if (value != null) {
+            hasValue = true;
             radioGroup.check(R.id.no);
             checkYes.setChecked(false);
             checkNo.setChecked(true);
             yesOnlyToggle.setChecked(false);
         } else {
+            hasValue = false;
             radioGroup.clearCheck();
             checkYes.setChecked(false);
             checkNo.setChecked(false);
             yesOnlyToggle.setChecked(false);
         }
+
+        updateDeleteVisibility(clearButton);
     }
 
     public void setEditable(Boolean editable) {
         for (int i = 0; i < radioGroup.getChildCount(); i++) {
-            radioGroup.getChildAt(i).setEnabled(editable);
+            View view = radioGroup.getChildAt(i);
+            view.setEnabled(editable);
+            setEditable(editable,view);
         }
         checkYes.setEnabled(editable);
         checkNo.setEnabled(editable);
         yesOnlyToggle.setEnabled(editable);
         clearButton.setEnabled(editable);
+
+        setEditable(editable,
+                labelView,
+                checkYes,
+                checkNo,
+                yesOnlyToggle,
+                clearButton,
+                findViewById(R.id.descriptionLabel)
+        );
+
+        updateDeleteVisibility(clearButton);
     }
 
     public interface OnValueChanged {
         void onValueChanged(boolean isActive);
         void onClearValue();
+    }
+
+    @Override
+    protected boolean hasValue() {
+        return hasValue;
+    }
+
+    @Override
+    protected boolean isEditable() {
+        return clearButton.isEnabled();
     }
 }

@@ -42,6 +42,8 @@ import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
+import org.dhis2.usescases.settings.models.ErrorModelMapper
+import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.sms.SmsSendingService
 import org.dhis2.utils.Constants.ATTRIBUTE_OPTION_COMBO
 import org.dhis2.utils.Constants.CATEGORY_OPTION_COMBO
@@ -72,7 +74,8 @@ class GranularSyncPresenterImpl(
     private val dvOrgUnit: String?,
     private val dvAttrCombo: String?,
     private val dvPeriodId: String?,
-    private val workManagerController: WorkManagerController
+    private val workManagerController: WorkManagerController,
+    private val errorMapper: ErrorModelMapper
 ) : GranularSyncContracts.Presenter {
 
     private var disposable: CompositeDisposable = CompositeDisposable()
@@ -480,5 +483,28 @@ class GranularSyncPresenterImpl(
     }
 
     override fun displayMessage(message: String?) {
+    }
+
+    override fun syncErrors(): List<ErrorViewModel> {
+        return arrayListOf<ErrorViewModel>().apply {
+            addAll(
+                errorMapper.mapD2Error(
+                    d2.maintenanceModule().d2Errors().blockingGet()
+                )
+            )
+            addAll(
+                errorMapper.mapConflict(
+                    d2.importModule().trackerImportConflicts().blockingGet()
+                )
+            )
+            addAll(
+                errorMapper.mapFKViolation(
+                    d2.maintenanceModule().foreignKeyViolations().blockingGet()
+                )
+            )
+            sortByDescending {
+                it.creationDate?.time
+            }
+        }
     }
 }

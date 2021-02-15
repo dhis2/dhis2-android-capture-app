@@ -14,8 +14,10 @@ import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.UiDevice
 import org.dhis2.R
+import org.dhis2.usescases.main.MainActivity
 import org.hamcrest.CoreMatchers.allOf
 
 open class BaseRobot {
@@ -26,7 +28,7 @@ open class BaseRobot {
     }
 
     fun acceptGenericDialog() {
-        onView(withId(R.id.dialogAccept)).perform(ViewActions.click())
+        onView(withId(android.R.id.button1)).perform(ViewActions.click())
     }
 
     fun closeKeyboard() {
@@ -69,6 +71,10 @@ open class BaseRobot {
         ) as ActivityManager
         val visibleActivityName = am.appTasks[0].taskInfo.baseActivity.className
         return visibleActivityName == T::class.java.name
+    }
+
+     fun <T : Activity> checkActivityIsFinishing(rule : ActivityTestRule<T>){
+        assert(rule.activity.isFinishing)
     }
 
     companion object {

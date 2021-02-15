@@ -579,6 +579,7 @@
     <string name="syncing">Synchronizing...</string>
     <string name="end_sync_granular">Synchronization completed.</string>
     <string name="error_sync">Error has happened during synchronization.</string>
+    <string name="error_sync_check_logs">An error has happened during synchronization. Click here to check error logs</string>
     <string name="cancel_sync">Cancelled synchronization.</string>
 
     <string name="copied_text">Copied</string>
@@ -746,4 +747,19 @@
     <string name="open_privacy_policy">Click here to check our <a href="">privacy policy</a> </string>
     <string name="coordinates_error">Coordinates values are not valid</string>
     <string name="break_glass_error">You cannot enroll TEIs from other org units in this program because it is protected.\nContact your administrator.</string>
+    <string name="add_image">Add Image</string>
+    <string name="field_is_mandatory">This field is mandatory</string>
+    <string name="security_debugger_message">For security reasons, this version of the app is not allow to be used with adb. Please use the training version.</string>
+
+    <string name="customactivityoncrash_error_activity_error_occurred_explanation">Oops! Something didn\'t go as planned.\nLet us get you back in action.</string>
+    <string name="customactivityoncrash_error_activity_restart_app">Go back</string>
+    <string name="customactivityoncrash_error_activity_close_app">Close app</string>
+    <string name="customactivityoncrash_error_activity_error_details">More details</string>
+    <string name="customactivityoncrash_error_activity_error_details_title">More details</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">Close</string>
+    <string name="customactivityoncrash_error_activity_error_details_copy">Copy to clipboard</string>
+    <string name="customactivityoncrash_error_activity_error_details_copied">Copied to clipboard</string>
+    <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Error information</string>
+    <string name="metada_first_sync_error">We found an error when syncing with your server. Share the error with your system administrator if possible.</string>
+    <string name="error_init_session">We could not init the session with your user</string>
 </resources>

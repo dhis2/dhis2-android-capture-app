@@ -43,7 +43,7 @@ import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.category.CategoryDialog;
-import org.dhis2.utils.customviews.CategoryOptionPopUp;
+import org.dhis2.utils.customviews.CatOptionPopUp;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.dhis2.utils.customviews.PeriodDialog;
@@ -65,8 +65,6 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.text.ParseException;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -82,6 +80,7 @@ import javax.inject.Inject;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
+import kotlin.Unit;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -182,7 +181,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         setScreenName(this.getLocalClassName());
         ((App) getApplicationContext()).userComponent().plus(
                 new EventInitialModule(this,
-                        eventUid)
+                        eventUid,
+                        programStageUid)
         ).inject(this);
         super.onCreate(savedInstanceState);
 
@@ -499,8 +499,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.geometry.setEditable(true);
         binding.geometry.setFeatureType(programStage.featureType());
         binding.geometry.setCurrentLocationListener(geometry -> {
-            Timber.tag("EVENTINITIAL").d("NEW GEOMETRY");
             this.newGeometry = geometry;
+            presenter.setChangingCoordinates(true);
         });
         binding.geometry.setMapListener(
                 (CoordinatesView.OnMapPositionClick) binding.geometry.getContext()
@@ -547,57 +547,68 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 for (Category category : catCombo.categories()) {
                     CategorySelectorBinding catSelectorBinding = CategorySelectorBinding.inflate(LayoutInflater.from(this));
                     catSelectorBinding.catCombLayout.setHint(category.displayName());
-                    catSelectorBinding.catCombo.setOnClickListener(
-                            view -> {
+                    catSelectorBinding.catCombo.setOnClickListener(view -> {
                                 if (presenter.catOptionSize(category.uid()) > CategoryDialog.DEFAULT_COUNT_LIMIT) {
-                                    new CategoryDialog(
-                                            CategoryDialog.Type.CATEGORY_OPTIONS,
-                                            category.uid(),
-                                            true,
-                                            selectedDate,
-                                            selectedOption -> {
-                                                CategoryOption categoryOption = presenter.getCatOption(selectedOption);
-                                                selectedCatOption.put(category.uid(), categoryOption);
-                                                catSelectorBinding.catCombo.setText(categoryOption.displayName());
-                                                if (selectedCatOption.size() == catCombo.categories().size()) {
-                                                    catOptionComboUid = presenter.getCatOptionCombo(categoryOptionCombos, new ArrayList<>(selectedCatOption.values()));
-                                                    checkActionButtonVisibility();
-                                                }
-                                                return null;
-                                            }
-                                    ).show(getSupportFragmentManager(),
-                                            CategoryDialog.Companion.getTAG());
-
+                                    showCategoryDialog(category, categoryOptionCombos, catSelectorBinding);
                                 } else {
-                                    CategoryOptionPopUp.getInstance()
-                                            .setCategory(category)
-                                            .setDate(selectedDate)
-                                            .setOnClick(item -> {
-                                                if (item != null)
-                                                    selectedCatOption.put(category.uid(), item);
-                                                else
-                                                    selectedCatOption.remove(category.uid());
-                                                catSelectorBinding.catCombo.setText(item != null ? item.displayName() : null);
-                                                if (selectedCatOption.size() == catCombo.categories().size()) {
-                                                    catOptionComboUid = presenter.getCatOptionCombo(categoryOptionCombos, new ArrayList<>(selectedCatOption.values()));
-                                                    checkActionButtonVisibility();
-                                                }
-                                            })
-                                            .show(this, catSelectorBinding.getRoot());
+                                    showCategoryPopUp(category, categoryOptionCombos, catSelectorBinding);
                                 }
                             }
-
                     );
 
                     if (stringCategoryOptionMap != null && stringCategoryOptionMap.get(category.uid()) != null)
                         catSelectorBinding.catCombo.setText(stringCategoryOptionMap.get(category.uid()).displayName());
-
+                    catSelectorBinding.getRoot().setEnabled(accessData);
                     binding.catComboLayout.addView(catSelectorBinding.getRoot());
                 }
             else if (catCombo.isDefault())
                 catOptionComboUid = categoryOptionCombos.get(0).uid();
 
+            checkActionButtonVisibility();
         });
+    }
+
+    private void showCategoryDialog(Category category, List<CategoryOptionCombo> categoryOptionCombos, CategorySelectorBinding catSelectorBinding) {
+        new CategoryDialog(
+                CategoryDialog.Type.CATEGORY_OPTIONS,
+                category.uid(),
+                true,
+                selectedDate,
+                selectedOption -> {
+                    CategoryOption categoryOption = presenter.getCatOption(selectedOption);
+                    selectedCatOption.put(category.uid(), categoryOption);
+                    catSelectorBinding.catCombo.setText(categoryOption.displayName());
+                    if (selectedCatOption.size() == catCombo.categories().size()) {
+                        catOptionComboUid = presenter.getCatOptionCombo(catCombo.uid(), categoryOptionCombos, new ArrayList<>(selectedCatOption.values()));
+                        checkActionButtonVisibility();
+                    }
+                    return null;
+                }
+        ).show(getSupportFragmentManager(),
+                CategoryDialog.Companion.getTAG());
+    }
+
+    private void showCategoryPopUp(Category category, List<CategoryOptionCombo> categoryOptionCombos, CategorySelectorBinding catSelectorBinding) {
+        new CatOptionPopUp(
+                this,
+                catSelectorBinding.getRoot(),
+                category.displayName(),
+                presenter.getCatOptions(category.uid()),
+                true,
+                selectedDate,
+                categoryOption -> {
+                    if (categoryOption != null)
+                        selectedCatOption.put(category.uid(), categoryOption);
+                    else
+                        selectedCatOption.remove(category.uid());
+                    catSelectorBinding.catCombo.setText(categoryOption != null ? categoryOption.displayName() : null);
+                    if (selectedCatOption.size() == catCombo.categories().size()) {
+                        catOptionComboUid = presenter.getCatOptionCombo(catCombo.uid(), categoryOptionCombos, new ArrayList<>(selectedCatOption.values()));
+                        checkActionButtonVisibility();
+                    }
+                    return Unit.INSTANCE;
+                }
+        ).show();
     }
 
     @Override
@@ -695,7 +706,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
         Calendar c = Calendar.getInstance();
-        c.set(year,month,day,0,0);
+        c.set(year, month, day, 0, 0);
         selectedDate = c.getTime();
         selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
         binding.date.setText(selectedDateString);

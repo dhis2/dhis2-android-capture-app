@@ -4,11 +4,13 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.event.entity.EventDetailsUIModel
+import org.dhis2.usescases.event.entity.EventStatusUIModel
 import org.dhis2.usescases.event.entity.ProgramStageUIModel
 import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.Rule
 import org.junit.Test
@@ -29,13 +31,14 @@ class EventTest: BaseTest() {
     @Test
     fun shouldDeleteEventWhenClickOnDeleteInsideSpecificEvent() {
         val tbVisit = "TB visit"
+        val tbVisitDate = "31/12/2019"
         val tbProgramStages = createProgramStageModel()
 
         prepareEventToDeleteIntentAndLaunchActivity(ruleTeiDashboard)
 
         teiDashboardRobot {
             clickOnStageGroup(tbVisit)
-            clickOnEventGroupByStage(tbVisit)
+            clickOnEventGroupByStage(tbVisitDate)
         }
 
         eventRegistrationRobot {
@@ -45,7 +48,7 @@ class EventTest: BaseTest() {
         }
 
         teiDashboardRobot {
-           checkEventWasDeletedStageGroup(tbProgramStages)
+            checkEventWasDeletedStageGroup(tbProgramStages)
         }
     }
 
@@ -75,9 +78,35 @@ class EventTest: BaseTest() {
         }
     }
 
+    @Test
+    fun shouldSuccessfullyUpdateAndSaveEvent() {
+        val labMonitoring = "Lab monitoring"
+        val eventDate = "1/6/2020"
+        val radioFormLength = 4
+
+        prepareEventToUpdateIntentAndLaunchActivity(ruleTeiDashboard)
+
+        teiDashboardRobot {
+            clickOnStageGroup(labMonitoring)
+            clickOnEventGroupByStage(eventDate)
+        }
+
+        eventRobot {
+            fillRadioButtonForm(radioFormLength)
+            clickOnFormFabButton()
+            clickOnFinishAndComplete()
+        }
+
+        teiDashboardRobot {
+            clickOnStageGroup(labMonitoring)
+            checkEventStateStageGroup(labMonitoringStatus)
+        }
+    }
+
     private val tbVisitProgramStage =  createTbVisitStageModel()
     private val labMonitoringProgramStage =  createLabMonitoringStageModel()
     private val sputumProgramStage =  createSputumStageModel()
+    private val labMonitoringStatus = createEventStatusDetails()
 
     private fun createProgramStageModel() = TEIProgramStagesUIModel(
         labMonitoringProgramStage,
@@ -105,6 +134,13 @@ class EventTest: BaseTest() {
         96,
         "1/3/2020",
         "OU TEST PARENT"
+    )
+
+    private fun createEventStatusDetails() = EventStatusUIModel(
+        "Lab monitoring",
+        "Event Completed",
+        "1/6/2020",
+        "Ngelehun CHC"
     )
 
 }

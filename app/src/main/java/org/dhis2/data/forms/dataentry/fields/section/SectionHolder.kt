@@ -2,6 +2,8 @@ package org.dhis2.data.forms.dataentry.fields.section
 
 import android.animation.ValueAnimator
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.Observable
@@ -46,8 +48,13 @@ class SectionHolder(
         formBinding.apply {
             sectionName.text = viewModel.label()
             openIndicator.scaleY = if (viewModel.isOpen) 1f else -1f
-            when (viewModel.errors()) {
-                null, 0 -> sectionFieldsInfo.apply {
+
+            if (viewModel.errors() == null && viewModel.warnings() == null) {
+                sectionFieldsErrorInfo.visibility = GONE
+                sectionFieldsWarningErrorInfo.visibility = GONE
+                sectionFieldsWarningInfo.visibility = GONE
+                sectionFieldsInfo.visibility = VISIBLE
+                sectionFieldsInfo.apply {
                     text = String.format(
                         "%s/%s",
                         viewModel.completedFields(),
@@ -63,25 +70,36 @@ class SectionHolder(
                         }
                     )
                 }
-                else -> sectionFieldsInfo.apply {
-                    text = String.format(
-                        "%s %s",
-                        viewModel.errors(),
-                        itemView.context.getString(R.string.errors)
-                    )
-                    background =
-                        ContextCompat.getDrawable(itemView.context, R.drawable.bg_section_error)
-                    setTextColor(
-                        ResourcesCompat.getColor(root.resources, R.color.white, null)
-                    )
-                }
+            } else if (viewModel.errors() != null && viewModel.warnings() != null) {
+                sectionFieldsErrorInfo.visibility = GONE
+                sectionFieldsWarningErrorInfo.visibility = VISIBLE
+                sectionFieldsWarningInfo.visibility = VISIBLE
+                sectionFieldsInfo.visibility = GONE
+                sectionFieldsWarningErrorInfo.chipText = viewModel.errors().toString()
+                sectionFieldsWarningInfo.chipText = viewModel.warnings().toString()
+            } else if (viewModel.errors() != null && viewModel.warnings() == null) {
+                sectionFieldsErrorInfo.visibility = VISIBLE
+                sectionFieldsWarningErrorInfo.visibility = GONE
+                sectionFieldsWarningInfo.visibility = GONE
+                sectionFieldsInfo.visibility = GONE
+                sectionFieldsErrorInfo.chipText = viewModel.errors().toString()
+            } else {
+                sectionFieldsErrorInfo.visibility = GONE
+                sectionFieldsWarningErrorInfo.visibility = GONE
+                sectionFieldsWarningInfo.visibility = VISIBLE
+                sectionFieldsInfo.visibility = GONE
+                sectionFieldsWarningInfo.chipText = viewModel.warnings().toString()
             }
         }
 
-        formBinding.descriptionIcon.visibility = if (viewModel.description().isNullOrEmpty()) {
-            View.GONE
-        } else {
-            View.VISIBLE
+        formBinding.descriptionIcon.visibility = GONE
+        formBinding.sectionName.viewTreeObserver.addOnGlobalLayoutListener {
+            formBinding.sectionName.takeIf { it.text == viewModel.label() }?.layout?.let {
+                val isEllipsized = it.getEllipsisCount(0) > 0
+                if (viewModel.hasToShowDescriptionIcon(isEllipsized)) {
+                    formBinding.descriptionIcon.visibility = VISIBLE
+                }
+            }
         }
 
         setShadows()
@@ -89,19 +107,19 @@ class SectionHolder(
 
     private fun checkVisibility(isClosingSection: Boolean) {
         formBinding.sectionDetails.visibility = if (isClosingSection) {
-            View.GONE
+            GONE
         } else {
-            View.VISIBLE
+            VISIBLE
         }
         formBinding.lastSectionDetails.visibility = if (isClosingSection) {
-            View.VISIBLE
+            VISIBLE
         } else {
-            View.GONE
+            GONE
         }
         formBinding.shadowEnd.visibility = if (isClosingSection) {
-            View.VISIBLE
+            VISIBLE
         } else {
-            View.GONE
+            GONE
         }
     }
 
@@ -114,9 +132,9 @@ class SectionHolder(
     private fun setShadows() {
         val isSelected = viewModel.isOpen
         if (isSelected) {
-            formBinding.shadowTop.visibility = View.VISIBLE
+            formBinding.shadowTop.visibility = VISIBLE
         } else {
-            formBinding.shadowTop.visibility = View.GONE
+            formBinding.shadowTop.visibility = GONE
         }
     }
 
@@ -132,7 +150,7 @@ class SectionHolder(
     }
 
     fun setBottomShadow(showShadow: Boolean) {
-        formBinding.shadowBottom.visibility = if (showShadow) View.VISIBLE else View.GONE
+        formBinding.shadowBottom.visibility = if (showShadow) VISIBLE else GONE
     }
 
     fun setLastSectionHeight(previousSectionIsOpened: Boolean) {
@@ -165,7 +183,7 @@ class SectionHolder(
     }
 
     fun handleHeaderClick(x: Float) {
-        val hasDescription = formBinding.descriptionIcon.visibility == View.VISIBLE
+        val hasDescription = formBinding.descriptionIcon.visibility == VISIBLE
         val descriptionClicked =
             formBinding.descriptionIcon.x <= x &&
                 formBinding.descriptionIcon.x + formBinding.descriptionIcon.width >= x

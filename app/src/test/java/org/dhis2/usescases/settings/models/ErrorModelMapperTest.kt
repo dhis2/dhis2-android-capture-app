@@ -40,13 +40,14 @@ class ErrorModelMapperTest {
     }
 
     @Test
-    fun `Should map conflict to errorViewModel`() {
+    fun `Should map description to errorViewModel`() {
         val createDate = Date()
         val result = mapper.map(
             TrackerImportConflict.builder()
                 .errorCode("1")
                 .created(createDate)
-                .conflict("Description")
+                .conflict("Conflict")
+                .displayDescription("Description")
                 .status(ImportStatus.ERROR)
                 .build()
         )
@@ -55,6 +56,25 @@ class ErrorModelMapperTest {
             assertTrue(this.creationDate == creationDate)
             assertTrue(this.errorComponent == ImportStatus.ERROR.name)
             assertTrue(this.errorDescription == "Description")
+        }
+    }
+
+    @Test
+    fun `Should map conflict to errorViewModel`() {
+        val createDate = Date()
+        val result = mapper.map(
+            TrackerImportConflict.builder()
+                .errorCode("1")
+                .created(createDate)
+                .conflict("Conflict")
+                .status(ImportStatus.ERROR)
+                .build()
+        )
+        result.apply {
+            assertTrue(this.errorCode == "1")
+            assertTrue(this.creationDate == creationDate)
+            assertTrue(this.errorComponent == ImportStatus.ERROR.name)
+            assertTrue(this.errorDescription == "Conflict")
         }
     }
 

@@ -3,6 +3,7 @@ package org.dhis2.data.dhislogic
 import javax.inject.Inject
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
+import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.event.Event
 
 class DhisCategoryUtils @Inject constructor(val d2: D2) {
@@ -13,7 +14,7 @@ class DhisCategoryUtils @Inject constructor(val d2: D2) {
                     d2.categoryModule()
                         .categoryOptionCombos().withCategoryOptions()
                         .uid(event.attributeOptionCombo())
-                        .blockingGet().categoryOptions()
+                        .blockingGet().categoryOptions() as Collection<CategoryOption>
                 )
             val options =
                 d2.categoryModule().categoryOptions().byUid().`in`(optionUid).blockingGet()

@@ -54,7 +54,8 @@ abstract class ProgramViewModel : BaseObservable(), Serializable {
             onlyEnrollOnce: Boolean,
             accessDataWrite: Boolean,
             state: String,
-            hasOverdueEvent: Boolean = false
+            hasOverdueEvent: Boolean = false,
+            filtersAreActive: Boolean = false
         ): ProgramViewModel {
             return AutoValue_ProgramViewModel(
                 uid,
@@ -69,28 +70,9 @@ abstract class ProgramViewModel : BaseObservable(), Serializable {
                 onlyEnrollOnce,
                 accessDataWrite,
                 state,
-                false,
+                filtersAreActive && count == 0,
                 hasOverdueEvent
             )
         }
-    }
-
-    fun setTranslucent(translucent: Boolean): ProgramViewModel {
-        return AutoValue_ProgramViewModel(
-            id(),
-            title(),
-            color(),
-            icon(),
-            count(),
-            type(),
-            typeName(),
-            programType(),
-            description(),
-            onlyEnrollOnce(),
-            accessDataWrite(),
-            state(),
-            translucent,
-            hasOverdue()
-        )
     }
 }

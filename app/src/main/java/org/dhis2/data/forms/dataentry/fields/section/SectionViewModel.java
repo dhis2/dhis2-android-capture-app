@@ -1,6 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.section;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
@@ -8,8 +9,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.Objects;
 
 @AutoValue
 public abstract class SectionViewModel extends FieldViewModel {
@@ -27,6 +27,9 @@ public abstract class SectionViewModel extends FieldViewModel {
 
     @Nullable
     public abstract Integer errors();
+
+    @Nullable
+    public abstract Integer warnings();
 
     @NonNull
     public abstract String rendering();
@@ -49,6 +52,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 isOpen,
                 totalFields,
                 completedFields,
+                null,
                 null,
                 rendering != null ? rendering : ProgramStageSectionRenderingType.LISTING.name()
         );
@@ -73,6 +77,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 0,
                 0,
                 null,
+                null,
                 ProgramStageSectionRenderingType.LISTING.name()
         );
     }
@@ -83,7 +88,7 @@ public abstract class SectionViewModel extends FieldViewModel {
     }
 
     @NonNull
-    public SectionViewModel withErrors(@NonNull Integer errors) {
+    public SectionViewModel withErrors(@Nullable Integer errors) {
         return new AutoValue_SectionViewModel(
                 uid(),
                 label(),
@@ -102,6 +107,59 @@ public abstract class SectionViewModel extends FieldViewModel {
                 totalFields(),
                 completedFields(),
                 errors,
+                warnings(),
+                rendering()
+
+        );
+    }
+
+    @NonNull
+    public SectionViewModel withErrorsAndWarnings(@Nullable Integer errors, @Nullable Integer warnings) {
+        return new AutoValue_SectionViewModel(
+                uid(),
+                label(),
+                false,
+                null,
+                null,
+                false,
+                false,
+                null,
+                null,
+                null,
+                description(),
+                objectStyle(),
+                null,
+                isOpen(),
+                totalFields(),
+                completedFields(),
+                errors,
+                warnings,
+                rendering()
+
+        );
+    }
+
+    @NonNull
+    public SectionViewModel withWarnings(@Nullable Integer warnings) {
+        return new AutoValue_SectionViewModel(
+                uid(),
+                label(),
+                false,
+                null,
+                null,
+                false,
+                false,
+                null,
+                null,
+                null,
+                description(),
+                objectStyle(),
+                null,
+                isOpen(),
+                totalFields(),
+                completedFields(),
+                errors(),
+                warnings,
                 rendering()
 
         );
@@ -119,7 +177,7 @@ public abstract class SectionViewModel extends FieldViewModel {
         return this;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return this;
@@ -150,6 +208,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 totalFields(),
                 completedFields(),
                 errors(),
+                warnings(),
                 rendering()
         );
     }
@@ -173,6 +232,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 totalFields,
                 completedFields(),
                 errors(),
+                warnings(),
                 rendering()
         );
     }
@@ -196,8 +256,14 @@ public abstract class SectionViewModel extends FieldViewModel {
                 totalFields(),
                 completedFields,
                 errors(),
+                warnings(),
                 rendering()
         );
+    }
+
+    public boolean hasToShowDescriptionIcon(boolean isTitleEllipsized) {
+        return (description() != null && !Objects.requireNonNull(description()).isEmpty()) ||
+                isTitleEllipsized;
     }
 
 }

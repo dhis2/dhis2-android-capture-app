@@ -6,8 +6,6 @@ import com.google.auto.value.AutoValue;
 
 import org.hisp.dhis.rules.models.RuleAction;
 
-import javax.annotation.Nonnull;
-
 /**
  * QUADRAM. Created by ppajuelo on 28/03/2019.
  */
@@ -18,18 +16,18 @@ public abstract class RuleActionUnsupported extends RuleAction {
      * @return a message to show to user
      * when an actionType is not supported
      */
-    @Nonnull
+   @NonNull
     public abstract String content();
 
     /**
      * @return name of the unsupported action.
      */
-    @Nonnull
+   @NonNull
     public abstract String actionValueType();
 
-    @Nonnull
+   @NonNull
     public static RuleActionUnsupported create(
-            @NonNull String content, @Nonnull String actionValueType) {
-        return new AutoValue_RuleActionUnsupported("",content, actionValueType);
+            @NonNull String content,@NonNull String actionValueType) {
+        return new AutoValue_RuleActionUnsupported("", content, actionValueType);
     }
 }

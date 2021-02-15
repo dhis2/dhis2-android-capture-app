@@ -8,12 +8,6 @@ import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
-/**
- * QUADRAM. Created by ppajuelo on 19/03/2018.
- */
-
 @AutoValue
 public abstract class FileViewModel extends FieldViewModel {
     public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, String description,
@@ -48,7 +42,7 @@ public abstract class FileViewModel extends FieldViewModel {
                 allowFutureDate(), editable(), optionSet(), warning, error(),description(),dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(), catCombo());
     }
 
-    @Nonnull
+   @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_FileViewModel(uid(), label(), mandatory(), data, programStageSection(),

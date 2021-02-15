@@ -162,7 +162,6 @@ fun SearchTeiModel.setTeiImage(
         teiTextImageView.visibility = View.GONE
         Glide.with(context)
             .load(file)
-            .placeholder(placeHolderId)
             .error(placeHolderId)
             .transition(DrawableTransitionOptions.withCrossFade())
             .transform(CircleCrop())
@@ -175,6 +174,25 @@ fun SearchTeiModel.setTeiImage(
         teiImageView.setImageDrawable(null)
         teiTextImageView.visibility = View.VISIBLE
         val valueToShow = ArrayList(textAttributeValues.values)
+        if (valueToShow[0] == null) {
+            teiTextImageView.text = "?"
+        } else {
+            teiTextImageView.text = valueToShow[0].value()?.first().toString().toUpperCase()
+        }
+        teiTextImageView.setTextColor(
+            ColorUtils.getContrastColor(
+                ColorUtils.getPrimaryColor(
+                    context,
+                    ColorUtils.ColorType.PRIMARY
+                )
+            )
+        )
+    } else if (isOnline && attributeValues.isNotEmpty() &&
+        !ArrayList(attributeValues.values).first().value().isNullOrEmpty()
+    ) {
+        teiImageView.setImageDrawable(null)
+        teiTextImageView.visibility = View.VISIBLE
+        val valueToShow = ArrayList(attributeValues.values)
         if (valueToShow[0] == null) {
             teiTextImageView.text = "?"
         } else {

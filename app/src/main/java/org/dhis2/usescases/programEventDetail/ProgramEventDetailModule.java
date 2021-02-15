@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.filter.FilterPresenter;
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
 import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature;
@@ -11,6 +13,7 @@ import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFe
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -38,14 +41,9 @@ public class ProgramEventDetailModule {
     @Provides
     @PerActivity
     ProgramEventDetailContract.Presenter providesPresenter(
-            @NonNull ProgramEventDetailRepository programEventDetailRepository, SchedulerProvider schedulerProvider, FilterManager filterManager) {
-        return new ProgramEventDetailPresenter(view, programEventDetailRepository, schedulerProvider, filterManager);
-    }
-
-    @Provides
-    @PerActivity
-    ProgramEventDetailAdapter provideProgramEventDetailAdapter(ProgramEventDetailContract.Presenter presenter) {
-        return new ProgramEventDetailAdapter(presenter);
+            @NonNull ProgramEventDetailRepository programEventDetailRepository, SchedulerProvider schedulerProvider, FilterManager filterManager,
+            PreferenceProvider preferenceProvider) {
+        return new ProgramEventDetailPresenter(view, programEventDetailRepository, schedulerProvider, filterManager, preferenceProvider);
     }
 
     @Provides
@@ -72,5 +70,11 @@ public class ProgramEventDetailModule {
     @PerActivity
     CarouselViewAnimations animations(){
         return new CarouselViewAnimations();
+    }
+
+    @Provides
+    @PerActivity
+    FiltersAdapter provideFiltersAdapter(FilterPresenter filterPresenter) {
+        return new FiltersAdapter(FiltersAdapter.ProgramType.EVENT, filterPresenter);
     }
 }

@@ -1,0 +1,13 @@
+build_time_average=800
+polling_interval=10
+browserstack_username=$BROWSERSTACK_USERNAME
+browserstack_access_key=$BROWSERSTACK_ACCESS_KEY
+app_apk_path=$BITRISE_APK_PATH
+test_apk_path=$BITRISE_TEST_APK_PATH
+browserstack_device_list="\"Google Pixel 3a-9.0\""
+browserstack_video=true
+browserstack_local=false
+browserstack_gps_location="40.730610,-73.935242"
+browserstack_language="en"
+browserstack_locale="en"
+browserstack_deviceLogs=true

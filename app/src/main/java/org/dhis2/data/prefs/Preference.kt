@@ -2,6 +2,7 @@ package org.dhis2.data.prefs
 
 class Preference {
     companion object {
+        const val EVENT_COORDINATE_CHANGED = "EVENT_COORDINATE_CHANGED"
         const val INITIAL_SYNC_DONE = "INITIAL_SYNC_DONE"
         const val SESSION_LOCKED = "SessionLocked"
         const val PIN = "pin"
@@ -39,5 +40,8 @@ class Preference {
         const val GROUPING = "GROUPING"
 
         const val CURRENT_ORG_UNIT = "CURRENT_ORG_UNIT"
+
+        const val FLAG = "FLAG"
+        const val THEME = "THEME"
     }
 }

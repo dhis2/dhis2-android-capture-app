@@ -28,8 +28,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:padding="5dp">
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
+
         <View
             android:id="@+id/dummyFocusView"
             android:layout_width="wrap_content"
@@ -51,67 +52,90 @@
             tools:srcCompat="@drawable/sierra_leone"
             tools:visibility="visible" />
 
+        <View
+            android:id="@+id/fieldBackground"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="12dp"
+            android:background="@drawable/bottomsheet_bg"
+            app:layout_constraintBottom_toBottomOf="@id/input_layout"
+            app:layout_constraintTop_toBottomOf="@id/renderImage"/>
+
         <TextView
             android:id="@+id/label"
             style="@style/FieldLabel"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{label}"
-            app:layout_constraintTop_toBottomOf="@id/renderImage"
-            tools:text="@string/lorem" />
+            app:layout_constrainedWidth="true"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
+            app:layout_constraintStart_toStartOf="@id/fieldBackground"
+            app:layout_constraintTop_toTopOf="@id/fieldBackground"
+            android:layout_marginTop="12dp"
+            tools:text="lorem" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/descriptionLabel"
+            android:layout_width="12dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/label"
+            app:layout_constraintEnd_toStartOf="@id/clear_button"
+            app:layout_constraintStart_toEndOf="@id/label"
+            app:layout_constraintTop_toTopOf="@+id/label"
+            app:srcCompat="@drawable/ic_info_outline"
+            app:tint="?colorPrimary" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout"
+            android:paddingTop="10dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:hint='@{fieldHint}'
+            android:theme="@style/loginInputText"
+            android:layout_marginHorizontal="12dp"
+            app:layout_constraintEnd_toEndOf="@id/fieldBackground"
+            app:layout_constraintStart_toStartOf="@id/fieldBackground"
             app:layout_constraintTop_toBottomOf="@id/label"
-            android:layout_below="@id/renderImage"
-            android:orientation="horizontal">
+            tools:hint="hint">
 
-            <ImageView
-                android:layout_gravity="center"
-                android:id="@+id/descIcon"
-                android:layout_width="wrap_content"
-                android:layout_marginEnd="8dp"
+            <org.dhis2.utils.customviews.TextInputAutoCompleteTextView
+                android:id="@+id/input_editText"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="gone"
-                app:srcCompat="@drawable/ic_info_outline" />
+                android:gravity="start"
+                android:imeOptions="actionNext"
+                android:paddingTop="8dp"
+                android:paddingBottom="36dp"
+                android:textAlignment="textStart"
+                android:textColor="@color/textPrimary"
+                android:textIsSelectable="true"
+                android:textSize="@dimen/form_edit_text_size"
+                tools:text="hello" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/input_layout"
-                style="@style/ValueType_LongText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint='@{fieldHint}'
-                android:textColorHint="@color/text_black_808"
-                android:theme="@style/loginInputText"
-                tools:hint="hint">
+        </com.google.android.material.textfield.TextInputLayout>
 
-                <org.dhis2.utils.customviews.TextInputAutoCompleteTextView
-                    android:paddingTop="32dp"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:paddingBottom="5dp"
-                    android:id="@+id/input_editText"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="start"
-                    android:imeOptions="actionNext"
-                    android:textIsSelectable="true"
-                    android:maxLines="1"
-                    android:textAlignment="textStart"
-                    android:textColor="@color/text_black_333"
-                    android:textSize="15sp"
-                    tools:text="hello" />
+        <ImageView
+            android:id="@+id/clear_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@id/fieldBackground"
+            app:layout_constraintTop_toTopOf="@id/fieldBackground"
+            android:padding="12dp"
+            app:srcCompat="@drawable/ic_clear"
+            app:tint="@color/default_field_icon_color" />
 
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <ImageView
-                android:id="@+id/descriptionLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                app:srcCompat="@drawable/ic_info_outline"
-                app:tint="?colorPrimary" />
-        </LinearLayout>
+        <ImageView
+            android:id="@+id/descIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_info_outline"
+            app:tint="?colorPrimary" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

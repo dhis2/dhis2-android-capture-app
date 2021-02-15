@@ -4,6 +4,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
+import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.BitmapUtils
 import org.dhis2.R
@@ -11,9 +12,8 @@ import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFe
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.layer.LayerType
-import org.hisp.dhis.android.core.common.FeatureType
 
-class RelationshipMapManager : MapManager() {
+class RelationshipMapManager(mapView: MapView) : MapManager(mapView) {
 
     companion object {
         const val RELATIONSHIP_ICON = "RELATIONSHIP_ICON"
@@ -26,11 +26,9 @@ class RelationshipMapManager : MapManager() {
 
     fun update(
         featureCollections: Map<String, FeatureCollection>,
-        boundingBox: BoundingBox,
-        featureType: FeatureType
+        boundingBox: BoundingBox
     ) {
         this.featureCollections = featureCollections
-        this.featureType = featureType
         this.boundingBox = boundingBox
         if (isMapReady()) {
             when {
@@ -89,8 +87,7 @@ class RelationshipMapManager : MapManager() {
     }
 
     override fun setLayer() {
-        mapLayerManager.initMap(map)
-            .withFeatureType(featureType)
+        mapLayerManager
             .addLayers(LayerType.RELATIONSHIP_LAYER, featureCollections.keys.toList(), true)
             .addLayer(LayerType.SATELLITE_LAYER)
     }

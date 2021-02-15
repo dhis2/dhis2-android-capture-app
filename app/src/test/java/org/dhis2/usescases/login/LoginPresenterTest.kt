@@ -165,13 +165,6 @@ class LoginPresenterTest {
     }
 
     @Test
-    fun `Should show alert when URL info is clicked`() {
-        loginPresenter.onUrlInfoClick()
-
-        verify(view).displayAlertDialog()
-    }
-
-    @Test
     fun `Should log in with fingerprint successfully`() {
         whenever(goldfinger.authenticate(view.getPromptParams())) doReturn Observable.just(
             FingerPrintResult(

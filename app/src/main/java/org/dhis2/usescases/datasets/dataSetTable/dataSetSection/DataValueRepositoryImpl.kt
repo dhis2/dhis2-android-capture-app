@@ -4,6 +4,7 @@ import android.text.TextUtils
 import io.reactivex.Flowable
 import java.util.ArrayList
 import java.util.HashMap
+import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
 import org.dhis2.data.tuples.Pair
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.hisp.dhis.android.core.D2
@@ -364,13 +365,25 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
         period: String,
         attributeOptionCombo: String
     ): Flowable<Boolean> {
-        return Flowable.fromCallable {
-            val dataApproval = d2.dataSetModule().dataApprovals()
-                .byOrganisationUnitUid().eq(orgUnit)
-                .byPeriodId().eq(period)
-                .byAttributeOptionComboUid().eq(attributeOptionCombo)
-                .one().blockingGet()
-            dataApproval != null && dataApproval.state() == DataApprovalState.APPROVED_HERE
+        return dataSet.flatMap { dataSet ->
+            dataSet.workflow()?.let { workflow ->
+                Flowable.fromCallable {
+                    val dataApproval = d2.dataSetModule().dataApprovals()
+                        .byOrganisationUnitUid().eq(orgUnit)
+                        .byPeriodId().eq(period)
+                        .byAttributeOptionComboUid().eq(attributeOptionCombo)
+                        .byWorkflowUid().eq(workflow.uid())
+                        .one().blockingGet()
+                    val approvalStates = listOf(
+                        DataApprovalState.APPROVED_ELSEWHERE,
+                        DataApprovalState.APPROVED_ABOVE,
+                        DataApprovalState.APPROVED_HERE,
+                        DataApprovalState.ACCEPTED_ELSEWHERE,
+                        DataApprovalState.ACCEPTED_HERE
+                    )
+                    dataApproval != null && approvalStates.contains(dataApproval.state())
+                }
+            } ?: Flowable.just(false)
         }
     }
 
@@ -458,7 +471,10 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
                                             ).blockingGet()
                                     canWriteOrgUnit = organisationUnits.isNotEmpty()
                                 }
-                                canWriteCatOption && canWriteOrgUnit
+                                val hasDataValueAuthority = !d2.userModule().authorities()
+                                    .byName().eq(AUTH_DATAVALUE_ADD)
+                                    .blockingIsEmpty()
+                                hasDataValueAuthority && canWriteCatOption && canWriteOrgUnit
                             }
                     else -> Flowable.just(false)
                 }
