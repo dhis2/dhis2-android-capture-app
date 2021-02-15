@@ -325,9 +325,10 @@ class FilterRepository @Inject constructor(
             return defaultFilters.values.toList()
         }
 
-        val datasetFiltersWebApp: Map<DataSetFilter, FilterConfig> = mapOf() // SDK
+        val datasetFiltersWebApp: Map<DataSetFilter, FilterConfig> =
+            d2.settingModule().appearanceSettings().getDataSetFilters(dataSetUid)
         val datasetFiltersWebAppKeys =
-            datasetFiltersWebApp.filterValues { it.filter() }.keys.toList()
+            datasetFiltersWebApp.filterValues { it.filter()!! }.keys.toList()
         val filtersToShow = defaultFilters.filter { datasetFiltersWebAppKeys.contains(it.key) }
 
         if (filtersToShow.isEmpty()) return mutableListOf()
@@ -386,9 +387,9 @@ class FilterRepository @Inject constructor(
             return defaultFilters.values.toList()
         }
 
-        //Fetch Home filters from SDK webapp
-        val homeFiltersWebApp: Map<HomeFilter, FilterConfig> = mapOf()
-        val homeFiltersWebAppKeys = homeFiltersWebApp.filterValues { it.filter() }.keys.toList()
+        val homeFiltersWebApp: Map<HomeFilter, FilterConfig> = d2.settingModule()
+            .appearanceSettings().homeFilters
+        val homeFiltersWebAppKeys = homeFiltersWebApp.filterValues { it.filter()!! }.keys.toList()
         val filtersToShow = defaultFilters.filter { homeFiltersWebAppKeys.contains(it.key) }
 
         if (filtersToShow.isEmpty()) return mutableListOf()
@@ -433,7 +434,7 @@ class FilterRepository @Inject constructor(
     }
 
     private fun webAppIsNotConfigured(): Boolean {
-        return true
+        return d2.settingModule() == null || d2.settingModule().appearanceSettings() == null
     }
 
     private fun getTrackerFilters(program: Program): List<FilterItem> {
@@ -450,10 +451,10 @@ class FilterRepository @Inject constructor(
             return defaultFilters.values.toList()
         }
 
-        //Fetch Home filters from SDK webapp
-        val trackerFiltersWebApp: Map<ProgramFilter, FilterConfig> = mapOf()
+        val trackerFiltersWebApp: Map<ProgramFilter, FilterConfig> =
+            d2.settingModule().appearanceSettings().getProgramFilters(program.uid())
         val trackerFiltersWebAppKeys =
-            trackerFiltersWebApp.filterValues { it.filter() }.keys.toList()
+            trackerFiltersWebApp.filterValues { it.filter()!! }.keys.toList()
         val filtersToShow = defaultFilters.filter { trackerFiltersWebAppKeys.contains(it.key) }
 
         val workingListFilter: WorkingListFilter? = getTrackerWorkingList(program)
@@ -560,10 +561,10 @@ class FilterRepository @Inject constructor(
             return defaultFilters.values.toMutableList()
         }
 
-        //Fetch Home filters from SDK webapp
-        val eventFiltersWebApp: Map<ProgramFilter, FilterConfig> = mapOf()
+        val eventFiltersWebApp: Map<ProgramFilter, FilterConfig> =
+            d2.settingModule().appearanceSettings().getProgramFilters(program.uid())
         val eventFiltersWebAppKeys =
-            eventFiltersWebApp.filterValues { it.filter() }.keys.toList()
+            eventFiltersWebApp.filterValues { it.filter()!! }.keys.toList()
         val filtersToShow = defaultFilters.filter { eventFiltersWebAppKeys.contains(it.key) }
 
         val workingListFilter: WorkingListFilter? = getEventWorkingList(program)
