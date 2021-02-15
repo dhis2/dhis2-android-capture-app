@@ -37,9 +37,7 @@
             android:layout_gravity="end"
             android:padding="8dp"
             android:textAlignment="textEnd"
-            android:text="No en lo absoluto"
-            android:textIsSelectable="true"
-            android:textColorHighlight="?colorPrimary"/>
+            android:text="No en lo absoluto"/>
     </RelativeLayout>
 
 
