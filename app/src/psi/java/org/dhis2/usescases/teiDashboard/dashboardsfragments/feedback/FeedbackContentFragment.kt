@@ -103,7 +103,7 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
     override fun render(state: FeedbackContentState) {
         return when (state) {
             is FeedbackContentState.Loading -> renderLoading()
-            is FeedbackContentState.Loaded -> renderLoaded(state.feedback, state.validations)
+            is FeedbackContentState.Loaded -> renderLoaded(state.feedback, state.position, state.validations)
             is FeedbackContentState.ValidationsWithError -> {
                 renderError(getString(R.string.unexpected_error_message))
                 showValidations(state.validations)
@@ -174,12 +174,12 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
         binding.failedCheckBox.isEnabled = false
     }
 
-    private fun renderLoaded(feedback: Tree.Root<*>, validations: List<Validation>) {
+    private fun renderLoaded(feedback: Tree.Root<*>, position: Int, validations: List<Validation>) {
         binding.msgFeedback.visibility = View.GONE
         binding.spinner.visibility = View.GONE
         binding.failedCheckBox.isEnabled = true
 
-        setFeedbackAdapter(feedback)
+        setFeedbackAdapter(feedback, position)
 
         showValidations(validations)
     }
@@ -227,7 +227,7 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
                 //  builder.setSpan( ImageSpan(activity, R.drawable.ic_error), builder.length - 1, builder.length, 0)
             }
 
-            val snackbar = Snackbar.make(view!!, builder, Snackbar.LENGTH_LONG)
+            val snackbar = Snackbar.make(view!!, builder, Snackbar.LENGTH_INDEFINITE)
             snackbar.setAction(
                 R.string.customactivityoncrash_error_activity_error_details_copy
             ) {
@@ -246,14 +246,14 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
         }
     }
 
-    private fun setFeedbackAdapter(feedback: Tree.Root<*>) {
+    private fun setFeedbackAdapter(feedback: Tree.Root<*>, scrollTo: Int) {
         val adapter = TreeAdapter(feedback, listOf(FeedbackItemBinder(), FeedbackHelpItemBinder()),
-            {
-                presenter.expand(it)
+            { node: Tree<*>, position: Int ->
+                presenter.expand(node, position)
             })
 
-
         binding.feedbackRecyclerView.adapter = adapter
+        binding.feedbackRecyclerView.layoutManager?.scrollToPosition(scrollTo)
     }
 
     companion object {

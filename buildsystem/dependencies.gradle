@@ -43,7 +43,7 @@ ext {
             glide            : "4.7.1",
             indicatordots    : "2.1.2",
             latestSecureStorageVersion    : "1.2.2",
-            markwon          : "4.5.1",
+            markwon          : "4.6.0",
 
             paperwork        : "1.2.7",
             rxjava           : "2.1.0",
