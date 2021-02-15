@@ -57,7 +57,8 @@ data class Value(
     val feedbackHelp: String? = null,
     val success: Boolean,
     val critical: Boolean,
-    val eventUid: String
+    val eventUid: String,
+    val isNumeric: Boolean
 )
 
 data class Event(val uid: String, val name: String, val values: List<Value> = listOf())
