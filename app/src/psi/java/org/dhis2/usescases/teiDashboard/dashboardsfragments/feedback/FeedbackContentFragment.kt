@@ -136,7 +136,7 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
             })
 
         binding.feedbackRecyclerView.adapter = adapter
-        binding.feedbackRecyclerView.layoutManager?.scrollToPosition(scrollTo)
+        binding.feedbackRecyclerView.smoothScrollToPosition(scrollTo)
     }
 
     companion object {

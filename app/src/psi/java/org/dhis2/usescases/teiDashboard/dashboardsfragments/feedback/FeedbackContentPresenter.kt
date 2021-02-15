@@ -55,11 +55,10 @@ class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
 
     fun expand(node: Tree<*>, position: Int) {
         if (lastLoaded != null && node is Tree.Node) {
-            val newPosition = if (node.expanded) position else position - 1
             lastLoaded =
                 lastLoaded!!.copy(
                     feedback = lastLoaded!!.feedback.expand(node),
-                    position = newPosition
+                    position = position
                 )
             render(lastLoaded!!)
         }
