@@ -13,7 +13,11 @@ import timber.log.Timber
 
 sealed class FeedbackContentState {
     object Loading : FeedbackContentState()
-    data class Loaded(val feedback: Tree.Root<*>, val onlyFailedFilter: Boolean) :
+    data class Loaded(
+        val feedback: Tree.Root<*>,
+        val onlyFailedFilter: Boolean,
+        val position: Int
+    ) :
         FeedbackContentState()
 
     object NotFound : FeedbackContentState()
@@ -65,19 +69,24 @@ class FeedbackContentPresenter(
         }
 
         result.fold(
-            { failure -> handleFailure(failure) },
-            { feedback ->
-                val feedbackText = nodesToText(feedback.children)
-                val systemInfo = getSystemInfo()
-                val serverUrl = systemInfo.contextPath
+                { failure -> handleFailure(failure) },
+                { feedback ->
+                    val feedbackText = nodesToText(feedback.children)
+                    val systemInfo = getSystemInfo()
+                    val serverUrl = systemInfo.contextPath
 
-                render(FeedbackContentState.SharingFeedback(feedbackText,serverUrl,enrollmentUid))
-            })
+                    render(FeedbackContentState.SharingFeedback(feedbackText,serverUrl,enrollmentUid))
+                })
     }
 
-    fun expand(node: Tree<*>) {
+    fun expand(node: Tree<*>, position: Int) {
         if (lastLoaded != null && node is Tree.Node) {
-            lastLoaded = lastLoaded!!.copy(feedback = lastLoaded!!.feedback.expand(node))
+            val newPosition = if (node.expanded) position else position - 1
+            lastLoaded =
+                lastLoaded!!.copy(
+                    feedback = lastLoaded!!.feedback.expand(node),
+                    position = newPosition
+                )
             render(lastLoaded!!)
         }
     }
@@ -97,7 +106,7 @@ class FeedbackContentPresenter(
                     tryMaintainCurrentExpandedItems(feedback) else feedback
 
 
-                lastLoaded = FeedbackContentState.Loaded(finalFeedback, onlyFailedFilter)
+                lastLoaded = FeedbackContentState.Loaded(finalFeedback, onlyFailedFilter, 0)
                 render(lastLoaded!!)
             })
     }
