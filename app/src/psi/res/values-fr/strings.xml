@@ -16,8 +16,8 @@
     <string name="feedback_malformed_error">"**Erreur**: json de retour incorrect pour l'élément de données %s"</string>
     <string name="feedback_error">"Erreur"</string>
     <string name="feedback_warning">"Attention"</string>
-    <string name="feedback_order_with_spaces">"Afin de rétroaction avec des espaces dans l'élément de données %s"</string>
-    <string name="feedback_order_invalid">"Afin de rétroaction non valide dans l'élément de données %s"</string>
-    <string name="feedback_order_duplicate">"double rétroaction de l'ordre dans les éléments de données %s"</string>
-    <string name="feedback_order_gap">"étape du programme %s contient des lacunes de commande de rétroaction"</string>
+    <string name="feedback_order_with_spaces">"Ordre du retour d'information avec des espaces dans l'élément de données %s"</string>
+    <string name="feedback_order_invalid">"Ordre du retour d'information non valide dans l'élément de données %s"</string>
+    <string name="feedback_order_duplicate">"Doublon dans l'ordre du retour d'information pour les éléments de données %s"</string>
+    <string name="feedback_order_gap">"Étape du programme %s contient des trous dans l'ordre du retour d'information"</string>
 </resources>

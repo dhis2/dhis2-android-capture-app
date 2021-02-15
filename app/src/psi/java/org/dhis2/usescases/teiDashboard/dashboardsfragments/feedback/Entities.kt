@@ -92,7 +92,8 @@ data class Value(
     val feedbackHelp: String? = null,
     val success: Boolean,
     val critical: Boolean,
-    val eventUid: String
+    val eventUid: String,
+    val isNumeric: Boolean
 )
 
 data class DataElement(val uid: String, val feedbackOrder: FeedbackOrder?)

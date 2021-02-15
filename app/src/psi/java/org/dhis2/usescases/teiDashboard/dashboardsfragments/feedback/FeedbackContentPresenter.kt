@@ -14,9 +14,12 @@ import timber.log.Timber
 sealed class FeedbackContentState {
     object Loading : FeedbackContentState()
     data class Loaded(
-        val feedback: Tree.Root<*>, val onlyFailedFilter: Boolean,
+        val feedback: Tree.Root<*>,
+        val onlyFailedFilter: Boolean,
+        val position: Int,
         val validations: List<Validation>
-    ) : FeedbackContentState()
+    ) :
+        FeedbackContentState()
 
     data class ValidationsWithError(val validations: List<Validation>) : FeedbackContentState()
     object NotFound : FeedbackContentState()
@@ -71,19 +74,24 @@ class FeedbackContentPresenter(
         }
 
         result.fold(
-            { failure -> handleFailure(failure) },
-            { feedbackResponse ->
-                val feedbackText = nodesToText(feedbackResponse.data.children)
-                val systemInfo = getSystemInfo()
-                val serverUrl = systemInfo.contextPath
+                { failure -> handleFailure(failure) },
+                { feedbackResponse ->
+                    val feedbackText = nodesToText(feedbackResponse.data.children)
+                    val systemInfo = getSystemInfo()
+                    val serverUrl = systemInfo.contextPath
 
-                render(FeedbackContentState.SharingFeedback(feedbackText, serverUrl, enrollmentUid))
-            })
+                    render(FeedbackContentState.SharingFeedback(feedbackText, serverUrl, enrollmentUid))
+                })
     }
 
-    fun expand(node: Tree<*>) {
+    fun expand(node: Tree<*>, position: Int) {
         if (lastLoaded != null && node is Tree.Node) {
-            lastLoaded = lastLoaded!!.copy(feedback = lastLoaded!!.feedback.expand(node))
+            val newPosition = if (node.expanded) position else position - 1
+            lastLoaded =
+                lastLoaded!!.copy(
+                    feedback = lastLoaded!!.feedback.expand(node),
+                    position = newPosition
+                )
             render(lastLoaded!!)
         }
     }
@@ -105,6 +113,7 @@ class FeedbackContentPresenter(
                 lastLoaded = FeedbackContentState.Loaded(
                     finalFeedback,
                     onlyFailedFilter,
+                    0,
                     feedbackResponse.validations
                 )
                 render(lastLoaded!!)
