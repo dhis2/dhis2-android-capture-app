@@ -227,7 +227,7 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
                 //  builder.setSpan( ImageSpan(activity, R.drawable.ic_error), builder.length - 1, builder.length, 0)
             }
 
-            val snackbar = Snackbar.make(view!!, builder, Snackbar.LENGTH_LONG)
+            val snackbar = Snackbar.make(view!!, builder, Snackbar.LENGTH_INDEFINITE)
             snackbar.setAction(R.string.customactivityoncrash_error_activity_error_details_copy
             ) {
                 val clipboard =
