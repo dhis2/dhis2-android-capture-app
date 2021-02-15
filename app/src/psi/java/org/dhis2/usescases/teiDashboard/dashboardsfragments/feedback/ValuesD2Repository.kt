@@ -6,6 +6,7 @@ import org.hisp.dhis.android.core.attribute.Attribute
 import org.hisp.dhis.android.core.attribute.AttributeValue
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.legendset.Legend
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 
 class ValuesD2Repository(private val d2: D2) : ValuesRepository {
     val dataElements: List<DataElement> = d2.dataElementModule().dataElements().get().blockingGet()
@@ -43,6 +44,7 @@ class ValuesD2Repository(private val d2: D2) : ValuesRepository {
                 val deName: String =
                     if (dataElement.displayFormName() == null) dataElement.displayName()!! else dataElement.displayFormName()!!
 
+
                 Value(
                     teiValue.dataElement()!!,
                     deName,
@@ -52,9 +54,20 @@ class ValuesD2Repository(private val d2: D2) : ValuesRepository {
                     deFeedbackHelp?.value(),
                     assignedLegend?.name()?.split("_")?.last() != failLegendSuffix,
                     dataElementsWithMandatory.contains(teiValue.dataElement()!!),
-                    eventUid
+                    eventUid,
+                    isNumeric(teiValue)
                 )
             }
+    }
+
+    private fun isNumeric(teiValue: TrackedEntityDataValue): Boolean {
+        val dataElement = d2.dataElementModule().dataElements()
+            .uid(teiValue.dataElement())
+            .blockingGet()
+
+        dataElement.optionSet()?.let {
+            return false
+        } ?: return dataElement.valueType()!!.isNumeric
     }
 
     private fun getDataElementsWithFeedbackOrder(

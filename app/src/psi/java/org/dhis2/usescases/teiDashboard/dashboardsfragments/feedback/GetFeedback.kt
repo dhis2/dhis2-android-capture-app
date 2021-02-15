@@ -78,6 +78,7 @@ class GetFeedback(
             .flatMap { it.values }
             .distinctBy { it.dataElement }
             .filter { it.feedbackOrder.level == 0 }
+            .sortedBy{ it.feedbackOrder }
 
         return root(null, level0DistinctValues.map {
             val eventsChildren =
@@ -175,7 +176,8 @@ class GetFeedback(
                         eventValueLevel0.value,
                         eventValueLevel0.colorByLegend,
                         eventValueLevel0.success,
-                        eventValueLevel0.critical
+                        eventValueLevel0.critical,
+                        eventValueLevel0.isNumeric
                     ),
                     event.uid
                 ), children
@@ -199,7 +201,8 @@ class GetFeedback(
                     eventValue.value,
                     eventValue.colorByLegend,
                     eventValue.success,
-                    eventValue.critical
+                    eventValue.critical,
+                    eventValue.isNumeric
                 ) else null,
                 eventValue.dataElement
             ), finalChildren
