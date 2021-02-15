@@ -328,7 +328,7 @@ class FilterRepository @Inject constructor(
         }
 
         val datasetFiltersWebApp: Map<DataSetFilter, FilterConfig> = mapOf()
-            //d2.settingModule().appearanceSettings().getDataSetFilters(dataSetUid)
+        //d2.settingModule().appearanceSettings().getDataSetFilters(dataSetUid)
         val datasetFiltersWebAppKeys =
             datasetFiltersWebApp.filterValues { it.filter()!! }.keys.toList()
         val filtersToShow = defaultFilters.filter { datasetFiltersWebAppKeys.contains(it.key) }
@@ -390,7 +390,7 @@ class FilterRepository @Inject constructor(
         }
 
         val homeFiltersWebApp: Map<HomeFilter, FilterConfig> = mapOf()
-            //d2.settingModule().appearanceSettings().homeFilters
+        //d2.settingModule().appearanceSettings().homeFilters
         val homeFiltersWebAppKeys = homeFiltersWebApp.filterValues { it.filter()!! }.keys.toList()
         val filtersToShow = defaultFilters.filter { homeFiltersWebAppKeys.contains(it.key) }
 
@@ -421,15 +421,12 @@ class FilterRepository @Inject constructor(
             )
         )
 
+        val stagesByUserAssignment = d2.programModule()
+            .programStages()
+            .byEnableUserAssignment()
+            .eq(true)
 
-         val stagesByProgramUidAndUserAssignment = d2.programModule()
-                .programStages()
-                .byProgramUid()
-                .eq(program.uid())
-                .byEnableUserAssignment()
-                .eq(true)
-
-            if (!stagesByProgramUidAndUserAssignment.blockingIsEmpty()) {
+        if (!stagesByUserAssignment.blockingIsEmpty()) {
             val assignToMeFilter = AssignedFilter(
                 programType = org.dhis2.utils.filters.ProgramType.ALL,
                 sortingItem = observableSortingInject,
@@ -461,7 +458,7 @@ class FilterRepository @Inject constructor(
         }
 
         val trackerFiltersWebApp: Map<ProgramFilter, FilterConfig> = mapOf()
-          //  d2.settingModule().appearanceSettings().getProgramFilters(program.uid())
+        //  d2.settingModule().appearanceSettings().getProgramFilters(program.uid())
         val trackerFiltersWebAppKeys =
             trackerFiltersWebApp.filterValues { it.filter()!! }.keys.toList()
         val filtersToShow = defaultFilters.filter { trackerFiltersWebAppKeys.contains(it.key) }
@@ -518,9 +515,14 @@ class FilterRepository @Inject constructor(
             resources.filterResources.filterEventStatusLabel()
         )
 
-        if (!d2.programModule().programStages().byProgramUid().eq(program.uid())
-                .byEnableUserAssignment().eq(true).blockingIsEmpty()
-        ) {
+        val stagesByProgramUidAndUserAssignment = d2.programModule()
+            .programStages()
+            .byProgramUid()
+            .eq(program.uid())
+            .byEnableUserAssignment()
+            .eq(true)
+
+        if (!stagesByProgramUidAndUserAssignment.blockingIsEmpty()) {
             defaultTrackerFilters[ProgramFilter.ASSIGNED_TO_ME] = AssignedFilter(
                 programType = org.dhis2.utils.filters.ProgramType.TRACKER,
                 sortingItem = observableSortingInject,
@@ -640,9 +642,14 @@ class FilterRepository @Inject constructor(
             resources.filterResources.filterEventStatusLabel()
         )
 
-        if (!d2.programModule().programStages().byProgramUid().eq(program.uid())
-                .byEnableUserAssignment().eq(true).blockingIsEmpty()
-        ) {
+        val stagesByProgramAndUserAssignment = d2.programModule()
+            .programStages()
+            .byProgramUid()
+            .eq(program.uid())
+            .byEnableUserAssignment()
+            .eq(true)
+
+        if (!stagesByProgramAndUserAssignment.blockingIsEmpty()) {
             defaultEventFilter[ProgramFilter.ASSIGNED_TO_ME] = AssignedFilter(
                 programType = org.dhis2.utils.filters.ProgramType.EVENT,
                 sortingItem = observableSortingInject,
