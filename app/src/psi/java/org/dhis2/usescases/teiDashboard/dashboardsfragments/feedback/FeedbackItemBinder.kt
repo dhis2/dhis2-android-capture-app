@@ -9,8 +9,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.R
-import org.dhis2.core.ui.tree.TreeAdapterBinder
 import org.dhis2.core.types.Tree
+import org.dhis2.core.ui.tree.TreeAdapterBinder
+import java.text.DecimalFormat
 
 class FeedbackItemBinder : TreeAdapterBinder(FeedbackItem::class.java) {
     override val layoutId: Int
@@ -29,7 +30,7 @@ class FeedbackItemBinder : TreeAdapterBinder(FeedbackItem::class.java) {
 
             renderColor(itemView, node)
             renderName(name, feedbackItem, node)
-            renderValue(value, feedbackItem, feedbackItem.value)
+            renderValue(value, feedbackItem)
             renderArrow(arrow, node)
         }
     }
@@ -80,16 +81,22 @@ class FeedbackItemBinder : TreeAdapterBinder(FeedbackItem::class.java) {
 
     private fun renderValue(
         valueView: TextView,
-        feedbackItem: FeedbackItem,
-        value: FeedbackItemValue?
+        feedbackItem: FeedbackItem
     ) {
-        if (feedbackItem.value == null || value?.data.isNullOrBlank()) {
+        if (feedbackItem.value == null || feedbackItem.value.data.isNullOrBlank()) {
             valueView.visibility = View.GONE
         } else {
-            valueView.text = value?.data
 
-            if (value?.color != null) {
-                valueView.setBackgroundColor(Color.parseColor(value.color))
+            if (feedbackItem.value.isNumeric) {
+                val num = feedbackItem.value.data.toDouble()
+
+                valueView.text = "%.1f".format(num)
+            } else {
+                valueView.text = feedbackItem.value.data
+            }
+
+            if (feedbackItem.value.color != null) {
+                valueView.setBackgroundColor(Color.parseColor(feedbackItem.value.color))
             } else {
                 valueView.setBackgroundColor(Color.TRANSPARENT)
             }

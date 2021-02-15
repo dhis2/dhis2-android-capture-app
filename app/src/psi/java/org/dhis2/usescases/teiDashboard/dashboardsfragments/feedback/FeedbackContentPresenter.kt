@@ -12,7 +12,11 @@ import timber.log.Timber
 
 sealed class FeedbackContentState {
     object Loading : FeedbackContentState()
-    data class Loaded(val feedback: Tree.Root<*>, val onlyFailedFilter: Boolean) :
+    data class Loaded(
+        val feedback: Tree.Root<*>,
+        val onlyFailedFilter: Boolean,
+        val position: Int
+    ) :
         FeedbackContentState()
 
     object NotFound : FeedbackContentState()
@@ -49,9 +53,14 @@ class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
         loadFeedback(value)
     }
 
-    fun expand(node: Tree<*>){
-        if (lastLoaded != null && node is Tree.Node){
-            lastLoaded = lastLoaded!!.copy(feedback = lastLoaded!!.feedback.expand(node))
+    fun expand(node: Tree<*>, position: Int) {
+        if (lastLoaded != null && node is Tree.Node) {
+            val newPosition = if (node.expanded) position else position - 1
+            lastLoaded =
+                lastLoaded!!.copy(
+                    feedback = lastLoaded!!.feedback.expand(node),
+                    position = newPosition
+                )
             render(lastLoaded!!)
         }
     }
@@ -71,12 +80,12 @@ class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
                     tryMaintainCurrentExpandedItems(feedback) else feedback
 
 
-                lastLoaded = FeedbackContentState.Loaded(finalFeedback, onlyFailedFilter)
+                lastLoaded = FeedbackContentState.Loaded(finalFeedback, onlyFailedFilter, 0)
                 render(lastLoaded!!)
             })
     }
 
-    private fun tryMaintainCurrentExpandedItems(feedback: Tree.Root<*>): Tree.Root<*>{
+    private fun tryMaintainCurrentExpandedItems(feedback: Tree.Root<*>): Tree.Root<*> {
         val flattedLastFeedback = flatTreeNodes(lastLoaded!!.feedback.children)
         val flattedFeedback = flatTreeNodes(feedback.children)
 

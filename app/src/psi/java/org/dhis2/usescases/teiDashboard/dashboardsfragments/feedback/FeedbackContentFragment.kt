@@ -78,7 +78,7 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
     override fun render(state: FeedbackContentState) {
         return when (state) {
             is FeedbackContentState.Loading -> renderLoading()
-            is FeedbackContentState.Loaded -> renderLoaded(state.feedback)
+            is FeedbackContentState.Loaded -> renderLoaded(state.feedback, state.position)
             is FeedbackContentState.NotFound -> renderError(getString(R.string.empty_tei_no_add))
             is FeedbackContentState.UnexpectedError -> renderError(getString(R.string.unexpected_error_message))
         }
@@ -121,22 +121,22 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
         binding.failedCheckBox.isEnabled = false
     }
 
-    private fun renderLoaded(feedback: Tree.Root<*>) {
+    private fun renderLoaded(feedback: Tree.Root<*>, position: Int) {
         binding.msgFeedback.visibility = View.GONE
         binding.spinner.visibility = View.GONE
         binding.failedCheckBox.isEnabled = true
 
-        setFeedbackAdapter(feedback)
+        setFeedbackAdapter(feedback, position)
     }
 
-    private fun setFeedbackAdapter(feedback: Tree.Root<*>) {
+    private fun setFeedbackAdapter(feedback: Tree.Root<*>, scrollTo: Int) {
         val adapter = TreeAdapter(feedback, listOf(FeedbackItemBinder(), FeedbackHelpItemBinder()),
-            {
-                presenter.expand(it)
+            { node: Tree<*>, position: Int ->
+                presenter.expand(node, position)
             })
 
-
         binding.feedbackRecyclerView.adapter = adapter
+        binding.feedbackRecyclerView.layoutManager?.scrollToPosition(scrollTo)
     }
 
     companion object {
