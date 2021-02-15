@@ -18,6 +18,9 @@ import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.StoreResult;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.data.tuples.Pair;
@@ -39,7 +42,6 @@ import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -60,7 +62,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceCreateProjection;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository;
@@ -72,10 +73,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import kotlin.collections.CollectionsKt;
 
 public class SearchRepositoryImpl implements SearchRepository {
 
@@ -87,48 +90,71 @@ public class SearchRepositoryImpl implements SearchRepository {
     private SearchParametersModel savedSearchParameters;
     private FilterManager savedFilters;
     private FilterPresenter filterPresenter;
+    private FieldViewModelFactory fieldFactory;
 
-    SearchRepositoryImpl(String teiType, D2 d2, FilterPresenter filterPresenter, ResourceManager resources, SearchSortingValueSetter sortingValueSetter) {
+    SearchRepositoryImpl(String teiType, D2 d2, FilterPresenter filterPresenter, ResourceManager resources, SearchSortingValueSetter sortingValueSetter, FieldViewModelFactory fieldFactory) {
         this.teiType = teiType;
         this.d2 = d2;
         this.resources = resources;
         this.sortingValueSetter = sortingValueSetter;
         this.filterPresenter = filterPresenter;
+        this.fieldFactory = fieldFactory;
     }
 
-
-    @NonNull
     @Override
-    public Observable<SearchProgramAttributes> programAttributes(String programId) {
+    public Observable<List<FieldViewModel>> searchFields(@Nullable String programUid, Map<String, String> currentSearchValues) {
+        if (programUid == null || programUid.isEmpty()) {
+            return trackedEntitySearchFields(currentSearchValues);
+        } else {
+            return programTrackedEntityAttributes(programUid, currentSearchValues);
+        }
+    }
+
+    private Observable<List<FieldViewModel>> trackedEntitySearchFields(Map<String, String> currentSearchValues) {
+        return d2.trackedEntityModule().trackedEntityTypeAttributes()
+                .byTrackedEntityTypeUid().eq(teiType)
+                .get().toFlowable()
+                .flatMapIterable(typeAttributes -> typeAttributes)
+                .map(typeAttribute -> {
+                    TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
+                            .uid(typeAttribute.trackedEntityAttribute().uid())
+                            .blockingGet();
+                    return fieldFactory.createForAttribute(
+                            attribute,
+                            null,
+                            currentSearchValues.get(attribute.uid()),
+                            true
+                    );
+                })
+                .toList().toObservable();
+    }
+
+    private Observable<List<FieldViewModel>> programTrackedEntityAttributes(String programUid, Map<String, String> currentSearchValues) {
         return d2.programModule().programTrackedEntityAttributes()
                 .withRenderType()
-                .byProgram().eq(programId)
-                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get().toObservable()
-                .map(programAttributes -> {
-                    List<TrackedEntityAttribute> attributes = new ArrayList<>();
-                    List<ValueTypeDeviceRendering> renderings = new ArrayList<>();
-
-                    for (ProgramTrackedEntityAttribute pteAttribute : programAttributes) {
-                        String trackedEntityAttribyteUid = pteAttribute.trackedEntityAttribute().uid();
-                        ValueTypeDeviceRendering deviceRendering = null;
-                        if (pteAttribute.renderType() != null && pteAttribute.renderType().mobile() != null) {
-                            deviceRendering = pteAttribute.renderType().mobile();
-                        }
-                        boolean isSearcheable = pteAttribute.searchable();
-                        boolean isUnique = d2.trackedEntityModule().trackedEntityAttributes()
-                                .uid(trackedEntityAttribyteUid)
-                                .blockingGet().unique() == Boolean.TRUE;
-
-                        if (isSearcheable || isUnique) {
-                            attributes.add(
-                                    d2.trackedEntityModule().trackedEntityAttributes().uid(
-                                            trackedEntityAttribyteUid)
-                                            .blockingGet());
-                            renderings.add(deviceRendering);
-                        }
-                    }
-                    return new SearchProgramAttributes(attributes, renderings);
-                });
+                .byProgram().eq(programUid)
+                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get().toFlowable()
+                .flatMapIterable(programAttributes -> programAttributes)
+                .filter(programAttribute -> {
+                    boolean isSearcheable = programAttribute.searchable();
+                    boolean isUnique = d2.trackedEntityModule().trackedEntityAttributes()
+                            .uid(programAttribute.trackedEntityAttribute().uid())
+                            .blockingGet().unique() == Boolean.TRUE;
+                    return isSearcheable || isUnique;
+                })
+                .map(programAttribute -> {
+                    TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
+                            .uid(programAttribute.trackedEntityAttribute().uid())
+                            .blockingGet();
+                    return fieldFactory.createForAttribute(
+                            attribute,
+                            programAttribute,
+                            currentSearchValues.get(attribute.uid()),
+                            true
+                    );
+                }).toList().map(list ->
+                        CollectionsKt.filter(list, item -> !(item instanceof PictureViewModel))
+                ).toObservable();
     }
 
     @Override
@@ -515,24 +541,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                         program.style().color() :
                         "" :
                 "";
-    }
-
-    @Override
-    public Observable<List<TrackedEntityAttribute>> trackedEntityTypeAttributes() {
-        return d2.trackedEntityModule().trackedEntityTypeAttributes()
-                .byTrackedEntityTypeUid().eq(teiType)
-                .get()
-                .map(typeAttributes -> {
-                    List<TrackedEntityAttribute> attributes = new ArrayList<>();
-                    for (TrackedEntityTypeAttribute typeAttribute : typeAttributes) {
-                        attributes.add(
-                                d2.trackedEntityModule().trackedEntityAttributes()
-                                        .uid(typeAttribute.trackedEntityAttribute().uid())
-                                        .blockingGet()
-                        );
-                    }
-                    return attributes;
-                }).toObservable();
     }
 
     @Override

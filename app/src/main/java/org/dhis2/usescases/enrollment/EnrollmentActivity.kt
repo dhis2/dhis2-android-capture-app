@@ -5,30 +5,21 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.text.TextUtils.isEmpty
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import io.reactivex.Flowable
 import java.io.File
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.isKeyboardOpened
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.DataEntryAdapter
-import org.dhis2.data.forms.dataentry.DataEntryArguments
-import org.dhis2.data.forms.dataentry.DataEntryHeaderHelper
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
-import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.uicomponents.map.views.MapSelectorActivity
@@ -41,7 +32,6 @@ import org.dhis2.utils.Constants.CAMERA_REQUEST
 import org.dhis2.utils.Constants.ENROLLMENT_UID
 import org.dhis2.utils.Constants.GALLERY_REQUEST
 import org.dhis2.utils.Constants.PROGRAM_UID
-import org.dhis2.utils.Constants.RQ_QR_SCANNER
 import org.dhis2.utils.Constants.TEI_UID
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.FileResourcesUtil
@@ -95,9 +85,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         }
     }
 
-    private lateinit var adapter: DataEntryAdapter
-    private lateinit var dataEntryHeaderHelper: DataEntryHeaderHelper
-
     /*region LIFECYCLE*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -123,26 +110,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         mode = EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
 
-        adapter = DataEntryAdapter(
-            LayoutInflater.from(this),
-            supportFragmentManager,
-            DataEntryArguments.forEnrollment(intent.getStringExtra(ENROLLMENT_UID_EXTRA))
-        )
-        dataEntryHeaderHelper = DataEntryHeaderHelper(
-            binding.headerContainer, binding.fieldRecycler
-        )
-        dataEntryHeaderHelper.observeHeaderChanges(this)
-        binding.fieldRecycler.addOnScrollListener(object :
-                RecyclerView.OnScrollListener() {
-                override fun onScrolled(
-                    recyclerView: RecyclerView,
-                    dx: Int,
-                    dy: Int
-                ) {
-                    dataEntryHeaderHelper.checkSectionHeader(recyclerView)
-                }
-            })
-        binding.fieldRecycler.adapter = adapter
+        binding.formView.init(this)
 
         binding.save.setOnClickListener {
             performSaveClick()
@@ -205,21 +173,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                         ).show()
                     }
                 }
-                RQ_QR_SCANNER -> {
-                    scanTextView.updateScanResult(data!!.getStringExtra(Constants.EXTRA_DATA))
-                }
                 RQ_EVENT -> openDashboard(presenter.getEnrollment()!!.uid()!!)
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
-    }
-
-    override fun sectionFlowable(): Flowable<String> {
-        return adapter.sectionFlowable()
-    }
-
-    override fun setSelectedSection(selectedSection: String) {
-        adapter.setCurrentSection(selectedSection)
     }
 
     override fun openEvent(eventUid: String) {
@@ -269,10 +226,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             bundle.putString(ENROLLMENT_UID, enrollmentUid)
             startActivity(TeiDashboardMobileActivity::class.java, bundle, true, false, null)
         }
-    }
-
-    override fun rowActions(): Flowable<RowAction> {
-        return adapter.asFlowable()
     }
 
     override fun showMissingMandatoryFieldsMessage(
@@ -439,29 +392,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     /*region DATA ENTRY*/
     override fun showFields(fields: List<FieldViewModel>) {
-        if (!isEmpty(presenter.getLastFocusItem())) {
-            adapter.setLastFocusItem(presenter.getLastFocusItem())
-        }
-
         fields.filter {
             it !is DisplayViewModel
         }
 
-        val myLayoutManager: LinearLayoutManager =
-            binding.fieldRecycler.layoutManager as LinearLayoutManager
-
-        val myFirstPositionIndex = myLayoutManager.findFirstVisibleItemPosition()
-        val myFirstPositionView = myLayoutManager.findViewByPosition(myFirstPositionIndex)
-
-        var offset = 0
-        myFirstPositionView?.let {
-            offset = it.top
-        }
-
-        adapter.swap(fields) {
-            dataEntryHeaderHelper.onItemsUpdatedCallback()
-        }
-        myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
+        binding.formView.render(fields)
     }
 
     /*endregion*/

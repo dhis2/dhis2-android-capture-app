@@ -32,8 +32,8 @@ class GraphToNutritionChart {
                 position = XAxis.XAxisPosition.BOTTOM
                 valueFormatter = AgeInMonthLabelFormatter()
                 granularity = DEFAULT_GRANULARITY
-                axisMinimum = 0f
-                axisMaximum = graph.series.first().coordinates.size + 1f
+                axisMinimum = graph.series.first().coordinates.first().position ?: 0f
+                axisMaximum = graph.series.first().coordinates.last().position ?: 0f + 1f
             }
 
             axisLeft.apply {

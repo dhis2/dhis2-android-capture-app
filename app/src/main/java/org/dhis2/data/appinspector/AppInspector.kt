@@ -36,9 +36,6 @@ class AppInspector(private val context: Context) {
                     sharedPreferencesPlugin()
                 )
                 addPlugin(
-                    leakCanaryPlugin()
-                )
-                addPlugin(
                     crashPlugin()
                 )
                 start()

@@ -4,9 +4,15 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="bgTransparent"
             type="java.lang.Boolean" />
+
+        <variable
+            name="item"
+            type="org.dhis2.data.forms.dataentry.fields.age.AgeViewModel" />
 
     </data>
 
@@ -22,18 +28,19 @@
             android:layout_marginStart="8dp"
             android:layout_marginBottom="6dp"
             android:background="?colorPrimary"
-            android:visibility="gone"
+            android:visibility="@{item.activated ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
 
-        <org.dhis2.utils.customviews.AgeView
+        <org.dhis2.data.forms.dataentry.fields.age.AgeView
             android:id="@+id/custom_ageview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:viewModel="@{item}"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

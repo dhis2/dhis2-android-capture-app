@@ -1,6 +1,7 @@
 package org.dhis2.Bindings;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -14,10 +15,13 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
@@ -29,9 +33,11 @@ import androidx.databinding.BindingAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
 import org.dhis2.utils.CatComboAdapter;
@@ -61,9 +67,8 @@ import java.util.List;
 
 import timber.log.Timber;
 
-/**
- * QUADRAM. Created by ppajuelo on 28/09/2017.
- */
+import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
+
 
 public class Bindings {
 
@@ -715,5 +720,88 @@ public class Bindings {
             p.setMargins(p.leftMargin, ExtensionsKt.getDp(marginInDp), p.rightMargin, p.bottomMargin);
             view.requestLayout();
         }
+    }
+
+    @BindingAdapter("setTextColor")
+    public static void setTextColorRadioButton(RadioButton radioButton, boolean isBgTransparent) {
+        radioButton.setTextColor(getColorStateViewChecked(radioButton.getContext(), isBgTransparent));
+    }
+
+    @BindingAdapter("tintRadioButton")
+    public static void tintRadioButton(RadioButton radioButton, boolean isBg) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            radioButton.setButtonTintList(getColorStateViewChecked(radioButton.getContext(), isBg));
+            radioButton.invalidate();
+        }
+    }
+
+    @BindingAdapter("setTextColor")
+    public static void setTextColorCheckbox(MaterialCheckBox checkbox, boolean isBgTransparent) {
+        checkbox.setTextColor(getColorStateViewChecked(checkbox.getContext(), isBgTransparent));
+    }
+
+    @BindingAdapter("tintCheckboxButton")
+    public static void tintCheckbox(MaterialCheckBox radioButton, boolean isBg) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            radioButton.setButtonTintList(getColorStateViewChecked(radioButton.getContext(), isBg));
+            radioButton.invalidate();
+        }
+    }
+
+    private static ColorStateList getColorStateViewChecked(Context context, boolean isBackground) {
+        int colorStateChecked;
+        int colorStateUnchecked;
+
+        if (isBackground) {
+            colorStateChecked = ColorUtils.getPrimaryColor(context,
+                    ColorUtils.ColorType.PRIMARY);
+            colorStateUnchecked = ContextCompat.getColor(context, R.color.textPrimary);
+        } else {
+            colorStateChecked = ColorUtils.getPrimaryColor(context,
+                    ColorUtils.ColorType.ACCENT);
+            colorStateUnchecked = colorStateChecked;
+        }
+
+
+        return new ColorStateList(
+                new int[][]{
+                        new int[]{android.R.attr.state_checked},
+                        new int[]{-android.R.attr.state_checked}
+                },
+                new int[]{
+                        colorStateChecked,
+                        colorStateUnchecked
+                }
+        );
+    }
+
+    @BindingAdapter("requestFocus")
+    public static void requestFocus(EditText editText, boolean focused) {
+        if (focused) {
+                editText.setFocusableInTouchMode(true);
+                editText.requestFocus();
+                openKeyboard(editText);
+        } else {
+            editText.clearFocus();
+        }
+    }
+
+    @BindingAdapter("checkListener")
+    public static void checkListener(RadioGroup radioGroup, RadioButtonViewModel viewModel){
+        radioGroup.setOnCheckedChangeListener(null);
+        if(viewModel.isAffirmativeChecked()){
+            radioGroup.check(R.id.yes);
+        }else if(viewModel.isNegativeChecked()){
+            radioGroup.check(R.id.no);
+        }else{
+            radioGroup.clearCheck();
+        }
+        radioGroup.setOnCheckedChangeListener((radioGroup1, checkedId) -> {
+            if(checkedId == R.id.yes){
+                viewModel.onValueChanged(true);
+            }else if(checkedId == R.id.no){
+                viewModel.onValueChanged(false);
+            }
+        });
     }
 }

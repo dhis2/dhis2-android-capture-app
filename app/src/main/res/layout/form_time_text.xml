@@ -4,21 +4,11 @@
 
     <data>
 
-        <variable
-            name="label"
-            type="java.lang.String" />
+        <import type="android.view.View" />
 
         <variable
-            name="description"
-            type="java.lang.String" />
-
-        <variable
-            name="initData"
-            type="java.lang.String" />
-
-        <variable
-            name="allowFutureDates"
-            type="java.lang.Boolean" />
+            name="item"
+            type="org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,24 +20,22 @@
             android:id="@+id/fieldSelected"
             android:layout_width="2dp"
             android:layout_height="50dp"
-            android:background="?colorPrimary"
             android:layout_marginStart="8dp"
             android:layout_marginBottom="6dp"
-            android:visibility="gone"
+            android:background="?colorPrimary"
+            android:visibility="@{item.activated ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
 
-        <org.dhis2.utils.customviews.TimeView
+        <org.dhis2.data.forms.dataentry.fields.datetime.TimeView
             android:id="@+id/timeView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:initData="@{initData}"
-            app:label="@{label}"
-            app:description="@{description}"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:viewModel="@{item}" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

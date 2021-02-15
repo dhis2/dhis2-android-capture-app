@@ -46,7 +46,8 @@ class RulesUtilsProviderImplTest {
     fun setUp() {
         ruleUtils = RulesUtilsProviderImpl(d2)
         fieldFactory = FieldViewModelFactoryImpl(
-            ValueType.values().map { it to it.name }.toMap()
+            ValueType.values().map { it to it.name }.toMap(),
+            false
         )
         testFieldViewModels = getTestingFieldViewModels().associateBy { it.uid() }.toMutableMap()
     }
@@ -84,7 +85,9 @@ class RulesUtilsProviderImplTest {
             null,
             null,
             ObjectStyle.builder().build(),
-            ""
+            "",
+            null,
+            null
         )
     }
 
