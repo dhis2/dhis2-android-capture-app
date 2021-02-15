@@ -11,27 +11,19 @@ import io.reactivex.disposables.CompositeDisposable;
 public class DataSetDetailViewHolder extends RecyclerView.ViewHolder{
 
     private ItemDatasetBinding binding;
-    private CompositeDisposable disposable;
 
     public DataSetDetailViewHolder(ItemDatasetBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
-        disposable = new CompositeDisposable();
     }
 
-    public void bind(DataSetDetailContract.Presenter presenter, DataSetDetailModel dataset) {
+    public void bind(DataSetDetailPresenter presenter, DataSetDetailModel dataSet) {
         binding.setVariable(BR.presenter, presenter);
-        binding.setVariable(BR.dataset, dataset);
+        binding.setVariable(BR.dataset, dataSet);
         binding.executePendingBindings();
 
-        binding.syncIcon.setOnClickListener(view ->  presenter.onSyncIconClick(dataset.orgUnitUid(), dataset.catOptionComboUid(), dataset.periodId()));
+        binding.syncIcon.setOnClickListener(view ->  presenter.onSyncIconClick(dataSet));
 
-        itemView.setOnClickListener(view -> presenter.onDataSetClick(
-                dataset.orgUnitUid(),
-                dataset.nameOrgUnit(),
-                dataset.periodId(),
-                dataset.periodType(),
-                dataset.namePeriod(),
-                dataset.catOptionComboUid()));
+        itemView.setOnClickListener(view -> presenter.openDataSet(dataSet));
     }
 }

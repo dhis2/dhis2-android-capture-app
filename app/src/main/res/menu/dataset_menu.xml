@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/showHelp"
+        android:icon="@drawable/ic_help"
+        android:title="@string/showHelp" />
+    <item
+        android:id="@+id/reopen"
+        android:icon="@drawable/ic_lock_open_menu"
+        android:title="@string/re_open"/>
+</menu>

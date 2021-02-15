@@ -34,7 +34,8 @@ class EventIndicatorsDialogFragment : DialogFragmentGlobalAbstract(),
         val activity = context as EventCaptureActivity
         if ((context.applicationContext as App).userComponent() != null) {
             (context.applicationContext as App)
-                .userComponent()?.plus(EventCaptureModule(activity.eventUid,
+                .userComponent()
+                ?.plus(EventCaptureModule(null,activity.eventUid,
                     activity.programUid))
                 ?.plus(
                     EventIndicatorsModule(
@@ -79,7 +80,7 @@ class EventIndicatorsDialogFragment : DialogFragmentGlobalAbstract(),
     }
 
     override fun swapIndicators(): Consumer<List<Trio<ProgramIndicator, String, String>>> {
-        return Consumer { indicators: List<Trio<ProgramIndicator, String, String>>? ->
+        return Consumer { indicators: List<Trio<ProgramIndicator, String, String>> ->
             adapter.setIndicators(indicators)
 
             binding.spinner.visibility = View.GONE

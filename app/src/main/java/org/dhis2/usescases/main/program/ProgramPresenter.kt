@@ -7,7 +7,6 @@ import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.dhis2.utils.Constants.PROGRAM_THEME
 import org.dhis2.utils.filters.FilterManager
-import org.hisp.dhis.android.core.period.DatePeriod
 import timber.log.Timber
 
 class ProgramPresenter internal constructor(
@@ -19,54 +18,49 @@ class ProgramPresenter internal constructor(
 ) {
 
     var disposable: CompositeDisposable = CompositeDisposable()
-    private val programQueries = PublishProcessor.create<Pair<List<DatePeriod>, List<String>>>()
 
     fun init() {
         FilterManager.getInstance().clearTextValues()
 
-        val loadingProcessor = PublishProcessor.create<Boolean>()
+        val applyFiler = PublishProcessor.create<FilterManager>()
 
         disposable.add(
-            loadingProcessor
+            applyFiler
+                .switchMap {
+                    homeRepository.programModels().onErrorReturn {
+                        arrayListOf()
+                    }
+                        .mergeWith(
+                            homeRepository.aggregatesModels().onErrorReturn {
+                                arrayListOf()
+                            }
+                        )
+                        .flatMapIterable { data -> data }
+                        .sorted { p1, p2 -> p1.title().compareTo(p2.title(), ignoreCase = true) }
+                        .toList().toFlowable()
+                        .subscribeOn(schedulerProvider.io())
+                        .onErrorReturn { arrayListOf() }
+                }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { view.showFilterProgress() },
-                    { Timber.e(it) }
+                    { programs -> view.swapProgramModelData(programs) },
+                    { throwable -> Timber.d(throwable) },
+                    { Timber.tag("INIT DATA").d("LOADING ENDED") }
                 )
         )
 
         disposable.add(
             filterManager.asFlowable()
                 .startWith(filterManager)
-                .doOnNext { Timber.tag("INIT DATA").d("NEW FILTER") }
-                .switchMap { filterManager ->
-                    loadingProcessor.onNext(true)
-                    homeRepository.programModels(
-                        filterManager.periodFilters,
-                        filterManager.orgUnitUidsFilters,
-                        filterManager.stateFilters
-                    )
-                        .mergeWith(
-                            homeRepository.aggregatesModels(
-                                filterManager.periodFilters,
-                                filterManager.orgUnitUidsFilters,
-                                filterManager.stateFilters
-                            )
-                        )
-                        .doOnNext { Timber.tag("INIT DATA").d("LIST READY TO BE SORTED SORTED") }
-                        .flatMapIterable { data -> data }
-                        .sorted { p1, p2 -> p1.title().compareTo(p2.title(), ignoreCase = true) }
-                        .toList().toFlowable()
-                        .subscribeOn(schedulerProvider.io())
-                        .doOnNext { Timber.tag("INIT DATA").d("LIST SORTED") }
-                }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { programs -> view.swapProgramModelData(programs) },
-                    { throwable -> view.renderError(throwable.message ?: "") },
-                    { Timber.tag("INIT DATA").d("LOADING ENDED") }
+                    {
+                        view.showFilterProgress()
+                        applyFiler.onNext(filterManager)
+                    },
+                    { Timber.e(it) }
                 )
         )
 
@@ -86,9 +80,7 @@ class ProgramPresenter internal constructor(
     }
 
     fun updateProgramQueries() {
-        programQueries.onNext(
-            Pair.create(filterManager.periodFilters, filterManager.orgUnitUidsFilters)
-        )
+        filterManager.publishData()
     }
 
     fun onItemClick(programModel: ProgramViewModel, programTheme: Int) {

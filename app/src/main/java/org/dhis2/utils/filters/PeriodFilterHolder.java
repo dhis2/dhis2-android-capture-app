@@ -11,6 +11,7 @@ import org.dhis2.databinding.FilterPeriodBinding;
 import org.dhis2.databinding.ItemFilterPeriodBinding;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
+import org.dhis2.utils.filters.sorting.SortingItem;
 import org.hisp.dhis.android.core.period.DatePeriod;
 
 import java.util.Calendar;
@@ -21,19 +22,30 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
 
     private ItemFilterPeriodBinding localBinding;
 
-    PeriodFilterHolder(@NonNull ItemFilterPeriodBinding binding, ObservableField<Filters> openedFilter) {
-        super(binding, openedFilter);
+    PeriodFilterHolder(@NonNull ItemFilterPeriodBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem, FiltersAdapter.ProgramType programType) {
+        super(binding, openedFilter, sortingItem);
         localBinding = binding;
         filterType = Filters.PERIOD;
+        this.programType = programType;
     }
 
     @Override
     public void bind() {
         super.bind();
         filterIcon.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_calendar_positive));
-        filterTitle.setText(R.string.filters_title_period);
-
-        setListeners(localBinding.periodLayout);
+        switch (programType){
+            case ALL:
+            case EVENT:
+                filterTitle.setText(R.string.filters_title_date);
+                break;
+            case TRACKER:
+            case DASHBOARD:
+                filterTitle.setText(R.string.filters_title_event_date);
+                break;
+            case DATASET:
+                filterTitle.setText(R.string.filters_title_period);
+                break;
+        }
 
         switch (FilterManager.getInstance().getPeriodIdSelected()) {
             case R.id.today:
@@ -74,6 +86,9 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
             default:
                 localBinding.periodLayout.anytime.setChecked(true);
         }
+
+        setListeners(localBinding.periodLayout);
+
     }
 
     private void setListeners(FilterPeriodBinding periodLayout) {
@@ -90,7 +105,7 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
             if (periodLayout.fromTo.isChecked()) {
                 int id = R.id.fromTo;
                 updateSelection(id);
-                FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.FROM_TO);
+                FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.FROM_TO, Filters.PERIOD);
                 if (id != FilterManager.getInstance().getPeriodIdSelected()) {
                     FilterManager.getInstance().setPeriodIdSelected(id);
                 }
@@ -100,7 +115,7 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
             if (periodLayout.other.isChecked()) {
                 int id = R.id.other;
                 updateSelection(id);
-                FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.OTHER);
+                FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.OTHER, Filters.PERIOD);
                 if (id != FilterManager.getInstance().getPeriodIdSelected()) {
                     FilterManager.getInstance().setPeriodIdSelected(id);
                 }
@@ -159,7 +174,7 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
                 if (dates != null)
                     FilterManager.getInstance().addPeriod(Collections.singletonList(DatePeriod.builder().startDate(dates[0]).endDate(dates[1]).build()));
                 else
-                    FilterManager.getInstance().addPeriod(null);
+                    FilterManager.getInstance().addPeriod(Collections.emptyList());
             }
 
             if (id != FilterManager.getInstance().getPeriodIdSelected()) {

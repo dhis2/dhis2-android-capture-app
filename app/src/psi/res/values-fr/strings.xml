@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PSI dhis2</string>
+    <string name="logo_text">PSI dhis2</string>
+    <string name="logo_number"></string>
+    <string name="dashboard_feedback">"Retour d'information"</string>
+    <string name="program_type_configuration_error_message">Il y a une erreur de configuration du type de programme dans le programme actuel. Veuillez examiner le programme sur le serveur et exécuter la configuration de synchronisation</string>
+    <string name="unexpected_error_message">"Une erreur imprévue s'est produite. Vérifiez votre configuration ou contactez votre administrateur"</string>
+    <string name="feedback_show_only_failed">Afficher seulement échoué</string>
+</resources>

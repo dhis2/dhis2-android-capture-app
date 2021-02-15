@@ -28,19 +28,16 @@ public class DisplayHolder extends FormViewHolder {
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.guideline.getLayoutParams();
             params.guidePercent = 0;
             binding.guideline.setLayoutParams(params);
-        }else
+        }else {
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.guideline.getLayoutParams();
+            params.guidePercent = 0.6f;
+            binding.guideline.setLayoutParams(params);
             binding.setVariable(BR.label, viewModel.label());
+        }
 
         binding.setVariable(BR.value, viewModel.value());
         binding.setVariable(BR.colorBg, -1);
         binding.executePendingBindings();
 
     }
-
-    @Override
-    public void dispose() {
-
-    }
-
-
 }

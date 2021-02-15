@@ -6,12 +6,16 @@ import android.graphics.Color;
 
 import org.dhis2.BR;
 import org.dhis2.Bindings.Bindings;
+import org.dhis2.R;
 import org.dhis2.databinding.ItemProgramStageBinding;
+import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.program.ProgramStage;
 
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
@@ -37,10 +41,13 @@ public class ProgramStageSelectionViewHolder extends RecyclerView.ViewHolder {
             style = ObjectStyle.builder().build();
 
         if (style.icon() != null) {
-            Resources resources = binding.programStageIcon.getContext().getResources();
-            String iconName = style.icon().startsWith("ic_") ? style.icon() : "ic_" + style.icon();
-            int icon = resources.getIdentifier(iconName, "drawable", binding.programStageIcon.getContext().getPackageName());
-            binding.programStageIcon.setImageResource(icon);
+            try {
+                int icon = new ResourceManager(binding.programStageIcon.getContext())
+                        .getObjectStyleDrawableResource(style.icon(), R.drawable.ic_default_icon);
+                binding.programStageIcon.setImageResource(icon);
+            }catch (Exception e){
+                Timber.e(e);
+            }
         }
 
         if (style.color() != null) {

@@ -19,10 +19,10 @@ import java.util.List;
 
 public class RelationshipAdapter extends RecyclerView.Adapter<RelationshipViewHolder> {
 
-    private RelationshipContracts.Presenter presenter;
+    private RelationshipPresenter presenter;
     private List<RelationshipViewModel> relationships;
 
-    public RelationshipAdapter(RelationshipContracts.Presenter presenter) {
+    public RelationshipAdapter(RelationshipPresenter presenter) {
         this.presenter = presenter;
         this.relationships = new ArrayList<>();
     }
@@ -36,7 +36,7 @@ public class RelationshipAdapter extends RecyclerView.Adapter<RelationshipViewHo
 
     @Override
     public void onBindViewHolder(@NonNull RelationshipViewHolder holder, int position) {
-        holder.bind(presenter,relationships.get(position));
+        holder.bind(presenter, relationships.get(position));
     }
 
     @Override

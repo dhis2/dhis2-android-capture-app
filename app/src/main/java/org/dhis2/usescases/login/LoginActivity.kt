@@ -2,7 +2,6 @@ package org.dhis2.usescases.login
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -13,13 +12,10 @@ import android.view.View
 import android.view.WindowManager
 import android.webkit.URLUtil
 import android.widget.ArrayAdapter
-import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import co.infinum.goldfinger.Goldfinger
-import com.andrognito.pinlockview.PinLockListener
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.BufferedReader
@@ -28,6 +24,8 @@ import java.io.StringWriter
 import javax.inject.Inject
 import okhttp3.HttpUrl
 import org.dhis2.App
+import org.dhis2.Bindings.app
+import org.dhis2.Bindings.buildInfo
 import org.dhis2.Bindings.onRightDrawableClicked
 import org.dhis2.R
 import org.dhis2.data.server.UserManager
@@ -35,9 +33,8 @@ import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.usescases.qrScanner.QRActivity
+import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.usescases.sync.SyncActivity
-import org.dhis2.utils.BiometricStorage
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.ACCOUNT_RECOVERY
 import org.dhis2.utils.Constants.RQ_QR_SCANNER
@@ -49,14 +46,14 @@ import org.dhis2.utils.WebViewActivity
 import org.dhis2.utils.WebViewActivity.Companion.WEB_VIEW_URL
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.FORGOT_CODE
-import org.dhis2.utils.analytics.UNLOCK_SESSION
+import org.dhis2.utils.session.PIN_DIALOG_TAG
+import org.dhis2.utils.session.PinDialog
 import timber.log.Timber
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var loginViewModel: LoginViewModel
-    private lateinit var fingerPrintDialog: Dialog
 
     @Inject
     lateinit var presenter: LoginPresenter
@@ -72,7 +69,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
-        var loginComponent = (applicationContext as App).loginComponent()
+        setTheme(R.style.LoginTheme)
+        var loginComponent = app().loginComponent()
         if (loginComponent == null) {
             // in case if we don't have cached presenter
             loginComponent = (applicationContext as App).createLoginComponent(this)
@@ -91,12 +89,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.presenter = presenter
         binding.loginModel = loginViewModel
         setLoginVisibility(false)
-
-        binding.pinLayout.forgotCode.visibility = View.VISIBLE
-        binding.pinLayout.forgotCode.setOnClickListener {
-            analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
-            binding.pinLayout.root.visibility = View.GONE
-        }
 
         loginViewModel.isDataComplete.observe(
             this,
@@ -134,22 +126,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
         binding.clearPassButton.setOnClickListener { binding.userPassEdit.text = null }
         binding.clearUserNameButton.setOnClickListener { binding.userNameEdit.text = null }
+        binding.clearUrl.setOnClickListener { binding.serverUrlEdit.text = null }
 
         setTestingCredentials()
         setAutocompleteAdapters()
-        setUpFingerPrintDialog()
-    }
-
-    override fun setUpFingerPrintDialog() {
-        fingerPrintDialog = MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-            .setTitle(R.string.fingerprint_title)
-            .setMessage(R.string.fingerprint_message)
-            .setCancelable(false)
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
-                presenter.stopReadingFingerprint()
-                dialog.dismiss()
-            }
-            .create()
+        setUpLoginInfo()
     }
 
     private fun checkUrl(urlString: String): Boolean {
@@ -205,11 +186,15 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun goToNextScreen() {
-        if (NetworkUtils.isOnline(this)) {
+        if (isNetworkAvailable()) {
             startActivity(SyncActivity::class.java, null, true, true, null)
         } else {
             startActivity(MainActivity::class.java, null, true, true, null)
         }
+    }
+
+    override fun isNetworkAvailable(): Boolean {
+        return NetworkUtils.isOnline(this)
     }
 
     override fun setUrl(url: String) {
@@ -271,7 +256,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             getString(R.string.send_user_name_title), getString(R.string.send_user_name_mesage),
             getString(R.string.action_agree), getString(R.string.cancel),
             object : OnDialogClickListener {
-                override fun onPossitiveClick(alertDialog: AlertDialog) {
+                override fun onPositiveClick() {
                     sharedPreferences.edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true)
                         .apply()
                     sharedPreferences.edit()
@@ -280,32 +265,28 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                     showLoginProgress(true)
                 }
 
-                override fun onNegativeClick(alertDialog: AlertDialog) {
+                override fun onNegativeClick() {
                     sharedPreferences.edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true)
                         .apply()
                     showLoginProgress(true)
                 }
             }
-        )?.show()
+        )
     }
 
     override fun onUnlockClick(android: View) {
-        binding.pinLayout.pinLockView.attachIndicatorDots(binding.pinLayout.indicatorDots)
-        binding.pinLayout.pinLockView.setPinLockListener(object : PinLockListener {
-            override fun onComplete(pin: String) {
-                analyticsHelper.setEvent(UNLOCK_SESSION, CLICK, UNLOCK_SESSION)
-                presenter.unlockSession(pin)
+        PinDialog(
+            PinDialog.Mode.ASK,
+            false,
+            {
+                startActivity(MainActivity::class.java, null, true, true, null)
+            },
+            {
+                analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
+                binding.unlockLayout.visibility = View.GONE
             }
-
-            override fun onEmpty() {
-            }
-
-            override fun onPinChange(pinLength: Int, intermediatePin: String) {
-            }
-        })
-        binding.pinLayout.title.text = getString(R.string.unblock_session)
-        binding.pinLayout.root.visibility = View.VISIBLE
-        isPinScreenVisible = true
+        )
+            .show(supportFragmentManager, PIN_DIALOG_TAG)
     }
 
     override fun onLogoutClick(android: View) {
@@ -332,31 +313,39 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     override fun saveUsersData() {
         (context.applicationContext as App).createUserComponent()
 
-        if (presenter.canHandleBiometrics() == true &&
-            !BiometricStorage.areCredentialsSet() && !BiometricStorage.areSameCredentials(
-                binding.serverUrlEdit.text?.toString(),
-                binding.userNameEdit.text?.toString(),
-                binding.userPassEdit.text?.toString()
-            )
+        if (!presenter.areSameCredentials(
+            binding.serverUrlEdit.text.toString(),
+            binding.userNameEdit.text.toString(),
+            binding.userPassEdit.text.toString()
+        )
         ) {
-            showInfoDialog(
-                getString(R.string.biometrics_security_title),
-                getString(R.string.biometrics_security_text),
-                object : OnDialogClickListener {
-                    override fun onPossitiveClick(alertDialog: AlertDialog) {
-                        BiometricStorage.saveUserCredentials(
-                            binding.serverUrlEdit.text?.toString(),
-                            binding.userNameEdit.text?.toString(),
-                            binding.userPassEdit.text?.toString()
-                        )
-                        goToNextScreen()
-                    }
+            if (presenter.canHandleBiometrics() == true) {
+                showInfoDialog(
+                    getString(R.string.biometrics_security_title),
+                    getString(R.string.biometrics_security_text),
+                    object : OnDialogClickListener {
+                        override fun onPositiveClick() {
+                            presenter.saveUserCredentials(
+                                binding.serverUrlEdit.text.toString(),
+                                binding.userNameEdit.text.toString(),
+                                binding.userPassEdit.text.toString()
+                            )
+                            goToNextScreen()
+                        }
 
-                    override fun onNegativeClick(alertDialog: AlertDialog) {
-                        goToNextScreen()
+                        override fun onNegativeClick() {
+                            goToNextScreen()
+                        }
                     }
-                }
-            )?.show()
+                )
+            } else {
+                presenter.saveUserCredentials(
+                    binding.serverUrlEdit.text.toString(),
+                    binding.userNameEdit.text.toString(),
+                    ""
+                )
+                goToNextScreen()
+            }
         } else {
             goToNextScreen()
         }
@@ -384,13 +373,12 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun showCredentialsData(type: Goldfinger.Type, vararg args: String) {
-        hideFingerprintDialog()
         if (type == Goldfinger.Type.SUCCESS) {
             binding.serverUrlEdit.setText(args[0])
             binding.userNameEdit.setText(args[1])
             binding.userPassEdit.setText(args[2])
             showLoginProgress(true)
-        } else if (type == Goldfinger.Type.ERROR) {
+        } else if (type == Goldfinger.Type.ERROR && args[0] != getString(R.string.cancel)) {
             showInfoDialog(getString(R.string.biometrics_dialog_title), args[0])
         }
     }
@@ -408,25 +396,22 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         startActivity(intent)
     }
 
-    override fun displayAlertDialog() {
-        MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-            .setTitle(R.string.login_server_info_title)
-            .setMessage(R.string.login_server_info_message)
-            .setPositiveButton(R.string.action_accept, null)
-            .show()
-    }
-
     override fun navigateToQRActivity() {
-        Intent(context, QRActivity::class.java).apply {
+        Intent(context, ScanActivity::class.java).apply {
             startActivityForResult(this, RQ_QR_SCANNER)
         }
     }
 
-    override fun showFingerprintDialog() {
-        fingerPrintDialog.show()
+    private fun setUpLoginInfo() {
+        binding.appBuildInfo.text = buildInfo()
     }
 
-    override fun hideFingerprintDialog() {
-        fingerPrintDialog.hide()
-    }
+    override fun getDefaultServerProtocol(): String =
+        getString(R.string.login_https)
+
+    override fun getPromptParams(): Goldfinger.PromptParams =
+        Goldfinger.PromptParams.Builder(this)
+            .title(R.string.fingerprint_title)
+            .negativeButtonText(R.string.cancel)
+            .build()
 }

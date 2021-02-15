@@ -1,12 +1,12 @@
 package org.dhis2.data.forms
 
+import android.os.Build
 import android.text.TextUtils.isEmpty
 import io.reactivex.Single
-import java.util.ArrayList
 import java.util.Calendar
 import java.util.Date
-import java.util.HashMap
 import java.util.Objects
+import org.dhis2.Bindings.toRuleAttributeValue
 import org.dhis2.Bindings.toRuleDataValue
 import org.dhis2.Bindings.toRuleList
 import org.dhis2.Bindings.toRuleVariable
@@ -28,38 +28,43 @@ class RulesRepository(private val d2: D2) {
 
     // ORG UNIT GROUPS
     // USER ROLES
-    fun supplementaryData(): Single<Map<String, List<String>>> {
+    fun supplementaryData(orgUnitUid: String): Single<Map<String, List<String>>> {
         return Single.fromCallable {
-            val supData = HashMap<String, MutableList<String>>()
-            for (ouGroup in d2.organisationUnitModule().organisationUnitGroups().blockingGet()) {
-                if (ouGroup.code() != null) {
-                    supData[ouGroup.code()!!] = ArrayList()
-                }
-            }
-            for (
-                ou in d2.organisationUnitModule().organisationUnits()
-                    .withOrganisationUnitGroups().blockingGet()
-            ) {
-                if (ou.organisationUnitGroups() != null) {
-                    for (ouGroup in ou.organisationUnitGroups()!!) {
-                        val groupOUs = supData[ouGroup.code()]
-                        if (groupOUs != null && !groupOUs.contains(ou.uid())) {
-                            groupOUs.add(ou.uid())
+            val supData = HashMap<String, List<String>>()
+
+            d2.organisationUnitModule().organisationUnits()
+                .withOrganisationUnitGroups().uid(orgUnitUid).blockingGet()
+                .let { orgUnit ->
+                    orgUnit.organisationUnitGroups()?.map {
+                        if (it.code() != null) {
+                            supData[it.code()!!] = arrayListOf(orgUnit.uid())
                         }
+                        supData[it.uid()!!] = arrayListOf(orgUnit.uid())
                     }
                 }
-            }
+
             val userRoleUids =
                 UidsHelper.getUidsList(d2.userModule().userRoles().blockingGet())
             supData["USER"] = userRoleUids
+            supData["android_version"] = listOf(Build.VERSION.SDK_INT.toString())
 
             supData
         }
     }
 
-    fun rulesNew(programUid: String): Single<List<Rule>> {
+    fun rulesNew(programUid: String, eventUid: String? = null): Single<List<Rule>> {
         return queryRules(programUid)
             .map { it.toRuleList() }
+            .map {
+                if (eventUid != null) {
+                    val stage = d2.eventModule().events().uid(eventUid).blockingGet().programStage()
+                    it.filter { rule ->
+                        rule.programStage() == null || rule.programStage() == stage
+                    }
+                } else {
+                    it
+                }
+            }
     }
 
     fun ruleVariables(programUid: String): Single<List<RuleVariable>> {
@@ -159,6 +164,7 @@ class RulesRepository(private val d2: D2) {
                 .byEnrollmentUid().eq(eventToEvaluate.enrollment())
                 .byUid().notIn(eventToEvaluate.uid())
                 .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
+                .byEventDate().before(Date())
                 .withTrackedEntityDataValues()
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .get()
@@ -168,41 +174,43 @@ class RulesRepository(private val d2: D2) {
                 .byProgramStageUid().eq(eventToEvaluate.programStage())
                 .byOrganisationUnitUid().eq(eventToEvaluate.organisationUnit())
                 .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
+                .byEventDate().before(Date())
                 .withTrackedEntityDataValues()
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .get().map { list ->
-                var currentEventIndex = -1
-                var index = 0
-                do {
-                    if (list[index].uid() == eventToEvaluate.uid()) {
-                        currentEventIndex = index
-                    } else {
-                        index++
+                    var currentEventIndex = -1
+                    var index = 0
+                    do {
+                        if (list[index].uid() == eventToEvaluate.uid()) {
+                            currentEventIndex = index
+                        } else {
+                            index++
+                        }
+                    } while (currentEventIndex == -1)
+
+                    var newEvents = list.subList(0, currentEventIndex)
+                    var previousEvents = list.subList(currentEventIndex + 1, list.size)
+
+                    if (newEvents.size > 10) {
+                        newEvents = newEvents.subList(0, 10)
                     }
-                } while (currentEventIndex == -1)
+                    if (previousEvents.size > 10) {
+                        previousEvents = previousEvents.subList(0, 10)
+                    }
 
-                var newEvents = list.subList(0, currentEventIndex)
-                var previousEvents = list.subList(currentEventIndex + 1, list.size)
+                    val finalList = ArrayList<Event>()
+                    finalList.addAll(newEvents)
+                    finalList.addAll(previousEvents)
 
-                if (newEvents.size > 10) {
-                    newEvents = newEvents.subList(0, 10)
+                    finalList
                 }
-                if (previousEvents.size > 10) {
-                    previousEvents = previousEvents.subList(0, 10)
-                }
-
-                val finalList = ArrayList<Event>()
-                finalList.addAll(newEvents)
-                finalList.addAll(previousEvents)
-
-                finalList
-            }
         }
     }
 
     fun enrollmentEvents(enrollmentUid: String): Single<List<RuleEvent>> {
         return d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
             .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
+            .byEventDate().before(Date())
             .withTrackedEntityDataValues()
             .get()
             .toFlowable().flatMapIterable { events -> events }
@@ -284,24 +292,6 @@ class RulesRepository(private val d2: D2) {
     private fun getAttributesValues(enrollment: Enrollment): List<RuleAttributeValue> {
         val attributeValues = d2.trackedEntityModule().trackedEntityAttributeValues()
             .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance()).blockingGet()
-        val ruleAttributeValues = ArrayList<RuleAttributeValue>()
-        for (attributeValue in attributeValues) {
-            val attribute = d2.trackedEntityModule().trackedEntityAttributes()
-                .uid(attributeValue.trackedEntityAttribute()).blockingGet()
-            var value = attributeValue.value()
-            if (attribute!!.optionSet() != null && !isEmpty(attribute.optionSet()!!.uid())) {
-                val useOptionCode = d2.programModule().programRuleVariables().byProgramUid()
-                    .eq(enrollment.program()).byTrackedEntityAttributeUid().eq(attribute.uid())
-                    .byUseCodeForOptionSet().isTrue.blockingIsEmpty()
-                if (!useOptionCode) {
-                    value = d2.optionModule().options()
-                        .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                        .byCode().eq(value)
-                        .one().blockingGet()!!.name()
-                }
-            }
-            RuleAttributeValue.create(attributeValue.trackedEntityAttribute()!!, value!!)
-        }
-        return ruleAttributeValues
+        return attributeValues.toRuleAttributeValue(d2, enrollment.program()!!)
     }
 }

@@ -8,6 +8,8 @@ import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
+import org.dhis2.utils.filters.sorting.SortingItem;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -22,18 +24,29 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-
-/**
- * Created by Cristian E. on 02/11/2017.
- */
+import kotlin.Triple;
 
 public interface ProgramEventDetailRepository {
 
     @NonNull
-    LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states, Pair<String, String> valueFilter);
+    LiveData<PagedList<EventViewModel>> filteredProgramEvents(
+            List<DatePeriod> dateFilter,
+            List<String> orgUnitFilter,
+            List<CategoryOptionCombo> catOptionComboUid,
+            List<EventStatus> eventStatus,
+            List<State> states,
+            SortingItem sortingItem,
+            boolean assignedToUser,
+            Pair<String, String> valueFilter);
 
     @NonNull
-    Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states);
+    Flowable<Triple<FeatureCollection, BoundingBox, List<ProgramEventViewModel>>> filteredEventsForMap(
+            List<DatePeriod> dateFilter,
+            List<String> orgUnitFilter,
+            List<CategoryOptionCombo> catOptionComboUid,
+            List<EventStatus> eventStatus,
+            List<State> states,
+            boolean assignedToUser);
 
     @NonNull
     Observable<Program> program();
@@ -50,4 +63,8 @@ public interface ProgramEventDetailRepository {
     Flowable<ProgramEventViewModel> getInfoForEvent(String eventUid);
 
     Single<FeatureType> featureType();
+
+    boolean hasAssignment();
+
+    CategoryOptionCombo getCatOptCombo(String selectedCatOptionCombo);
 }

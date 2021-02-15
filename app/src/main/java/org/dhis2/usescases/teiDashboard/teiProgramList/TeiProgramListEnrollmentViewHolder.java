@@ -5,6 +5,10 @@ import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.databinding.ViewDataBinding;
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.databinding.ItemTeiProgramsEnrollmentBinding;
@@ -12,10 +16,8 @@ import org.dhis2.databinding.ItemTeiProgramsEnrollmentInactiveBinding;
 import org.dhis2.databinding.ItemTeiProgramsProgramsBinding;
 import org.dhis2.usescases.main.program.ProgramViewModel;
 import org.dhis2.utils.ColorUtils;
+import org.dhis2.utils.resources.ResourceManager;
 
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.databinding.ViewDataBinding;
-import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
 /**
@@ -50,16 +52,11 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
 
             int color = ColorUtils.getColorFrom(enrollment.color(),
                     ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY));
-            int icon;
-            if (enrollment.icon() != null) {
-                Resources resources = itemView.getContext().getResources();
-                String iconName = enrollment.icon().startsWith("ic_") ?
-                        enrollment.icon() :
-                        "ic_" + enrollment.icon();
-                icon = resources.getIdentifier(iconName, "drawable", itemView.getContext().getPackageName());
-            } else {
-                icon = R.drawable.ic_program_default;
-            }
+            int icon = new ResourceManager(itemView.getContext())
+                    .getObjectStyleDrawableResource(
+                            enrollment.icon(),
+                            R.drawable.ic_program_default
+                    );
 
             Drawable iconImage = null;
             try {
@@ -91,14 +88,11 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
 
             int color = ColorUtils.getColorFrom(programModel.color(),
                     ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY));
-            int icon;
-            if (programModel.icon() != null) {
-                Resources resources = itemView.getContext().getResources();
-                String iconName = programModel.icon().startsWith("ic_") ? programModel.icon() : "ic_" + programModel.icon();
-                icon = resources.getIdentifier(iconName, "drawable", itemView.getContext().getPackageName());
-            } else {
-                icon = R.drawable.ic_program_default;
-            }
+            int icon = new ResourceManager(itemView.getContext())
+                    .getObjectStyleDrawableResource(
+                            programModel.icon(),
+                            R.drawable.ic_program_default
+                    );
 
             Drawable iconImage = null;
             try {

@@ -73,7 +73,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
                 && getIntent().getExtras().getString(EVENT_ID) != null && getIntent().getExtras().getString(PROGRAM_ID) != null) {
             eventId = getIntent().getExtras().getString(EVENT_ID);
             programId = getIntent().getExtras().getString(PROGRAM_ID);
-            ((App) getApplicationContext()).userComponent().plus(new EventSummaryModule(this, eventId)).inject(this);
+            ((App) getApplicationContext()).userComponent().plus(new EventSummaryModule(eventId)).inject(this);
         } else {
             finish();
         }

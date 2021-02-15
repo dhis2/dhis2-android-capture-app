@@ -30,9 +30,4 @@ public class DisplayRow implements Row<DisplayHolder, DisplayViewModel> {
     public void onBind(@NonNull DisplayHolder viewHolder, @NonNull DisplayViewModel viewModel) {
         viewHolder.update(viewModel);
     }
-
-    @Override
-    public void deAttach(@NonNull DisplayHolder viewHolder) {
-        viewHolder.dispose();
-    }
 }

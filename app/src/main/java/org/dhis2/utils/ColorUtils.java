@@ -43,6 +43,10 @@ public class ColorUtils {
         return androidx.core.graphics.ColorUtils.setAlphaComponent(color, 155);
     }
 
+    public static int withAlpha(int color, int alpha) {
+        return androidx.core.graphics.ColorUtils.setAlphaComponent(color, alpha);
+    }
+
     public enum ColorType {
         PRIMARY, PRIMARY_LIGHT, PRIMARY_DARK, ACCENT
     }

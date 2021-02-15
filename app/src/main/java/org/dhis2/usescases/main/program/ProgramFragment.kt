@@ -2,6 +2,7 @@ package org.dhis2.usescases.main.program
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
@@ -14,6 +15,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import javax.inject.Inject
 import org.dhis2.App
+import org.dhis2.Bindings.clipWithRoundedCorners
+import org.dhis2.Bindings.dp
 import org.dhis2.R
 import org.dhis2.databinding.FragmentProgramBinding
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
@@ -42,8 +45,12 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
     @Inject
     lateinit var presenter: ProgramPresenter
+
     @Inject
     lateinit var adapter: ProgramModelAdapter
+
+    @Inject
+    lateinit var animation: ProgramAnimation
 
     // -------------------------------------------
     //region LIFECYCLE
@@ -61,9 +68,11 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_program, container, false)
-
+        (binding.drawerLayout.background as GradientDrawable).cornerRadius = 0f
         return binding.apply {
             presenter = this@ProgramFragment.presenter
+            programRecycler.clipWithRoundedCorners(16.dp)
+            programRecycler.itemAnimator = null
             programRecycler.adapter = adapter
             programRecycler.addItemDecoration(
                 DividerItemDecoration(
@@ -77,11 +86,17 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     override fun onResume() {
         super.onResume()
         presenter.init()
+        animation.initBackdropCorners(
+            binding.drawerLayout.background.mutate() as GradientDrawable
+        )
     }
 
     override fun onPause() {
-        super.onPause()
+        animation.reverseBackdropCorners(
+            binding.drawerLayout.background.mutate() as GradientDrawable
+        )
         presenter.dispose()
+        super.onPause()
     }
 
     //endregion
@@ -151,7 +166,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
     override fun navigateTo(program: ProgramViewModel) {
         val bundle = Bundle()
-        val idTag = if (program.typeName() == Constants.DATA_SET) {
+        val idTag = if (program.programType().isEmpty()) {
             Constants.DATASET_UID
         } else {
             Constants.PROGRAM_UID
@@ -193,7 +208,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     override fun showSyncDialog(program: ProgramViewModel) {
         val dialog = SyncStatusDialog.Builder()
             .setConflictType(
-                if (program.typeName() != Constants.DATA_SET) {
+                if (program.programType().isNotEmpty()) {
                     SyncStatusDialog.ConflictType.PROGRAM
                 } else {
                     SyncStatusDialog.ConflictType.DATA_SET
@@ -210,6 +225,10 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
                 })
             .build()
 
-        dialog.show(abstractActivity.supportFragmentManager, dialog.dialogTag)
+        dialog.show(abstractActivity.supportFragmentManager, FRAGMENT_TAG)
+    }
+
+    companion object {
+        const val FRAGMENT_TAG = "SYNC"
     }
 }

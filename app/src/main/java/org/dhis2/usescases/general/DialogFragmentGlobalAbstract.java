@@ -16,11 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-
-/**
- * QUADRAM. Created by ppajuelo on 18/10/2017.
- */
 
 public abstract class DialogFragmentGlobalAbstract extends DialogFragment implements AbstractActivityContracts.View {
 
@@ -66,8 +61,8 @@ public abstract class DialogFragmentGlobalAbstract extends DialogFragment implem
     }
 
     @Override
-    public AlertDialog showInfoDialog(String title, String message, String possitiveButtonText, String negativeButtonText, OnDialogClickListener clickListener) {
-        return getAbstractActivity().showInfoDialog(title, message, possitiveButtonText, negativeButtonText, clickListener);
+    public void showInfoDialog(String title, String message, String possitiveButtonText, String negativeButtonText, OnDialogClickListener clickListener) {
+        getAbstractActivity().showInfoDialog(title, message, possitiveButtonText, negativeButtonText, clickListener);
     }
 
     @Override
@@ -76,8 +71,8 @@ public abstract class DialogFragmentGlobalAbstract extends DialogFragment implem
     }
 
     @Override
-    public AlertDialog showInfoDialog(String title, String message, OnDialogClickListener clickListener) {
-        return getAbstractActivity().showInfoDialog(title, message, clickListener);
+    public void showInfoDialog(String title, String message, OnDialogClickListener clickListener) {
+        getAbstractActivity().showInfoDialog(title, message, clickListener);
     }
 
     @Override

@@ -3,10 +3,10 @@ package org.dhis2.data.service;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.work.Data;
@@ -17,20 +17,25 @@ import com.google.firebase.perf.metrics.AddTrace;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.D2ErrorUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
-import org.hisp.dhis.android.core.D2Manager;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Calendar;
 
 import javax.inject.Inject;
 
 import timber.log.Timber;
 
-/**
- * QUADRAM. Created by ppajuelo on 23/10/2018.
- */
+import static org.dhis2.data.service.SyncOutputKt.METADATA_MESSAGE;
+import static org.dhis2.data.service.SyncOutputKt.METADATA_STATE;
+import static org.dhis2.utils.analytics.AnalyticsConstants.METADATA_TIME;
 
 public class SyncMetadataWorker extends Worker {
 
@@ -39,6 +44,9 @@ public class SyncMetadataWorker extends Worker {
 
     @Inject
     SyncPresenter presenter;
+
+    @Inject
+    PreferenceProvider prefs;
 
     public SyncMetadataWorker(
             @NonNull Context context,
@@ -50,16 +58,6 @@ public class SyncMetadataWorker extends Worker {
     @Override
     @AddTrace(name = "MetadataSyncTrace")
     public Result doWork() {
-
-        Timber.d("USER COMPONENT IS NULL : %s", ((App) getApplicationContext()).userComponent() != null);
-        Timber.d("SERVER COMPONENT IS NULL : %s", ((App) getApplicationContext()).serverComponent() != null);
-        try {
-            Timber.d("D2 IS NULL : %s", D2Manager.getD2() != null);
-        } catch (IllegalStateException e) {
-            Timber.d("D2 : %s", e.getMessage());
-
-        }
-
         if (((App) getApplicationContext()).userComponent() != null) {
 
             ((App) getApplicationContext()).userComponent().plus(new SyncMetadataWorkerModule()).inject(this);
@@ -71,7 +69,9 @@ public class SyncMetadataWorker extends Worker {
 
             boolean isMetaOk = true;
             boolean noNetwork = false;
+            StringBuilder message = new StringBuilder("");
 
+            long init = System.currentTimeMillis();
             try {
                 presenter.syncMetadata(progress -> triggerNotification(
                         getApplicationContext().getString(R.string.app_name),
@@ -82,32 +82,57 @@ public class SyncMetadataWorker extends Worker {
                 isMetaOk = false;
                 if (!NetworkUtils.isOnline(getApplicationContext()))
                     noNetwork = true;
+                if (e instanceof D2Error) {
+                    message.append(D2ErrorUtils.getErrorMessage(getApplicationContext(), e))
+                            .append("\n\n")
+                            .append(errorStackTrace(((D2Error) e).originalException()).split("\n\t")[0])
+                            .append("\n\n")
+                            .append(errorStackTrace(e).split("\n\t")[0]);
+                } else if (e.getCause() instanceof D2Error) {
+                    message.append(D2ErrorUtils.getErrorMessage(getApplicationContext(), e.getCause()))
+                            .append("\n\n")
+                            .append(errorStackTrace(((D2Error) e.getCause()).originalException()).split("\n\t")[0])
+                            .append("\n\n")
+                            .append(e.toString().split("\n\t")[0]);
+                } else {
+                    message.append(e.toString().split("\n\t")[0]);
+                }
+            } finally {
+                presenter.logTimeToFinish(System.currentTimeMillis() - init, METADATA_TIME);
             }
 
             String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
 
-            SharedPreferences prefs = getApplicationContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-            prefs.edit().putString(Constants.LAST_META_SYNC, lastDataSyncDate).apply();
-            prefs.edit().putBoolean(Constants.LAST_META_SYNC_STATUS, isMetaOk).apply();
-            prefs.edit().putBoolean(Constants.LAST_META_SYNC_NO_NETWORK, noNetwork).apply();
+            prefs.setValue(Constants.LAST_META_SYNC, lastDataSyncDate);
+            prefs.setValue(Constants.LAST_META_SYNC_STATUS, isMetaOk);
+            prefs.setValue(Constants.LAST_META_SYNC_NO_NETWORK, noNetwork);
 
             cancelNotification();
 
             if (!isMetaOk)
-                return Result.failure(createOutputData(false));
+                return Result.failure(createOutputData(false, message.toString()));
 
             presenter.startPeriodicMetaWork();
 
-            return Result.success(createOutputData(true));
+            return Result.success(createOutputData(true, message.toString()));
         } else {
-            return Result.failure(createOutputData(false));
+            return Result.failure(createOutputData(false, getApplicationContext().getString(R.string.error_init_session)));
         }
     }
 
-    private Data createOutputData(boolean state) {
+    private Data createOutputData(boolean state, String message) {
         return new Data.Builder()
-                .putBoolean("METADATA_STATE", state)
+                .putBoolean(METADATA_STATE, state)
+                .putString(METADATA_MESSAGE, message)
                 .build();
+    }
+
+    private String errorStackTrace(@Nullable Exception exception){
+        if(exception == null)
+            return "";
+        Writer writer = new StringWriter();
+        exception.printStackTrace(new PrintWriter(writer));
+        return writer.toString();
     }
 
 

@@ -180,10 +180,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
 
     @Override
     public void goToDashBoard(String uid) {
-        Bundle bundle = new Bundle();
-        bundle.putString("TEI_UID", uid);
-        bundle.putString("PROGRAM_UID", null);
-        startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
+        startActivity(TeiDashboardMobileActivity.intent(context,uid,null,null));
     }
 
     @Override

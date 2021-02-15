@@ -1,0 +1,8 @@
+target/
+tmp/
+venv/
+**/__pycache__/**
+**/*.backup
+.idea/
+.DS_Store
+src/commonmark/en/content/submodules/

@@ -3,9 +3,6 @@ package org.dhis2.data.forms.dataentry;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
-import org.dhis2.data.user.UserRepository;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
 import org.hisp.dhis.android.core.event.EventObjectRepository;
@@ -14,8 +11,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueObjec
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository;
 
 import java.util.Objects;
-
-import javax.annotation.Nonnull;
 
 import io.reactivex.Flowable;
 import timber.log.Timber;
@@ -33,8 +28,6 @@ public final class DataValueStore implements DataEntryStore {
     private final EnrollmentObjectRepository enrollmentRepository;
 
     public DataValueStore(@NonNull D2 d2,
-                          @NonNull BriteDatabase briteDatabase,
-                          @NonNull UserRepository userRepository,
                           @NonNull String eventUid) {
         this.d2 = d2;
         this.eventUid = eventUid;
@@ -64,23 +57,6 @@ public final class DataValueStore implements DataEntryStore {
                 });
     }
 
-    @NonNull
-    @Override
-    public Flowable<Boolean> checkUnique(@NonNull String uid, @Nullable String value) {
-        if (value != null && getValueType(uid) == ATTR) {
-            boolean isUnique = Boolean.TRUE.equals(d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet().unique());
-            if (isUnique && !d2.trackedEntityModule().trackedEntityAttributeValues()
-                    .byTrackedEntityAttribute().eq(uid)
-                    .byValue().eq(value).blockingGet().isEmpty()) {
-                delete(uid, ATTR);
-                return Flowable.just(false);
-            } else
-                return Flowable.just(true);
-        } else
-            return Flowable.just(true);
-    }
-
-
     private long update(@NonNull String uid, @Nullable String value, valueType valueType) {
         if (valueType == ATTR) {
             try {
@@ -103,7 +79,7 @@ public final class DataValueStore implements DataEntryStore {
         }
     }
 
-    private valueType getValueType(@Nonnull String uid) {
+    private valueType getValueType(@NonNull String uid) {
         return d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists() ? ATTR : DATA_ELEMENT;
     }
 
@@ -140,7 +116,7 @@ public final class DataValueStore implements DataEntryStore {
             }
         } else {
             try {
-                d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, eventUid)
+                d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid)
                         .blockingSet(value);
                 return 1;
             } catch (D2Error d2Error) {

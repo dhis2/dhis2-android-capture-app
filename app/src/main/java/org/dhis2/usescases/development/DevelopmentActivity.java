@@ -1,6 +1,10 @@
 package org.dhis2.usescases.development;
 
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.widget.CompoundButton;
 
 import androidx.annotation.Nullable;
@@ -12,6 +16,7 @@ import com.google.gson.reflect.TypeToken;
 import org.dhis2.R;
 import org.dhis2.databinding.DevelopmentActivityBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.usescases.main.MainActivity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,6 +26,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * QUADRAM. Created by ppajuelo on 15/04/2019.
@@ -70,6 +76,22 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         });
 
         renderIconForPosition(count);
+
+        binding.localeButton.setOnClickListener(view->{
+            if(binding.locale.getText().toString()!=null){
+                String localeCode = binding.locale.getText().toString();
+                Resources resources = getResources();
+                DisplayMetrics dm = resources.getDisplayMetrics();
+                Configuration config = resources.getConfiguration();
+                if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN_MR1){
+                    config.setLocale(new Locale(localeCode.toLowerCase()));
+                } else {
+                    config.locale = new Locale(localeCode.toLowerCase());
+                }
+                resources.updateConfiguration(config, dm);
+                startActivity(MainActivity.class,null,true,true,null);
+            }
+        });
     }
 
     private void renderIconForPosition(int position) {
@@ -82,20 +104,63 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         int iconResource_positive = getResources().getIdentifier(iconName + "_positive", "drawable", getPackageName());
         binding.iconInput.setError(null);
 
+        binding.iconImagePossitive.setImageDrawable(null);
+        binding.iconImageOutline.setImageDrawable(null);
+        binding.iconImageNegative.setImageDrawable(null);
+
+        binding.iconImagePossitiveTint.setImageDrawable(null);
+        binding.iconImageOutlineTint.setImageDrawable(null);
+        binding.iconImageNegativeTint.setImageDrawable(null);
+
         boolean hasError = false;
         try {
             binding.iconImagePossitive.setImageResource(iconResource_positive);
-            binding.iconImageOutline.setImageResource(iconResource_outline);
-            binding.iconImageNegative.setImageResource(iconResource_negative);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            hasError = true;
+        }
+
+        try {
+            binding.iconImageOutline.setImageResource(iconResource_outline);
+        } catch (Exception e) {
+            e.printStackTrace();
+            hasError = true;
+        }
+
+        try {
+            binding.iconImageNegative.setImageResource(iconResource_negative);
+        } catch (Exception e) {
+            e.printStackTrace();
+            hasError = true;
+        }
+
+        try {
             binding.iconImagePossitiveTint.setImageResource(iconResource_positive);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            hasError = true;
+        }
+
+        try {
+
             binding.iconImageOutlineTint.setImageResource(iconResource_outline);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            hasError = true;
+        }
+
+        try {
             binding.iconImageNegativeTint.setImageResource(iconResource_negative);
 
         } catch (Exception e) {
             e.printStackTrace();
             hasError = true;
         }
+
+
 
         if(hasError){
             binding.iconInput.setError("This drawable has errors");
@@ -106,8 +171,11 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
 
     private void nextDrawable(){
         count++;
-        if (count == iconNames.size())
+        if (count == iconNames.size()) {
             count = 0;
+            binding.automaticErrorCheck.setChecked(false);
+            return;
+        }
         renderIconForPosition(count);
     }
 }

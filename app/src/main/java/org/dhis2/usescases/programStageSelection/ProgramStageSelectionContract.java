@@ -21,7 +21,7 @@ public class ProgramStageSelectionContract {
 
         void onBackClick();
 
-        void getProgramStages(String programId, @NonNull String programUid, @NonNull View view);
+        void getProgramStages(String programId, @NonNull String programUid);
 
         void onProgramStageClick(ProgramStage programStage);
 

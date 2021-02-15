@@ -31,7 +31,7 @@ public class AgeHolder extends FormViewHolder {
 
         binding.customAgeview.setAgeChangedListener(ageDate -> {
                     if (ageViewModel.value() == null || !Objects.equals(ageViewModel.value(), ageDate == null ? null : DateUtils.databaseDateFormat().format(ageDate))) {
-                        processor.onNext(RowAction.create(ageViewModel.uid(), ageDate == null ? null : DateUtils.uiDateFormat().format(ageDate), getAdapterPosition()));
+                        processor.onNext(RowAction.create(ageViewModel.uid(), ageDate == null ? null : DateUtils.oldUiDateFormat().format(ageDate), getAdapterPosition()));
                         clearBackground(isSearchMode);
                     }
                 }
@@ -60,6 +60,8 @@ public class AgeHolder extends FormViewHolder {
             binding.customAgeview.setWarning(ageViewModel.warning());
         else if (ageViewModel.error() != null)
             binding.customAgeview.setError(ageViewModel.error());
+        else
+            binding.customAgeview.clearErrors();
 
         binding.customAgeview.setEditable(ageViewModel.editable());
 
@@ -67,10 +69,5 @@ public class AgeHolder extends FormViewHolder {
 
         initFieldFocus();
 
-    }
-
-    @Override
-    public void dispose() {
-//        disposable.clear();
     }
 }

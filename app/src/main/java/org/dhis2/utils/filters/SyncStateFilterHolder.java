@@ -6,13 +6,15 @@ import androidx.databinding.ObservableField;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemFilterStateBinding;
+import org.dhis2.utils.filters.sorting.SortingItem;
 import org.hisp.dhis.android.core.common.State;
 
 class SyncStateFilterHolder extends FilterHolder {
 
-    SyncStateFilterHolder(@NonNull ItemFilterStateBinding binding, ObservableField<Filters> openedFilter) {
-        super(binding, openedFilter);
+    SyncStateFilterHolder(@NonNull ItemFilterStateBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem, FiltersAdapter.ProgramType programType) {
+        super(binding, openedFilter, sortingItem);
         filterType = Filters.SYNC_STATE;
+        this.programType = programType;
     }
 
     @Override
@@ -27,7 +29,8 @@ class SyncStateFilterHolder extends FilterHolder {
         );
         localBinding.filterState.stateNotSynced.setChecked(
                 FilterManager.getInstance().getStateFilters().contains(State.TO_UPDATE) ||
-                        FilterManager.getInstance().getStateFilters().contains(State.TO_POST)
+                        FilterManager.getInstance().getStateFilters().contains(State.TO_POST) ||
+                        FilterManager.getInstance().getStateFilters().contains(State.UPLOADING)
         );
         localBinding.filterState.stateError.setChecked(
                 FilterManager.getInstance().getStateFilters().contains(State.ERROR) ||
@@ -43,10 +46,15 @@ class SyncStateFilterHolder extends FilterHolder {
         localBinding.filterState.stateNotSynced.setOnCheckedChangeListener((compoundButton, b) ->{
                     FilterManager.getInstance().addState(!b, State.TO_UPDATE);
                     FilterManager.getInstance().addState(!b, State.TO_POST);
+                    FilterManager.getInstance().addState(!b, State.UPLOADING);
                 });
-        localBinding.filterState.stateError.setOnCheckedChangeListener((compoundButton, b) ->
-                FilterManager.getInstance().addState(!b, State.ERROR));
-        localBinding.filterState.stateSMS.setOnCheckedChangeListener((compoundButton, b) ->
-                FilterManager.getInstance().addState(!b, State.SYNCED_VIA_SMS));
+        localBinding.filterState.stateError.setOnCheckedChangeListener((compoundButton, b) -> {
+            FilterManager.getInstance().addState(!b, State.ERROR);
+            FilterManager.getInstance().addState(!b, State.WARNING);
+        });
+        localBinding.filterState.stateSMS.setOnCheckedChangeListener((compoundButton, b) -> {
+            FilterManager.getInstance().addState(!b, State.SYNCED_VIA_SMS);
+            FilterManager.getInstance().addState(!b, State.SENT_VIA_SMS);
+        });
     }
 }

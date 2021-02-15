@@ -32,10 +32,4 @@ public class FileHolder extends FormViewHolder {
 
         });
     }
-
-    @Override
-    public void dispose() {
-
-    }
-
 }

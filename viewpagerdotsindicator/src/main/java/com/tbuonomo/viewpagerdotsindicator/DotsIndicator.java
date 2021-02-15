@@ -2,10 +2,8 @@ package com.tbuonomo.viewpagerdotsindicator;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import androidx.viewpager.widget.ViewPager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +13,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class DotsIndicator extends LinearLayout {
   public static final float DEFAULT_WIDTH_FACTOR = 2.5f;
 
   private List<ImageView> dots;
-  private ViewPager viewPager;
+  private ViewPager2 viewPager;
   private float dotsSize;
   private float dotsCornerRadius;
   private float dotsSpacing;
@@ -32,7 +33,7 @@ public class DotsIndicator extends LinearLayout {
   private int dotsColor;
 
   private boolean dotsClickable;
-  private ViewPager.OnPageChangeListener pageChangedListener;
+  private ViewPager2.OnPageChangeCallback pageChangeCallback;
 
   public DotsIndicator(Context context) {
     super(context);
@@ -95,10 +96,10 @@ public class DotsIndicator extends LinearLayout {
   private void refreshDots() {
     if (viewPager != null && viewPager.getAdapter() != null) {
       // Check if we need to refresh the dots count
-      if (dots.size() < viewPager.getAdapter().getCount()) {
-        addDots(viewPager.getAdapter().getCount() - dots.size());
-      } else if (dots.size() > viewPager.getAdapter().getCount()) {
-        removeDots(dots.size() - viewPager.getAdapter().getCount());
+      if (dots.size() < viewPager.getAdapter().getItemCount()) {
+        addDots(viewPager.getAdapter().getItemCount() - dots.size());
+      } else if (dots.size() > viewPager.getAdapter().getItemCount()) {
+        removeDots(dots.size() - viewPager.getAdapter().getItemCount());
       }
       setUpDotsAnimators();
     } else {
@@ -124,7 +125,7 @@ public class DotsIndicator extends LinearLayout {
           if (dotsClickable
               && viewPager != null
               && viewPager.getAdapter() != null
-              && finalI < viewPager.getAdapter().getCount()) {
+              && finalI < viewPager.getAdapter().getItemCount()) {
             viewPager.setCurrentItem(finalI, true);
           }
         }
@@ -145,7 +146,7 @@ public class DotsIndicator extends LinearLayout {
   private void setUpDotsAnimators() {
     if (viewPager != null
         && viewPager.getAdapter() != null
-        && viewPager.getAdapter().getCount() > 0) {
+        && viewPager.getAdapter().getItemCount() > 0) {
       if (currentPage < dots.size()) {
         View dot = dots.get(currentPage);
 
@@ -168,16 +169,16 @@ public class DotsIndicator extends LinearLayout {
         params.width = (int) (dotsSize * dotsWidthFactor);
         dot.setLayoutParams(params);
       }
-      if (pageChangedListener != null) {
-        viewPager.removeOnPageChangeListener(pageChangedListener);
+      if (pageChangeCallback != null) {
+        viewPager.unregisterOnPageChangeCallback(pageChangeCallback);
       }
       setUpOnPageChangedListener();
-      viewPager.addOnPageChangeListener(pageChangedListener);
+      viewPager.registerOnPageChangeCallback(pageChangeCallback);
     }
   }
 
   private void setUpOnPageChangedListener() {
-    pageChangedListener = new ViewPager.OnPageChangeListener() {
+    pageChangeCallback = new ViewPager2.OnPageChangeCallback() {
       private int lastPage;
 
       @Override
@@ -207,23 +208,27 @@ public class DotsIndicator extends LinearLayout {
 
         if (nextDot != null) {
           int nextDotWidth =
-              (int) (dotsSize + (dotsSize * (dotsWidthFactor - 1) * (positionOffset)));
+                  (int) (dotsSize + (dotsSize * (dotsWidthFactor - 1) * (positionOffset)));
           setDotWidth(nextDot, nextDotWidth);
         }
 
         lastPage = position;
       }
 
+      @Override
+      public void onPageSelected(int position) {
+        super.onPageSelected(position);
+      }
+
+      @Override
+      public void onPageScrollStateChanged(int state) {
+        super.onPageScrollStateChanged(state);
+      }
+
       private void setDotWidth(ImageView dot, int dotWidth) {
         ViewGroup.LayoutParams dotParams = dot.getLayoutParams();
         dotParams.width = dotWidth;
         dot.setLayoutParams(dotParams);
-      }
-
-      @Override public void onPageSelected(int position) {
-      }
-
-      @Override public void onPageScrollStateChanged(int state) {
       }
     };
   }
@@ -238,8 +243,9 @@ public class DotsIndicator extends LinearLayout {
 
   private void setUpViewPager() {
     if (viewPager.getAdapter() != null) {
-      viewPager.getAdapter().registerDataSetObserver(new DataSetObserver() {
-        @Override public void onChanged() {
+      viewPager.getAdapter().registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+        @Override
+        public void onChanged() {
           super.onChanged();
           refreshDots();
         }
@@ -263,7 +269,7 @@ public class DotsIndicator extends LinearLayout {
     this.dotsClickable = dotsClickable;
   }
 
-  public void setViewPager(ViewPager viewPager) {
+  public void setViewPager(ViewPager2 viewPager) {
     this.viewPager = viewPager;
     setUpViewPager();
     refreshDots();

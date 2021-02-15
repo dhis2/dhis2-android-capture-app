@@ -6,6 +6,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -35,19 +36,22 @@ public class ProgramEventDetailContract {
 
         void setWritePermission(Boolean aBoolean);
 
-        void setLiveData(LiveData<PagedList<ProgramEventViewModel>> pagedListLiveData);
+        void showFilterProgress();
+
+        void setLiveData(LiveData<PagedList<EventViewModel>> pagedListLiveData);
 
         void setOptionComboAccess(Boolean canCreateEvent);
 
         void updateFilters(int totalFilters);
 
-        void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos);
+        void setCatOptionComboFilter(
+                Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos);
 
         void setTextTypeDataElementsFilter(List<DataElement> textTypeDataElementsFilter);
 
         void openOrgUnitTreeSelector();
 
-        Consumer<kotlin.Pair<FeatureCollection, BoundingBox>> setMap();
+        void setMap(FeatureCollection featureCollection, BoundingBox boundingBox, List<ProgramEventViewModel> programEventViewModels);
 
         void setEventInfo(Pair<ProgramEventViewModel,LatLng> programEventViewModel);
 
@@ -55,15 +59,23 @@ public class ProgramEventDetailContract {
 
         void clearFilters();
 
-        Consumer<FeatureType> setFeatureType();
+        void setFeatureType(FeatureType featureType);
 
         void startNewEvent();
 
+        void updateEventCarouselItem(ProgramEventViewModel programEventViewModel);
+
         boolean isMapVisible();
+
+        void navigateToEvent(String eventId, String orgUnit);
+
+        void showSyncDialog(String uid);
+
+        void showCatOptComboDialog(String catComboUid);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(View view);
+        void init();
 
         void addEvent();
 
@@ -75,10 +87,18 @@ public class ProgramEventDetailContract {
 
         void onSyncIconClick(String uid);
 
-        void getEventInfo(String eventUid, LatLng latLng);
+        void getEventInfo(String eventUid);
 
         void getMapData();
 
         void clearFilterClick();
+
+        boolean hasAssignment();
+
+        void filterCatOptCombo(String selectedCatOptionCombo);
+
+        Program getProgram();
+
+        FeatureType getFeatureType();
     }
 }

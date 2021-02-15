@@ -1,6 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.indicators
 
-import com.squareup.sqlbrite2.BriteDatabase
 import dagger.Module
 import dagger.Provides
 import org.dhis2.data.dagger.PerFragment
@@ -35,9 +34,9 @@ class EventIndicatorsModule(private val programUid: String, private val eventUid
     @Provides
     @PerFragment
     fun ruleEngineRepository(
-        briteDatabase: BriteDatabase,
+        d2: D2,
         formRepository: FormRepository
     ): RuleEngineRepository {
-        return EventsRuleEngineRepository(briteDatabase, formRepository, eventUid)
+        return EventsRuleEngineRepository(d2, formRepository, eventUid)
     }
 }

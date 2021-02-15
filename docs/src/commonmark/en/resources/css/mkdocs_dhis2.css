@@ -1,0 +1,487 @@
+
+.md-typeset {
+  font-size: .67rem;
+}
+​
+.md-typeset p {
+  font-size: .67rem;
+  padding-top: .1em;
+  padding-bottom: .1em;
+}
+​
+.md-typeset code {
+  font-size: 80%;
+}
+
+.md-typeset blockquote,
+.md-typeset q {
+  quotes: none;
+}
+
+.md-typeset blockquote:before,
+.md-typeset q:before,
+.md-typeset blockquote:after,
+.md-typeset q:after {
+  content: none;
+}
+
+.md-typeset blockquote {
+  background-color: #fcfcfc;
+  border: 1px solid #dddddd;
+  border-left: 3px solid #aab8c6;
+  margin-bottom: 10px;
+  padding: 5px 5px 10px 40px;
+  background-position: 10px 10px;
+  background-repeat: no-repeat;
+}
+
+.md-typeset blockquote :last-child {
+  margin-bottom: 0;
+}
+
+.md-typeset li blockquote {
+  margin: 0.5em 0 1em;
+}
+
+.md-typeset blockquote p {
+  margin: 5px;
+}
+
+.md-typeset td blockquote {
+  margin: 0px;
+  margin-top: 5px;
+  padding: 5px;
+  padding-top: 35px;
+}
+
+.md-nav {
+  font-size: .62rem;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+figure {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+figcaption {
+  text-align: center;
+  margin: 1em;
+  font-style: italic;
+}
+
+.note {
+  background-image: url(../images/admin/note.png);
+}
+
+.tip, .truc, .astuce {
+  background-image: url(../images/admin/tip.png);
+}
+
+.important {
+  background-image: url(../images/admin/important.png);
+}
+
+.caution, .prudence {
+  background-image: url(../images/admin/caution.png);
+}
+
+.warning, .attention, .danger {
+  background-image: url(../images/admin/warning.png);
+}
+
+.work_in_progress {
+  background-image: url(../images/admin/icon-wip.png);
+}
+
+.example {
+  background-image: url(../images/admin/example.png);
+}
+
+.thanks {
+  border: 1px solid #ddd;
+  padding: 0 1em 0;
+  font-family: 'Rubik';
+}
+
+caption {
+  font-style: italic;
+  font-weight: bold;
+  padding-bottom: 1em;
+  padding-top: 1em;
+  text-align: left;
+}
+
+/* Variables */
+
+:root {
+  --grey900: #212934;
+  --grey800: #404b5a;
+  --grey700: #4A5768;
+  --grey600: #6E7A8A;
+  --grey500: #A0ADBA;
+  --grey400: #D5DDE5;
+  --grey300: #E8EDF2;
+  --grey200: #F3F5F7;
+  --grey100: #F8F9FA;
+  --grey050: #FBFCFD;
+  --green900: #103713;
+  --green700: #2E7D32;
+  --green100: #e8f5e9;
+  --red900: #330202;
+  --red700: #B71C1C;
+  --red500: #D32F2F;
+  --red100: #ffe5e8;
+  --red050: #FFF5F6;
+  --blue900: #093371;
+  --blue700: #1565c0;
+  --blue500: #2196F3;
+  --blue300: #90caf9;
+  --blue200: #c5e3fc;
+  --blue100: #e3f2fd;
+  --blue050: #f5fbff;
+  --teal050: #F1F9F9;
+  --yellow050: #FFF8E1;
+  --yellow200: #FFE082;
+}
+
+body {
+  color:var(--grey800);
+  background:white;
+}
+
+article {
+  color:var(--grey900);
+}
+
+/* .md-header {
+  background-color: white;
+  color: var(--grey700);
+}
+
+.md-tabs {
+  background-color: white;
+  box-shadow: 0 2px 4px 0 rgba(3,27,78,0.10);
+  color:var(--grey900);
+}
+
+.md-header[data-md-state="shadow"] {
+  -webkit-transition: background-color .25s,color .25s,box-shadow 0s;
+  transition: background-color .25s,color .25s,box-shadow 0s;
+  box-shadow: 0 2px 4px 0 rgba(3,27,78,0.10);
+}
+
+.md-search__input {
+  background-color: var(--grey200);
+  color: var(--grey800);
+  font-size: .8rem;
+}
+
+.md-search__input::placeholder {
+  color: var(--grey700);
+  opacity: 1;
+} */
+
+.md-grid {
+ // max-width:70rem;
+}
+
+.md-sidebar--secondary {
+  //margin-left:70rem;
+}
+
+.md-sidebar--primary {
+  border-right:1px solid var(--grey300);
+  /*! width: 300px; */
+}
+
+.md-main__inner {
+  padding-top: 0;
+}
+.md-header[data-md-state="shadow"] {
+  box-shadow: 0 2px 4px 0 rgba(3,27,78,0.10);
+}
+
+.md-typeset p a {
+  color:var(--blue700);
+  text-decoration: underline;
+}
+
+.md-typeset p a:hover {
+  color:var(--blue500);
+}
+
+.md-typeset p a:active {
+  background:var(--blue050);
+}
+
+.md-typeset p a:visited {
+  color:#4C2794;
+}
+
+.md-typeset h1 {
+  color: var(--grey900);
+  font-size: 1.5rem;
+  font-weight:400;
+}
+
+.md-typeset h2 {
+  color: var(--grey900);
+  font-size: 1.2rem;
+  font-weight:400;
+}
+
+.md-typeset h3 {
+  color: var(--grey900);
+  font-size: 1rem;
+  font-weight:400;
+}
+
+.md-typeset h4 {
+  color: var(--grey900);
+  font-size: 0.9rem;
+  font-weight:400;
+}
+
+.md-typeset h5 {
+  color: var(--grey700);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.md-typeset h6 {
+  color: var(--grey700);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.md-nav__link[data-md-state="blur"] {
+  color: var(--grey600);
+}
+
+.md-nav__title{
+  margin-bottom:15px;
+}
+
+.md-footer-nav {
+  margin:1rem 0 2rem;
+  background-color: white;
+  color: var(--grey900);
+}
+
+.md-footer-nav__link {
+  width: 40%;
+  background: white;
+  border:1px solid var(--grey300);
+  padding: 0.6rem 0 0.4rem;
+}
+
+.md-footer-nav__link:hover {
+  background:var(--grey050);
+  color: var(--grey900);
+}
+
+.md-typeset blockquote {
+  background-color: var(--blue050);
+  border: 1px solid var(--blue200);
+  border-radius:3px;
+  border-left: normal;
+  margin-top:32px;
+  margin-bottom: 40px;
+  padding: 6px 16px 12px 52px;
+  background-position: 16px 12px;
+  background-repeat: no-repeat;
+  color:var(--grey900);
+}
+
+.md-typeset blockquote.caution, .md-typeset blockquote.prudence, .md-typeset blockquote.important {
+  background-color:var(--yellow050);
+  border:1px solid var(--yellow200);
+}
+
+.md-typeset blockquote.warning, .md-typeset blockquote.attention, .md-typeset blockquote.danger {
+  background-color:var(--red050);
+  border:2px solid var(--red500);
+}
+
+.md-typeset .codehilite {
+  background-color: var(--grey100);
+  border:1px solid var(--grey200);
+}
+
+.md-sidebar {
+ // background-color:var(--grey100)
+}
+
+body {
+ // background:var(--grey100);
+}
+
+.md-content {
+  background:white;
+  max-width:860px;
+}
+
+.md-typeset, .md-typeset p {
+}
+
+.md-typeset img {
+  margin:1.5em 0;
+}
+
+caption {
+  color: var(--grey700);
+  font-weight: 700;
+  font-size: 0.7rem;
+  font-style: normal;
+  margin: 0 0.4rem;
+  padding: 0.6rem 0;
+}
+
+.md-typeset table:not([class]) th {
+  background: var(--grey300);
+  color: var(--grey900)
+}
+
+.md-typeset table:not([class]) {
+  font-size:0.67rem;
+  box-shadow: none;
+  border-radius: 0px;
+  padding: 0 0;
+}
+
+.md-typeset table:not([class]) tr:hover {
+  background-color: var(--grey100);
+  box-shadow: inset 0 .05rem 0 #fff;
+}
+
+.md-typeset__table {
+  border: 1px solid var(--grey300);
+  margin: 0 0.8em;
+}
+
+.md-typeset .md-typeset__table {
+  padding: 0 0;
+}
+
+.md-clipboard::before {
+  color: var(--grey600);
+}
+
+.md-typeset code {
+  box-shadow: .29412em 0 0 var(--grey200),-.29412em 0 0 var(--grey200);
+  background-color: var(--grey200);
+  color: var(--grey800);
+  font-size: 85%;
+  direction: ltr;
+}
+
+.md-nav__link--active, .md-nav__link:active {
+  color: var(--blue700);
+}
+
+
+/* Float four columns side by side */
+.column {
+  float: left;
+  width: 25%;
+  padding: 0 10px;
+}
+
+/* Remove extra left and right margins, due to padding */
+.row {margin: 0 -5px;}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Responsive columns */
+@media screen and (max-width: 600px) {
+  .column {
+    width: 100%;
+    display: block;
+    margin-bottom: 20px;
+  }
+}
+
+/* Style the counter cards */
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  text-align: center;
+  background-color: #f1f1f1;
+}
+
+
+select {
+
+  /* styling */
+  background-color: white;
+  border: thin solid var(--grey400);
+  border-radius: 4px;
+  display: inline-block;
+  font: inherit;
+  line-height: 1.5em;
+  padding: 0.5em 3.5em 0.5em 1em;
+  width:95%;
+
+  /* reset */
+  margin-bottom: 15px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+
+select {
+  background-image:
+    linear-gradient(45deg, transparent 50%, gray 50%),
+    linear-gradient(135deg, gray 50%, transparent 50%),
+    linear-gradient(to right, #ccc, #ccc);
+  background-position:
+    calc(100% - 20px) calc(1em + 2px),
+    calc(100% - 15px) calc(1em + 2px),
+    calc(100% - 2.5em) 0.5em;
+  background-size:
+    5px 5px,
+    5px 5px,
+    1px 1.5em;
+  background-repeat: no-repeat;
+}
+
+select:focus {
+  border-color: var(--grey500);
+  outline: 0;
+}
+
+
+/* change to the github icon to the official logo ¯\_(ツ)_/¯ */
+.md-source__icon svg {
+  display:none;
+}
+.md-source__icon {
+  background-image:url(../images/admin/github.png);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.codehilite pre span {
+  white-space: normal;
+}
+
+.codehilite pre {
+  white-space:pre-wrap;
+}

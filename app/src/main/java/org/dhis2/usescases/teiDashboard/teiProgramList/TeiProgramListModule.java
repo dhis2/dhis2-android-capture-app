@@ -2,10 +2,11 @@ package org.dhis2.usescases.teiDashboard.teiProgramList;
 
 import androidx.annotation.NonNull;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.utils.CodeGenerator;
+import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
+import org.dhis2.data.prefs.PreferenceProvider;
+import org.dhis2.usescases.main.program.ProgramViewModelMapper;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -19,9 +20,11 @@ import dagger.Provides;
 public class TeiProgramListModule {
 
 
+    private final TeiProgramListContract.View view;
     private final String teiUid;
 
-    TeiProgramListModule(String teiUid) {
+    TeiProgramListModule(TeiProgramListContract.View view, String teiUid) {
+        this.view = view;
         this.teiUid = teiUid;
     }
 
@@ -33,8 +36,11 @@ public class TeiProgramListModule {
 
     @Provides
     @PerActivity
-    TeiProgramListContract.Presenter providesPresenter(TeiProgramListContract.Interactor interactor) {
-        return new TeiProgramListPresenter(interactor, teiUid);
+    TeiProgramListContract.Presenter providesPresenter(TeiProgramListContract.Interactor interactor,
+                                                       PreferenceProvider preferenceProvider,
+                                                       AnalyticsHelper analyticsHelper,
+                                                       DhisEnrollmentUtils dhisEnrollmentUtils) {
+        return new TeiProgramListPresenter(view, interactor, teiUid, preferenceProvider, analyticsHelper, dhisEnrollmentUtils);
     }
 
     @Provides
@@ -51,7 +57,7 @@ public class TeiProgramListModule {
 
     @Provides
     @PerActivity
-    TeiProgramListRepository eventDetailRepository(@NonNull CodeGenerator codeGenerator, @NonNull BriteDatabase briteDatabase, D2 d2) {
-        return new TeiProgramListRepositoryImpl(codeGenerator, briteDatabase, d2);
+    TeiProgramListRepository eventDetailRepository(D2 d2) {
+        return new TeiProgramListRepositoryImpl(d2, new ProgramViewModelMapper());
     }
 }

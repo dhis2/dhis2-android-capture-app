@@ -9,6 +9,9 @@ public class AboutContracts {
     public interface AboutView{
         void renderUserCredentials(UserCredentials userCredentialsModel);
         void renderServerUrl(String serverUrl);
+        String checkCredentials();
+        String checkUrl();
+        void navigateToPrivacyPolicy();
     }
 
     public interface AboutPresenter {

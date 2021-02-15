@@ -1,29 +1,29 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.data.forms.EventRepository;
-import org.dhis2.data.forms.FormRepository;
-import org.dhis2.data.forms.RulesRepository;
-import org.dhis2.data.forms.dataentry.DataEntryStore;
-import org.dhis2.data.forms.dataentry.DataValueStore;
-import org.dhis2.data.schedulers.SchedulerProvider;
-import org.dhis2.data.user.UserRepository;
-import org.dhis2.utils.RulesUtilsProvider;
-import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.rules.RuleExpressionEvaluator;
-
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import org.dhis2.Bindings.ValueTypeExtensionsKt;
+import org.dhis2.R;
+import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.dhislogic.DhisEventUtils;
+import org.dhis2.data.forms.EventRepository;
+import org.dhis2.data.forms.FormRepository;
+import org.dhis2.data.forms.RulesRepository;
+import org.dhis2.data.forms.dataentry.DataEntryStore;
+import org.dhis2.data.forms.dataentry.ValueStore;
+import org.dhis2.data.forms.dataentry.ValueStoreImpl;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import org.dhis2.data.prefs.PreferenceProvider;
+import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.utils.RulesUtilsProvider;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.rules.RuleExpressionEvaluator;
+
 import dagger.Module;
 import dagger.Provides;
-
-/**
- * QUADRAM. Created by ppajuelo on 19/11/2018.
- */
 
 @PerActivity
 @Module
@@ -31,9 +31,11 @@ public class EventCaptureModule {
 
 
     private final String eventUid;
+    private final EventCaptureContract.View view;
     private final String programUid;
 
-    public EventCaptureModule(String eventUid, String programUid) {
+    public EventCaptureModule(EventCaptureContract.View view, String eventUid, String programUid) {
+        this.view = view;
         this.eventUid = eventUid;
         this.programUid = programUid;
     }
@@ -42,16 +44,29 @@ public class EventCaptureModule {
     @PerActivity
     EventCaptureContract.Presenter providePresenter(@NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
                                                     @NonNull RulesUtilsProvider ruleUtils,
-                                                    @NonNull DataEntryStore dataEntryStore,
-                                                    SchedulerProvider schedulerProvider) {
-        return new EventCapturePresenterImpl(eventUid,programUid, eventCaptureRepository, ruleUtils, dataEntryStore, schedulerProvider);
+                                                    @NonNull ValueStore valueStore,
+                                                    SchedulerProvider schedulerProvider,
+                                                    PreferenceProvider preferences,
+                                                    GetNextVisibleSection getNextVisibleSection,
+                                                    EventFieldMapper fieldMapper) {
+        return new EventCapturePresenterImpl(view, eventUid, programUid,eventCaptureRepository, ruleUtils, valueStore, schedulerProvider,
+                preferences, getNextVisibleSection, fieldMapper);
     }
 
     @Provides
     @PerActivity
-    EventCaptureContract.EventCaptureRepository provideRepository(BriteDatabase briteDatabase, Context context,
-                                                                  FormRepository formRepository, D2 d2) {
-        return new EventCaptureRepositoryImpl(briteDatabase, context, formRepository, eventUid, d2);
+    EventFieldMapper provideFieldMapper(Context context){
+        return new EventFieldMapper(context.getString(R.string.field_is_mandatory));
+    }
+
+    @Provides
+    @PerActivity
+    EventCaptureContract.EventCaptureRepository provideRepository(Context context,
+                                                                  FormRepository formRepository,
+                                                                  D2 d2,
+                                                                  DhisEventUtils eventUtils) {
+        FieldViewModelFactory fieldFactory = new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context));
+        return new EventCaptureRepositoryImpl(fieldFactory, formRepository, eventUid, d2, eventUtils);
     }
 
     @Provides
@@ -62,19 +77,21 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    FormRepository formRepository(@NonNull BriteDatabase briteDatabase,
-                                  @NonNull RuleExpressionEvaluator evaluator,
+    FormRepository formRepository(@NonNull RuleExpressionEvaluator evaluator,
                                   @NonNull RulesRepository rulesRepository,
                                   @NonNull D2 d2) {
-        return new EventRepository(briteDatabase, evaluator, rulesRepository, eventUid, d2);
+        return new EventRepository(evaluator, rulesRepository, eventUid, d2);
     }
 
     @Provides
     @PerActivity
-    DataEntryStore dataValueStore(@NonNull BriteDatabase briteDatabase,
-                                  @NonNull UserRepository userRepository,
-                                  @NonNull D2 d2) {
-        return new DataValueStore(d2,briteDatabase, userRepository, eventUid);
+    ValueStore valueStore(@NonNull D2 d2) {
+        return new ValueStoreImpl(d2, eventUid, DataEntryStore.EntryMode.DE);
     }
 
+    @Provides
+    @PerActivity
+    GetNextVisibleSection getNextVisibleSection() {
+        return new GetNextVisibleSection();
+    }
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PSI dhis2</string>
+    <string name="logo_text">PSI dhis2</string>
+    <string name="logo_number"></string>
+    <string name="dashboard_feedback">មតិប្រតិកម្ម</string>
+    <string name="program_type_configuration_error_message">មានកំហុសក្នុងការកំណត់រចនាសម្ព័ន្ធប្រភេទកម្មវិធីនៅក្នុងកម្មវិធីបច្ចុប្បន្ន។ សូមពិនិត្យមើលកម្មវិធីនៅក្នុងម៉ាស៊ីនមេនិងដើម្បីអនុវត្តការកំណត់រចនាសម្ព័ន្ធសមកាលកម្ម</string>
+    <string name="unexpected_error_message">កំហុស​ដែល​មិន​រំពឹង​ទុក​បាន​កើត​ឡើង​។ ពិនិត្យមើលការកំណត់រចនាសម្ព័ន្ធឬទំនាក់ទំនងរបស់អ្នកជាមួយអ្នកគ្រប់គ្រងរបស់អ្នក</string>
+    <string name="feedback_show_only_failed">បង្ហាញតែបរាជ័យ</string>
+</resources>

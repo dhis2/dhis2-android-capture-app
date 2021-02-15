@@ -35,7 +35,7 @@ class SplashModule internal constructor(
     @PerActivity
     @Named(FLAG)
     fun provideFlag(): String {
-        return if (userManager?.d2 != null) {
+        return if (userManager?.d2 != null && userManager.isUserLoggedIn.blockingFirst()) {
             val systemSetting =
                 userManager.d2.systemSettingModule().systemSetting().flag().blockingGet()
             if (systemSetting != null) {

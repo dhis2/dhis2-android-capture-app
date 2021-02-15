@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PSI dhis2</string>
+    <string name="logo_text">PSI dhis2</string>
+    <string name="logo_number"></string>
+    <string name="dashboard_feedback">Обратная связь</string>
+    <string name="program_type_configuration_error_message">текущей программе есть ошибка конфигурации типа программы. Пожалуйста, проверьте программу на сервере и выполните настройку синхронизации.</string>
+    <string name="unexpected_error_message">Произошла непредвиденная ошибка. Проверьте конфигурацию или обратитесь к администратору</string>
+    <string name="feedback_show_only_failed">Показать только не удалось</string>
+</resources>

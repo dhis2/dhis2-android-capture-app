@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PSI dhis2</string>
+    <string name="logo_text">PSI dhis2</string>
+    <string name="logo_number"></string>
+    <string name="dashboard_feedback">Phản hồi</string>
+    <string name="program_type_configuration_error_message">Có lỗi cấu hình loại chương trình trong chương trình hiện tại. Vui lòng xem lại chương trình trong máy chủ và thực hiện cấu hình đồng bộ</string>
+    <string name="unexpected_error_message">Một lỗi không mong muốn đã xảy ra. Xem lại cấu hình của bạn hoặc liên hệ với quản trị viên của bạn</string>
+    <string name="feedback_show_only_failed">Chỉ hiển thị không thành công</string>
+</resources>

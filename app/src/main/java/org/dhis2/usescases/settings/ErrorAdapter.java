@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemErrorDialogBinding;
-import org.hisp.dhis.android.core.imports.TrackerImportConflict;
+import org.dhis2.usescases.settings.models.ErrorViewModel;
 
 import java.util.List;
 
@@ -24,11 +24,11 @@ import io.reactivex.processors.PublishProcessor;
 
 public class ErrorAdapter extends RecyclerView.Adapter<ErrorViewHolder> {
 
-    private final List<TrackerImportConflict> data;
+    private final List<ErrorViewModel> data;
     private final ObservableBoolean sharing;
-    private FlowableProcessor<Pair<Boolean, TrackerImportConflict>> processor;
+    private FlowableProcessor<Pair<Boolean, ErrorViewModel>> processor;
 
-    public ErrorAdapter(List<TrackerImportConflict> data, ObservableBoolean sharing) {
+    public ErrorAdapter(List<ErrorViewModel> data, ObservableBoolean sharing) {
         this.processor = PublishProcessor.create();
         this.data = data;
         this.sharing = sharing;
@@ -52,7 +52,7 @@ public class ErrorAdapter extends RecyclerView.Adapter<ErrorViewHolder> {
     }
 
     @NonNull
-    public FlowableProcessor<Pair<Boolean, TrackerImportConflict>> asFlowable() {
+    public FlowableProcessor<Pair<Boolean, ErrorViewModel>> asFlowable() {
         return processor;
     }
 }

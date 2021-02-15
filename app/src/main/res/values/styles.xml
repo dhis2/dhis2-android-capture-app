@@ -5,6 +5,10 @@
         <item name="android:colorAccent">@color/colorGreyDefault</item>
     </style>
 
+    <style name="ErrorActivityTheme" parent="AppTheme">
+        <item name="colorAccent">@color/text_black_4d4d4d</item>
+    </style>
+
     <style name="DatePickerTheme" parent="Base.Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">@color/colorGreyDefault</item>
         <item name="android:colorAccent">@color/colorGreyDefault</item>
@@ -49,7 +53,7 @@
         <item name="tabIndicatorHeight">2dp</item>
         <item name="tabTextAppearance">@style/DhisTabText</item>
         <item name="tabSelectedTextColor">?colorAccent</item>
-        <item name="android:background">?colorPrimary</item>
+        <item name="android:background">?colorPrimaryDark</item>
     </style>
 
     <style name="DhisTabText" parent="TextAppearance.Design.Tab">
@@ -58,24 +62,10 @@
     </style>
 
     <style name="loginInputText"><!--parent="TextAppearance.AppCompat"-->
-        <item name="android:textColorHint">@color/text_black_808</item>
-        <item name="colorAccent">@color/text_black_333</item>
-        <item name="colorControlNormal">@color/text_black_333</item>
-        <item name="colorControlActivated">@color/text_black_333</item>
-    </style>
-
-    <style name="ValueType_LongText" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
-        <item name="android:textColorHint">@color/text_black_808</item>
-        <item name="colorAccent">@color/text_black_333</item>
-        <item name="colorControlNormal">@color/text_black_333</item>
-        <item name="colorControlActivated">@color/text_black_333</item>
-    </style>
-
-    <style name="ValueType_Text">
-        <item name="android:textColorHint">@color/text_black_808</item>
-        <item name="colorAccent">@color/text_black_333</item>
-        <item name="colorControlNormal">@color/text_black_333</item>
-        <item name="colorControlActivated">@color/text_black_333</item>
+        <item name="android:textColorHint">@color/textSecondary</item>
+        <item name="colorControlNormal">@color/textPrimary</item>
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="colorControlActivated">?colorPrimary</item>
     </style>
 
     <style name="boxedInputText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
@@ -184,7 +174,7 @@
     </style>
 
     <style name="ImageFieldLabel">
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textAlignment">textStart</item>
         <item name="android:textStyle">bold</item>
     </style>
@@ -207,6 +197,14 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/padding_12</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <style name="ActionIconSmallPadding" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_6</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
     </style>
@@ -266,18 +264,55 @@
     <style name="dhisSwitch">
         <!-- colorPrimary is used for the default action bar background -->
         <item name="colorPrimary">?colorPrimary</item>
-
-        <!-- colorPrimaryDark is used for the status bar -->
-        <item name="colorPrimaryDark">?colorPrimaryDark</item>
-
-        <!-- colorAccent is used as the default value for colorControlActivated,
-             which is used to tint widgets -->
-        <item name="colorAccent">?colorPrimaryLight</item>
-
-        <!-- You can also set colorControlNormal, colorControlActivated
-             colorControlHighlight, and colorSwitchThumbNormal. -->
     </style>
 
+    <style name="ErrorText" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/red_060</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="HintText" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextInputLayoutAppearance" parent="Widget.Design.TextInputLayout">
+        <!-- reference our hint & error styles -->
+        <item name="hintTextAppearance">@style/HintText</item>
+        <item name="errorTextAppearance">@style/ErrorText</item>
+        <item name="android:textColor">@color/black_de0</item>
+        <item name="android:textColorHint">@color/gray_9b9</item>
+        <item name="colorControlNormal">@color/gray_9b9</item>
+        <item name="colorControlActivated">@color/black_de0</item>
+        <item name="colorControlHighlight">@color/gray_9b9</item>
+        <item name="android:layout_marginStart">-4dp</item>
+        <item name="android:layout_marginLeft">-4dp</item>
+    </style>
+
+    <style name="pin_dialog_animation">
+<!--        <item name="android:windowEnterAnimation">@anim/fscv_fade_in</item>-->
+        <item name="android:windowEnterAnimation">@anim/pin_dialog_anim_enter</item>
+        <item name="android:windowExitAnimation">@anim/pin_dialog_anim_exit</item>
+    </style>
+
+    <style name="FieldLabel">
+        <item name="android:textSize">@dimen/field_label_size</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:textColor">@color/text_black_A63</item>
+    </style>
+
+    <style name="settingsHint">
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="CustomBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+    </style>
+
+    <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
     <style name="spinner"/>
 
 </resources>

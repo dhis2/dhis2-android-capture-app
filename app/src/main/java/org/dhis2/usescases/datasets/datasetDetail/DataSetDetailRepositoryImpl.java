@@ -1,11 +1,6 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
@@ -21,8 +16,15 @@ import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.Period;
 import org.hisp.dhis.android.core.period.PeriodType;
 
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 import io.reactivex.Flowable;
 import io.reactivex.Single;
+
+import static org.dhis2.data.dhislogic.AuthoritiesKt.AUTH_DATAVALUE_ADD;
 
 public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
@@ -60,6 +62,11 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
         if (!catOptComboFilters.isEmpty())
             repo = repo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptComboFilters));
 
+        d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet();
+        int dataSetOrgUnitNumber = d2.organisationUnitModule().organisationUnits()
+                .byDataSetUids(Collections.singletonList(dataSetUid))
+                .blockingGet().size();
+
         DataSetInstanceCollectionRepository finalRepo = repo;
         return Flowable.fromIterable(finalRepo.blockingGet())
                 .map(dataSetReport -> {
@@ -73,7 +80,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
                     State state = dataSetReport.state();
 
-                    if(state == State.SYNCED && dscr!=null){
+                    if (state == State.SYNCED && dscr != null) {
                         state = dscr.state();
                     }
 
@@ -86,7 +93,8 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                             dataSetReport.attributeOptionComboDisplayName(),
                             periodName,
                             state,
-                            dataSetReport.periodType().name());
+                            dataSetReport.periodType().name(),
+                            dataSetOrgUnitNumber > 1);
                 })
                 .filter(dataSetDetailModel -> stateFilters.isEmpty() || stateFilters.contains(dataSetDetailModel.state()))
                 .toSortedList((dataSet1, dataSet2) -> {
@@ -105,7 +113,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
     public Flowable<Boolean> canWriteAny() {
         return d2.dataSetModule().dataSets().uid(dataSetUid).get().toFlowable()
                 .flatMap(dataSet -> {
-                    if (dataSet.access().data().write())
+                    if (dataSet.access().data().write() && hasDataValueAuthority())
                         return d2.categoryModule().categoryOptionCombos().withCategoryOptions()
                                 .byCategoryComboUid().eq(dataSet.categoryCombo().uid()).get().toFlowable()
                                 .map(categoryOptionCombos -> {
@@ -121,10 +129,10 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
                                     if (canWriteCatOption) {
 
-                                        List<OrganisationUnit> organisationUnits = d2.organisationUnitModule().organisationUnits().byDataSetUids(Collections.singletonList(dataSetUid))
-                                                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet();
+                                        int countOrgUnits = d2.organisationUnitModule().organisationUnits().byDataSetUids(Collections.singletonList(dataSetUid))
+                                                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingCount();
 
-                                        canWriteOrgUnit = !organisationUnits.isEmpty();
+                                        canWriteOrgUnit = countOrgUnits != 0;
 
                                     }
 
@@ -135,5 +143,14 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                         return Flowable.just(false);
                 });
 
+    }
+
+    private boolean hasDataValueAuthority(){
+        return !d2.userModule().authorities().byName().eq(AUTH_DATAVALUE_ADD).blockingIsEmpty();
+    }
+
+    @Override
+    public CategoryOptionCombo getCatOptCombo(String selectedCatOptionCombo) {
+        return d2.categoryModule().categoryOptionCombos().uid(selectedCatOptionCombo).blockingGet();
     }
 }

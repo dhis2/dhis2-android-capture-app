@@ -28,11 +28,14 @@
             type="java.lang.String" />
     </data>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rootLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:padding="5dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
         tools:background="?attr/colorPrimary">
 
         <ImageView
@@ -42,24 +45,55 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="5dp"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@drawable/sierra_leone"
             tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/label"
+            style="@style/FieldLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{label}"
+            android:textColor="?colorAccent"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/renderImage"
+            tools:text="Form Name" />
+
+        <ImageView
+            android:id="@+id/descriptionLabel"
+            android:layout_width="12dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/label"
+            app:layout_constraintTop_toTopOf="@+id/label"
+            app:srcCompat="@drawable/ic_info_outline"
+            app:tint="?colorAccent" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/renderImage"
-            android:orientation="horizontal">
+            android:layout_marginHorizontal="12dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/label">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/input_layout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/renderImage"
                 android:layout_weight="1"
+                android:hint="@string/choose_option"
                 android:textColorHint="@drawable/edit_text_hint_accent"
-                android:theme="@style/loginInputTextAccent"
-                tools:hint="this is the hint">
+                android:theme="@style/loginInputTextAccent">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_editText"
@@ -70,9 +104,8 @@
                     android:maxLines="4"
                     android:textAlignment="textStart"
                     android:textColor="?colorAccent"
-                    android:textSize="15sp"
-                    app:drawableEndCompat="@drawable/ic_arrow_drop_down"
-                    tools:text="@string/lorem" />
+                    android:textSize="@dimen/form_edit_text_size"
+                    app:drawableEndCompat="@drawable/ic_arrow_drop_down" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -81,16 +114,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:visibility="gone"
-                app:srcCompat="@drawable/ic_close"
-                app:tint="?colorAccent" />
-
-            <ImageView
-                android:id="@+id/descriptionLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:visibility="@{(label.length()>16 || description!=null)?View.VISIBLE : View.GONE}"
-                app:srcCompat="@drawable/ic_info_outline"
-                app:tint="?colorAccent" />
+                android:padding="8dp"
+                app:tint="?colorAccent"
+                app:srcCompat="@drawable/ic_close" />
         </LinearLayout>
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

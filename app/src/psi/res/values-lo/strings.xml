@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PSI dhis2</string>
+    <string name="logo_text">PSI dhis2</string>
+    <string name="logo_number"></string>
+    <string name="dashboard_feedback">ຄຳ ຕິຊົມ</string>
+    <string name="program_type_configuration_error_message">កំហុស​ដែល​មិន​រំពឹង​ទុក​បាន​កើត​ឡើង​។ ពិនិត្យមើលការកំណត់រចនាសម្ព័ន្ធឡើងវិញឬទំនាក់ទំនងជាមួយអ្នកគ្រប់គ្រងរបស់អ្នក</string>
+    <string name="unexpected_error_message">ຂໍ້ຜິດພາດທີ່ບໍ່ຄາດຄິດໄດ້ເກີດຂື້ນ. ກວດສອບການຕັ້ງຄ່າຫລືຕິດຕໍ່ກັບຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</string>
+    <string name="feedback_show_only_failed">ສະແດງບໍ່ພຽງແຕ່ລົ້ມເຫລວ</string>
+</resources>

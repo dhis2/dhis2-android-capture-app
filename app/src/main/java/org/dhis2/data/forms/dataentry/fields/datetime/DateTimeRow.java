@@ -88,9 +88,4 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
     public void onBind(@NonNull DateTimeHolder viewHolder, @NonNull DateTimeViewModel viewModel) {
         viewHolder.update(viewModel);
     }
-
-    @Override
-    public void deAttach(@NonNull DateTimeHolder viewHolder) {
-        viewHolder.dispose();
-    }
 }

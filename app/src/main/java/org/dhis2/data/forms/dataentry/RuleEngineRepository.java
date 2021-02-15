@@ -9,8 +9,6 @@ import io.reactivex.Flowable;
 
 public interface RuleEngineRepository {
 
-    void updateRuleAttributeMap(String uid, String value);
-
     Flowable<RuleEngine> updateRuleEngine();
 
     @NonNull

@@ -7,6 +7,13 @@ import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
+import androidx.databinding.ViewDataBinding;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -16,6 +23,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
 
 import java.text.ParseException;
@@ -24,9 +32,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableField;
-import androidx.databinding.ViewDataBinding;
 import timber.log.Timber;
 
 /**
@@ -38,12 +43,16 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     private TextInputEditText editText;
     private TextInputLayout inputLayout;
     private ViewDataBinding binding;
+    private TextView labelText;
 
     private OnDateSelected listener;
 
     private String label;
     private String description;
     private Date date;
+    private View clearButton;
+    private View descriptionLabel;
+    private ImageView descriptionIcon;
 
     public TimeView(Context context) {
         super(context);
@@ -61,19 +70,28 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     }
 
     private void setLayout() {
-        binding = DataBindingUtil.inflate(inflater, R.layout.time_view, this, true);
+        binding = DataBindingUtil.inflate(inflater, R.layout.date_time_view, this, true);
         editText = findViewById(R.id.inputEditText);
         inputLayout = findViewById(R.id.inputLayout);
-        ((ImageView) findViewById(R.id.descIcon)).setImageResource(R.drawable.ic_form_date);
+        labelText = findViewById(R.id.label);
+        descriptionLabel = findViewById(R.id.descriptionLabel);
+        descriptionIcon = findViewById(R.id.descIcon);
+        inputLayout.setHint(getContext().getString(R.string.select_time));
+        descriptionIcon.setImageResource(R.drawable.ic_form_time);
+        clearButton = findViewById(R.id.clear_button);
+        clearButton.setOnClickListener(v -> {
+            clearTime();
+        });
         editText.setFocusable(false); //Makes editText not editable
         editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this::onFocusChanged);
         editText.setOnClickListener(this);
+        descriptionIcon.setOnClickListener(this);
     }
 
-    public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale){
+    public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale) {
         binding = DataBindingUtil.inflate(inflater, R.layout.custom_cell_view, this, true);
-        ((CustomCellViewBinding)binding).setTableScale(tableScale);
+        ((CustomCellViewBinding) binding).setTableScale(tableScale);
         editText = findViewById(R.id.inputEditText);
         editText.setFocusable(false); //Makes editText not editable
         editText.setClickable(true);//  but clickable
@@ -94,6 +112,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
 
     public void setDescription(String description) {
         this.description = description;
+        descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
         binding.setVariable(BR.description, description);
         binding.executePendingBindings();
     }
@@ -106,11 +125,10 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
             } catch (ParseException e) {
                 Timber.e(e);
             }
-
-
-            data = DateUtils.timeFormat().format(date);
+            data = date != null ? DateUtils.timeFormat().format(date) : data;
         }
         editText.setText(data);
+        updateDeleteVisibility(clearButton);
     }
 
     public void setWarning(String msg) {
@@ -125,7 +143,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         editText.requestFocus();
     }
 
-    public void setMandatory(){
+    public void setMandatory() {
         ImageView mandatory = binding.getRoot().findViewById(R.id.ic_mandatory);
         mandatory.setVisibility(View.VISIBLE);
     }
@@ -141,6 +159,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+        requestFocus();
         activate();
         final Calendar c = Calendar.getInstance();
         if (date != null)
@@ -168,23 +187,64 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
             listener.onDateSelected(selectedDate);
             nextFocus(view);
             date = null;
+            updateDeleteVisibility(clearButton);
         }, hour, minute, is24HourFormat);
         dialog.setTitle(label);
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getContext().getString(R.string.date_dialog_clear), (timeDialog, which) -> {
-            editText.setText(null);
-            listener.onDateSelected(null);
-            date=null;
+            clearTime();
         });
 
         dialog.show();
+    }
+
+    @Override
+    public void dispatchSetActivated(boolean activated) {
+        super.dispatchSetActivated(activated);
+        if (activated) {
+            labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+        } else {
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
+        }
     }
 
     public TextInputEditText getEditText() {
         return editText;
     }
 
+
     public void setEditable(Boolean editable) {
         editText.setEnabled(editable);
+        clearButton.setEnabled(editable);
+        descriptionIcon.setEnabled(editable);
+        editText.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
+        );
+        setEditable(editable,
+                labelText,
+                inputLayout,
+                findViewById(R.id.descIcon),
+                descriptionLabel,
+                clearButton
+        );
+        updateDeleteVisibility(clearButton);
+    }
+
+    private void clearTime() {
+        editText.setText(null);
+        listener.onDateSelected(null);
+        date = null;
+        updateDeleteVisibility(clearButton);
+    }
+
+    @Override
+    protected boolean hasValue() {
+        return editText.getText() != null && !editText.getText().toString().isEmpty();
+    }
+
+    @Override
+    protected boolean isEditable() {
+        return editText.isEnabled();
     }
 }
