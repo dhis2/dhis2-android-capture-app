@@ -19,9 +19,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRe
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
-
-import javax.annotation.Nonnull;
-
 import dagger.Module;
 import dagger.Provides;
 
@@ -30,13 +27,16 @@ import dagger.Provides;
 public class EventInitialModule {
 
     private final EventInitialContract.View view;
+    private final String stageUid;
     @Nullable
     private String eventUid;
 
-    public EventInitialModule(@Nonnull EventInitialContract.View view,
-                              @Nullable String eventUid) {
+    public EventInitialModule(@NonNull EventInitialContract.View view,
+                              @Nullable String eventUid,
+                              String stageUid) {
         this.view = view;
         this.eventUid = eventUid;
+        this.stageUid = stageUid;
     }
 
     @Provides
@@ -44,8 +44,8 @@ public class EventInitialModule {
     EventInitialContract.Presenter providesPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
                                                      @NonNull EventInitialRepository eventInitialRepository,
                                                      @NonNull SchedulerProvider schedulerProvider,
-                                                     @Nonnull PreferenceProvider preferenceProvider,
-                                                     @Nonnull AnalyticsHelper analyticsHelper) {
+                                                    @NonNull PreferenceProvider preferenceProvider,
+                                                    @NonNull AnalyticsHelper analyticsHelper) {
         return new EventInitialPresenter(
                 view,
                 eventSummaryRepository,
@@ -81,6 +81,6 @@ public class EventInitialModule {
     @Provides
     @PerActivity
     EventInitialRepository eventDetailRepository(D2 d2) {
-        return new EventInitialRepositoryImpl(eventUid, d2);
+        return new EventInitialRepositoryImpl(eventUid, stageUid, d2);
     }
 }

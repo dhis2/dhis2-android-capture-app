@@ -38,6 +38,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.FileResourcesUtil;
+import org.dhis2.utils.ImageUtils;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog;
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
@@ -214,7 +215,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 break;
             case Constants.CAMERA_REQUEST:
                 if (resultCode == RESULT_OK) {
-                    File file = new File(FileResourceDirectoryHelper.getFileResourceDirectory(this), "tempFile.png");
+                    File imageFile = new File(FileResourceDirectoryHelper.getFileResourceDirectory(this), "tempFile.png");
+                    File file = new ImageUtils().rotateImage(this, imageFile);
                     if (file.exists()) {
                         presenter.saveImage(uuid, file.getPath());
                     } else
@@ -572,5 +574,23 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 })
                 .setCancelable(false)
                 .show();
+    }
+
+    @Override
+    public void showProgress(){
+        runOnUiThread(() -> {
+            binding.toolbarProgress.setVisibility(View.VISIBLE);
+            binding.toolbarProgress.show();
+        });
+
+    }
+
+    @Override
+    public void hideProgress(){
+        runOnUiThread(() -> {
+            binding.toolbarProgress.hide();
+            binding.toolbarProgress.setVisibility(View.GONE);
+        });
+
     }
 }

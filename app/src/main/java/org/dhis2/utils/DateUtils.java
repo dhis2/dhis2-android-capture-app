@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Nonnull;
-
 import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
@@ -45,7 +43,7 @@ public class DateUtils {
         return instance;
     }
 
-    public static final String DATABASE_FORMAT_EXPRESSION = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    public static final String DATABASE_FORMAT_EXPRESSION = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     public static final String DATABASE_FORMAT_EXPRESSION_NO_MILLIS = "yyyy-MM-dd'T'HH:mm:ss";
     public static final String DATABASE_FORMAT_EXPRESSION_NO_SECONDS = "yyyy-MM-dd'T'HH:mm";
     public static final String DATE_TIME_FORMAT_EXPRESSION = "yyyy-MM-dd HH:mm";
@@ -215,7 +213,7 @@ public class DateUtils {
         return new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION_NO_SECONDS, Locale.US);
     }
 
-    @Nonnull
+   @NonNull
     public static Boolean dateHasNoSeconds(String dateTime) {
         try {
             databaseDateFormatNoSeconds().parse(dateTime);
@@ -875,6 +873,8 @@ public class DateUtils {
             @Override
             public void onDateSet(@NonNull Date fromDate) {
                 DatePickerDialogFragment toCalendar = DatePickerDialogFragment.create(true);
+                if (!FilterManager.getInstance().getPeriodFilters().isEmpty())
+                    toCalendar.setInitialDate(FilterManager.getInstance().getPeriodFilters().get(0).endDate());
                 toCalendar.setOpeningClosingDates(fromDate, null);
                 toCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
                     @Override

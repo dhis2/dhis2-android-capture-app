@@ -18,7 +18,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 class CarouselEventHolder(
     val binding: ItemCarouselEventBinding,
     val program: Program?,
-    val onClick: (teiUid: String?, enrollmentUid: String?) -> Boolean,
+    val onClick: (teiUid: String?, enrollmentUid: String?, eventUid: String?) -> Boolean,
     private val profileImagePreviewCallback: (String) -> Unit
 ) :
     RecyclerView.ViewHolder(binding.root),
@@ -46,8 +46,8 @@ class CarouselEventHolder(
             this.eventInfo.text = eventInfo
         }
 
-        itemView.setOnClickListener {
-            onClick(data.enrollment.trackedEntityInstance(), data.enrollment.uid())
+        binding.eventInfoCard.setOnClickListener {
+            onClick(data.enrollment.trackedEntityInstance(), data.enrollment.uid(), data.eventUid)
         }
 
         setStageStyle(
@@ -75,7 +75,7 @@ class CarouselEventHolder(
                         .toLowerCase(Locale.getDefault())
                 )
         } else {
-            binding.noCoordinatesLabel.root.visibility = View.INVISIBLE
+            binding.noCoordinatesLabel.root.visibility = View.GONE
         }
     }
 

@@ -7,24 +7,21 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.PopupMenu;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -66,6 +63,9 @@ import timber.log.Timber;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
+import static org.dhis2.utils.Constants.CAMERA_REQUEST;
+import static org.dhis2.utils.Constants.GALLERY_REQUEST;
+import static org.dhis2.utils.Constants.RQ_MAP_LOCATION_VIEW;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 import static org.dhis2.utils.session.PinDialogKt.PIN_DIALOG_TAG;
@@ -84,6 +84,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     public AnalyticsHelper analyticsHelper;
     public ScanTextView scanTextView;
     private PinDialog pinDialog;
+    private boolean comesFromImageSource = false;
 
     public void requestLocationPermission(CoordinatesView coordinatesView) {
         this.coordinatesView = coordinatesView;
@@ -149,10 +150,19 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         lifeCycleObservable.onNext(Status.ON_RESUME);
-        if (ExtensionsKt.app(this).isSessionBlocked() && !(this instanceof SplashActivity)) {
-            if (getPinDialog() == null) {
-                initPinDialog();
-                showPinDialog();
+        shouldCheckPIN();
+    }
+
+    private void shouldCheckPIN() {
+        if (comesFromImageSource) {
+            ExtensionsKt.app(this).disableBackGroundFlag();
+            comesFromImageSource = false;
+        } else {
+            if (ExtensionsKt.app(this).isSessionBlocked() && !(this instanceof SplashActivity)) {
+                if (getPinDialog() == null) {
+                    initPinDialog();
+                    showPinDialog();
+                }
             }
         }
     }
@@ -199,7 +209,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         pinDialog.show(getSupportFragmentManager(), PIN_DIALOG_TAG);
     }
 
-    public PinDialog getPinDialog(){
+    public PinDialog getPinDialog() {
         return (PinDialog) getSupportFragmentManager().findFragmentByTag(PIN_DIALOG_TAG);
     }
 
@@ -309,84 +319,38 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     @Override
     public void showInfoDialog(String title, String message) {
         if (getActivity() != null) {
-            AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+            showInfoDialog(title, message, new OnDialogClickListener() {
+                @Override
+                public void onPositiveClick() {
 
-            //TITLE
-            final View titleView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_title, null);
-            ((TextView) titleView.findViewById(R.id.dialogTitle)).setText(title);
-            alertDialog.setCustomTitle(titleView);
+                }
 
-            //BODY
-            final View msgView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_body, null);
-            ((TextView) msgView.findViewById(R.id.dialogBody)).setText(message);
-            msgView.findViewById(R.id.dialogAccept).setOnClickListener(view -> alertDialog.dismiss());
-            msgView.findViewById(R.id.dialogCancel).setOnClickListener(view -> alertDialog.dismiss());
-            alertDialog.setView(msgView);
+                @Override
+                public void onNegativeClick() {
 
-
-            alertDialog.show();
-
+                }
+            });
         }
     }
 
     @Override
-    public AlertDialog showInfoDialog(String title, String message, OnDialogClickListener clickListener) {
+    public void showInfoDialog(String title, String message, OnDialogClickListener clickListener) {
         if (getActivity() != null) {
-            AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-
-            //TITLE
-            final View titleView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_title, null);
-            ((TextView) titleView.findViewById(R.id.dialogTitle)).setText(title);
-            alertDialog.setCustomTitle(titleView);
-
-            //BODY
-            final View msgView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_body, null);
-            ((TextView) msgView.findViewById(R.id.dialogBody)).setText(message);
-            msgView.findViewById(R.id.dialogAccept).setOnClickListener(view -> {
-                clickListener.onPossitiveClick(alertDialog);
-                alertDialog.dismiss();
-            });
-            msgView.findViewById(R.id.dialogCancel).setOnClickListener(view -> {
-                clickListener.onNegativeClick(alertDialog);
-                alertDialog.dismiss();
-            });
-            alertDialog.setView(msgView);
-
-            return alertDialog;
-
-        } else
-            return null;
+            showInfoDialog(title, message, getString(R.string.button_ok), getString(R.string.cancel), clickListener);
+        }
     }
 
     @Override
-    public AlertDialog showInfoDialog(String title, String message, String positiveButtonText, String negativeButtonText, OnDialogClickListener clickListener) {
+    public void showInfoDialog(String title, String message, String positiveButtonText, String negativeButtonText, OnDialogClickListener clickListener) {
         if (getActivity() != null) {
-            AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-
-            //TITLE
-            final View titleView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_title, null);
-            ((TextView) titleView.findViewById(R.id.dialogTitle)).setText(title);
-            alertDialog.setCustomTitle(titleView);
-
-            //BODY
-            final View msgView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_body, null);
-            ((TextView) msgView.findViewById(R.id.dialogBody)).setText(message);
-            ((Button) msgView.findViewById(R.id.dialogAccept)).setText(positiveButtonText);
-            ((Button) msgView.findViewById(R.id.dialogCancel)).setText(negativeButtonText);
-            msgView.findViewById(R.id.dialogAccept).setOnClickListener(view -> {
-                clickListener.onPossitiveClick(alertDialog);
-                alertDialog.dismiss();
-            });
-            msgView.findViewById(R.id.dialogCancel).setOnClickListener(view -> {
-                clickListener.onNegativeClick(alertDialog);
-                alertDialog.dismiss();
-            });
-            alertDialog.setView(msgView);
-
-            return alertDialog;
-
-        } else
-            return null;
+            new MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
+                    .setTitle(title)
+                    .setCancelable(false)
+                    .setMessage(message)
+                    .setPositiveButton(positiveButtonText, (dialogInterface, i) -> clickListener.onPositiveClick())
+                    .setNegativeButton(negativeButtonText, (dialogInterface, i) -> clickListener.onNegativeClick())
+                    .show();
+        }
     }
 
     @Override
@@ -395,7 +359,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         startActivityForResult(MapSelectorActivity.Companion.create(this,
                 coordinatesView.getFeatureType(),
                 coordinatesView.currentCoordinates()),
-                Constants.RQ_MAP_LOCATION_VIEW);
+                RQ_MAP_LOCATION_VIEW);
     }
 
     @Override
@@ -421,6 +385,13 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
                 coordinatesView.updateLocation(geometry);
             }
             this.coordinatesView = null;
+        }
+
+        switch (requestCode) {
+            case GALLERY_REQUEST:
+            case CAMERA_REQUEST:
+                comesFromImageSource = true;
+                break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

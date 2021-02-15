@@ -160,7 +160,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
             while (cursor.moveToNext()) {
                 Date eventDate = null;
                 try {
-                    eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(0));
+                    eventDate = BaseIdentifiableObject.DATE_FORMAT.parse(cursor.getString(0));
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }

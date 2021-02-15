@@ -40,10 +40,29 @@ object TeiMarkers {
         }
     }
 
-    fun getMarker(context: Context, bitmap: Bitmap, color: Int): Bitmap {
-        val (canvas, markerBitmap) = initMarkerCanvas(context, color)
+    fun getMarker(context: Context, bitmap: Bitmap): Bitmap {
+        val drawable: Drawable =
+            ContextCompat.getDrawable(context, R.drawable.bg_image_marker)!!
+        drawable.mutate()
 
-        canvas.drawBitmap(bitmap, canvas.width / 2f - bitmap.width / 2f, 10f, null)
+        val canvasMarker = Bitmap.createBitmap(
+            drawable.intrinsicWidth,
+            drawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        val markerBitmap =
+            Bitmap.createBitmap(canvasMarker.width, canvasMarker.height, canvasMarker.config)
+        val canvas = Canvas(markerBitmap)
+
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+
+        canvas.drawBitmap(
+            bitmap,
+            canvas.width / 2f - bitmap.width / 2f,
+            canvas.height / 2f - bitmap.height / 2f,
+            null
+        )
         return markerBitmap
     }
 

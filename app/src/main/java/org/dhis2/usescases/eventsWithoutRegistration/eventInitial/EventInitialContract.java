@@ -121,7 +121,7 @@ public class EventInitialContract {
 
         void getStageObjectStyle(String uid);
 
-        String getCatOptionCombo(List<CategoryOptionCombo> categoryOptionCombos, List<CategoryOption> values);
+        String getCatOptionCombo(String uid, List<CategoryOptionCombo> categoryOptionCombos, List<CategoryOption> values);
 
         Date getStageLastDate(String programStageUid, String enrollmentUid);
 
@@ -132,6 +132,10 @@ public class EventInitialContract {
         CategoryOption getCatOption(String selectedOption);
 
         int catOptionSize(String uid);
+
+        List<CategoryOption> getCatOptions(String categoryUid);
+
+        void setChangingCoordinates(boolean changingCoordinates);
     }
 
 }

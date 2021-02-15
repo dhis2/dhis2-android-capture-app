@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.core.types.Tree
 import org.dhis2.core.types.expand
+import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.GetSystemInfo
 import timber.log.Timber
 
 sealed class FeedbackContentState {
@@ -15,29 +16,43 @@ sealed class FeedbackContentState {
     data class Loaded(
         val feedback: Tree.Root<*>,
         val onlyFailedFilter: Boolean,
-        val position: Int
+        val position: Int,
+        val validations: List<Validation>
     ) :
         FeedbackContentState()
 
+    data class ValidationsWithError(val validations: List<Validation>) : FeedbackContentState()
     object NotFound : FeedbackContentState()
     object UnexpectedError : FeedbackContentState()
+    data class SharingFeedback(
+        val feedbackText: String,
+        val serverUrl: String,
+        val enrollmentUID: String
+    ) :
+        FeedbackContentState()
 }
 
-class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
+class FeedbackContentPresenter(
+    private val getFeedback: GetFeedback,
+    private val getSystemInfo: GetSystemInfo
+) :
     CoroutineScope by MainScope() {
 
     private var view: FeedbackContentView? = null
+    private lateinit var enrollmentUid: String
     private lateinit var feedbackMode: FeedbackMode
     private var criticalFilter: Boolean? = null
     private var lastLoaded: FeedbackContentState.Loaded? = null
 
     fun attach(
         view: FeedbackContentView,
+        enrollmentUid: String,
         feedbackMode: FeedbackMode,
         criticalFilter: Boolean?,
         onlyFailedFilter: Boolean
     ) {
         this.view = view
+        this.enrollmentUid = enrollmentUid
         this.feedbackMode = feedbackMode
         this.criticalFilter = criticalFilter
 
@@ -51,6 +66,22 @@ class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
 
     fun changeOnlyFailedFilter(value: Boolean) {
         loadFeedback(value)
+    }
+
+    fun shareFeedback(onlyFailedFilter: Boolean) = launch {
+        val result = withContext(Dispatchers.IO) {
+            getFeedback(feedbackMode, criticalFilter, onlyFailedFilter)
+        }
+
+        result.fold(
+                { failure -> handleFailure(failure) },
+                { feedbackResponse ->
+                    val feedbackText = nodesToText(feedbackResponse.data.children)
+                    val systemInfo = getSystemInfo()
+                    val serverUrl = systemInfo.contextPath
+
+                    render(FeedbackContentState.SharingFeedback(feedbackText, serverUrl, enrollmentUid))
+                })
     }
 
     fun expand(node: Tree<*>, position: Int) {
@@ -73,15 +104,41 @@ class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
 
         result.fold(
             { failure -> handleFailure(failure) },
-            { feedback ->
+            { feedbackResponse ->
 
                 val finalFeedback = if (lastLoaded != null)
-                    tryMaintainCurrentExpandedItems(feedback) else feedback
+                    tryMaintainCurrentExpandedItems(feedbackResponse.data) else feedbackResponse.data
 
-
-                lastLoaded = FeedbackContentState.Loaded(finalFeedback, onlyFailedFilter, 0)
+                lastLoaded = FeedbackContentState.Loaded(
+                    finalFeedback,
+                    onlyFailedFilter,
+                    0,
+                    feedbackResponse.validations
+                )
                 render(lastLoaded!!)
             })
+    }
+
+    private fun nodesToText(nodes: List<Tree<*>>, level: Int = 0): String {
+        val builder = StringBuffer()
+
+        for (node in nodes) {
+
+            val text = if (node.content is FeedbackItem) {
+                "${node.content.name} ${node.content.value?.data ?: ""}"
+            } else {
+                (node.content as FeedbackHelpItem).text
+            }
+
+            builder.appendln("".padStart(level * 3) + text)
+            builder.appendln()
+
+            if (node is Tree.Node && node.children.isNotEmpty()) {
+                builder.append(nodesToText(node.children, level + 1))
+            }
+        }
+
+        return builder.toString()
     }
 
     private fun tryMaintainCurrentExpandedItems(feedback: Tree.Root<*>): Tree.Root<*> {
@@ -123,6 +180,9 @@ class FeedbackContentPresenter(private val getFeedback: GetFeedback) :
             is FeedbackFailure.UnexpectedError -> {
                 render(FeedbackContentState.UnexpectedError)
                 Timber.d(failure.error)
+            }
+            is FeedbackFailure.ValidationsWithError -> {
+                render(FeedbackContentState.ValidationsWithError(failure.validations))
             }
         }
     }

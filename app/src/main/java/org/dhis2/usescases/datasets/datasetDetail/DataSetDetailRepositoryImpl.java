@@ -24,6 +24,8 @@ import java.util.Locale;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 
+import static org.dhis2.data.dhislogic.AuthoritiesKt.AUTH_DATAVALUE_ADD;
+
 public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
     private final D2 d2;
@@ -111,7 +113,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
     public Flowable<Boolean> canWriteAny() {
         return d2.dataSetModule().dataSets().uid(dataSetUid).get().toFlowable()
                 .flatMap(dataSet -> {
-                    if (dataSet.access().data().write())
+                    if (dataSet.access().data().write() && hasDataValueAuthority())
                         return d2.categoryModule().categoryOptionCombos().withCategoryOptions()
                                 .byCategoryComboUid().eq(dataSet.categoryCombo().uid()).get().toFlowable()
                                 .map(categoryOptionCombos -> {
@@ -141,6 +143,10 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                         return Flowable.just(false);
                 });
 
+    }
+
+    private boolean hasDataValueAuthority(){
+        return !d2.userModule().authorities().byName().eq(AUTH_DATAVALUE_ADD).blockingIsEmpty();
     }
 
     @Override

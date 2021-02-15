@@ -29,7 +29,7 @@ class CarouselRelationshipHolder(
         binding.clearButton.setOnClickListener {
             delete(data.relationshipUid)
         }
-        itemView.setOnClickListener {
+        binding.relationshipCard.setOnClickListener {
             clickListener(
                 if (currentTei == data.from.teiUid) {
                     data.to.teiUid!!

@@ -21,7 +21,7 @@ class ValidationUtils {
                         ValueType.UNIT_INTERVAL -> it.toFloat().toString()
                         ValueType.NUMBER ->
                             if (it.toDouble() % 1.toDouble() == 0.toDouble()) {
-                                it.toInt().toString()
+                                it.toIntOrNull()?.toString() ?: value
                             } else {
                                 it.toDouble().toString()
                             }

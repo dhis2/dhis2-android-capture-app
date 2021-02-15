@@ -135,6 +135,7 @@ class SyncPresenterImpl(
         Completable.fromObservable(
             d2.metadataModule().download()
                 .doOnNext { data ->
+                    Timber.log(1, data.toString())
                     progressUpdate.onProgressUpdate(ceil(data.percentage() ?: 0.0).toInt())
                 }
                 .doOnComplete { setUpSMS() }
@@ -215,7 +216,7 @@ class SyncPresenterImpl(
                 val calendar = Calendar.getInstance()
                 calendar.timeInMillis = it.created()?.time ?: 0
                 val date = DateUtils.databaseDateFormat().format(calendar.time)
-                mergeDateConflicts.add(date + "/" + it.conflict())
+                mergeDateConflicts.add(date + "/" + it.displayDescription())
             }
 
             val data = Data.Builder()

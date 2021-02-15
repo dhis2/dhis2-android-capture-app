@@ -61,13 +61,21 @@ class SyncGranularWorker(
             Timber.e(e)
         }
 
-        return when (conflictType) {
-            ConflictType.PROGRAM -> presenter.blockSyncGranularProgram(uid)
-            ConflictType.TEI -> presenter.blockSyncGranularTei(uid)
-            ConflictType.EVENT -> presenter.blockSyncGranularEvent(uid)
-            ConflictType.DATA_SET -> presenter.blockSyncGranularDataSet(
-                uid
-            )
+        val result = when (conflictType) {
+            ConflictType.PROGRAM -> {
+                presenter.blockSyncGranularProgram(uid)
+            }
+            ConflictType.TEI -> {
+                presenter.blockSyncGranularTei(uid)
+            }
+            ConflictType.EVENT -> {
+                presenter.blockSyncGranularEvent(uid)
+            }
+            ConflictType.DATA_SET -> {
+                presenter.blockSyncGranularDataSet(
+                    uid
+                )
+            }
             ConflictType.DATA_VALUES ->
                 presenter.blockSyncGranularDataValues(
                     uid,
@@ -78,5 +86,6 @@ class SyncGranularWorker(
                 )
             else -> Result.failure()
         }
+        return result
     }
 }

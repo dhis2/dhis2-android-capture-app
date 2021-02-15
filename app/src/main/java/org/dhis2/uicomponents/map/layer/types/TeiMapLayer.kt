@@ -12,8 +12,8 @@ import com.mapbox.mapboxsdk.style.layers.Property
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.TEI_UID
 import org.dhis2.uicomponents.map.layer.MapLayer
-import org.dhis2.uicomponents.map.layer.MapLayerManager
 import org.dhis2.uicomponents.map.managers.TeiMapManager.Companion.TEIS_SOURCE_ID
 import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
@@ -60,7 +60,7 @@ class TeiMapLayer(
         get() = style.getLayer(POINT_LAYER_ID)
             ?: SymbolLayer(POINT_LAYER_ID, TEIS_SOURCE_ID)
                 .withProperties(
-                    PropertyFactory.iconImage(MapLayerManager.TEI_ICON_ID),
+                    PropertyFactory.iconImage(Expression.get(TEI_UID)),
                     PropertyFactory.iconOffset(arrayOf(0f, -25f)),
                     PropertyFactory.iconAllowOverlap(true),
                     PropertyFactory.textAllowOverlap(true)
@@ -75,8 +75,8 @@ class TeiMapLayer(
         get() = style.getLayer(SELECTED_POINT_LAYER_ID)
             ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_POINT_SOURCE_ID)
                 .withProperties(
-                    PropertyFactory.iconImage(MapLayerManager.TEI_ICON_ID),
-                    PropertyFactory.iconOffset(arrayOf(0f, -25f)),
+                    PropertyFactory.iconImage(Expression.get(TEI_UID)),
+                    PropertyFactory.iconOffset(arrayOf(0f, -20f)),
                     PropertyFactory.iconAllowOverlap(true),
                     PropertyFactory.textAllowOverlap(true)
                 ).withFilter(
@@ -138,7 +138,10 @@ class TeiMapLayer(
 
     private fun setVisibility(visibility: String) {
         when (featureType) {
-            FeatureType.POINT -> pointLayer.setProperties(PropertyFactory.visibility(visibility))
+            FeatureType.POINT -> {
+                pointLayer.setProperties(PropertyFactory.visibility(visibility))
+                selectedPointLayer.setProperties(PropertyFactory.visibility(visibility))
+            }
             FeatureType.POLYGON -> {
                 polygonLayer.setProperties(PropertyFactory.visibility(visibility))
                 polygonBorderLayer.setProperties(PropertyFactory.visibility(visibility))
@@ -170,15 +173,12 @@ class TeiMapLayer(
 
     private fun selectPoint(feature: Feature) {
         style.getSourceAs<GeoJsonSource>(SELECTED_POINT_SOURCE_ID)?.apply {
-            setGeoJson(
-                FeatureCollection.fromFeatures(
-                    arrayListOf(Feature.fromGeometry(feature.geometry()))
-                )
-            )
+            setGeoJson(feature)
         }
 
         selectedPointLayer.setProperties(
-            PropertyFactory.iconSize(1.5f)
+            PropertyFactory.iconSize(1.5f),
+            PropertyFactory.visibility(Property.VISIBLE)
         )
     }
 
@@ -205,7 +205,7 @@ class TeiMapLayer(
     private fun deselectCurrentPoint() {
         if (featureType == FeatureType.POINT) {
             selectedPointLayer.setProperties(
-                PropertyFactory.iconSize(1f)
+                PropertyFactory.visibility(Property.NONE)
             )
         } else {
             selectedPolygonLayer.setProperties(

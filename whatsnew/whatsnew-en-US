@@ -1,1 +1,8 @@
-This version includes several quality and performance improvements
+This is a patch version that fixes:
+- ANDROAPP-3605 Show option group' action fails when using the variable 'data element from previous even
+- ANDROAPP-3603 Crash generated on "new event" information/menu buttons
+- ANDROAPP-3529 Widget is not loading correct icon
+- ANDROAPP-3600 Crash when user can't log in to a server
+- ANDROAPP-3595 [Sync] Old webapp values remain and app is blocked even when it has been disabled
+....
+You can find all the details on Jira and Github.

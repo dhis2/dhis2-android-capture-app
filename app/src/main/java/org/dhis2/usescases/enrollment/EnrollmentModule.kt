@@ -83,6 +83,7 @@ class EnrollmentModule(
     @Provides
     @PerActivity
     fun providePresenter(
+        context: Context,
         d2: D2,
         enrollmentObjectRepository: EnrollmentObjectRepository,
         dataEntryRepository: DataEntryRepository,
@@ -103,7 +104,8 @@ class EnrollmentModule(
             schedulerProvider,
             formRepository,
             valueStore,
-            analyticsHelper
+            analyticsHelper,
+            context.getString(R.string.field_is_mandatory)
         )
     }
 
@@ -130,14 +132,16 @@ class EnrollmentModule(
         rulesRepository: RulesRepository,
         evaluator: RuleExpressionEvaluator,
         enrollmentRepository: EnrollmentObjectRepository,
-        programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>
+        programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
+        teiRepository: TrackedEntityInstanceObjectRepository
     ): EnrollmentFormRepository {
         return EnrollmentFormRepositoryImpl(
             d2,
             rulesRepository,
             evaluator,
             enrollmentRepository,
-            programRepository
+            programRepository,
+            teiRepository
         )
     }
 }

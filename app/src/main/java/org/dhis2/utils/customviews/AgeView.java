@@ -6,10 +6,12 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.ViewDataBinding;
-import androidx.room.util.StringUtil;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -18,14 +20,13 @@ import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.AgeCustomViewAccentBinding;
 import org.dhis2.databinding.AgeCustomViewBinding;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
 
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -48,6 +49,11 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     private OnAgeSet listener;
     private String label;
     private TextInputLayout inputLayout;
+    private TextView labelText;
+    private View descriptionLabel;
+    private View yearInputLayout;
+    private View monthInputLayout;
+    private View dayInputLayout;
 
     public AgeView(Context context) {
         super(context);
@@ -66,6 +72,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
 
     public void setLabel(String label, String description) {
         this.label = label;
+        descriptionLabel.setVisibility(description!=null ? View.VISIBLE : View.GONE);
         if (binding instanceof AgeCustomViewAccentBinding) {
             ((AgeCustomViewAccentBinding) binding).setLabel(label);
             ((AgeCustomViewAccentBinding) binding).setDescription(description);
@@ -83,8 +90,11 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     public void setError(String msg) {
         inputLayout.setErrorTextAppearance(R.style.error_appearance);
         inputLayout.setError(msg);
-        clearValues();
         date.requestFocus();
+    }
+
+    public void clearErrors(){
+        inputLayout.setError(null);
     }
 
     private void onFocusChanged(View view, boolean b) {
@@ -106,6 +116,16 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
                 break;
         }
 
+    }
+
+    @Override
+    public void dispatchSetActivated(boolean activated) {
+        super.dispatchSetActivated(activated);
+        if (activated) {
+            labelText.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+        } else {
+            labelText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
+        }
     }
 
     private void showCustomCalendar(View view) {
@@ -217,19 +237,24 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
 
 
     public void setIsBgTransparent(Boolean isBgTransparent) {
-
+        this.isBgTransparent = isBgTransparent;
         if (!isBgTransparent)
             binding = AgeCustomViewAccentBinding.inflate(inflater, this, true);
         else
             binding = AgeCustomViewBinding.inflate(inflater, this, true);
 
         inputLayout = findViewById(R.id.inputLayout);
+        yearInputLayout = findViewById(R.id.yearInputLayout);
+        monthInputLayout = findViewById(R.id.monthInputLayout);
+        dayInputLayout = findViewById(R.id.dayInputLayout);
         date = findViewById(R.id.date_picker);
         day = findViewById(R.id.input_days);
         month = findViewById(R.id.input_month);
         year = findViewById(R.id.input_year);
+        labelText = findViewById(R.id.label);
         selectedCalendar = Calendar.getInstance();
         dateFormat = DateUtils.uiDateFormat();
+        descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
 
         date.setFocusable(false); //Makes editText not editable
         date.setClickable(true);//  but clickable
@@ -271,6 +296,32 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         day.setEnabled(editable);
         month.setEnabled(editable);
         year.setEnabled(editable);
+
+        date.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
+        );
+        day.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
+        );
+        month.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
+        );
+        year.setTextColor(
+                !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
+                        ContextCompat.getColor(getContext(), R.color.textPrimary)
+        );
+
+        setEditable(editable,
+                labelText,
+                descriptionLabel,
+                inputLayout,
+                dayInputLayout,
+                monthInputLayout,
+                yearInputLayout
+                );
     }
 
     public void clearValues() {

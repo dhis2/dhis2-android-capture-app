@@ -80,4 +80,6 @@ public interface EventInitialRepository {
     CategoryOption getCatOption(String selectedOption);
 
     int getCatOptionSize(String uid);
+
+    List<CategoryOption> getCategoryOptions(String categoryUid);
 }

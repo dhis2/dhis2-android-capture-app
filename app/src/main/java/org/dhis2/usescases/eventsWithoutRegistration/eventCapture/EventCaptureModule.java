@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.dhis2.Bindings.ValueTypeExtensionsKt;
+import org.dhis2.R;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dhislogic.DhisEventUtils;
 import org.dhis2.data.forms.EventRepository;
@@ -46,9 +47,16 @@ public class EventCaptureModule {
                                                     @NonNull ValueStore valueStore,
                                                     SchedulerProvider schedulerProvider,
                                                     PreferenceProvider preferences,
-                                                    GetNextVisibleSection getNextVisibleSection) {
-        return new EventCapturePresenterImpl(view, eventUid, programUid, eventCaptureRepository, ruleUtils, valueStore, schedulerProvider,
-                preferences,  getNextVisibleSection);
+                                                    GetNextVisibleSection getNextVisibleSection,
+                                                    EventFieldMapper fieldMapper) {
+        return new EventCapturePresenterImpl(view, eventUid, programUid,eventCaptureRepository, ruleUtils, valueStore, schedulerProvider,
+                preferences, getNextVisibleSection, fieldMapper);
+    }
+
+    @Provides
+    @PerActivity
+    EventFieldMapper provideFieldMapper(Context context){
+        return new EventFieldMapper(context.getString(R.string.field_is_mandatory));
     }
 
     @Provides

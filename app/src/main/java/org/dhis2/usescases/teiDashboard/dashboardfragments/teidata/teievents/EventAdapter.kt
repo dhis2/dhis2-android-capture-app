@@ -75,7 +75,15 @@ class EventAdapter(
                 EventViewHolder(
                     binding,
                     program,
-                    presenter
+                    { eventUid -> presenter.onSyncDialogClick(eventUid) },
+                    { eventUid, sharedView -> presenter.onScheduleSelected(eventUid, sharedView) },
+                    { eventUid, _, eventStatus, sharedView ->
+                        presenter.onEventSelected(
+                            eventUid,
+                            eventStatus,
+                            sharedView
+                        )
+                    }
                 )
             }
         }
@@ -88,7 +96,12 @@ class EventAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is EventViewHolder -> {
-                holder.bind(getItem(position), enrollment)
+                holder.bind(
+                    getItem(position), enrollment
+                ) {
+                    getItem(holder.getAdapterPosition()).toggleValueList()
+                    notifyItemChanged(holder.getAdapterPosition())
+                }
             }
             is StageViewHolder -> {
                 holder.bind(getItem(position))

@@ -121,8 +121,8 @@
 
     <style name="colorPrimary_e57" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_e57</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark_Pink</item>
-        <item name="colorPrimaryLight">@color/colorPrimaryLight_Pink</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark_e57</item>
+        <item name="colorPrimaryLight">@color/colorPrimaryLight_e57</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>

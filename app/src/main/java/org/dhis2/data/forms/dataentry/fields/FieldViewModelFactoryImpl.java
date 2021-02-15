@@ -15,6 +15,7 @@ import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
+import org.dhis2.utils.DhisTextUtils;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -57,11 +58,10 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                                  @Nullable String description, @Nullable ValueTypeDeviceRendering fieldRendering, @Nullable Integer optionCount, ObjectStyle objectStyle, @Nullable String fieldMask,
                                  @Nullable String colorByLegend) {
         isNull(type, "type must be supplied");
-
-        if (!isEmpty(optionSet)) {
+        if (DhisTextUtils.Companion.isNotEmpty(optionSet)) {
             if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING) {
                 if (fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
-                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, fieldRendering);
+                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, fieldRendering, valueTypeHintMap.get(type));
                 } else if (fieldRendering != null && type == ValueType.TEXT && optionSetTextRenderings.contains(fieldRendering.type())) {
                     return OptionSetViewModel.create(id, label, mandatory, optionSet, value, section, editable, description, objectStyle, fieldRendering);
                 } else {
@@ -88,7 +88,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case UNIT_INTERVAL:
             case URL:
                 if (fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
-                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, fieldRendering);
+                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, fieldRendering, valueTypeHintMap.get(type));
                 } else {
                     return EditTextViewModel.create(id, label, mandatory, value, valueTypeHintMap.get(type), 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask, colorByLegend);
                 }

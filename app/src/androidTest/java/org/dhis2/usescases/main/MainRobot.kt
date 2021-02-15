@@ -11,6 +11,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
+import org.dhis2.usescases.about.AboutTest
 import org.dhis2.usescases.login.LoginActivity
 import org.hamcrest.CoreMatchers.allOf
 
@@ -28,6 +29,7 @@ class MainRobot : BaseRobot() {
 
     fun clickOnSettings() = apply {
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.sync_manager))
+        waitToDebounce(FRAGMENT_TRANSITION)
     }
 
     fun clickOnPin() = apply {
@@ -36,10 +38,12 @@ class MainRobot : BaseRobot() {
 
     fun clickOnLogout() {
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.logout_button))
+        waitToDebounce(LOGOUT_TRANSITION)
     }
 
     fun clickAbout() = apply {
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.menu_about))
+        waitToDebounce(FRAGMENT_TRANSITION)
     }
 
     fun clickJiraIssue() = apply {
@@ -55,9 +59,23 @@ class MainRobot : BaseRobot() {
         Intents.intended(allOf(IntentMatchers.hasComponent(LoginActivity::class.java.name)))
     }
 
+    fun checkHomeIsDisplayed() {
+        onView(withId(R.id.program_recycler))
+            .check(matches(isDisplayed()))
+    }
+
+    fun openFilters(){
+        onView(withId(R.id.filterActionButton)).perform(click())
+    }
+
     fun filterByPeriodToday() {
         onView(withId(R.id.filter)).perform(click())
         onView(withId(R.id.filterLayout))
         onView(withId(R.id.today)).perform(click())
+    }
+
+    companion object {
+        const val FRAGMENT_TRANSITION = 1500L
+        const val LOGOUT_TRANSITION = 2000L
     }
 }
