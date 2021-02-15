@@ -33,7 +33,7 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
 
         if (((context.applicationContext) as App).dashboardComponent() != null) {
             ((context.applicationContext) as App).dashboardComponent()!!
-                .plus(FeedbackModule(activity.programUid, activity.teiUid, activity.enrollmentUid))
+                .plus(FeedbackModule(activity.programUid, activity.teiUid, activity.enrollmentUid,context))
                 .inject(this)
         }
     }

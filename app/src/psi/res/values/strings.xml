@@ -8,4 +8,10 @@
     <string name="unexpected_error_message">An unexpected error has occurred. Review your configuration or contact with your administrator</string>
     <string name="feedback_show_only_failed">Show only failed</string>
     <string name="feedback_url">"See full feedback at:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"By indicator"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"By technical area"</string>
+    <string name="feedback_tab_hnqis_all">"All"</string>
+    <string name="feedback_tab_hnqis_critical">"Critical"</string>
+    <string name="feedback_tab_hnqis_non_critical">"Non Critical"</string>
+    <string name="feedback_malformed_error">"**Error** : Malformed feedback json for Data Element %s"</string>
 </resources>

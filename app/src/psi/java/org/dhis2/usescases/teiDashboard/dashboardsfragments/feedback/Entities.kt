@@ -62,3 +62,5 @@ data class Value(
 )
 
 data class Event(val uid: String, val name: String, val values: List<Value> = listOf())
+
+data class MultilingualFeedback (val text:String, val locale:String)

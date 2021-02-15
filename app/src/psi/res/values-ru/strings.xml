@@ -7,5 +7,11 @@
     <string name="program_type_configuration_error_message">текущей программе есть ошибка конфигурации типа программы. Пожалуйста, проверьте программу на сервере и выполните настройку синхронизации.</string>
     <string name="unexpected_error_message">Произошла непредвиденная ошибка. Проверьте конфигурацию или обратитесь к администратору</string>
     <string name="feedback_show_only_failed">Показать только не удалось</string>
-    <string name="feedback_url">"See full feedback at:"</string>
+    <string name="feedback_url">"См. Полный отзыв на:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"По показателю"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"По технической области"</string>
+    <string name="feedback_tab_hnqis_all">"Все"</string>
+    <string name="feedback_tab_hnqis_critical">"Критический"</string>
+    <string name="feedback_tab_hnqis_non_critical">"Не критично"</string>
+    <string name="feedback_malformed_error">"**Ошибка**: неверный ответ для элемента данных %s"</string>
 </resources>

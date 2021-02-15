@@ -8,4 +8,10 @@
     <string name="unexpected_error_message">لقد حدث خطأ غير متوقع. راجع التكوين الخاص بك أو اتصل بالمسؤول</string>
     <string name="feedback_show_only_failed">إظهار فشل فقط</string>
     <string name="feedback_url">"شاهد الملاحظات الكاملة على:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"حسب المؤشر"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"By technical area"</string>
+    <string name="feedback_tab_hnqis_all">"حسب المجال التقني"</string>
+    <string name="feedback_tab_hnqis_critical">"حرج"</string>
+    <string name="feedback_tab_hnqis_non_critical">"غير مهم"</string>
+    <string name="feedback_malformed_error">"**خطأ**: ملاحظات مشوهة لعنصر البيانات %s"</string>
 </resources>

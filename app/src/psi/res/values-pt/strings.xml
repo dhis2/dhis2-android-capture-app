@@ -8,4 +8,10 @@
     <string name="unexpected_error_message">Ocorreu um erro inesperado. Revise sua configuração ou entre em contato com seu administrador</string>
     <string name="feedback_show_only_failed">Mostrar apenas falhou</string>
     <string name="feedback_url">"Veja o feedback completo em:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"Por indicador"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"Por área técnicaa"</string>
+    <string name="feedback_tab_hnqis_all">"Todos"</string>
+    <string name="feedback_tab_hnqis_critical">"Crítico"</string>
+    <string name="feedback_tab_hnqis_non_critical">"Não Crítico"</string>
+    <string name="feedback_malformed_error">"**Erro**: feedback malformado para o elemento de dados %s"</string>
 </resources>

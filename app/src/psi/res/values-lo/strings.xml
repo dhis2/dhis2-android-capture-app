@@ -8,4 +8,10 @@
     <string name="unexpected_error_message">ຂໍ້ຜິດພາດທີ່ບໍ່ຄາດຄິດໄດ້ເກີດຂື້ນ. ກວດສອບການຕັ້ງຄ່າຫລືຕິດຕໍ່ກັບຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</string>
     <string name="feedback_show_only_failed">ສະແດງບໍ່ພຽງແຕ່ລົ້ມເຫລວ</string>
     <string name="feedback_url">"ເບິ່ງ ຄຳ ຕິຊົມຢ່າງເຕັມທີ່:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"ໂດຍຕົວຊີ້ວັດ"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"ໂດຍພື້ນທີ່ດ້ານເຕັກນິກ"</string>
+    <string name="feedback_tab_hnqis_all">"ທັງ ໝົດ"</string>
+    <string name="feedback_tab_hnqis_critical">"ທີ່ ສຳ ຄັນ"</string>
+    <string name="feedback_tab_hnqis_non_critical">"ບໍ່ ສຳ ຄັນ"</string>
+    <string name="feedback_malformed_error">"**ຂໍ້ຜິດພາດ**: ຂໍ້ຄິດເຫັນທີ່ບໍ່ຖືກຕ້ອງ ສຳ ລັບອົງປະກອບຂໍ້ມູນ %s"</string>
 </resources>
