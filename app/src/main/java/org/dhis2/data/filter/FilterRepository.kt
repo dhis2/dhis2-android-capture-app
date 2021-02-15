@@ -41,7 +41,8 @@ import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQuer
 
 class FilterRepository @Inject constructor(
     private val d2: D2,
-    val resources: ResourceManager
+    val resources: ResourceManager,
+    private val getFiltersApplyingWebAppConfig: GetFiltersApplyingWebAppConfig
 ) {
 
     private val observableSortingInject = ObservableField<SortingItem>()
@@ -325,8 +326,8 @@ class FilterRepository @Inject constructor(
             return defaultFilters.values.toList()
         }
 
-        val datasetFiltersWebApp: Map<DataSetFilter, FilterConfig> =
-            d2.settingModule().appearanceSettings().getDataSetFilters(dataSetUid)
+        val datasetFiltersWebApp: Map<DataSetFilter, FilterConfig> = mapOf()
+            //d2.settingModule().appearanceSettings().getDataSetFilters(dataSetUid)
         val datasetFiltersWebAppKeys =
             datasetFiltersWebApp.filterValues { it.filter()!! }.keys.toList()
         val filtersToShow = defaultFilters.filter { datasetFiltersWebAppKeys.contains(it.key) }
@@ -387,8 +388,8 @@ class FilterRepository @Inject constructor(
             return defaultFilters.values.toList()
         }
 
-        val homeFiltersWebApp: Map<HomeFilter, FilterConfig> = d2.settingModule()
-            .appearanceSettings().homeFilters
+        val homeFiltersWebApp: Map<HomeFilter, FilterConfig> = mapOf()
+            //d2.settingModule().appearanceSettings().homeFilters
         val homeFiltersWebAppKeys = homeFiltersWebApp.filterValues { it.filter()!! }.keys.toList()
         val filtersToShow = defaultFilters.filter { homeFiltersWebAppKeys.contains(it.key) }
 
@@ -434,7 +435,8 @@ class FilterRepository @Inject constructor(
     }
 
     private fun webAppIsNotConfigured(): Boolean {
-        return d2.settingModule() == null || d2.settingModule().appearanceSettings() == null
+        return true
+        //return d2.settingModule() == null || d2.settingModule().appearanceSettings() == null
     }
 
     private fun getTrackerFilters(program: Program): List<FilterItem> {
@@ -451,8 +453,8 @@ class FilterRepository @Inject constructor(
             return defaultFilters.values.toList()
         }
 
-        val trackerFiltersWebApp: Map<ProgramFilter, FilterConfig> =
-            d2.settingModule().appearanceSettings().getProgramFilters(program.uid())
+        val trackerFiltersWebApp: Map<ProgramFilter, FilterConfig> = mapOf()
+          //  d2.settingModule().appearanceSettings().getProgramFilters(program.uid())
         val trackerFiltersWebAppKeys =
             trackerFiltersWebApp.filterValues { it.filter()!! }.keys.toList()
         val filtersToShow = defaultFilters.filter { trackerFiltersWebAppKeys.contains(it.key) }
@@ -561,8 +563,8 @@ class FilterRepository @Inject constructor(
             return defaultFilters.values.toMutableList()
         }
 
-        val eventFiltersWebApp: Map<ProgramFilter, FilterConfig> =
-            d2.settingModule().appearanceSettings().getProgramFilters(program.uid())
+        val eventFiltersWebApp: Map<ProgramFilter, FilterConfig> = mapOf()
+        //d2.settingModule().appearanceSettings().getProgramFilters(program.uid())
         val eventFiltersWebAppKeys =
             eventFiltersWebApp.filterValues { it.filter()!! }.keys.toList()
         val filtersToShow = defaultFilters.filter { eventFiltersWebAppKeys.contains(it.key) }

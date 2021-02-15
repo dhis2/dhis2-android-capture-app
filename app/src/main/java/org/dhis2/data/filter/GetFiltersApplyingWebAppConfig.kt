@@ -7,7 +7,7 @@ class GetFiltersApplyingWebAppConfig {
 
     fun <T> execute(
         defaultFilters: LinkedHashMap<T, FilterItem>,
-        webAppFilters: LinkedHashMap<T, FilterConfig>
+        webAppFilters: Map<T, FilterConfig>
     ): List<FilterItem> {
         val filtersToShowFromWebAppKeys = webAppFilters.filterValues { it.filter()!! }.keys.toList()
         val filterToShow = defaultFilters.filter { filtersToShowFromWebAppKeys.contains(it.key) }
