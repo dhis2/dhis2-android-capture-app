@@ -14,4 +14,10 @@
     <string name="feedback_tab_hnqis_critical">"危急"</string>
     <string name="feedback_tab_hnqis_non_critical">"不重要"</string>
     <string name="feedback_malformed_error">"**錯誤**：數據元素的反饋格式錯誤 %s"</string>
+    <string name="feedback_error">"错误"</string>
+    <string name="feedback_warning">"警告"</string>
+    <string name="feedback_order_with_spaces">"为了反馈与数据元素的空间 %s"</string>
+    <string name="feedback_order_invalid">"在数据元素无效反馈顺序 %s"</string>
+    <string name="feedback_order_duplicate">"在数据部分的反馈顺序重复 %s"</string>
+    <string name="feedback_order_gap">"计划阶段％s包含反馈顺序差距"</string>
 </resources>

@@ -14,4 +14,10 @@
     <string name="feedback_tab_hnqis_critical">"Kritisk"</string>
     <string name="feedback_tab_hnqis_non_critical">"Ikke kritisk"</string>
     <string name="feedback_malformed_error">"**Feil**: Feilformet tilbakemelding for dataelementet %s"</string>
+    <string name="feedback_error">"Feil"</string>
+    <string name="feedback_warning">"Advarsel"</string>
+    <string name="feedback_order_with_spaces">"Tilbakemelding rekkefølge med mellomrom i dataelement %s"</string>
+    <string name="feedback_order_invalid">"Ugyldig tilbakemelding rekkefølge i dataelement %s"</string>
+    <string name="feedback_order_duplicate">"Tilbakemelding orden duplikat i dataelementene %s"</string>
+    <string name="feedback_order_gap">"program scenen %s inneholder tilbakemeldinger ordre hull"</string>
 </resources>

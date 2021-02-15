@@ -14,4 +14,10 @@
     <string name="feedback_tab_hnqis_critical">"Críticas"</string>
     <string name="feedback_tab_hnqis_non_critical">"No Críticas"</string>
     <string name="feedback_malformed_error">"**Error**: json de retroalimentación con formato incorrecto para el elemento de datos %s"</string>
+    <string name="feedback_error">"Error"</string>
+    <string name="feedback_warning">"Advertencia"</string>
+    <string name="feedback_order_with_spaces">"Retroalimentación con espacios en el elemento de datos %s"</string>
+    <string name="feedback_order_invalid">"Orden de retroalimentación inválido en el elemento de datos %s"</string>
+    <string name="feedback_order_duplicate">"Duplicado en el orden de retroalimentación en los elementos de datos %s"</string>
+    <string name="feedback_order_gap">"Etapa de programa %s contiene lagunas en su orden de realimentación"</string>
 </resources>

@@ -16,13 +16,19 @@ sealed class FeedbackContentState {
     data class Loaded(
         val feedback: Tree.Root<*>,
         val onlyFailedFilter: Boolean,
-        val position: Int
+        val position: Int,
+        val validations: List<Validation>
     ) :
         FeedbackContentState()
 
+    data class ValidationsWithError(val validations: List<Validation>) : FeedbackContentState()
     object NotFound : FeedbackContentState()
     object UnexpectedError : FeedbackContentState()
-    data class SharingFeedback(val feedbackText: String, val serverUrl:String, val enrollmentUID: String) :
+    data class SharingFeedback(
+        val feedbackText: String,
+        val serverUrl: String,
+        val enrollmentUID: String
+    ) :
         FeedbackContentState()
 }
 
@@ -63,19 +69,18 @@ class FeedbackContentPresenter(
     }
 
     fun shareFeedback(onlyFailedFilter: Boolean) = launch {
-
         val result = withContext(Dispatchers.IO) {
             getFeedback(feedbackMode, criticalFilter, onlyFailedFilter)
         }
 
         result.fold(
                 { failure -> handleFailure(failure) },
-                { feedback ->
-                    val feedbackText = nodesToText(feedback.children)
+                { feedbackResponse ->
+                    val feedbackText = nodesToText(feedbackResponse.data.children)
                     val systemInfo = getSystemInfo()
                     val serverUrl = systemInfo.contextPath
 
-                    render(FeedbackContentState.SharingFeedback(feedbackText,serverUrl,enrollmentUid))
+                    render(FeedbackContentState.SharingFeedback(feedbackText, serverUrl, enrollmentUid))
                 })
     }
 
@@ -100,13 +105,17 @@ class FeedbackContentPresenter(
 
         result.fold(
             { failure -> handleFailure(failure) },
-            { feedback ->
+            { feedbackResponse ->
 
                 val finalFeedback = if (lastLoaded != null)
-                    tryMaintainCurrentExpandedItems(feedback) else feedback
+                    tryMaintainCurrentExpandedItems(feedbackResponse.data) else feedbackResponse.data
 
-
-                lastLoaded = FeedbackContentState.Loaded(finalFeedback, onlyFailedFilter, 0)
+                lastLoaded = FeedbackContentState.Loaded(
+                    finalFeedback,
+                    onlyFailedFilter,
+                    0,
+                    feedbackResponse.validations
+                )
                 render(lastLoaded!!)
             })
     }
@@ -172,6 +181,9 @@ class FeedbackContentPresenter(
             is FeedbackFailure.UnexpectedError -> {
                 render(FeedbackContentState.UnexpectedError)
                 Timber.d(failure.error)
+            }
+            is FeedbackFailure.ValidationsWithError -> {
+                render(FeedbackContentState.ValidationsWithError(failure.validations))
             }
         }
     }

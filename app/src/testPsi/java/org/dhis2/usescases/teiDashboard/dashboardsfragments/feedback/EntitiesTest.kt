@@ -12,6 +12,20 @@ class FeedbackUtilsTest {
     }
 
     @Test
+    fun `FeedbackOrder should ignore spaces to the begin of the text`() {
+        val feedbackOrder = FeedbackOrder(" 1.2")
+
+        Assert.assertEquals("1", feedbackOrder.parent)
+    }
+
+    @Test
+    fun `FeedbackOrder should ignore spaces to the end of the text`() {
+        val feedbackOrder = FeedbackOrder("1.2 ")
+
+        Assert.assertEquals("1", feedbackOrder.parent)
+    }
+
+    @Test
     fun `FeedbackOrder should return expected parent from a non root of level 1`() {
         val feedbackOrder = FeedbackOrder("1.2")
 

@@ -1,8 +1,10 @@
 package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 
 import com.google.gson.GsonBuilder
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
+import org.dhis2.core.functional.Either
 import org.dhis2.core.types.Tree
 import org.dhis2.core.types.leaf
 import org.dhis2.core.types.node
@@ -26,11 +28,14 @@ class GetFeedbackTest {
     @Mock
     lateinit var valuesRepository: ValuesRepository
 
+    @Mock
+    lateinit var dataElementRepository: DataElementRepository
+
     @Test
     fun `should return not found failure if It's by event and there are not events`() {
         givenThatThereNotEvents()
 
-        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val getFeedback = GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
 
         val feedbackResult =
             getFeedback(FeedbackMode.ByEvent, null, false)
@@ -44,7 +49,7 @@ class GetFeedbackTest {
     fun `should not return feedback if It's by event and there are events without values`() {
         givenAnEventsWithoutValues()
 
-        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val getFeedback = GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
         val feedbackResult =
             getFeedback(FeedbackMode.ByEvent, null, false)
 
@@ -54,7 +59,7 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> Assert.assertEquals(expectedFeedback, feedback) })
+            { feedback -> Assert.assertEquals(expectedFeedback, feedback.data) })
     }
 
     @Test
@@ -68,7 +73,7 @@ class GetFeedbackTest {
             )
         )
 
-        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val getFeedback = GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
         val feedbackResult = getFeedback(FeedbackMode.ByEvent)
 
         val expectedFeedback = root(
@@ -113,7 +118,7 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> assertFeedback(expectedFeedback, feedback) })
+            { feedback -> assertFeedback(expectedFeedback, feedback.data) })
     }
 
     @Test
@@ -125,7 +130,7 @@ class GetFeedbackTest {
             )
         )
 
-        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val getFeedback = GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
         val feedbackResult =
             getFeedback(FeedbackMode.ByEvent, null, true)
 
@@ -135,7 +140,7 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> assertFeedback(expectedFeedback, feedback) })
+            { feedback -> assertFeedback(expectedFeedback, feedback.data) })
     }
 
     @Test
@@ -149,7 +154,7 @@ class GetFeedbackTest {
             )
         )
 
-        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val getFeedback = GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
         val feedbackResult =
             getFeedback(FeedbackMode.ByEvent, null, true)
 
@@ -179,7 +184,7 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> assertFeedback(expectedFeedback, feedback) })
+            { feedback -> assertFeedback(expectedFeedback, feedback.data) })
     }
 
     @Test
@@ -194,7 +199,7 @@ class GetFeedbackTest {
             )
         )
 
-        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val getFeedback = GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
         val feedbackResult = getFeedback(FeedbackMode.ByEvent, null, true)
 
         val expectedFeedback = root(
@@ -240,7 +245,7 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> assertFeedback(expectedFeedback, feedback) })
+            { feedback -> assertFeedback(expectedFeedback, feedback.data) })
     }
 
     @Test
@@ -252,7 +257,7 @@ class GetFeedbackTest {
             )
         )
 
-        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val getFeedback = GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
         val feedbackResult =
             getFeedback(FeedbackMode.ByEvent, true, false)
 
@@ -263,7 +268,7 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> assertFeedback(expectedFeedback, feedback) })
+            { feedback -> assertFeedback(expectedFeedback, feedback.data) })
     }
 
     @Test
@@ -275,7 +280,7 @@ class GetFeedbackTest {
             )
         )
 
-        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val getFeedback = GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
         val feedbackResult =
             getFeedback(FeedbackMode.ByEvent, false, false)
 
@@ -286,7 +291,7 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> assertFeedback(expectedFeedback, feedback) })
+            { feedback -> assertFeedback(expectedFeedback, feedback.data) })
     }
 
     @Test
@@ -300,7 +305,7 @@ class GetFeedbackTest {
             )
         )
 
-        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val getFeedback = GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
         val feedbackResult =
             getFeedback(FeedbackMode.ByEvent, true, false)
 
@@ -333,7 +338,7 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> assertFeedback(expectedFeedback, feedback) })
+            { feedback -> assertFeedback(expectedFeedback, feedback.data) })
     }
 
     @Test
@@ -347,7 +352,7 @@ class GetFeedbackTest {
             )
         )
 
-        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val getFeedback = GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
         val feedbackResult =
             getFeedback(FeedbackMode.ByEvent, false, false)
 
@@ -379,7 +384,7 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> assertFeedback(expectedFeedback, feedback) })
+            { feedback -> assertFeedback(expectedFeedback, feedback.data) })
     }
 
     @Test
@@ -394,7 +399,7 @@ class GetFeedbackTest {
             )
         )
 
-        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val getFeedback = GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
         val feedbackResult =
             getFeedback(FeedbackMode.ByEvent, true, false)
 
@@ -435,7 +440,7 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> assertFeedback(expectedFeedback, feedback) })
+            { feedback -> assertFeedback(expectedFeedback, feedback.data) })
     }
 
     @Test
@@ -450,7 +455,7 @@ class GetFeedbackTest {
             )
         )
 
-        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val getFeedback = GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
         val feedbackResult =
             getFeedback(FeedbackMode.ByEvent, false, false)
 
@@ -491,14 +496,14 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> assertFeedback(expectedFeedback, feedback) })
+            { feedback -> assertFeedback(expectedFeedback, feedback.data) })
     }
 
     @Test
     fun `should return not found failure if It's by technical area and there are not events`() {
         givenThatThereNotEvents()
 
-        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val getFeedback = GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
 
         val feedbackResult =
             getFeedback(FeedbackMode.ByTechnicalArea)
@@ -512,7 +517,7 @@ class GetFeedbackTest {
     fun `should not return feedback if It's by technical area and there are events without values`() {
         givenAnEventsWithoutValues()
 
-        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val getFeedback = GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
         val feedbackResult =
             getFeedback(FeedbackMode.ByTechnicalArea, null, false)
 
@@ -522,7 +527,7 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> Assert.assertEquals(expectedFeedback, feedback) })
+            { feedback -> Assert.assertEquals(expectedFeedback, feedback.data) })
     }
 
     @Test
@@ -536,7 +541,7 @@ class GetFeedbackTest {
             )
         )
 
-        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val getFeedback = GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
         val feedbackResult = getFeedback(FeedbackMode.ByTechnicalArea)
 
         val expectedFeedback = root(
@@ -593,7 +598,7 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> assertFeedback(expectedFeedback, feedback) })
+            { feedback -> assertFeedback(expectedFeedback, feedback.data) })
     }
 
     @Test
@@ -605,7 +610,7 @@ class GetFeedbackTest {
             )
         )
 
-        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val getFeedback = GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
         val feedbackResult =
             getFeedback(FeedbackMode.ByTechnicalArea, null, true)
 
@@ -616,7 +621,7 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> assertFeedback(expectedFeedback, feedback) })
+            { feedback -> assertFeedback(expectedFeedback, feedback.data) })
     }
 
     @Test
@@ -630,7 +635,7 @@ class GetFeedbackTest {
             )
         )
 
-        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val getFeedback = GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
         val feedbackResult =
             getFeedback(FeedbackMode.ByTechnicalArea, null, true)
 
@@ -667,7 +672,7 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> assertFeedback(expectedFeedback, feedback) })
+            { feedback -> assertFeedback(expectedFeedback, feedback.data) })
     }
 
     @Test
@@ -682,7 +687,7 @@ class GetFeedbackTest {
             )
         )
 
-        val getFeedback = GetFeedback(teiDataRepository, valuesRepository)
+        val getFeedback = GetFeedback(teiDataRepository, dataElementRepository, valuesRepository)
         val feedbackResult = getFeedback(FeedbackMode.ByTechnicalArea, null, true)
 
         val expectedFeedback = root(
@@ -716,7 +721,7 @@ class GetFeedbackTest {
 
         feedbackResult.fold(
             { failure -> Assert.fail("$failure should be success") },
-            { feedback -> assertFeedback(expectedFeedback, feedback) })
+            { feedback -> assertFeedback(expectedFeedback, feedback.data) })
     }
 
     private fun assertFeedback(
@@ -743,6 +748,10 @@ class GetFeedbackTest {
     }
 
     private fun givenAnEventsWithoutValues() {
+        whenever(
+            dataElementRepository.getWithFeedbackOrderByProgramStage(any())
+        ).thenReturn(Either.Right(listOf()))
+
         val events = listOf(
             EventViewModel(
                 EventViewModelType.EVENT,
@@ -768,6 +777,10 @@ class GetFeedbackTest {
     }
 
     private fun givenOneEventWithValues(stageName: String, valuesData: List<List<String>>) {
+        whenever(
+            dataElementRepository.getWithFeedbackOrderByProgramStage(any())
+        ).thenReturn(Either.Right(listOf()))
+
         whenever(
             teiDataRepository.getTEIEnrollmentEvents(
                 null, false, mutableListOf(), mutableListOf(),

@@ -5,9 +5,11 @@ import org.dhis2.core.types.Tree
 import org.dhis2.core.types.filter
 import org.dhis2.core.types.root
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 
 sealed class FeedbackFailure {
     object NotFound : FeedbackFailure()
+    data class ValidationsWithError(val validations: List<Validation>) : FeedbackFailure()
     data class UnexpectedError(val error: Exception) : FeedbackFailure()
 }
 
@@ -18,20 +20,31 @@ sealed class FeedbackMode {
 
 class GetFeedback(
     private val teiDataRepository: TeiDataRepository,
+    private val dataElementRepository: DataElementRepository,
     private val valuesRepository: ValuesRepository
 ) {
     operator fun invoke(
         feedbackMode: FeedbackMode,
         criticalFilter: Boolean? = null,
         onlyFailedFilter: Boolean = false
-    ): Either<FeedbackFailure, Tree.Root<*>> {
+    ): Either<FeedbackFailure, ResponseWithValidations<Tree.Root<*>>> {
         return try {
-            val events = getEnrollmentEvents()
+            val validations = validateFeedbackOrders()
 
-            if (events.isEmpty()) {
-                Either.Left(FeedbackFailure.NotFound)
+            if (validations.any { it is Validation.DataElementError }) {
+                Either.Left(FeedbackFailure.ValidationsWithError(validations))
             } else {
-                Either.Right(createFeedback(feedbackMode, events, criticalFilter, onlyFailedFilter))
+                val events = getEvents()
+                if (events.isEmpty()) {
+                    Either.Left(FeedbackFailure.NotFound)
+                } else {
+
+                    val feedback =
+                        createFeedback(feedbackMode, events, criticalFilter, onlyFailedFilter)
+
+
+                    Either.Right(ResponseWithValidations(feedback, validations))
+                }
             }
         } catch (e: Exception) {
             Either.Left(FeedbackFailure.UnexpectedError(e))
@@ -209,8 +222,106 @@ class GetFeedback(
         )
     }
 
-    private fun getEnrollmentEvents(): List<Event> {
-        val enrolmentEvents = teiDataRepository.getTEIEnrollmentEvents(
+    private fun getEvents(): List<Event> {
+        val enrolmentEvents = getEnrollmentEvents()
+
+        return enrolmentEvents.map {
+            val values = valuesRepository.getByEvent(it.event!!.uid())
+
+            Event(it.event.uid(), it.stage?.displayName()!!, it.stage.uid(), values)
+        }
+    }
+
+    private fun validateFeedbackOrders(): List<Validation> {
+        val validations = mutableListOf<Validation>()
+        val events = getEnrollmentEvents()
+        val programStages = events.map { it.stage!!.uid() }.distinct()
+
+        programStages.forEach { programStage ->
+            val dataElementsResponse =
+                dataElementRepository.getWithFeedbackOrderByProgramStage(programStage)
+
+            dataElementsResponse.fold(
+                { validationErrors -> validations.addAll(validationErrors) },
+                { dataElements ->
+                    val feedbackOrderWarnings = dataElements.map { dataElement ->
+                        dataElement.feedbackOrder?.warnings?.map {
+                            Validation.DataElementWarning(dataElement.uid, it)
+                        } ?: listOf()
+                    }.flatten()
+
+                    validations.addAll(feedbackOrderWarnings)
+
+                    val deWithDuplicates = getDEWithDuplicateFeedbackOrder(dataElements)
+
+                    if (deWithDuplicates.isNotEmpty()) {
+                        validations.add(
+                            Validation.DataElementWarning(
+                                deWithDuplicates,
+                                FeedbackOrderDuplicate
+                            )
+                        )
+                    }
+
+                    if (existsFeedbackOrderGaps(dataElements)) {
+                        validations.add(
+                            Validation.ProgramStageWarning(
+                                programStage,
+                                FeedbackOrderGap
+                            )
+                        )
+                    }
+                }
+            )
+
+        }
+
+        return validations
+    }
+
+    private fun existsFeedbackOrderGaps(dataElements: List<DataElement>): Boolean {
+        val feedbackOrders = dataElements.sortedBy { it.feedbackOrder }.map { it.feedbackOrder }
+
+        val feedbackOrderByParent = HashMap<String?, MutableList<FeedbackOrder>>()
+
+        feedbackOrders.forEach { order ->
+            val parent = order!!.parent
+
+            val children = feedbackOrderByParent[parent] ?: mutableListOf()
+
+            children.add(order)
+
+            feedbackOrderByParent[parent] = children
+        }
+
+        return feedbackOrderByParent.map { entry ->
+            entry.value.mapIndexed { index, order ->
+                if (index == 0){
+                    false
+                } else {
+                    order.lastNumber -  entry.value[index-1].lastNumber > 1
+                }
+            }.any { it }
+        }.any { it }
+    }
+
+    private fun getDEWithDuplicateFeedbackOrder(dataElements: List<DataElement>): String {
+        val feedbackOrderDuplicates =
+            dataElements.groupingBy { it.feedbackOrder }.eachCount()
+                .filter { it.value > 1 }.keys
+
+        val dataElementsWithDuplicates =
+            dataElements.filter { feedbackOrderDuplicates.contains(it.feedbackOrder) }
+
+        return if (dataElementsWithDuplicates.isNotEmpty()) {
+            dataElementsWithDuplicates.joinToString(",") { it.uid }
+        } else {
+            ""
+        }
+    }
+
+    private fun getEnrollmentEvents(): List<EventViewModel> {
+        return teiDataRepository.getTEIEnrollmentEvents(
             null,
             false,
             mutableListOf(),
@@ -221,15 +332,13 @@ class GetFeedback(
             mutableListOf(),
             null
         ).blockingGet()
-
-        return enrolmentEvents.map {
-            val values = valuesRepository.getByEvent(it.event!!.uid())
-
-            Event(it.event.uid(), it.stage?.displayName()!!, values)
-        }
     }
 }
 
 interface ValuesRepository {
     fun getByEvent(eventUid: String): List<Value>
+}
+
+interface DataElementRepository {
+    fun getWithFeedbackOrderByProgramStage(eventUid: String): Either<List<Validation>, List<DataElement>>
 }
