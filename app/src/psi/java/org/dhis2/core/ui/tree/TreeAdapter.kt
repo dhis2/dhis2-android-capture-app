@@ -8,7 +8,7 @@ import org.dhis2.core.types.Tree
 class TreeAdapter(
     root: Tree.Root<*>,
     private val binders: List<TreeAdapterBinder>,
-    private val onTreeClickListener: (Tree<*>) -> Unit,
+    private val onTreeClickListener: (node: Tree<*>, position: Int) -> Unit,
     private val displayRoot: Boolean = false
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
@@ -66,7 +66,7 @@ class TreeAdapter(
             val node = displayNodes[viewHolder.adapterPosition]
 
             if (node is Tree.Node) {
-                onTreeClickListener(node)
+                onTreeClickListener(node, viewHolder.adapterPosition)
             }
         }
 

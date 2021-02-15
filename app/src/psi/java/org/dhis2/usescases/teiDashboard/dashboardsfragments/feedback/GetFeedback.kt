@@ -78,6 +78,7 @@ class GetFeedback(
             .flatMap { it.values }
             .distinctBy { it.dataElement }
             .filter { it.feedbackOrder.level == 0 }
+            .sortedBy{ it.feedbackOrder }
 
         return root(null, level0DistinctValues.map {
             val eventsChildren =
