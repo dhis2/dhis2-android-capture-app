@@ -40,6 +40,7 @@ public class SearchTeiModel implements CarouselItemModel {
     private String sortingValue;
     private String teTypeName;
     private String enrolledOrgUnit;
+    private boolean showNavigationButton = false;
 
     public SearchTeiModel() {
         this.tei = null;
@@ -218,4 +219,11 @@ public class SearchTeiModel implements CarouselItemModel {
     public void setEnrolledOrgUnit(String orgUnit) { enrolledOrgUnit = orgUnit; }
 
     public String getEnrolledOrgUnit() { return enrolledOrgUnit; }
+
+    public void setShowNavigationButton(boolean showNavigationButton){
+        this.showNavigationButton = showNavigationButton;
+    }
+    public boolean shouldShowNavigationButton(){
+        return showNavigationButton;
+    }
 }
