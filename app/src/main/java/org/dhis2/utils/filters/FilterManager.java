@@ -485,12 +485,14 @@ public class FilterManager implements Serializable {
         filterProcessor.onNext(this);
     }
 
-    public void clearWorkingList() {
+    public void clearWorkingList(boolean silently) {
         if (currentWorkingList != null) {
             currentWorkingList = null;
             setWorkingListScope(new EmptyWorkingList());
         }
-        filterProcessor.onNext(this);
+        if(!silently) {
+            filterProcessor.onNext(this);
+        }
     }
 
     public void clearSorting() {

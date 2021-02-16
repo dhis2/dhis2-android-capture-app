@@ -1,11 +1,16 @@
 package org.dhis2.utils.filters.workingLists
 
+import android.view.View
 import org.dhis2.utils.filters.FilterManager
 
 data class WorkingListItem(
     val uid: String,
     val label: String
 ) {
+    private val itemId = View.generateViewId()
+
+    fun id() = itemId
+
     private var isActive: Boolean = false
 
     private fun activateFilters() {
