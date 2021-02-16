@@ -56,7 +56,7 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun provideGetFiltersApplyingWebAppConfig(): GetFiltersApplyingWebAppConfig{
+    fun provideGetFiltersApplyingWebAppConfig(): GetFiltersApplyingWebAppConfig {
         return GetFiltersApplyingWebAppConfig()
     }
 
