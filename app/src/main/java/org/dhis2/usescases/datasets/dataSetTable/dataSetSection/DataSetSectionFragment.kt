@@ -236,9 +236,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         val adapter = DataSetIndicatorAdapter(requireContext())
         indicatorsTable?.adapter = adapter
         indicatorsTable?.headerCount = 1
-        indicatorsTable?.setRowHeaderWidth(
-            indicators.keys.toList().calculateWidth(requireContext()).second.dp + 16.dp
-        )
+        val width = indicators.keys.toList().calculateWidth(requireContext()).second + 16.dp
+        val max = resources.displayMetrics.widthPixels*2/3
+        indicatorsTable?.setRowHeaderWidth(if (width < max) width else max)
         adapter.setAllItems(
             listOf(listOf(getString(R.string.value))),
             indicators.keys.toList(),
