@@ -27,7 +27,7 @@ class WorkingListChipGroup @JvmOverloads constructor(
                 ).apply {
                     tag = workingListItem.uid
                     workingList = workingListItem
-                    chip.id = workingListItem.hashCode()
+                    chip.id = workingListItem.id()
                     chip.isChecked = workingListItem.isSelected()
                 }.root
             )
