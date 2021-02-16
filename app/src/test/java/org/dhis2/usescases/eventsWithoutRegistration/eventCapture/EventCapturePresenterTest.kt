@@ -4,11 +4,14 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.processors.FlowableProcessor
 import junit.framework.Assert.assertTrue
 import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
+import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
@@ -28,6 +31,8 @@ class EventCapturePresenterTest {
     private val preferences: PreferenceProvider = mock()
     private val getNextVisibleSection: GetNextVisibleSection = GetNextVisibleSection()
     private val eventFieldMapper: EventFieldMapper = mock()
+    private val onRowActionProcessor: FlowableProcessor<RowAction> = mock()
+    private val fieldFactory: FieldViewModelFactory = mock()
 
     @Before
     fun setUp() {
@@ -40,7 +45,9 @@ class EventCapturePresenterTest {
             schedulers,
             preferences,
             getNextVisibleSection,
-            eventFieldMapper
+            eventFieldMapper,
+            onRowActionProcessor,
+            fieldFactory.sectionProcessor()
         )
     }
 
@@ -89,8 +96,10 @@ class EventCapturePresenterTest {
                 "testSection",
                 false,
                 null,
-                1,
-                ObjectStyle.builder().build()
+                ObjectStyle.builder().build(),
+                false,
+                "any",
+                null
             )
         )
 
@@ -110,8 +119,10 @@ class EventCapturePresenterTest {
                 null,
                 false,
                 null,
-                1,
-                ObjectStyle.builder().build()
+                ObjectStyle.builder().build(),
+                false,
+                "any",
+                null
             )
         )
 

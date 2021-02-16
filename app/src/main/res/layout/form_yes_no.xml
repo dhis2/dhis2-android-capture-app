@@ -5,18 +5,11 @@
 
     <data>
 
+        <import type="android.view.View" />
 
         <variable
-            name="valueType"
-            type="org.hisp.dhis.android.core.common.ValueType" />
-
-        <variable
-            name="label"
-            type="java.lang.String" />
-
-        <variable
-            name="description"
-            type="java.lang.String" />
+            name="item"
+            type="org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel" />
 
     </data>
 
@@ -29,25 +22,22 @@
             android:id="@+id/fieldSelected"
             android:layout_width="2dp"
             android:layout_height="50dp"
-            android:background="?colorPrimary"
             android:layout_marginStart="8dp"
             android:layout_marginBottom="6dp"
-            android:visibility="gone"
+            android:background="?colorPrimary"
+            android:visibility="@{item.activated ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
-
-        <org.dhis2.utils.customviews.YesNoView
+        <org.dhis2.data.forms.dataentry.fields.radiobutton.YesNoView
             android:id="@+id/customYesNo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:description="@{description}"
-            app:label="@{label}"
-            app:valueType="@{valueType}"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:viewModel="@{item}" />
 
         <TextView
             android:id="@+id/warningError"
@@ -55,13 +45,13 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:gravity="center"
-            android:textSize="18sp"
-            android:visibility="gone"
+            android:text="@{item.errorMessage}"
             android:textColor="@color/colorPrimaryOrange"
-            app:layout_constraintStart_toStartOf="parent"
+            android:textSize="18sp"
+            android:visibility="@{item.errorMessage != null ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/customYesNo"
-            tools:text="This is a error message"
-            tools:visibility="visible"/>
+            tools:text="This is a error message" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
