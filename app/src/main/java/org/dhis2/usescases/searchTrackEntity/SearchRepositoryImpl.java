@@ -702,11 +702,12 @@ public class SearchRepositoryImpl implements SearchRepository {
             if (searchTei.getEnrollments().size() > 0) {
                 searchTei.setEnrolledOrgUnit(d2.organisationUnitModule().organisationUnits().uid(searchTei.getEnrollments().get(0).organisationUnit()).blockingGet().name());
             } else {
-                searchTei.setEnrolledOrgUnit("");
+                searchTei.setEnrolledOrgUnit(d2.organisationUnitModule().organisationUnits().uid(searchTei.getTei().organisationUnit()).blockingGet().name());
             }
             searchTei.setProfilePicture(profilePicturePath(tei, selectedProgram));
         } else {
             searchTei.setTei(tei);
+            searchTei.setEnrolledOrgUnit(d2.organisationUnitModule().organisationUnits().uid(searchTei.getTei().organisationUnit()).blockingGet().name());
             if (tei.trackedEntityAttributeValues() != null) {
                 if (selectedProgram != null) {
                     List<ProgramTrackedEntityAttribute> programAttributes = d2.programModule().programTrackedEntityAttributes()
