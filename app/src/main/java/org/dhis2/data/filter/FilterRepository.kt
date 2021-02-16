@@ -19,7 +19,6 @@ import org.dhis2.utils.filters.sorting.SortingItem
 import org.dhis2.utils.filters.workingLists.WorkingListItem
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.api.filters.internal.Filter
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.AssignedUserMode
@@ -277,12 +276,12 @@ class FilterRepository @Inject constructor(
         globalTrackedEntityTypeFiltersWebApp.remove(ProgramFilter.ASSIGNED_TO_ME)
         globalTrackedEntityTypeFiltersWebApp.remove(ProgramFilter.ENROLLMENT_DATE)
 
-        val globalTrackedEntityTypeFiltersWebAppKey =
-            globalTrackedEntityTypeFiltersWebApp.filterValues { it.filter()!! }.keys.toList()
-        val filtersToShow =
-            defaultFilters.filter { globalTrackedEntityTypeFiltersWebAppKey.contains(it.key) }
+        val filtersToShow = getFiltersApplyingWebAppConfig.execute(
+            defaultFilters,
+            globalTrackedEntityTypeFiltersWebApp
+        )
 
-        return filtersToShow.values.toList()
+        return filtersToShow
     }
 
     fun createDefaultTrackedEntityFilters(): LinkedHashMap<ProgramFilter, FilterItem> {
@@ -330,17 +329,16 @@ class FilterRepository @Inject constructor(
 
         val datasetFiltersWebApp: Map<DataSetFilter, FilterSetting> =
             d2.settingModule().appearanceSettings().getDataSetFiltersByUid(dataSetUid)
-        val datasetFiltersWebAppKeys =
-            datasetFiltersWebApp.filterValues { it.filter()!! }.keys.toList()
-        val filtersToShow = defaultFilters.filter { datasetFiltersWebAppKeys.contains(it.key) }
+        val filtersToShow =
+            getFiltersApplyingWebAppConfig.execute(defaultFilters, datasetFiltersWebApp)
 
-        return filtersToShow.values.toList()
+        return filtersToShow
     }
 
     private fun createDefaultDatasetFilters(dataSetUid: String):
         LinkedHashMap<DataSetFilter, FilterItem> {
 
-        val datasetsFilters = linkedMapOf(
+        val datasetFilters = linkedMapOf(
             DataSetFilter.PERIOD to PeriodFilter(
                 org.dhis2.utils.filters.ProgramType.DATASET,
                 observableSortingInject,
@@ -375,10 +373,10 @@ class FilterRepository @Inject constructor(
                 observableSortingInject,
                 observableOpenFilter,
                 categoryCombo.displayName() ?: ""
-            ).also { datasetsFilters[DataSetFilter.CAT_COMBO] = it }
+            ).also { datasetFilters[DataSetFilter.CAT_COMBO] = it }
         }
 
-        return datasetsFilters
+        return datasetFilters
     }
 
     fun homeFilters(): List<FilterItem> {
@@ -390,10 +388,10 @@ class FilterRepository @Inject constructor(
 
         val homeFiltersWebApp: Map<HomeFilter, FilterSetting> =
             d2.settingModule().appearanceSettings().homeFilters
-        val homeFiltersWebAppKeys = homeFiltersWebApp.filterValues { it.filter()!! }.keys.toList()
-        val filtersToShow = defaultFilters.filter { homeFiltersWebAppKeys.contains(it.key) }
+        val filtersToShow =
+            getFiltersApplyingWebAppConfig.execute(defaultFilters, homeFiltersWebApp)
 
-        return filtersToShow.values.toList()
+        return filtersToShow
     }
 
     private fun createDefaultHomeFilters(): LinkedHashMap<HomeFilter, FilterItem> {
@@ -455,10 +453,8 @@ class FilterRepository @Inject constructor(
 
         val trackerFiltersWebApp: Map<ProgramFilter, FilterSetting> =
             d2.settingModule().appearanceSettings().getProgramFiltersByUid(program.uid())
-        val trackerFiltersWebAppKeys =
-            trackerFiltersWebApp.filterValues { it.filter()!! }.keys.toList()
-        val filtersToShow = defaultFilters.filter { trackerFiltersWebAppKeys.contains(it.key) }
-
+        val filtersToShow =
+            getFiltersApplyingWebAppConfig.execute(defaultFilters, trackerFiltersWebApp)
         val workingListFilter: WorkingListFilter? = getTrackerWorkingList(program)
 
         if (filtersToShow.isEmpty() && workingListFilter == null) {
@@ -466,11 +462,11 @@ class FilterRepository @Inject constructor(
         }
 
         if (workingListFilter != null) {
-            return filtersToShow.values.toMutableList().apply {
+            return filtersToShow.toMutableList().apply {
                 add(0, workingListFilter)
             }
         }
-        return filtersToShow.values.toList()
+        return filtersToShow
     }
 
     private fun createGetDefaultTrackerFilter(program: Program):
@@ -570,10 +566,8 @@ class FilterRepository @Inject constructor(
 
         val eventFiltersWebApp: Map<ProgramFilter, FilterSetting> =
             d2.settingModule().appearanceSettings().getProgramFiltersByUid(program.uid())
-        val eventFiltersWebAppKeys =
-            eventFiltersWebApp.filterValues { it.filter()!! }.keys.toList()
-        val filtersToShow = defaultFilters.filter { eventFiltersWebAppKeys.contains(it.key) }
-
+        val filtersToShow =
+            getFiltersApplyingWebAppConfig.execute(defaultFilters, eventFiltersWebApp)
         val workingListFilter: WorkingListFilter? = getEventWorkingList(program)
 
         if (filtersToShow.isEmpty() && workingListFilter == null) {
@@ -581,11 +575,11 @@ class FilterRepository @Inject constructor(
         }
 
         if (workingListFilter != null) {
-            return filtersToShow.values.toMutableList().apply {
+            return filtersToShow.toMutableList().apply {
                 add(0, workingListFilter)
             }
         }
-        return filtersToShow.values.toList()
+        return filtersToShow.toList()
     }
 
     private fun getEventWorkingList(program: Program): WorkingListFilter? {

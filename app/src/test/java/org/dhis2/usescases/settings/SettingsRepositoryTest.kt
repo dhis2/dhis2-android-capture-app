@@ -376,8 +376,6 @@ class SettingsRepositoryTest {
             .dataSync(SETTINGS_DATA_PERIOD)
             .metadataSync(SETTINGS_METADATA_PERIOD)
             .encryptDB(SETTINGS_ENCRYPT)
-            .numberSmsConfirmation(SETTINGS_GATEWAY)
-            .numberSmsToSend(SETTINGS_RESPONSE)
             .reservedValues(SETTINGS_RV)
             .build()
     }
