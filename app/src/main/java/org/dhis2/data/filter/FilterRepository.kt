@@ -256,13 +256,23 @@ class FilterRepository @Inject constructor(
         return d2.programModule().programs().uid(programUid).get()
             .map {
                 if (it.programType() == ProgramType.WITH_REGISTRATION) {
-                    getTrackerFilters(it)
+                    getTrackerFilters(it, true)
                 } else {
                     getEventFilters(it)
                 }
             }.blockingGet()
     }
 
+    fun dashboardFilters(programUid: String): List<FilterItem> {
+        return d2.programModule().programs().uid(programUid).get()
+            .map {
+                if (it.programType() == ProgramType.WITH_REGISTRATION) {
+                    getTrackerFilters(it, false)
+                } else {
+                    getEventFilters(it)
+                }
+            }.blockingGet()
+    }
 
     fun globalTrackedEntityFilters(): List<FilterItem> {
         val defaultFilters = createDefaultTrackedEntityFilters()
@@ -437,12 +447,12 @@ class FilterRepository @Inject constructor(
         return d2.settingModule() == null || d2.settingModule().appearanceSettings() == null
     }
 
-    private fun getTrackerFilters(program: Program): List<FilterItem> {
+    private fun getTrackerFilters(program: Program, showWorkingLists: Boolean): List<FilterItem> {
 
         val defaultFilters = createGetDefaultTrackerFilter(program)
 
         if (webAppIsNotConfigured()) {
-            val workingListFilter = getTrackerWorkingList(program)
+            val workingListFilter = getTrackerWorkingList(program, showWorkingLists)
             if (workingListFilter != null) {
                 return defaultFilters.values.toMutableList().apply {
                     add(0, workingListFilter)
@@ -455,7 +465,7 @@ class FilterRepository @Inject constructor(
             d2.settingModule().appearanceSettings().getProgramFiltersByUid(program.uid())
         val filtersToShow =
             getFiltersApplyingWebAppConfig.execute(defaultFilters, trackerFiltersWebApp)
-        val workingListFilter: WorkingListFilter? = getTrackerWorkingList(program)
+        val workingListFilter: WorkingListFilter? = getTrackerWorkingList(program, showWorkingLists)
 
         if (filtersToShow.isEmpty() && workingListFilter == null) {
             return mutableListOf()
@@ -526,7 +536,13 @@ class FilterRepository @Inject constructor(
         return defaultTrackerFilters
     }
 
-    private fun getTrackerWorkingList(program: Program): WorkingListFilter? {
+    private fun getTrackerWorkingList(
+        program: Program,
+        showWorkingLists: Boolean
+    ): WorkingListFilter? {
+        if (!showWorkingLists){
+            return null
+        }
         val workingLists = d2.trackedEntityModule().trackedEntityInstanceFilters()
             .byProgram().eq(program.uid())
             .withTrackedEntityInstanceEventFilters()
