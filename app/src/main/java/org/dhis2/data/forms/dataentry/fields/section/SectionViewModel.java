@@ -2,19 +2,27 @@ package org.dhis2.data.forms.dataentry.fields.section;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.ObservableField;
 
 import com.google.auto.value.AutoValue;
 
+import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.Objects;
 
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
+
 @AutoValue
 public abstract class SectionViewModel extends FieldViewModel {
 
     public static final String CLOSING_SECTION_UID = "closing_section";
+    private boolean showBottomShadow;
+    private boolean lastPositionShouldChangeHeight;
 
     @NonNull
     public abstract boolean isOpen();
@@ -34,7 +42,16 @@ public abstract class SectionViewModel extends FieldViewModel {
     @NonNull
     public abstract String rendering();
 
-    public static SectionViewModel create(String sectionUid, String sectionName, String description, boolean isOpen, Integer totalFields, Integer completedFields, String rendering) {
+    @Nullable
+    public abstract FlowableProcessor<String> sectionProcessor();
+
+    @Nullable
+    public abstract ObservableField<String> selectedField();
+
+
+    private int sectionNumber;
+
+    public static SectionViewModel create(String sectionUid, String sectionName, String description, boolean isOpen, Integer totalFields, Integer completedFields, String rendering, FlowableProcessor<String> sectionProcessor, ObservableField<String> currentSection) {
         return new AutoValue_SectionViewModel(
                 sectionUid,
                 sectionName,
@@ -49,12 +66,17 @@ public abstract class SectionViewModel extends FieldViewModel {
                 description,
                 ObjectStyle.builder().build(),
                 null,
+                DataEntryViewHolderTypes.SECTION,
+                null,
+                false,
                 isOpen,
                 totalFields,
                 completedFields,
                 null,
                 null,
-                rendering != null ? rendering : ProgramStageSectionRenderingType.LISTING.name()
+                rendering != null ? rendering : ProgramStageSectionRenderingType.LISTING.name(),
+                sectionProcessor,
+                currentSection
         );
     }
 
@@ -73,12 +95,17 @@ public abstract class SectionViewModel extends FieldViewModel {
                 null,
                 ObjectStyle.builder().build(),
                 null,
+                DataEntryViewHolderTypes.SECTION,
+                null,
+                false,
                 false,
                 0,
                 0,
                 null,
                 null,
-                ProgramStageSectionRenderingType.LISTING.name()
+                ProgramStageSectionRenderingType.LISTING.name(),
+                PublishProcessor.create(),
+                new ObservableField("")
         );
     }
 
@@ -103,13 +130,17 @@ public abstract class SectionViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 null,
+                DataEntryViewHolderTypes.SECTION,
+                processor(),
+                activated(),
                 isOpen(),
                 totalFields(),
                 completedFields(),
                 errors,
                 warnings(),
-                rendering()
-
+                rendering(),
+                sectionProcessor(),
+                selectedField()
         );
     }
 
@@ -129,13 +160,17 @@ public abstract class SectionViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 null,
+                DataEntryViewHolderTypes.SECTION,
+                processor(),
+                activated(),
                 isOpen(),
                 totalFields(),
                 completedFields(),
                 errors,
                 warnings,
-                rendering()
-
+                rendering(),
+                sectionProcessor(),
+                selectedField()
         );
     }
 
@@ -155,13 +190,17 @@ public abstract class SectionViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 null,
+                DataEntryViewHolderTypes.SECTION,
+                processor(),
+                activated(),
                 isOpen(),
                 totalFields(),
                 completedFields(),
                 errors(),
                 warnings,
-                rendering()
-
+                rendering(),
+                sectionProcessor(),
+                selectedField()
         );
     }
 
@@ -189,6 +228,12 @@ public abstract class SectionViewModel extends FieldViewModel {
         return this;
     }
 
+    @NonNull
+    @Override
+    public FieldViewModel withFocus(boolean isFocused) {
+        return this;
+    }
+
     public SectionViewModel setOpen(boolean isOpen) {
         return new AutoValue_SectionViewModel(
                 uid(),
@@ -204,12 +249,17 @@ public abstract class SectionViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 null,
+                DataEntryViewHolderTypes.SECTION,
+                processor(),
+                activated(),
                 isOpen,
                 totalFields(),
                 completedFields(),
                 errors(),
                 warnings(),
-                rendering()
+                rendering(),
+                sectionProcessor(),
+                selectedField()
         );
     }
 
@@ -228,12 +278,17 @@ public abstract class SectionViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 null,
+                DataEntryViewHolderTypes.SECTION,
+                processor(),
+                activated(),
                 isOpen(),
                 totalFields,
                 completedFields(),
                 errors(),
                 warnings(),
-                rendering()
+                rendering(),
+                sectionProcessor(),
+                selectedField()
         );
     }
 
@@ -252,12 +307,17 @@ public abstract class SectionViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 null,
+                DataEntryViewHolderTypes.SECTION,
+                processor(),
+                activated(),
                 isOpen(),
                 totalFields(),
                 completedFields,
                 errors(),
                 warnings(),
-                rendering()
+                rendering(),
+                sectionProcessor(),
+                selectedField()
         );
     }
 
@@ -266,4 +326,74 @@ public abstract class SectionViewModel extends FieldViewModel {
                 isTitleEllipsized;
     }
 
+    @Override
+    public int getLayoutId() {
+        return R.layout.form_section;
+    }
+
+    public boolean isClosingSection() {
+        return uid().equals(CLOSING_SECTION_UID);
+    }
+
+    public boolean hasErrorAndWarnings() {
+        return (errors() != null && warnings() != null);
+    }
+
+    public boolean hasNotAnyErrorOrWarning() {
+        return (errors() == null && warnings() == null);
+    }
+
+    public boolean hasOnlyErrors() {
+        return (errors() != null && warnings() == null);
+    }
+
+    public String getFormattedSectionFieldsInfo() {
+        return String.format("%s/%s", completedFields(), totalFields());
+    }
+
+    public boolean areAllFieldsCompleted() {
+        return completedFields().equals(totalFields());
+    }
+
+    public void setSelected() {
+        onItemClick();
+
+        if (selectedField() != null && sectionProcessor() != null) {
+            String sectionToOpen = Objects.equals(selectedField().get(), uid()) ? "" : uid();
+            selectedField().set(sectionToOpen);
+            sectionProcessor().onNext(sectionToOpen);
+        }
+    }
+
+    public void setSectionNumber(int sectionNumber) {
+        this.sectionNumber = sectionNumber;
+    }
+
+    public int getSectionNumber() {
+        return sectionNumber;
+    }
+
+    public boolean isSelected() {
+        if (selectedField() == null) {
+            return false;
+        } else {
+            return Objects.equals(selectedField().get(), uid());
+        }
+    }
+
+    public void setShowBottomShadow(boolean showBottomShadow) {
+        this.showBottomShadow = showBottomShadow;
+    }
+
+    public boolean showBottomShadow() {
+        return showBottomShadow;
+    }
+
+    public void setLastSectionHeight(boolean lastPositionShouldChangeHeight) {
+        this.lastPositionShouldChangeHeight = lastPositionShouldChangeHeight;
+    }
+
+    public boolean lastPositionShouldChangeHeight() {
+        return lastPositionShouldChangeHeight;
+    }
 }

@@ -4,7 +4,11 @@ import androidx.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 
+import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
+import org.dhis2.data.forms.dataentry.fields.ActionType;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.option.Option;
@@ -12,15 +16,21 @@ import org.hisp.dhis.android.core.option.Option;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.processors.FlowableProcessor;
+
 @AutoValue
 public abstract class OptionSetViewModel extends FieldViewModel {
 
     private List<String> optionsToHide = new ArrayList<>();
     private List<String> optionsToShow = new ArrayList<>();
 
-    abstract ValueTypeDeviceRendering fieldRendering();
+    public abstract boolean isBackgroundTransparent();
 
-    abstract List<Option> options();
+    public abstract String renderType();
+
+    public abstract ValueTypeDeviceRendering fieldRendering();
+
+    public abstract List<Option> options();
 
     public static OptionSetViewModel create(String id,
                                             String label,
@@ -31,7 +41,10 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                                             Boolean editable,
                                             String description,
                                             ObjectStyle objectStyle,
-                                            ValueTypeDeviceRendering fieldRendering) {
+                                            boolean isBackgroundTransparent,
+                                            String renderType,
+                                            ValueTypeDeviceRendering fieldRendering,
+                                            FlowableProcessor<RowAction> processor) {
 
         return new AutoValue_OptionSetViewModel(
                 id,
@@ -47,6 +60,11 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description,
                 objectStyle,
                 null,
+                DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                processor,
+                false,
+                isBackgroundTransparent,
+                renderType,
                 fieldRendering,
                 new ArrayList<>()
         );
@@ -68,6 +86,11 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 fieldMask(),
+                DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                processor(),
+                activated(),
+                isBackgroundTransparent(),
+                renderType(),
                 fieldRendering(),
                 options()
         );
@@ -90,6 +113,11 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 fieldMask(),
+                DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                processor(),
+                activated(),
+                isBackgroundTransparent(),
+                renderType(),
                 fieldRendering(),
                 options()
         );
@@ -112,6 +140,11 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 fieldMask(),
+                DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                processor(),
+                activated(),
+                isBackgroundTransparent(),
+                renderType(),
                 fieldRendering(),
                 options()
         );
@@ -134,6 +167,11 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 fieldMask(),
+                DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                processor(),
+                activated(),
+                isBackgroundTransparent(),
+                renderType(),
                 fieldRendering(),
                 options()
         );
@@ -155,6 +193,11 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 fieldMask(),
+                DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                processor(),
+                activated(),
+                isBackgroundTransparent(),
+                renderType(),
                 fieldRendering(),
                 options
         );
@@ -177,19 +220,51 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 fieldMask(),
+                DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                processor(),
+                activated(),
+                isBackgroundTransparent(),
+                renderType(),
+                fieldRendering(),
+                options()
+        );
+    }
+
+    @NonNull
+    @Override
+    public OptionSetViewModel withFocus(boolean isFocused) {
+        return new AutoValue_OptionSetViewModel(
+                uid(),
+                label(),
+                mandatory(),
+                value(),
+                programStageSection(),
+                allowFutureDate(),
+                editable(),
+                optionSet(),
+                warning(),
+                error(),
+                description(),
+                objectStyle(),
+                fieldMask(),
+                DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                processor(),
+                isFocused,
+                isBackgroundTransparent(),
+                renderType(),
                 fieldRendering(),
                 options()
         );
     }
 
     public void setOptionsToHide(List<String> optionsToHide) {
-        if(optionsToHide!=null) {
+        if (optionsToHide != null) {
             this.optionsToHide.addAll(optionsToHide);
         }
     }
 
     public void setOptionsToShow(List<String> optionsToShow) {
-        if(optionsToShow!=null) {
+        if (optionsToShow != null) {
             this.optionsToShow.addAll(optionsToShow);
         }
     }
@@ -202,4 +277,23 @@ public abstract class OptionSetViewModel extends FieldViewModel {
         return optionsToShow;
     }
 
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.form_option_set_selector;
+    }
+
+    public void onOptionSelected(String optionCode) {
+        onItemClick();
+
+        processor().onNext(new RowAction(
+                uid(),
+                optionCode,
+                false,
+                null,
+                null,
+                null,
+                null,
+                ActionType.ON_SAVE));
+    }
 }

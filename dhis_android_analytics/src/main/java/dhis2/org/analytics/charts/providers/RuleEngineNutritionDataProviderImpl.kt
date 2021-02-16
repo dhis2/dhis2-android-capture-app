@@ -24,19 +24,19 @@ class RuleEngineNutritionDataProviderImpl : NutritionDataProvider {
             }
         }
 
-        zscoreTable.toSortedMap(compareBy { it.parameter })
-            .values.forEachIndexed { i, map ->
-                val values = map.keys.sorted()
-                for (dataIndex in 0 until numberOfData) {
-                    nutritionData[dataIndex].add(
-                        GraphPoint(
-                            eventDate = Date(),
-                            position = i,
-                            fieldValue = values[dataIndex]
-                        )
+        zscoreTable.toSortedMap(compareBy { it.parameter }).forEach {
+            val parameter = it.key.parameter
+            val values = it.value.keys.sorted()
+            for (dataIndex in 0 until numberOfData) {
+                nutritionData[dataIndex].add(
+                    GraphPoint(
+                        eventDate = Date(),
+                        position = parameter,
+                        fieldValue = values[dataIndex]
                     )
-                }
+                )
             }
+        }
 
         return nutritionData.map {
             SerieData("", it)

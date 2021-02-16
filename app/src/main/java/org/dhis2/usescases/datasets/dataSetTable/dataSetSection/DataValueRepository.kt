@@ -2,7 +2,7 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
 import io.reactivex.Flowable
 import io.reactivex.Single
-import java.util.HashMap
+import java.util.SortedMap
 import org.dhis2.data.tuples.Pair
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.hisp.dhis.android.core.category.Category
@@ -79,6 +79,7 @@ interface DataValueRepository {
     fun getDataSetIndicators(
         orgUnitUid: String,
         periodUid: String,
-        attributeOptionCombo: String
-    ): Single<HashMap<String?, String>>
+        attributeOptionCombo: String,
+        sectionName: String
+    ): Single<SortedMap<String?, String>>
 }
