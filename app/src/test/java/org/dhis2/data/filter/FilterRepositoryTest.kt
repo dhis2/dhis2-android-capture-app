@@ -12,6 +12,15 @@ import org.junit.Test
 
 class FilterRepositoryTest {
 
+    companion object {
+        const val EVENT_DATE = "date"
+        const val ENROLLMENT_DATE = "enrollment_date"
+        const val ORG_UNIT = "org_unit"
+        const val SYNC_STATUS = "sync_status"
+        const val ENROLLMENT_STATUS = "enrollment_status"
+        const val EVENT_STATUS = "event_status"
+    }
+
     private val d2: D2 = mock()
     private val resourceManager: ResourceManager = mock()
     private val getFiltersApplyingWebAppConfig: GetFiltersApplyingWebAppConfig = mock()
@@ -22,15 +31,30 @@ class FilterRepositoryTest {
         RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
         filterRepository = FilterRepository(d2, resourceManager, getFiltersApplyingWebAppConfig)
         whenever(resourceManager.filterResources) doReturn mock()
-        whenever(resourceManager.filterResources.filterOrgUnitLabel()) doReturn "org_unit"
-        whenever(resourceManager.filterResources.filterSyncLabel()) doReturn "sync"
-        whenever(resourceManager.filterResources.filterEnrollmentStatusLabel()) doReturn "status"
-        whenever(resourceManager.filterResources.filterDateLabel()) doReturn "date"
+        whenever(resourceManager.filterResources.filterOrgUnitLabel()) doReturn ORG_UNIT
+        whenever(resourceManager.filterResources.filterSyncLabel()) doReturn SYNC_STATUS
+        whenever(resourceManager.filterResources.filterEnrollmentStatusLabel()) doReturn
+            ENROLLMENT_STATUS
+        whenever(resourceManager.filterResources.filterDateLabel()) doReturn EVENT_DATE
     }
 
     @Test
     fun `Should get home filters when webapp is not configured`() {
-        //val result = filterRepository.homeFilters()
+        whenever(d2.programModule()) doReturn mock()
+        whenever(d2.programModule().programStages()) doReturn mock()
+        whenever(d2.programModule().programStages().byEnableUserAssignment()) doReturn mock()
+        whenever(
+            d2.programModule().programStages().byEnableUserAssignment().eq(true)
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages().byEnableUserAssignment()
+                .eq(true).blockingIsEmpty()
+        ) doReturn true
+
+        val result = filterRepository.homeFilters()
+
+        //assert(result)
+
     }
 
     /*
