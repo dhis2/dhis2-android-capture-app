@@ -193,10 +193,12 @@ class EventIndicatorRepositoryTest {
     private fun mockedEffects(): List<RuleEffect> {
         return listOf(
             RuleEffect.create(
+                "ruleUid1",
                 RuleActionDisplayKeyValuePair.createForFeedback("content", "data"),
                 "data"
             ),
             RuleEffect.create(
+                "ruleUid2",
                 RuleActionDisplayKeyValuePair.createForIndicators("content", "data"),
                 "data"
             )
