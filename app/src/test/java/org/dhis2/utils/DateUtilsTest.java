@@ -5,7 +5,6 @@ import org.dhis2.R;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -311,7 +310,7 @@ public class DateUtilsTest {
 
     @Test
     public void getNextPeriodFinancialApril() throws ParseException {
-        Date testDate = StringExtensionsKt.toDate( "2018-09-13");
+        Date testDate = StringExtensionsKt.toDate("2018-09-13");
         String expectedPrevDate = "2017-04-01";
         String expectedCurrentDate = "2018-04-01";
         String expectedNextDate = "2019-04-01";
@@ -649,59 +648,5 @@ public class DateUtilsTest {
 
         assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.COMPLETED, 1, null, 0));
 
-    }
-
-    @Test
-    @Ignore("When the year has changed, is creating different behavior than expected by the test")
-    public void shouldSubtractYearsToDateWithPositiveInteger() throws ParseException{
-        int years = 5;
-
-        Date currentDate = DateUtils.oldUiDateFormat().parse("2020-07-15");
-        Date beforeDate = DateUtils.yearsBeforeNow(years);
-
-        Calendar now = Calendar.getInstance();
-        now.setTime(currentDate);
-        Calendar before = Calendar.getInstance();
-        before.setTime(beforeDate);
-
-        int result = now.get(Calendar.YEAR) - before.get(Calendar.YEAR);
-
-        assertEquals(result, years);
-    }
-
-    @Test
-    @Ignore("When the year has changed, is creating different behavior than expected by the test")
-    public void shouldSubtractYearsToDateWithNegativeInteger() throws ParseException{
-        int years = -5;
-
-        Date currentDate = DateUtils.oldUiDateFormat().parse("2020-07-15");
-        Date beforeDate = DateUtils.yearsBeforeNow(years);
-
-        Calendar now = Calendar.getInstance();
-        now.setTime(currentDate);
-        Calendar before = Calendar.getInstance();
-        before.setTime(beforeDate);
-
-        int result = now.get(Calendar.YEAR) - before.get(Calendar.YEAR);
-
-        assertEquals(result, -(years));
-    }
-
-    @Test
-    @Ignore("When the year has changed, is creating different behavior than expected by the test")
-    public void shouldAddYearsToDate() throws ParseException{
-        int years = 1;
-
-        Date currentDate = DateUtils.oldUiDateFormat().parse("2020-07-15");
-        Date beforeDate = DateUtils.yearsAfterNow(years);
-
-        Calendar now = Calendar.getInstance();
-        now.setTime(currentDate);
-        Calendar after = Calendar.getInstance();
-        after.setTime(beforeDate);
-
-        int result = after.get(Calendar.YEAR) - now.get(Calendar.YEAR);
-
-        assertEquals(result, years);
     }
 }
