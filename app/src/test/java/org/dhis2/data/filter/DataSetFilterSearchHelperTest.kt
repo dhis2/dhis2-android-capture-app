@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -73,6 +74,7 @@ class DataSetFilterSearchHelperTest {
     }
 
     @Test
+    @Ignore
     fun `Should apply filters if set`() {
         filterManager.apply {
             addOrgUnit(

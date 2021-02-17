@@ -23,6 +23,7 @@ import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -98,6 +99,7 @@ class TrackerFilterSearchHelperTest {
     }
 
     @Test
+    @Ignore
     fun `Should apply filters if set`() {
         filterManager.apply {
             addEnrollmentStatus(false, EnrollmentStatus.ACTIVE)
