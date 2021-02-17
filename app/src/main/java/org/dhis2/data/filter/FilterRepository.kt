@@ -345,8 +345,9 @@ class FilterRepository @Inject constructor(
         return filtersToShow
     }
 
-    private fun createDefaultDatasetFilters(dataSetUid: String):
-        LinkedHashMap<DataSetFilter, FilterItem> {
+    private fun createDefaultDatasetFilters(
+        dataSetUid: String
+    ): LinkedHashMap<DataSetFilter, FilterItem> {
         val datasetFilters = linkedMapOf(
             DataSetFilter.PERIOD to PeriodFilter(
                 org.dhis2.utils.filters.ProgramType.DATASET,
@@ -476,8 +477,9 @@ class FilterRepository @Inject constructor(
         return filtersToShow
     }
 
-    private fun createGetDefaultTrackerFilter(program: Program):
-        LinkedHashMap<ProgramFilter, FilterItem> {
+    private fun createGetDefaultTrackerFilter(
+        program: Program
+    ): LinkedHashMap<ProgramFilter, FilterItem> {
         val defaultTrackerFilters = linkedMapOf<ProgramFilter, FilterItem>()
 
         defaultTrackerFilters[ProgramFilter.EVENT_DATE] = PeriodFilter(
