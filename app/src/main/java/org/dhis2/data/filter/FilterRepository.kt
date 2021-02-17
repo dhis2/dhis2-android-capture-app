@@ -362,7 +362,7 @@ class FilterRepository @Inject constructor(
                 observableOpenFilter,
                 resources.filterResources.filterOrgUnitLabel()
             ),
-            DataSetFilter.SYN_STATUS to SyncStateFilter(
+            DataSetFilter.SYNC_STATUS to SyncStateFilter(
                 org.dhis2.utils.filters.ProgramType.DATASET,
                 observableSortingInject,
                 observableOpenFilter,
