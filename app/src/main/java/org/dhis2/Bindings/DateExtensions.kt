@@ -12,10 +12,10 @@ import org.joda.time.Interval
 import org.joda.time.LocalDate
 import org.joda.time.Minutes
 
-val currentDate: Date
+val defaultCurrentDate: Date
     get() = Date()
 
-fun Date?.toDateSpan(context: Context): String = when {
+fun Date?.toDateSpan(context: Context, currentDate: Date = defaultCurrentDate): String = when {
     this == null -> ""
     this.after(currentDate) -> SimpleDateFormat("d/M/yyyy", Locale.getDefault()).format(this)
     else -> {
@@ -42,7 +42,7 @@ fun Date?.toDateSpan(context: Context): String = when {
     }
 }
 
-fun Date?.toUiText(context: Context): String = when {
+fun Date?.toUiText(context: Context, currentDate: Date = defaultCurrentDate): String = when {
     this == null -> ""
     this.after(currentDate) -> SimpleDateFormat("d/M/yyyy", Locale.getDefault()).format(this)
     else -> {
@@ -54,7 +54,7 @@ fun Date?.toUiText(context: Context): String = when {
             duration.toStandardDays().isLessThan(Days.days(2)) -> {
                 context.getString(R.string.filter_period_yesterday)
             }
-            LocalDate(Instant(time)).year == LocalDate(Instant(Date())).year -> {
+            LocalDate(Instant(time)).year == LocalDate(Instant(currentDate.time)).year -> {
                 SimpleDateFormat("dd MMM", Locale.getDefault()).format(this)
             }
             else -> {
