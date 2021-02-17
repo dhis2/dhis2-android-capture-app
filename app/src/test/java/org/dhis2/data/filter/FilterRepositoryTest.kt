@@ -1,26 +1,13 @@
 package org.dhis2.data.filter
 
 import androidx.databinding.ObservableField
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import io.reactivex.Single
-import io.reactivex.android.plugins.RxAndroidPlugins
-import io.reactivex.schedulers.Schedulers
-import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
-import org.dhis2.utils.filters.OrgUnitFilter
-import org.dhis2.utils.filters.PeriodFilter
-import org.dhis2.utils.filters.ProgramType
-import org.dhis2.utils.filters.SyncStateFilter
 import org.dhis2.utils.filters.sorting.SortingItem
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.android.core.settings.FilterSetting
-import org.hisp.dhis.android.core.settings.HomeFilter
-import org.hisp.dhis.android.core.settings.ProgramFilter
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
