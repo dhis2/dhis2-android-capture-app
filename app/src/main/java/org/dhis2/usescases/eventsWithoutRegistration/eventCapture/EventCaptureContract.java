@@ -77,11 +77,7 @@ public class EventCaptureContract {
 
         void nextCalculation(boolean doNextCalculation);
 
-        void onNextSection();
-
         void attempFinish();
-
-        void onPreviousSection();
 
         boolean isEnrollmentOpen();
 

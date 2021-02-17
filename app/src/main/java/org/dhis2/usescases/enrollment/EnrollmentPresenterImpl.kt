@@ -664,10 +664,6 @@ class EnrollmentPresenterImpl(
         assignValue(uid, value)
     }
 
-    override fun setDisplayKeyValue(label: String, value: String) = Unit
-
-    override fun setHideSection(sectionUid: String) = Unit
-
     override fun setMessageOnComplete(content: String, canComplete: Boolean) = Unit
 
     override fun setHideProgramStage(programStageUid: String) = Unit
