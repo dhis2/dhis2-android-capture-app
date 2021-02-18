@@ -16,6 +16,10 @@
             type="androidx.databinding.ObservableBoolean" />
 
         <variable
+            name="showClear"
+            type="androidx.databinding.ObservableBoolean" />
+
+        <variable
             name="totalFilters"
             type="Integer" />
 
@@ -63,17 +67,6 @@
                 android:visibility="gone"
                 app:layout_constraintStart_toEndOf="@id/back_button"
                 tools:ignore="RelativeOverlap" />
-
-            <ImageView
-                android:id="@+id/clear_button"
-                style="@style/ActionIcon"
-                android:onClick="@{()->presenter.onClearClick()}"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/moreOptions"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_refresh"
-                tools:ignore="ContentDescription" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/filterCounter"
@@ -255,7 +248,8 @@
                         android:id="@+id/clear_filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="19dp"
+                        android:padding="4dp"
+                        android:layout_marginEnd="12dp"
                         android:onClick="@{()->presenter.clearFilterClick()}"
                         android:visibility="@{totalFilters>0?View.VISIBLE:View.GONE}"
                         android:background="?selectableItemBackgroundBorderless"
@@ -269,7 +263,8 @@
                         android:id="@+id/close_filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
+                        android:padding="4dp"
+                        android:layout_marginEnd="12dp"
                         android:onClick="@{()->presenter.closeFilterClick()}"
                         android:background="?selectableItemBackgroundBorderless"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -381,7 +376,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:onClick="@{()->presenter.clearFilterClick()}"
-                android:visibility="@{totalFiltersSearch>0?View.VISIBLE:View.GONE}"
+                android:visibility="@{showClear?View.VISIBLE:View.GONE}"
                 app:backgroundTint="@color/white"
                 app:fabSize="mini"
                 app:tint="?colorPrimary"
@@ -394,7 +389,7 @@
                 android:id="@+id/enrollmentButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:layout_margin="16dp"
                 android:focusableInTouchMode="true"
                 android:onClick="@{(view)->presenter.onFabClick(needsSearch)}"
                 app:backgroundTint="@color/white"

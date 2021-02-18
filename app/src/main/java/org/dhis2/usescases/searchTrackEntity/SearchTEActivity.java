@@ -135,6 +135,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private int switchOpenClose = 2;
 
     ObservableBoolean needsSearch = new ObservableBoolean(true);
+    ObservableBoolean showClear = new ObservableBoolean(false);
 
     private SearchTeiLiveAdapter liveAdapter;
     private RelationshipLiveAdapter relationshipLiveAdapter;
@@ -167,6 +168,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
         binding.setPresenter(presenter);
         binding.setNeedsSearch(needsSearch);
+        binding.setShowClear(showClear);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         binding.setTotalFiltersSearch(presenter.getQueryData().size());
 
@@ -811,6 +813,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
         binding.filterOpen.setVisibility(backDropActive ? View.VISIBLE : View.GONE);
         ViewCompat.setElevation(binding.mainLayout, backDropActive ? 20 : 0);
+        ViewCompat.setElevation(binding.mapView, backDropActive ? 20 : 0);
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             activeFilter(general);
@@ -843,11 +846,21 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         filtersAdapter.submitList(filtersToDisplay);
     }
 
+    @Override
+    public void showClearSearch(boolean empty) {
+        showClear.set(empty);
+    }
+
     private void setFabVisibility(boolean show, boolean onNavBar) {
         binding.enrollmentButton.animate()
                 .setDuration(500)
                 .translationX(show ? 0 : 500)
                 .translationY(onNavBar ? -ExtensionsKt.getDp(56) : 0)
+                .start();
+
+        binding.clearFilterSearchButton.animate()
+                .setDuration(500)
+                .translationX(show && !onNavBar ? 0 : 500)
                 .start();
     }
 

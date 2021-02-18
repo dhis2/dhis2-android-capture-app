@@ -13,7 +13,6 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.clipWithRoundedCorners
 import org.dhis2.Bindings.dp
@@ -34,6 +33,7 @@ import org.dhis2.utils.granularsync.GranularSyncContracts
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * Created by ppajuelo on 18/10/2017.f
@@ -71,7 +71,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         (binding.drawerLayout.background as GradientDrawable).cornerRadius = 0f
         return binding.apply {
             presenter = this@ProgramFragment.presenter
-            programRecycler.clipWithRoundedCorners(16.dp)
+            drawerLayout.clipWithRoundedCorners(16.dp)
             programRecycler.itemAnimator = null
             programRecycler.adapter = adapter
             programRecycler.addItemDecoration(

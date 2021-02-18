@@ -20,6 +20,7 @@ import com.mapbox.geojson.FeatureCollection;
 import org.dhis2.R;
 import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.filter.FilterRepository;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
@@ -226,21 +227,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribe(data -> {
                             Map<String, String> queryDataBU = new HashMap<>(queryData);
                             view.setFabIcon(true);
-                            if (!DhisTextUtils.Companion.isEmpty(data.value())) {
-                                queryData.put(data.id(), data.value());
-                                if (data.requiresExactMatch())
-                                    if (data.value().equals("null_os_null"))
-                                        queryData.remove(data.id());
-                            } else {
-                                queryData.remove(data.id());
-                            }
+                            updateQueryData(data);
 
                             if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
-                                if (!DhisTextUtils.Companion.isEmpty(data.value()))
-                                    queryData.put(data.id(), data.value());
-                                else
-                                    queryData.remove(data.id());
+                                updateQueryData(data);
                             }
+                            view.showClearSearch(!queryData.isEmpty());
                         },
                         Timber::d)
         );
@@ -536,6 +528,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         isSearching = true;
         queryData.clear();
         view.setFabIcon(true);
+        view.showClearSearch(false);
         currentProgram.onNext(selectedProgram != null ? selectedProgram.uid() : "");
         queryProcessor.onNext(new HashMap<>());
     }
@@ -1022,5 +1015,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 searchRepository.getEventInfo(eventUid),
                 searchRepository.getTrackedEntityInfo(teiUid, selectedProgram, FilterManager.getInstance().getSortingItem())
         );
+    }
+
+    private void updateQueryData(RowAction data) {
+        if (DhisTextUtils.Companion.isEmpty(data.value())
+                || (data.requiresExactMatch() && data.value().equals("null_os_null"))) {
+            queryData.remove(data.id());
+        } else {
+            queryData.put(data.id(), data.value());
+        }
     }
 }
