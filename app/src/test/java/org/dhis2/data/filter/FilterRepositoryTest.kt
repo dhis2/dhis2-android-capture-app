@@ -50,7 +50,7 @@ class FilterRepositoryTest {
 
     @Test
     fun `Should get home filters without assign to me when webapp is not configured`() {
-        whenever(d2.settingModule()) doReturn null
+        whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn false
         whenever(
             d2.programModule().programStages().byEnableUserAssignment().eq(true)
         ) doReturn mock()
@@ -69,7 +69,7 @@ class FilterRepositoryTest {
 
     @Test
     fun `Should get home filters with assign to me when webapp is not configured`() {
-        whenever(d2.settingModule()) doReturn null
+        whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn false
         whenever(
             d2.programModule().programStages().byEnableUserAssignment().eq(true)
         ) doReturn mock()

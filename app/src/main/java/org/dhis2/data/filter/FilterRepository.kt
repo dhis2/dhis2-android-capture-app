@@ -443,7 +443,7 @@ class FilterRepository @Inject constructor(
     }
 
     private fun webAppIsNotConfigured(): Boolean {
-        return d2.settingModule() == null || d2.settingModule().appearanceSettings() == null
+        return !d2.settingModule().appearanceSettings().blockingExists()
     }
 
     private fun getTrackerFilters(program: Program, showWorkingLists: Boolean): List<FilterItem> {
