@@ -52,24 +52,7 @@ class EnrollmentRepository(
     private val enrollmentRepository: EnrollmentObjectRepository =
         d2.enrollmentModule().enrollments().uid(enrollmentUid)
 
-    private val canEditAttributes: Boolean
-
-    init {
-        canEditAttributes = getAttributeAccess()
-    }
-
-    private fun getAttributeAccess(): Boolean {
-        val selectedProgram = d2.programModule().programs().uid(
-            enrollmentRepository.blockingGet().program()
-        ).blockingGet()
-        val programAccess =
-            selectedProgram.access().data().write() != null && selectedProgram.access().data()
-                .write()
-        val teTypeAccess = d2.trackedEntityModule().trackedEntityTypes().uid(
-            selectedProgram.trackedEntityType()?.uid()
-        ).blockingGet().access().data().write()
-        return programAccess && teTypeAccess
-    }
+    private val canEditAttributes: Boolean = dhisEnrollmentUtils.canBeEdited(enrollmentUid)
 
     override fun enrollmentSectionUids(): Flowable<MutableList<String>> {
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
@@ -147,13 +130,13 @@ class EnrollmentRepository(
         for (section in programSections) {
             fields.add(transformSection(section))
             for (attribute in section.attributes()!!) {
-                val programTrackedEntityAttribute =
-                    d2.programModule().programTrackedEntityAttributes()
-                        .withRenderType()
-                        .byProgram().eq(programUid)
-                        .byTrackedEntityAttribute().eq(attribute.uid())
-                        .one().blockingGet()
-                fields.add(transform(programTrackedEntityAttribute!!, section.uid()))
+                d2.programModule().programTrackedEntityAttributes()
+                    .withRenderType()
+                    .byProgram().eq(programUid)
+                    .byTrackedEntityAttribute().eq(attribute.uid())
+                    .one().blockingGet()?.let { programTrackedEntityAttribute ->
+                    fields.add(transform(programTrackedEntityAttribute, section.uid()))
+                }
             }
         }
         return Single.just(fields)
