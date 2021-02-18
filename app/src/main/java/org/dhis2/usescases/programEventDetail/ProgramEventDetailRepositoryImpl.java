@@ -12,7 +12,6 @@ import com.mapbox.geojson.FeatureCollection;
 import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
 import org.dhis2.uicomponents.map.managers.EventMapManager;
@@ -27,15 +26,12 @@ import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
-import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventFilter;
-import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,11 +45,11 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     private final String programUid;
     private final FilterPresenter filterPresenter;
-    private D2 d2;
-    private ProgramEventMapper mapper;
-    private MapEventToFeatureCollection mapEventToFeatureCollection;
-    private MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection;
-    private DhisMapUtils mapUtils;
+    private final D2 d2;
+    private final ProgramEventMapper mapper;
+    private final MapEventToFeatureCollection mapEventToFeatureCollection;
+    private final MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection;
+    private final DhisMapUtils mapUtils;
 
     ProgramEventDetailRepositoryImpl(String programUid, D2 d2, ProgramEventMapper mapper, MapEventToFeatureCollection mapEventToFeatureCollection, MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
                                      DhisMapUtils mapUtils, FilterPresenter filterPresenter) {
@@ -69,14 +65,15 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     @Override
     public LiveData<PagedList<EventViewModel>> filteredProgramEvents() {
-        DataSource dataSource =  filterPresenter.filteredEventProgram(program().blockingFirst())
-                .withTrackedEntityDataValues()
+        DataSource<Event, EventViewModel> dataSource = filterPresenter
+                .filteredEventProgram(program().blockingFirst())
                 .getDataSource()
-                .map(event -> mapper.eventToEventViewModel(event));
+                .map(mapper::eventToEventViewModel);
 
-        return new LivePagedListBuilder(new DataSource.Factory() {
+        return new LivePagedListBuilder<>(new DataSource.Factory<Event, EventViewModel>() {
             @Override
-            public DataSource create() {
+            @NotNull
+            public DataSource<Event, EventViewModel> create() {
                 return dataSource;
             }
         }, 20).build();
@@ -86,7 +83,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @Override
     public Flowable<ProgramEventMapData> filteredEventsForMap() {
         return filterPresenter.filteredEventProgram(program().blockingFirst())
-                .withTrackedEntityDataValues()
                 .get()
                 .map(listEvents -> {
                     kotlin.Pair<FeatureCollection, BoundingBox> eventFeatureCollection =

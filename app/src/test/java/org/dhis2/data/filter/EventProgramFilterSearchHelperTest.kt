@@ -16,7 +16,7 @@ import org.dhis2.utils.filters.sorting.SortingItem
 import org.dhis2.utils.filters.sorting.SortingStatus
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.common.State
-import org.hisp.dhis.android.core.event.EventCollectionRepository
+import org.hisp.dhis.android.core.event.search.EventQueryCollectionRepository
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
@@ -69,17 +69,17 @@ class EventProgramFilterSearchHelperTest {
             Program.builder().uid("programUid").build()
         )
         verify(filterRepository, times(0)).applyOrgUnitFilter(
-            any<EventCollectionRepository>(),
+            any<EventQueryCollectionRepository>(),
             any()
         )
         verify(filterRepository, times(0))
-            .applyStateFilter(any<EventCollectionRepository>(), any())
+            .applyStateFilter(any<EventQueryCollectionRepository>(), any())
         verify(filterRepository, times(0))
-            .applyEventStatusFilter(any<EventCollectionRepository>(), any())
+            .applyEventStatusFilter(any<EventQueryCollectionRepository>(), any())
         verify(filterRepository, times(0))
-            .applyDateFilter(any<EventCollectionRepository>(), any())
+            .applyDateFilter(any<EventQueryCollectionRepository>(), any())
         verify(filterRepository, times(0))
-            .applyAssignToMe(any<EventCollectionRepository>())
+            .applyAssignToMe(any<EventQueryCollectionRepository>())
     }
 
     @Test
@@ -95,16 +95,16 @@ class EventProgramFilterSearchHelperTest {
         }
 
         whenever(
-            filterRepository.applyOrgUnitFilter(any<EventCollectionRepository>(), any())
+            filterRepository.applyOrgUnitFilter(any<EventQueryCollectionRepository>(), any())
         ) doReturn mock()
         whenever(
-            filterRepository.applyStateFilter(any<EventCollectionRepository>(), any())
+            filterRepository.applyStateFilter(any<EventQueryCollectionRepository>(), any())
         ) doReturn mock()
         whenever(
-            filterRepository.applyDateFilter(any<EventCollectionRepository>(), any())
+            filterRepository.applyDateFilter(any<EventQueryCollectionRepository>(), any())
         ) doReturn mock()
         whenever(
-            filterRepository.applyAssignToMe(any<EventCollectionRepository>())
+            filterRepository.applyAssignToMe(any<EventQueryCollectionRepository>())
         ) doReturn mock()
 
         eventFilterSearchHelper.getFilteredEventRepository(
@@ -112,13 +112,15 @@ class EventProgramFilterSearchHelperTest {
         )
 
         verify(filterRepository, times(1))
-            .applyOrgUnitFilter(any<EventCollectionRepository>(), any())
+            .applyOrgUnitFilter(any<EventQueryCollectionRepository>(), any())
         verify(filterRepository, times(1))
-            .applyStateFilter(any<EventCollectionRepository>(), any())
+            .applyOrgUnitFilter(any<EventQueryCollectionRepository>(), any())
         verify(filterRepository, times(1))
-            .applyDateFilter(any<EventCollectionRepository>(), any())
+            .applyStateFilter(any<EventQueryCollectionRepository>(), any())
         verify(filterRepository, times(1))
-            .applyAssignToMe(any<EventCollectionRepository>())
+            .applyDateFilter(any<EventQueryCollectionRepository>(), any())
+        verify(filterRepository, times(1))
+            .applyAssignToMe(any<EventQueryCollectionRepository>())
     }
 
     @Test

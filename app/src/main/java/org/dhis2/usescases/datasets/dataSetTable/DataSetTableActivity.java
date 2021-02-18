@@ -492,8 +492,12 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void saveAndFinish() {
-        Toast.makeText(this, R.string.save, Toast.LENGTH_SHORT).show();
-        finish();
+        if(presenter.isComplete()){
+            Toast.makeText(this, R.string.data_set_quality_check_done, Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(this, R.string.save, Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     public FlowableProcessor<Boolean> observeReopenChanges() {

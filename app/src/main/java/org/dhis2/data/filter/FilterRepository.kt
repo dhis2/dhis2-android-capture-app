@@ -25,8 +25,8 @@ import org.hisp.dhis.android.core.common.AssignedUserMode
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSetInstanceSummaryCollectionRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.event.EventStatus
+import org.hisp.dhis.android.core.event.search.EventQueryCollectionRepository
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
 import org.hisp.dhis.android.core.period.DatePeriod
@@ -85,17 +85,17 @@ class FilterRepository @Inject constructor(
     }
 
     fun applyEventStatusFilter(
-        repository: EventCollectionRepository,
+        repository: EventQueryCollectionRepository,
         eventStatuses: List<EventStatus>
-    ): EventCollectionRepository {
+    ): EventQueryCollectionRepository {
         return repository.byStatus().`in`(eventStatuses)
     }
 
     fun applyCategoryOptionComboFilter(
-        repository: EventCollectionRepository,
+        repository: EventQueryCollectionRepository,
         categoryOptionCombos: List<CategoryOptionCombo>
-    ): EventCollectionRepository {
-        return repository.byAttributeOptionComboUid().`in`(
+    ): EventQueryCollectionRepository {
+        return repository.byAttributeOptionCombo().`in`(
             categoryOptionCombos.map { it.uid() }
         )
     }
@@ -166,53 +166,54 @@ class FilterRepository @Inject constructor(
         return repository.orderByEnrollmentStatus().eq(orderDirection)
     }
 
-    fun eventsByProgram(programUid: String): EventCollectionRepository {
-        return d2.eventModule().events()
-            .byDeleted().isFalse
-            .byProgramUid().eq(programUid)
+    fun eventsByProgram(programUid: String): EventQueryCollectionRepository {
+        return d2.eventModule()
+            .eventQuery()
+            .byIncludeDeleted()
+            .eq(false)
+            .byProgram()
+            .eq(programUid)
     }
 
     fun applyOrgUnitFilter(
-        repository: EventCollectionRepository,
+        repository: EventQueryCollectionRepository,
         orgUnitUis: List<String>
-    ): EventCollectionRepository {
-        return repository.byOrganisationUnitUid().`in`(orgUnitUis)
+    ): EventQueryCollectionRepository {
+        return repository.byOrgUnits().`in`(orgUnitUis)
     }
 
     fun applyStateFilter(
-        repository: EventCollectionRepository,
+        repository: EventQueryCollectionRepository,
         states: List<State>
-    ): EventCollectionRepository {
-        return repository.byState().`in`(states)
+    ): EventQueryCollectionRepository {
+        return repository.byStates().`in`(states)
     }
 
     fun applyDateFilter(
-        repository: EventCollectionRepository,
-        datePeriods: List<DatePeriod>
-    ): EventCollectionRepository {
-        return repository.byEventDate().inDatePeriods(datePeriods)
+        repository: EventQueryCollectionRepository,
+        datePeriod: DatePeriod
+    ): EventQueryCollectionRepository {
+        return repository.byEventDate().inDatePeriod(datePeriod)
     }
 
-    fun applyAssignToMe(repository: EventCollectionRepository): EventCollectionRepository {
-        return repository.byAssignedUser().eq(currentUserUid())
-    }
-
-    private fun currentUserUid(): String {
-        return d2.userModule().user().blockingGet().uid()
+    fun applyAssignToMe(
+        repository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
+        return repository.byAssignedUser().eq(AssignedUserMode.CURRENT)
     }
 
     fun sortByEventDate(
-        repository: EventCollectionRepository,
+        repository: EventQueryCollectionRepository,
         orderDirection: RepositoryScope.OrderByDirection
-    ): EventCollectionRepository {
-        return repository.orderByEventDate(orderDirection)
+    ): EventQueryCollectionRepository {
+        return repository.orderByEventDate().eq(orderDirection)
     }
 
     fun sortByOrgUnit(
-        repository: EventCollectionRepository,
+        repository: EventQueryCollectionRepository,
         orderDirection: RepositoryScope.OrderByDirection
-    ): EventCollectionRepository {
-        return repository.orderByOrganisationUnitName(orderDirection)
+    ): EventQueryCollectionRepository {
+        return repository.orderByOrganisationUnitName().eq(orderDirection)
     }
 
     fun dataSetInstanceSummaries(): DataSetInstanceSummaryCollectionRepository {
@@ -250,7 +251,18 @@ class FilterRepository @Inject constructor(
         return d2.programModule().programs().uid(programUid).get()
             .map {
                 if (it.programType() == ProgramType.WITH_REGISTRATION) {
-                    getTrackerFilters(it)
+                    getTrackerFilters(it, true)
+                } else {
+                    getEventFilters(it)
+                }
+            }.blockingGet()
+    }
+
+    fun dashboardFilters(programUid: String): List<FilterItem> {
+        return d2.programModule().programs().uid(programUid).get()
+            .map {
+                if (it.programType() == ProgramType.WITH_REGISTRATION) {
+                    getTrackerFilters(it, false)
                 } else {
                     getEventFilters(it)
                 }
@@ -375,9 +387,12 @@ class FilterRepository @Inject constructor(
                     resources.filterResources.filterSyncLabel()
                 )
             )
-            if (!d2.programModule().programStages()
-                .byEnableUserAssignment().eq(true).blockingIsEmpty()
-            ) {
+            val stagesByUserAssignment = d2.programModule()
+                .programStages()
+                .byEnableUserAssignment()
+                .eq(true)
+
+            if (!stagesByUserAssignment.blockingIsEmpty()) {
                 add(
                     AssignedFilter(
                         programType = org.dhis2.utils.filters.ProgramType.ALL,
@@ -390,27 +405,29 @@ class FilterRepository @Inject constructor(
         }
     }
 
-    private fun getTrackerFilters(program: Program): List<FilterItem> {
+    private fun getTrackerFilters(program: Program, showWorkingLists: Boolean): List<FilterItem> {
         return mutableListOf<FilterItem>().apply {
-            val workingLists = d2.trackedEntityModule().trackedEntityInstanceFilters()
-                .byProgram().eq(program.uid())
-                .withTrackedEntityInstanceEventFilters()
-                .blockingGet()
-                .map {
-                    WorkingListItem(
-                        it.uid(),
-                        it.displayName() ?: ""
+            if (showWorkingLists) {
+                val workingLists = d2.trackedEntityModule().trackedEntityInstanceFilters()
+                    .byProgram().eq(program.uid())
+                    .withTrackedEntityInstanceEventFilters()
+                    .blockingGet()
+                    .map {
+                        WorkingListItem(
+                            it.uid(),
+                            it.displayName() ?: ""
+                        )
+                    }
+                if (workingLists.isNotEmpty()) {
+                    add(
+                        WorkingListFilter(
+                            workingLists,
+                            org.dhis2.utils.filters.ProgramType.TRACKER,
+                            observableSortingInject, observableOpenFilter,
+                            ""
+                        )
                     )
                 }
-            if (workingLists.isNotEmpty()) {
-                add(
-                    WorkingListFilter(
-                        workingLists,
-                        org.dhis2.utils.filters.ProgramType.TRACKER,
-                        observableSortingInject, observableOpenFilter,
-                        ""
-                    )
-                )
             }
             add(
                 PeriodFilter(
@@ -457,9 +474,15 @@ class FilterRepository @Inject constructor(
                     resources.filterResources.filterEventStatusLabel()
                 )
             )
-            if (!d2.programModule().programStages().byProgramUid().eq(program.uid())
-                .byEnableUserAssignment().eq(true).blockingIsEmpty()
-            ) {
+
+            val stagesByProgramUidAndUserAssignment = d2.programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid())
+                .byEnableUserAssignment()
+                .eq(true)
+
+            if (!stagesByProgramUidAndUserAssignment.blockingIsEmpty()) {
                 add(
                     AssignedFilter(
                         programType = org.dhis2.utils.filters.ProgramType.TRACKER,
@@ -522,9 +545,14 @@ class FilterRepository @Inject constructor(
                     resources.filterResources.filterEventStatusLabel()
                 )
             )
-            if (!d2.programModule().programStages().byProgramUid().eq(program.uid())
-                .byEnableUserAssignment().eq(true).blockingIsEmpty()
-            ) {
+            val stagesByProgramAndUserAssignment = d2.programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid())
+                .byEnableUserAssignment()
+                .eq(true)
+
+            if (!stagesByProgramAndUserAssignment.blockingIsEmpty()) {
                 add(
                     AssignedFilter(
                         programType = org.dhis2.utils.filters.ProgramType.EVENT,
@@ -562,12 +590,11 @@ class FilterRepository @Inject constructor(
     }
 
     fun applyWorkingList(
-        eventQuery: EventCollectionRepository,
+        eventQuery: EventQueryCollectionRepository,
         currentWorkingList: WorkingListItem?
-    ): EventCollectionRepository {
+    ): EventQueryCollectionRepository {
         return currentWorkingList?.let {
-            // TODO: Should be EventQueryCollectionRepository?
-            eventQuery
+            eventQuery.byEventFilter().eq(it.uid)
         } ?: eventQuery
     }
 }

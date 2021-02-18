@@ -5,8 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
-import com.mapbox.geojson.FeatureCollection;
-
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
@@ -15,8 +14,6 @@ import org.dhis2.utils.filters.sorting.SortingItem;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.Date;
@@ -26,16 +23,10 @@ import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.Single;
-
-/**
- * QUADRAM. Created by ppajuelo on 02/11/2017.
- */
 
 public interface SearchRepository {
 
-    @NonNull
-    Observable<SearchProgramAttributes> programAttributes(String programId);
+    Observable<List<FieldViewModel>> searchFields(@Nullable String programUid, Map<String, String> currentSearchValues);
 
     Observable<List<Program>> programsWithRegistration(String programTypeId);
 
@@ -54,7 +45,6 @@ public interface SearchRepository {
 
     String getProgramColor(@NonNull String programUid);
 
-    Observable<List<TrackedEntityAttribute>> trackedEntityTypeAttributes();
 
     Observable<TrackedEntityType> getTrackedEntityType(String trackedEntityUid);
 

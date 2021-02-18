@@ -68,7 +68,8 @@ class SearchTEPresenterTest {
             eventToEventUiComponent,
             preferenceProvider,
             workingListMapper,
-            filterRepository
+            filterRepository,
+            null
         )
     }
 

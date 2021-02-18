@@ -9,8 +9,7 @@ import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
-import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
-import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
@@ -53,6 +52,7 @@ import java.util.Objects;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -199,57 +199,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return renderingType;
     }
 
-    private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels) {
-        ArrayList<FieldViewModel> renderList = new ArrayList<>();
-
-        for (FieldViewModel fieldViewModel : fieldViewModels) {
-
-            ProgramStageSectionRenderingType renderingType = renderingType(fieldViewModel.programStageSection());
-            if (fieldViewModel instanceof ImageViewModel && !isEmpty(fieldViewModel.optionSet()) && renderingType != ProgramStageSectionRenderingType.LISTING) {
-                List<Option> options = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())
-                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                        .blockingGet();
-                for (Option option : options) {
-                    ValueTypeDeviceRendering fieldRendering = null;
-
-                    if (stageDataElementsMap.containsKey(fieldViewModel.uid())) {
-                        ProgramStageDataElement psDE = stageDataElementsMap.get(fieldViewModel.uid());
-                        fieldRendering = psDE.renderType() != null && psDE.renderType().mobile() != null ? psDE.renderType().mobile() : null;
-                    }
-
-                    ObjectStyle objectStyle = option.style();
-
-                    renderList.add(fieldFactory.create(
-                            fieldViewModel.uid() + "." + option.uid(),
-                            fieldViewModel.label() + ImageViewModel.NAME_CODE_DELIMITATOR + option.displayName() + ImageViewModel.NAME_CODE_DELIMITATOR + option.code(),
-                            ValueType.TEXT,
-                            fieldViewModel.mandatory(),
-                            fieldViewModel.optionSet(),
-                            fieldViewModel.value(),
-                            fieldViewModel.programStageSection(),
-                            fieldViewModel.allowFutureDate(),
-                            fieldViewModel.editable() == null ? false : fieldViewModel.editable(),
-                            renderingType, fieldViewModel.description(),
-                            fieldRendering,
-                            options.size(),
-                            objectStyle,
-                            fieldViewModel.fieldMask()));
-
-                }
-            } else if (fieldViewModel instanceof OptionSetViewModel) {
-                List<Option> options = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())
-                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                        .blockingGet();
-                renderList.add(((OptionSetViewModel) fieldViewModel).withOptions(options));
-            } else
-                renderList.add(fieldViewModel);
-        }
-        return renderList;
-    }
-
     @NonNull
     @Override
-    public Flowable<List<FieldViewModel>> list() {
+    public Flowable<List<FieldViewModel>> list(FlowableProcessor<RowAction> processor) {
         isEventEditable = isEventEditable(eventUid);
         if (!sectionFields.isEmpty()) {
             return Flowable.just(sectionFields)
@@ -274,15 +226,13 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                         boolean editable = fieldViewModel.editable() != null ? fieldViewModel.editable() : true;
                         fieldViewModel = fieldViewModel.withValue(value).withEditMode(editable || isEventEditable);
-
                         if (!error.isEmpty()) {
-                            fieldViewModel.withError(error);
+                            fieldViewModel = fieldViewModel.withError(error);
                         }
 
                         return fieldViewModel;
                     }).toList().toFlowable()
-                    .map(fieldViewModels -> sectionFields = fieldViewModels)
-                    .map(this::checkRenderType);
+                    .map(fieldViewModels -> sectionFields = fieldViewModels);
         } else {
             return Flowable.fromCallable(() -> {
                 List<ProgramStageDataElement> stageDataElements = d2.programModule().programStageDataElements()
@@ -332,6 +282,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         String description = de.displayDescription();
 
                         int optionCount = 0;
+                        List<Option> options;
                         if (!isEmpty(optionSet)) {
                             if (!isEmpty(dataValue)) {
                                 if (d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).one().blockingExists()) {
@@ -339,6 +290,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 }
                             }
                             optionCount = d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount();
+                            options = d2.optionModule().options().byOptionSetUid().eq(optionSet).orderBySortOrder(RepositoryScope.OrderByDirection.ASC).blockingGet();
+                        } else {
+                            options = new ArrayList<>();
                         }
 
                         ValueTypeDeviceRendering fieldRendering = programStageDataElement.renderType() != null ?
@@ -363,7 +317,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                         valueType, mandatory, optionSet, dataValue,
                                         programStageSection != null ? programStageSection.uid() : null, allowFutureDates,
                                         isEventEditable,
-                                        renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask());
+                                        renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(), processor, options);
 
                         if (!error.isEmpty()) {
                             return fieldViewModel.withError(error);
@@ -373,8 +327,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                     })
                     .toList().toFlowable()
-                    .map(data -> sectionFields = data)
-                    .map(this::checkRenderType);
+                    .map(data -> sectionFields = data);
         }
     }
 
@@ -470,10 +423,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             d2.eventModule().events().uid(eventUid).blockingGet().programStage()
                     ).blockingGet().access().data().write();
         return canWrite;
-    }
-
-    @Override
-    public void setLastUpdated(String lastUpdatedUid) {
     }
 
     @Override

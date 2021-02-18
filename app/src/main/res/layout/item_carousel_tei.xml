@@ -180,6 +180,11 @@
                     android:textColor="@color/textPrimary"
                     android:textSize="14sp"
                     android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}'
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    app:layout_constraintWidth_default="wrap"
+                    app:layout_constraintEnd_toStartOf="@+id/infoLayout"
+                    app:layout_constraintHorizontal_bias="0"
                     app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
                     app:layout_constraintTop_toTopOf="@id/tracked_entity_image"
                     tools:text="Attribute 1:" />
@@ -196,6 +201,11 @@
                     android:textColor="@color/textPrimary"
                     android:textSize="12sp"
                     android:visibility='@{attribute.size() > 1 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    app:layout_constraintWidth_default="wrap"
+                    app:layout_constraintEnd_toStartOf="@+id/infoLayout"
+                    app:layout_constraintHorizontal_bias="0"
                     app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
                     app:layout_constraintTop_toBottomOf="@id/attribute_a_name"
                     tools:text="Attribute 2:" />

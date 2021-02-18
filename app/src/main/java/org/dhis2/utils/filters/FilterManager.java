@@ -485,12 +485,14 @@ public class FilterManager implements Serializable {
         filterProcessor.onNext(this);
     }
 
-    public void clearWorkingList() {
+    public void clearWorkingList(boolean silently) {
         if (currentWorkingList != null) {
             currentWorkingList = null;
             setWorkingListScope(new EmptyWorkingList());
         }
-        filterProcessor.onNext(this);
+        if(!silently) {
+            filterProcessor.onNext(this);
+        }
     }
 
     public void clearSorting() {
@@ -586,6 +588,12 @@ public class FilterManager implements Serializable {
     }
 
     private void setFilterCountersForWorkingList(WorkingListScope scope) {
+        periodFiltersApplied.set(0);
+        enrollmentPeriodFiltersApplied.set(0);
+        enrollmentStatusFiltersApplied.set(0);
+        eventStatusFiltersApplied.set(0);
+        assignedToMeApplied.set(0);
+
         periodFiltersApplied.set(scope.eventDateCount());
         enrollmentPeriodFiltersApplied.set(scope.enrollmentDateCount());
         enrollmentStatusFiltersApplied.set(scope.enrollmentStatusCount());

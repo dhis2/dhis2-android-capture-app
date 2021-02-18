@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.SortedMap;
 
 public class DataValueContract {
 
@@ -30,6 +31,6 @@ public class DataValueContract {
 
         void updateTabLayout(int count);
 
-        void renderIndicators(@NotNull HashMap<String, String> indicators);
+        void renderIndicators(@NotNull SortedMap<String, String> indicators);
     }
 }
