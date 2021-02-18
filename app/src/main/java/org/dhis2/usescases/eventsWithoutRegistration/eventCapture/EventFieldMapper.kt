@@ -28,16 +28,15 @@ class EventFieldMapper(
     fun map(
         fields: MutableList<FieldViewModel>,
         sectionList: MutableList<FormSectionViewModel>,
-        sectionsToHide: MutableList<String>,
         currentSection: String,
         errors: MutableMap<String, String>,
         emptyMandatoryFields: MutableMap<String, FieldViewModel>,
         showErrors: Pair<Boolean, Boolean>
     ): Pair<MutableList<EventSectionModel>, MutableList<FieldViewModel>> {
         clearAll()
-        setFieldMap(fields, sectionList, sectionsToHide, showErrors.first, emptyMandatoryFields)
+        setFieldMap(fields, sectionList, showErrors.first, emptyMandatoryFields)
         sectionList.forEach {
-            handleSection(fields, sectionList, sectionsToHide, it, currentSection)
+            handleSection(fields, sectionList, it, currentSection)
         }
 
         if (eventSectionModels.first().sectionName() == "NO_SECTION") {
@@ -92,7 +91,6 @@ class EventFieldMapper(
     private fun setFieldMap(
         fields: List<FieldViewModel>,
         sectionList: List<FormSectionViewModel>,
-        sectionsToHide: List<String?>,
         showMandatoryErrors: Boolean,
         emptyMandatoryFields: MutableMap<String, FieldViewModel>
     ) {
@@ -109,9 +107,7 @@ class EventFieldMapper(
                         field
                     }
                 )
-                if (field !is DisplayViewModel &&
-                    !sectionsToHide.contains(field.programStageSection())
-                ) {
+                if (field !is DisplayViewModel) {
                     if (fieldIsNotOptionSetOrImage(field)) {
                         totalFields++
                     } else if (!optionSets.contains(field.optionSet())) {
@@ -142,11 +138,10 @@ class EventFieldMapper(
     private fun handleSection(
         fields: List<FieldViewModel>,
         sectionList: List<FormSectionViewModel>,
-        sectionsToHide: List<String?>,
         sectionModel: FormSectionViewModel,
         section: String
     ) {
-        if (isValidMultiSection(sectionList, sectionModel, sectionsToHide)) {
+        if (isValidMultiSection(sectionList, sectionModel)) {
             handleMultiSection(sectionModel, section)
         } else if (isValidSingleSection(sectionList, sectionModel)) {
             handleSingleSection(fields, sectionModel)
@@ -155,11 +150,9 @@ class EventFieldMapper(
 
     private fun isValidMultiSection(
         sectionList: List<FormSectionViewModel>,
-        sectionModel: FormSectionViewModel,
-        sectionsToHide: List<String?>
+        sectionModel: FormSectionViewModel
     ): Boolean {
-        return sectionList.isNotEmpty() && sectionModel.sectionUid()!!
-            .isNotEmpty() && !sectionsToHide.contains(sectionModel.sectionUid())
+        return sectionList.isNotEmpty() && sectionModel.sectionUid()!!.isNotEmpty()
     }
 
     private fun isValidSingleSection(
@@ -197,17 +190,19 @@ class EventFieldMapper(
             )
         )
         val isOpen = sectionModel.sectionUid() == section
-        finalFieldList.add(
-            fieldFactory.createSection(
-                sectionModel.sectionUid(),
-                sectionModel.label(),
-                "",
-                isOpen,
-                finalFields.keys.size,
-                cont,
-                sectionModel.renderType()
+        if (fieldMap[sectionModel.sectionUid()]?.isNotEmpty() == true) {
+            finalFieldList.add(
+                fieldFactory.createSection(
+                    sectionModel.sectionUid(),
+                    sectionModel.label(),
+                    "",
+                    isOpen,
+                    finalFields.keys.size,
+                    cont,
+                    sectionModel.renderType()
+                )
             )
-        )
+        }
         if (isOpen && fieldMap[sectionModel.sectionUid()] != null) {
             finalFieldList.addAll(fieldMap[sectionModel.sectionUid()] as Collection<FieldViewModel>)
         }

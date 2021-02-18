@@ -27,6 +27,7 @@ import org.hisp.dhis.rules.models.RuleActionShowWarning
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion
 import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Assert
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -97,6 +98,7 @@ class RulesUtilsProviderImplTest {
 
         testRuleEffects.add(
             RuleEffect.create(
+                "ruleUid",
                 RuleActionShowWarning.create("content", "action_data", testingUid),
                 "data"
             )
@@ -118,6 +120,7 @@ class RulesUtilsProviderImplTest {
 
         testRuleEffects.add(
             RuleEffect.create(
+                "ruleUid",
                 RuleActionShowError.create("content", "action_data", testingUid),
                 "data"
             )
@@ -144,6 +147,7 @@ class RulesUtilsProviderImplTest {
         val testingUid = "uid3"
         testRuleEffects.add(
             RuleEffect.create(
+                "ruleUid",
                 RuleActionHideField.create("content", testingUid),
                 "data"
             )
@@ -163,6 +167,7 @@ class RulesUtilsProviderImplTest {
     fun `RuleActionDisplayText Should not add new DisplayViewModel`() {
         testRuleEffects.add(
             RuleEffect.create(
+                "ruleUid",
                 RuleActionDisplayText.createForFeedback("content", "action data"),
                 "data"
             )
@@ -184,6 +189,7 @@ class RulesUtilsProviderImplTest {
     fun `RuleActionDisplayKeyValuePair should not add new DisplayViewModel`() {
         testRuleEffects.add(
             RuleEffect.create(
+                "ruleUid",
                 RuleActionDisplayKeyValuePair.createForIndicators("content", "action data"),
                 "data"
             )
@@ -206,10 +212,16 @@ class RulesUtilsProviderImplTest {
         val testingSectionUid = "section2"
         testRuleEffects.add(
             RuleEffect.create(
+                "ruleUid",
                 RuleActionHideSection.create(testingSectionUid),
                 "data"
             )
         )
+
+        val mandatoryFieldUid = "uid3"
+        testFieldViewModels.apply {
+            put(mandatoryFieldUid, get(mandatoryFieldUid)!!.setMandatory())
+        }
 
         ruleUtils.applyRuleEffects(
             testFieldViewModels,
@@ -217,7 +229,9 @@ class RulesUtilsProviderImplTest {
             actionCallbacks
         )
 
-        verify(actionCallbacks, times(1)).setHideSection(testingSectionUid)
+        assertTrue(testFieldViewModels[mandatoryFieldUid] != null)
+        assertTrue(testFieldViewModels["uid4"] == null)
+        assertTrue(testFieldViewModels["uid5"] == null)
     }
 
     @Test
@@ -226,6 +240,7 @@ class RulesUtilsProviderImplTest {
 
         testRuleEffects.add(
             RuleEffect.create(
+                "ruleUid",
                 RuleActionAssign.create("content", "data", testingUid),
                 "data"
             )
@@ -249,12 +264,14 @@ class RulesUtilsProviderImplTest {
 
         testRuleEffects.add(
             RuleEffect.create(
+                "ruleUid1",
                 RuleActionAssign.create("content", "data", testingUid),
                 "data"
             )
         )
         testRuleEffects.add(
             RuleEffect.create(
+                "ruleUid2",
                 RuleActionAssign.create("content", "data", testingUid2),
                 "test"
             )
@@ -278,6 +295,7 @@ class RulesUtilsProviderImplTest {
     fun `RuleActionAssign should set a value to calculated value`() {
         testRuleEffects.add(
             RuleEffect.create(
+                "ruleUid",
                 RuleActionAssign.create("content", "data", null),
                 "data"
             )
@@ -298,6 +316,7 @@ class RulesUtilsProviderImplTest {
 
         testRuleEffects.add(
             RuleEffect.create(
+                "ruleUid",
                 RuleActionSetMandatoryField.create(testingUid),
                 "data"
             )
@@ -318,6 +337,7 @@ class RulesUtilsProviderImplTest {
 
         testRuleEffects.add(
             RuleEffect.create(
+                "ruleUid",
                 RuleActionWarningOnCompletion.create("content", "action_data", testingUid),
                 "data"
             )
@@ -339,6 +359,7 @@ class RulesUtilsProviderImplTest {
 
         testRuleEffects.add(
             RuleEffect.create(
+                "ruleUid",
                 RuleActionErrorOnCompletion.create("content", "action_data", testingUid),
                 "data"
             )
@@ -359,6 +380,7 @@ class RulesUtilsProviderImplTest {
         val testingUid = "stageUid"
         testRuleEffects.add(
             RuleEffect.create(
+                "ruleUid",
                 RuleActionHideProgramStage.create(testingUid),
                 "data"
             )
@@ -381,6 +403,7 @@ class RulesUtilsProviderImplTest {
     fun `RuleActionHideOption should execute callback action`() {
         testRuleEffects.add(
             RuleEffect.create(
+                "ruleUid",
                 RuleActionHideOption.create("content", "optionUid", "field"),
                 "data"
             )
@@ -399,6 +422,7 @@ class RulesUtilsProviderImplTest {
     fun `RuleActionHideOptionGroup should execute callback action`() {
         testRuleEffects.add(
             RuleEffect.create(
+                "ruleUid",
                 RuleActionHideOptionGroup.create("content", "optionGroupUid", "field"),
                 "data"
             )
@@ -417,6 +441,7 @@ class RulesUtilsProviderImplTest {
     fun `RuleActionShowOptionGroup should execute callback action`() {
         testRuleEffects.add(
             RuleEffect.create(
+                "ruleUid",
                 RuleActionShowOptionGroup.create("content", "optionGroupUid", "field"),
                 "data"
             )
