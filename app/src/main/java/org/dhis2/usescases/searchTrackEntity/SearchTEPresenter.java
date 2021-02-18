@@ -19,6 +19,7 @@ import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.R;
 import org.dhis2.data.dhislogic.DhisMapUtils;
+import org.dhis2.data.forms.dataentry.fields.ActionType;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.prefs.Preference;
@@ -222,16 +223,17 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(data -> {
-                            Map<String, String> queryDataBU = new HashMap<>(queryData);
-                            view.setFabIcon(true);
-                            updateQueryData(data);
+                    if (data.getType() == ActionType.ON_TEXT_CHANGE || data.getType() == ActionType.ON_SAVE) {
+                        Map<String, String> queryDataBU = new HashMap<>(queryData);
+                        view.setFabIcon(true);
+                        updateQueryData(data);
 
-                            if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
-                                updateQueryData(data);
-                            }
-                            view.showClearSearch(!queryData.isEmpty());
-                        },
-                        Timber::d)
+                        if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
+                            updateQueryData(data);
+                        }
+                        view.showClearSearch(!queryData.isEmpty());
+                    }
+                    }, Timber::d)
         );
 
 

@@ -493,8 +493,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void setFormData(List<FieldViewModel> data) {
-        adapter.swap(data, () -> {
-        });
+        adapter.swap(data, () -> adapter.notifyDataSetChanged());
         updateFiltersSearch(presenter.getQueryData().size());
     }
 
