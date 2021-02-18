@@ -1006,7 +1006,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private void updateQueryData(RowAction data) {
         if (DhisTextUtils.Companion.isEmpty(data.getValue())
-                || (data.geRequiresExactMatch() && data.getValue().equals("null_os_null"))) {
+                || (data.getRequiresExactMatch() && data.getValue().equals("null_os_null"))) {
             queryData.remove(data.getId());
         } else {
             queryData.put(data.getId(), data.getValue());
