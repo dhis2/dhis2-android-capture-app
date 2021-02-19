@@ -1,0 +1,9 @@
+{
+  "serverUrl": "https://play.dhis2.org/android-dev",
+  "loginLabel": "Login with X",
+  "clientId": "1019417002544-mqa7flk4mjohrgsbg9bta9bvluoj85o0.apps.googleusercontent.com",
+  "redirectUri": "com.googleusercontent.apps.1019417002544-mqa7flk4mjohrgsbg9bta9bvluoj85o0:/oauth2redirect",
+  "discoveryUri": "https://accounts.google.com/.well-known/openid-configuration",
+  "authorizationUrl": null,
+  "tokenUrl": null
+}

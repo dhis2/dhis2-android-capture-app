@@ -1,11 +1,13 @@
 package org.dhis2.usescases.login
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import org.dhis2.data.dagger.PerActivity
 import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.usescases.login.auth.OpenIdProviders
 import org.dhis2.utils.analytics.AnalyticsHelper
 
 /**
@@ -31,5 +33,11 @@ class LoginModule(private val view: LoginContracts.View) {
             fingerPrintController,
             analyticsHelper
         )
+    }
+
+    @Provides
+    @PerActivity
+    fun openIdProviders(context: Context): OpenIdProviders {
+        return OpenIdProviders(context)
     }
 }

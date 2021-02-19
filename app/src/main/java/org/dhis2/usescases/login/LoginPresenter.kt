@@ -8,8 +8,6 @@ import androidx.annotation.VisibleForTesting
 import co.infinum.goldfinger.Goldfinger
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.processors.FlowableProcessor
-import io.reactivex.processors.PublishProcessor
 import org.dhis2.App
 import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.data.fingerprint.Type
@@ -51,7 +49,6 @@ class LoginPresenter(
 ) {
 
     private var userManager: UserManager? = null
-    private val serverUrlFlowable: FlowableProcessor<String> = PublishProcessor.create()
     var disposable: CompositeDisposable = CompositeDisposable()
 
     private var canHandleBiometrics: Boolean? = null
@@ -343,7 +340,7 @@ class LoginPresenter(
 
     fun areSameCredentials(serverUrl: String, userName: String, pass: String): Boolean {
         return preferenceProvider.areCredentialsSet() &&
-                preferenceProvider.areSameCredentials(serverUrl, userName, pass)
+            preferenceProvider.areSameCredentials(serverUrl, userName, pass)
     }
 
     fun saveUserCredentials(serverUrl: String, userName: String, pass: String) {
@@ -356,10 +353,10 @@ class LoginPresenter(
             fingerPrintController.authenticate(view.getPromptParams())
                 .map { result ->
                     if (preferenceProvider.contains(
-                            SECURE_SERVER_URL,
-                            SECURE_USER_NAME,
-                            SECURE_PASS
-                        )
+                        SECURE_SERVER_URL,
+                        SECURE_USER_NAME,
+                        SECURE_PASS
+                    )
                     ) {
                         Result.success(result)
                     } else {
@@ -428,10 +425,6 @@ class LoginPresenter(
     @RestrictTo(Scope.TESTS)
     fun setUserManager(userManager: UserManager) {
         this.userManager = userManager
-    }
-
-    fun discoverLoginOptions(serverUrl: String) {
-        serverUrlFlowable.onNext(serverUrl)
     }
 
     companion object {

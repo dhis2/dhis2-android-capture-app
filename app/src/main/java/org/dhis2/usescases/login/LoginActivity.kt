@@ -18,6 +18,10 @@ import androidx.lifecycle.ViewModelProviders
 import co.infinum.goldfinger.Goldfinger
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.io.StringWriter
+import javax.inject.Inject
 import okhttp3.HttpUrl
 import org.dhis2.App
 import org.dhis2.Bindings.app
@@ -30,6 +34,7 @@ import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.auth.AuthServiceModel
+import org.dhis2.usescases.login.auth.OpenIdProviders
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.usescases.sync.SyncActivity
@@ -48,10 +53,6 @@ import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import timber.log.Timber
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.StringWriter
-import javax.inject.Inject
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
@@ -60,6 +61,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     @Inject
     lateinit var presenter: LoginPresenter
+
+    @Inject
+    lateinit var openIdProviders: OpenIdProviders
 
     private var isPinScreenVisible = false
     private var qrUrl: String? = null
@@ -105,19 +109,18 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             }
         )
 
-        loginViewModel.serverUrl.observe(
-            this,
-            Observer { serverUrl ->
-                presenter.discoverLoginOptions(serverUrl)
-            }
-        )
+        openIdProviders.loadOpenIdProvider {
+            showLoginOptions(it.takeIf { it.hasConfiguration() })
+        }
 
         binding.serverUrlEdit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 if (checkUrl(binding.serverUrlEdit.text.toString())) {
                     binding.accountRecovery.visibility = View.VISIBLE
+                    binding.loginOpenId.isEnabled = true
                 } else {
                     binding.accountRecovery.visibility = View.GONE
+                    binding.loginOpenId.isEnabled = false
                 }
             }
 
@@ -148,8 +151,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private fun checkUrl(urlString: String): Boolean {
         return URLUtil.isValidUrl(urlString) &&
-                Patterns.WEB_URL.matcher(urlString).matches() &&
-                HttpUrl.parse(urlString) != null
+            Patterns.WEB_URL.matcher(urlString).matches() &&
+            HttpUrl.parse(urlString) != null
     }
 
     override fun setTestingCredentials() {
@@ -320,10 +323,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         (context.applicationContext as App).createUserComponent()
 
         if (!presenter.areSameCredentials(
-                binding.serverUrlEdit.text.toString(),
-                binding.userNameEdit.text.toString(),
-                binding.userPassEdit.text.toString()
-            )
+            binding.serverUrlEdit.text.toString(),
+            binding.userNameEdit.text.toString(),
+            binding.userPassEdit.text.toString()
+        )
         ) {
             if (presenter.canHandleBiometrics() == true) {
                 showInfoDialog(
@@ -371,9 +374,13 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         if (requestCode == RQ_QR_SCANNER && resultCode == Activity.RESULT_OK) {
             qrUrl = data?.getStringExtra(Constants.EXTRA_DATA)
             qrUrl?.let { setUrl(it) }
-        }else if(resultCode == Activity.RESULT_OK){
+        } else if (resultCode == Activity.RESULT_OK) {
             data?.let {
-                presenter.handleAuthResponseData(binding.serverUrlEdit.text.toString(), data, requestCode)
+                presenter.handleAuthResponseData(
+                    binding.serverUrlEdit.text.toString(),
+                    data,
+                    requestCode
+                )
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -426,12 +433,13 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             .negativeButtonText(R.string.cancel)
             .build()
 
-    override fun showLoginOptions(authService: AuthServiceModel?) {
-        authService?.openIDConnectConfig?.let { config ->
+    private fun showLoginOptions(authServiceModel: AuthServiceModel?) {
+        authServiceModel?.let {
+            binding.serverUrlEdit.setText(authServiceModel.serverUrl)
             binding.loginOpenId.visibility = View.VISIBLE
-            binding.loginOpenId.text = authService.loginLabel
+            binding.loginOpenId.text = authServiceModel.loginLabel
             binding.loginOpenId.setOnClickListener {
-                presenter.openIdLogin(config)
+                presenter.openIdLogin(authServiceModel.toOpenIdConfig())
             }
         }
     }

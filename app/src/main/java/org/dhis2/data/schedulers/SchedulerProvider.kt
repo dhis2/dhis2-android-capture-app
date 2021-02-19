@@ -30,7 +30,7 @@ fun <T> Observable<T>.defaultSubscribe(
 fun <T> Flowable<T>.defaultSubscribe(
     schedulerProvider: SchedulerProvider,
     onNext: (T) -> Unit? = {},
-    onError: (Throwable) -> Unit? = { Timber.d(it)},
+    onError: (Throwable) -> Unit? = { Timber.d(it) },
     onComplete: () -> Unit? = {}
 ): Disposable {
     return subscribeOn(schedulerProvider.io())
