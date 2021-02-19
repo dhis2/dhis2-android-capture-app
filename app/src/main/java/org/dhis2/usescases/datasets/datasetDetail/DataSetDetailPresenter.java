@@ -43,7 +43,11 @@ public class DataSetDetailPresenter {
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(filterItems -> {
-                                    view.setFilters(filterItems);
+                                    if (filterItems.isEmpty()){
+                                        view.hideFilters();
+                                    } else {
+                                        view.setFilters(filterItems);
+                                    }
                                 },
                                 Timber::d
                         )

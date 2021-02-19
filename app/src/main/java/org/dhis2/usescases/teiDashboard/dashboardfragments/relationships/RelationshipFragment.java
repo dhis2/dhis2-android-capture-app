@@ -99,7 +99,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         });
 
         TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) getContext();
-        activity.relationshipMap().observe(this, showMap -> {
+        activity.relationshipMap().observe(getViewLifecycleOwner(), showMap -> {
             binding.relationshipRecycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
             binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
             binding.mapLayerButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
@@ -316,7 +316,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                         })
                         .build();
         binding.mapCarousel.setAdapter(carouselAdapter);
-        binding.mapCarousel.attachToMapManager(relationshipMapManager, (feature, found) -> true);
+        binding.mapCarousel.setCallback((feature, found) -> true);
+        binding.mapCarousel.attachToMapManager(relationshipMapManager);
         carouselAdapter.addItems(relationships);
 
         animations.endMapLoading(binding.mapCarousel);

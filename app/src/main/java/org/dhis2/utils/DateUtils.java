@@ -4,6 +4,7 @@ package org.dhis2.utils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.apache.commons.text.WordUtils;
 import org.dhis2.data.forms.section.viewmodels.date.DatePickerDialogFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.customviews.RxDateDialog;
@@ -748,7 +749,7 @@ public class DateUtils {
                 break;
         }
 
-        return formattedDate;
+        return WordUtils.capitalize(formattedDate);
     }
 
     /**

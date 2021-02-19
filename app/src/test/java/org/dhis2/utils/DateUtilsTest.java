@@ -516,11 +516,11 @@ public class DateUtilsTest {
 
         assertEquals("11/1/2019", DateUtils.getInstance().getPeriodUIString(null, testDate, Locale.ENGLISH));
         assertEquals("11/1/2019", DateUtils.getInstance().getPeriodUIString(PeriodType.Daily, testDate, Locale.ENGLISH));
-        assertEquals("Week 2 2019-01-07 to  2019-01-13", DateUtils.getInstance().getPeriodUIString(PeriodType.Weekly, testDate, Locale.ENGLISH));
-        assertEquals("Week 2 2019-01-09 to  2019-01-15", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklyWednesday, testDate, Locale.ENGLISH));
-        assertEquals("Week 2 2019-01-10 to  2019-01-16", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklyThursday, testDate, Locale.ENGLISH));
-        assertEquals("Week 1 2019-01-05 to  2019-01-11", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklySaturday, testDate, Locale.ENGLISH));
-        assertEquals("Week 2 2019-01-06 to  2019-01-12", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklySunday, testDate, Locale.ENGLISH));
+        assertEquals("Week 2 2019-01-07 To  2019-01-13", DateUtils.getInstance().getPeriodUIString(PeriodType.Weekly, testDate, Locale.ENGLISH));
+        assertEquals("Week 2 2019-01-09 To  2019-01-15", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklyWednesday, testDate, Locale.ENGLISH));
+        assertEquals("Week 2 2019-01-10 To  2019-01-16", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklyThursday, testDate, Locale.ENGLISH));
+        assertEquals("Week 1 2019-01-05 To  2019-01-11", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklySaturday, testDate, Locale.ENGLISH));
+        assertEquals("Week 2 2019-01-06 To  2019-01-12", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklySunday, testDate, Locale.ENGLISH));
         assertEquals("2 2019 - 3 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.BiWeekly, testDate, Locale.ENGLISH));
         assertEquals("Jan 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.Monthly, testDate, Locale.ENGLISH));
         assertEquals("Jan 2019 - Feb 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.BiMonthly, testDate, Locale.ENGLISH));

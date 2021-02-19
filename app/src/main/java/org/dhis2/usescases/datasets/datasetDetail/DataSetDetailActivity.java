@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets.datasetDetail;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
@@ -10,6 +11,7 @@ import android.transition.TransitionManager;
 import android.view.View;
 
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
@@ -126,6 +128,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         initSet.applyTo(binding.backdropLayout);
 
         binding.filterOpen.setVisibility(backDropActive ? View.VISIBLE : View.GONE);
+        ViewCompat.setElevation(binding.eventsLayout, backDropActive ? 20 : 0);
     }
 
     @Override
@@ -227,5 +230,10 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Override
     public void setFilters(List<FilterItem> filterItems) {
         filtersAdapter.submitList(filterItems);
+    }
+
+    @Override
+    public void hideFilters() {
+        binding.filter.setVisibility(View.GONE);
     }
 }
