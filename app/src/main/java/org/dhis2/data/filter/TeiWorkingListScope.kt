@@ -3,6 +3,7 @@ package org.dhis2.data.filter
 import org.dhis2.utils.filters.Filters
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.common.AssignedUserMode
+import org.hisp.dhis.android.core.event.search.EventQueryRepositoryScope
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryRepositoryScope
 
 sealed class WorkingListScope {
@@ -111,7 +112,7 @@ fun TrackedEntityInstanceQueryRepositoryScope.mapToWorkingListScope(
     )
 }
 
-/*fun EventQueryRepositoryScope.mapToEventWorkingListScope(
+fun EventQueryRepositoryScope.mapToEventWorkingListScope(
     resources: ResourceManager
 ): EventWorkingListScope {
     return EventWorkingListScope(
@@ -120,4 +121,4 @@ fun TrackedEntityInstanceQueryRepositoryScope.mapToWorkingListScope(
         eventStatus()?.let { resources.filterResources.eventStatusToText(it) },
         assignedUserMode()
     )
-}*/
+}
