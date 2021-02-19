@@ -69,6 +69,7 @@ import javax.inject.Inject;
 import kotlin.Unit;
 import timber.log.Timber;
 
+import static android.view.View.GONE;
 import static org.dhis2.R.layout.activity_program_event_detail;
 import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection.EVENT;
 import static org.dhis2.utils.Constants.ORG_UNIT;
@@ -234,13 +235,13 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void setLiveData(LiveData<PagedList<EventViewModel>> pagedListLiveData) {
         pagedListLiveData.observe(this, pagedList -> {
-            binding.programProgress.setVisibility(View.GONE);
+            binding.programProgress.setVisibility(GONE);
             liveAdapter.submitList(pagedList, () -> {
                 if (binding.recycler.getAdapter() != null && binding.recycler.getAdapter().getItemCount() == 0) {
                     binding.emptyTeis.setVisibility(View.VISIBLE);
-                    binding.recycler.setVisibility(View.GONE);
+                    binding.recycler.setVisibility(GONE);
                 } else {
-                    binding.emptyTeis.setVisibility(View.GONE);
+                    binding.emptyTeis.setVisibility(GONE);
                     binding.recycler.setVisibility(View.VISIBLE);
                 }
             });
@@ -253,10 +254,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public void setOptionComboAccess(Boolean canCreateEvent) {
         switch (binding.addEventButton.getVisibility()) {
             case View.VISIBLE:
-                binding.addEventButton.setVisibility(canCreateEvent ? View.VISIBLE : View.GONE);
+                binding.addEventButton.setVisibility(canCreateEvent ? View.VISIBLE : GONE);
                 break;
-            case View.GONE:
-                binding.addEventButton.setVisibility(View.GONE);
+            case GONE:
+                binding.addEventButton.setVisibility(GONE);
                 break;
         }
 
@@ -310,10 +311,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public void setWritePermission(Boolean canWrite) {
         switch (binding.addEventButton.getVisibility()) {
             case View.VISIBLE:
-                binding.addEventButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
+                binding.addEventButton.setVisibility(canWrite ? View.VISIBLE : GONE);
                 break;
-            case View.GONE:
-                binding.addEventButton.setVisibility(View.GONE);
+            case GONE:
+                binding.addEventButton.setVisibility(GONE);
                 break;
         }
         if (binding.addEventButton.getVisibility() == View.VISIBLE) {
@@ -458,11 +459,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             }
             return false;
         });
-        boolean mapVisible = binding.mapView.getVisibility() != View.GONE;
-        boolean listVisible = binding.recycler.getVisibility() != View.GONE;
+        boolean mapVisible = binding.mapView.getVisibility() != GONE;
+        boolean listVisible = binding.recycler.getVisibility() != GONE;
         boolean emptyVisible = !mapVisible && !listVisible;
         popupMenu.getMenu().getItem(0).setVisible(!emptyVisible && !mapVisible && featureType != FeatureType.NONE);
-        popupMenu.getMenu().getItem(1).setVisible(!emptyVisible && binding.recycler.getVisibility() == View.GONE && featureType != FeatureType.NONE);
+        popupMenu.getMenu().getItem(1).setVisible(!emptyVisible && binding.recycler.getVisibility() == GONE && featureType != FeatureType.NONE);
         popupMenu.show();
     }
 
@@ -500,10 +501,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     private void showMap(boolean showMap) {
-        binding.recycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
-        binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
-        binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : View.GONE);
-        binding.addEventButton.setVisibility(showMap ? View.GONE : View.VISIBLE);
+        binding.recycler.setVisibility(showMap ? GONE : View.VISIBLE);
+        binding.mapView.setVisibility(showMap ? View.VISIBLE : GONE);
+        binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : GONE);
+        binding.addEventButton.setVisibility(showMap ? GONE : View.VISIBLE);
 
         if (showMap) {
             binding.toolbarProgress.setVisibility(View.VISIBLE);
@@ -516,7 +517,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 return Unit.INSTANCE;
             });
         } else {
-            binding.mapLayerButton.setVisibility(View.GONE);
+            binding.mapLayerButton.setVisibility(GONE);
         }
     }
 
@@ -558,5 +559,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void setFilterItems(List<FilterItem> programFilters) {
         filtersAdapter.submitList(programFilters);
+    }
+
+    @Override
+    public void hideFilters() {
+        binding.filter.setVisibility(GONE);
     }
 }

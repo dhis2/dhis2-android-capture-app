@@ -231,4 +231,9 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     public void setFilters(List<FilterItem> filterItems) {
         filtersAdapter.submitList(filterItems);
     }
+
+    @Override
+    public void hideFilters() {
+        binding.filter.setVisibility(View.GONE);
+    }
 }

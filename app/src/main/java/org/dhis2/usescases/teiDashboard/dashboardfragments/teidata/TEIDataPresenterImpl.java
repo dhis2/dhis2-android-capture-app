@@ -118,8 +118,13 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                         .flatMap(fManager -> Flowable.just(filterRepository.dashboardFilters(programUid)))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                view::setFilters,
+                        .subscribe(filters -> {
+                                    if (filters.isEmpty()){
+                                        view.hideFilters();
+                                    } else {
+                                        view.setFilters(filters);
+                                    }
+                                },
                                 Timber::e
                         )
         );

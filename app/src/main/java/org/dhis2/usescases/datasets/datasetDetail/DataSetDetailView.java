@@ -64,4 +64,6 @@ interface DataSetDetailView extends AbstractActivityContracts.View {
     void showCatOptComboDialog(String catComboUid);
 
     void setFilters(List<FilterItem> filterItems);
+
+    void hideFilters();
 }

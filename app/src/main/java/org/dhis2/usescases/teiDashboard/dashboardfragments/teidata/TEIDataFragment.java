@@ -291,6 +291,11 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
+    public void hideFilters() {
+        activity.hideFilter();
+    }
+
+    @Override
     public Flowable<String> observeStageSelection(Program currentProgram, Enrollment currentEnrollment) {
         if (adapter == null) {
             adapter = new EventAdapter(presenter, currentProgram);
