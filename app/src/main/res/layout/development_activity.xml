@@ -10,7 +10,7 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/navigationView"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
@@ -169,25 +169,17 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:background="@color/primaryAlpha"
-                    android:text="Navigation"
+                    android:text="Break the glass"
                     android:textColor="@color/colorAccent" />
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/navigationVisibilityButton"
+                    android:id="@+id/breakGlassButton"
                     style="@style/Widget.MaterialComponents.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
-                    android:text="Hide navigation bar" />
+                    android:text="Show dialog" />
 
             </LinearLayout>
         </ScrollView>
-
-        <org.dhis2.utils.customviews.DhisBottomNavigationBar
-            android:id="@+id/navigationView"
-            style="@style/DhisBottomNavigationView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:menu="@menu/navigation_dashboard_menu" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
