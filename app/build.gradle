@@ -64,7 +64,6 @@ android {
         }
 
         manifestPlaceholders = [
-//                appAuthRedirectScheme: 'com.googleusercontent.apps.652593417937-0bpi96sefm1ig0uo7cecjgcbsla7onue'
                 appAuthRedirectScheme: ''
         ]
     }
