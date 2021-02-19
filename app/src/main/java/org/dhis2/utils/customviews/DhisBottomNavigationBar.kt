@@ -67,10 +67,12 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
     fun hide() {
         animations.hide {
             hidden = true
+            visibility = View.GONE
         }
     }
 
     fun show() {
+        visibility = View.VISIBLE
         animations.show {
             hidden = false
         }

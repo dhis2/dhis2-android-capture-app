@@ -4,12 +4,12 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.rules.models.RuleEffect;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 import java.util.List;
@@ -18,6 +18,7 @@ import java.util.Map;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.subjects.BehaviorSubject;
 
 /**
@@ -64,6 +65,10 @@ public class EventCaptureContract {
         void showProgress();
 
         void hideProgress();
+
+        void showNavigationBar();
+
+        void hideNavigationBar();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -76,15 +81,9 @@ public class EventCaptureContract {
 
         void nextCalculation(boolean doNextCalculation);
 
-        void onNextSection();
-
         void attempFinish();
 
-        void onPreviousSection();
-
         boolean isEnrollmentOpen();
-
-        void goToSection(String sectionUid);
 
         void goToSection();
 
@@ -108,8 +107,6 @@ public class EventCaptureContract {
 
         void refreshTabCounters();
 
-        void setLastUpdatedUid(@NotNull String lastUpdatedUid);
-
         void hideProgress();
 
         void showProgress();
@@ -130,7 +127,7 @@ public class EventCaptureContract {
         Flowable<List<FormSectionViewModel>> eventSections();
 
         @NonNull
-        Flowable<List<FieldViewModel>> list();
+        Flowable<List<FieldViewModel>> list(FlowableProcessor<RowAction> processor);
 
         @NonNull
         Flowable<Result<RuleEffect>> calculate();
@@ -152,8 +149,6 @@ public class EventCaptureContract {
         Observable<String> programStage();
 
         boolean getAccessDataWrite();
-
-        void setLastUpdated(String lastUpdatedUid);
 
         boolean isEnrollmentCancelled();
 

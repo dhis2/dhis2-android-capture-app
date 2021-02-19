@@ -822,6 +822,9 @@
     <string name="value">Value</string>
     <string name="enrolled_in">Enrolled in:</string>
     <string name="section_charts_indicators">Charts and indicators</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="from_gallery">Choose from gallery</string>
+    <string name="data_set_quality_check_done">Done!</string>
     <string name="break_glass_dialog_title">This program is protected</string>
     <string name="break_glass_dialog_description">You must provide a reason to check for enrollment in this protected program. All activity will be logged.</string>
     <string name="break_glass_reason">Reason to check for enrollment</string>

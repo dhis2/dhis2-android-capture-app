@@ -31,7 +31,7 @@ class IndicatorsRobot : BaseRobot() {
                 allOf(
                     isDisplayed(), isNotEmpty(),
                     atPosition(
-                        2,
+                        3,
                         hasDescendant(
                             allOf(
                                 withText(yellowFeverIndicator),
@@ -53,7 +53,7 @@ class IndicatorsRobot : BaseRobot() {
                 allOf(
                     isDisplayed(), isNotEmpty(),
                     atPosition(
-                        1,
+                        2,
                         hasDescendant(
                             allOf(
                                 withText(weightIndicator),
@@ -72,6 +72,6 @@ class IndicatorsRobot : BaseRobot() {
     }
 
     fun checkGraphIsRendered(chartName:String){
-        onView(withId(R.id.indicators_recycler)).check(matches(hasItem(withChild(withText(chartName)))))
+        onView(withId(R.id.indicators_recycler)).check(matches(atPosition(1, hasDescendant(withText(chartName)))))
     }
 }

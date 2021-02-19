@@ -16,6 +16,7 @@ import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.RulesUtilsProvider;
@@ -24,6 +25,8 @@ import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import dagger.Module;
 import dagger.Provides;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 
 @PerActivity
 @Module
@@ -46,24 +49,32 @@ public class EventCaptureModule {
                                                     SchedulerProvider schedulerProvider,
                                                     PreferenceProvider preferences,
                                                     GetNextVisibleSection getNextVisibleSection,
-                                                    EventFieldMapper fieldMapper) {
+                                                    EventFieldMapper fieldMapper,
+                                                    FlowableProcessor<RowAction> onFieldActionProcessor,
+                                                    FieldViewModelFactory fieldFactory) {
         return new EventCapturePresenterImpl(view, eventUid, eventCaptureRepository, ruleUtils, valueStore, schedulerProvider,
-                preferences, getNextVisibleSection, fieldMapper);
+                preferences, getNextVisibleSection, fieldMapper, onFieldActionProcessor, fieldFactory.sectionProcessor());
     }
 
     @Provides
     @PerActivity
-    EventFieldMapper provideFieldMapper(Context context) {
-        return new EventFieldMapper(context.getString(R.string.field_is_mandatory));
+    EventFieldMapper provideFieldMapper(Context context, FieldViewModelFactory fieldFactory) {
+        return new EventFieldMapper(fieldFactory, context.getString(R.string.field_is_mandatory));
     }
 
     @Provides
     @PerActivity
-    EventCaptureContract.EventCaptureRepository provideRepository(Context context,
+    EventCaptureContract.EventCaptureRepository provideRepository(FieldViewModelFactory fieldFactory,
                                                                   RuleEngineRepository ruleEngineRepository,
-                                                                  D2 d2) {
-        FieldViewModelFactory fieldFactory = new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context));
+                                                                  D2 d2
+    ) {
         return new EventCaptureRepositoryImpl(fieldFactory, ruleEngineRepository, eventUid, d2);
+    }
+
+    @Provides
+    @PerActivity
+    FieldViewModelFactory fieldFactory(Context context) {
+        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), false);
     }
 
     @Provides
@@ -96,5 +107,11 @@ public class EventCaptureModule {
     @PerActivity
     GetNextVisibleSection getNextVisibleSection() {
         return new GetNextVisibleSection();
+    }
+
+    @Provides
+    @PerActivity
+    FlowableProcessor<RowAction> getProcessor() {
+        return PublishProcessor.create();
     }
 }

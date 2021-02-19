@@ -115,7 +115,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     public void init() {
         compositeDisposable.add(
                 filterManager.asFlowable().startWith(filterManager)
-                        .flatMap(fManager -> Flowable.just(filterRepository.programFilters(programUid)))
+                        .flatMap(fManager -> Flowable.just(filterRepository.dashboardFilters(programUid)))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
