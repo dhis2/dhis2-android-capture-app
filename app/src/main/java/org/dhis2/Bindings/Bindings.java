@@ -15,8 +15,8 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -37,6 +37,7 @@ import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.LegendValue;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
@@ -803,5 +804,18 @@ public class Bindings {
                 viewModel.onValueChanged(false);
             }
         });
+    }
+
+    @BindingAdapter("legendValue")
+    public static void setLegend(TextView textView, LegendValue legendValue) {
+        if(legendValue!=null) {
+            Drawable bg = textView.getBackground();
+            DrawableCompat.setTint(bg, ColorUtils.withAlpha(legendValue.getColor(),38));
+            Drawable[] drawables = textView.getCompoundDrawables();
+            for (Drawable drawable : drawables) {
+                if (drawable != null)
+                    DrawableCompat.setTint(drawable, legendValue.getColor());
+            }
+        }
     }
 }

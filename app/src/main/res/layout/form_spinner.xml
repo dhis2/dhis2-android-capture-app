@@ -26,16 +26,20 @@
         <variable
             name="initialValue"
             type="java.lang.String" />
+
+        <variable
+            name="legend"
+            type="org.dhis2.data.forms.dataentry.fields.LegendValue" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/rootLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
         android:clickable="true"
-        android:focusable="true">
+        android:focusable="true"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
 
         <ImageView
             android:id="@+id/renderImage"
@@ -57,9 +61,9 @@
             android:layout_height="wrap_content"
             android:text="@{label}"
             app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/renderImage"
             tools:text="Form Name" />
@@ -77,12 +81,15 @@
             app:tint="?colorPrimary" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/textContainer"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/renderImage"
             android:layout_marginHorizontal="12dp"
             android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/label">
+            app:layout_constraintTop_toBottomOf="@id/label"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/legendLabel">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/input_layout"
@@ -108,9 +115,26 @@
                 android:id="@+id/delete"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:visibility="gone"
                 android:padding="8dp"
+                android:visibility="gone"
                 app:srcCompat="@drawable/ic_close" />
         </LinearLayout>
+
+        <include
+            android:id="@+id/legendLabel"
+            layout="@layout/data_element_legend"
+            android:layout_width="wrap_content"
+            android:layout_height="26dp"
+            android:layout_marginEnd="12dp"
+            android:visibility="@{legend!=null?View.VISIBLE:View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@id/textContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/textContainer"
+            app:layout_constraintTop_toTopOf="@id/textContainer"
+            app:layout_constraintWidth_default="percent"
+            app:layout_constraintWidth_max="wrap"
+            app:layout_constraintWidth_percent="0.5"
+            app:legend="@{legend}" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
