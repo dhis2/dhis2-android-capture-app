@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatSpinner;
@@ -35,11 +36,11 @@ import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
 import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.filters.CatOptionComboFilter;
 import org.dhis2.utils.filters.Filters;
 import org.dhis2.utils.filters.cat_opt_comb.CatOptCombFilterAdapter;
 import org.dhis2.utils.filters.sorting.SortingItem;
-import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -676,5 +677,10 @@ public class Bindings {
     @BindingAdapter(value = {"filterArrow", "filterType"})
     public static void setFilterArrow(View view, Filters openFilter, Filters filterType) {
         view.animate().scaleY(openFilter != filterType ? 1 : -1).setDuration(200).start();
+    }
+
+    @BindingAdapter("clipCorners")
+    public static void setClipCorners(View view, int cornerRadiusInDp) {
+        ViewExtensionsKt.clipWithRoundedCorners(view, ExtensionsKt.getDp(cornerRadiusInDp));
     }
 }

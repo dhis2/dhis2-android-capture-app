@@ -112,7 +112,8 @@ fun ProgramRule.toRuleEngineObject(): Rule {
         priority(),
         condition() ?: "",
         programRuleActions()?.toRuleActionList() ?: ArrayList(),
-        name()
+        name(),
+        "ruleId"
     )
 }
 

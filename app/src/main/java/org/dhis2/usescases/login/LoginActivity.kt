@@ -8,7 +8,6 @@ import android.text.Editable
 import android.text.TextUtils.isEmpty
 import android.text.TextWatcher
 import android.util.Patterns
-import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.webkit.URLUtil
@@ -23,12 +22,12 @@ import okhttp3.HttpUrl
 import org.dhis2.App
 import org.dhis2.Bindings.app
 import org.dhis2.Bindings.buildInfo
+import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.Bindings.onRightDrawableClicked
 import org.dhis2.R
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityLoginBinding
-import org.dhis2.databinding.ButtonAuthBinding
 import org.dhis2.usescases.login.auth.AuthActivity
 import org.dhis2.usescases.login.auth.AuthServiceModel
 import org.dhis2.usescases.main.MainActivity
@@ -98,6 +97,7 @@ class LoginActivity : AuthActivity(), LoginContracts.View {
         loginViewModel.isTestingEnvironment.observe(
             this,
             Observer<Trio<String, String, String>> { testingEnvironment ->
+                binding.root.closeKeyboard()
                 binding.serverUrlEdit.setText(testingEnvironment.val0())
                 binding.userNameEdit.setText(testingEnvironment.val1())
                 binding.userPassEdit.setText(testingEnvironment.val2())
@@ -210,8 +210,9 @@ class LoginActivity : AuthActivity(), LoginContracts.View {
     }
 
     override fun showUnlockButton() {
-        binding.unlockLayout.visibility = View.VISIBLE
-        onUnlockClick(binding.unlockLayout)
+        binding.unlock.visibility = View.VISIBLE
+        binding.logout.visibility = View.GONE
+        onUnlockClick(binding.unlock)
     }
 
     override fun renderError(throwable: Throwable) {
@@ -226,7 +227,7 @@ class LoginActivity : AuthActivity(), LoginContracts.View {
     }
 
     override fun setLoginVisibility(isVisible: Boolean) {
-        binding.login.visibility = if (isVisible) View.VISIBLE else View.GONE
+        binding.login.isEnabled = isVisible
     }
 
     override fun showLoginProgress(showLogin: Boolean) {
@@ -286,7 +287,8 @@ class LoginActivity : AuthActivity(), LoginContracts.View {
             },
             {
                 analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
-                binding.unlockLayout.visibility = View.GONE
+                binding.unlock.visibility = View.GONE
+                binding.logout.visibility = View.GONE
             }
         )
             .show(supportFragmentManager, PIN_DIALOG_TAG)
@@ -425,15 +427,11 @@ class LoginActivity : AuthActivity(), LoginContracts.View {
             .build()
 
     override fun showLoginOptions(authServices: List<AuthServiceModel>) {
-        authServices.forEach { authService ->
-            binding.openIdContainer.apply {
-                removeAllViews()
-                addView(
-                    ButtonAuthBinding.inflate(LayoutInflater.from(this@LoginActivity)).apply {
-                        authServiceModel = authService
-                        openidLoginButton.setOnClickListener { attemptLogin(authServiceModel as AuthServiceModel) }
-                    }.root
-                )
+        authServices.firstOrNull()?.let { authService ->
+            binding.loginOpenId.visibility = View.VISIBLE
+            binding.loginOpenId.text = authService.loginLabel
+            binding.loginOpenId.setOnClickListener {
+                attemptLogin(authService)
             }
         }
     }
