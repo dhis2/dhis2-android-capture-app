@@ -28,7 +28,7 @@ import org.dhis2.R
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityLoginBinding
-import org.dhis2.usescases.login.auth.AuthActivity
+import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.auth.AuthServiceModel
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.ScanActivity
@@ -46,13 +46,14 @@ import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.FORGOT_CODE
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
+import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import timber.log.Timber
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.StringWriter
 import javax.inject.Inject
 
-class LoginActivity : AuthActivity(), LoginContracts.View {
+class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var loginViewModel: LoginViewModel
@@ -366,15 +367,14 @@ class LoginActivity : AuthActivity(), LoginContracts.View {
         }
     }
 
-    override fun loginWithAuthorization(token: String) {
-        //TODO: Remove hardcode url
-        presenter.loginWithToken("https://play.dhis2.org/android-dev", token)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == RQ_QR_SCANNER && resultCode == Activity.RESULT_OK) {
             qrUrl = data?.getStringExtra(Constants.EXTRA_DATA)
             qrUrl?.let { setUrl(it) }
+        }else if(resultCode == Activity.RESULT_OK){
+            data?.let {
+                presenter.handleAuthResponseData(binding.serverUrlEdit.text.toString(), data, requestCode)
+            }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -426,13 +426,19 @@ class LoginActivity : AuthActivity(), LoginContracts.View {
             .negativeButtonText(R.string.cancel)
             .build()
 
-    override fun showLoginOptions(authServices: List<AuthServiceModel>) {
-        authServices.firstOrNull()?.let { authService ->
+    override fun showLoginOptions(authService: AuthServiceModel?) {
+        authService?.openIDConnectConfig?.let { config ->
             binding.loginOpenId.visibility = View.VISIBLE
             binding.loginOpenId.text = authService.loginLabel
             binding.loginOpenId.setOnClickListener {
-                attemptLogin(authService)
+                presenter.openIdLogin(config)
             }
+        }
+    }
+
+    override fun openOpenIDActivity(intentData: IntentWithRequestCode?) {
+        intentData?.let {
+            startActivityForResult(intentData.intent, intentData.requestCode)
         }
     }
 }

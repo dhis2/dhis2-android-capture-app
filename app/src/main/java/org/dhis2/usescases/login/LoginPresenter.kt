@@ -1,11 +1,11 @@
 package org.dhis2.usescases.login
 
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.RestrictTo
 import androidx.annotation.RestrictTo.Scope
 import androidx.annotation.VisibleForTesting
 import co.infinum.goldfinger.Goldfinger
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
@@ -18,9 +18,7 @@ import org.dhis2.data.prefs.Preference.Companion.PIN
 import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.data.schedulers.defaultSubscribe
 import org.dhis2.data.server.UserManager
-import org.dhis2.usescases.login.auth.AuthServiceModel
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.utils.Constants.PREFS_URLS
 import org.dhis2.utils.Constants.PREFS_USERS
@@ -40,9 +38,9 @@ import org.dhis2.utils.analytics.SERVER_QR_SCANNER
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
+import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 import retrofit2.Response
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 class LoginPresenter(
     private val view: LoginContracts.View,
@@ -93,15 +91,6 @@ class LoginPresenter(
                     )
             )
         } ?: view.setUrl(view.getDefaultServerProtocol())
-
-        disposable.add(
-            serverUrlFlowable.debounce(1, TimeUnit.SECONDS, schedulers.io()).flatMap { serverUrl ->
-                Flowable.just(listOf(AuthServiceModel.mocked()))
-            }.defaultSubscribe(
-                schedulers,
-                onNext = { authServices -> view.showLoginOptions(authServices) }
-            )
-        )
     }
 
     fun checkServerInfoAndShowBiometricButton() {
@@ -220,6 +209,62 @@ class LoginPresenter(
                     }
                 )
         )
+    }
+
+    fun openIdLogin(config: OpenIDConnectConfig) {
+        disposable.add(
+            Observable.just(
+                (view.abstracContext.applicationContext as App).createServerComponent()
+                    .userManager()
+            )
+                .flatMap { userManager ->
+                    this.userManager = userManager
+                    userManager.logIn(config)
+                }
+                .subscribeOn(schedulers.io())
+                .observeOn(schedulers.ui())
+                .subscribe(
+                    {
+                        view.openOpenIDActivity(it)
+                    },
+                    {
+                        Timber.e(it)
+                    }
+                )
+        )
+    }
+
+    fun handleAuthResponseData(serverUrl: String, data: Intent, requestCode: Int) {
+        userManager?.let { userManager ->
+            disposable.add(
+                userManager.handleAuthData(serverUrl, data, requestCode)
+                    .map<Response<Any>> { user ->
+                        run {
+                            with(preferenceProvider) {
+                                setValue(
+                                    USER,
+                                    userManager.d2.userModule()
+                                        .userCredentials()
+                                        .blockingGet()
+                                        .username()
+                                )
+                                setValue(SESSION_LOCKED, false)
+                                setValue(PIN, null)
+                            }
+                            Response.success<Any>(null)
+                        }
+                    }.subscribeOn(schedulers.io())
+                    .observeOn(schedulers.ui())
+                    .subscribe(
+                        {
+                            this.handleResponse(it, "", serverUrl)
+                        },
+                        {
+                            this.handleError(it, serverUrl, "", "")
+                        }
+                    )
+            )
+        }
     }
 
     fun onQRClick() {
@@ -387,48 +432,6 @@ class LoginPresenter(
 
     fun discoverLoginOptions(serverUrl: String) {
         serverUrlFlowable.onNext(serverUrl)
-    }
-
-    fun loginWithToken(serverUrl: String, token: String) {
-        //TODO:ANDROAPP-3310 Use SDK to login
-        userManager?.d2?.userModule()?.logInOpenIdConnect(serverUrl, token)
-        disposable.add(
-            Observable.just(
-                (view.abstracContext.applicationContext as App).createServerComponent()
-                    .userManager()
-            )
-                .flatMap { userManager ->
-                    preferenceProvider.setValue(SERVER, "$serverUrl/api")
-                    this.userManager = userManager
-                    userManager.logIn(serverUrl, token)
-                        .map<Response<Any>> { user ->
-                            run {
-                                with(preferenceProvider) {
-                                    setValue(
-                                        USER,
-                                        userManager.d2.userModule()
-                                            .userCredentials()
-                                            .blockingGet()
-                                            .username()
-                                    )
-                                    setValue(SESSION_LOCKED, false)
-                                    setValue(PIN, null)
-                                }
-                                Response.success<Any>(null)
-                            }
-                        }
-                }
-                .subscribeOn(schedulers.io())
-                .observeOn(schedulers.ui())
-                .subscribe(
-                    {
-                        this.handleResponse(it, "", serverUrl)
-                    },
-                    {
-                        this.handleError(it, serverUrl, "", "")
-                    }
-                )
-        )
     }
 
     companion object {
