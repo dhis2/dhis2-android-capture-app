@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import androidx.databinding.BindingMethod;
 import androidx.databinding.BindingMethods;
 import androidx.databinding.DataBindingUtil;
@@ -106,9 +107,6 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.CHANGE_PROGRAM;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
-@BindingMethods({
-        @BindingMethod(type = FloatingActionButton.class, attribute = "app:srcCompat", method = "setImageDrawable")
-})
 public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View,
         MapboxMap.OnMapClickListener {
 
@@ -134,6 +132,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private int switchOpenClose = 2;
 
     ObservableBoolean needsSearch = new ObservableBoolean(true);
+    ObservableBoolean showClear = new ObservableBoolean(false);
 
     private SearchTeiLiveAdapter liveAdapter;
     private RelationshipLiveAdapter relationshipLiveAdapter;
@@ -168,6 +167,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
         binding.setPresenter(presenter);
         binding.setNeedsSearch(needsSearch);
+        binding.setShowClear(showClear);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         binding.setTotalFiltersSearch(presenter.getQueryData().size());
 
@@ -179,6 +179,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
 
         ViewExtensionsKt.clipWithRoundedCorners(binding.mainLayout, ExtensionsKt.getDp(16));
+        ViewExtensionsKt.clipWithRoundedCorners(binding.mapView, ExtensionsKt.getDp(16));
         if (fromRelationship) {
             relationshipLiveAdapter = new RelationshipLiveAdapter(presenter, getSupportFragmentManager());
             binding.scrollView.setAdapter(relationshipLiveAdapter);
@@ -481,8 +482,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     return Unit.INSTANCE;
                 });
             } else {
-                binding.mapLayerButton.setVisibility(GONE);
-                binding.clearFilterButton.setVisibility(GONE);
+                binding.mapLayerButton.setVisibility(View.GONE);
             }
 
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -493,8 +493,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void setFormData(List<FieldViewModel> data) {
-        adapter.swap(data, () -> {
-        });
+        adapter.swap(data, () -> adapter.notifyDataSetChanged());
         updateFiltersSearch(presenter.getQueryData().size());
     }
 
@@ -670,6 +669,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (programTheme != -1) {
             prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
             binding.enrollmentButton.setSupportImageTintList(ColorStateList.valueOf(programColor));
+            binding.clearFilterSearchButton.setSupportImageTintList(ColorStateList.valueOf(programColor));
             binding.mainToolbar.setBackgroundColor(programColor);
             binding.backdropLayout.setBackgroundColor(programColor);
             binding.navigationBar.setIconsColor(programColor);
@@ -691,6 +691,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     break;
             }
             binding.enrollmentButton.setSupportImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, colorPrimary)));
+            binding.clearFilterSearchButton.setSupportImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, colorPrimary)));
             binding.mainToolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
             binding.backdropLayout.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
             binding.navigationBar.setIconsColor(ContextCompat.getColor(this, colorPrimary));
@@ -781,11 +782,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             switchOpenClose = general ? 0 : 1;
             backDropActive = !backDropActive;
         }
-        binding.filterOpen.setVisibility(backDropActive ? View.VISIBLE : GONE);
-        binding.clearFilterButton.setVisibility(backDropActive && isMapVisible() ? View.VISIBLE : GONE);
+        binding.filterOpen.setVisibility(backDropActive ? View.VISIBLE : View.GONE);
+        ViewCompat.setElevation(binding.mainLayout, backDropActive ? 20 : 0);
+        ViewCompat.setElevation(binding.mapView, backDropActive ? 20 : 0);
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             activeFilter(general);
+        } else {
+            binding.enrollmentButton.setVisibility(general ? View.GONE : View.VISIBLE);
+        }
     }
 
     private void activeFilter(boolean general) {
@@ -813,6 +818,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
+    public void showClearSearch(boolean empty) {
+        showClear.set(empty);
+    }
+
+    @Override
     public void hideFilter() {
         binding.searchFilterGeneral.setVisibility(GONE);
     }
@@ -822,6 +832,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 .setDuration(500)
                 .translationX(show ? 0 : 500)
                 .translationY(onNavBar ? -ExtensionsKt.getDp(56) : 0)
+                .start();
+
+        binding.clearFilterSearchButton.animate()
+                .setDuration(500)
+                .translationX(show && !onNavBar ? 0 : 500)
                 .start();
     }
 
@@ -924,6 +939,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (data.val0().isEmpty()) {
             binding.messageContainer.setVisibility(GONE);
             binding.mapView.setVisibility(View.VISIBLE);
+            binding.mapCarousel.setVisibility(View.VISIBLE);
+            binding.mapLayerButton.setVisibility(View.VISIBLE);
 
             List<CarouselItemModel> allItems = new ArrayList<>();
             allItems.addAll(trackerMapData.getTeiModels());
@@ -945,7 +962,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         } else {
             binding.messageContainer.setVisibility(View.VISIBLE);
             binding.message.setText(data.val0());
-            binding.mapView.setVisibility(GONE);
+            binding.mapView.setVisibility(View.GONE);
+            binding.mapCarousel.setVisibility(View.GONE);
+            binding.mapLayerButton.setVisibility(View.GONE);
         }
         if (!trackerMapData.getTeiModels().isEmpty() && !data.val1()) {
             showHideFilter();

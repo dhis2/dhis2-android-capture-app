@@ -19,6 +19,7 @@ import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.R;
 import org.dhis2.data.dhislogic.DhisMapUtils;
+import org.dhis2.data.forms.dataentry.fields.ActionType;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.prefs.Preference;
@@ -228,25 +229,17 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(data -> {
-                            Map<String, String> queryDataBU = new HashMap<>(queryData);
-                            view.setFabIcon(true);
-                            if (!DhisTextUtils.Companion.isEmpty(data.getValue())) {
-                                queryData.put(data.getId(), data.getValue());
-                                if (data.getRequiresExactMatch())
-                                    if (data.getValue().equals("null_os_null"))
-                                        queryData.remove(data.getId());
-                            } else {
-                                queryData.remove(data.getId());
-                            }
+                    if (data.getType() == ActionType.ON_TEXT_CHANGE || data.getType() == ActionType.ON_SAVE) {
+                        Map<String, String> queryDataBU = new HashMap<>(queryData);
+                        view.setFabIcon(true);
+                        updateQueryData(data);
 
-                            if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
-                                if (!DhisTextUtils.Companion.isEmpty(data.getValue()))
-                                    queryData.put(data.getId(), data.getValue());
-                                else
-                                    queryData.remove(data.getId());
-                            }
-                        },
-                        Timber::d)
+                        if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
+                            updateQueryData(data);
+                        }
+                        view.showClearSearch(!queryData.isEmpty());
+                    }
+                    }, Timber::d)
         );
 
 
@@ -530,6 +523,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         isSearching = true;
         queryData.clear();
         view.setFabIcon(true);
+        view.showClearSearch(false);
         currentProgram.onNext(selectedProgram != null ? selectedProgram.uid() : "");
         queryProcessor.onNext(new HashMap<>());
     }
@@ -1021,5 +1015,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 searchRepository.getEventInfo(eventUid),
                 searchRepository.getTrackedEntityInfo(teiUid, selectedProgram, FilterManager.getInstance().getSortingItem())
         );
+    }
+
+    private void updateQueryData(RowAction data) {
+        if (DhisTextUtils.Companion.isEmpty(data.getValue())
+                || (data.getRequiresExactMatch() && data.getValue().equals("null_os_null"))) {
+            queryData.remove(data.getId());
+        } else {
+            queryData.put(data.getId(), data.getValue());
+        }
     }
 }

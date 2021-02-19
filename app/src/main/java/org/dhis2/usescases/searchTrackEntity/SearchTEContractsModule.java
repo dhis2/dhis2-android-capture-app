@@ -91,6 +91,8 @@ public class SearchTEContractsModule {
 
         void setFilters(List<FilterItem> filtersToDisplay);
 
+        void showClearSearch(boolean empty);
+
         void hideFilter();
     }
 
