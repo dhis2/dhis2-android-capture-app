@@ -73,16 +73,16 @@ data class TeiWorkingListScope(
 data class EventWorkingListScope(
     val stageUid: String?,
     val eventDate: String?,
-    val eventStatus: String?,
+    val eventStatusList: List<String>?,
     val assignedToMe: AssignedUserMode?
 ) : WorkingListScope() {
     override fun isAssignedActive(): Boolean = assignedToMe != null
     override fun isAssignedToMeActive(): Boolean = assignedToMe == AssignedUserMode.CURRENT
     override fun isEnrollmentStatusActive(): Boolean = false
     override fun isPeriodActive(filterType: Filters): Boolean = eventDate != null
-    override fun isEventStatusActive(): Boolean = eventStatus != null
+    override fun isEventStatusActive(): Boolean = eventStatusList?.isNotEmpty() == true
 
-    override fun eventStatusCount(): Int = if (eventStatus != null) 1 else 0
+    override fun eventStatusCount(): Int = eventStatusList?.size ?: 0
     override fun eventDateCount(): Int = if (eventDate != null) 1 else 0
     override fun enrollmentDateCount(): Int = 0
     override fun enrollmentStatusCount(): Int = 0
@@ -90,7 +90,7 @@ data class EventWorkingListScope(
 
     override fun value(filterType: Filters) = when (filterType) {
         Filters.PERIOD -> eventDate ?: ""
-        Filters.EVENT_STATUS -> eventStatus ?: ""
+        Filters.EVENT_STATUS -> eventStatusList?.joinToString() ?: ""
         else -> ""
     }
 }

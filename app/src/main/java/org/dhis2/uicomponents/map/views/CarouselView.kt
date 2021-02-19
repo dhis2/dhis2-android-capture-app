@@ -25,6 +25,8 @@ class CarouselView @JvmOverloads constructor(
     private lateinit var carouselAdapter: CarouselAdapter
     private val CAROUSEL_SMOOTH_THREADSHOLD = 10
     private val CAROUSEL_PROXIMITY_THREADSHOLD = 3
+    private lateinit var mapManager: MapManager
+    private lateinit var callback: (feature: Feature?, found: Boolean) -> Boolean
 
     init {
         layoutManager = CarouselLayoutManager(context, HORIZONTAL, false)
@@ -38,36 +40,52 @@ class CarouselView @JvmOverloads constructor(
     }
 
     fun attachToMapManager(
-        mapManager: MapManager,
-        callback: (feature: Feature?, found: Boolean) -> Boolean
+        manager: MapManager
     ) {
-        addOnScrollListener(object : OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                if (
-                    newState == SCROLL_STATE_DRAGGING ||
-                    newState == SCROLL_STATE_SETTLING &&
-                    carouselEnabled
-                ) {
-                    callback.invoke(null, false)
-                }
-                if (newState == SCROLL_STATE_IDLE && carouselEnabled) {
-                    mapManager.mapLayerManager.selectFeature(null)
-                    val features = mapManager.findFeatures(currentItem())
-                    if (features != null && features.isNotEmpty() && features.size > 1) {
-                        mapManager.map?.centerCameraOnFeatures(features)
-                    } else {
-                        val feature = mapManager.findFeature(currentItem())
-                        if (feature == null) {
-                            callback.invoke(feature, false)
+        mapManager = manager
+        if (::callback.isInitialized) {
+            addOnScrollListener(object : OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (
+                        newState == SCROLL_STATE_DRAGGING ||
+                        newState == SCROLL_STATE_SETTLING &&
+                        carouselEnabled
+                    ) {
+                        callback.invoke(null, false)
+                    }
+                    if (newState == SCROLL_STATE_IDLE && carouselEnabled) {
+                        mapManager.mapLayerManager.selectFeature(null)
+                        val features = mapManager.findFeatures(currentItem())
+                        if (features != null && features.isNotEmpty() && features.size > 1) {
+                            mapManager.map?.centerCameraOnFeatures(features)
                         } else {
-                            mapManager.map?.centerCameraOnFeature(feature)
-                            callback.invoke(feature, true)
+                            val feature = mapManager.findFeature(currentItem())
+                            if (feature == null) {
+                                callback.invoke(feature, false)
+                            } else {
+                                mapManager.map?.centerCameraOnFeature(feature)
+                                callback.invoke(feature, true)
+                            }
                         }
                     }
                 }
+            })
+        } else {
+            throw IllegalArgumentException("Callback cannot be null, set it with .setCallback()")
+        }
+    }
+
+    fun selectFirstItem() {
+        if (carouselAdapter.itemCount > 0) {
+            val feature = mapManager.findFeature(currentItem())
+            if (feature != null) {
+                mapManager.mapLayerManager.selectFeature(feature)
+                callback.invoke(feature, true)
+            } else {
+                callback.invoke(feature, false)
             }
-        })
+        }
     }
 
     private fun getVisiblePosition(): Int {
@@ -126,5 +144,9 @@ class CarouselView @JvmOverloads constructor(
     fun hideNavigateTo() {
         val holder = findViewHolderForAdapterPosition(getVisiblePosition())
         (holder as CarouselTeiHolder).hideNavigateButton()
+    }
+
+    fun setCallback(callback: (feature: Feature?, found: Boolean) -> Boolean) {
+        this.callback = callback
     }
 }

@@ -113,7 +113,7 @@ fun ProgramRule.toRuleEngineObject(): Rule {
         condition() ?: "",
         programRuleActions()?.toRuleActionList() ?: ArrayList(),
         name(),
-        "ruleId"
+        uid()
     )
 }
 

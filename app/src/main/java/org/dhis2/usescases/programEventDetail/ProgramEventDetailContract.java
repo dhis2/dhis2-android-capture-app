@@ -65,6 +65,8 @@ public class ProgramEventDetailContract {
         void showCatOptComboDialog(String catComboUid);
 
         void setFilterItems(List<FilterItem> programFilters);
+
+        void hideFilters();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

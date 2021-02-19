@@ -19,6 +19,8 @@ import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.R;
 import org.dhis2.data.dhislogic.DhisMapUtils;
+import org.dhis2.data.forms.dataentry.fields.ActionType;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
@@ -50,7 +52,6 @@ import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Unit;
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -120,6 +121,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private boolean teiTypeHasAttributesToDisplay = true;
     private boolean isSearching;
     private DhisMapUtils mapUtils;
+    private final Flowable<RowAction> fieldProcessor;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -134,7 +136,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              EventToEventUiComponent eventToEventUiComponent,
                              PreferenceProvider preferenceProvider,
                              TeiFilterToWorkingListItemMapper workingListMapper,
-                             FilterRepository filterRepository) {
+                             FilterRepository filterRepository,
+                             Flowable<RowAction> fieldProcessor) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -145,6 +148,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.mapTeisToFeatureCollection = mapTeisToFeatureCollection;
         this.mapTeiEventsToFeatureCollection = mapTeiEventsToFeatureCollection;
         this.mapCoordinateFieldToFeatureCollection = mapCoordinateFieldToFeatureCollection;
+        this.fieldProcessor = fieldProcessor;
+
         this.workingListMapper = workingListMapper;
         this.eventToEventUiComponent = eventToEventUiComponent;
         this.filterRepository = filterRepository;
@@ -173,7 +178,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 .startWith(FilterManager.getInstance())
                                 .map(filterManager -> {
                                     if (programUid.isEmpty()) {
-                                        return filterRepository.trackedEntityFilters();
+                                        return filterRepository.globalTrackedEntityFilters();
                                     } else {
                                         return filterRepository.programFilters(programUid);
                                     }
@@ -181,8 +186,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                        view::setFilters,
-                        Timber::e
+                        filters -> {
+                            if (filters.isEmpty()){
+                                view.hideFilter();
+                            } else {
+                                view.setFilters(filters);
+                            }
+                        }
+                        ,Timber::e
                 )
         );
 
@@ -202,65 +213,42 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         ));
 
         compositeDisposable.add(currentProgram
-                .flatMap(programUid -> {
-                    if (programUid.isEmpty())
-                        return searchRepository.trackedEntityTypeAttributes()
-                                .map(attributes -> Pair.create(attributes, new ArrayList<ValueTypeDeviceRendering>()));
-                    else
-                        return searchRepository.programAttributes(selectedProgram.uid())
-                                .map(data -> Pair.create(data.getTrackedEntityAttributes(), data.getRendering()));
-                })
+                .flatMap(programUid ->
+                        searchRepository.searchFields(programUid, queryData))
                 .subscribe(
                         data -> {
-                            if (data.val0().isEmpty()) {
+                            if (data.isEmpty()) {
                                 teiTypeHasAttributesToDisplay = false;
                             }
-                            view.setForm(data.val0(), selectedProgram, queryData, data.val1());
+                            view.setFormData(data);
                         },
                         Timber::d)
         );
 
-        compositeDisposable.add(view.rowActionss()
+        compositeDisposable.add(fieldProcessor
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(data -> {
-                            Map<String, String> queryDataBU = new HashMap<>(queryData);
-                            view.setFabIcon(true);
-                            if (!DhisTextUtils.Companion.isEmpty(data.value())) {
-                                queryData.put(data.id(), data.value());
-                                if (data.requiresExactMatch())
-                                    if (data.value().equals("null_os_null"))
-                                        queryData.remove(data.id());
-                            } else {
-                                queryData.remove(data.id());
-                            }
+                    if (data.getType() == ActionType.ON_TEXT_CHANGE || data.getType() == ActionType.ON_SAVE) {
+                        Map<String, String> queryDataBU = new HashMap<>(queryData);
+                        view.setFabIcon(true);
+                        updateQueryData(data);
 
-                            if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
-                                if (!DhisTextUtils.Companion.isEmpty(data.value()))
-                                    queryData.put(data.id(), data.value());
-                                else
-                                    queryData.remove(data.id());
-                            }
-                        },
-                        Timber::d)
+                        if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
+                            updateQueryData(data);
+                        }
+                        view.showClearSearch(!queryData.isEmpty());
+                    }
+                    }, Timber::d)
         );
 
 
         ConnectableFlowable<Pair<HashMap<String, String>, FilterManager>> updaterFlowable = currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
-                .doOnEach(element -> {
-                    Timber.d("outer updaterFlowable before %s", element.getValue());
-                })
                 .switchMap(program ->
                         Flowable.combineLatest(queryProcessor.startWith(queryData),
                                 FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
-                                Pair::create).doOnEach(element -> {
-                            Timber.d("inner %s", element.getValue());
-                        })
-
+                                Pair::create)
                 )
-                .doOnEach(element -> {
-                    Timber.d("outer updaterFlowable after %s", element.getValue());
-                })
                 .onBackpressureLatest()
                 .publish();
 
@@ -285,7 +273,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         compositeDisposable.add(
                 listDataProcessor
-                        .doOnEach(element -> Timber.d("listDataProcessor %s", element.getValue()))
                         .switchMap(map -> {
                             CountingIdlingResourceSingleton.INSTANCE.increment();
                             return Flowable.just(searchRepository.searchTrackedEntities(
@@ -536,6 +523,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         isSearching = true;
         queryData.clear();
         view.setFabIcon(true);
+        view.showClearSearch(false);
         currentProgram.onNext(selectedProgram != null ? selectedProgram.uid() : "");
         queryProcessor.onNext(new HashMap<>());
     }
@@ -824,6 +812,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
+    public void downloadTeiWithReason(String teiUid, String enrollmentUid, String reason) {
+
+    }
+
+    @Override
     public String nameOUByUid(String uid) {
         OrganisationUnit organisationUnit = d2.organisationUnitModule().organisationUnits().uid(uid).blockingGet();
         return organisationUnit != null ? organisationUnit.name() : null;
@@ -1022,5 +1015,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 searchRepository.getEventInfo(eventUid),
                 searchRepository.getTrackedEntityInfo(teiUid, selectedProgram, FilterManager.getInstance().getSortingItem())
         );
+    }
+
+    private void updateQueryData(RowAction data) {
+        if (DhisTextUtils.Companion.isEmpty(data.getValue())
+                || (data.getRequiresExactMatch() && data.getValue().equals("null_os_null"))) {
+            queryData.remove(data.getId());
+        } else {
+            queryData.put(data.getId(), data.getValue());
+        }
     }
 }

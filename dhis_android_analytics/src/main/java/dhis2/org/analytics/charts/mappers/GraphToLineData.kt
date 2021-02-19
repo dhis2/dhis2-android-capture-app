@@ -8,10 +8,12 @@ class GraphToLineData {
     private val coordinateToEntryMapper by lazy { GraphCoordinatesToEntry() }
     fun map(graph: Graph): LineData {
         return LineData(
-            LineDataSet(
-                coordinateToEntryMapper.map(graph),
-                graph.title
-            )
+            graph.series.map {
+                LineDataSet(
+                    coordinateToEntryMapper.map(graph, it.coordinates),
+                    it.fieldName
+                ).withGlobalStyle()
+            }
         )
     }
 }

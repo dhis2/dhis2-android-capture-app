@@ -39,6 +39,7 @@ class SearchTETest : BaseTest() {
         val firstName = "Tim"
         val firstNamePosition = 0
         val filterCount = "1"
+        val orgUnit = "Ngelehun CHC"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
@@ -47,7 +48,7 @@ class SearchTETest : BaseTest() {
             typeAttributeAtPosition(firstName, firstNamePosition)
             clickOnFab()
             checkFilterCount(filterCount)
-            checkListOfSearchTEI(firstName, "")
+            checkListOfSearchTEI(firstName, orgUnit)
         }
     }
 
@@ -278,6 +279,7 @@ class SearchTETest : BaseTest() {
     @Test
     fun shouldSuccessfullySearchAndFilter() {
         val name = "Anna"
+        val lastName = "Jones"
         val namePosition = 0
         val enrollmentStatus = context.getString(R.string.filters_title_enrollment_status)
         val totalCount = "2"
@@ -301,7 +303,7 @@ class SearchTETest : BaseTest() {
         }
 
         searchTeiRobot {
-            checkListOfSearchTEI(name, "")
+            checkListOfSearchTEI(name, lastName)
         }
     }
 

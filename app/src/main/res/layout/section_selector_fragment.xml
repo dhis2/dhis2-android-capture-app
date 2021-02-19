@@ -23,23 +23,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/formRecycler"
+        <org.dhis2.data.forms.dataentry.FormView
+            android:id="@+id/formView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/form_field_background"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            android:paddingBottom="100dp"
             android:clipToPadding="false"
-            tools:listitem="@layout/custom_text_view" />
-
-        <RelativeLayout
-            android:id="@+id/headerContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/formRecycler"
-            app:layout_constraintStart_toStartOf="@id/formRecycler"
-            app:layout_constraintEnd_toEndOf="@id/formRecycler"/>
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <FrameLayout
             android:id="@+id/header"

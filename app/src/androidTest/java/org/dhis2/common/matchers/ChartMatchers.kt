@@ -27,6 +27,7 @@ class ChartMatchers {
                         ChartType.BAR_CHART -> view is BarChart
                         ChartType.TABLE -> view is TableView
                         ChartType.SINGLE_VALUE -> view.findViewById<View>(R.id.singleValueTitle) != null
+                        ChartType.NUTRITION -> view is LineChart
                     }
                 }
             }

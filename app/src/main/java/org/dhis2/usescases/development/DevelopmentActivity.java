@@ -5,14 +5,11 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.MenuItem;
-import android.view.View;
+import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -21,6 +18,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.DevelopmentActivityBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
+import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,6 +29,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 import java.util.Locale;
+
+import kotlin.Unit;
 
 public class DevelopmentActivity extends ActivityGlobalAbstract {
 
@@ -46,7 +46,7 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         loadAnalyticsDevTools();
         loadLocaleDevTools();
         loadIconsDevTools();
-        loadNavigationView();
+        loadBreakTheGlass();
     }
 
     private void loadAnalyticsDevTools() {
@@ -201,18 +201,15 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         renderIconForPosition(count);
     }
 
-    private void loadNavigationView(){
-        binding.navigationView.setOnNavigationItemSelectedListener(item -> true);
-        binding.navigationVisibilityButton.setOnClickListener(view -> {
-            binding.navigationVisibilityButton.setEnabled(false);
-            if(binding.navigationView.isHidden()){
-                binding.navigationView.show();
-                binding.navigationVisibilityButton.setText("Hide navigation bar");
-            }else {
-                binding.navigationView.hide();
-                binding.navigationVisibilityButton.setText("Show navigation bar");
-            }
-            binding.navigationVisibilityButton.setEnabled(true);
-        });
+    private void loadBreakTheGlass() {
+        binding.breakGlassButton.setOnClickListener(view ->
+                new BreakTheGlassBottomDialog()
+                        .setPositiveButton(reason -> {
+                            Toast.makeText(this, reason, Toast.LENGTH_SHORT).show();
+                            return Unit.INSTANCE;
+                        })
+                        .show(
+                                getSupportFragmentManager(),
+                                BreakTheGlassBottomDialog.class.getName()));
     }
 }

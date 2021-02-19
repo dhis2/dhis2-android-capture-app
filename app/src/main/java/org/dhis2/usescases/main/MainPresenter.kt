@@ -77,7 +77,13 @@ class MainPresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { filters -> view.setFilters(filters) },
+                    { filters ->
+                        if (filters.isEmpty()) {
+                            view.hideFilters()
+                        } else {
+                            view.setFilters(filters)
+                        }
+                    },
                     { Timber.e(it) }
                 )
         )

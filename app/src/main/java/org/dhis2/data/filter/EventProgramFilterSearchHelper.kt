@@ -4,25 +4,25 @@ import javax.inject.Inject
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
-import org.hisp.dhis.android.core.event.EventCollectionRepository
+import org.hisp.dhis.android.core.event.search.EventQueryCollectionRepository
 import org.hisp.dhis.android.core.program.Program
 
 class EventProgramFilterSearchHelper @Inject constructor(
     private val filterRepository: FilterRepository,
     val filterManager: FilterManager
-) : FilterHelperActions<EventCollectionRepository> {
+) : FilterHelperActions<EventQueryCollectionRepository> {
 
     fun getFilteredEventRepository(
         program: Program
-    ): EventCollectionRepository {
+    ): EventQueryCollectionRepository {
         return applyFiltersTo(
             filterRepository.eventsByProgram(program.uid())
         )
     }
 
     override fun applyFiltersTo(
-        repository: EventCollectionRepository
-    ): EventCollectionRepository {
+        repository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
         return repository
             .withFilter { applyWorkingList(it) }
             .withFilter { applyDateFilter(it) }
@@ -35,14 +35,18 @@ class EventProgramFilterSearchHelper @Inject constructor(
     }
 
     private fun applyWorkingList(
-        eventRepository: EventCollectionRepository
-    ): EventCollectionRepository {
+        eventRepository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
         return if (filterManager.workingListActive()) {
             filterRepository.applyWorkingList(
                 eventRepository,
                 filterManager.currentWorkingList()
             ).also {
-                // TODO: Scope from event
+                filterManager.setWorkingListScope(
+                    it.scope.mapToEventWorkingListScope(
+                        filterRepository.resources
+                    )
+                )
             }
         } else {
             eventRepository
@@ -50,8 +54,8 @@ class EventProgramFilterSearchHelper @Inject constructor(
     }
 
     private fun applyEventStatus(
-        eventRepository: EventCollectionRepository
-    ): EventCollectionRepository {
+        eventRepository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
         return if (filterManager.eventStatusFilters.isNotEmpty()) {
             filterRepository.applyEventStatusFilter(
                 eventRepository,
@@ -63,8 +67,8 @@ class EventProgramFilterSearchHelper @Inject constructor(
     }
 
     private fun applyCategoryOptionComboFilter(
-        eventRepository: EventCollectionRepository
-    ): EventCollectionRepository {
+        eventRepository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
         return if (filterManager.catOptComboFilters.isNotEmpty()) {
             filterRepository.applyCategoryOptionComboFilter(
                 eventRepository,
@@ -76,8 +80,8 @@ class EventProgramFilterSearchHelper @Inject constructor(
     }
 
     private fun applyOrgUnitFilter(
-        eventRepository: EventCollectionRepository
-    ): EventCollectionRepository {
+        eventRepository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
         return if (filterManager.orgUnitUidsFilters.isNotEmpty()) {
             filterRepository.applyOrgUnitFilter(eventRepository, filterManager.orgUnitUidsFilters)
         } else {
@@ -86,8 +90,8 @@ class EventProgramFilterSearchHelper @Inject constructor(
     }
 
     private fun applyStateFilter(
-        eventRepository: EventCollectionRepository
-    ): EventCollectionRepository {
+        eventRepository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
         return if (filterManager.stateFilters.isNotEmpty()) {
             filterRepository.applyStateFilter(eventRepository, filterManager.stateFilters)
         } else {
@@ -96,18 +100,18 @@ class EventProgramFilterSearchHelper @Inject constructor(
     }
 
     private fun applyDateFilter(
-        eventRepository: EventCollectionRepository
-    ): EventCollectionRepository {
+        eventRepository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
         return if (filterManager.periodFilters.isNotEmpty()) {
-            filterRepository.applyDateFilter(eventRepository, filterManager.periodFilters)
+            filterRepository.applyDateFilter(eventRepository, filterManager.periodFilters.first())
         } else {
             eventRepository
         }
     }
 
     private fun applyAssignedToMeFilter(
-        eventRepository: EventCollectionRepository
-    ): EventCollectionRepository {
+        eventRepository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
         return if (filterManager.assignedFilter) {
             filterRepository.applyAssignToMe(eventRepository)
         } else {
@@ -116,8 +120,8 @@ class EventProgramFilterSearchHelper @Inject constructor(
     }
 
     override fun applySorting(
-        repository: EventCollectionRepository
-    ): EventCollectionRepository {
+        repository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
         return filterManager.sortingItem?.let { sortingItem ->
             val orderDirection = getSortingDirection(
                 filterManager.sortingItem.sortingStatus

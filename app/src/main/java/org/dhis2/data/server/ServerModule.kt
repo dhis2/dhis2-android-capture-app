@@ -11,6 +11,7 @@ import okhttp3.Interceptor
 import org.dhis2.App
 import org.dhis2.BuildConfig
 import org.dhis2.data.dagger.PerServer
+import org.dhis2.data.filter.GetFiltersApplyingWebAppConfig
 import org.dhis2.data.prefs.PreferenceProviderImpl
 import org.dhis2.utils.RulesUtilsProvider
 import org.dhis2.utils.RulesUtilsProviderImpl
@@ -51,6 +52,12 @@ class ServerModule {
     @PerServer
     fun provideCharts(serverComponent: ServerComponent): Charts {
         return DhisAnalyticCharts.Provider.get(serverComponent)
+    }
+
+    @Provides
+    @PerServer
+    fun provideGetFiltersApplyingWebAppConfig(): GetFiltersApplyingWebAppConfig {
+        return GetFiltersApplyingWebAppConfig()
     }
 
     companion object {

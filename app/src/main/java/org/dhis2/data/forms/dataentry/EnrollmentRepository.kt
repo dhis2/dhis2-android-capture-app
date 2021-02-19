@@ -4,16 +4,17 @@ import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.processors.FlowableProcessor
 import java.util.ArrayList
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
+import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel
-import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.DhisTextUtils
@@ -44,30 +45,14 @@ class EnrollmentRepository(
     private val enrollmentCoordinatesLabel: String,
     private val reservedValuesWarning: String,
     private val enrollmentDateDefaultLabel: String,
-    private val incidentDateDefaultLabel: String
+    private val incidentDateDefaultLabel: String,
+    private val onRowActionProccesor: FlowableProcessor<RowAction>
 ) : DataEntryRepository {
 
     private val enrollmentRepository: EnrollmentObjectRepository =
         d2.enrollmentModule().enrollments().uid(enrollmentUid)
 
-    private val canEditAttributes: Boolean
-
-    init {
-        canEditAttributes = getAttributeAccess()
-    }
-
-    private fun getAttributeAccess(): Boolean {
-        val selectedProgram = d2.programModule().programs().uid(
-            enrollmentRepository.blockingGet().program()
-        ).blockingGet()
-        val programAccess =
-            selectedProgram.access().data().write() != null && selectedProgram.access().data()
-                .write()
-        val teTypeAccess = d2.trackedEntityModule().trackedEntityTypes().uid(
-            selectedProgram.trackedEntityType()?.uid()
-        ).blockingGet().access().data().write()
-        return programAccess && teTypeAccess
-    }
+    private val canEditAttributes: Boolean = dhisEnrollmentUtils.canBeEdited(enrollmentUid)
 
     override fun enrollmentSectionUids(): Flowable<MutableList<String>> {
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
@@ -105,7 +90,7 @@ class EnrollmentRepository(
                     }.map { list ->
                         val fields = getEnrollmentData(program)
                         fields.addAll(list)
-                        fields.add(SectionViewModel.createClosingSection())
+                        fields.add(fieldFactory.createClosingSection())
                         fields
                     }
             }.toFlowable()
@@ -145,13 +130,13 @@ class EnrollmentRepository(
         for (section in programSections) {
             fields.add(transformSection(section))
             for (attribute in section.attributes()!!) {
-                val programTrackedEntityAttribute =
-                    d2.programModule().programTrackedEntityAttributes()
-                        .withRenderType()
-                        .byProgram().eq(programUid)
-                        .byTrackedEntityAttribute().eq(attribute.uid())
-                        .one().blockingGet()
-                fields.add(transform(programTrackedEntityAttribute!!, section.uid()))
+                d2.programModule().programTrackedEntityAttributes()
+                    .withRenderType()
+                    .byProgram().eq(programUid)
+                    .byTrackedEntityAttribute().eq(attribute.uid())
+                    .one().blockingGet()?.let { programTrackedEntityAttribute ->
+                    fields.add(transform(programTrackedEntityAttribute, section.uid()))
+                }
             }
         }
         return Single.just(fields)
@@ -242,7 +227,9 @@ class EnrollmentRepository(
             programTrackedEntityAttribute.renderType()?.mobile(),
             optionCount,
             attribute.style(),
-            attribute.fieldMask()
+            attribute.fieldMask(),
+            onRowActionProccesor,
+            null
         )
 
         return if (!error.isNullOrEmpty()) {
@@ -294,14 +281,11 @@ class EnrollmentRepository(
         val teiType = d2.trackedEntityModule().trackedEntityTypes()
             .uid(tei.trackedEntityType()).blockingGet()
         return mutableListOf(
-            SectionViewModel.create(
-                SINGLE_SECTION_UID,
-                String.format(singleSectionLabel, teiType.displayName()),
-                null,
-                false,
-                0,
-                0,
-                ProgramStageSectionRenderingType.LISTING.name
+            fieldFactory.createSingleSection(
+                String.format(
+                    singleSectionLabel,
+                    teiType.displayName()
+                )
             )
         )
     }
@@ -351,7 +335,7 @@ class EnrollmentRepository(
     }
 
     private fun getEnrollmentDataSection(description: String?): FieldViewModel {
-        return SectionViewModel.create(
+        return fieldFactory.createSection(
             ENROLLMENT_DATA_SECTION_UID,
             enrollmentDataSectionLabel,
             description,
@@ -379,7 +363,10 @@ class EnrollmentRepository(
             allowFutureDates,
             true,
             null,
-            ObjectStyle.builder().build()
+            ObjectStyle.builder().build(),
+            true,
+            false,
+            onRowActionProccesor
         )
     }
 
@@ -399,7 +386,10 @@ class EnrollmentRepository(
             allowFutureDates,
             true,
             null,
-            ObjectStyle.builder().build()
+            ObjectStyle.builder().build(),
+            true,
+            false,
+            onRowActionProccesor
         )
     }
 
@@ -412,7 +402,10 @@ class EnrollmentRepository(
             ENROLLMENT_DATA_SECTION_UID,
             editable,
             null,
-            ObjectStyle.builder().build()
+            ObjectStyle.builder().build(),
+            true,
+            ProgramStageSectionRenderingType.LISTING.name,
+            onRowActionProccesor
         )
     }
 
@@ -431,9 +424,13 @@ class EnrollmentRepository(
             false,
             if (tei!!.geometry() != null) tei.geometry()!!.coordinates() else null,
             ENROLLMENT_DATA_SECTION_UID,
-            true, null,
+            true,
+            null,
             ObjectStyle.builder().build(),
-            featureType
+            featureType,
+            true,
+            false,
+            onRowActionProccesor
         )
     }
 
@@ -452,12 +449,15 @@ class EnrollmentRepository(
             ENROLLMENT_DATA_SECTION_UID,
             true, null,
             ObjectStyle.builder().build(),
-            featureType
+            featureType,
+            true,
+            false,
+            onRowActionProccesor
         )
     }
 
     private fun transformSection(programSection: ProgramSection): FieldViewModel {
-        return SectionViewModel.create(
+        return fieldFactory.createSection(
             programSection.uid(),
             programSection.displayName(),
             programSection.description(),

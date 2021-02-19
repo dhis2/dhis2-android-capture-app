@@ -18,6 +18,10 @@
         <variable
             name="fieldHint"
             type="String" />
+
+        <variable
+            name="focus"
+            type="java.lang.Boolean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -56,7 +60,7 @@
             android:layout_marginHorizontal="12dp"
             android:background="@drawable/bottomsheet_bg"
             app:layout_constraintBottom_toBottomOf="@id/input_layout"
-            app:layout_constraintTop_toBottomOf="@id/renderImage"/>
+            app:layout_constraintTop_toBottomOf="@id/renderImage" />
 
         <TextView
             android:id="@+id/label"
@@ -67,9 +71,9 @@
             android:text="@{label}"
             android:textColor="?colorPrimary"
             app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintStart_toStartOf="@id/fieldBackground"
             app:layout_constraintTop_toTopOf="@id/fieldBackground"
             tools:text="@string/lorem" />
@@ -89,12 +93,12 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout"
-            android:paddingTop="10dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint='@{fieldHint}'
-            android:theme="@style/loginInputText"
             android:layout_marginHorizontal="12dp"
+            android:hint='@{fieldHint}'
+            android:paddingTop="10dp"
+            android:theme="@style/loginInputText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/label"
@@ -112,6 +116,7 @@
                 android:textColor="@color/textPrimary"
                 android:textIsSelectable="true"
                 android:textSize="@dimen/form_edit_text_size"
+                app:requestFocus="@{focus}"
                 tools:text="hello" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -119,9 +124,9 @@
             android:id="@+id/clear_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="12dp"
             app:layout_constraintEnd_toEndOf="@id/fieldBackground"
             app:layout_constraintTop_toTopOf="@id/fieldBackground"
-            android:padding="12dp"
             app:srcCompat="@drawable/ic_clear"
             app:tint="@color/default_field_icon_color" />
 

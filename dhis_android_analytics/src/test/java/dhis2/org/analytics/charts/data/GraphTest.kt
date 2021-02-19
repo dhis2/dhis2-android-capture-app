@@ -52,32 +52,32 @@ class GraphTest {
     @Test
     fun `Should return the maximum`() {
         val graph = mockedGraph()
-        assertTrue(graph.maxValue()!!.fieldValue == 50f)
+        assertTrue(graph.maxValue() == 50f)
     }
 
     @Test
     fun `Should return null maximum if empty coordinate`() {
         val graph = mockedGraph(emptyList())
-        assertTrue(graph.maxValue() == null)
+        assertTrue(graph.maxValue() == 0f)
     }
 
     @Test
     fun `Should return the correct minimum`() {
         val graph = mockedGraph()
-        assertTrue(graph.minValue()!!.fieldValue == 10f)
+        assertTrue(graph.minValue() == 10f)
     }
 
     @Test
     fun `Should return null minimum if empty coordinate`() {
         val graph = mockedGraph(emptyList())
-        assertTrue(graph.minValue() == null)
+        assertTrue(graph.minValue() == 0f)
     }
 
-    private fun mockedGraph(coordinates: List<GraphPoint>? = mockedCoordinates()): Graph {
+    private fun mockedGraph(coordinates: List<GraphPoint> = mockedCoordinates()): Graph {
         return Graph(
             "testGraph",
             false,
-            coordinates!!,
+            coordinates.map { SerieData("fieldName", coordinates) },
             "periodToDisplay",
             PeriodType.Daily,
             dailyPeriodPeriod
@@ -86,10 +86,10 @@ class GraphTest {
 
     private fun mockedCoordinates(): List<GraphPoint> {
         return arrayListOf(
-            GraphPoint(Date.from(Instant.parse("2020-01-01T00:00:00.00Z")), 10f),
-            GraphPoint(Date.from(Instant.parse("2020-01-02T00:00:00.00Z")), 20f),
-            GraphPoint(Date.from(Instant.parse("2020-01-04T00:00:00.00Z")), 50f),
-            GraphPoint(Date.from(Instant.parse("2020-01-07T00:00:00.00Z")), 30f)
+            GraphPoint(Date.from(Instant.parse("2020-01-01T00:00:00.00Z")), fieldValue = 10f),
+            GraphPoint(Date.from(Instant.parse("2020-01-02T00:00:00.00Z")), fieldValue = 20f),
+            GraphPoint(Date.from(Instant.parse("2020-01-04T00:00:00.00Z")), fieldValue = 50f),
+            GraphPoint(Date.from(Instant.parse("2020-01-07T00:00:00.00Z")), fieldValue = 30f)
         )
     }
 }
