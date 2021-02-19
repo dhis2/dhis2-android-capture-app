@@ -1,7 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import android.annotation.SuppressLint;
-import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +12,7 @@ import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.StoreResult;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
+import org.dhis2.data.forms.dataentry.fields.ActionType;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
@@ -69,14 +69,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private final EventFieldMapper fieldMapper;
     private CompositeDisposable compositeDisposable;
     private EventCaptureContract.View view;
-    private int currentPosition;
     private ObservableField<String> currentSection;
-    private FlowableProcessor<Integer> currentSectionPosition;
     private FlowableProcessor<Boolean> showCalculationProcessor;
     private List<FormSectionViewModel> sectionList;
     private Map<String, FieldViewModel> emptyMandatoryFields;
     //Rules data
-    private List<String> sectionsToHide;
     private Map<String, List<String>> optionsToHide = new HashMap<>();
     private Map<String, List<String>> optionsGroupsToHide = new HashMap<>();
     private Map<String, List<String>> optionsGroupToShow = new HashMap<>();
@@ -86,8 +83,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private EventStatus eventStatus;
     private boolean hasExpired;
     private final Flowable<String> sectionProcessor;
-    private int unsupportedFields;
-    private int totalFields;
     private ConnectableFlowable<List<FieldViewModel>> fieldFlowable;
     private PublishProcessor<Unit> notesCounterProcessor;
     private BehaviorSubject<List<FieldViewModel>> formFieldsProcessor;
@@ -114,8 +109,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.rulesUtils = rulesUtils;
         this.valueStore = valueStore;
         this.schedulerProvider = schedulerProvider;
-        this.currentPosition = 0;
-        this.sectionsToHide = new ArrayList<>();
         this.currentSection = new ObservableField<>("");
         this.errors = new HashMap<>();
         this.emptyMandatoryFields = new HashMap<>();
@@ -128,7 +121,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.fieldMapper = fieldMapper;
         this.onFieldActionProcessor = onFieldActionProcessor;
 
-        currentSectionPosition = PublishProcessor.create();
         this.sectionProcessor = sectionProcessor;
         showCalculationProcessor = PublishProcessor.create();
         progressProcessor = PublishProcessor.create();
@@ -236,8 +228,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                         fieldMapper.map(
                                                                 fields,
                                                                 sectionList,
-                                                                sectionsToHide,
-                                                                getNextVisibleSection.get(section, sectionList, sectionsToHide),
+                                                                section/*getNextVisibleSection.get(section, sectionList)*/,
                                                                 errors,
                                                                 emptyMandatoryFields,
                                                                 showErrors
@@ -285,6 +276,17 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         );
 
         fieldFlowable.connect();
+
+        compositeDisposable.add(
+                onFieldActionProcessor.subscribe(
+                        rowAction -> {
+                            if (rowAction.getType() == ActionType.ON_FOCUS) {
+                                view.hideNavigationBar();
+                            }
+                        },
+                        Timber::e
+                        )
+        );
     }
 
     @VisibleForTesting
@@ -325,7 +327,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         {
                             emptyMandatoryFields = new HashMap<>();
                             for (FieldViewModel fieldViewModel : fields) {
-                                if (fieldViewModel.mandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection())) {
+                                if (fieldViewModel.mandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.value())) {
                                     emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
                                 }
                             }
@@ -376,7 +378,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         optionsToHide.clear();
         optionsGroupsToHide.clear();
         optionsGroupToShow.clear();
-        sectionsToHide.clear();
         errors.clear();
         completeMessage = null;
         canComplete = true;
@@ -435,29 +436,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void onNextSection() {
-
-        view.clearFocus();
-
-        new Handler().postDelayed(
-                this::changeSection,
-                1000);
-
-    }
-
-    private void changeSection() {
-
-
-        List<FormSectionViewModel> finalSections = getFinalSections();
-
-        if (currentPosition < finalSections.size() - 1) {
-            currentSectionPosition.onNext(++currentPosition);
-        } else {
-
-        }
-    }
-
-    @Override
     public void attempFinish() {
 
         qualityCheck();
@@ -471,6 +449,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         } else {
             view.showCompleteActions(canComplete && eventCaptureRepository.isEnrollmentOpen(), completeMessage, errors, emptyMandatoryFields);
         }
+
+        view.showNavigationBar();
     }
 
     private void setUpActionByStatus(EventStatus eventStatus) {
@@ -493,32 +473,13 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void onPreviousSection() {
-        if (currentPosition != 0) {
-            currentSectionPosition.onNext(--currentPosition);
-        }
-    }
-
-    private List<FormSectionViewModel> getFinalSections() {
-        List<FormSectionViewModel> finalSections = new ArrayList<>();
-        for (FormSectionViewModel section : sectionList)
-            if (!sectionsToHide.contains(section.sectionUid()))
-                finalSections.add(section);
-        return finalSections;
-    }
-
-    @Override
     public boolean isEnrollmentOpen() {
         return eventCaptureRepository.isEnrollmentOpen();
     }
 
     @Override
     public void goToSection() {
-        String sectionUid = errors.entrySet().iterator().next().getKey();
-        for (FormSectionViewModel sectionModel : getFinalSections())
-            if (sectionModel.sectionUid() != null && sectionModel.sectionUid().equals(sectionUid))
-                currentPosition = getFinalSections().indexOf(sectionModel);
-        currentSectionPosition.onNext(currentPosition);
+
     }
 
     @Override
@@ -553,8 +514,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .subscribe(canReOpenEvent -> {
                                     if (canReOpenEvent) {
                                         if (eventCaptureRepository.reopenEvent()) {
-                                            currentPosition = 0;
-                                            currentSectionPosition.onNext(0);
                                             view.showSnackBar(R.string.event_reopened);
                                             eventStatus = EventStatus.ACTIVE;
                                         }
@@ -653,23 +612,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @SuppressLint("CheckResult")
     @Override
     public void save(@NotNull @NonNull String uid, @Nullable String value) {
-        if (value == null || !sectionsToHide.contains(eventCaptureRepository.getSectionFor(uid))) {
-            StoreResult result = valueStore.saveWithTypeCheck(uid, value).blockingFirst();
-            if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
-                assignedValueChanged = true;
-            }
+        StoreResult result = valueStore.saveWithTypeCheck(uid, value).blockingFirst();
+        if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
+            assignedValueChanged = true;
         }
-    }
-
-    @Override
-    public void setDisplayKeyValue(@NonNull String label, @NonNull String value) {
-        //TODO: Implement Indicator tabs to show this field
-    }
-
-    @Override
-    public void setHideSection(@NonNull String sectionUid) {
-        if (!sectionsToHide.contains(sectionUid))
-            sectionsToHide.add(sectionUid);
     }
 
     @Override

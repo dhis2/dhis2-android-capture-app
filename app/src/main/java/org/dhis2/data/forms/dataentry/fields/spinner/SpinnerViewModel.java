@@ -55,7 +55,6 @@ public abstract class SpinnerViewModel extends FieldViewModel {
         return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, editable, null, null, description, objectStyle, null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor, false, legendValue, hintFilterOptions, optionSet, isBackgroundTransparent, renderType);
     }
 
-
     @Override
     public FieldViewModel setMandatory() {
         return new AutoValue_SpinnerViewModel(uid(), label(), true, value(), programStageSection(), allowFutureDate(), editable(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(), activated(), legendValue(), hint(), optionSet(), isBackgroundTransparent(), renderType());

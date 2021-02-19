@@ -779,29 +779,28 @@ public class Bindings {
     @BindingAdapter("requestFocus")
     public static void requestFocus(EditText editText, boolean focused) {
         if (focused) {
-            if (!editText.hasFocus()) {
+                editText.setFocusableInTouchMode(true);
                 editText.requestFocus();
                 openKeyboard(editText);
-            }
         } else {
             editText.clearFocus();
         }
     }
 
     @BindingAdapter("checkListener")
-    public static void checkListener(RadioGroup radioGroup, RadioButtonViewModel viewModel) {
+    public static void checkListener(RadioGroup radioGroup, RadioButtonViewModel viewModel){
         radioGroup.setOnCheckedChangeListener(null);
-        if (viewModel.isAffirmativeChecked()) {
+        if(viewModel.isAffirmativeChecked()){
             radioGroup.check(R.id.yes);
-        } else if (viewModel.isNegativeChecked()) {
+        }else if(viewModel.isNegativeChecked()){
             radioGroup.check(R.id.no);
-        } else {
+        }else{
             radioGroup.clearCheck();
         }
         radioGroup.setOnCheckedChangeListener((radioGroup1, checkedId) -> {
-            if (checkedId == R.id.yes) {
+            if(checkedId == R.id.yes){
                 viewModel.onValueChanged(true);
-            } else if (checkedId == R.id.no) {
+            }else if(checkedId == R.id.no){
                 viewModel.onValueChanged(false);
             }
         });

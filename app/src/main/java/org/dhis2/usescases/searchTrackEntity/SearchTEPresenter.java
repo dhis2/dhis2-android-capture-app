@@ -812,6 +812,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
+    public void downloadTeiWithReason(String teiUid, String enrollmentUid, String reason) {
+
+    }
+
+    @Override
     public String nameOUByUid(String uid) {
         OrganisationUnit organisationUnit = d2.organisationUnitModule().organisationUnits().uid(uid).blockingGet();
         return organisationUnit != null ? organisationUnit.name() : null;

@@ -88,6 +88,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         editText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
         delete.setOnClickListener(view -> {
+            closeKeyboard(this);
             viewModel.onItemClick();
             deleteSelectedOption();
         });
@@ -225,8 +226,8 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
     @Override
     public void onClick(View v) {
         requestFocus();
-        viewModel.onItemClick();
         closeKeyboard(v);
+        viewModel.onItemClick();
         OptionSetDialog dialog = new OptionSetDialog();
         dialog.create(getContext());
         dialog.setOptionSet(viewModel);

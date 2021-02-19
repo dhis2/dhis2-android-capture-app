@@ -59,8 +59,8 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                     rulesActionCallbacks
                 )
                 is RuleActionHideSection -> hideSection(
-                    it.ruleAction() as RuleActionHideSection,
-                    rulesActionCallbacks
+                    fieldViewModels,
+                    it.ruleAction() as RuleActionHideSection
                 )
                 is RuleActionAssign -> assign(
                     it.ruleAction() as RuleActionAssign,
@@ -158,8 +158,10 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         fieldViewModels: MutableMap<String, FieldViewModel>,
         rulesActionCallbacks: RulesActionCallbacks
     ) {
-        fieldViewModels.remove(hideField.field())
-        rulesActionCallbacks.save(hideField.field(), null)
+        if (fieldViewModels[hideField.field()]?.mandatory() != true) {
+            fieldViewModels.remove(hideField.field())
+            rulesActionCallbacks.save(hideField.field(), null)
+        }
     }
 
     private fun displayText(
@@ -178,10 +180,13 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
     }
 
     private fun hideSection(
-        hideSection: RuleActionHideSection,
-        rulesActionCallbacks: RulesActionCallbacks
+        fieldViewModels: MutableMap<String, FieldViewModel>,
+        hideSection: RuleActionHideSection
     ) {
-        rulesActionCallbacks.setHideSection(hideSection.programStageSection())
+        fieldViewModels.filter {
+            it.value.programStageSection() == hideSection.programStageSection() &&
+                !it.value.mandatory()
+        }.keys.forEach { fieldViewModels.remove(it) }
     }
 
     private fun assign(

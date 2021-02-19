@@ -131,35 +131,13 @@ class EventCapturePresenterTest {
 
     @Test
     fun `Should return current section if sectionsToHide is empty`() {
-        val activeSection = getNextVisibleSection.get("activeSection", sections(), emptyList())
+        val activeSection = getNextVisibleSection.get("activeSection", sections())
         assertTrue(activeSection == "activeSection")
     }
 
     @Test
-    fun `Should return second section if sectionsToHide contains current section`() {
-        val sectionsToHide = listOf("sectionUid_1")
-        val activeSection = getNextVisibleSection.get("sectionUid_1", sections(), sectionsToHide)
-        assertTrue(activeSection == "sectionUid_2")
-    }
-
-    @Test
-    fun `Should return visible section if sectionsToHide contains several previous sections`() {
-        val sectionsToHide = listOf("sectionUid_1", "sectionUid_2")
-        val activeSection = getNextVisibleSection.get("sectionUid_1", sections(), sectionsToHide)
-        assertTrue(activeSection == "sectionUid_3")
-    }
-
-    @Test
-    fun `Should return empty section if sectionsToHide contains all sections`() {
-        val sectionsToHide = listOf("sectionUid_1", "sectionUid_2", "sectionUid_3")
-        val activeSection = getNextVisibleSection.get("sectionUid_1", sections(), sectionsToHide)
-        assertTrue(activeSection.isEmpty())
-    }
-
-    @Test
     fun `Should return current when section is last one and hide section is not empty`() {
-        val sectionsToHide = listOf("sectionUid_2")
-        val activeSection = getNextVisibleSection.get("sectionUid_3", sections(), sectionsToHide)
+        val activeSection = getNextVisibleSection.get("sectionUid_3", sections())
         assertTrue(activeSection == "sectionUid_3")
     }
 

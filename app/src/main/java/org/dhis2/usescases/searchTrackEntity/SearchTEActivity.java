@@ -53,6 +53,7 @@ import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.forms.dataentry.DataEntryAdapter;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.geometry.FeatureExtensionsKt;
@@ -73,6 +74,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
+import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
@@ -342,6 +344,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         teiMapManager.onResume();
 
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+
     }
 
     @Override
@@ -361,7 +364,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         FilterManager.getInstance().clearEnrollmentStatus();
         FilterManager.getInstance().clearEventStatus();
         FilterManager.getInstance().clearEnrollmentDate();
-        FilterManager.getInstance().clearWorkingList();
+        FilterManager.getInstance().clearWorkingList(false);
         FilterManager.getInstance().clearSorting();
 
         super.onDestroy();
@@ -880,12 +883,23 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void openDashboard(String teiUid, String programUid, String enrollmentUid) {
+        FilterManager.getInstance().clearWorkingList(true);
         startActivity(TeiDashboardMobileActivity.intent(this, teiUid, enrollmentUid != null ? programUid : null, enrollmentUid));
     }
 
     @Override
     public void couldNotDownload(String typeName) {
         displayMessage(getString(R.string.download_tei_error, typeName));
+    }
+
+    @Override
+    public void showBreakTheGlass(String teiUid, String enrollmentUid) {
+        new BreakTheGlassBottomDialog()
+                .setPositiveButton(reason -> {
+                    presenter.downloadTeiWithReason(teiUid, enrollmentUid, reason);
+                    return Unit.INSTANCE;
+                })
+                .show(getSupportFragmentManager(), BreakTheGlassBottomDialog.class.getName());
     }
 
     @Override

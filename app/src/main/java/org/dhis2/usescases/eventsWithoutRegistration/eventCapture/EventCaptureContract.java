@@ -65,6 +65,10 @@ public class EventCaptureContract {
         void showProgress();
 
         void hideProgress();
+
+        void showNavigationBar();
+
+        void hideNavigationBar();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -77,11 +81,7 @@ public class EventCaptureContract {
 
         void nextCalculation(boolean doNextCalculation);
 
-        void onNextSection();
-
         void attempFinish();
-
-        void onPreviousSection();
 
         boolean isEnrollmentOpen();
 

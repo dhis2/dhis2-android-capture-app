@@ -151,11 +151,6 @@ class EnrollmentPresenterImpl(
 
                     when (rowAction.type) {
                         ActionType.ON_SAVE -> {
-                            if (rowAction.id == focusedItem?.id &&
-                                focusedItem?.type == ActionType.ON_FOCUS
-                            ) {
-                                focusedItem = null
-                            }
                             if (rowAction.error != null) {
                                 if (itemsWithError.find { it.id == rowAction.id } == null) {
                                     itemsWithError.add(rowAction)
@@ -668,10 +663,6 @@ class EnrollmentPresenterImpl(
     override fun save(uid: String, value: String?) {
         assignValue(uid, value)
     }
-
-    override fun setDisplayKeyValue(label: String, value: String) = Unit
-
-    override fun setHideSection(sectionUid: String) = Unit
 
     override fun setMessageOnComplete(content: String, canComplete: Boolean) = Unit
 

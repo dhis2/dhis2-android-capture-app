@@ -36,7 +36,8 @@
                 app:onCheckedChangeListener="@{(view, checkedId)-> filterItem.onChecked(checkedId)}"
                 app:singleLine="true"
                 app:singleSelection="true"
-                app:workingLists="@{filterItem.workingLists}" />
+                app:workingLists="@{filterItem.workingLists}"
+                app:workingFilter="@{filterItem}"/>
         </HorizontalScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

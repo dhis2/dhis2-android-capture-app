@@ -64,6 +64,7 @@ import static android.content.Context.MODE_PRIVATE;
 import static android.text.TextUtils.isEmpty;
 import static java.lang.String.valueOf;
 import static org.dhis2.Bindings.ValueExtensionsKt.withValueTypeCheck;
+import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
 
 
 public class CustomTextView extends FieldLayout {
@@ -138,6 +139,7 @@ public class CustomTextView extends FieldLayout {
         });
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus && viewModel.isSearchMode()) {
+                openKeyboard(v);
                 sendAction();
             } else {
                 if (valueHasChanged()) {

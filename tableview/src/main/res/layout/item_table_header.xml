@@ -16,6 +16,6 @@
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:textColor="@color/table_view_default_text_color"
-        android:textSize="14sp"
+        android:textSize="12sp"
         tools:text="Test"/>
 </LinearLayout>

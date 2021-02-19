@@ -52,4 +52,17 @@ class DhisEnrollmentUtils @Inject constructor(val d2: D2) {
             .byProgramStageUid().`in`(stagesWithReportDateToUse.union(stagesWithGeneratedBy))
             .blockingIsEmpty()
     }
+
+    fun canBeEdited(enrollmentUid: String): Boolean {
+        val selectedProgram = d2.programModule().programs().uid(
+            d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().program()
+        ).blockingGet()
+        val programAccess =
+            selectedProgram.access().data().write() != null && selectedProgram.access().data()
+                .write()
+        val teTypeAccess = d2.trackedEntityModule().trackedEntityTypes().uid(
+            selectedProgram.trackedEntityType()?.uid()
+        ).blockingGet().access().data().write()
+        return programAccess && teTypeAccess
+    }
 }

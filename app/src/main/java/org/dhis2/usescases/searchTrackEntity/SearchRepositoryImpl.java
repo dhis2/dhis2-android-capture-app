@@ -20,6 +20,7 @@ import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.data.tuples.Pair;
@@ -61,7 +62,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceCreateProjection;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository;
@@ -78,6 +78,7 @@ import java.util.Map;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import kotlin.collections.CollectionsKt;
 
 public class SearchRepositoryImpl implements SearchRepository {
 
@@ -151,7 +152,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                             currentSearchValues.get(attribute.uid()),
                             true
                     );
-                }).toList().toObservable();
+                }).toList().map(list ->
+                        CollectionsKt.filter(list, item -> !(item instanceof PictureViewModel))
+                ).toObservable();
     }
 
     @Override
@@ -707,11 +710,12 @@ public class SearchRepositoryImpl implements SearchRepository {
             if (searchTei.getEnrollments().size() > 0) {
                 searchTei.setEnrolledOrgUnit(d2.organisationUnitModule().organisationUnits().uid(searchTei.getEnrollments().get(0).organisationUnit()).blockingGet().name());
             } else {
-                searchTei.setEnrolledOrgUnit("");
+                searchTei.setEnrolledOrgUnit(d2.organisationUnitModule().organisationUnits().uid(searchTei.getTei().organisationUnit()).blockingGet().name());
             }
             searchTei.setProfilePicture(profilePicturePath(tei, selectedProgram));
         } else {
             searchTei.setTei(tei);
+            searchTei.setEnrolledOrgUnit(d2.organisationUnitModule().organisationUnits().uid(searchTei.getTei().organisationUnit()).blockingGet().name());
             if (tei.trackedEntityAttributeValues() != null) {
                 if (selectedProgram != null) {
                     List<ProgramTrackedEntityAttribute> programAttributes = d2.programModule().programTrackedEntityAttributes()
