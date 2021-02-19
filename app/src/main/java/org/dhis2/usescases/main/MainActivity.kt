@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
 import android.view.View
+import android.view.View.GONE
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintSet
@@ -268,6 +269,10 @@ class MainActivity :
 
     override fun setFilters(filters: List<FilterItem>) {
         newAdapter.submitList(filters)
+    }
+
+    override fun hideFilters() {
+        binding.filterActionButton.visibility = GONE
     }
 
     override fun fail(message: String, exception: String) {

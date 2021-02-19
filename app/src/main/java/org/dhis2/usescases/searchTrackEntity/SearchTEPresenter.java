@@ -177,7 +177,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 .startWith(FilterManager.getInstance())
                                 .map(filterManager -> {
                                     if (programUid.isEmpty()) {
-                                        return filterRepository.trackedEntityFilters();
+                                        return filterRepository.globalTrackedEntityFilters();
                                     } else {
                                         return filterRepository.programFilters(programUid);
                                     }
@@ -185,8 +185,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                        view::setFilters,
-                        Timber::e
+                        filters -> {
+                            if (filters.isEmpty()){
+                                view.hideFilter();
+                            } else {
+                                view.setFilters(filters);
+                            }
+                        }
+                        ,Timber::e
                 )
         );
 

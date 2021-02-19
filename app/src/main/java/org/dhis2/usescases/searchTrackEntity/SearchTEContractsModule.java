@@ -90,6 +90,8 @@ public class SearchTEContractsModule {
         void setFormData(List<FieldViewModel> data);
 
         void setFilters(List<FilterItem> filtersToDisplay);
+
+        void hideFilter();
     }
 
     public interface Presenter {

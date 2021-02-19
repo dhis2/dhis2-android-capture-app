@@ -66,6 +66,8 @@ public class TEIDataContracts {
 
         void setFilters(List<FilterItem> filterItems);
 
+        void hideFilters();
+
         Flowable<String> observeStageSelection(Program currentProgram, Enrollment currentEnrollment);
 
         void showNewEventOptions(android.view.View view, ProgramStage stageUid);

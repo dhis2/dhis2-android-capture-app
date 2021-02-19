@@ -50,4 +50,6 @@ interface MainView : AbstractActivityContracts.View {
     fun goToHome()
 
     fun setFilters(filters: List<FilterItem>)
+
+    fun hideFilters()
 }
