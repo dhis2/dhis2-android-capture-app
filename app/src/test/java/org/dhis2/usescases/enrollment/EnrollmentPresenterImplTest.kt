@@ -377,9 +377,9 @@ class EnrollmentPresenterImplTest {
             ObjectStyle.builder().build(),
             null,
             null,
-            "any",
             false,
             false,
+            null,
             null
         )
 

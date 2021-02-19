@@ -49,7 +49,8 @@ class FormBottomDialogPresenterTest {
                     "any",
                     false,
                     false,
-                    PublishProcessor.create()
+                    PublishProcessor.create(),
+                    null
                 )
             ),
             Pair(
