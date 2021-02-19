@@ -38,6 +38,9 @@ android {
     compileSdkVersion versions.sdk
     buildToolsVersion versions.tools
     defaultConfig {
+        manifestPlaceholders = [
+                appAuthRedirectScheme: ''
+        ]
         applicationId "com.dhis2"
         minSdkVersion versions.minSdk
         targetSdkVersion versions.sdk
