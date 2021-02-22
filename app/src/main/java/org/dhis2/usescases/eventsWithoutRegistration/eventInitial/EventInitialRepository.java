@@ -82,4 +82,6 @@ public interface EventInitialRepository {
     int getCatOptionSize(String uid);
 
     List<CategoryOption> getCategoryOptions(String categoryUid);
+
+    boolean showCompletionPercentage();
 }

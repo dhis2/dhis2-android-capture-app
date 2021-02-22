@@ -749,6 +749,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.completion.setCompletionPercentage((float) totalCompletedFields / (float) totalFields);
         binding.completion.setSecondaryPercentage((float) unsupportedFields / (float) totalFields);
 
+        if (!presenter.getCompletionPercentageVisibility()) {
+            binding.completion.setVisibility(View.GONE);
+        }
+
     }
 
     @Override
@@ -842,7 +846,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
                 binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
             binding.actionButton.setText(getString(R.string.check_event));
-            binding.geometry.setEditable(false);
+            if(binding.geometry.getViewModel() != null)
+                binding.geometry.setEditable(false);
             binding.executePendingBindings();
         }
     }

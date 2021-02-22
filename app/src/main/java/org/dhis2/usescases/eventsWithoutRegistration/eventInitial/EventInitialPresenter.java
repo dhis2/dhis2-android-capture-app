@@ -452,4 +452,9 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     public List<CategoryOption> getCatOptions(String categoryUid) {
         return eventInitialRepository.getCategoryOptions(categoryUid);
     }
+
+    @Override
+    public boolean getCompletionPercentageVisibility() {
+        return eventInitialRepository.showCompletionPercentage();
+    }
 }
