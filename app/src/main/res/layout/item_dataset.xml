@@ -16,6 +16,7 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:cardBackgroundColor="@android:color/transparent"
         app:cardElevation="0dp"
         app:rippleColor="@color/rippleColor"
         tools:style="@style/CardView">

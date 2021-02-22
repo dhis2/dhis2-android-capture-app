@@ -71,7 +71,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         (binding.drawerLayout.background as GradientDrawable).cornerRadius = 0f
         return binding.apply {
             presenter = this@ProgramFragment.presenter
-            programRecycler.clipWithRoundedCorners(16.dp)
+            drawerLayout.clipWithRoundedCorners(16.dp)
             programRecycler.itemAnimator = null
             programRecycler.adapter = adapter
             programRecycler.addItemDecoration(
@@ -109,6 +109,10 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
     override fun showFilterProgress() {
         binding.progressLayout.visibility = View.VISIBLE
+        binding.clearFilter.visibility = when {
+            FilterManager.getInstance().totalFilters > 0 -> View.VISIBLE
+            else -> View.GONE
+        }
     }
 
     override fun renderError(message: String) {
