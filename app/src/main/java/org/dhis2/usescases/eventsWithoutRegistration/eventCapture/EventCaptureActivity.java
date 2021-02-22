@@ -157,18 +157,25 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void goBack() {
         hideKeyboard();
-        attemptFinish();
+        finishEditMode();
     }
 
     @Override
     public void onBackPressed() {
         if (!ExtensionsKt.isKeyboardOpened(this)) {
-            attemptFinish();
+            finishEditMode();
         } else {
             hideKeyboard();
         }
     }
 
+    private void finishEditMode() {
+        if (binding.navigationBar.isHidden()) {
+            showNavigationBar();
+        } else {
+            attemptFinish();
+        }
+    }
     private void attemptFinish() {
         if (eventMode == EventMode.NEW) {
             new CustomDialog(
@@ -538,5 +545,15 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             binding.toolbarProgress.setVisibility(View.GONE);
         });
 
+    }
+
+    @Override
+    public void showNavigationBar(){
+        binding.navigationBar.show();
+    }
+
+    @Override
+    public void hideNavigationBar(){
+        binding.navigationBar.hide();
     }
 }

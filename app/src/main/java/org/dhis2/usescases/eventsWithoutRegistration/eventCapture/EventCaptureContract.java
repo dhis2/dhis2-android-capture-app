@@ -65,6 +65,10 @@ public class EventCaptureContract {
         void showProgress();
 
         void hideProgress();
+
+        void showNavigationBar();
+
+        void hideNavigationBar();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

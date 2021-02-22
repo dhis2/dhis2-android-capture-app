@@ -25,7 +25,10 @@ class CarouselTeiHolder(
     RecyclerView.ViewHolder(binding.root),
     CarouselBinder<SearchTeiModel> {
 
+    private var dataModel: SearchTeiModel? = null
+
     override fun bind(data: SearchTeiModel) {
+        dataModel = data
         if (data.isAttributeListOpen) {
             showAttributeList()
         } else {
@@ -41,6 +44,11 @@ class CarouselTeiHolder(
             lastUpdated.text = data.tei.lastUpdated().toDateSpan(itemView.context)
             sortingValue = data.sortingValue
             attributeListOpened = data.isAttributeListOpen
+            mapNavigateFab.visibility = if (data.shouldShowNavigationButton()) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
             executePendingBindings()
         }
 
@@ -135,10 +143,12 @@ class CarouselTeiHolder(
     }
 
     fun showNavigateButton() {
+        dataModel?.setShowNavigationButton(true)
         binding.mapNavigateFab.show()
     }
 
     fun hideNavigateButton() {
+        dataModel?.setShowNavigationButton(false)
         binding.mapNavigateFab.hide()
     }
 }

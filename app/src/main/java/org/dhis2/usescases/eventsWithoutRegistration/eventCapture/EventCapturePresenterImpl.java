@@ -12,6 +12,7 @@ import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.StoreResult;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
+import org.dhis2.data.forms.dataentry.fields.ActionType;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
@@ -275,6 +276,17 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         );
 
         fieldFlowable.connect();
+
+        compositeDisposable.add(
+                onFieldActionProcessor.subscribe(
+                        rowAction -> {
+                            if (rowAction.getType() == ActionType.ON_FOCUS) {
+                                view.hideNavigationBar();
+                            }
+                        },
+                        Timber::e
+                        )
+        );
     }
 
     @VisibleForTesting
@@ -437,6 +449,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         } else {
             view.showCompleteActions(canComplete && eventCaptureRepository.isEnrollmentOpen(), completeMessage, errors, emptyMandatoryFields);
         }
+
+        view.showNavigationBar();
     }
 
     private void setUpActionByStatus(EventStatus eventStatus) {

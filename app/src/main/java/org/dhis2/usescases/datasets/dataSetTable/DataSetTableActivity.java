@@ -3,9 +3,12 @@ package org.dhis2.usescases.datasets.dataSetTable;
 import android.content.pm.ActivityInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
@@ -75,6 +78,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     private BottomSheetBehavior<View> behavior;
     private FlowableProcessor<Boolean> reopenProcessor;
+    private boolean isKeyboardOpened = false;
 
     public static Bundle getBundle(@NonNull String dataSetUid,
                                    @NonNull String orgUnitUid,
@@ -132,6 +136,38 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
             binding.viewPager.setCurrentItem(pagePosition);
             return true;
         });
+    }
+
+    private ViewTreeObserver.OnGlobalLayoutListener layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+            Rect rect = new Rect();
+            binding.container.getWindowVisibleDisplayFrame(rect);
+            int height = binding.container.getRootView().getHeight() - (rect.bottom - rect.top);
+
+            if (height > 100) {
+                isKeyboardOpened = true;
+                if (binding.BSLayout.bottomSheetLayout.getVisibility() == View.VISIBLE) {
+                    if (behavior != null && behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                        behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    }
+                }
+            } else {
+                isKeyboardOpened = false;
+            }
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        binding.container.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        binding.container.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
     }
 
     @Override
@@ -382,7 +418,14 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
             behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            if (isKeyboardOpened) {
+                hideKeyboard();
+                new Handler().postDelayed(() -> {
+                    behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                }, 100);
+            } else {
+                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }
         }
     }
 

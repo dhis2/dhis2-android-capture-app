@@ -68,7 +68,13 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                view::setFilterItems,
+                                filters -> {
+                                    if (filters.isEmpty()){
+                                        view.hideFilters();
+                                    } else {
+                                        view.setFilterItems(filters);
+                                    }
+                                },
                                 Timber::e
                         )
         );

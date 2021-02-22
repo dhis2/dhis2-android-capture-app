@@ -85,6 +85,20 @@ class MainPresenterTest {
     }
 
     @Test
+    fun `Should hide filter icon when is list is empty`() {
+        val periodRequest: FlowableProcessor<Pair<FilterManager.PeriodRequest, Filters?>> =
+            BehaviorProcessor.create()
+        whenever(filterManager.asFlowable()) doReturn Flowable.just(filterManager)
+        whenever(filterManager.periodRequest) doReturn periodRequest
+        periodRequest.onNext(Pair(FilterManager.PeriodRequest.FROM_TO, null))
+        whenever(filterRepository.homeFilters()) doReturn emptyList()
+
+        presenter.initFilters()
+
+        verify(view).hideFilters()
+    }
+
+    @Test
     fun `Should log out`() {
         whenever(d2.userModule()) doReturn mock()
         whenever(d2.userModule().logOut()) doReturn Completable.complete()
