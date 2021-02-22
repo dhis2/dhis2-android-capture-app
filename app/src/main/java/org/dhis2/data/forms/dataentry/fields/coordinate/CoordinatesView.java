@@ -530,5 +530,9 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private void subscribe() {
         ((ActivityResultObservable) getContext()).subscribe(this);
     }
+
+    public CoordinateViewModel getViewModel() {
+        return viewModel;
+    }
 }
 
