@@ -224,6 +224,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void updatePercentage(float primaryValue, float secondaryValue) {
         binding.completion.setCompletionPercentage(primaryValue);
         binding.completion.setSecondaryPercentage(secondaryValue);
+        if (!presenter.getCompletionPercentageVisibility()) {
+            binding.completion.setVisibility(View.GONE);
+        }
     }
 
     @Override
