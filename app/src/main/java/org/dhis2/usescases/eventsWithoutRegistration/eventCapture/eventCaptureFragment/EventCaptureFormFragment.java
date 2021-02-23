@@ -1,4 +1,3 @@
-
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment;
 
 import android.content.Context;
@@ -26,8 +25,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
-import kotlin.jvm.functions.Function1;
 
 public class EventCaptureFormFragment extends FragmentGlobalAbstract implements EventCaptureFormView {
 
