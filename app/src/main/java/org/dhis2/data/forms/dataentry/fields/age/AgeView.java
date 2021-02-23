@@ -1,16 +1,19 @@
 package org.dhis2.data.forms.dataentry.fields.age;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.text.InputFilter;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.ViewCompat;
 import androidx.databinding.ViewDataBinding;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -59,6 +62,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     private View monthInputLayout;
     private View dayInputLayout;
     private AgeViewModel viewModel;
+    private TextView errorView;
 
     public AgeView(Context context) {
         super(context);
@@ -98,18 +102,28 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setWarning(String msg) {
-        inputLayout.setErrorTextAppearance(R.style.warning_appearance);
-        inputLayout.setError(msg);
+        setErrorColor(ContextCompat.getColor(getContext(), R.color.warning_color));
+        errorView.setText(msg);
+        errorView.setVisibility(View.VISIBLE);
     }
 
     public void setError(String msg) {
-        inputLayout.setErrorTextAppearance(R.style.error_appearance);
-        inputLayout.setError(msg);
-        date.requestFocus();
+        setErrorColor(ContextCompat.getColor(getContext(), R.color.error_color));
+        errorView.setText(msg);
+        errorView.setVisibility(View.VISIBLE);
     }
 
     public void clearErrors() {
-        inputLayout.setError(null);
+        setErrorColor(ContextCompat.getColor(getContext(), R.color.textPrimary));
+        errorView.setVisibility(View.GONE);
+    }
+
+    private void setErrorColor(int color) {
+        ViewCompat.setBackgroundTintList(day, ColorStateList.valueOf(color));
+        ViewCompat.setBackgroundTintList(month, ColorStateList.valueOf(color));
+        ViewCompat.setBackgroundTintList(year, ColorStateList.valueOf(color));
+        ViewCompat.setBackgroundTintList(date, ColorStateList.valueOf(color));
+        errorView.setTextColor(color);
     }
 
     private void onFocusChanged(View view, boolean hasFocus) {
@@ -271,6 +285,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         selectedCalendar = Calendar.getInstance();
         dateFormat = DateUtils.uiDateFormat();
         descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
+        errorView = findViewById(R.id.errorMessage);
 
         date.setFocusable(false); //Makes editText not editable
         date.setClickable(true);//  but clickable
