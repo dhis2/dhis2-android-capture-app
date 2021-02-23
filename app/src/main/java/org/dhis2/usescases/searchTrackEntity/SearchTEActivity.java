@@ -207,7 +207,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     showMap(false);
                     break;
                 case R.id.navigation_map_view:
-                    if (backDropActive) {
+                    if (backDropActive) { 
                         closeFilters();
                     }
                     showMap(true);
@@ -226,70 +226,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     .show(getSupportFragmentManager(), MapLayerDialog.class.getName());
         });
 
-        CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
-                .addOnTeiClickListener(
-                        (teiUid, enrollmentUid, isDeleted) -> {
-                            if (binding.mapCarousel.getCarouselEnabled()) {
-                                if (fromRelationship) {
-                                    presenter.addRelationship(teiUid, null, NetworkUtils.isOnline(this));
-                                } else {
-                                    updateTei = teiUid;
-                                    presenter.onTEIClick(teiUid, enrollmentUid, isDeleted);
-                                }
-                            }
-                            return true;
-                        })
-                .addOnSyncClickListener(
-                        teiUid -> {
-                            if (binding.mapCarousel.getCarouselEnabled()) {
-                                presenter.onSyncIconClick(teiUid);
-                            }
-                            return true;
-                        })
-                .addOnDeleteRelationshipListener(relationshipUid -> {
-                    if (binding.mapCarousel.getCarouselEnabled()) {
-                        presenter.deleteRelationship(relationshipUid);
-                    }
-                    return true;
-                })
-                .addOnRelationshipClickListener(teiUid -> {
-                    if (binding.mapCarousel.getCarouselEnabled()) {
-                        presenter.onTEIClick(teiUid, null, false);
-                    }
-                    return true;
-                })
-                .addOnEventClickListener((teiUid, enrollmentUid, eventUid) -> {
-                    if (binding.mapCarousel.getCarouselEnabled()) {
-                        updateTei = teiUid;
-                        updateEvent = eventUid;
-                        presenter.onTEIClick(teiUid, enrollmentUid, false);
-                    }
-                    return true;
-                })
-                .addOnProfileImageClickListener(
-                        path -> {
-                            if (binding.mapCarousel.getCarouselEnabled()) {
-                                new ImageDetailBottomDialog(
-                                        null,
-                                        new File(path)
-                                ).show(
-                                        getSupportFragmentManager(),
-                                        ImageDetailBottomDialog.TAG
-                                );
-                            }
-                            return Unit.INSTANCE;
-                        }
-                )
-                .addOnNavigateClickListener(
-                        uuid -> {
-                            navigateToMap(teiMapManager.findFeature(uuid));
-                            return Unit.INSTANCE;
-                        }
-                )
-                .addProgram(presenter.getProgram())
-                .build();
-        binding.mapCarousel.setAdapter(carouselAdapter);
-
         binding.executePendingBindings();
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             setFabVisibility(false, false);
@@ -304,12 +240,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         teiMapManager.setEnrollmentFeatureType(presenter.getProgram() != null ? presenter.getProgram().featureType() : null);
         teiMapManager.setCarouselAdapter(carouselAdapter);
         teiMapManager.setOnMapClickListener(this);
-
-        binding.mapCarousel.setCallback((feature, found) -> {
-            showNavFab(feature, found);
-            return true;
-        });
-        binding.mapCarousel.attachToMapManager(teiMapManager);
     }
 
     @Override
@@ -472,6 +402,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : GONE);
 
             if (showMap) {
+                initializeCarousel();
                 binding.toolbarProgress.setVisibility(View.VISIBLE);
                 binding.toolbarProgress.show();
                 teiMapManager.init(() -> {
@@ -482,6 +413,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     return Unit.INSTANCE;
                 });
             } else {
+                removeCarousel();
                 binding.mapLayerButton.setVisibility(View.GONE);
             }
 
@@ -489,6 +421,84 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 setFabVisibility(!needsSearch.get() && !showMap, true);
             }
         }
+    }
+
+    private void removeCarousel() {
+        carouselAdapter = null;
+        binding.mapCarousel.setAdapter(null);
+        binding.mapCarousel.setCallback((feature, found) -> true);
+    }
+
+    private void initializeCarousel() {
+        carouselAdapter = new CarouselAdapter.Builder()
+                .addOnTeiClickListener(
+                        (teiUid, enrollmentUid, isDeleted) -> {
+                            if (binding.mapCarousel.getCarouselEnabled()) {
+                                if (fromRelationship) {
+                                    presenter.addRelationship(teiUid, null, NetworkUtils.isOnline(this));
+                                } else {
+                                    updateTei = teiUid;
+                                    presenter.onTEIClick(teiUid, enrollmentUid, isDeleted);
+                                }
+                            }
+                            return true;
+                        })
+                .addOnSyncClickListener(
+                        teiUid -> {
+                            if (binding.mapCarousel.getCarouselEnabled()) {
+                                presenter.onSyncIconClick(teiUid);
+                            }
+                            return true;
+                        })
+                .addOnDeleteRelationshipListener(relationshipUid -> {
+                    if (binding.mapCarousel.getCarouselEnabled()) {
+                        presenter.deleteRelationship(relationshipUid);
+                    }
+                    return true;
+                })
+                .addOnRelationshipClickListener(teiUid -> {
+                    if (binding.mapCarousel.getCarouselEnabled()) {
+                        presenter.onTEIClick(teiUid, null, false);
+                    }
+                    return true;
+                })
+                .addOnEventClickListener((teiUid, enrollmentUid, eventUid) -> {
+                    if (binding.mapCarousel.getCarouselEnabled()) {
+                        updateTei = teiUid;
+                        updateEvent = eventUid;
+                        presenter.onTEIClick(teiUid, enrollmentUid, false);
+                    }
+                    return true;
+                })
+                .addOnProfileImageClickListener(
+                        path -> {
+                            if (binding.mapCarousel.getCarouselEnabled()) {
+                                new ImageDetailBottomDialog(
+                                        null,
+                                        new File(path)
+                                ).show(
+                                        getSupportFragmentManager(),
+                                        ImageDetailBottomDialog.TAG
+                                );
+                            }
+                            return Unit.INSTANCE;
+                        }
+                )
+                .addOnNavigateClickListener(
+                        uuid -> {
+                            navigateToMap(teiMapManager.findFeature(uuid));
+                            return Unit.INSTANCE;
+                        }
+                )
+                .addProgram(presenter.getProgram())
+                .build();
+        binding.mapCarousel.setAdapter(carouselAdapter);
+
+        binding.mapCarousel.setCallback((feature, found) -> {
+            showNavFab(feature, found);
+            return true;
+        });
+        binding.mapCarousel.attachToMapManager(teiMapManager);
     }
 
     @Override
