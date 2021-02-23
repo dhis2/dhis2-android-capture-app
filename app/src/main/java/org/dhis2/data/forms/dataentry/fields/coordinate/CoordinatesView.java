@@ -269,11 +269,11 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     public void setInitialValue(String initialValue) {
         if (featureType == null)
             throw new NullPointerException("use setFeatureType before setting an initial value");
-        setCoordinatesValue(
-                Geometry.builder()
-                        .coordinates(initialValue)
-                        .type(featureType)
-                        .build());
+        currentGeometry = Geometry.builder()
+                .coordinates(initialValue)
+                .type(featureType)
+                .build();
+        setCoordinatesValue(currentGeometry);
         updateDeleteVisibility(clearButton);
 
     }
@@ -470,8 +470,12 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     public void clearValueData() {
-        this.latitude.setText(null);
-        this.longitude.setText(null);
+        if(featureType == FeatureType.POINT) {
+            this.latitude.setText(null);
+            this.longitude.setText(null);
+        }else if(featureType == FeatureType.POLYGON){
+            this.polygon.setText(null);
+        }
     }
 
     public Double getLatitude() {
@@ -490,8 +494,14 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     @Override
     protected boolean hasValue() {
-        return latitude.getText() != null && !latitude.getText().toString().isEmpty() &&
-                longitude.getText() != null && !longitude.getText().toString().isEmpty();
+        if (featureType == FeatureType.POINT) {
+            return latitude.getText() != null && !latitude.getText().toString().isEmpty() &&
+                    longitude.getText() != null && !longitude.getText().toString().isEmpty();
+        } else if (featureType == FeatureType.POLYGON) {
+            return polygon.getText()!=null && !polygon.getText().toString().isEmpty();
+        } else {
+            return super.hasValue();
+        }
     }
 
     @Override
