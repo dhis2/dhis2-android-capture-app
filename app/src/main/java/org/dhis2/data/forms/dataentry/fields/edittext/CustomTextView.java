@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
@@ -497,6 +498,7 @@ public class CustomTextView extends FieldLayout {
         setLabel(viewModel.label(), viewModel.mandatory());
         setHint(viewModel.hint());
         binding.setVariable(BR.focus, viewModel.activated());
+        binding.setVariable(BR.legend, viewModel.legendValue());
         setDescription(viewModel.description());
         setText(withValueTypeCheck(viewModel.value(), viewModel.valueType()));
         setWarning(viewModel.warning(), viewModel.error());
@@ -566,5 +568,9 @@ public class CustomTextView extends FieldLayout {
     private Boolean valueHasChanged() {
         return !Preconditions.equals(isEmpty(getEditText().getText()) ? "" : getEditText().getText().toString(),
                 viewModel.value() == null ? "" : valueOf(viewModel.value())) || viewModel.error() != null;
+    }
+
+    public void setBackgroundColor(@ColorInt int color) {
+        inputLayout.setBackgroundColor(color);
     }
 }
