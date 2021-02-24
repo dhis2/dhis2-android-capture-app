@@ -269,10 +269,14 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     public void setInitialValue(String initialValue) {
         if (featureType == null)
             throw new NullPointerException("use setFeatureType before setting an initial value");
-        currentGeometry = Geometry.builder()
-                .coordinates(initialValue)
-                .type(featureType)
-                .build();
+        if (initialValue != null) {
+            currentGeometry = Geometry.builder()
+                    .coordinates(initialValue)
+                    .type(featureType)
+                    .build();
+        } else {
+            currentGeometry = null;
+        }
         setCoordinatesValue(currentGeometry);
         updateDeleteVisibility(clearButton);
 
@@ -449,7 +453,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         invalidate();
     }
 
-    private void setCoordinatesValue(Geometry geometry) {
+    private void setCoordinatesValue(@Nullable Geometry geometry) {
         if (geometry != null && geometry.type() != null) {
             if (geometry.type() == FeatureType.POINT) {
                 try {
@@ -465,15 +469,20 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             } else if (geometry.type() == FeatureType.MULTI_POLYGON) {
                 this.polygon.setText(getContext().getString(R.string.polygon_captured));
             }
+        } else {
+            this.latitude.setText(null);
+            this.longitude.setText(null);
+            this.polygon.setText(null);
+            this.polygon.setText(null);
         }
         updateDeleteVisibility(clearButton);
     }
 
     public void clearValueData() {
-        if(featureType == FeatureType.POINT) {
+        if (featureType == FeatureType.POINT) {
             this.latitude.setText(null);
             this.longitude.setText(null);
-        }else if(featureType == FeatureType.POLYGON){
+        } else if (featureType == FeatureType.POLYGON) {
             this.polygon.setText(null);
         }
     }
@@ -498,7 +507,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             return latitude.getText() != null && !latitude.getText().toString().isEmpty() &&
                     longitude.getText() != null && !longitude.getText().toString().isEmpty();
         } else if (featureType == FeatureType.POLYGON) {
-            return polygon.getText()!=null && !polygon.getText().toString().isEmpty();
+            return polygon.getText() != null && !polygon.getText().toString().isEmpty();
         } else {
             return super.hasValue();
         }
