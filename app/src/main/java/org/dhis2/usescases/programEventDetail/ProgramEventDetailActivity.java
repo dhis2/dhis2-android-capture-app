@@ -410,7 +410,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         }
 
         eventMapManager.mapLayerManager.selectFeature(null);
-        binding.mapLayerButton.setVisibility(View.VISIBLE);
+        binding.mapLayerButton.setVisibility(isMapVisible() ? View.VISIBLE : View.GONE);
 
         animations.endMapLoading(binding.mapCarousel);
         binding.toolbarProgress.hide();
