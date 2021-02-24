@@ -107,7 +107,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
             @Override
             public void onPageSelected(int position) {
-                binding.navigationBar.selectItemAt(position);
+                binding.navigationBar.selectItemAt(position+1);
             }
 
             @Override

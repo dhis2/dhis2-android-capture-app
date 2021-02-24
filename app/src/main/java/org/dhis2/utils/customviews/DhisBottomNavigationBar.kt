@@ -61,6 +61,9 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
                 if (index == initialPage) {
                     setCurrentItemIndicatorPosition(findViewById<View>(item.itemId), true)
                 }
+                if (initialPage != 0) {
+                    selectItemAt(initialPage)
+                }
             }
         }
         setIconsColor(currentItemIndicatorColor)
