@@ -222,7 +222,7 @@ public class FilterManager implements Serializable {
         }
 
         stateFiltersApplied.set(stateFiltersCount);
-        filterProcessor.onNext(this);
+        publishData();
     }
 
 //    endregion
@@ -240,7 +240,7 @@ public class FilterManager implements Serializable {
         } else {
             eventStatusFiltersApplied.set(eventStatusFilters.size());
         }
-        filterProcessor.onNext(this);
+        publishData();
     }
 
     public void addEnrollmentStatus(boolean remove, EnrollmentStatus enrollmentStatus) {
@@ -253,21 +253,21 @@ public class FilterManager implements Serializable {
         }
         enrollmentStatusFiltersApplied.set(enrollmentStatusFilters.size());
         if (!workingListActive())
-            filterProcessor.onNext(this);
+            publishData();
     }
 
     public void addPeriod(List<DatePeriod> datePeriod) {
         this.periodFilters = datePeriod;
         observablePeriodFilters.set(datePeriod);
         periodFiltersApplied.set(datePeriod != null && !datePeriod.isEmpty() ? 1 : 0);
-        filterProcessor.onNext(this);
+        publishData();
     }
 
     public void addEnrollmentPeriod(List<DatePeriod> datePeriod) {
         this.enrollmentPeriodFilters = datePeriod;
 
         enrollmentPeriodFiltersApplied.set(datePeriod != null && !datePeriod.isEmpty() ? 1 : 0);
-        filterProcessor.onNext(this);
+        publishData();
     }
 
     public void addOrgUnit(OrganisationUnit ou) {
@@ -279,7 +279,7 @@ public class FilterManager implements Serializable {
 
         liveDataOUFilter.setValue(ouFilters);
         ouFiltersApplied.set(ouFilters.size());
-        filterProcessor.onNext(this);
+        publishData();
     }
 
     public void addCatOptCombo(CategoryOptionCombo catOptCombo) {
@@ -292,7 +292,7 @@ public class FilterManager implements Serializable {
             catComboAdapter.notifyDataSetChanged();
         }
         catOptCombFiltersApplied.set(catOptComboFilters.size());
-        filterProcessor.onNext(this);
+        publishData();
     }
 
 
@@ -424,7 +424,7 @@ public class FilterManager implements Serializable {
         ouFilters = new ArrayList<>();
         liveDataOUFilter.setValue(ouFilters);
         ouFiltersApplied.set(ouFilters.size());
-        filterProcessor.onNext(this);
+        publishData();
     }
 
     public void addIfCan(OrganisationUnit content, boolean b) {
@@ -440,7 +440,7 @@ public class FilterManager implements Serializable {
         }
         liveDataOUFilter.setValue(ouFilters);
         ouFiltersApplied.set(ouFilters.size());
-        filterProcessor.onNext(this);
+        publishData();
     }
 
     public boolean exist(OrganisationUnit content) {
@@ -450,21 +450,21 @@ public class FilterManager implements Serializable {
     public void clearCatOptCombo() {
         catOptComboFilters.clear();
         catOptCombFiltersApplied.set(catOptComboFilters.size());
-        filterProcessor.onNext(this);
+        publishData();
     }
 
     public void clearEventStatus() {
         eventStatusFilters.clear();
         eventStatusFiltersApplied.set(eventStatusFilters.size());
         observableEventStatus.set(eventStatusFilters);
-        filterProcessor.onNext(this);
+        publishData();
     }
 
     public void clearEnrollmentStatus() {
         enrollmentStatusFilters.clear();
         observableEnrollmentStatus.set(null);
         enrollmentStatusFiltersApplied.set(enrollmentStatusFilters.size());
-        filterProcessor.onNext(this);
+        publishData();
     }
 
     public void clearAssignToMe() {
@@ -472,7 +472,7 @@ public class FilterManager implements Serializable {
             assignedFilter = false;
             observableAssignedToMe.set(false);
             assignedToMeApplied.set(0);
-            filterProcessor.onNext(this);
+            publishData();
         }
     }
 
@@ -482,7 +482,7 @@ public class FilterManager implements Serializable {
         }
         enrollmentPeriodIdSelected.set(R.id.anytime);
         enrollmentPeriodFiltersApplied.set(enrollmentPeriodFilters == null ? 0 : enrollmentPeriodFilters.size());
-        filterProcessor.onNext(this);
+        publishData();
     }
 
     public void clearWorkingList(boolean silently) {
@@ -490,14 +490,14 @@ public class FilterManager implements Serializable {
             currentWorkingList = null;
             setWorkingListScope(new EmptyWorkingList());
         }
-        if(!silently) {
-            filterProcessor.onNext(this);
+        if (!silently) {
+            publishData();
         }
     }
 
     public void clearSorting() {
         sortingItem = null;
-        filterProcessor.onNext(this);
+        publishData();
     }
 
     public void clearAllFilters() {
@@ -530,7 +530,7 @@ public class FilterManager implements Serializable {
         setWorkingListScope(new EmptyWorkingList());
 
         if (!workingListActive())
-            filterProcessor.onNext(this);
+            publishData();
     }
 
     public boolean getAssignedFilter() {
@@ -546,7 +546,7 @@ public class FilterManager implements Serializable {
         observableAssignedToMe.set(isChecked);
         assignedToMeApplied.set(isChecked ? 1 : 0);
         if (!workingListActive()) {
-            filterProcessor.onNext(this);
+            publishData();
         }
     }
 
@@ -556,7 +556,7 @@ public class FilterManager implements Serializable {
         } else {
             this.sortingItem = null;
         }
-        filterProcessor.onNext(this);
+        publishData();
     }
 
     public SortingItem getSortingItem() {
@@ -570,7 +570,7 @@ public class FilterManager implements Serializable {
             this.currentWorkingList = null;
             setWorkingListScope(new EmptyWorkingList());
         }
-        filterProcessor.onNext(this);
+        publishData();
     }
 
     @Nullable
@@ -588,10 +588,17 @@ public class FilterManager implements Serializable {
     }
 
     private void setFilterCountersForWorkingList(WorkingListScope scope) {
+
+        periodFilters = new ArrayList<>();
         periodFiltersApplied.set(0);
+        enrollmentPeriodFilters.clear();
         enrollmentPeriodFiltersApplied.set(0);
+        enrollmentStatusFilters.clear();
         enrollmentStatusFiltersApplied.set(0);
+        eventStatusFilters.clear();
         eventStatusFiltersApplied.set(0);
+        clearAssignToMe();
+        assignedFilter = false;
         assignedToMeApplied.set(0);
 
         periodFiltersApplied.set(scope.eventDateCount());
@@ -599,6 +606,7 @@ public class FilterManager implements Serializable {
         enrollmentStatusFiltersApplied.set(scope.enrollmentStatusCount());
         eventStatusFiltersApplied.set(scope.eventStatusCount());
         assignedToMeApplied.set(scope.assignCount());
+
     }
 
     private int getTotalFilterCounterForWorkingList(WorkingListScope scope) {

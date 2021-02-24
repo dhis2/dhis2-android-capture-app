@@ -206,7 +206,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         );
 
         compositeDisposable.add(
-                filterManager.asFlowable()
+                filterManager.asFlowable().onBackpressureLatest()
                         .doOnNext(queryData -> {
                             if (view.isMapVisible())
                                 mapProcessor.onNext(new Unit());
