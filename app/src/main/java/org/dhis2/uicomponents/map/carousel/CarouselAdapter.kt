@@ -15,7 +15,6 @@ import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFea
 import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.layer.MapLayerManager
 import org.dhis2.uicomponents.map.layer.types.EventMapLayer
-import org.dhis2.uicomponents.map.layer.types.FieldMapLayer
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiEventMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
