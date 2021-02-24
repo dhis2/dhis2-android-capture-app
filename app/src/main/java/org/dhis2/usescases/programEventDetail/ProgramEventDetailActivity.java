@@ -193,6 +193,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         FilterManager.getInstance().clearEventStatus();
         FilterManager.getInstance().clearCatOptCombo();
         FilterManager.getInstance().clearWorkingList(false);
+        FilterManager.getInstance().clearAssignToMe();
     }
 
 
