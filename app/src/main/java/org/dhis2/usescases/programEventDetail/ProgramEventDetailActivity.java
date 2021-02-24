@@ -10,9 +10,7 @@ import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.util.SparseBooleanArray;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,6 +42,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.orgunitselector.OUTreeActivity;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
+import org.dhis2.utils.AppMenuHelper;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventMode;
@@ -59,8 +58,6 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.program.Program;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,7 +93,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private ProgramEventDetailLiveAdapter liveAdapter;
     private boolean backDropActive;
     private String programUid;
-    private FeatureType featureType;
     private EventMapManager eventMapManager;
 
     public static final String EXTRA_PROGRAM_UID = "PROGRAM_UID";
@@ -122,6 +118,18 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         binding.setPresenter(presenter);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+        binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.navigation_list_view:
+                    showMap(false);
+                    return true;
+                case R.id.navigation_map_view:
+                    showMap(true);
+                    return true;
+                default:
+                    return false;
+            }
+        });
 
         ViewExtensionsKt.clipWithRoundedCorners(binding.recycler, ExtensionsKt.getDp(16));
         ViewExtensionsKt.clipWithRoundedCorners(binding.mapView, ExtensionsKt.getDp(16));
@@ -295,7 +303,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setFeatureType(FeatureType type) {
-        this.featureType = type;
+        binding.navigationBar.setVisibility(type == FeatureType.NONE ? View.GONE : View.VISIBLE);
     }
 
     @Override
@@ -426,46 +434,20 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void showMoreOptions(View view) {
-        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
-        try {
-            Field[] fields = popupMenu.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                if ("mPopup".equals(field.getName())) {
-                    field.setAccessible(true);
-                    Object menuPopupHelper = field.get(popupMenu);
-                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
-                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
-                    setForceIcons.invoke(menuPopupHelper, true);
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-        popupMenu.getMenuInflater().inflate(R.menu.event_list_menu, popupMenu.getMenu());
-        popupMenu.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.showHelp:
-                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
-                    showTutorial(false);
-                    break;
-                case R.id.menu_list:
-                    showMap(false);
-                    break;
-                case R.id.menu_map:
-                    showMap(true);
-                    break;
-                default:
-                    break;
-            }
-            return false;
-        });
-        boolean mapVisible = binding.mapView.getVisibility() != GONE;
-        boolean listVisible = binding.recycler.getVisibility() != GONE;
-        boolean emptyVisible = !mapVisible && !listVisible;
-        popupMenu.getMenu().getItem(0).setVisible(!emptyVisible && !mapVisible && featureType != FeatureType.NONE);
-        popupMenu.getMenu().getItem(1).setVisible(!emptyVisible && binding.recycler.getVisibility() == GONE && featureType != FeatureType.NONE);
-        popupMenu.show();
+        new AppMenuHelper.Builder()
+                .menu(this, R.menu.event_list_menu)
+                .onMenuItemClicked(itemId -> {
+                    switch (itemId) {
+                        case R.id.showHelp:
+                            analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
+                            showTutorial(false);
+                            break;
+                        default:
+                            break;
+                    }
+                    return false;
+                })
+                .build().show();
     }
 
     @Override
