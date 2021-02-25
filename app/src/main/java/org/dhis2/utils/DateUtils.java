@@ -56,7 +56,7 @@ public class DateUtils {
                 return new Date[]{getFirstDayOfWeek(date), getLastDayOfWeek(date)};
             case DAILY:
             default:
-                return new Date[]{getDate(date), getNextDate(date)};
+                return new Date[]{getDate(date), getDate(date)};
         }
     }
 
