@@ -152,7 +152,6 @@ class EventMapFragment :
         }
 
         eventMapManager?.mapLayerManager?.selectFeature(null)
-        binding.mapLayerButton.visibility = View.VISIBLE
 
         animations.endMapLoading(binding.mapCarousel)
         programEventsViewModel.setProgress(false)

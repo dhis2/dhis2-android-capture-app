@@ -274,51 +274,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public void setMap(ProgramEventMapData mapData) {
-        eventMapManager.update(
-                mapData.getFeatureCollectionMap(),
-                mapData.getBoundingBox()
-        );
-        if (binding.mapCarousel.getAdapter() == null) {
-            CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
-                    .addOnSyncClickListener(
-                            teiUid -> {
-                                if (binding.mapCarousel.getCarouselEnabled()) {
-                                    presenter.onSyncIconClick(teiUid);
-                                }
-                                return true;
-                            })
-                    .addOnEventClickListener((teiUid, orgUnit, eventUid) -> {
-                        if (binding.mapCarousel.getCarouselEnabled()) {
-                            presenter.onEventClick(teiUid, orgUnit);
-                        }
-                        return true;
-                    })
-                    .build();
-            binding.mapCarousel.setAdapter(carouselAdapter);
-            binding.mapCarousel.setCallback((feature, found) -> true);
-            binding.mapCarousel.attachToMapManager(eventMapManager);
-            carouselAdapter.addItems(mapData.getEvents());
-        } else {
-            ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(mapData.getEvents(), eventMapManager.mapLayerManager);
-        }
-
-        eventMapManager.mapLayerManager.selectFeature(null);
-        binding.mapLayerButton.setVisibility(isMapVisible() ? View.VISIBLE : View.GONE);
-
-        animations.endMapLoading(binding.mapCarousel);
-        binding.toolbarProgress.hide();
-    }
-
-    @Override
-    public void updateEventCarouselItem(ProgramEventViewModel programEventViewModel) {
-        ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateItem(programEventViewModel);
-        animations.endMapLoading(this.binding.mapCarousel);
-        this.binding.toolbarProgress.hide();
-        updateEvent = null;
-    }
-
-    @Override
     public void showMoreOptions(View view) {
         new AppMenuHelper.Builder()
                 .menu(this, R.menu.event_list_menu)
