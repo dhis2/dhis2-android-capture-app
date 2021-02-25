@@ -117,9 +117,7 @@
                 android:layout_height="wrap_content"
                 android:indeterminate="true"
                 android:padding="0dp"
-                android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar_guideline"
-                tools:visibility="visible" />
+                app:layout_constraintTop_toBottomOf="@+id/toolbar_guideline"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -149,7 +147,7 @@
                 android:id="@+id/eventsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:background="@drawable/ic_front_backdrop_bg"
+                android:background="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/backdropGuideTop">
 
@@ -203,77 +201,12 @@
                         app:tint="?colorPrimary" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
-                    android:id="@+id/empty_teis"
+                <FrameLayout
+                    android:id="@+id/fragmentContainer"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:gravity="center"
-                    android:padding="42dp"
-                    android:text="@string/empty_tei_add"
-                    android:textSize="@dimen/primaryTextSize"
-                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/filterOpen" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:clipToPadding="false"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="100dp"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/progressLayout"
-                    tools:listitem="@layout/item_event" />
-
-                <com.mapbox.mapboxsdk.maps.MapView
-                    android:id="@+id/mapView"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:visibility="gone"
-                    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/filterOpen" />
-
-                <org.dhis2.uicomponents.map.views.CarouselView
-                    android:id="@+id/map_carousel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:paddingBottom="16dp"
-                    app:layout_constraintBottom_toBottomOf="@id/mapView"
-                    app:layout_constraintStart_toStartOf="@id/mapView"
-                    tools:listitem="@layout/item_carousel_event" />
-
-                <ImageView
-                    android:id="@+id/mapLayerButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/progressLayout"
-                    app:srcCompat="@drawable/ic_map_layers" />
-
-                <RelativeLayout
-                    android:id="@+id/progressLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@id/filterOpen">
-
-                    <ProgressBar
-                        android:id="@+id/program_progress"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerInParent="true"
-                        android:layout_margin="5dp"
-                        app:progressColor="@{@color/colorPrimary}" />
-                </RelativeLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

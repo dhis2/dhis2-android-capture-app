@@ -159,6 +159,12 @@ class CarouselAdapter private constructor(
         notifyDataSetChanged()
     }
 
+    fun setItems(data: List<CarouselItemModel>) {
+        items.clear()
+        items.addAll(data)
+        notifyDataSetChanged()
+    }
+
     fun updateAllData(data: List<CarouselItemModel>, mapLayerManager: MapLayerManager) {
         allItems.clear()
         allItems.addAll(data)

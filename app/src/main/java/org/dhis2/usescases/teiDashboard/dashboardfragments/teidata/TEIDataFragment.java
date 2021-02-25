@@ -145,7 +145,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     public void onStart() {
         super.onStart();
         dashboardViewModel = ViewModelProviders.of(activity).get(DashboardViewModel.class);
-
     }
 
     @Nullable

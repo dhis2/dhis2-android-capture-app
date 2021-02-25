@@ -2,8 +2,6 @@ package org.dhis2.usescases.programEventDetail;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.PointF;
-import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.transition.ChangeBounds;
@@ -12,36 +10,24 @@ import android.transition.TransitionManager;
 import android.util.SparseBooleanArray;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.LiveData;
-import androidx.paging.PagedList;
-
-import com.mapbox.geojson.Feature;
-import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.maps.MapboxMap;
+import androidx.lifecycle.ViewModelProviders;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.animations.CarouselViewAnimations;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
-import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
-import org.dhis2.uicomponents.map.layer.LayerType;
-import org.dhis2.uicomponents.map.layer.MapLayer;
-import org.dhis2.uicomponents.map.layer.MapLayerDialog;
-import org.dhis2.uicomponents.map.managers.EventMapManager;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.orgunitselector.OUTreeActivity;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
+import org.dhis2.usescases.programEventDetail.eventList.EventListFragment;
+import org.dhis2.usescases.programEventDetail.eventMap.EventMapFragment;
 import org.dhis2.utils.AppMenuHelper;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
@@ -53,29 +39,21 @@ import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.hisp.dhis.android.core.category.CategoryCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.program.Program;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import kotlin.Unit;
-import timber.log.Timber;
-
 import static android.view.View.GONE;
 import static org.dhis2.R.layout.activity_program_event_detail;
-import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection.EVENT;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
-public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View,
-        MapboxMap.OnMapClickListener {
+public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View {
 
     private static final String FRAGMENT_TAG = "SYNC";
 
@@ -85,18 +63,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     ProgramEventDetailContract.Presenter presenter;
 
     @Inject
-    CarouselViewAnimations animations;
-
-    @Inject
     FiltersAdapter filtersAdapter;
 
-    private ProgramEventDetailLiveAdapter liveAdapter;
     private boolean backDropActive;
     private String programUid;
-    private EventMapManager eventMapManager;
 
     public static final String EXTRA_PROGRAM_UID = "PROGRAM_UID";
-    private String updateEvent;
+    private ProgramEventDetailViewModel programEventsViewModel;
+    public ProgramEventDetailComponent component;
 
     public static Bundle getBundle(String programUid) {
         Bundle bundle = new Bundle();
@@ -106,16 +80,13 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        this.programUid = getIntent().getStringExtra(EXTRA_PROGRAM_UID);
-
-        ((App) getApplicationContext()).userComponent().plus(new ProgramEventDetailModule(this, programUid)).inject(this);
+        initExtras();
+        initInjection();
         super.onCreate(savedInstanceState);
-
-        FilterManager.getInstance().clearCatOptCombo();
-        FilterManager.getInstance().clearEventStatus();
+        initEventFilters();
+        initViewModel();
 
         binding = DataBindingUtil.setContentView(this, activity_program_event_detail);
-
         binding.setPresenter(presenter);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
@@ -130,97 +101,67 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     return false;
             }
         });
-
-        ViewExtensionsKt.clipWithRoundedCorners(binding.recycler, ExtensionsKt.getDp(16));
-        ViewExtensionsKt.clipWithRoundedCorners(binding.mapView, ExtensionsKt.getDp(16));
-        liveAdapter = new ProgramEventDetailLiveAdapter(presenter.getProgram(), presenter);
-        binding.recycler.setAdapter(liveAdapter);
-
-        try {
-            binding.filterLayout.setAdapter(filtersAdapter);
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-
-        binding.mapLayerButton.setOnClickListener(view ->
-                new MapLayerDialog(eventMapManager)
-                        .show(getSupportFragmentManager(), MapLayerDialog.class.getName())
-        );
-
-        eventMapManager = new EventMapManager(binding.mapView);
-        eventMapManager.setFeatureType(presenter.getFeatureType());
-        eventMapManager.setOnMapClickListener(this);
+        ViewExtensionsKt.clipWithRoundedCorners(binding.eventsLayout, ExtensionsKt.getDp(16));
+        binding.filterLayout.setAdapter(filtersAdapter);
         presenter.init();
+        showMap(false);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (eventMapManager != null) {
-            eventMapManager.onStart();
-        }
+    private void initExtras() {
+        this.programUid = getIntent().getStringExtra(EXTRA_PROGRAM_UID);
     }
 
+    private void initInjection() {
+        component = ((App) getApplicationContext()).userComponent().plus(new ProgramEventDetailModule(this, programUid));
+        component.inject(this);
+    }
+
+    private void initEventFilters() {
+        FilterManager.getInstance().clearCatOptCombo();
+        FilterManager.getInstance().clearEventStatus();
+    }
+
+    private void initViewModel() {
+        programEventsViewModel = ViewModelProviders.of(this).get(ProgramEventDetailViewModel.class);
+        programEventsViewModel.progress().observe(this, showProgress -> {
+            if (showProgress) {
+                binding.toolbarProgress.show();
+            } else {
+                binding.toolbarProgress.hide();
+            }
+        });
+
+        programEventsViewModel.getEventSyncClicked().observe(this, eventUid -> {
+            if (eventUid != null) {
+                presenter.onSyncIconClick(eventUid);
+            }
+        });
+
+        programEventsViewModel.getEventClicked().observe(this, eventData -> {
+            if (eventData != null) {
+                navigateToEvent(eventData.component1(), eventData.component2());
+            }
+        });
+
+        programEventsViewModel.getWritePermission().observe(this, canWrite ->
+                binding.addEventButton.setVisibility(canWrite ? View.VISIBLE : GONE));
+
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (isMapVisible()) {
-            if (updateEvent != null) {
-                animations.initMapLoading(binding.mapCarousel);
-                binding.toolbarProgress.show();
-                presenter.getEventInfo(updateEvent);
-            }
-        } else {
-            FilterManager.getInstance().publishData();
-        }
-        if (eventMapManager != null) {
-            eventMapManager.onResume();
-        }
         binding.addEventButton.setEnabled(true);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
-    }
-
-    @Override
-    protected void onPause() {
-        if (eventMapManager != null) {
-            eventMapManager.onPause();
-        }
-        super.onPause();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         presenter.onDettach();
-        if (eventMapManager != null) {
-            eventMapManager.onDestroy();
-        }
-        binding.mapView.onDestroy();
-
         FilterManager.getInstance().clearEventStatus();
         FilterManager.getInstance().clearCatOptCombo();
         FilterManager.getInstance().clearWorkingList(false);
-    }
-
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        binding.mapView.onLowMemory();
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        binding.mapView.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (isMapVisible() && eventMapManager.getPermissionsManager() != null) {
-            eventMapManager.getPermissionsManager().onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
     }
 
     @Override
@@ -230,45 +171,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void showFilterProgress() {
-        runOnUiThread(() -> {
-            if (isMapVisible()) {
-                binding.toolbarProgress.setVisibility(View.VISIBLE);
-                binding.toolbarProgress.show();
-            } else {
-                binding.progressLayout.setVisibility(View.VISIBLE);
-            }
-        });
-    }
-
-    @Override
-    public void setLiveData(LiveData<PagedList<EventViewModel>> pagedListLiveData) {
-        pagedListLiveData.observe(this, pagedList -> {
-            binding.programProgress.setVisibility(GONE);
-            liveAdapter.submitList(pagedList, () -> {
-                if (binding.recycler.getAdapter() != null && binding.recycler.getAdapter().getItemCount() == 0) {
-                    binding.emptyTeis.setVisibility(View.VISIBLE);
-                    binding.recycler.setVisibility(GONE);
-                } else {
-                    binding.emptyTeis.setVisibility(GONE);
-                    binding.recycler.setVisibility(View.VISIBLE);
-                }
-            });
-
-        });
-
-    }
-
-    @Override
-    public void setOptionComboAccess(Boolean canCreateEvent) {
-        switch (binding.addEventButton.getVisibility()) {
-            case View.VISIBLE:
-                binding.addEventButton.setVisibility(canCreateEvent ? View.VISIBLE : GONE);
-                break;
-            case GONE:
-                binding.addEventButton.setVisibility(GONE);
-                break;
-        }
-
+        programEventsViewModel.setProgress(true);
     }
 
     @Override
@@ -317,19 +220,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setWritePermission(Boolean canWrite) {
-        switch (binding.addEventButton.getVisibility()) {
-            case View.VISIBLE:
-                binding.addEventButton.setVisibility(canWrite ? View.VISIBLE : GONE);
-                break;
-            case GONE:
-                binding.addEventButton.setVisibility(GONE);
-                break;
-        }
-        if (binding.addEventButton.getVisibility() == View.VISIBLE) {
-            binding.emptyTeis.setText(R.string.empty_tei_add);
-        } else {
-            binding.emptyTeis.setText(R.string.empty_tei_no_add);
-        }
+        programEventsViewModel.getWritePermission().setValue(canWrite);
     }
 
     @Override
@@ -347,11 +238,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public void updateFilters(int totalFilters) {
         binding.setTotalFilters(totalFilters);
         binding.executePendingBindings();
-    }
-
-    @Override
-    public void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos) {
-
     }
 
     @Override
@@ -388,54 +274,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public void setMap(ProgramEventMapData mapData) {
-        eventMapManager.update(
-                mapData.getFeatureCollectionMap(),
-                mapData.getBoundingBox()
-        );
-        if (binding.mapCarousel.getAdapter() == null) {
-            CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
-                    .addOnSyncClickListener(
-                            teiUid -> {
-                                if (binding.mapCarousel.getCarouselEnabled()) {
-                                    presenter.onSyncIconClick(teiUid);
-                                }
-                                return true;
-                            })
-                    .addOnEventClickListener((teiUid, orgUnit, eventUid) -> {
-                        if (binding.mapCarousel.getCarouselEnabled()) {
-                            presenter.onEventClick(teiUid, orgUnit);
-                        }
-                        return true;
-                    })
-                    .build();
-            binding.mapCarousel.setAdapter(carouselAdapter);
-            binding.mapCarousel.setCallback((feature, found) -> true);
-            binding.mapCarousel.attachToMapManager(eventMapManager);
-            carouselAdapter.addItems(mapData.getEvents());
-        } else {
-            ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(mapData.getEvents(), eventMapManager.mapLayerManager);
-        }
-
-        eventMapManager.mapLayerManager.selectFeature(null);
-        binding.mapLayerButton.setVisibility(View.VISIBLE);
-
-        animations.endMapLoading(binding.mapCarousel);
-        binding.toolbarProgress.hide();
-    }
-
-    @Override
-    public void updateEventCarouselItem(ProgramEventViewModel programEventViewModel) {
-        ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateItem(programEventViewModel);
-        animations.endMapLoading(this.binding.mapCarousel);
-        this.binding.toolbarProgress.hide();
-        updateEvent = null;
-    }
-
-    @Override
     public void showMoreOptions(View view) {
         new AppMenuHelper.Builder()
                 .menu(this, R.menu.event_list_menu)
+                .anchor(view)
                 .onMenuItemClicked(itemId -> {
                     switch (itemId) {
                         case R.id.showHelp:
@@ -451,13 +293,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public boolean isMapVisible() {
-        return binding.mapView.getVisibility() == View.VISIBLE;
-    }
-
-    @Override
     public void navigateToEvent(String eventId, String orgUnit) {
-        this.updateEvent = eventId;
+        programEventsViewModel.setUpdateEvent(eventId);
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, programUid);
         bundle.putString(Constants.EVENT_UID, eventId);
@@ -484,42 +321,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     private void showMap(boolean showMap) {
-        binding.recycler.setVisibility(showMap ? GONE : View.VISIBLE);
-        binding.mapView.setVisibility(showMap ? View.VISIBLE : GONE);
-        binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : GONE);
-        binding.addEventButton.setVisibility(showMap ? GONE : View.VISIBLE);
-
-        if (showMap) {
-            binding.toolbarProgress.setVisibility(View.VISIBLE);
-            binding.toolbarProgress.show();
-            eventMapManager.init(() -> {
-                presenter.getMapData();
-                return Unit.INSTANCE;
-            }, (permissionManager) -> {
-                permissionManager.requestLocationPermissions(this);
-                return Unit.INSTANCE;
-            });
-        } else {
-            binding.mapLayerButton.setVisibility(GONE);
-        }
-    }
-
-    @Override
-    public boolean onMapClick(@NonNull LatLng point) {
-        PointF pointf = eventMapManager.getMap().getProjection().toScreenLocation(point);
-        RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
-
-        List<Feature> features = new ArrayList<>();
-        for (MapLayer mapLayer : eventMapManager.mapLayerManager.getLayers()) {
-            features.addAll(eventMapManager.getMap().queryRenderedFeatures(rectF, mapLayer.getId()));
-        }
-        if (!features.isEmpty()) {
-            Feature selectedFeature = eventMapManager.findFeature(LayerType.EVENT_LAYER.name(), EVENT, features.get(0).getStringProperty(EVENT));
-            eventMapManager.mapLayerManager.getLayer(LayerType.EVENT_LAYER.name(), true).setSelectedItem(selectedFeature);
-            binding.mapCarousel.scrollToFeature(features.get(0));
-            return true;
-        }
-        return false;
+        getSupportFragmentManager().beginTransaction().replace(
+                R.id.fragmentContainer,
+                showMap ? new EventMapFragment() : new EventListFragment()
+        ).commitNow();
+        binding.addEventButton.setVisibility(showMap && programEventsViewModel.getWritePermission().getValue() ? GONE : View.VISIBLE);
     }
 
     @Override
