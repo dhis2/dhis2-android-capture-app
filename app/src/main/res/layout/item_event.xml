@@ -43,7 +43,6 @@
             android:id="@+id/eventCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="72dp"
             app:rippleColor="@color/rippleColor"
             app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="0dp"
