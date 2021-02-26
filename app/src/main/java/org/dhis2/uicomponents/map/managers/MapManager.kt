@@ -133,7 +133,9 @@ abstract class MapManager(val mapView: MapView) {
         return source
     }
 
-    open fun markFeatureAsSelected(point: LatLng, layer: String? = null): Feature? { return null }
+    open fun markFeatureAsSelected(point: LatLng, layer: String? = null): Feature? {
+        return null
+    }
 
     @SuppressLint("MissingPermission")
     private fun enableLocationComponent(
@@ -161,6 +163,14 @@ abstract class MapManager(val mapView: MapView) {
                 })
                 onMissingPermission(permissionsManager)
             }
+        }
+    }
+
+    fun requestMapLayerManager(): MapLayerManager? {
+        return if (::mapLayerManager.isInitialized) {
+            mapLayerManager
+        } else {
+            null
         }
     }
 }
