@@ -295,6 +295,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         FilterManager.getInstance().clearEnrollmentDate();
         FilterManager.getInstance().clearWorkingList(false);
         FilterManager.getInstance().clearSorting();
+        FilterManager.getInstance().clearAssignToMe();
 
         super.onDestroy();
     }
