@@ -7,13 +7,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.mapbox.geojson.Feature
+import kotlin.math.abs
 import org.dhis2.uicomponents.map.camera.centerCameraOnFeature
 import org.dhis2.uicomponents.map.camera.centerCameraOnFeatures
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.carousel.CarouselLayoutManager
 import org.dhis2.uicomponents.map.carousel.CarouselTeiHolder
 import org.dhis2.uicomponents.map.managers.MapManager
-import kotlin.math.abs
 
 class CarouselView @JvmOverloads constructor(
     context: Context,
