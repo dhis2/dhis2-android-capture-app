@@ -18,7 +18,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -883,7 +882,9 @@ public class DateUtils {
         fromCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
             @Override
             public void onDateSet(@NonNull Date date) {
-                fromToListener.onFromToSelected(getDatePeriodListFor(Collections.singletonList(date), Period.DAILY));
+                List<Date> dates = new ArrayList<>();
+                dates.add(date);
+                fromToListener.onFromToSelected(getDatePeriodListFor(dates, Period.DAILY));
             }
 
             @Override

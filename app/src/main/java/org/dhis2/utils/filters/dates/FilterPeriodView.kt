@@ -6,8 +6,6 @@ import android.view.LayoutInflater
 import android.widget.CompoundButton
 import android.widget.FrameLayout
 import androidx.databinding.Observable
-import java.util.Calendar
-import java.util.Date
 import org.dhis2.R
 import org.dhis2.databinding.FilterPeriodBinding
 import org.dhis2.utils.DateUtils
@@ -17,6 +15,8 @@ import org.dhis2.utils.filters.FilterItem
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.PeriodFilter
 import org.hisp.dhis.android.core.period.DatePeriod
+import java.util.Calendar
+import java.util.Date
 
 class FilterPeriodView @JvmOverloads constructor(
     context: Context,
@@ -140,12 +140,12 @@ class FilterPeriodView @JvmOverloads constructor(
                 }
 
                 val periods = if (dates != null) {
-                    listOf(
+                    mutableListOf(
                         DatePeriod.builder().startDate(dates[0]).endDate(dates[1])
                             .build()
                     )
                 } else {
-                    emptyList()
+                    mutableListOf()
                 }
                 onPeriodSelected(periods, id)
             }
