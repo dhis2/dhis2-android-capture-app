@@ -461,7 +461,7 @@ public class FilterManager implements Serializable {
     }
 
     public void clearEnrollmentStatus() {
-        enrollmentStatusFilters.clear();
+        enrollmentStatusFilters = new ArrayList<>();
         observableEnrollmentStatus.set(null);
         enrollmentStatusFiltersApplied.set(enrollmentStatusFilters.size());
         filterProcessor.onNext(this);
