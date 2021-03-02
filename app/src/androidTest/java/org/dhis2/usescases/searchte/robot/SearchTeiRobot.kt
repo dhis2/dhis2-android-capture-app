@@ -148,4 +148,8 @@ class SearchTeiRobot : BaseRobot() {
     fun clickOnSearchFilter() {
         onView(withId(R.id.search_filter)).perform(click())
     }
+
+    fun clickOnShowMoreFilters(){
+        onView(withId(R.id.search_filter_general)).perform(click())
+    }
 }
