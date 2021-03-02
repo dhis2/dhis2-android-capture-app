@@ -59,6 +59,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -443,13 +444,12 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public void showCatComboDialog(String eventId, CategoryCombo categoryCombo, List<CategoryOptionCombo> categoryOptionCombos) {
-        if (categoryCombo.name().equals("default")) return;
+    public void showCatComboDialog(String eventId, Date eventDate, String categoryComboUid) {
         CategoryDialog categoryDialog = new CategoryDialog(
                 CategoryDialog.Type.CATEGORY_OPTION_COMBO,
-                categoryCombo.uid(),
-                false,
-                null,
+                categoryComboUid,
+                true,
+                eventDate,
                 selectedCatOptComboUid -> {
                     presenter.changeCatOption(eventId, selectedCatOptComboUid);
                     return null;
