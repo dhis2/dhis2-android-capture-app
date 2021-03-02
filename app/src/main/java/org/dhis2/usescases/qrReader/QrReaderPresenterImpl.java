@@ -173,7 +173,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     // LOOK FOR dataElement ON LOCAL DATABASE.
                     // IF FOUND, OPEN DASHBOARD
                     if (d2.dataElementModule().dataElements().uid(attrValue.getString("dataElement")).blockingExists()) {
-                        this.dataJson.add(attrValue);
+                        this.teiDataJson.add(attrValue);
                         DataElement de = d2.dataElementModule().dataElements().uid(attrValue.getString("dataElement")).blockingGet();
                         attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), de.displayFormName(), true));
                     } else {
