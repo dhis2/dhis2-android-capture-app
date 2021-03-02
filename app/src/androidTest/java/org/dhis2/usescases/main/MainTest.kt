@@ -4,8 +4,8 @@ import android.Manifest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
+import org.dhis2.common.filters.filterRobotCommon
 import org.dhis2.usescases.searchte.robot.filterRobot
-import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -25,7 +25,7 @@ class MainTest : BaseTest() {
         super.setUp()
     }
 
- /* @Test
+    @Test
     fun checkHomeScreenRecyclerviewHasElements() {
         startActivity()
         homeRobot {
@@ -68,7 +68,7 @@ class MainTest : BaseTest() {
             openFilters()
         }
 
-        filterRobot {
+        filterRobotCommon {
             openDateFilter()
             clickOnFromToDateOption()
             selectDate(2020,6,15)
@@ -80,7 +80,7 @@ class MainTest : BaseTest() {
             acceptDateSelected()
             checkDate(2020,11,7)
         }
-    } */
+    }
 
     @Test
     fun shouldApplyFilterInProgramThatDoesNotApplyInHome(){

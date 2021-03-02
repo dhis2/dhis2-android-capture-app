@@ -18,7 +18,7 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.utils.filters.FilterHolder
 import org.hamcrest.Matchers.allOf
 
-fun filterRobot(robotBody: FiltersRobot.() -> Unit) {
+fun filterRobotCommon(robotBody: FiltersRobot.() -> Unit) {
     FiltersRobot().apply {
         robotBody()
     }
@@ -30,8 +30,7 @@ class FiltersRobot : BaseRobot() {
             RecyclerViewActions.actionOnItemAtPosition<FilterHolder>(0, click())
         )
     }
-
-
+    
     fun clickOnFromToDateOption() {
         onView(withId(R.id.fromTo)).perform(click())
     }
