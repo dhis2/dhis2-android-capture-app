@@ -31,7 +31,7 @@ public class D2ErrorUtils {
             case API_RESPONSE_PROCESS_ERROR:
                 return context.getString(R.string.login_error_error_response);
             case NO_DHIS2_SERVER:
-                return  "Provided server url is not a dhis instance";
+                return  context.getString(R.string.login_error_no_dhis_instance);
             case UNEXPECTED:
             case UNKNOWN_HOST:
             case URL_NOT_FOUND:
