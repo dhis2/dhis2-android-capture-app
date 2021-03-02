@@ -92,22 +92,15 @@ class MainTest : BaseTest() {
             openProgramByPosition(programPosition)
         }
 
-            filterRobot {
-                clickOnFilter()
-                clickOnEnrollmentDateFilter()
-                clickOnTodayEnrollmentDate()
-                Thread.sleep(10000)
-            }
-            /*filterRobot {
-                clickOnEnrollmentDateFilter()
-                clickOnTodayEnrollmentDate()
-                Thread.sleep(10000)
-            } */
-          //  pressBack()
+        filterRobot {
+            clickOnFilter()
+            clickOnEnrollmentDateFilter()
+            clickOnTodayEnrollmentDate()
+        }
 
-        /*filterRobot {
-            openDateFilter()
-        }  */
+        homeRobot {
+            pressBack()
+        }
     }
 
     private fun startActivity() {
