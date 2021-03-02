@@ -101,7 +101,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 if (fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
                     return ScanTextViewModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, fieldRendering, valueTypeHintMap.get(type), !searchMode, searchMode, processor);
                 } else if (fieldRendering != null && type == ValueType.TEXT && optionSetTextRenderings.contains(fieldRendering.type())) {
-                    return OptionSetViewModel.create(id, label, mandatory, optionSet, value, section, editable, description, objectStyle, true, ProgramStageSectionRenderingType.LISTING.toString(), fieldRendering, processor);
+                    return OptionSetViewModel.create(id, label, mandatory, optionSet, value, section, editable, description, objectStyle, true, ProgramStageSectionRenderingType.LISTING.toString(), fieldRendering, processor, options);
                 } else {
                     return SpinnerViewModel.create(id, label, valueTypeHintMap.get(type), mandatory, optionSet, value, section, editable, description, objectStyle, !searchMode, ProgramStageSectionRenderingType.LISTING.toString(), processor, legendValue);
                 }
