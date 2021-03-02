@@ -37,6 +37,7 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
     private val itemIndicatorSize: Float
     private val itemIndicatorDrawable: Drawable?
     private var currentItemId: Int = -1
+    private var initialPage: Int
 
     init {
         labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
@@ -52,12 +53,16 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
             )
             itemIndicatorDrawable =
                 getDrawable(R.styleable.DhisBottomNavigationBar_currentItemSelectorDrawable)
+            initialPage = getInt(R.styleable.DhisBottomNavigationBar_initialPage, 0)
             recycle()
         }
         post {
             menu.forEachIndexed { index, item ->
-                if (index == 0) {
+                if (index == initialPage) {
                     setCurrentItemIndicatorPosition(findViewById<View>(item.itemId), true)
+                }
+                if (initialPage != 0) {
+                    selectItemAt(initialPage)
                 }
             }
         }

@@ -35,5 +35,6 @@
         <attr name="currentItemSelectorColor" format="color"/>
         <attr name="currentItemSelectorSize" format="dimension"/>
         <attr name="currentItemSelectorDrawable" format="reference"/>
+        <attr name="initialPage" format="integer"/>
     </declare-styleable>
 </resources>

@@ -18,7 +18,6 @@ import io.reactivex.schedulers.Schedulers
 import junit.framework.Assert.assertTrue
 import org.dhis2.data.filter.FilterPresenter
 import org.dhis2.data.filter.FilterRepository
-import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
@@ -51,7 +50,6 @@ class ProgramEventDetailPresenterTest {
     private val repository: ProgramEventDetailRepository = mock()
     private val scheduler = TrampolineSchedulerProvider()
     private val filterManager: FilterManager = FilterManager.getInstance()
-    private val preferenceProvider: PreferenceProvider = mock()
     private val workingListMapper: EventFilterToWorkingListItemMapper = mock()
     private val filterPresenter: FilterPresenter = mock()
 
@@ -64,7 +62,6 @@ class ProgramEventDetailPresenterTest {
             repository,
             scheduler,
             filterManager,
-            preferenceProvider,
             workingListMapper,
             filterRepository,
             filterPresenter
@@ -116,7 +113,6 @@ class ProgramEventDetailPresenterTest {
         whenever(repository.accessDataWrite) doReturn true
         whenever(repository.hasAccessToAllCatOptions()) doReturn Single.just(true)
         whenever(repository.program()) doReturn Observable.just(program)
-        whenever(repository.catOptionCombos()) doReturn Single.just(catOptionComboPair)
         whenever(
             repository.filteredProgramEvents()
         ) doReturn events
@@ -126,10 +122,7 @@ class ProgramEventDetailPresenterTest {
         presenter.init()
         verify(view).setFeatureType(FeatureType.POINT)
         verify(view).setWritePermission(true)
-        verify(view).setOptionComboAccess(true)
         verify(view).setProgram(program)
-        verify(view).setCatOptionComboFilter(catOptionComboPair)
-        verify(view).setLiveData(events)
     }
 
     @Test
@@ -137,13 +130,6 @@ class ProgramEventDetailPresenterTest {
         presenter.onSyncIconClick("uid")
 
         verify(view).showSyncDialog("uid")
-    }
-
-    @Test
-    fun `Should navigate to event`() {
-        presenter.onEventClick("eventId", "orgUnit")
-
-        verify(view).navigateToEvent("eventId", "orgUnit")
     }
 
     @Test

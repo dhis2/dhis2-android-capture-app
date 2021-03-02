@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.databinding.ViewDataBinding;
+import androidx.databinding.library.baseAdapters.BR;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
@@ -147,20 +148,16 @@ public class OptionSetSelectionView extends FieldLayout {
                 radioGroup.setOrientation(LinearLayout.VERTICAL);
                 checkGroup.setVisibility(View.GONE);
                 radioGroup.setVisibility(View.VISIBLE);
-                delete.setVisibility(VISIBLE);
+                delete.setVisibility(value != null ? VISIBLE : GONE);
                 setRadioOptions();
                 break;
             case HORIZONTAL_RADIOBUTTONS:
                 radioGroup.setOrientation(LinearLayout.HORIZONTAL);
                 checkGroup.setVisibility(View.GONE);
                 radioGroup.setVisibility(View.VISIBLE);
-                delete.setVisibility(VISIBLE);
+                delete.setVisibility(value != null ? VISIBLE : GONE);
                 setRadioOptions();
                 break;
-        }
-
-        if (delete != null && value != null) {
-            delete.setVisibility(View.VISIBLE);
         }
     }
 
@@ -193,6 +190,7 @@ public class OptionSetSelectionView extends FieldLayout {
                 OptionSetSelectItemBinding optionBinding = OptionSetSelectItemBinding.inflate(inflater, radioGroup, false);
                 optionBinding.setEditable(isEditable);
                 optionBinding.setOptionName(option.displayName());
+                optionBinding.setVariable(BR.isBgTransparent, isBgTransparent);
                 optionBinding.radio.setLayoutParams(new RadioGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f));
                 optionBinding.radio.setChecked(currentCodeValue != null && (currentCodeValue.equals(option.code()) || currentCodeValue.equals(option.name())));
                 optionBinding.radio.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -234,7 +232,7 @@ public class OptionSetSelectionView extends FieldLayout {
         if (mandatory)
             labelBuilder.append("*");
         this.label = labelBuilder.toString();
-        labelView.setHint(this.label);
+        binding.setVariable(BR.label, label);
     }
 
     public void setDescription(String description) {

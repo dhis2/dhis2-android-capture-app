@@ -41,7 +41,7 @@ class EventRegistrationRobot : BaseRobot() {
     }
 
     fun clickOnDetails() {
-        onView(withText(R.string.event_overview)).perform(click())
+        onView(withId(R.id.navigation_details)).perform(click())
     }
 
    fun checkEventDetails(eventDetails: EventDetailsUIModel) {

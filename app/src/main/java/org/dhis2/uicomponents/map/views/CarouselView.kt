@@ -22,7 +22,7 @@ class CarouselView @JvmOverloads constructor(
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
     var carouselEnabled: Boolean = true
-    private lateinit var carouselAdapter: CarouselAdapter
+    private var carouselAdapter: CarouselAdapter? = null
     private val CAROUSEL_SMOOTH_THREADSHOLD = 10
     private val CAROUSEL_PROXIMITY_THREADSHOLD = 3
     private lateinit var mapManager: MapManager
@@ -34,7 +34,7 @@ class CarouselView @JvmOverloads constructor(
         LinearSnapHelper().attachToRecyclerView(this)
     }
 
-    fun setAdapter(adapter: CarouselAdapter) {
+    fun setAdapter(adapter: CarouselAdapter?) {
         super.setAdapter(adapter)
         this.carouselAdapter = adapter
     }
@@ -77,13 +77,15 @@ class CarouselView @JvmOverloads constructor(
     }
 
     fun selectFirstItem() {
-        if (carouselAdapter.itemCount > 0) {
-            val feature = mapManager.findFeature(currentItem())
-            if (feature != null) {
-                mapManager.mapLayerManager.selectFeature(feature)
-                callback.invoke(feature, true)
-            } else {
-                callback.invoke(feature, false)
+        carouselAdapter?.let { adapter ->
+            if (adapter.itemCount > 0) {
+                val feature = mapManager.findFeature(currentItem())
+                if (feature != null) {
+                    mapManager.mapLayerManager.selectFeature(feature)
+                    callback.invoke(feature, true)
+                } else {
+                    callback.invoke(feature, false)
+                }
             }
         }
     }
@@ -101,14 +103,14 @@ class CarouselView @JvmOverloads constructor(
     }
 
     fun currentItem(): String {
-        return carouselAdapter.getUidProperty(getVisiblePosition())
+        return carouselAdapter?.getUidProperty(getVisiblePosition()) ?: ""
     }
 
     fun scrollToFeature(feature: Feature) {
         if (carouselEnabled) {
             val initialPosition = (layoutManager as LinearLayoutManager)
                 .findFirstCompletelyVisibleItemPosition()
-            val endPosition = carouselAdapter.indexOfFeature(feature)
+            val endPosition = carouselAdapter?.indexOfFeature(feature) ?: -1
 
             if (initialPosition == -1 || endPosition == -1) {
                 return

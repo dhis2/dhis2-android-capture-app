@@ -14,6 +14,7 @@ import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEvents
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.layer.MapLayerManager
+import org.dhis2.uicomponents.map.layer.types.EventMapLayer
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiEventMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
@@ -141,6 +142,8 @@ class CarouselAdapter private constructor(
                         .filter { it.programStage?.displayName() == sourceId },
                     visible
                 )
+            is EventMapLayer ->
+                updateItems(allItems.filterIsInstance<ProgramEventViewModel>(), visible)
             else -> Unit
         }
     }
@@ -155,6 +158,12 @@ class CarouselAdapter private constructor(
     }
 
     fun addItems(data: List<CarouselItemModel>) {
+        items.addAll(data)
+        notifyDataSetChanged()
+    }
+
+    fun setItems(data: List<CarouselItemModel>) {
+        items.clear()
         items.addAll(data)
         notifyDataSetChanged()
     }

@@ -198,11 +198,13 @@ class EnrollmentPresenterImpl(
                                         )
                                     }
                                     EnrollmentRepository.TEI_COORDINATES_UID -> {
-                                        val geometry = rowAction.extraData?.let {
-                                            Geometry.builder()
-                                                .coordinates(rowAction.value)
-                                                .type(FeatureType.valueOf(it))
-                                                .build()
+                                        val geometry = rowAction.value?.let {
+                                            rowAction.extraData?.let {
+                                                Geometry.builder()
+                                                    .coordinates(rowAction.value)
+                                                    .type(FeatureType.valueOf(it))
+                                                    .build()
+                                            }
                                         }
                                         saveTeiGeometry(geometry)
                                         Flowable.just(
@@ -213,11 +215,13 @@ class EnrollmentPresenterImpl(
                                         )
                                     }
                                     EnrollmentRepository.ENROLLMENT_COORDINATES_UID -> {
-                                        val geometry = rowAction.extraData?.let {
-                                            Geometry.builder()
-                                                .coordinates(rowAction.value)
-                                                .type(FeatureType.valueOf(it))
-                                                .build()
+                                        val geometry = rowAction.value?.let {
+                                            rowAction.extraData?.let {
+                                                Geometry.builder()
+                                                    .coordinates(rowAction.value)
+                                                    .type(FeatureType.valueOf(it))
+                                                    .build()
+                                            }
                                         }
                                         saveEnrollmentGeometry(geometry)
                                         Flowable.just(
