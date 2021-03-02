@@ -10,6 +10,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withChild
+import androidx.test.espresso.matcher.ViewMatchers.withClassName
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withTagValue
@@ -39,8 +40,12 @@ class FilterRobot : BaseRobot() {
     }
 
     fun clickOnTodayEnrollmentDate(){
+        onView(withId(R.id.filterRecyclerLayout))
+            .perform(actionOnItem<FilterHolder>(hasDescendant(withId(R.id.today)), click())
+            )
         //  onView(allOf(withParent(withId(R.id.periodView)), withId(R.id.today))).perform(click())
-        onView(allOf(withId(R.id.today), withParent(withTagValue(`is`("PeriodContainer"))))).perform(click())
+       //  onView(allOf(withId(R.id.today), withClassName(RadioButton))).perform(click())
+       // onView(allOf(withId(R.id.today), withParent(withTagValue(`is`("PeriodContainer"))))).perform(click())
     }
 
     fun clickOnFilter() {
