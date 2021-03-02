@@ -434,13 +434,11 @@ public class DateUtilsTest {
         assertEquals(dates3[1], lastDayOfWeek);
 
         String currentDayString = "2018-12-05";
-        String nextDayString = "2018-12-06";
         Date currentDay = DateUtils.oldUiDateFormat().parse(currentDayString);
-        Date nextDay = DateUtils.oldUiDateFormat().parse(nextDayString);
 
         Date[] dates4 = dateUtils.getDateFromDateAndPeriod(dateToTest, Period.DAILY);
         assertEquals(dates4[0], currentDay);
-        assertEquals(dates4[1], nextDay);
+        assertEquals(dates4[1], currentDay);
     }
 
     @Test
