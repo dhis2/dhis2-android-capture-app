@@ -1,15 +1,22 @@
 package org.dhis2.common.filters
 
+import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
+import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withParent
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.DatePickerMatchers.Companion.matchesDate
+import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.utils.filters.FilterHolder
+import org.hamcrest.Matchers.allOf
 
 fun filterRobot(robotBody: FiltersRobot.() -> Unit) {
     FiltersRobot().apply {
@@ -23,6 +30,7 @@ class FiltersRobot : BaseRobot() {
             RecyclerViewActions.actionOnItemAtPosition<FilterHolder>(0, click())
         )
     }
+
 
     fun clickOnFromToDateOption() {
         onView(withId(R.id.fromTo)).perform(click())

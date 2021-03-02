@@ -1,5 +1,6 @@
 package org.dhis2.usescases.searchte.robot
 
+import android.widget.RadioButton
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
@@ -11,6 +12,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withChild
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
+import androidx.test.espresso.matcher.ViewMatchers.withTagValue
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
@@ -19,7 +21,9 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.dateIsInRange
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.utils.filters.FilterHolder
+import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.instanceOf
 
 fun filterRobot(filterRobot: FilterRobot.() -> Unit) {
     FilterRobot().apply {
@@ -28,6 +32,16 @@ fun filterRobot(filterRobot: FilterRobot.() -> Unit) {
 }
 
 class FilterRobot : BaseRobot() {
+
+    fun clickOnEnrollmentDateFilter() {
+        val tag = "DATE OF ENROLLMENT"
+        onView(allOf(withId(R.id.filterLayout), hasDescendant(withText(tag)))).perform(click())
+    }
+
+    fun clickOnTodayEnrollmentDate(){
+        //  onView(allOf(withParent(withId(R.id.periodView)), withId(R.id.today))).perform(click())
+        onView(allOf(withId(R.id.today), withParent(withTagValue(`is`("PeriodContainer"))))).perform(click())
+    }
 
     fun clickOnFilter() {
         onView(withId(R.id.search_filter_general)).perform(click())
