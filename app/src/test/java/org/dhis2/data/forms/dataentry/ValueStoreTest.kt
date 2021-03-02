@@ -30,6 +30,17 @@ class ValueStoreTest {
 
     @Test
     fun `Trying to save an unique attribute should return a valid response`() {
+        mockCheckUniqueFilter()
+
+        val testSubscriber = attrValueStore.save("uid", "uniqueValue").test()
+
+        testSubscriber.assertValueCount(1)
+        testSubscriber.assertValue {
+            it.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_NOT_UNIQUE
+        }
+    }
+
+    private fun mockCheckUniqueFilter() {
         whenever(
             d2.trackedEntityModule().trackedEntityAttributes().uid("uid").blockingGet()
         ) doReturn mockedUniqueAttribute()
@@ -39,23 +50,33 @@ class ValueStoreTest {
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid").byValue()
+                .byTrackedEntityAttribute().eq("uid")
+                .byTrackedEntityInstance()
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid").byValue().eq("uniqueValue")
+                .byTrackedEntityAttribute().eq("uid")
+                .byTrackedEntityInstance().neq("recordUid")
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid").byValue().eq("uniqueValue").blockingGet()
+                .byTrackedEntityAttribute().eq("uid")
+                .byTrackedEntityInstance().neq("recordUid")
+                .byValue()
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributeValues()
+                .byTrackedEntityAttribute().eq("uid")
+                .byTrackedEntityInstance().neq("recordUid")
+                .byValue().eq("uniqueValue")
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributeValues()
+                .byTrackedEntityAttribute().eq("uid")
+                .byTrackedEntityInstance().neq("recordUid")
+                .byValue().eq("uniqueValue")
+                .blockingGet()
         ) doReturn mockedAttributeValueList()
-
-        val testSubscriber = attrValueStore.save("uid", "uniqueValue").test()
-
-        testSubscriber.assertValueCount(1)
-        testSubscriber.assertValue {
-            it.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_NOT_UNIQUE
-        }
     }
 
     @Test
@@ -154,11 +175,11 @@ class ValueStoreTest {
     @Test
     fun `Should not delete data element value if field is option set`() {
         whenever(d2.optionModule().options().uid("optionUid").blockingGet()) doReturn
-            Option.builder()
-                .name("optionName")
-                .uid("optionUid")
-                .code("optionCode")
-                .build()
+                Option.builder()
+                    .name("optionName")
+                    .uid("optionUid")
+                    .code("optionCode")
+                    .build()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues().value(
                 "recordUid",
@@ -186,10 +207,10 @@ class ValueStoreTest {
             d2.dataElementModule().dataElements()
                 .uid("fieldUid").blockingGet()
         ) doReturn
-            DataElement.builder()
-                .uid("fieldUid")
-                .valueType(ValueType.TEXT)
-                .build()
+                DataElement.builder()
+                    .uid("fieldUid")
+                    .valueType(ValueType.TEXT)
+                    .build()
         val storeResult = deValueStore.deleteOptionValueIfSelected(
             "fieldUid",
             "optionUid"
@@ -200,11 +221,11 @@ class ValueStoreTest {
     @Test
     fun `Should delete data element value if field is option set`() {
         whenever(d2.optionModule().options().uid("optionUid").blockingGet()) doReturn
-            Option.builder()
-                .name("optionName")
-                .uid("optionUid")
-                .code("optionCode")
-                .build()
+                Option.builder()
+                    .name("optionName")
+                    .uid("optionUid")
+                    .code("optionCode")
+                    .build()
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues().value(
                 "recordUid",
