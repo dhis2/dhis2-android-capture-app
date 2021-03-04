@@ -69,10 +69,6 @@ class ValueStoreImpl(
     }
 
     private fun saveAttribute(uid: String, value: String?): Flowable<StoreResult> {
-        if (!checkUniqueFilter(uid, value)) {
-            return Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_NOT_UNIQUE))
-        }
-
         val teiUid =
             when (entryMode) {
                 DataEntryStore.EntryMode.DE -> {
@@ -85,6 +81,10 @@ class ValueStoreImpl(
                 DataEntryStore.EntryMode.DV -> null
             }
                 ?: return Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_HAS_NOT_CHANGED))
+
+        if (!checkUniqueFilter(uid, value, teiUid)) {
+            return Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_NOT_UNIQUE))
+        }
 
         val valueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
             .value(uid, teiUid)
@@ -139,7 +139,7 @@ class ValueStoreImpl(
         }
     }
 
-    private fun checkUniqueFilter(uid: String, value: String?): Boolean {
+    private fun checkUniqueFilter(uid: String, value: String?, teiUid: String): Boolean {
         return if (value != null) {
             val isUnique =
                 d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()!!.unique()
@@ -147,6 +147,7 @@ class ValueStoreImpl(
             if (isUnique) {
                 val hasValue = d2.trackedEntityModule().trackedEntityAttributeValues()
                     .byTrackedEntityAttribute().eq(uid)
+                    .byTrackedEntityInstance().neq(teiUid)
                     .byValue().eq(value).blockingGet().isNotEmpty()
                 !hasValue
             } else {
