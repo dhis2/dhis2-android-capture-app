@@ -82,7 +82,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
-                data, programStageSection(), null, false, null,
+                data, programStageSection(), null, editable(), null,
                 description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(), activated(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
                 renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering(), legendValue());
     }

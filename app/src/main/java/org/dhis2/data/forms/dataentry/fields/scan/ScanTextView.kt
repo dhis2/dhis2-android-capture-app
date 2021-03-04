@@ -112,6 +112,7 @@ class ScanTextView @JvmOverloads constructor(
         editText.isEnabled = isEditable
         editText.isFocusable = true
         editText.isClickable = isEditable
+        qrIcon.isClickable = isEditable
         when {
             !isEditable -> delete.visibility = View.GONE
         }

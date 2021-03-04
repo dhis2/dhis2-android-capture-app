@@ -179,7 +179,7 @@ public class HelpManager {
                 .closeOnTouch(true)
                 .build();
         FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(activity)
-                .focusOn(activity.findViewById(R.id.clear_button))
+                .focusOn(activity.findViewById(R.id.clearFilterSearchButton))
                 .title(activity.getString(R.string.tuto_search_4_v2))
                 .enableAutoTextPosition()
                 .closeOnTouch(true)
@@ -238,7 +238,7 @@ public class HelpManager {
         FancyShowCaseView tuto7 = new FancyShowCaseView.Builder(activity)
                 .title(activity.getString(R.string.tuto_dashboard_7))
                 .enableAutoTextPosition()
-                .focusOn(activity.findViewById(R.id.tab_layout))
+                .focusOn(activity.findViewById(R.id.navigationBar))
                 .focusShape(FocusShape.ROUNDED_RECTANGLE)
                 .closeOnTouch(true)
                 .build();

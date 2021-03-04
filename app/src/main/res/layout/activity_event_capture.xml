@@ -136,6 +136,7 @@
             style="@style/DhisBottomNavigationView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:initialPage="1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:menu="@menu/navigation_event_menu" />
 

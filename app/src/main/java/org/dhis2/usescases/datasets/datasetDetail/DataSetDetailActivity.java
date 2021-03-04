@@ -70,7 +70,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
         adapter = new DataSetDetailAdapter(presenter);
 
-        ViewExtensionsKt.clipWithRoundedCorners(binding.recycler, ExtensionsKt.getDp(16));
+        ViewExtensionsKt.clipWithRoundedCorners(binding.eventsLayout, ExtensionsKt.getDp(16));
         binding.filterLayout.setAdapter(filtersAdapter);
     }
 

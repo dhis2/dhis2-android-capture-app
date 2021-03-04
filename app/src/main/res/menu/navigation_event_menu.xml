@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/navigation_details"
+        android:enabled="true"
+        android:icon="@drawable/ic_navigation_details"
+        android:title="@string/event_overview"/>
+
+    <item
         android:id="@+id/navigation_data_entry"
         android:enabled="true"
         android:icon="@drawable/ic_navigation_forms"
