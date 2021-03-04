@@ -21,6 +21,7 @@ import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -44,7 +45,7 @@ public class TEIDataContracts {
 
         Consumer<EnrollmentStatus> enrollmentCompleted();
 
-        void showCatComboDialog(String eventId, CategoryCombo categoryCombo, List<CategoryOptionCombo> categoryOptionCombos);
+        void showCatComboDialog(String eventUid, Date eventDate, String categoryComboUid);
 
         void switchFollowUp(boolean followUp);
 
