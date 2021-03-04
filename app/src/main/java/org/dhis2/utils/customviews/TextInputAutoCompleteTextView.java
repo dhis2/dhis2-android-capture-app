@@ -2,7 +2,6 @@ package org.dhis2.utils.customviews;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.KeyEvent;
 import android.view.ViewParent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
@@ -40,18 +39,5 @@ public class TextInputAutoCompleteTextView extends AppCompatAutoCompleteTextView
             outAttrs.imeOptions = outAttrs.imeOptions | EditorInfo.IME_FLAG_NO_FULLSCREEN;
         }
         return ic;
-    }
-
-
-    @Override
-    public boolean onKeyPreIme(int keyCode, KeyEvent event) {
-        clearFocusWhenKeyboardIsDismissed(keyCode);
-        return super.onKeyPreIme(keyCode, event);
-    }
-
-    private void clearFocusWhenKeyboardIsDismissed(int keyCode) {
-        if(keyCode == KeyEvent.KEYCODE_BACK){
-            this.clearFocus();
-        }
     }
 }
