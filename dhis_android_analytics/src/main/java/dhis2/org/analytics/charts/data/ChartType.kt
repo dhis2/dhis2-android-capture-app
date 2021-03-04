@@ -19,3 +19,13 @@ enum class NutritionChartType {
     WHO_WFH_BOY,
     WHO_WHO_WFH_GIRL
 }
+
+fun org.hisp.dhis.android.core.settings.ChartType.toAnalyticsChartType():ChartType{
+    return when(this){
+        org.hisp.dhis.android.core.settings.ChartType.BAR -> ChartType.BAR_CHART
+        org.hisp.dhis.android.core.settings.ChartType.LINE -> ChartType.LINE_CHART
+        org.hisp.dhis.android.core.settings.ChartType.TABLE -> ChartType.TABLE
+        org.hisp.dhis.android.core.settings.ChartType.WHO_NUTRITION -> ChartType.NUTRITION
+        org.hisp.dhis.android.core.settings.ChartType.SINGLE_VALUE -> ChartType.SINGLE_VALUE
+    }
+}
