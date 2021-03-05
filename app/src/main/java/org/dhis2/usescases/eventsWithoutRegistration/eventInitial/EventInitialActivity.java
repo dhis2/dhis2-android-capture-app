@@ -302,7 +302,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void initProgressBar() {
-        binding.completion.setVisibility(eventUid == null ? View.GONE : View.VISIBLE);
+        if (eventUid != null && presenter.getCompletionPercentageVisibility()) {
+            binding.completion.setVisibility(View.VISIBLE);
+        } else {
+            binding.completion.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -748,11 +752,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         totalFields = totalFields + realUpdates.size();
         binding.completion.setCompletionPercentage((float) totalCompletedFields / (float) totalFields);
         binding.completion.setSecondaryPercentage((float) unsupportedFields / (float) totalFields);
-
-        if (!presenter.getCompletionPercentageVisibility()) {
-            binding.completion.setVisibility(View.GONE);
-        }
-
     }
 
     @Override
