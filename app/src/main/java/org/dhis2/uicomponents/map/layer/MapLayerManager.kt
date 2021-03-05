@@ -137,7 +137,9 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
 
     fun selectFeature(feature: Feature?) {
         mapLayers.entries.forEach {
-            it.value.setSelectedItem(feature)
+            if (it.value.visible) {
+                it.value.setSelectedItem(feature)
+            }
         }
     }
 
