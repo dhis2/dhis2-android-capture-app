@@ -132,8 +132,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="com.googleusercontent.apps.1019417002544-mqa7flk4mjohrgsbg9bta9bvluoj85o0" />
-<!--                <data android:scheme="com.googleusercontent.apps.652593417937-ouaqob8mol887jmcbvvb8m54b22sp9g3" />-->
+                <data android:scheme="*" />
             </intent-filter>
         </activity>
     </application>
