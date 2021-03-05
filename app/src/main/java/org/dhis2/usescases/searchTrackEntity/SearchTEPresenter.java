@@ -187,13 +187,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                         filters -> {
-                            if (filters.isEmpty()){
-                                view.hideFilter();
-                            } else {
+                            if (!filters.isEmpty()) {
                                 view.setFilters(filters);
                             }
                         }
-                        ,Timber::e
+                        , Timber::e
                 )
         );
 
@@ -239,7 +237,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         }
                         view.showClearSearch(!queryData.isEmpty());
                     }
-                    }, Timber::d)
+                }, Timber::d)
         );
 
 
@@ -996,11 +994,16 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void checkFilters(boolean listResultIsOk) {
+        boolean hasToShowFilters = !filterRepository.
+                programFilters(currentProgram.blockingFirst()).isEmpty();
+
         if (listResultIsOk) {
-            view.setFiltersVisibility(true);
-        } else {
+            view.setFiltersVisibility(hasToShowFilters);
+        } else if (!listResultIsOk && hasToShowFilters){
             boolean filtersActive = FilterManager.getInstance().getTotalFilters() != 0;
             view.setFiltersVisibility(filtersActive);
+        } else if (!listResultIsOk && !hasToShowFilters){
+            view.setFiltersVisibility(false);
         }
     }
 
