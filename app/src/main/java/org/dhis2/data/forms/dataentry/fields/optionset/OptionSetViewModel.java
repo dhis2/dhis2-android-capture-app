@@ -44,7 +44,8 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                                             boolean isBackgroundTransparent,
                                             String renderType,
                                             ValueTypeDeviceRendering fieldRendering,
-                                            FlowableProcessor<RowAction> processor) {
+                                            FlowableProcessor<RowAction> processor,
+                                            List<Option> options) {
 
         return new AutoValue_OptionSetViewModel(
                 id,
@@ -66,7 +67,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 isBackgroundTransparent,
                 renderType,
                 fieldRendering,
-                new ArrayList<>()
+                options
         );
     }
 

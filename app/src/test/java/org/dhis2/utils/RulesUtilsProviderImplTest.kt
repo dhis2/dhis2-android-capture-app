@@ -88,6 +88,7 @@ class RulesUtilsProviderImplTest {
             ObjectStyle.builder().build(),
             "",
             null,
+            null,
             null
         )
     }
@@ -254,7 +255,7 @@ class RulesUtilsProviderImplTest {
 
         verify(actionCallbacks, times(1)).save(testingUid, "data")
         Assert.assertTrue(testFieldViewModels[testingUid]!!.value().equals("data"))
-        Assert.assertFalse(testFieldViewModels[testingUid]!!.editable()!!)
+        Assert.assertTrue(testFieldViewModels[testingUid]!!.editable()!!)
     }
 
     @Test
@@ -287,8 +288,8 @@ class RulesUtilsProviderImplTest {
         verify(actionCallbacks, times(0)).save(testingUid2, "test")
         Assert.assertTrue(testFieldViewModels[testingUid]!!.value().equals("data"))
         Assert.assertTrue(testFieldViewModels[testingUid2]!!.value().equals("test"))
-        Assert.assertFalse(testFieldViewModels[testingUid]!!.editable()!!)
-        Assert.assertFalse(testFieldViewModels[testingUid]!!.editable()!!)
+        Assert.assertTrue(testFieldViewModels[testingUid]!!.editable()!!)
+        Assert.assertTrue(testFieldViewModels[testingUid]!!.editable()!!)
     }
 
     @Test

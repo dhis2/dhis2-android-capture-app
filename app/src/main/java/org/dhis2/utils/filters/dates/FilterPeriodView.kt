@@ -140,12 +140,12 @@ class FilterPeriodView @JvmOverloads constructor(
                 }
 
                 val periods = if (dates != null) {
-                    listOf(
+                    mutableListOf(
                         DatePeriod.builder().startDate(dates[0]).endDate(dates[1])
                             .build()
                     )
                 } else {
-                    emptyList()
+                    mutableListOf()
                 }
                 onPeriodSelected(periods, id)
             }

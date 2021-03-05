@@ -15,8 +15,8 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -37,6 +37,7 @@ import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.LegendValue;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
@@ -632,6 +633,7 @@ public class Bindings {
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
                 if (position != 0) {
                     itemFilter.selectCatOptionCombo(position - 1);
+                    spinner.setSelection(0);
                 }
             }
 
@@ -778,30 +780,43 @@ public class Bindings {
     @BindingAdapter("requestFocus")
     public static void requestFocus(EditText editText, boolean focused) {
         if (focused) {
-                editText.setFocusableInTouchMode(true);
-                editText.requestFocus();
-                openKeyboard(editText);
+            editText.setFocusableInTouchMode(true);
+            editText.requestFocus();
+            openKeyboard(editText);
         } else {
             editText.clearFocus();
         }
     }
 
     @BindingAdapter("checkListener")
-    public static void checkListener(RadioGroup radioGroup, RadioButtonViewModel viewModel){
+    public static void checkListener(RadioGroup radioGroup, RadioButtonViewModel viewModel) {
         radioGroup.setOnCheckedChangeListener(null);
-        if(viewModel.isAffirmativeChecked()){
+        if (viewModel.isAffirmativeChecked()) {
             radioGroup.check(R.id.yes);
-        }else if(viewModel.isNegativeChecked()){
+        } else if (viewModel.isNegativeChecked()) {
             radioGroup.check(R.id.no);
-        }else{
+        } else {
             radioGroup.clearCheck();
         }
         radioGroup.setOnCheckedChangeListener((radioGroup1, checkedId) -> {
-            if(checkedId == R.id.yes){
+            if (checkedId == R.id.yes) {
                 viewModel.onValueChanged(true);
-            }else if(checkedId == R.id.no){
+            } else if (checkedId == R.id.no) {
                 viewModel.onValueChanged(false);
             }
         });
+    }
+
+    @BindingAdapter("legendValue")
+    public static void setLegend(TextView textView, LegendValue legendValue) {
+        if (legendValue != null) {
+            Drawable bg = textView.getBackground();
+            DrawableCompat.setTint(bg, ColorUtils.withAlpha(legendValue.getColor(), 38));
+            Drawable[] drawables = textView.getCompoundDrawables();
+            for (Drawable drawable : drawables) {
+                if (drawable != null)
+                    DrawableCompat.setTint(drawable, legendValue.getColor());
+            }
+        }
     }
 }

@@ -6,11 +6,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +27,7 @@ import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.AppMenuHelper;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
@@ -40,23 +39,18 @@ import org.dhis2.utils.customviews.FormBottomDialog;
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
 
 import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import timber.log.Timber;
+import kotlin.Unit;
 
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
-/**
- * QUADRAM. Created by ppajuelo on 19/11/2018.
- */
 public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.View {
 
     private static final int RQ_GO_BACK = 1202;
@@ -113,7 +107,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
             @Override
             public void onPageSelected(int position) {
-                binding.navigationBar.selectItemAt(position);
+                binding.navigationBar.selectItemAt(position+1);
             }
 
             @Override
@@ -126,6 +120,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     private void setUpNavigationBar() {
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
+                case R.id.navigation_details:
+                    goToInitialScreen();
+                    break;
                 case R.id.navigation_data_entry:
                     binding.eventViewPager.setCurrentItem(0);
                     break;
@@ -176,6 +173,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             attemptFinish();
         }
     }
+
     private void attemptFinish() {
         if (eventMode == EventMode.NEW) {
             new CustomDialog(
@@ -427,42 +425,27 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showMoreOptions(View view) {
-        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
-        try {
-            Field[] fields = popupMenu.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                if ("mPopup".equals(field.getName())) {
-                    field.setAccessible(true);
-                    Object menuPopupHelper = field.get(popupMenu);
-                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
-                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
-                    setForceIcons.invoke(menuPopupHelper, true);
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-        popupMenu.getMenuInflater().inflate(R.menu.event_menu, popupMenu.getMenu());
-        popupMenu.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.showHelp:
-                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
-                    showTutorial(false);
-                    break;
-                case R.id.menu_delete:
-                    confirmDeleteEvent();
-                    break;
-                case R.id.menu_overview:
-                    goToInitialScreen();
-                    break;
-                default:
-                    break;
-            }
-            return false;
-        });
-        popupMenu.getMenu().getItem(1).setVisible(presenter.canWrite() && presenter.isEnrollmentOpen());
-        popupMenu.show();
+        new AppMenuHelper.Builder().menu(this, R.menu.event_menu).anchor(view)
+                .onMenuInflated(popupMenu -> {
+                    popupMenu.getMenu().getItem(0).setVisible(presenter.canWrite() && presenter.isEnrollmentOpen());
+                    return Unit.INSTANCE;
+                })
+                .onMenuItemClicked(itemId -> {
+                    switch (itemId) {
+                        case R.id.showHelp:
+                            analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
+                            showTutorial(false);
+                            break;
+                        case R.id.menu_delete:
+                            confirmDeleteEvent();
+                            break;
+                        default:
+                            break;
+                    }
+                    return false;
+                })
+                .build()
+                .show();
     }
 
     @Override
@@ -530,7 +513,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void showProgress(){
+    public void showProgress() {
         runOnUiThread(() -> {
             binding.toolbarProgress.setVisibility(View.VISIBLE);
             binding.toolbarProgress.show();
@@ -539,7 +522,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void hideProgress(){
+    public void hideProgress() {
         runOnUiThread(() -> {
             binding.toolbarProgress.hide();
             binding.toolbarProgress.setVisibility(View.GONE);
@@ -548,12 +531,12 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void showNavigationBar(){
+    public void showNavigationBar() {
         binding.navigationBar.show();
     }
 
     @Override
-    public void hideNavigationBar(){
+    public void hideNavigationBar() {
         binding.navigationBar.hide();
     }
 }

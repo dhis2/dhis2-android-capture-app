@@ -20,6 +20,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.RulesUtilsProvider;
+import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
@@ -66,9 +67,10 @@ public class EventCaptureModule {
     @PerActivity
     EventCaptureContract.EventCaptureRepository provideRepository(FieldViewModelFactory fieldFactory,
                                                                   RuleEngineRepository ruleEngineRepository,
-                                                                  D2 d2
+                                                                  D2 d2,
+                                                                  ResourceManager resourceManager
     ) {
-        return new EventCaptureRepositoryImpl(fieldFactory, ruleEngineRepository, eventUid, d2);
+        return new EventCaptureRepositoryImpl(fieldFactory, ruleEngineRepository, eventUid, d2, resourceManager);
     }
 
     @Provides

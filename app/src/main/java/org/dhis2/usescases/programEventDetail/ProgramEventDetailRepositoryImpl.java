@@ -146,12 +146,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     }
 
     @Override
-    public boolean hasAssignment() {
-        return !d2.programModule().programStages().byProgramUid().eq(programUid)
-                .byEnableUserAssignment().isTrue().blockingIsEmpty();
-    }
-
-    @Override
     public CategoryOptionCombo getCatOptCombo(String selectedCatOptionCombo) {
         return d2.categoryModule().categoryOptionCombos().uid(selectedCatOptionCombo).blockingGet();
     }
@@ -176,17 +170,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             canWrite = false;
 
         return canWrite;
-    }
-
-    @Override
-    public Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos() {
-        return d2.programModule().programs().uid(programUid).get()
-                .map(program -> {
-                    CategoryCombo catCombo = d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).blockingGet();
-                    List<CategoryOptionCombo> catOptCombos = d2.categoryModule().categoryOptionCombos()
-                            .byCategoryComboUid().eq(catCombo.uid()).blockingGet();
-                    return Pair.create(catCombo, catOptCombos);
-                });
     }
 
     @Override

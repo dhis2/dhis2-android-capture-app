@@ -72,7 +72,7 @@ class EventCaptureFormPresenter(
                                 }?.let { item ->
                                     itemList = list.updated(
                                         list.indexOf(item),
-                                        item.withValue(rowAction.value).withEditMode(true)
+                                        item.withValue(rowAction.value)
                                     )
                                 }
                             }
