@@ -15,5 +15,12 @@ interface ChartCoordinatesProvider {
         indicatorUid: String
     ): List<GraphPoint>
 
-    fun nutritionCoordinates(): List<GraphPoint>
+    fun nutritionCoordinates(
+        stageUid: String,
+        teiUid: String,
+        zScoreValueContainerUid:String,
+        zScoreSavedIsDataElement:Boolean,
+        ageOrHeightCountainerUid: String,
+        ageOrHeightIsDataElement:Boolean
+    ): List<GraphPoint>
 }

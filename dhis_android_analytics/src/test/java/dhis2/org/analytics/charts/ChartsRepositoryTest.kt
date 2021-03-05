@@ -61,7 +61,7 @@ class ChartsRepositoryTest {
         mockEnrollmentCall()
         mockAnalyticsSettingsCall(mockedAnalyticsSettings())
         whenever(
-            analyticsTeiSettingsToGraph.map(any(), any(), any(), any())
+            analyticsTeiSettingsToGraph.map(any(), any(), any(), any(), any())
         ) doReturn mockedSettingsGraphs()
 
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")

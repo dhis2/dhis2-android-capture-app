@@ -56,19 +56,41 @@ class ChartCoordinatesProviderImpl(val d2: D2) : ChartCoordinatesProvider {
 
     override fun nutritionCoordinates(
         stageUid: String,
-        teiUid: String
+        teiUid: String,
+        zScoreValueContainerUid: String,
+        zScoreSavedIsDataElement: Boolean,
+        ageOrHeightCountainerUid: String,
+        ageOrHeightIsDataElement: Boolean
     ): List<GraphPoint> {
-        return d2.analyticsModule().eventLineList()
+
+        var eventLineListRepository = d2.analyticsModule().eventLineList()
             .byProgramStage().eq(stageUid)
             .byTrackedEntityInstance().eq(teiUid)
-            .blockingEvaluate()
-            .mapNotNull {lineListResponse ->
-                lineListResponse.values.first().value?.let {value->
-                    GraphPoint(
-                        eventDate = formattedDate(lineListResponse.date)
-                    )
-                }
+        eventLineListRepository = if (zScoreSavedIsDataElement) {
+            eventLineListRepository.withDataElement(zScoreValueContainerUid)
+        } else {
+            eventLineListRepository.withProgramIndicator(zScoreValueContainerUid)
+        }
+        eventLineListRepository = if (ageOrHeightIsDataElement) {
+            eventLineListRepository.withDataElement(ageOrHeightCountainerUid)
+        } else {
+            eventLineListRepository.withProgramIndicator(ageOrHeightCountainerUid)
+        }
+        return eventLineListRepository.blockingEvaluate().mapNotNull { lineListResponse ->
+            val zScoreValue =
+                lineListResponse.values.firstOrNull { it.uid == zScoreValueContainerUid }?.value
+            val xAxisValue =
+                lineListResponse.values.firstOrNull { it.uid == ageOrHeightCountainerUid }?.value
+            if (zScoreValue == null || xAxisValue == null) {
+                null
+            } else {
+                GraphPoint(
+                    eventDate = formattedDate(lineListResponse.date),
+                    position = xAxisValue.toFloat(),
+                    fieldValue = zScoreValue.toFloat()
+                )
             }
+        }
     }
 
     private fun formattedDate(date: Date): Date {

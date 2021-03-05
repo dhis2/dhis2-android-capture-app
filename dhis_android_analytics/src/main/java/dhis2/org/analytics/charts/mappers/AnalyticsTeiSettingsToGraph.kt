@@ -21,15 +21,28 @@ class AnalyticsTeiSettingsToGraph(
         teiUid: String,
         analytycsTeiSettings: List<AnalyticsTeiSetting>,
         dataElementNameProvider: (String) -> String,
-        indicatorNameProvider: (String) -> String
+        indicatorNameProvider: (String) -> String,
+        teiGenderProvider: () -> Boolean
     ): List<Graph> {
         return analytycsTeiSettings.map { analyticsTeiSettings ->
             val analyticsSetting = analyticsSettingsMapper.map(analyticsTeiSettings)
             val nutritionCoordinates: List<SerieData> =
                 if (analyticsSetting.type == ChartType.NUTRITION) {
-                    nutritionDataProvider.getNutritionData(NutritionChartType.WHO_HFA_BOY) //TODO: Check Nutrition types
+                    nutritionDataProvider.getNutritionData(NutritionChartType.WHO_HFA_BOY) //TODO: Check Nutrition types and tei gender to pick table
                         .toMutableList().apply {
-                            chartCoordinatesProvider.nutritionCoordinates()
+                            add(
+                                SerieData(
+                                    analyticsSetting.displayName,
+                                    chartCoordinatesProvider.nutritionCoordinates(
+                                        "null",
+                                        teiUid,
+                                        "null",
+                                        false,
+                                        "null",
+                                        false
+                                    )
+                                )
+                            )
                         }
                 } else {
                     emptyList()

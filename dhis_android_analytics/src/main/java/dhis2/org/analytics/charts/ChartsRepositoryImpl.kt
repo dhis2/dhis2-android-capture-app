@@ -44,6 +44,9 @@ class ChartsRepositoryImpl(
                     { indicatorUid ->
                         d2.programModule().programIndicators().uid(indicatorUid).blockingGet()
                             .displayName() ?: indicatorUid
+                    },
+                    {
+                        true //TODO: GET GENDER
                     }
                 )
             } ?: emptyList()
@@ -74,7 +77,7 @@ class ChartsRepositoryImpl(
             )
         }.flatten()
             .filter { it.series.isNotEmpty() }
-            .nutritionTestingData(d2)
+//            .nutritionTestingData(d2) TODO: REMOVE BEFORE MERGING
     }
 
     private fun getRepeatableProgramStages(program: String?) =
