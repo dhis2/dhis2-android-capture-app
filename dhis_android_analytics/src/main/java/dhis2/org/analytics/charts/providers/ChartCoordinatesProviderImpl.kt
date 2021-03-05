@@ -54,6 +54,23 @@ class ChartCoordinatesProviderImpl(val d2: D2) : ChartCoordinatesProvider {
 
     }
 
+    override fun nutritionCoordinates(
+        stageUid: String,
+        teiUid: String
+    ): List<GraphPoint> {
+        return d2.analyticsModule().eventLineList()
+            .byProgramStage().eq(stageUid)
+            .byTrackedEntityInstance().eq(teiUid)
+            .blockingEvaluate()
+            .mapNotNull {lineListResponse ->
+                lineListResponse.values.first().value?.let {value->
+                    GraphPoint(
+                        eventDate = formattedDate(lineListResponse.date)
+                    )
+                }
+            }
+    }
+
     private fun formattedDate(date: Date): Date {
         return try {
             val formattedDateString = SimpleDateFormat("yyyy-MM-dd").format(date)

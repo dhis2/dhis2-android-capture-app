@@ -14,4 +14,6 @@ interface ChartCoordinatesProvider {
         teiUid: String,
         indicatorUid: String
     ): List<GraphPoint>
+
+    fun nutritionCoordinates(): List<GraphPoint>
 }

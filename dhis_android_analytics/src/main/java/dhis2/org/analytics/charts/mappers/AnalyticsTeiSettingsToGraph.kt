@@ -28,6 +28,9 @@ class AnalyticsTeiSettingsToGraph(
             val nutritionCoordinates: List<SerieData> =
                 if (analyticsSetting.type == ChartType.NUTRITION) {
                     nutritionDataProvider.getNutritionData(NutritionChartType.WHO_HFA_BOY) //TODO: Check Nutrition types
+                        .toMutableList().apply {
+                            chartCoordinatesProvider.nutritionCoordinates()
+                        }
                 } else {
                     emptyList()
                 }
