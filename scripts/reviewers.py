@@ -23,18 +23,13 @@ else:
 
     print("Ready to assigned reviewers")
     pr_owner = requests.get("https://api.github.com/repos/dhis2/dhis2-android-capture-app/pulls/%s?access_token=%s" %(BITRISE_PULL_REQUEST, GITHUB_RELEASE_API_TOKEN)).json()['user']['login']
-    quadram_devs = ["ferdyrod", "Balcan", "mmmateos"]
-    dhis_devs = ["JaimeToca", "andresmr"]
+    devs = ["ferdyrod", "Balcan", "mmmateos", "JaimeToca", "andresmr"]
 
-    if (pr_owner in quadram_devs):
-        quadram_devs.remove(pr_owner)
-    elif (pr_owner in dhis_devs):
-        dhis_devs.remove(pr_owner)
+    devs.remove(pr_owner)
 
-    quadram_reviewer = random.choice(quadram_devs)
-    dhis_reviewer = random.choice(dhis_devs)
+    random_devs = random.sample(devs, 2)
 
-    reviewers = json.dumps([quadram_reviewer, dhis_reviewer])
+    reviewers = json.dumps(random_devs)
 
     print("Assigning reviewers selected to the PR")
     payload = '{"reviewers":%s}' %(reviewers)
