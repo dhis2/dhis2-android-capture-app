@@ -38,9 +38,6 @@ android {
     compileSdkVersion versions.sdk
     buildToolsVersion versions.tools
     defaultConfig {
-        manifestPlaceholders = [
-                appAuthRedirectScheme: ''
-        ]
         applicationId "com.dhis2"
         minSdkVersion versions.minSdk
         targetSdkVersion versions.sdk
@@ -65,6 +62,10 @@ android {
                 includeCompileClasspath true
             }
         }
+
+        manifestPlaceholders = [
+                appAuthRedirectScheme: ''
+        ]
     }
 
     testOptions {
@@ -328,6 +329,9 @@ dependencies {
 
     /*region SECURITY*/
     implementation 'com.scottyab:rootbeer-lib:0.0.7'
+
+    /*openId*/
+    implementation 'net.openid:appauth:0.7.1'
 
     //Test
     implementation fileTree(include: ['*.jar'], dir: 'libs')

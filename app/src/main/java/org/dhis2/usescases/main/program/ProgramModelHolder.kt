@@ -15,7 +15,10 @@ class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
 
         val color = ColorUtils.getColorFrom(
             programViewModel.color(),
-            ColorUtils.getPrimaryColor(binding.programImage.context, ColorUtils.ColorType.PRIMARY)
+            ColorUtils.getPrimaryColor(
+                binding.programImage.context,
+                ColorUtils.ColorType.PRIMARY_LIGHT
+            )
         )
 
         binding.programImage.background = ColorUtils.tintDrawableWithColor(

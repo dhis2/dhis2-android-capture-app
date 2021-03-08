@@ -1,5 +1,6 @@
 package org.dhis2.usescases.login
 
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.RestrictTo
 import androidx.annotation.RestrictTo.Scope
@@ -35,6 +36,7 @@ import org.dhis2.utils.analytics.SERVER_QR_SCANNER
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
+import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 import retrofit2.Response
 import timber.log.Timber
 
@@ -204,6 +206,62 @@ class LoginPresenter(
                     }
                 )
         )
+    }
+
+    fun openIdLogin(config: OpenIDConnectConfig) {
+        disposable.add(
+            Observable.just(
+                (view.abstracContext.applicationContext as App).createServerComponent()
+                    .userManager()
+            )
+                .flatMap { userManager ->
+                    this.userManager = userManager
+                    userManager.logIn(config)
+                }
+                .subscribeOn(schedulers.io())
+                .observeOn(schedulers.ui())
+                .subscribe(
+                    {
+                        view.openOpenIDActivity(it)
+                    },
+                    {
+                        Timber.e(it)
+                    }
+                )
+        )
+    }
+
+    fun handleAuthResponseData(serverUrl: String, data: Intent, requestCode: Int) {
+        userManager?.let { userManager ->
+            disposable.add(
+                userManager.handleAuthData(serverUrl, data, requestCode)
+                    .map<Response<Any>> { user ->
+                        run {
+                            with(preferenceProvider) {
+                                setValue(
+                                    USER,
+                                    userManager.d2.userModule()
+                                        .userCredentials()
+                                        .blockingGet()
+                                        .username()
+                                )
+                                setValue(SESSION_LOCKED, false)
+                                setValue(PIN, null)
+                            }
+                            Response.success<Any>(null)
+                        }
+                    }.subscribeOn(schedulers.io())
+                    .observeOn(schedulers.ui())
+                    .subscribe(
+                        {
+                            this.handleResponse(it, "", serverUrl)
+                        },
+                        {
+                            this.handleError(it, serverUrl, "", "")
+                        }
+                    )
+            )
+        }
     }
 
     fun onQRClick() {

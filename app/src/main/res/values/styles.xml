@@ -82,6 +82,21 @@
         <item name="colorControlActivated">@color/colorAccent</item>
     </style>
 
+    <style name="LoginButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:textSize">12sp</item>
+        <item name="backgroundTint">@color/login_bg_selector</item>
+        <item name="android:textColor">@color/login_text_color_selector</item>
+        <item name="rippleColor">?colorPrimaryLight</item>
+    </style>
+
+    <style name="OpenIdLoginButton" parent="Widget.MaterialComponents.Button.Icon">
+        <item name="android:textSize">12sp</item>
+        <item name="iconSize">24dp</item>
+        <item name="backgroundTint">@color/openid_login_bg_selector</item>
+        <item name="iconTint">@color/openid_icon_color_selector</item>
+        <item name="android:textColor">@color/openid_text_color_selector</item>
+    </style>
+
     <style name="dhisInputTextColorPrimary" parent="TextAppearance.AppCompat">
         <item name="android:textColorHint">?colorPrimary</item>
         <item name="colorAccent">?colorPrimary</item>
@@ -290,7 +305,7 @@
     </style>
 
     <style name="pin_dialog_animation">
-<!--        <item name="android:windowEnterAnimation">@anim/fscv_fade_in</item>-->
+        <!--        <item name="android:windowEnterAnimation">@anim/fscv_fade_in</item>-->
         <item name="android:windowEnterAnimation">@anim/pin_dialog_anim_enter</item>
         <item name="android:windowExitAnimation">@anim/pin_dialog_anim_exit</item>
     </style>

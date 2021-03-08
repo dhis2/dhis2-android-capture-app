@@ -24,6 +24,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatSpinner;
@@ -805,6 +806,11 @@ public class Bindings {
                 viewModel.onValueChanged(false);
             }
         });
+    }
+
+    @BindingAdapter("clipCorners")
+    public static void setClipCorners(View view, int cornerRadiusInDp) {
+        ViewExtensionsKt.clipWithRoundedCorners(view, ExtensionsKt.getDp(cornerRadiusInDp));
     }
 
     @BindingAdapter("legendValue")

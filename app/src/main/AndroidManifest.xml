@@ -99,6 +99,7 @@
         <activity android:name=".usescases.development.DevelopmentActivity" />
 
         <service android:name=".usescases.sms.SmsSendingService" />
+
         <activity android:name=".usescases.teiDashboard.nfcdata.NfcDataWriteActivity" />
         <activity android:name=".usescases.about.PolicyView" />
 
@@ -119,9 +120,22 @@
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity android:name=".usescases.events.ScheduledEventActivity" />
 
-        <activity android:name=".usescases.notes.noteDetail.NoteDetailActivity"
+        <activity
+            android:name=".usescases.notes.noteDetail.NoteDetailActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".usescases.settingsprogram.SettingsProgramActivity" />
+
+        <activity
+            android:name="net.openid.appauth.RedirectUriReceiverActivity"
+            android:exported="true"
+            tools:node="replace">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="*" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

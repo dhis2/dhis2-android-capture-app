@@ -26,12 +26,15 @@ import okhttp3.HttpUrl
 import org.dhis2.App
 import org.dhis2.Bindings.app
 import org.dhis2.Bindings.buildInfo
+import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.Bindings.onRightDrawableClicked
 import org.dhis2.R
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
+import org.dhis2.usescases.login.auth.AuthServiceModel
+import org.dhis2.usescases.login.auth.OpenIdProviders
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.usescases.sync.SyncActivity
@@ -48,6 +51,7 @@ import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.FORGOT_CODE
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
+import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import timber.log.Timber
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
@@ -58,8 +62,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     @Inject
     lateinit var presenter: LoginPresenter
 
-    private var users: MutableList<String>? = null
-    private var urls: MutableList<String>? = null
+    @Inject
+    lateinit var openIdProviders: OpenIdProviders
 
     private var isPinScreenVisible = false
     private var qrUrl: String? = null
@@ -98,18 +102,25 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         loginViewModel.isTestingEnvironment.observe(
             this,
             Observer<Trio<String, String, String>> { testingEnvironment ->
+                binding.root.closeKeyboard()
                 binding.serverUrlEdit.setText(testingEnvironment.val0())
                 binding.userNameEdit.setText(testingEnvironment.val1())
                 binding.userPassEdit.setText(testingEnvironment.val2())
             }
         )
 
+        openIdProviders.loadOpenIdProvider {
+            showLoginOptions(it.takeIf { it.hasConfiguration() })
+        }
+
         binding.serverUrlEdit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 if (checkUrl(binding.serverUrlEdit.text.toString())) {
                     binding.accountRecovery.visibility = View.VISIBLE
+                    binding.loginOpenId.isEnabled = true
                 } else {
                     binding.accountRecovery.visibility = View.GONE
+                    binding.loginOpenId.isEnabled = false
                 }
             }
 
@@ -203,8 +214,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun showUnlockButton() {
-        binding.unlockLayout.visibility = View.VISIBLE
-        onUnlockClick(binding.unlockLayout)
+        binding.unlock.visibility = View.VISIBLE
+        binding.logout.visibility = View.GONE
+        onUnlockClick(binding.unlock)
     }
 
     override fun renderError(throwable: Throwable) {
@@ -219,7 +231,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun setLoginVisibility(isVisible: Boolean) {
-        binding.login.visibility = if (isVisible) View.VISIBLE else View.GONE
+        binding.login.isEnabled = isVisible
     }
 
     override fun showLoginProgress(showLogin: Boolean) {
@@ -279,7 +291,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             },
             {
                 analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
-                binding.unlockLayout.visibility = View.GONE
+                binding.unlock.visibility = View.GONE
+                binding.logout.visibility = View.GONE
             }
         )
             .show(supportFragmentManager, PIN_DIALOG_TAG)
@@ -361,6 +374,14 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         if (requestCode == RQ_QR_SCANNER && resultCode == Activity.RESULT_OK) {
             qrUrl = data?.getStringExtra(Constants.EXTRA_DATA)
             qrUrl?.let { setUrl(it) }
+        } else if (resultCode == Activity.RESULT_OK) {
+            data?.let {
+                presenter.handleAuthResponseData(
+                    binding.serverUrlEdit.text.toString(),
+                    data,
+                    requestCode
+                )
+            }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -411,4 +432,21 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             .title(R.string.fingerprint_title)
             .negativeButtonText(R.string.cancel)
             .build()
+
+    private fun showLoginOptions(authServiceModel: AuthServiceModel?) {
+        authServiceModel?.let {
+            binding.serverUrlEdit.setText(authServiceModel.serverUrl)
+            binding.loginOpenId.visibility = View.VISIBLE
+            binding.loginOpenId.text = authServiceModel.loginLabel
+            binding.loginOpenId.setOnClickListener {
+                presenter.openIdLogin(authServiceModel.toOpenIdConfig())
+            }
+        }
+    }
+
+    override fun openOpenIDActivity(intentData: IntentWithRequestCode?) {
+        intentData?.let {
+            startActivityForResult(intentData.intent, intentData.requestCode)
+        }
+    }
 }
