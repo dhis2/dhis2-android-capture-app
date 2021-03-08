@@ -45,7 +45,11 @@ import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.customviews.OrgUnitDialog;
+import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.OrgUnitFilter;
+import org.dhis2.utils.filters.PeriodFilter;
+import org.dhis2.utils.filters.SyncStateFilter;
 import org.dhis2.utils.filters.workingLists.TeiFilterToWorkingListItemMapper;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
@@ -991,6 +995,25 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void setProgramForTesting(Program program) {
         selectedProgram = program;
     }
+
+    @Override
+    public void clearOtherFiltersIfWebAppIsConfig() {
+        boolean isOrgUnit = false, isSync = false, isPeriod = false;
+        List<FilterItem> filters = filterRepository.homeFilters();
+        for (FilterItem filter : filters) {
+            if (filter instanceof OrgUnitFilter){
+                isOrgUnit = true;
+            } else if (filter instanceof SyncStateFilter){
+                isSync = true;
+            } else if (filter instanceof PeriodFilter){
+                isPeriod = true;
+            }
+        }
+        if (!isOrgUnit) FilterManager.getInstance().clearOuFilter();
+        if (!isSync) FilterManager.getInstance().clearSyncFilter();
+        if (!isPeriod) FilterManager.getInstance().clearPeriodFilter();
+    }
+
 
     @Override
     public void checkFilters(boolean listResultIsOk) {
