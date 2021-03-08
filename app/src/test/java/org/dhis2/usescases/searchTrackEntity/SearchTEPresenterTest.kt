@@ -24,7 +24,6 @@ import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp
 import org.dhis2.utils.filters.FilterItem
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
-import org.dhis2.utils.filters.OrgUnitFilter
 import org.dhis2.utils.filters.ProgramType
 import org.dhis2.utils.filters.sorting.SortingItem
 import org.dhis2.utils.filters.workingLists.TeiFilterToWorkingListItemMapper
