@@ -4,7 +4,11 @@ import androidx.annotation.VisibleForTesting;
 
 import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
+import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
+
+import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -17,6 +21,7 @@ public class DataSetDetailPresenter {
     private SchedulerProvider schedulerProvider;
     private FilterManager filterManager;
     private FilterRepository filterRepository;
+    private DisableHomeFiltersFromSettingsApp disableHomFilters;
 
     CompositeDisposable disposable;
 
@@ -24,13 +29,15 @@ public class DataSetDetailPresenter {
                                   DataSetDetailRepository dataSetDetailRepository,
                                   SchedulerProvider schedulerProvider,
                                   FilterManager filterManager,
-                                  FilterRepository filterRepository) {
+                                  FilterRepository filterRepository,
+                                  DisableHomeFiltersFromSettingsApp disableHomFilters) {
 
         this.view = view;
         this.dataSetDetailRepository = dataSetDetailRepository;
         this.schedulerProvider = schedulerProvider;
         this.filterManager = filterManager;
         this.filterRepository = filterRepository;
+        this.disableHomFilters = disableHomFilters;
         disposable = new CompositeDisposable();
     }
 
@@ -155,5 +162,10 @@ public class DataSetDetailPresenter {
         FilterManager.getInstance().addCatOptCombo(
                 dataSetDetailRepository.getCatOptCombo(selectedCatOptionCombo)
         );
+    }
+
+    public void clearFilterIfDatasetConfig() {
+        List<FilterItem> filters = filterRepository.homeFilters();
+        disableHomFilters.execute(filters);
     }
 }

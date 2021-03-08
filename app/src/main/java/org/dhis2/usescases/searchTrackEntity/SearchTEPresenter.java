@@ -45,6 +45,7 @@ import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.customviews.OrgUnitDialog;
+import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.OrgUnitFilter;
@@ -126,6 +127,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private boolean isSearching;
     private DhisMapUtils mapUtils;
     private final Flowable<RowAction> fieldProcessor;
+    private DisableHomeFiltersFromSettingsApp disableHomeFilters;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -141,7 +143,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              PreferenceProvider preferenceProvider,
                              TeiFilterToWorkingListItemMapper workingListMapper,
                              FilterRepository filterRepository,
-                             Flowable<RowAction> fieldProcessor) {
+                             Flowable<RowAction> fieldProcessor,
+                             DisableHomeFiltersFromSettingsApp disableHomeFilters) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -157,6 +160,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.workingListMapper = workingListMapper;
         this.eventToEventUiComponent = eventToEventUiComponent;
         this.filterRepository = filterRepository;
+        this.disableHomeFilters = disableHomeFilters;
         compositeDisposable = new CompositeDisposable();
         queryData = new HashMap<>();
         queryProcessor = PublishProcessor.create();
@@ -998,22 +1002,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void clearOtherFiltersIfWebAppIsConfig() {
-        boolean isOrgUnit = false, isSync = false, isPeriod = false;
         List<FilterItem> filters = filterRepository.homeFilters();
-        for (FilterItem filter : filters) {
-            if (filter instanceof OrgUnitFilter){
-                isOrgUnit = true;
-            } else if (filter instanceof SyncStateFilter){
-                isSync = true;
-            } else if (filter instanceof PeriodFilter){
-                isPeriod = true;
-            }
-        }
-        if (!isOrgUnit) FilterManager.getInstance().clearOuFilter();
-        if (!isSync) FilterManager.getInstance().clearSyncFilter();
-        if (!isPeriod) FilterManager.getInstance().clearPeriodFilter();
+        disableHomeFilters.execute(filters);
     }
-
 
     @Override
     public void checkFilters(boolean listResultIsOk) {
