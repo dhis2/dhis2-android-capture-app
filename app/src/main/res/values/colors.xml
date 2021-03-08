@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--DEFAULT THEME-->
-    <color name="colorPrimary">#215e8c</color>
-    <color name="colorPrimaryDark">#16507C</color>
-    <color name="colorPrimaryLight">#BACFFF</color>
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#1565c0</color>
+    <color name="colorPrimaryLight">#72C8FF</color>
     <color name="colorAccent">#ffffff</color>
     <color name="colorAccentAlpha">#7fffffff</color>
     <color name="ic_launcher_background">#FFFFFF</color>
@@ -23,7 +23,7 @@
     <color name="colorPrimaryDarkOrange">#CF4500</color>
     <color name="colorPrimaryLightOrange">#FFA77B</color>
 
-    <color name="colorGreyDefault">#4d4d4d</color>
+    <color name="colorGreyDefault">#4d4d4d</color>x
     <color name="colorGreyDefaultPressed">#383838</color>
 
     <!--region BACKEND COLOR-->
@@ -413,4 +413,8 @@
     <color name="dhis_color">#2C98F0</color>
 
     <color name="unselected_tab_badge_color">#B3FFFFFF</color>
+
+    <color name="openid_login_icon">@color/white</color>
+    <color name="openid_login_text">@color/white</color>
+    <color name="openid_login_bg">?colorPrimary</color>
 </resources>

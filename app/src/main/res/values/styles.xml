@@ -84,11 +84,15 @@
 
     <style name="LoginButton" parent="Widget.MaterialComponents.Button">
         <item name="android:textSize">12sp</item>
+        <item name="backgroundTint">@color/login_bg_selector</item>
+        <item name="android:textColor">@color/login_text_color_selector</item>
+        <item name="rippleColor">?colorPrimaryLight</item>
     </style>
 
     <style name="OpenIdLoginButton" parent="Widget.MaterialComponents.Button.Icon">
         <item name="android:textSize">12sp</item>
         <item name="iconSize">24dp</item>
+        <item name="backgroundTint">@color/openid_login_bg_selector</item>
         <item name="iconTint">@color/openid_icon_color_selector</item>
         <item name="android:textColor">@color/openid_text_color_selector</item>
     </style>
