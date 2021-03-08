@@ -412,8 +412,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public boolean showCompletionPercentage() {
-        return d2.settingModule().appearanceSettings().getCompletionSpinnerByUid(
-                d2.eventModule().events().uid(eventUid).blockingGet().program()
-        ).visible();
+        if (d2.settingModule().appearanceSettings().blockingExists()) {
+            return d2.settingModule().appearanceSettings().getCompletionSpinnerByUid(
+                    d2.eventModule().events().uid(eventUid).blockingGet().program()
+            ).visible();
+        }
+        return true;
     }
 }
