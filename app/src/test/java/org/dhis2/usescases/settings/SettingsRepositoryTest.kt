@@ -164,8 +164,8 @@ class SettingsRepositoryTest {
             }
     }
 
-    @Test
     @Ignore
+    @Test
     fun `Should return non editable sms configuration if settings exist`() {
         configureGeneralSettings(true)
         val testObserver = settingsRepository.sms().test()

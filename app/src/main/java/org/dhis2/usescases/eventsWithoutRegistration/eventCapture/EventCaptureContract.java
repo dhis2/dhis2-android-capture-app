@@ -110,6 +110,8 @@ public class EventCaptureContract {
         void hideProgress();
 
         void showProgress();
+
+        boolean getCompletionPercentageVisibility();
     }
 
     public interface EventCaptureRepository {
@@ -163,6 +165,8 @@ public class EventCaptureContract {
         Single<Integer> getNoteCount();
 
         List<String> getOptionsFromGroups(List<String> optionGroupUids);
+
+        boolean showCompletionPercentage();
     }
 
 }

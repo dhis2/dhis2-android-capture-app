@@ -714,4 +714,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         currentShowError.getSecond() != showErrors.getSecond()
         );
     }
+
+    @Override
+    public boolean getCompletionPercentageVisibility() {
+        return eventCaptureRepository.showCompletionPercentage();
+    }
 }
