@@ -25,7 +25,8 @@ else:
     pr_owner = requests.get("https://api.github.com/repos/dhis2/dhis2-android-capture-app/pulls/%s?access_token=%s" %(BITRISE_PULL_REQUEST, GITHUB_RELEASE_API_TOKEN)).json()['user']['login']
     devs = ["ferdyrod", "Balcan", "mmmateos", "JaimeToca", "andresmr"]
 
-    devs.remove(pr_owner)
+    if pr_owner in devs:
+        devs.remove(pr_owner)
 
     random_devs = random.sample(devs, 2)
 
