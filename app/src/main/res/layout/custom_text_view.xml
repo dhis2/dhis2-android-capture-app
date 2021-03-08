@@ -31,6 +31,10 @@
             name="legend"
             type="org.dhis2.data.forms.dataentry.fields.LegendValue" />
 
+        <variable
+            name="keyboardActionType"
+            type="org.dhis2.data.forms.dataentry.fields.KeyboardActionType" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -113,12 +117,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="start"
-                    android:imeOptions="actionNext"
                     android:maxLines="1"
                     android:textAlignment="textStart"
                     android:textIsSelectable="true"
                     android:textSize="@dimen/form_edit_text_size"
                     app:requestFocus="@{focus}"
+                    app:setImeOption="@{keyboardActionType}"
                     tools:text="hello" />
 
             </com.google.android.material.textfield.TextInputLayout>

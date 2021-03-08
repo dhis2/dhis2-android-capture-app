@@ -13,6 +13,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel
+import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel
 import org.dhis2.usescases.enrollment.EnrollmentActivity
@@ -106,13 +107,19 @@ class EnrollmentRepository(
             .toList()
             .map {
                 val finalFieldList = mutableListOf<FieldViewModel>()
-                for (field in it) {
+                for ((index, field) in it.withIndex()) {
                     if (field is OptionSetViewModel) {
                         val options =
                             d2.optionModule().options().byOptionSetUid().eq(field.optionSet())
                                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                                 .blockingGet()
                         finalFieldList.add(field.withOptions(options))
+                    } else if (
+                        (index == it.lastIndex) &&
+                        field is EditTextViewModel &&
+                        field.valueType() != ValueType.LONG_TEXT
+                    ) {
+                        finalFieldList.add(field.withKeyBoardActionDone())
                     } else {
                         finalFieldList.add(field)
                     }
@@ -129,14 +136,23 @@ class EnrollmentRepository(
         val fields = ArrayList<FieldViewModel>()
         for (section in programSections) {
             fields.add(transformSection(section))
-            for (attribute in section.attributes()!!) {
+            for ((index, attribute) in section.attributes()!!.withIndex()) {
                 d2.programModule().programTrackedEntityAttributes()
                     .withRenderType()
                     .byProgram().eq(programUid)
                     .byTrackedEntityAttribute().eq(attribute.uid())
                     .one().blockingGet()?.let { programTrackedEntityAttribute ->
-                    fields.add(transform(programTrackedEntityAttribute, section.uid()))
-                }
+                        val field = transform(programTrackedEntityAttribute, section.uid())
+                        if (
+                            (index == section.attributes()!!.lastIndex) &&
+                            field is EditTextViewModel &&
+                            field.valueType() != ValueType.LONG_TEXT
+                        ) {
+                            fields.add(field.withKeyBoardActionDone())
+                        } else {
+                            fields.add(field)
+                        }
+                    }
             }
         }
         return Single.just(fields)

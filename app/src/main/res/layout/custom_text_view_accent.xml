@@ -26,6 +26,10 @@
         <variable
             name="focus"
             type="java.lang.Boolean" />
+
+        <variable
+            name="keyboardActionType"
+            type="org.dhis2.data.forms.dataentry.fields.KeyboardActionType" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -111,12 +115,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="start"
-                    android:imeOptions="actionNext"
                     android:maxLines="1"
                     android:textColor="?colorAccent"
                     android:textIsSelectable="true"
                     android:textSize="@dimen/form_edit_text_size"
                     app:requestFocus="@{focus}"
+                    app:setImeOption="@{keyboardActionType}"
                     tools:text="@string/lorem" />
 
             </com.google.android.material.textfield.TextInputLayout>
