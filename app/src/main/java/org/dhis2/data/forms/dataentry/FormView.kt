@@ -9,6 +9,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.utils.Constants
@@ -65,16 +66,22 @@ class FormView @JvmOverloads constructor(
             }
         } else {
             recyclerView.setOnScrollListener(object :
-                    RecyclerView.OnScrollListener() {
-                    override fun onScrolled(
-                        recyclerView: RecyclerView,
-                        dx: Int,
-                        dy: Int
-                    ) {
-                        val hasToShowFab = checkLastItem()
-                        scrollCallback?.invoke(hasToShowFab)
-                    }
-                })
+                RecyclerView.OnScrollListener() {
+                override fun onScrolled(
+                    recyclerView: RecyclerView,
+                    dx: Int,
+                    dy: Int
+                ) {
+                    val hasToShowFab = checkLastItem()
+                    scrollCallback?.invoke(hasToShowFab)
+                }
+            })
+        }
+
+        recyclerView.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                closeKeyboard()
+            }
         }
     }
 
