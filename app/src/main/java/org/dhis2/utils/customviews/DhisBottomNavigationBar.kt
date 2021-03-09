@@ -23,6 +23,8 @@ import org.dhis2.Bindings.clipWithRoundedCorners
 import org.dhis2.Bindings.dp
 import org.dhis2.R
 
+const val itemIndicatorTag = "ITEM_INDICATOR"
+
 class DhisBottomNavigationBar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -59,7 +61,7 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
         post {
             menu.forEachIndexed { index, item ->
                 if (index == initialPage) {
-                    setCurrentItemIndicatorPosition(findViewById<View>(item.itemId), true)
+                    animateItemIndicatorPosition(findViewById<View>(item.itemId))
                 }
                 if (initialPage != 0) {
                     selectItemAt(initialPage)
@@ -106,6 +108,7 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
             y = 0f
             setImageDrawable(itemIndicatorDrawable)
             DrawableCompat.setTint(DrawableCompat.wrap(drawable), currentItemIndicatorColor)
+            tag = itemIndicatorTag
         }
     }
 
@@ -116,10 +119,7 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
         }
     }
 
-    private fun setCurrentItemIndicatorPosition(
-        selectedItemView: View,
-        addCurrentSelector: Boolean = false
-    ) {
+    private fun setCurrentItemIndicatorPosition(selectedItemView: View) {
         currentItemIndicator.apply {
             x = selectedItemView.x +
                 selectedItemView.width / 2f +
@@ -127,10 +127,20 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
                 itemIndicatorSize / 2f
             y = (this@DhisBottomNavigationBar.height - itemIndicatorSize) / 2f
         }
-        if (addCurrentSelector) {
+
+        if (indicatorHasPosition() && !isItemIndicatorAdded()) {
             addView(currentItemIndicator)
         }
         invalidate()
+    }
+
+    private fun indicatorHasPosition(): Boolean {
+        return currentItemIndicator.x != -itemIndicatorSize / 2f &&
+            currentItemIndicator.y != -itemIndicatorSize / 2f
+    }
+
+    private fun isItemIndicatorAdded(): Boolean {
+        return findViewWithTag<View?>(itemIndicatorTag) != null
     }
 
     fun isHidden(): Boolean {
@@ -185,6 +195,15 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
         itemIconTintList = iconsColorStates
         itemIndicatorDrawable?.let {
             DrawableCompat.setTint(DrawableCompat.wrap(it), currentItemIndicatorColor)
+        }
+    }
+
+    override fun onVisibilityChanged(changedView: View, visibility: Int) {
+        super.onVisibilityChanged(changedView, visibility)
+        post {
+            if (visibility == View.VISIBLE) {
+                animateItemIndicatorPosition(findViewById(selectedItemId))
+            }
         }
     }
 }
