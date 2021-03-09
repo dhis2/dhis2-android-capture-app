@@ -49,6 +49,7 @@ class EventMapFragment :
         savedInstanceState: Bundle?
     ): View? {
         (activity as ProgramEventDetailActivity).component.plus(EventMapModule(this)).inject(this)
+        programEventsViewModel.setProgress(true)
         binding = FragmentProgramEventDetailMapBinding.inflate(inflater, container, false)
         binding.apply {
             eventMapManager = EventMapManager(mapView)
@@ -95,6 +96,7 @@ class EventMapFragment :
     override fun onDestroy() {
         eventMapManager?.onDestroy()
         binding.mapView.onDestroy()
+        presenter.onDestroy()
         super.onDestroy()
     }
 
