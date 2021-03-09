@@ -142,17 +142,17 @@ class EnrollmentRepository(
                     .byProgram().eq(programUid)
                     .byTrackedEntityAttribute().eq(attribute.uid())
                     .one().blockingGet()?.let { programTrackedEntityAttribute ->
-                        val field = transform(programTrackedEntityAttribute, section.uid())
-                        if (
-                            (index == section.attributes()!!.lastIndex) &&
-                            field is EditTextViewModel &&
-                            field.valueType() != ValueType.LONG_TEXT
-                        ) {
-                            fields.add(field.withKeyBoardActionDone())
-                        } else {
-                            fields.add(field)
-                        }
+                    val field = transform(programTrackedEntityAttribute, section.uid())
+                    if (
+                        (index == section.attributes()!!.lastIndex) &&
+                        field is EditTextViewModel &&
+                        field.valueType() != ValueType.LONG_TEXT
+                    ) {
+                        fields.add(field.withKeyBoardActionDone())
+                    } else {
+                        fields.add(field)
                     }
+                }
             }
         }
         return Single.just(fields)

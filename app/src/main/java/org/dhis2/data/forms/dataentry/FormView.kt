@@ -66,16 +66,16 @@ class FormView @JvmOverloads constructor(
             }
         } else {
             recyclerView.setOnScrollListener(object :
-                RecyclerView.OnScrollListener() {
-                override fun onScrolled(
-                    recyclerView: RecyclerView,
-                    dx: Int,
-                    dy: Int
-                ) {
-                    val hasToShowFab = checkLastItem()
-                    scrollCallback?.invoke(hasToShowFab)
-                }
-            })
+                    RecyclerView.OnScrollListener() {
+                    override fun onScrolled(
+                        recyclerView: RecyclerView,
+                        dx: Int,
+                        dy: Int
+                    ) {
+                        val hasToShowFab = checkLastItem()
+                        scrollCallback?.invoke(hasToShowFab)
+                    }
+                })
         }
 
         recyclerView.setOnFocusChangeListener { _, hasFocus ->
