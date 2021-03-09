@@ -65,6 +65,7 @@ public class OptionSetSelectionView extends FieldLayout {
     }
 
     public void setLayoutData(boolean isBgTransparent, String renderType) {
+        this.isBgTransparent = isBgTransparent;
         if (isBgTransparent)
             binding = FormSpinnerSelectionBinding.inflate(inflater, this, true);
         else
@@ -168,6 +169,7 @@ public class OptionSetSelectionView extends FieldLayout {
                 OptionSetSelectCheckItemBinding optionBinding = OptionSetSelectCheckItemBinding.inflate(inflater, checkGroup, false);
                 optionBinding.setEditable(isEditable);
                 optionBinding.setOptionName(option.displayName());
+                optionBinding.setVariable(BR.isBgTransparent, isBgTransparent);
                 optionBinding.checkBox.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f));
                 optionBinding.checkBox.setChecked(currentCodeValue != null && (currentCodeValue.equals(option.code()) || currentCodeValue.equals(option.name())));
                 optionBinding.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
