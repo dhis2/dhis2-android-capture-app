@@ -500,6 +500,28 @@ public class FilterManager implements Serializable {
         filterProcessor.onNext(this);
     }
 
+    public void clearPeriodFilter(){
+        periodFilters = new ArrayList<>();
+        observablePeriodFilters.set(periodFilters);
+        periodIdSelected.set(R.id.anytime);
+        periodFiltersApplied.set(0);
+        filterProcessor.onNext(this);
+    }
+
+    public void clearSyncFilter(){
+        stateFilters.clear();
+        observableStates.set(stateFilters);
+        stateFiltersApplied.set(stateFilters.size());
+        filterProcessor.onNext(this);
+    }
+
+    public void clearOuFilter(){
+        ouFilters.clear();
+        liveDataOUFilter.setValue(ouFilters);
+        ouFiltersApplied.set(ouFilters.size());
+        filterProcessor.onNext(this);
+    }
+
     public void clearAllFilters() {
         eventStatusFilters.clear();
         observableEventStatus.set(eventStatusFilters);

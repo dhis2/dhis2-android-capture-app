@@ -64,5 +64,7 @@ public class ProgramEventDetailContract {
         FeatureType getFeatureType();
 
         List<WorkingListItem> workingLists();
+
+        void clearOtherFiltersIfWebAppIsConfig();
     }
 }

@@ -163,6 +163,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         FilterManager.getInstance().clearCatOptCombo();
         FilterManager.getInstance().clearWorkingList(false);
         FilterManager.getInstance().clearAssignToMe();
+        presenter.clearOtherFiltersIfWebAppIsConfig();
     }
 
     @Override

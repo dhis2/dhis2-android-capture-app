@@ -297,6 +297,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         FilterManager.getInstance().clearSorting();
         FilterManager.getInstance().clearAssignToMe();
 
+        presenter.clearOtherFiltersIfWebAppIsConfig();
+
         super.onDestroy();
     }
 

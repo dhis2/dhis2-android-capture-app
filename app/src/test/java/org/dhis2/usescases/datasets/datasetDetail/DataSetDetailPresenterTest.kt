@@ -41,6 +41,7 @@ import io.reactivex.schedulers.TestScheduler
 import org.dhis2.data.filter.FilterRepository
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.data.tuples.Pair
+import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.FilterManager.PeriodRequest
 import org.dhis2.utils.filters.Filters
@@ -59,6 +60,7 @@ class DataSetDetailPresenterTest {
     private val scheduler = TestSchedulerProvider(TestScheduler())
     private val filterManager: FilterManager = mock()
     private val filterRepository: FilterRepository = mock()
+    private val disableHomeFilters: DisableHomeFiltersFromSettingsApp = mock()
 
     @Before
     fun setUp() {
@@ -67,7 +69,8 @@ class DataSetDetailPresenterTest {
             repository,
             scheduler,
             filterManager,
-            filterRepository
+            filterRepository,
+            disableHomeFilters
         )
     }
 
