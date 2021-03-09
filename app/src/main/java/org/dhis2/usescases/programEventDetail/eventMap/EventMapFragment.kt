@@ -86,6 +86,11 @@ class EventMapFragment :
         }
     }
 
+    override fun onDestroy() {
+        presenter.onDestroy()
+        super.onDestroy()
+    }
+
     override fun onLowMemory() {
         super.onLowMemory()
         eventMapManager?.onLowMemory()

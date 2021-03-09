@@ -34,7 +34,7 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
         savedInstanceState: Bundle?
     ): View? {
         (activity as ProgramEventDetailActivity).component.plus(EventListModule(this)).inject(this)
-
+        programEventsViewModel.setProgress(true)
         liveAdapter = ProgramEventDetailLiveAdapter(presenter.program(), programEventsViewModel)
         return FragmentProgramEventDetailListBinding.inflate(inflater, container, false)
             .apply {
