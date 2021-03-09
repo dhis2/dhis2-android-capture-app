@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -36,10 +35,6 @@ import java.util.Date;
 import java.util.Objects;
 
 import static android.text.TextUtils.isEmpty;
-
-/**
- * QUADRAM. Created by frodriguez on 1/15/2018.
- */
 
 
 public class AgeView extends FieldLayout implements View.OnClickListener {
@@ -389,7 +384,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
             setWarning(viewModel.warning());
         else if (viewModel.error() != null)
             setError(viewModel.error());
-        else
+        else if (!viewModel.isSearchMode())
             clearErrors();
 
         setEditable(viewModel.editable());
