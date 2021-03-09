@@ -25,6 +25,7 @@ import org.hisp.dhis.android.core.period.DatePeriod;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -591,11 +592,15 @@ public class FilterManager implements Serializable {
 
         periodFilters = new ArrayList<>();
         periodFiltersApplied.set(0);
+        periodIdSelected.set(R.id.anytime);
         enrollmentPeriodFilters.clear();
         enrollmentPeriodFiltersApplied.set(0);
+        enrollmentPeriodIdSelected.set(R.id.anytime);
         enrollmentStatusFilters.clear();
         enrollmentStatusFiltersApplied.set(0);
+        observableEnrollmentStatus.set(null);
         eventStatusFilters.clear();
+        observableEventStatus.set(eventStatusFilters);
         eventStatusFiltersApplied.set(0);
         clearAssignToMe();
         assignedFilter = false;
