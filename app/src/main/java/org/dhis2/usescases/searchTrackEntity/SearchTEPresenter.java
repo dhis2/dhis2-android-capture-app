@@ -44,6 +44,7 @@ import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.utils.filters.FilterItem;
@@ -62,6 +63,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
+import org.matomo.sdk.Matomo;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -90,6 +92,10 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_RELATIONSHIP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SEARCH_TEI;
 
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
+
+    private static final String TRACKER_PROGRAM_LIST = "tracker_program_list";
+    private static final String SYNC_TEI = "sync_tei_btn";
+    private static final String CLICK_SYNC = "click";
 
     private static final Program ALL_TE_TYPES = null;
     private static final int MAX_NO_SELECTED_PROGRAM_RESULTS = 5;
@@ -128,6 +134,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private DhisMapUtils mapUtils;
     private final Flowable<RowAction> fieldProcessor;
     private DisableHomeFiltersFromSettingsApp disableHomeFilters;
+    private MatomoAnalyticsController matomoAnalyticsController;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -144,7 +151,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              TeiFilterToWorkingListItemMapper workingListMapper,
                              FilterRepository filterRepository,
                              Flowable<RowAction> fieldProcessor,
-                             DisableHomeFiltersFromSettingsApp disableHomeFilters) {
+                             DisableHomeFiltersFromSettingsApp disableHomeFilters,
+                             MatomoAnalyticsController matomoAnalyticsController) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -161,6 +169,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.eventToEventUiComponent = eventToEventUiComponent;
         this.filterRepository = filterRepository;
         this.disableHomeFilters = disableHomeFilters;
+        this.matomoAnalyticsController = matomoAnalyticsController;
         compositeDisposable = new CompositeDisposable();
         queryData = new HashMap<>();
         queryProcessor = PublishProcessor.create();
@@ -867,6 +876,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onSyncIconClick(String teiUid) {
+        matomoAnalyticsController.trackEvent(TRACKER_PROGRAM_LIST, SYNC_TEI, CLICK_SYNC);
         view.showSyncDialog(
                 new SyncStatusDialog.Builder()
                         .setConflictType(SyncStatusDialog.ConflictType.TEI)
