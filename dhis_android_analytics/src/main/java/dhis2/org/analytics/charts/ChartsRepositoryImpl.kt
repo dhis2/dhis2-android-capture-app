@@ -1,7 +1,6 @@
 package dhis2.org.analytics.charts
 
 import dhis2.org.analytics.charts.data.Graph
-import dhis2.org.analytics.charts.data.nutritionTestingData
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
 import dhis2.org.analytics.charts.mappers.DataElementToGraph
 import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
@@ -45,8 +44,12 @@ class ChartsRepositoryImpl(
                         d2.programModule().programIndicators().uid(indicatorUid).blockingGet()
                             .displayName() ?: indicatorUid
                     },
-                    {
-                        true //TODO: GET GENDER
+                    { nutritionGenderData ->
+                        val genderValue = d2.trackedEntityModule().trackedEntityAttributeValues().value(
+                            nutritionGenderData.attributeUid,
+                            enrollment.trackedEntityInstance()
+                        ).blockingGet()
+                        nutritionGenderData.isFemale(genderValue.value())
                     }
                 )
             } ?: emptyList()

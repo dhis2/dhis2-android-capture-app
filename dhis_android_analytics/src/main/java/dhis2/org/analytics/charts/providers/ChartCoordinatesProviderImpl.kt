@@ -41,7 +41,11 @@ class ChartCoordinatesProviderImpl(val d2: D2) : ChartCoordinatesProvider {
             .blockingEvaluate()
             .sortedBy { it.date }
             .filter {
-                !(it.values.first().value?.toFloat() ?: Float.NaN).isNaN()
+                try {
+                    !(it.values.first().value?.toFloat() ?: Float.NaN).isNaN()
+                }catch (e:java.lang.Exception){
+                    false
+                }
             }
             .mapNotNull { lineListResponse ->
                 lineListResponse.values.first().value?.let { value ->
@@ -51,7 +55,6 @@ class ChartCoordinatesProviderImpl(val d2: D2) : ChartCoordinatesProvider {
                     )
                 }
             }
-
     }
 
     override fun nutritionCoordinates(

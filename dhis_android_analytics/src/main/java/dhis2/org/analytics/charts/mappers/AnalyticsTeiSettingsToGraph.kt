@@ -1,9 +1,10 @@
 package dhis2.org.analytics.charts.mappers
 
-import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
-import dhis2.org.analytics.charts.data.NutritionChartType
+import dhis2.org.analytics.charts.data.NutritionGenderData
+import dhis2.org.analytics.charts.data.NutritionSettingsAnalyticsModel
 import dhis2.org.analytics.charts.data.SerieData
+import dhis2.org.analytics.charts.data.toNutritionChartType
 import dhis2.org.analytics.charts.providers.ChartCoordinatesProvider
 import dhis2.org.analytics.charts.providers.NutritionDataProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProvider
@@ -22,24 +23,27 @@ class AnalyticsTeiSettingsToGraph(
         analytycsTeiSettings: List<AnalyticsTeiSetting>,
         dataElementNameProvider: (String) -> String,
         indicatorNameProvider: (String) -> String,
-        teiGenderProvider: () -> Boolean
+        teiGenderProvider: (NutritionGenderData) -> Boolean
     ): List<Graph> {
         return analytycsTeiSettings.map { analyticsTeiSettings ->
             val analyticsSetting = analyticsSettingsMapper.map(analyticsTeiSettings)
             val nutritionCoordinates: List<SerieData> =
-                if (analyticsSetting.type == ChartType.NUTRITION) {
-                    nutritionDataProvider.getNutritionData(NutritionChartType.WHO_HFA_BOY) //TODO: Check Nutrition types and tei gender to pick table
+                if (analyticsSetting is NutritionSettingsAnalyticsModel) {
+                    val isFemale = teiGenderProvider(analyticsSetting.genderData)
+                    val nutritionChartType = analyticsTeiSettings.whoNutritionData()!!.chartType()
+                        .toNutritionChartType(isFemale)
+                    nutritionDataProvider.getNutritionData(nutritionChartType)
                         .toMutableList().apply {
                             add(
                                 SerieData(
                                     analyticsSetting.displayName,
                                     chartCoordinatesProvider.nutritionCoordinates(
-                                        "null",
+                                        analyticsSetting.stageUid,
                                         teiUid,
-                                        "null",
-                                        false,
-                                        "null",
-                                        false
+                                        analyticsSetting.zScoreContainerUid,
+                                        analyticsSetting.zScoreContainerIsDataElement,
+                                        analyticsSetting.ageOrHeightContainerUid,
+                                        analyticsSetting.ageOrHeightIsDataElement
                                     )
                                 )
                             )
@@ -48,7 +52,7 @@ class AnalyticsTeiSettingsToGraph(
                     emptyList()
                 }
 
-            val dataElementCoordinates = analyticsSetting.dataElements.map {
+            val dataElementCoordinates = analyticsSetting.dataElements().map {
                 SerieData(
                     dataElementNameProvider(it.dataElementUid),
                     chartCoordinatesProvider.dataElementCoordinates(
@@ -58,7 +62,7 @@ class AnalyticsTeiSettingsToGraph(
                     )
                 )
             }
-            val indicatorCoordinates = analyticsSetting.indicators.map {
+            val indicatorCoordinates = analyticsSetting.indicators().map {
                 SerieData(
                     indicatorNameProvider(it.indicatorUid),
                     chartCoordinatesProvider.indicatorCoordinates(
@@ -74,8 +78,8 @@ class AnalyticsTeiSettingsToGraph(
                 nutritionCoordinates.union(dataElementCoordinates).union(indicatorCoordinates)
                     .toList(),
                 "",
-                PeriodType.valueOf(analyticsSetting.period),
-                periodStepProvider.periodStep(PeriodType.valueOf(analyticsSetting.period)),
+                PeriodType.valueOf(analyticsSetting.period()),
+                periodStepProvider.periodStep(PeriodType.valueOf(analyticsSetting.period())),
                 analyticsSetting.type
             )
         }
