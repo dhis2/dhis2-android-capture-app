@@ -15,6 +15,7 @@ import org.dhis2.usescases.settings.models.SettingsViewModel;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.usescases.settings.models.ErrorModelMapper;
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.settings.LimitScope;
@@ -37,6 +38,12 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA_NOW;
 
 public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
+    private static final String SETTINGS = "settings";
+    private static final String SYNC_DATA = "sync_data_btn";
+    private static final String SYNC_CONFIG = "sync_config_btn";
+    private static final String SYNC_PARAMETERS = "sync_parameters_btn";
+    private static final String CLICK = "click";
+
     private final D2 d2;
     private final SchedulerProvider schedulerProvider;
     private final PreferenceProvider preferenceProvider;
@@ -48,6 +55,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     private FlowableProcessor<Boolean> checkData;
     private GatewayValidator gatewayValidator;
     private WorkManagerController workManagerController;
+    private MatomoAnalyticsController matomoAnalyticsController;
 
     SyncManagerPresenter(
             D2 d2,
@@ -58,7 +66,8 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
             SettingsRepository settingsRepository,
             SyncManagerContracts.View view,
             AnalyticsHelper analyticsHelper,
-            ErrorModelMapper errorMapper) {
+            ErrorModelMapper errorMapper,
+            MatomoAnalyticsController matomoAnalyticsController) {
         this.view = view;
         this.d2 = d2;
         this.settingsRepository = settingsRepository;
@@ -68,6 +77,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         this.workManagerController = workManagerController;
         this.analyticsHelper = analyticsHelper;
         this.errorMapper = errorMapper;
+        this.matomoAnalyticsController = matomoAnalyticsController;
         checkData = PublishProcessor.create();
         compositeDisposable = new CompositeDisposable();
     }
@@ -226,6 +236,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void syncMeta(int seconds, String scheduleTag) {
+        matomoAnalyticsController.trackEvent(SETTINGS, SYNC_DATA, CLICK);
         preferenceProvider.setValue(Constants.TIME_META, seconds);
         workManagerController.cancelUniqueWork(scheduleTag);
         WorkerItem workerItem = new WorkerItem(scheduleTag, WorkerType.METADATA, (long) seconds, null, null, ExistingPeriodicWorkPolicy.REPLACE);
@@ -235,6 +246,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void syncData() {
+        matomoAnalyticsController.trackEvent(SETTINGS, SYNC_CONFIG, CLICK);
         view.syncData();
         analyticsHelper.setEvent(SYNC_DATA_NOW, CLICK, SYNC_DATA_NOW);
         WorkerItem workerItem = new WorkerItem(Constants.DATA_NOW, WorkerType.DATA, null, null, ExistingWorkPolicy.KEEP, null);

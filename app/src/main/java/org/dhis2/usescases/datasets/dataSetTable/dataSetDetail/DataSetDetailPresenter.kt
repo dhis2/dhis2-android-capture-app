@@ -7,6 +7,7 @@ import io.reactivex.processors.PublishProcessor
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.tuples.Trio
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepositoryImpl
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.period.Period
 import timber.log.Timber
@@ -14,8 +15,16 @@ import timber.log.Timber
 class DataSetDetailPresenter(
     val view: DataSetDetailView,
     val repository: DataSetTableRepositoryImpl,
-    val schedulers: SchedulerProvider
+    val schedulers: SchedulerProvider,
+    val matomoAnalyticsController: MatomoAnalyticsController
 ) {
+
+    companion object {
+        const val DATASET_DETAIL = "dataset_detail"
+        const val SYNC_DATASET = "sync_dataset_btn"
+        const val CLICK_SYNC = "click"
+    }
+
     private val disposable = CompositeDisposable()
     private val updateProcessor = PublishProcessor.create<Boolean>()
 
@@ -91,5 +100,9 @@ class DataSetDetailPresenter(
 
     fun updateData() {
         updateProcessor.onNext(true)
+    }
+
+    fun onClickSyncStatus() {
+        matomoAnalyticsController.trackEvent(DATASET_DETAIL, SYNC_DATASET, CLICK_SYNC)
     }
 }

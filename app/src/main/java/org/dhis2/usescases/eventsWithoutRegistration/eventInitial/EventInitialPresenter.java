@@ -21,6 +21,7 @@ import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -54,6 +55,10 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT;
 
 public class EventInitialPresenter implements EventInitialContract.Presenter {
 
+    private static final String EVENT_LIST = "event_program_list";
+    private static final String CREATE_EVENT = "create_event_next";
+    private static final String CLICK_CREATE = "click";
+
     public static final int ACCESS_LOCATION_PERMISSION_REQUEST = 101;
     private final PreferenceProvider preferences;
     private final AnalyticsHelper analyticsHelper;
@@ -78,12 +83,15 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     private String programId;
 
+    private MatomoAnalyticsController matomoAnalyticsController;
+
     public EventInitialPresenter(@NonNull EventInitialContract.View view,
                                  @NonNull EventSummaryRepository eventSummaryRepository,
                                  @NonNull EventInitialRepository eventInitialRepository,
                                  @NonNull SchedulerProvider schedulerProvider,
                                  @NonNull PreferenceProvider preferenceProvider,
-                                 @NonNull AnalyticsHelper analyticsHelper) {
+                                 @NonNull AnalyticsHelper analyticsHelper,
+                                 @NonNull MatomoAnalyticsController matomoAnalyticsController) {
 
         this.view = view;
         this.eventInitialRepository = eventInitialRepository;
@@ -91,6 +99,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         this.schedulerProvider = schedulerProvider;
         this.preferences = preferenceProvider;
         this.analyticsHelper = analyticsHelper;
+        this.matomoAnalyticsController = matomoAnalyticsController;
     }
 
     @Override
@@ -456,5 +465,10 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public boolean getCompletionPercentageVisibility() {
         return eventInitialRepository.showCompletionPercentage();
+    }
+
+    @Override
+    public void onEventCreated() {
+        matomoAnalyticsController.trackEvent(EVENT_LIST, CREATE_EVENT, CLICK_CREATE);
     }
 }

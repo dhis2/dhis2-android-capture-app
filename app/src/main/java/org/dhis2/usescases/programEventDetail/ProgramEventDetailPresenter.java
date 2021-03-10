@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
@@ -25,6 +26,11 @@ import timber.log.Timber;
 
 public class ProgramEventDetailPresenter implements ProgramEventDetailContract.Presenter {
 
+    private static final String EVENT_LIST = "event_program_list";
+    private static final String SYNC_EVENT = "sync_event_btn";
+    private static final String CLICK_SYNC = "click";
+
+
     private final ProgramEventDetailRepository eventRepository;
     private final SchedulerProvider schedulerProvider;
     private final FilterManager filterManager;
@@ -34,6 +40,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     private FlowableProcessor<Unit> listDataProcessor;
     private EventFilterToWorkingListItemMapper workingListMapper;
     private DisableHomeFiltersFromSettingsApp disableHomFilters;
+    private MatomoAnalyticsController matomoAnalyticsController;
 
     public ProgramEventDetailPresenter(
             ProgramEventDetailContract.View view,
@@ -43,7 +50,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
             EventFilterToWorkingListItemMapper workingListMapper,
             FilterRepository filterRepository,
             FilterPresenter filterPresenter,
-            DisableHomeFiltersFromSettingsApp disableHomFilters) {
+            DisableHomeFiltersFromSettingsApp disableHomFilters,
+            MatomoAnalyticsController matomoAnalyticsController) {
         this.view = view;
         this.eventRepository = programEventDetailRepository;
         this.schedulerProvider = schedulerProvider;
@@ -51,6 +59,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         this.workingListMapper = workingListMapper;
         this.filterRepository = filterRepository;
         this.disableHomFilters = disableHomFilters;
+        this.matomoAnalyticsController = matomoAnalyticsController;
         compositeDisposable = new CompositeDisposable();
         listDataProcessor = PublishProcessor.create();
     }
@@ -145,6 +154,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void onSyncIconClick(String uid) {
+        matomoAnalyticsController.trackEvent(EVENT_LIST, SYNC_EVENT, CLICK_SYNC);
         view.showSyncDialog(uid);
     }
 
