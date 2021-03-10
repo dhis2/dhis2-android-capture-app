@@ -123,7 +123,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         );
 
         compositeDisposable.add(
-                filterManager.asFlowable()
+                filterManager.asFlowable().onBackpressureLatest()
                         .doOnNext(filterManager -> view.showFilterProgress())
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
