@@ -785,7 +785,6 @@ public class Bindings {
     public static void requestFocus(EditText editText, boolean focused) {
         if (focused) {
             editText.requestFocus();
-            openKeyboard(editText);
         } else {
             editText.clearFocus();
         }

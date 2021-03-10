@@ -9,7 +9,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.utils.Constants
@@ -76,12 +75,6 @@ class FormView @JvmOverloads constructor(
                         scrollCallback?.invoke(hasToShowFab)
                     }
                 })
-        }
-
-        recyclerView.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                closeKeyboard()
-            }
         }
     }
 

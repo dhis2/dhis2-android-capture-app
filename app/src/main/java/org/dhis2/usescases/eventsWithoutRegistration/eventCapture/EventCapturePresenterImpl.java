@@ -333,12 +333,14 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
                                 }
                             }
-                            int lastIndex = fields.size() - 1;
-                            FieldViewModel field = fields.get(lastIndex);
-                            if (field instanceof EditTextViewModel &&
-                                    ((EditTextViewModel) field).valueType() != ValueType.LONG_TEXT
-                            ) {
-                                fields.set(lastIndex, ((EditTextViewModel) field).withKeyBoardActionDone());
+                            if (!fields.isEmpty()) {
+                                int lastIndex = fields.size() - 1;
+                                FieldViewModel field = fields.get(lastIndex);
+                                if (field instanceof EditTextViewModel &&
+                                        ((EditTextViewModel) field).valueType() != ValueType.LONG_TEXT
+                                ) {
+                                    fields.set(lastIndex, ((EditTextViewModel) field).withKeyBoardActionDone());
+                                }
                             }
                             return fields;
                         }
