@@ -249,7 +249,12 @@ class GranularSyncPresenterImpl(
         disposable.add(
             smsSender.send().doOnNext { state ->
                 if (!isLastSendingStateTheSame(state.sent, state.total)) {
-                    reportState(SmsSendingService.State.SENDING, state.sent, state.total)
+                    reportState(
+                        if (state.sent == 0) SmsSendingService.State.STARTED
+                        else SmsSendingService.State.SENDING,
+                        state.sent,
+                        state.total
+                    )
                 }
             }.ignoreElements().doOnComplete {
                 reportState(
