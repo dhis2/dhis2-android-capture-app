@@ -600,7 +600,7 @@ public class FilterManager implements Serializable {
         enrollmentStatusFiltersApplied.set(0);
         observableEnrollmentStatus.set(null);
         eventStatusFilters.clear();
-        observableEventStatus.set(eventStatusFilters);
+        observableEventStatus.set(null);
         eventStatusFiltersApplied.set(0);
         clearAssignToMe();
         assignedFilter = false;
