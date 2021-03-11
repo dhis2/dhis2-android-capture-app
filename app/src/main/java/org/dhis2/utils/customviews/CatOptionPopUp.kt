@@ -37,7 +37,7 @@ class CatOptionPopUp(
             }
             true
         }
-        menu.add(Menu.NONE, Menu.NONE, 0, categoryName)
+
         selectableOptions.forEachIndexed { index, option ->
             menu.add(Menu.NONE, Menu.NONE, index + 1, option.displayName())
         }
