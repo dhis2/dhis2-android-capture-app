@@ -129,7 +129,9 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        viewModel.onItemClick();
+        if (viewModel != null) {
+            viewModel.onItemClick();
+        }
         switch (view.getId()) {
             case R.id.date_picker:
                 showCustomCalendar(view);
