@@ -58,7 +58,7 @@
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/app_name"
                     android:padding="15dp"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
