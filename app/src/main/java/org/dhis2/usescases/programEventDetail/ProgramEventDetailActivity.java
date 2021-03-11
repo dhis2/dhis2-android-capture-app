@@ -93,10 +93,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_list_view:
-                    showMap(false);
+                    if(isMapVisible) {
+                        showMap(false);
+                    }
                     return true;
                 case R.id.navigation_map_view:
-                    showMap(true);
+                    if(!isMapVisible) {
+                        showMap(true);
+                    }
                     return true;
                 default:
                     return false;
@@ -323,14 +327,12 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     private void showMap(boolean showMap) {
-        if(isMapVisible != showMap) {
-            isMapVisible = showMap;
-            getSupportFragmentManager().beginTransaction().replace(
-                    R.id.fragmentContainer,
-                    showMap ? new EventMapFragment() : new EventListFragment()
-            ).commitNow();
-            binding.addEventButton.setVisibility(showMap && programEventsViewModel.getWritePermission().getValue() ? GONE : View.VISIBLE);
-        }
+        isMapVisible = showMap;
+        getSupportFragmentManager().beginTransaction().replace(
+                R.id.fragmentContainer,
+                showMap ? new EventMapFragment() : new EventListFragment()
+        ).commitNow();
+        binding.addEventButton.setVisibility(showMap && programEventsViewModel.getWritePermission().getValue() ? GONE : View.VISIBLE);
     }
 
     @Override
