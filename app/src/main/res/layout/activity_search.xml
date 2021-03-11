@@ -323,7 +323,7 @@
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/progressLayout"
-                    app:srcCompat="@drawable/ic_map_layers" />
+                    app:srcCompat="@drawable/ic_map_layers_ripple" />
 
                 <RelativeLayout
                     android:id="@+id/messageContainer"
