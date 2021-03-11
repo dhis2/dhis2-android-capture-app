@@ -73,7 +73,8 @@ class DataSetDetailPresenterTest {
             filterManager,
             filterRepository,
             disableHomeFilters,
-            matomoAnalyticsController)
+            matomoAnalyticsController
+        )
     }
 
     @Test
