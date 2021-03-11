@@ -15,14 +15,18 @@ import androidx.databinding.ObservableBoolean;
 import com.evrencoskun.tableview.TableView;
 import com.evrencoskun.tableview.handler.SelectionHandler;
 
+import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomTextViewCellBinding;
 import org.dhis2.utils.DialogClickListener;
+import org.dhis2.utils.Validator;
 import org.dhis2.utils.customviews.TableFieldDialog;
 import org.hisp.dhis.android.core.common.ValueType;
+
+import java.util.Map;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -36,6 +40,8 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
     private TableView tableView;
     FlowableProcessor<RowAction> processor;
+    private Map<ValueType, Validator> validators;
+    private Validator validator;
 
     @SuppressLint("RxLeakedSubscription")
     EditTextCellCustomHolder(CustomTextViewCellBinding binding, FlowableProcessor<RowAction> processor,
@@ -72,6 +78,8 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                 tableView.scrollToColumnPosition(getAdapterPosition(), DEFAULT_CELL_OFFSET);
             }
         });
+
+        validators = ((Components) binding.getRoot().getContext().getApplicationContext()).appComponent().injectValidators();
     }
 
 
@@ -109,6 +117,8 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     }
 
     private void setInputType(ValueType valueType) {
+
+        this.validator = validators.get(valueType);
 
         editText.setFilters(new InputFilter[]{});
         editText.setFocusable(true);
@@ -222,21 +232,21 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                         return false;
                     }
                 case INTEGER_NEGATIVE:
-                    if (Integer.valueOf(editText.getText().toString()) < 0)
+                    if (validator.validate(editText.getText().toString()))
                         return true;
                     else {
                         editText.setError(editText.getContext().getString(R.string.invalid_negative_number));
                         return false;
                     }
                 case INTEGER_ZERO_OR_POSITIVE:
-                    if (Integer.valueOf(editText.getText().toString()) >= 0)
+                    if (validator.validate(editText.getText().toString()))
                         return true;
                     else {
                         editText.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
                         return false;
                     }
                 case INTEGER_POSITIVE:
-                    if (Integer.valueOf(editText.getText().toString()) > 0)
+                    if (validator.validate(editText.getText().toString()))
                         return true;
                     else {
                         editText.setError(editText.getContext().getString(R.string.invalid_possitive));
