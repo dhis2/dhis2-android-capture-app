@@ -56,9 +56,12 @@ class AnalyticsHelper @Inject constructor(
         logEvent(event, bundle)
     }
 
-    fun updateMatomoSecondaryTracker(any: Any) {
-        // TODO: finish when SDK provides matomo configuration
-//        matomoAnalyticsController.updateDhisImplementationTracker()
+    fun updateMatomoSecondaryTracker(matomoUrl: String, matomoID: Int, trackerName: String) {
+        matomoAnalyticsController.updateDhisImplementationTracker(
+            matomoUrl,
+            matomoID,
+            trackerName
+        )
     }
 
     private fun logEvent(event: String, bundle: Bundle) {
