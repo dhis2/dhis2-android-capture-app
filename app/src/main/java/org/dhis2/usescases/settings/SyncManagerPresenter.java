@@ -41,7 +41,6 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     private static final String SETTINGS = "settings";
     private static final String SYNC_DATA = "sync_data_btn";
     private static final String SYNC_CONFIG = "sync_config_btn";
-    private static final String SYNC_PARAMETERS = "sync_parameters_btn";
     private static final String CLICK = "click";
 
     private final D2 d2;
@@ -162,24 +161,32 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void saveLimitScope(LimitScope limitScope) {
+        String syncParam = "sync_limitScope_save";
+        matomoAnalyticsController.trackEvent(SETTINGS, syncParam, CLICK);
         settingsRepository.saveLimitScope(limitScope);
         checkData.onNext(true);
     }
 
     @Override
     public void saveEventMaxCount(Integer eventsNumber) {
+        String syncParam = "sync_eventMaxCount_save";
+        matomoAnalyticsController.trackEvent(SETTINGS, syncParam, CLICK);
         settingsRepository.saveEventsToDownload(eventsNumber);
         checkData.onNext(true);
     }
 
     @Override
     public void saveTeiMaxCount(Integer teiNumber) {
+        String syncParam = "sync_teiMaxCoung_save";
+        matomoAnalyticsController.trackEvent(SETTINGS, syncParam, CLICK);
         settingsRepository.saveTeiToDownload(teiNumber);
         checkData.onNext(true);
     }
 
     @Override
     public void saveReservedValues(Integer reservedValuesCount) {
+        String syncParam = "sync_reservedValues_save";
+        matomoAnalyticsController.trackEvent(SETTINGS, syncParam, CLICK);
         settingsRepository.saveReservedValuesToDownload(reservedValuesCount);
         checkData.onNext(true);
     }
