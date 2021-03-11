@@ -69,6 +69,7 @@
 
         <ImageView
             android:id="@+id/descriptionLabel"
+            style="@style/ActionIconUnwrap"
             android:layout_width="12dp"
             android:layout_height="0dp"
             android:visibility="@{(description!=null)?View.VISIBLE : View.GONE}"

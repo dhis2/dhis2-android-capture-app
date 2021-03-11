@@ -67,6 +67,7 @@
 
             <ImageView
                 android:id="@+id/descriptionLabel"
+                style="@style/ActionIconUnwrap"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_marginStart="5dp"
