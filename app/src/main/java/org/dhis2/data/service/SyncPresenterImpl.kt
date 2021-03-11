@@ -458,12 +458,11 @@ class SyncPresenterImpl(
     }
 
     override fun updateProyectAnalytics() {
-        d2.settingModule().generalSetting()
-            .blockingGet()?.let {
-            if (it.matomoID()?.toIntOrNull() != null && it.matomoURL() != null) {
+        getSettings()?.let {
+            if (it.matomoID() != null && it.matomoURL() != null) {
                 analyticsHelper.updateMatomoSecondaryTracker(
                     it.matomoURL()!!,
-                    it.matomoID()?.toInt()!!,
+                    it.matomoID()!!,
                     DEFAULT_EXTERNAL_TRACKER_NAME
                 )
             }
