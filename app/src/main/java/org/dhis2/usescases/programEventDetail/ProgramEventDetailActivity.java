@@ -71,6 +71,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public static final String EXTRA_PROGRAM_UID = "PROGRAM_UID";
     private ProgramEventDetailViewModel programEventsViewModel;
     public ProgramEventDetailComponent component;
+    private boolean isMapVisible = false;
 
     public static Bundle getBundle(String programUid) {
         Bundle bundle = new Bundle();
@@ -322,11 +323,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     private void showMap(boolean showMap) {
-        getSupportFragmentManager().beginTransaction().replace(
-                R.id.fragmentContainer,
-                showMap ? new EventMapFragment() : new EventListFragment()
-        ).commitNow();
-        binding.addEventButton.setVisibility(showMap && programEventsViewModel.getWritePermission().getValue() ? GONE : View.VISIBLE);
+        if(isMapVisible != showMap) {
+            isMapVisible = showMap;
+            getSupportFragmentManager().beginTransaction().replace(
+                    R.id.fragmentContainer,
+                    showMap ? new EventMapFragment() : new EventListFragment()
+            ).commitNow();
+            binding.addEventButton.setVisibility(showMap && programEventsViewModel.getWritePermission().getValue() ? GONE : View.VISIBLE);
+        }
     }
 
     @Override
