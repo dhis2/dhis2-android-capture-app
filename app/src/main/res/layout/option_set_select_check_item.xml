@@ -25,8 +25,8 @@
         android:enabled="@{editable}"
         android:text="@{optionName}"
         android:layout_marginEnd="4dp"
-        android:textColor="@{isBgTransparent?@color/text_black_333:@color/colorAccent}"
-        app:buttonTint="@color/text_black_333"
+        app:setTextColor="@{isBgTransparent}"
+        app:tintCheckboxButton="@{isBgTransparent}"
         app:layout_constraintTop_toTopOf="parent"
         tools:checked="true"
         tools:text="Option name" />

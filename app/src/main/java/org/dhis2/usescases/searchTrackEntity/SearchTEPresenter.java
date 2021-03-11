@@ -45,7 +45,12 @@ import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.customviews.OrgUnitDialog;
+import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
+import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.OrgUnitFilter;
+import org.dhis2.utils.filters.PeriodFilter;
+import org.dhis2.utils.filters.SyncStateFilter;
 import org.dhis2.utils.filters.workingLists.TeiFilterToWorkingListItemMapper;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
@@ -122,6 +127,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private boolean isSearching;
     private DhisMapUtils mapUtils;
     private final Flowable<RowAction> fieldProcessor;
+    private DisableHomeFiltersFromSettingsApp disableHomeFilters;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -137,7 +143,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              PreferenceProvider preferenceProvider,
                              TeiFilterToWorkingListItemMapper workingListMapper,
                              FilterRepository filterRepository,
-                             Flowable<RowAction> fieldProcessor) {
+                             Flowable<RowAction> fieldProcessor,
+                             DisableHomeFiltersFromSettingsApp disableHomeFilters) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -153,6 +160,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.workingListMapper = workingListMapper;
         this.eventToEventUiComponent = eventToEventUiComponent;
         this.filterRepository = filterRepository;
+        this.disableHomeFilters = disableHomeFilters;
         compositeDisposable = new CompositeDisposable();
         queryData = new HashMap<>();
         queryProcessor = PublishProcessor.create();
@@ -187,13 +195,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                         filters -> {
-                            if (filters.isEmpty()){
-                                view.hideFilter();
-                            } else {
+                            if (!filters.isEmpty()) {
                                 view.setFilters(filters);
                             }
                         }
-                        ,Timber::e
+                        , Timber::e
                 )
         );
 
@@ -239,7 +245,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         }
                         view.showClearSearch(!queryData.isEmpty());
                     }
-                    }, Timber::d)
+                }, Timber::d)
         );
 
 
@@ -995,12 +1001,23 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
+    public void clearOtherFiltersIfWebAppIsConfig() {
+        List<FilterItem> filters = filterRepository.homeFilters();
+        disableHomeFilters.execute(filters);
+    }
+
+    @Override
     public void checkFilters(boolean listResultIsOk) {
+        boolean hasToShowFilters = !filterRepository.
+                programFilters(currentProgram.blockingFirst()).isEmpty();
+
         if (listResultIsOk) {
-            view.setFiltersVisibility(true);
-        } else {
+            view.setFiltersVisibility(hasToShowFilters);
+        } else if (!listResultIsOk && hasToShowFilters){
             boolean filtersActive = FilterManager.getInstance().getTotalFilters() != 0;
             view.setFiltersVisibility(filtersActive);
+        } else if (!listResultIsOk && !hasToShowFilters){
+            view.setFiltersVisibility(false);
         }
     }
 

@@ -55,4 +55,8 @@ class EventMapPresenter(
     fun programFeatureType(): FeatureType {
         return eventRepository.program().blockingFirst().featureType() ?: FeatureType.NONE
     }
+
+    fun onDestroy() {
+        disposable.clear()
+    }
 }

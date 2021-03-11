@@ -17,6 +17,7 @@ import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataEleme
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
+import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.filters.workingLists.EventFilterToWorkingListItemMapper;
@@ -54,7 +55,7 @@ public class ProgramEventDetailModule {
         return new ProgramEventDetailPresenter(view, programEventDetailRepository, schedulerProvider, filterManager,
                 eventWorkingListMapper,
                 filterRepository,
-                filterPresenter);
+                filterPresenter, new DisableHomeFiltersFromSettingsApp());
     }
 
     @Provides

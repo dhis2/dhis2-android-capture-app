@@ -187,4 +187,11 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
             DrawableCompat.setTint(DrawableCompat.wrap(it), currentItemIndicatorColor)
         }
     }
+
+    override fun onVisibilityChanged(changedView: View, visibility: Int) {
+        super.onVisibilityChanged(changedView, visibility)
+        if (visibility == View.VISIBLE) {
+            setCurrentItemIndicatorPosition(findViewById(selectedItemId), false)
+        }
+    }
 }

@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
+import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.workingLists.EventFilterToWorkingListItemMapper;
 import org.dhis2.utils.filters.workingLists.WorkingListItem;
@@ -31,20 +33,24 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     CompositeDisposable compositeDisposable;
     private FlowableProcessor<Unit> listDataProcessor;
     private EventFilterToWorkingListItemMapper workingListMapper;
-
+    private DisableHomeFiltersFromSettingsApp disableHomFilters;
 
     public ProgramEventDetailPresenter(
             ProgramEventDetailContract.View view,
             @NonNull ProgramEventDetailRepository programEventDetailRepository,
             SchedulerProvider schedulerProvider,
             FilterManager filterManager,
-            EventFilterToWorkingListItemMapper workingListMapper, FilterRepository filterRepository, FilterPresenter filterPresenter) {
+            EventFilterToWorkingListItemMapper workingListMapper,
+            FilterRepository filterRepository,
+            FilterPresenter filterPresenter,
+            DisableHomeFiltersFromSettingsApp disableHomFilters) {
         this.view = view;
         this.eventRepository = programEventDetailRepository;
         this.schedulerProvider = schedulerProvider;
         this.filterManager = filterManager;
         this.workingListMapper = workingListMapper;
         this.filterRepository = filterRepository;
+        this.disableHomFilters = disableHomFilters;
         compositeDisposable = new CompositeDisposable();
         listDataProcessor = PublishProcessor.create();
     }
@@ -117,7 +123,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         );
 
         compositeDisposable.add(
-                filterManager.asFlowable()
+                filterManager.asFlowable().onBackpressureLatest()
                         .doOnNext(filterManager -> view.showFilterProgress())
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
@@ -194,5 +200,11 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                 .flatMapIterable(data -> data)
                 .map(eventFilter -> workingListMapper.map(eventFilter))
                 .toList().blockingGet();
+    }
+
+    @Override
+    public void clearOtherFiltersIfWebAppIsConfig() {
+        List<FilterItem> filters = filterRepository.homeFilters();
+        disableHomFilters.execute(filters);
     }
 }
