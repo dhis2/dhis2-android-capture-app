@@ -336,8 +336,7 @@
 
                     <ImageView
                         android:id="@+id/syncState"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        style="@style/ActionIconNoPadding"
                         android:layout_alignParentEnd="true"
                         android:layout_marginStart="4dp"
                         android:visibility="@{isOnline?View.GONE:View.VISIBLE}"
