@@ -77,9 +77,8 @@
 
         <ImageView
             android:id="@+id/clearSelection"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
+            style="@style/ActionIcon"
+            android:layout_marginEnd="4dp"
             app:tint="@color/icon_color"
             app:layout_constraintBottom_toBottomOf="@+id/viewLayout"
             app:layout_constraintEnd_toEndOf="parent"

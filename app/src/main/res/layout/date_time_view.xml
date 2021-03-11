@@ -101,8 +101,7 @@
 
             <ImageView
                 android:id="@+id/clear_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/ActionIcon"
                 app:layout_constraintEnd_toEndOf="@id/input_layout"
                 app:layout_constraintTop_toTopOf="@id/input_layout"
                 android:layout_gravity="center"

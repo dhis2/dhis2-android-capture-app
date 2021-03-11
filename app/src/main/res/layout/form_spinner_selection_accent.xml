@@ -69,8 +69,7 @@
 
         <ImageView
             android:id="@+id/delete"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            style="@style/ActionIcon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/label"
             android:padding="8dp"

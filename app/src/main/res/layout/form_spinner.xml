@@ -114,6 +114,7 @@
 
             <ImageView
                 android:id="@+id/delete"
+                style="@style/ActionIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:padding="8dp"

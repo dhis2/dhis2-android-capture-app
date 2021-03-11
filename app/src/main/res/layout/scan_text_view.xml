@@ -116,10 +116,8 @@
 
             <ImageView
                 android:id="@+id/delete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/ActionIcon"
                 android:visibility="gone"
-                android:padding="11dp"
                 tools:visibility="visible"
                 app:srcCompat="@drawable/ic_close"
                 app:tint="@color/colorGreyDefault" />
