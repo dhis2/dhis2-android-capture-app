@@ -24,7 +24,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatSpinner;
@@ -823,6 +822,15 @@ public class Bindings {
                 if (drawable != null)
                     DrawableCompat.setTint(drawable, legendValue.getColor());
             }
+        }
+    }
+
+    @BindingAdapter("fabVisibility")
+    public static void setFabVisibility(FloatingActionButton fab, boolean isVisible) {
+        if (isVisible) {
+            fab.show();
+        } else {
+            fab.hide();
         }
     }
 }
