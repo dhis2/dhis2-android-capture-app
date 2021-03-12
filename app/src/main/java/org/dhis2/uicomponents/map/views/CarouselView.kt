@@ -77,14 +77,16 @@ class CarouselView @JvmOverloads constructor(
     }
 
     fun selectFirstItem() {
-        carouselAdapter?.let { adapter ->
-            if (adapter.itemCount > 0) {
-                val feature = mapManager.findFeature(currentItem())
-                if (feature != null) {
-                    mapManager.mapLayerManager.selectFeature(feature)
-                    callback.invoke(feature, true)
-                } else {
-                    callback.invoke(feature, false)
+        if (mapManager.style?.isFullyLoaded == true) {
+            carouselAdapter?.let { adapter ->
+                if (adapter.itemCount > 0) {
+                    val feature = mapManager.findFeature(currentItem())
+                    if (feature != null) {
+                        mapManager.mapLayerManager.selectFeature(feature)
+                        callback.invoke(feature, true)
+                    } else {
+                        callback.invoke(feature, false)
+                    }
                 }
             }
         }
