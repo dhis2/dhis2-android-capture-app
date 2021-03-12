@@ -24,12 +24,14 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
+import org.dhis2.data.server.OpenIdSession;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.ActivityResultObservable;
 import org.dhis2.utils.ActivityResultObserver;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsConstants;
@@ -45,6 +47,7 @@ import java.lang.reflect.Method;
 
 import javax.inject.Inject;
 
+import kotlin.Unit;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
@@ -67,12 +70,14 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     public AnalyticsHelper analyticsHelper;
     @Inject
     public CrashReportController crashReportController;
+    @Inject
+    public OpenIdSession openIdSession;
     private PinDialog pinDialog;
     private boolean comesFromImageSource = false;
 
     private ActivityResultObserver activityResultObserver;
 
-    public void requestEnableLocation(){
+    public void requestEnableLocation() {
         displayMessage(getString(R.string.enable_location_message));
     }
 
@@ -88,6 +93,11 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        openIdSession.setSessionCallback(this, () -> {
+            showSessionExpired();
+            return Unit.INSTANCE;
+        });
+
         FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         if (!getResources().getBoolean(R.bool.is_tablet))
@@ -385,5 +395,29 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     @Override
     public AnalyticsHelper analyticsHelper() {
         return analyticsHelper;
+    }
+
+    private void showSessionExpired() {
+        CustomDialog sessionDialog = new CustomDialog(
+                this,
+                "The session has expired",
+                "Your current session has expired. For security reasons you will need to provide your credentials again",
+                getString(R.string.action_accept),
+                null,
+                Constants.SESSION_DIALOG_RQ,
+                new DialogClickListener() {
+                    @Override
+                    public void onPositive() {
+                        startActivity(LoginActivity.class, null, true, true, null);
+                    }
+
+                    @Override
+                    public void onNegative() {
+
+                    }
+                }
+        );
+        sessionDialog.setCancelable(false);
+        sessionDialog.show();
     }
 }
