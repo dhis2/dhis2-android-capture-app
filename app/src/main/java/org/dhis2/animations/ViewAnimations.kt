@@ -82,8 +82,8 @@ fun View.expand(callback: () -> Unit) {
     startAnimation(a)
 }
 
-fun View.show(){
-    if(visibility != View.VISIBLE){
+fun View.show() {
+    if (visibility != View.VISIBLE) {
         animate()
             .scaleX(1f)
             .scaleY(1f)
@@ -98,8 +98,8 @@ fun View.show(){
     }
 }
 
-fun View.hide(){
-    if(visibility != View.GONE){
+fun View.hide() {
+    if (visibility != View.GONE) {
         animate()
             .scaleX(0f)
             .scaleY(0f)
