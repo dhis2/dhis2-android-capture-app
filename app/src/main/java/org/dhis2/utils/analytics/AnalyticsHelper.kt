@@ -67,4 +67,8 @@ class AnalyticsHelper @Inject constructor(
     private fun logEvent(event: String, bundle: Bundle) {
         analytics.logEvent(event, bundle)
     }
+
+    fun clearMatomoSecondaryTracker() {
+        matomoAnalyticsController.clearDhisImplementation()
+    }
 }

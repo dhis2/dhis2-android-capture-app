@@ -121,7 +121,7 @@ class SyncPresenterTest {
         )
         whenever(
             d2.settingModule().generalSetting().blockingGet()
-        )doReturn GeneralSettings.builder()
+        ) doReturn GeneralSettings.builder()
             .encryptDB(false)
             .matomoID(11111)
             .matomoURL("MatomoURL")
@@ -140,7 +140,7 @@ class SyncPresenterTest {
         )
         whenever(
             d2.settingModule().generalSetting().blockingGet()
-        )doReturn GeneralSettings.builder()
+        ) doReturn GeneralSettings.builder()
             .encryptDB(false)
             .build()
         presenter.syncMetadata { }
@@ -157,10 +157,26 @@ class SyncPresenterTest {
         )
         whenever(
             d2.settingModule().generalSetting().blockingGet()
-        )doReturn null
+        ) doReturn null
         presenter.syncMetadata { }
 
-        verifyZeroInteractions(analyticsHelper)
+        verify(analyticsHelper, times(0)).updateMatomoSecondaryTracker(any(), any(), any())
+    }
+
+    @Test
+    fun `Should clear secondary tracker`() {
+        whenever(
+            d2.metadataModule().download()
+        ) doReturn Observable.fromArray(
+            D2Progress.empty(2)
+        )
+        whenever(
+            d2.settingModule().generalSetting().blockingGet()
+        ) doReturn null
+        presenter.syncMetadata { }
+
+        verify(analyticsHelper, times(0)).updateMatomoSecondaryTracker(any(), any(), any())
+        verify(analyticsHelper).clearMatomoSecondaryTracker()
     }
 
     private fun mockedProgramSettings(

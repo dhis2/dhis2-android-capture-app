@@ -466,6 +466,6 @@ class SyncPresenterImpl(
                     DEFAULT_EXTERNAL_TRACKER_NAME
                 )
             }
-        }
+        } ?: analyticsHelper.clearMatomoSecondaryTracker()
     }
 }
