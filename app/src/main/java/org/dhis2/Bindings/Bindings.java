@@ -37,6 +37,7 @@ import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.R;
+import org.dhis2.animations.ViewAnimationsKt;
 import org.dhis2.data.forms.dataentry.fields.LegendValue;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
@@ -831,6 +832,15 @@ public class Bindings {
             fab.show();
         } else {
             fab.hide();
+        }
+    }
+
+    @BindingAdapter("viewVisibility")
+    public static void setViewVisibility(View view, boolean isVisible){
+        if(isVisible){
+            ViewAnimationsKt.show(view);
+        }else{
+            ViewAnimationsKt.hide(view);
         }
     }
 }
