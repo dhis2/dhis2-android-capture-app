@@ -50,14 +50,11 @@ import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
 
 import static org.dhis2.utils.analytics.AnalyticsConstants.BACK_EVENT;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT;
+import static org.dhis2.utils.analytics.matomo.Actions.CREATE_EVENT;
+import static org.dhis2.utils.analytics.matomo.Categories.EVENT_LIST;
+import static org.dhis2.utils.analytics.matomo.Labels.CLICK;
 
 public class EventInitialPresenter implements EventInitialContract.Presenter {
-
-    private static final String EVENT_LIST = "event_program_list";
-    private static final String CREATE_EVENT = "create_event_next";
-    private static final String CLICK_CREATE = "click";
 
     public static final int ACCESS_LOCATION_PERMISSION_REQUEST = 101;
     private final PreferenceProvider preferences;
@@ -469,6 +466,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     @Override
     public void onEventCreated() {
-        matomoAnalyticsController.trackEvent(EVENT_LIST, CREATE_EVENT, CLICK_CREATE);
+        matomoAnalyticsController.trackEvent(EVENT_LIST, CREATE_EVENT, CLICK);
     }
 }

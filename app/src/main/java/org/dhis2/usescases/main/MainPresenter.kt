@@ -11,6 +11,9 @@ import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.LoginActivity
+import org.dhis2.utils.analytics.matomo.Actions.Companion.SETTINGS
+import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
+import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2
@@ -29,12 +32,6 @@ class MainPresenter(
     private val filterRepository: FilterRepository,
     private val matomoAnalyticsController: MatomoAnalyticsController
 ) {
-
-    companion object {
-        const val HOME_SCREEN = "home"
-        const val SETTINGS = "settings_nav_drawer"
-        const val CLICK_SETTINGS = "click"
-    }
 
     var disposable: CompositeDisposable = CompositeDisposable()
 
@@ -172,6 +169,6 @@ class MainPresenter(
     }
 
     fun onClickSyncManager() {
-        matomoAnalyticsController.trackEvent(HOME_SCREEN, SETTINGS, CLICK_SETTINGS)
+        matomoAnalyticsController.trackEvent(HOME, SETTINGS, CLICK)
     }
 }

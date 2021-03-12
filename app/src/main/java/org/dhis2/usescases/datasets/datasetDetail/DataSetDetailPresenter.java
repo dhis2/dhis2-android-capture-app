@@ -15,11 +15,11 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
 
-public class DataSetDetailPresenter {
+import static org.dhis2.utils.analytics.matomo.Actions.SYNC_DATASET;
+import static org.dhis2.utils.analytics.matomo.Categories.DATASET_LIST;
+import static org.dhis2.utils.analytics.matomo.Labels.CLICK;
 
-    private static final String DATASET_LIST = "dataset_list";
-    private static final String SYNC_DATASET = "sync_dataset_btn";
-    private static final String CLICK_SYNC = "sync";
+public class DataSetDetailPresenter {
 
     private DataSetDetailView view;
     private DataSetDetailRepository dataSetDetailRepository;
@@ -154,7 +154,7 @@ public class DataSetDetailPresenter {
 
 
     public void onSyncIconClick(DataSetDetailModel dataSet) {
-        matomoAnalyticsController.trackEvent(DATASET_LIST, SYNC_DATASET, CLICK_SYNC);
+        matomoAnalyticsController.trackEvent(DATASET_LIST, SYNC_DATASET, CLICK);
         view.showSyncDialog(dataSet);
     }
 

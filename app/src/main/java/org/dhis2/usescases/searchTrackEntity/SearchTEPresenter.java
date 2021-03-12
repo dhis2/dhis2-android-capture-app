@@ -49,9 +49,6 @@ import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
-import org.dhis2.utils.filters.OrgUnitFilter;
-import org.dhis2.utils.filters.PeriodFilter;
-import org.dhis2.utils.filters.SyncStateFilter;
 import org.dhis2.utils.filters.workingLists.TeiFilterToWorkingListItemMapper;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
@@ -63,7 +60,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
-import org.matomo.sdk.Matomo;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -86,16 +82,14 @@ import timber.log.Timber;
 import static android.app.Activity.RESULT_OK;
 import static org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment.TEI_A_UID;
 import static org.dhis2.utils.analytics.AnalyticsConstants.ADD_RELATIONSHIP;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_ENROLL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_RELATIONSHIP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SEARCH_TEI;
+import static org.dhis2.utils.analytics.matomo.Actions.SYNC_TEI;
+import static org.dhis2.utils.analytics.matomo.Categories.TRACKER_LIST;
+import static org.dhis2.utils.analytics.matomo.Labels.CLICK;
 
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
-
-    private static final String TRACKER_PROGRAM_LIST = "tracker_program_list";
-    private static final String SYNC_TEI = "sync_tei_btn";
-    private static final String CLICK_SYNC = "click";
 
     private static final Program ALL_TE_TYPES = null;
     private static final int MAX_NO_SELECTED_PROGRAM_RESULTS = 5;
@@ -876,7 +870,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onSyncIconClick(String teiUid) {
-        matomoAnalyticsController.trackEvent(TRACKER_PROGRAM_LIST, SYNC_TEI, CLICK_SYNC);
+        matomoAnalyticsController.trackEvent(TRACKER_LIST, SYNC_TEI, CLICK);
         view.showSyncDialog(
                 new SyncStatusDialog.Builder()
                         .setConflictType(SyncStatusDialog.ConflictType.TEI)

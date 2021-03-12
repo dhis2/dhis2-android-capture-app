@@ -34,14 +34,12 @@ import timber.log.Timber;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA_NOW;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA_NOW;
+import static org.dhis2.utils.analytics.matomo.Actions.SYNC_CONFIG;
+import static org.dhis2.utils.analytics.matomo.Actions.SYNC_DATA;
+import static org.dhis2.utils.analytics.matomo.Categories.SETTINGS;
 
 
 public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
-
-    private static final String SETTINGS = "settings";
-    private static final String SYNC_DATA = "sync_data_btn";
-    private static final String SYNC_CONFIG = "sync_config_btn";
-    private static final String CLICK = "click";
 
     private final D2 d2;
     private final SchedulerProvider schedulerProvider;

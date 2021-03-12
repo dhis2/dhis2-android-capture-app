@@ -24,12 +24,11 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
+import static org.dhis2.utils.analytics.matomo.Actions.SYNC_EVENT;
+import static org.dhis2.utils.analytics.matomo.Categories.EVENT_LIST;
+import static org.dhis2.utils.analytics.matomo.Labels.CLICK;
+
 public class ProgramEventDetailPresenter implements ProgramEventDetailContract.Presenter {
-
-    private static final String EVENT_LIST = "event_program_list";
-    private static final String SYNC_EVENT = "sync_event_btn";
-    private static final String CLICK_SYNC = "click";
-
 
     private final ProgramEventDetailRepository eventRepository;
     private final SchedulerProvider schedulerProvider;
@@ -154,7 +153,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void onSyncIconClick(String uid) {
-        matomoAnalyticsController.trackEvent(EVENT_LIST, SYNC_EVENT, CLICK_SYNC);
+        matomoAnalyticsController.trackEvent(EVENT_LIST, SYNC_EVENT, CLICK);
         view.showSyncDialog(uid);
     }
 

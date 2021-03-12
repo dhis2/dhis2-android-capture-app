@@ -28,9 +28,11 @@ import org.dhis2.utils.Result
 import org.dhis2.utils.RulesActionCallbacks
 import org.dhis2.utils.RulesUtilsProviderImpl
 import org.dhis2.utils.analytics.AnalyticsHelper
-import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_AND_BACK
 import org.dhis2.utils.analytics.SAVE_ENROLL
+import org.dhis2.utils.analytics.matomo.Actions.Companion.CREATE_TEI
+import org.dhis2.utils.analytics.matomo.Categories.Companion.TRACKER_LIST
+import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
@@ -65,12 +67,6 @@ class EnrollmentPresenterImpl(
     private val sectionProcessor: Flowable<String>,
     private val matomoAnalyticsController: MatomoAnalyticsController
 ) : RulesActionCallbacks {
-
-    companion object {
-        const val TRACKER_LIST = "tracker_program_list"
-        const val CREATE_TEI = "create_tei_save"
-        const val CLICK = "click"
-    }
 
     private val disposable = CompositeDisposable()
     private val optionsToHide = HashMap<String, ArrayList<String>>()
