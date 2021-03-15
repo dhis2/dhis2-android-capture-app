@@ -225,6 +225,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                     setProgramConflictMessage(state)
                 } else if (conflictType == ConflictType.DATA_VALUES) {
                     setDataSetInstanceMessage()
+                } else {
+                    setNoConflictMessage(getString(R.string.server_sync_error))
                 }
             State.SYNCED_VIA_SMS, State.SENT_VIA_SMS ->
                 setNoConflictMessage(getString(R.string.sms_synced_message))
