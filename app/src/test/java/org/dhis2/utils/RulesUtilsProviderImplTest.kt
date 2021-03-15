@@ -288,8 +288,8 @@ class RulesUtilsProviderImplTest {
         verify(actionCallbacks, times(0)).save(testingUid2, "test")
         Assert.assertTrue(testFieldViewModels[testingUid]!!.value().equals("data"))
         Assert.assertTrue(testFieldViewModels[testingUid2]!!.value().equals("test"))
-        Assert.assertTrue(testFieldViewModels[testingUid]!!.editable()!!)
-        Assert.assertTrue(testFieldViewModels[testingUid]!!.editable()!!)
+        Assert.assertTrue(!testFieldViewModels[testingUid]!!.editable()!!)
+        Assert.assertTrue(!testFieldViewModels[testingUid]!!.editable()!!)
     }
 
     @Test
