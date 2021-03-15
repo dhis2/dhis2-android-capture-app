@@ -831,4 +831,6 @@
     <string name="break_glass_hint">Describe the reason here</string>
     <string name="authenticating">Authenticating</string>
     <string name="login_error_no_dhis_instance">Provided server url is not a dhis instance</string>
+    <string name="openid_session_expired">The session has expired</string>
+    <string name="openid_session_expired_message">Your current session has expired. For security reasons you will need to provide your credentials again</string>
 </resources>

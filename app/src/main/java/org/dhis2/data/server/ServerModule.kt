@@ -51,8 +51,8 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun openIdSession(d2: D2, schedulerProvider: SchedulerProvider?): OpenIdSession {
-        return OpenIdSession(d2, schedulerProvider!!)
+    fun openIdSession(d2: D2, schedulerProvider: SchedulerProvider): OpenIdSession {
+        return OpenIdSession(d2, schedulerProvider)
     }
 
     @Provides

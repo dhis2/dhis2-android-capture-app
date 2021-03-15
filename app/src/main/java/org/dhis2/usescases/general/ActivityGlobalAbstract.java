@@ -21,10 +21,11 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
-import org.dhis2.data.server.OpenIdSession;
+import org.dhis2.data.server.ServerComponent;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.splash.SplashActivity;
@@ -70,8 +71,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     public AnalyticsHelper analyticsHelper;
     @Inject
     public CrashReportController crashReportController;
-    @Inject
-    public OpenIdSession openIdSession;
     private PinDialog pinDialog;
     private boolean comesFromImageSource = false;
 
@@ -93,10 +92,13 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        openIdSession.setSessionCallback(this, () -> {
-            showSessionExpired();
-            return Unit.INSTANCE;
-        });
+        ServerComponent serverComponent = ((App) getApplicationContext()).getServerComponent();
+        if (serverComponent != null) {
+            serverComponent.openIdSession().setSessionCallback(this, () -> {
+                showSessionExpired();
+                return Unit.INSTANCE;
+            });
+        }
 
         FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
@@ -400,15 +402,15 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     private void showSessionExpired() {
         CustomDialog sessionDialog = new CustomDialog(
                 this,
-                "The session has expired",
-                "Your current session has expired. For security reasons you will need to provide your credentials again",
+                getString(R.string.openid_session_expired),
+                getString(R.string.openid_session_expired_message),
                 getString(R.string.action_accept),
                 null,
                 Constants.SESSION_DIALOG_RQ,
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
-                        startActivity(LoginActivity.class, null, true, true, null);
+                        startActivity(LoginActivity.class, LoginActivity.Companion.bundle(true), true, true, null);
                     }
 
                     @Override
