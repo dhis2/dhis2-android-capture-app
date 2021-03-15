@@ -28,9 +28,12 @@ import org.dhis2.utils.Result
 import org.dhis2.utils.RulesActionCallbacks
 import org.dhis2.utils.RulesUtilsProviderImpl
 import org.dhis2.utils.analytics.AnalyticsHelper
-import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_AND_BACK
 import org.dhis2.utils.analytics.SAVE_ENROLL
+import org.dhis2.utils.analytics.matomo.Actions.Companion.CREATE_TEI
+import org.dhis2.utils.analytics.matomo.Categories.Companion.TRACKER_LIST
+import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.common.FeatureType
@@ -61,7 +64,8 @@ class EnrollmentPresenterImpl(
     private val analyticsHelper: AnalyticsHelper,
     private val mandatoryWarning: String,
     private val onRowActionProcessor: FlowableProcessor<RowAction>,
-    private val sectionProcessor: Flowable<String>
+    private val sectionProcessor: Flowable<String>,
+    private val matomoAnalyticsController: MatomoAnalyticsController
 ) : RulesActionCallbacks {
 
     private val disposable = CompositeDisposable()
@@ -522,22 +526,25 @@ class EnrollmentPresenterImpl(
 
     fun finish(enrollmentMode: EnrollmentActivity.EnrollmentMode) {
         when (enrollmentMode) {
-            EnrollmentActivity.EnrollmentMode.NEW -> disposable.add(
-                formRepository.autoGenerateEvents()
-                    .flatMap { formRepository.useFirstStageDuringRegistration() }
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe(
-                        {
-                            if (!DhisTextUtils.isEmpty(it.second)) {
-                                view.openEvent(it.second)
-                            } else {
-                                view.openDashboard(it.first)
-                            }
-                        },
-                        { Timber.tag(TAG).e(it) }
-                    )
-            )
+            EnrollmentActivity.EnrollmentMode.NEW -> {
+                matomoAnalyticsController.trackEvent(TRACKER_LIST, CREATE_TEI, CLICK)
+                disposable.add(
+                    formRepository.autoGenerateEvents()
+                        .flatMap { formRepository.useFirstStageDuringRegistration() }
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                            {
+                                if (!DhisTextUtils.isEmpty(it.second)) {
+                                    view.openEvent(it.second)
+                                } else {
+                                    view.openDashboard(it.first)
+                                }
+                            },
+                            { Timber.tag(TAG).e(it) }
+                        )
+                )
+            }
             EnrollmentActivity.EnrollmentMode.CHECK -> view.setResultAndFinish()
         }
     }

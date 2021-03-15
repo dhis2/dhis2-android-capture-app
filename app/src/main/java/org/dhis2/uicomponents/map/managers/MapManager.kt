@@ -1,7 +1,11 @@
 package org.dhis2.uicomponents.map.managers
 
 import android.annotation.SuppressLint
+import android.os.Bundle
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.BoundingBox
@@ -21,7 +25,7 @@ import org.dhis2.uicomponents.map.camera.initCameraToViewAllElements
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.layer.MapLayerManager
 
-abstract class MapManager(val mapView: MapView) {
+abstract class MapManager(val mapView: MapView) : LifecycleObserver {
 
     var map: MapboxMap? = null
     lateinit var mapLayerManager: MapLayerManager
@@ -95,24 +99,46 @@ abstract class MapManager(val mapView: MapView) {
 
     fun isMapReady() = map != null && style?.isFullyLoaded ?: false
 
+    fun onCreate(savedInstanceState: Bundle?) {
+        mapView.onCreate(savedInstanceState)
+    }
+
+    fun onSaveInstanceState(outState: Bundle) {
+        mapView.onSaveInstanceState(outState)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onStart() {
         mapView.onStart()
         map?.locationComponent?.onStart()
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onResume() {
         mapView.onResume()
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun onPause() {
         mapView.onPause()
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    fun onStop() {
+        mapView.onStop()
+    }
+
     @SuppressLint("MissingPermission")
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun onDestroy() {
+        mapView.onDestroy()
         markerViewManager?.onDestroy()
         symbolManager?.onDestroy()
         map?.locationComponent?.onStop()
+    }
+
+    fun onLowMemory() {
+        mapView.onLowMemory()
     }
 
     abstract fun findFeature(source: String, propertyName: String, propertyValue: String): Feature?

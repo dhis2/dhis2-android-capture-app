@@ -147,12 +147,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //---------------------------------------------------------------------------------------------
 
     //region LIFECYCLE
-    @Override
-    protected void onStart() {
-        super.onStart();
-        teiMapManager.onStart();
-    }
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -236,6 +230,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
         updateFiltersSearch(presenter.getQueryData().size());
         teiMapManager = new TeiMapManager(binding.mapView);
+        getLifecycle().addObserver(teiMapManager);
+        teiMapManager.onCreate(savedInstanceState);
         teiMapManager.setTeiFeatureType(presenter.getTrackedEntityType(tEType).featureType());
         teiMapManager.setEnrollmentFeatureType(presenter.getProgram() != null ? presenter.getProgram().featureType() : null);
         teiMapManager.setCarouselAdapter(carouselAdapter);
@@ -270,8 +266,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             initSearchNeeded = true;
         }
 
-        teiMapManager.onResume();
-
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
 
     }
@@ -281,7 +275,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (initSearchNeeded) {
             presenter.onDestroy();
         }
-        teiMapManager.onPause();
         super.onPause();
     }
 
@@ -303,6 +296,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        teiMapManager.onLowMemory();
+    }
+
+    @Override
     public void onBackPressed() {
         if (!ExtensionsKt.isKeyboardOpened(this)) {
             super.onBackPressed();
@@ -320,7 +319,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        binding.mapView.onSaveInstanceState(outState);
+        teiMapManager.onSaveInstanceState(outState);
         outState.putSerializable(Constants.QUERY_DATA, presenter.getQueryData());
     }
 
