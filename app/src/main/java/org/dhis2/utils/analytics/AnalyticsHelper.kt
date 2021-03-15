@@ -21,7 +21,7 @@ class AnalyticsHelper @Inject constructor(
             put(param, value)
         }
 
-        trackMatomoEvent(param, value, event)
+        // trackMatomoEvent(param, value, event)
         setEvent(event, params)
     }
 

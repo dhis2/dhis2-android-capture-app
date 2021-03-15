@@ -75,7 +75,10 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentDatasetDetailBinding.inflate(inflater, container, false)
-        binding.syncStatus.setOnClickListener { openSyncDialog() }
+        binding.syncStatus.setOnClickListener {
+            presenter.onClickSyncStatus()
+            openSyncDialog()
+        }
         return binding.root
     }
 

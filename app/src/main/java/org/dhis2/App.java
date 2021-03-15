@@ -127,7 +127,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         setUpRxPlugin();
         initAcra();
         initCustomCrashActivity();
-        appComponent.matomoController().trackDownload();
     }
 
     private void initCustomCrashActivity() {

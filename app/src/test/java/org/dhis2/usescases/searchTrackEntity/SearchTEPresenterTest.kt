@@ -19,6 +19,7 @@ import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEvents
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent
 import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.dhis2.utils.filters.AssignedFilter
 import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp
 import org.dhis2.utils.filters.FilterItem
@@ -53,6 +54,7 @@ class SearchTEPresenterTest {
     private val workingListMapper: TeiFilterToWorkingListItemMapper = mock()
     private val filterRepository: FilterRepository = mock()
     private val disableHomeFiltersFromSettingsApp: DisableHomeFiltersFromSettingsApp = mock()
+    private val matomoAnalyticsController: MatomoAnalyticsController = mock()
 
     @Before
     fun setUp() {
@@ -79,7 +81,8 @@ class SearchTEPresenterTest {
             workingListMapper,
             filterRepository,
             null,
-            disableHomeFiltersFromSettingsApp
+            disableHomeFiltersFromSettingsApp,
+            matomoAnalyticsController
         )
     }
 
