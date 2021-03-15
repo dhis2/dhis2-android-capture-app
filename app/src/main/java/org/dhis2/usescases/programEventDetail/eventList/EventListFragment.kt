@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
 import javax.inject.Inject
+import org.dhis2.R
 import org.dhis2.databinding.FragmentProgramEventDetailListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
@@ -33,7 +34,7 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
         savedInstanceState: Bundle?
     ): View? {
         (activity as ProgramEventDetailActivity).component.plus(EventListModule(this)).inject(this)
-
+        programEventsViewModel.setProgress(true)
         liveAdapter = ProgramEventDetailLiveAdapter(presenter.program(), programEventsViewModel)
         return FragmentProgramEventDetailListBinding.inflate(inflater, container, false)
             .apply {
@@ -44,6 +45,7 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
 
     override fun onResume() {
         super.onResume()
+        programEventsViewModel.setProgress(true)
         presenter.init()
     }
 
@@ -54,6 +56,7 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
                 programEventsViewModel.setProgress(false)
                 liveAdapter?.submitList(pagedList) {
                     if (binding.recycler.adapter?.itemCount ?: 0 == 0) {
+                        binding.emptyTeis.text = getString(R.string.empty_tei_add)
                         binding.emptyTeis.visibility = View.VISIBLE
                         binding.recycler.visibility = View.GONE
                     } else {

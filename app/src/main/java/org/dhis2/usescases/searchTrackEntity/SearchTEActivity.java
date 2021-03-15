@@ -147,12 +147,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //---------------------------------------------------------------------------------------------
 
     //region LIFECYCLE
-    @Override
-    protected void onStart() {
-        super.onStart();
-        teiMapManager.onStart();
-    }
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -236,6 +230,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
         updateFiltersSearch(presenter.getQueryData().size());
         teiMapManager = new TeiMapManager(binding.mapView);
+        getLifecycle().addObserver(teiMapManager);
+        teiMapManager.onCreate(savedInstanceState);
         teiMapManager.setTeiFeatureType(presenter.getTrackedEntityType(tEType).featureType());
         teiMapManager.setEnrollmentFeatureType(presenter.getProgram() != null ? presenter.getProgram().featureType() : null);
         teiMapManager.setCarouselAdapter(carouselAdapter);
@@ -270,8 +266,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             initSearchNeeded = true;
         }
 
-        teiMapManager.onResume();
-
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
 
     }
@@ -281,7 +275,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (initSearchNeeded) {
             presenter.onDestroy();
         }
-        teiMapManager.onPause();
         super.onPause();
     }
 
@@ -297,7 +290,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         FilterManager.getInstance().clearSorting();
         FilterManager.getInstance().clearAssignToMe();
 
+        presenter.clearOtherFiltersIfWebAppIsConfig();
+
         super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        teiMapManager.onLowMemory();
     }
 
     @Override
@@ -318,7 +319,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        binding.mapView.onSaveInstanceState(outState);
+        teiMapManager.onSaveInstanceState(outState);
         outState.putSerializable(Constants.QUERY_DATA, presenter.getQueryData());
     }
 
@@ -809,7 +810,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         initSet.clone(binding.backdropLayout);
 
         if (backDropActive) {
-            initSet.connect(R.id.mainLayout, ConstraintSet.TOP, general ? R.id.filterRecyclerLayout : R.id.form_recycler, ConstraintSet.BOTTOM, general ? 50 : 0);
+            initSet.connect(R.id.mainLayout, ConstraintSet.TOP, general ? R.id.filterRecyclerLayout : R.id.form_recycler, ConstraintSet.BOTTOM, general ? ExtensionsKt.getDp(16) : 0);
         } else {
             initSet.connect(R.id.mainLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
         }

@@ -24,9 +24,9 @@
         android:layout_height="wrap_content"
         android:enabled="@{editable}"
         android:text="@{optionName}"
-        android:textColor="@{isBgTransparent?@color/text_black_333:@color/colorAccent}"
         android:layout_marginEnd="4dp"
-        app:buttonTint="@color/text_black_333"
+        app:setTextColor="@{isBgTransparent}"
+        app:tintRadioButton="@{isBgTransparent}"
         app:layout_constraintTop_toTopOf="parent"
         tools:checked="true"
         tools:text="Option Name" />

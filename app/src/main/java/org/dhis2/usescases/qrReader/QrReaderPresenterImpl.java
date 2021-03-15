@@ -173,7 +173,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     // LOOK FOR dataElement ON LOCAL DATABASE.
                     // IF FOUND, OPEN DASHBOARD
                     if (d2.dataElementModule().dataElements().uid(attrValue.getString("dataElement")).blockingExists()) {
-                        this.dataJson.add(attrValue);
+                        this.teiDataJson.add(attrValue);
                         DataElement de = d2.dataElementModule().dataElements().uid(attrValue.getString("dataElement")).blockingGet();
                         attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), de.displayFormName(), true));
                     } else {
@@ -454,8 +454,8 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                             enrollmentBuilder.status(EnrollmentStatus.valueOf(enrollmentJson.getString("status")));
                         if (enrollmentJson.has("enrollmentDate"))
                             enrollmentBuilder.enrollmentDate(DateUtils.databaseDateFormat().parse(enrollmentJson.getString("enrollmentDate")));
-                        if (enrollmentJson.has("dateOfIncident"))
-                            enrollmentBuilder.incidentDate(DateUtils.databaseDateFormat().parse(enrollmentJson.getString("incidentDate ")));
+                        if (enrollmentJson.has("incidentDate"))
+                            enrollmentBuilder.incidentDate(DateUtils.databaseDateFormat().parse(enrollmentJson.getString("incidentDate")));
                         if (enrollmentJson.has("organisationUnit"))
                             enrollmentBuilder.organisationUnit(enrollmentJson.getString("organisationUnit"));
                         if (enrollmentJson.has("trackedEntityInstance"))

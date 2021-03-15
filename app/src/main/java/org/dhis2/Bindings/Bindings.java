@@ -24,6 +24,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatSpinner;
@@ -37,6 +38,7 @@ import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.KeyboardActionType;
 import org.dhis2.data.forms.dataentry.fields.LegendValue;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
@@ -68,6 +70,9 @@ import java.util.List;
 
 import timber.log.Timber;
 
+import static android.view.inputmethod.EditorInfo.IME_ACTION_DONE;
+import static android.view.inputmethod.EditorInfo.IME_ACTION_NEXT;
+import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_ENTER_ACTION;
 import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
 
 
@@ -633,6 +638,7 @@ public class Bindings {
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
                 if (position != 0) {
                     itemFilter.selectCatOptionCombo(position - 1);
+                    spinner.setSelection(0);
                 }
             }
 
@@ -779,38 +785,58 @@ public class Bindings {
     @BindingAdapter("requestFocus")
     public static void requestFocus(EditText editText, boolean focused) {
         if (focused) {
-                editText.setFocusableInTouchMode(true);
-                editText.requestFocus();
-                openKeyboard(editText);
+            editText.requestFocus();
         } else {
             editText.clearFocus();
         }
     }
 
+    @BindingAdapter("setImeOption")
+    public static void setImeOption(EditText editText, KeyboardActionType type) {
+        if (type != null) {
+            switch (type) {
+                case NEXT:
+                    editText.setImeOptions(IME_ACTION_NEXT);
+                    break;
+                case DONE:
+                    editText.setImeOptions(IME_ACTION_DONE);
+                    break;
+                case ENTER:
+                    editText.setImeOptions(IME_FLAG_NO_ENTER_ACTION);
+                    break;
+            }
+        }
+    }
+
     @BindingAdapter("checkListener")
-    public static void checkListener(RadioGroup radioGroup, RadioButtonViewModel viewModel){
+    public static void checkListener(RadioGroup radioGroup, RadioButtonViewModel viewModel) {
         radioGroup.setOnCheckedChangeListener(null);
-        if(viewModel.isAffirmativeChecked()){
+        if (viewModel.isAffirmativeChecked()) {
             radioGroup.check(R.id.yes);
-        }else if(viewModel.isNegativeChecked()){
+        } else if (viewModel.isNegativeChecked()) {
             radioGroup.check(R.id.no);
-        }else{
+        } else {
             radioGroup.clearCheck();
         }
         radioGroup.setOnCheckedChangeListener((radioGroup1, checkedId) -> {
-            if(checkedId == R.id.yes){
+            if (checkedId == R.id.yes) {
                 viewModel.onValueChanged(true);
-            }else if(checkedId == R.id.no){
+            } else if (checkedId == R.id.no) {
                 viewModel.onValueChanged(false);
             }
         });
     }
 
+    @BindingAdapter("clipCorners")
+    public static void setClipCorners(View view, int cornerRadiusInDp) {
+        ViewExtensionsKt.clipWithRoundedCorners(view, ExtensionsKt.getDp(cornerRadiusInDp));
+    }
+
     @BindingAdapter("legendValue")
     public static void setLegend(TextView textView, LegendValue legendValue) {
-        if(legendValue!=null) {
+        if (legendValue != null) {
             Drawable bg = textView.getBackground();
-            DrawableCompat.setTint(bg, ColorUtils.withAlpha(legendValue.getColor(),38));
+            DrawableCompat.setTint(bg, ColorUtils.withAlpha(legendValue.getColor(), 38));
             Drawable[] drawables = textView.getCompoundDrawables();
             for (Drawable drawable : drawables) {
                 if (drawable != null)

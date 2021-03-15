@@ -71,6 +71,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public static final String EXTRA_PROGRAM_UID = "PROGRAM_UID";
     private ProgramEventDetailViewModel programEventsViewModel;
     public ProgramEventDetailComponent component;
+    private boolean isMapVisible = false;
 
     public static Bundle getBundle(String programUid) {
         Bundle bundle = new Bundle();
@@ -92,10 +93,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_list_view:
-                    showMap(false);
+                    if(isMapVisible) {
+                        showMap(false);
+                    }
                     return true;
                 case R.id.navigation_map_view:
-                    showMap(true);
+                    if(!isMapVisible) {
+                        showMap(true);
+                    }
                     return true;
                 default:
                     return false;
@@ -163,6 +168,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         FilterManager.getInstance().clearCatOptCombo();
         FilterManager.getInstance().clearWorkingList(false);
         FilterManager.getInstance().clearAssignToMe();
+        presenter.clearOtherFiltersIfWebAppIsConfig();
     }
 
     @Override
@@ -322,6 +328,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     private void showMap(boolean showMap) {
+        isMapVisible = showMap;
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.fragmentContainer,
                 showMap ? new EventMapFragment() : new EventListFragment()

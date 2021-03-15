@@ -1,5 +1,7 @@
 package org.dhis2.usescases.searchTrackEntity
 
+import androidx.databinding.ObservableField
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
@@ -17,7 +19,14 @@ import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEvents
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent
 import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.dhis2.utils.filters.AssignedFilter
+import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp
+import org.dhis2.utils.filters.FilterItem
 import org.dhis2.utils.filters.FilterManager
+import org.dhis2.utils.filters.Filters
+import org.dhis2.utils.filters.ProgramType
+import org.dhis2.utils.filters.sorting.SortingItem
 import org.dhis2.utils.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.Program
@@ -44,6 +53,8 @@ class SearchTEPresenterTest {
     private val dhisMapUtils: DhisMapUtils = mock()
     private val workingListMapper: TeiFilterToWorkingListItemMapper = mock()
     private val filterRepository: FilterRepository = mock()
+    private val disableHomeFiltersFromSettingsApp: DisableHomeFiltersFromSettingsApp = mock()
+    private val matomoAnalyticsController: MatomoAnalyticsController = mock()
 
     @Before
     fun setUp() {
@@ -69,7 +80,9 @@ class SearchTEPresenterTest {
             preferenceProvider,
             workingListMapper,
             filterRepository,
-            null
+            null,
+            disableHomeFiltersFromSettingsApp,
+            matomoAnalyticsController
         )
     }
 
@@ -299,12 +312,34 @@ class SearchTEPresenterTest {
 
     @Test
     fun `Should show filters if list is ok`() {
+        val observableSortingInject = ObservableField<SortingItem>()
+        val observableOpenFilter = ObservableField<Filters>()
+        whenever(filterRepository.programFilters(any())) doReturn
+            listOf(
+                AssignedFilter(
+                    ProgramType.TRACKER,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    "asignToMe"
+                )
+            )
         presenter.checkFilters(true)
         verify(view, times(1)).setFiltersVisibility(true)
     }
 
     @Test
     fun `Should show filters if list is not ok but filters are active`() {
+        val observableSortingInject = ObservableField<SortingItem>()
+        val observableOpenFilter = ObservableField<Filters>()
+        whenever(filterRepository.programFilters(any())) doReturn
+            listOf(
+                AssignedFilter(
+                    ProgramType.TRACKER,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    "asignToMe"
+                )
+            )
         FilterManager.clearAll()
         FilterManager.getInstance().setAssignedToMe(true)
         presenter.checkFilters(false)
@@ -316,5 +351,15 @@ class SearchTEPresenterTest {
         FilterManager.clearAll()
         presenter.checkFilters(false)
         verify(view, times(1)).setFiltersVisibility(false)
+    }
+
+    @Test
+    fun `Should clear other filters if webapp is config`() {
+        val list = listOf<FilterItem>()
+        whenever(filterRepository.homeFilters()) doReturn listOf()
+
+        presenter.clearOtherFiltersIfWebAppIsConfig()
+
+        verify(disableHomeFiltersFromSettingsApp).execute(list)
     }
 }

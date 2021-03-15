@@ -829,4 +829,7 @@
     <string name="break_glass_dialog_description">You must provide a reason to check for enrollment in this protected program. All activity will be logged.</string>
     <string name="break_glass_reason">Reason to check for enrollment</string>
     <string name="break_glass_hint">Describe the reason here</string>
+    <string name="authenticating">Authenticating</string>
+    <string name="login_error_no_dhis_instance">Provided server url is not a dhis instance</string>
+    <string name="invalid_integer">Value must be an integer</string>
 </resources>

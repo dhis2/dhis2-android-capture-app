@@ -136,6 +136,10 @@ public class EventInitialContract {
         List<CategoryOption> getCatOptions(String categoryUid);
 
         void setChangingCoordinates(boolean changingCoordinates);
+
+        boolean getCompletionPercentageVisibility();
+
+        void onEventCreated();
     }
 
 }

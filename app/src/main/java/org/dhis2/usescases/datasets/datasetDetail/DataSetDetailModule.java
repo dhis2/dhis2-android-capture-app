@@ -32,6 +32,8 @@ import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
+import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.filters.ProgramType;
@@ -57,8 +59,11 @@ public class DataSetDetailModule {
     DataSetDetailPresenter providesPresenter(DataSetDetailRepository dataSetDetailRepository,
                                              SchedulerProvider schedulerProvider,
                                              FilterManager filterManager,
-                                             FilterRepository filterRepository) {
-        return new DataSetDetailPresenter(view, dataSetDetailRepository, schedulerProvider, filterManager, filterRepository);
+                                             FilterRepository filterRepository,
+                                             DisableHomeFiltersFromSettingsApp disableHomeFiltersFromSettingsApp,
+                                             MatomoAnalyticsController matomoAnalyticsController) {
+        return new DataSetDetailPresenter(view, dataSetDetailRepository, schedulerProvider, filterManager, filterRepository,
+                disableHomeFiltersFromSettingsApp, matomoAnalyticsController);
     }
 
     @Provides
@@ -71,5 +76,11 @@ public class DataSetDetailModule {
     @PerActivity
     FiltersAdapter provideNewFiltersAdapter() {
         return new FiltersAdapter();
+    }
+
+    @Provides
+    @PerActivity
+    DisableHomeFiltersFromSettingsApp provideDisableHomeFiltersFromSettingsApp() {
+        return new DisableHomeFiltersFromSettingsApp();
     }
 }

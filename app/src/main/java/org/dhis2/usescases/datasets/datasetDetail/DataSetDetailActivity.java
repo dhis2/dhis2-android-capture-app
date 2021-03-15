@@ -236,4 +236,10 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     public void hideFilters() {
         binding.filter.setVisibility(View.GONE);
     }
+
+    @Override
+    protected void onDestroy() {
+        presenter.clearFilterIfDatasetConfig();
+        super.onDestroy();
+    }
 }

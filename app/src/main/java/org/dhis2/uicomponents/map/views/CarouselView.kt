@@ -55,7 +55,7 @@ class CarouselView @JvmOverloads constructor(
                         callback.invoke(null, false)
                     }
                     if (newState == SCROLL_STATE_IDLE && carouselEnabled) {
-                        mapManager.mapLayerManager.selectFeature(null)
+                        mapManager.requestMapLayerManager()?.selectFeature(null)
                         val features = mapManager.findFeatures(currentItem())
                         if (features != null && features.isNotEmpty() && features.size > 1) {
                             mapManager.map?.centerCameraOnFeatures(features)
@@ -77,14 +77,16 @@ class CarouselView @JvmOverloads constructor(
     }
 
     fun selectFirstItem() {
-        carouselAdapter?.let { adapter ->
-            if (adapter.itemCount > 0) {
-                val feature = mapManager.findFeature(currentItem())
-                if (feature != null) {
-                    mapManager.mapLayerManager.selectFeature(feature)
-                    callback.invoke(feature, true)
-                } else {
-                    callback.invoke(feature, false)
+        if (mapManager.style?.isFullyLoaded == true) {
+            carouselAdapter?.let { adapter ->
+                if (adapter.itemCount > 0) {
+                    val feature = mapManager.findFeature(currentItem())
+                    if (feature != null) {
+                        mapManager.mapLayerManager.selectFeature(feature)
+                        callback.invoke(feature, true)
+                    } else {
+                        callback.invoke(feature, false)
+                    }
                 }
             }
         }

@@ -1,16 +1,22 @@
 package org.dhis2.usescases.searchte.robot
 
+import android.widget.RadioButton
+import androidx.appcompat.widget.AppCompatRadioButton
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withChild
+import androidx.test.espresso.matcher.ViewMatchers.withClassName
+import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
+import androidx.test.espresso.matcher.ViewMatchers.withTagValue
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
@@ -19,7 +25,10 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.dateIsInRange
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.utils.filters.FilterHolder
+import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.containsString
+import org.hamcrest.Matchers.instanceOf
 
 fun filterRobot(filterRobot: FilterRobot.() -> Unit) {
     FilterRobot().apply {
@@ -28,6 +37,16 @@ fun filterRobot(filterRobot: FilterRobot.() -> Unit) {
 }
 
 class FilterRobot : BaseRobot() {
+
+    fun clickOnEnrollmentDateFilter() {
+        val tag = "DATE OF ENROLLMENT"
+        onView(allOf(withId(R.id.filterLayout), hasDescendant(withText(tag)))).perform(click())
+    }
+
+    fun clickOnTodayEnrollmentDate(){
+        onView(allOf(withId(R.id.today),
+            withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))).perform(click())
+    }
 
     fun clickOnFilter() {
         onView(withId(R.id.search_filter_general)).perform(click())
@@ -52,7 +71,7 @@ class FilterRobot : BaseRobot() {
             .perform(actionOnItem<FilterHolder>(hasDescendant(withText(filter)), clickChildViewWithId(R.id.filterArrow)))
     }
 
-    fun closeSearchForm () {
+    fun closeSearchForm() {
         onView(withId(R.id.close_filter)).perform(click())
     }
 

@@ -61,9 +61,6 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SHARE_TEI;
 import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_QR;
 import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_SHARE;
 
-/**
- * QUADRAM. Created by ppajuelo on 09/04/2019.
- */
 public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     private final D2 d2;
@@ -76,13 +73,14 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private final String enrollmentUid;
     private final RuleEngineRepository ruleEngineRepository;
     private final FilterManager filterManager;
-    private String programUid;
     private final String teiUid;
-    private TEIDataContracts.View view;
-    private CompositeDisposable compositeDisposable;
+    private final TEIDataContracts.View view;
+    private final CompositeDisposable compositeDisposable;
+    private final FilterRepository filterRepository;
+
+    private String programUid;
     private DashboardProgramModel dashboardModel;
     private String currentStage = null;
-    private FilterRepository filterRepository;
 
     public TEIDataPresenterImpl(TEIDataContracts.View view, D2 d2,
                                 DashboardRepository dashboardRepository,
@@ -119,7 +117,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(filters -> {
-                                    if (filters.isEmpty()){
+                                    if (filters.isEmpty()) {
                                         view.hideFilters();
                                     } else {
                                         view.setFilters(filters);
@@ -286,20 +284,18 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void getCatComboOptions(Event event) {
-        compositeDisposable.add(
-                dashboardRepository.catComboForProgram(event.program())
-                        .flatMap(categoryCombo -> dashboardRepository.catOptionCombos(categoryCombo.uid()),
-                                Pair::create
-                        )
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(categoryComboListPair -> {
-                                    for (ProgramStage programStage : dashboardModel.getProgramStages()) {
-                                        if (event.programStage().equals(programStage.uid()))
-                                            view.showCatComboDialog(event.uid(), categoryComboListPair.val0(), categoryComboListPair.val1());
-                                    }
-                                },
-                                Timber::e));
+        if (dashboardRepository.isStageFromProgram(event.programStage())) {
+            compositeDisposable.add(
+                    dashboardRepository.catComboForProgram(event.program())
+                            .filter(categoryCombo -> categoryCombo.isDefault() != Boolean.TRUE && !categoryCombo.name().equals("default"))
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
+                            .subscribe(categoryCombo ->
+                                            view.showCatComboDialog(event.uid(),
+                                                    event.eventDate() == null ? event.dueDate() : event.eventDate(),
+                                                    categoryCombo.uid()),
+                                    Timber::e));
+        }
     }
 
     @Override

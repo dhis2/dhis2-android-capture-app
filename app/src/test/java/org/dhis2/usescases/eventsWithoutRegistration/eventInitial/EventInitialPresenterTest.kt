@@ -10,6 +10,7 @@ import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository
 import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -22,6 +23,7 @@ class EventInitialPresenterTest {
     val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     val preferences: PreferenceProvider = mock()
     val analyticsHelper: AnalyticsHelper = mock()
+    private val matomoAnalyticsController: MatomoAnalyticsController = mock()
 
     @Before
     fun setUp() {
@@ -31,7 +33,8 @@ class EventInitialPresenterTest {
             eventInitialRepository,
             schedulers,
             preferences,
-            analyticsHelper
+            analyticsHelper,
+            matomoAnalyticsController
         )
     }
 

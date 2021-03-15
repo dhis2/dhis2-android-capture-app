@@ -92,6 +92,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         relationshipAdapter = new RelationshipAdapter(presenter);
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
         relationshipMapManager = new RelationshipMapManager(binding.mapView);
+        getLifecycle().addObserver(relationshipMapManager);
+        relationshipMapManager.onCreate(savedInstanceState);
         relationshipMapManager.setOnMapClickListener(this);
         relationshipMapManager.init(() -> Unit.INSTANCE, (permissionManager) -> {
             permissionManager.requestLocationPermissions(activity);
@@ -116,6 +118,12 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        relationshipMapManager.onSaveInstanceState(outState);
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (binding.mapView.getVisibility() == View.VISIBLE && relationshipMapManager.getPermissionsManager() != null) {
             relationshipMapManager.getPermissionsManager().onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -129,20 +137,18 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
             animations.initMapLoading(binding.mapCarousel);
         }
         presenter.init();
-        relationshipMapManager.onResume();
     }
 
     @Override
     public void onPause() {
         presenter.onDettach();
-        relationshipMapManager.onPause();
         super.onPause();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        relationshipMapManager.onDestroy();
+    public void onLowMemory() {
+        super.onLowMemory();
+        relationshipMapManager.onLowMemory();
     }
 
     @Override

@@ -22,6 +22,9 @@ import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp
+import org.dhis2.utils.filters.FilterItem
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
 import org.dhis2.utils.filters.sorting.SortingItem
@@ -52,6 +55,8 @@ class ProgramEventDetailPresenterTest {
     private val filterManager: FilterManager = FilterManager.getInstance()
     private val workingListMapper: EventFilterToWorkingListItemMapper = mock()
     private val filterPresenter: FilterPresenter = mock()
+    private val disableHomeFilters: DisableHomeFiltersFromSettingsApp = mock()
+    private val matomoAnalyticsController: MatomoAnalyticsController = mock()
 
     @Before
     fun setUp() {
@@ -64,7 +69,9 @@ class ProgramEventDetailPresenterTest {
             filterManager,
             workingListMapper,
             filterRepository,
-            filterPresenter
+            filterPresenter,
+            disableHomeFilters,
+            matomoAnalyticsController
         )
     }
 
@@ -175,6 +182,16 @@ class ProgramEventDetailPresenterTest {
     fun `Should clear all filters when reset filter button is clicked`() {
         presenter.clearFilterClick()
         assertTrue(filterManager.totalFilters == 0)
+    }
+
+    @Test
+    fun `Should clear other filters if webapp is config`() {
+        val list = listOf<FilterItem>()
+        whenever(filterRepository.homeFilters()) doReturn listOf()
+
+        presenter.clearOtherFiltersIfWebAppIsConfig()
+
+        verify(disableHomeFilters).execute(list)
     }
 
     private fun dummyCategoryCombo() = CategoryCombo.builder().uid("uid").build()

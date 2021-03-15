@@ -30,6 +30,17 @@ class ValueStoreTest {
 
     @Test
     fun `Trying to save an unique attribute should return a valid response`() {
+        mockCheckUniqueFilter()
+
+        val testSubscriber = attrValueStore.save("uid", "uniqueValue").test()
+
+        testSubscriber.assertValueCount(1)
+        testSubscriber.assertValue {
+            it.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_NOT_UNIQUE
+        }
+    }
+
+    private fun mockCheckUniqueFilter() {
         whenever(
             d2.trackedEntityModule().trackedEntityAttributes().uid("uid").blockingGet()
         ) doReturn mockedUniqueAttribute()
@@ -39,23 +50,33 @@ class ValueStoreTest {
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid").byValue()
+                .byTrackedEntityAttribute().eq("uid")
+                .byTrackedEntityInstance()
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid").byValue().eq("uniqueValue")
+                .byTrackedEntityAttribute().eq("uid")
+                .byTrackedEntityInstance().neq("recordUid")
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid").byValue().eq("uniqueValue").blockingGet()
+                .byTrackedEntityAttribute().eq("uid")
+                .byTrackedEntityInstance().neq("recordUid")
+                .byValue()
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributeValues()
+                .byTrackedEntityAttribute().eq("uid")
+                .byTrackedEntityInstance().neq("recordUid")
+                .byValue().eq("uniqueValue")
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributeValues()
+                .byTrackedEntityAttribute().eq("uid")
+                .byTrackedEntityInstance().neq("recordUid")
+                .byValue().eq("uniqueValue")
+                .blockingGet()
         ) doReturn mockedAttributeValueList()
-
-        val testSubscriber = attrValueStore.save("uid", "uniqueValue").test()
-
-        testSubscriber.assertValueCount(1)
-        testSubscriber.assertValue {
-            it.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_NOT_UNIQUE
-        }
     }
 
     @Test

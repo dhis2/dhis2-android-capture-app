@@ -44,4 +44,5 @@ interface MatomoAnalyticsController {
     )
 
     fun trackDownload()
+    fun clearDhisImplementation()
 }
