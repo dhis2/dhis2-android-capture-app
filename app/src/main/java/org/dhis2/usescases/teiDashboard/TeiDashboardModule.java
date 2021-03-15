@@ -77,11 +77,10 @@ public class TeiDashboardModule {
     @Provides
     @PerActivity
     FormRepository formRepository(
-            @NonNull RuleExpressionEvaluator evaluator,
             @NonNull RulesRepository rulesRepository,
             D2 d2) {
         String enrollmentUidToUse = enrollmentUid != null ? enrollmentUid : "";
-        return new EnrollmentFormRepository(evaluator, rulesRepository, enrollmentUidToUse, d2);
+        return new EnrollmentFormRepository(rulesRepository, enrollmentUidToUse, d2);
     }
 
     @Provides

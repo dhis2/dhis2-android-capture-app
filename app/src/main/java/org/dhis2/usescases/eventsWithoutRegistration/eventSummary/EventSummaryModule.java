@@ -13,7 +13,6 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import dagger.Module;
 import dagger.Provides;
@@ -63,10 +62,9 @@ public class EventSummaryModule {
     }
 
     @Provides
-    FormRepository formRepository(@NonNull RuleExpressionEvaluator evaluator,
-                                  @NonNull RulesRepository rulesRepository,
+    FormRepository formRepository(@NonNull RulesRepository rulesRepository,
                                   @NonNull D2 d2) {
-        return new EventRepository(evaluator, rulesRepository, eventUid, d2);
+        return new EventRepository(rulesRepository, eventUid, d2);
     }
 
     @Provides

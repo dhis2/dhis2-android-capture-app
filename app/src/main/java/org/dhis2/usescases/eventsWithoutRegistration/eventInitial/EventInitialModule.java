@@ -19,7 +19,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRe
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.rules.RuleExpressionEvaluator;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -71,10 +71,9 @@ public class EventInitialModule {
     }
 
     @Provides
-    FormRepository formRepository(@NonNull RuleExpressionEvaluator evaluator,
-                                  @NonNull RulesRepository rulesRepository,
+    FormRepository formRepository(@NonNull RulesRepository rulesRepository,
                                   @NonNull D2 d2) {
-        return new EventRepository(evaluator, rulesRepository, eventUid, d2);
+        return new EventRepository(rulesRepository, eventUid, d2);
     }
 
     @Provides
