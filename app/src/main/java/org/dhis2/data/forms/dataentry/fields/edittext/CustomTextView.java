@@ -416,6 +416,12 @@ public class CustomTextView extends FieldLayout {
                         return false;
                     }
                 case INTEGER:
+                    if (validator.validate(editText.getText().toString()))
+                        return true;
+                    else {
+                        inputLayout.setError(editText.getContext().getString(R.string.invalid_integer));
+                        return false;
+                    }
                 case NUMBER:
                     if (validator.validate(editText.getText().toString()))
                         return true;
@@ -500,7 +506,7 @@ public class CustomTextView extends FieldLayout {
         binding.setVariable(BR.focus, viewModel.activated());
         binding.setVariable(BR.legend, viewModel.legendValue());
         setDescription(viewModel.description());
-        setText(withValueTypeCheck(viewModel.value(), viewModel.valueType()));
+        setText(viewModel.value());
         setWarning(viewModel.warning(), viewModel.error());
         if (!viewModel.isSearchMode() && viewModel.value() != null &&
                 !Objects.requireNonNull(viewModel.value()).isEmpty() &&

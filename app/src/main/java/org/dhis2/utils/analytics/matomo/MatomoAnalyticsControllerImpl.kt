@@ -141,4 +141,8 @@ class MatomoAnalyticsControllerImpl(
             TrackHelper.track().download().identifier(apkChecksum).with(it)
         }
     }
+
+    override fun clearDhisImplementation() {
+        dhisImplementationTracker = null
+    }
 }

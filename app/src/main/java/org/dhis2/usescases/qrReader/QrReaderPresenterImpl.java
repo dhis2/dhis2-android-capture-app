@@ -454,8 +454,8 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                             enrollmentBuilder.status(EnrollmentStatus.valueOf(enrollmentJson.getString("status")));
                         if (enrollmentJson.has("enrollmentDate"))
                             enrollmentBuilder.enrollmentDate(DateUtils.databaseDateFormat().parse(enrollmentJson.getString("enrollmentDate")));
-                        if (enrollmentJson.has("dateOfIncident"))
-                            enrollmentBuilder.incidentDate(DateUtils.databaseDateFormat().parse(enrollmentJson.getString("incidentDate ")));
+                        if (enrollmentJson.has("incidentDate"))
+                            enrollmentBuilder.incidentDate(DateUtils.databaseDateFormat().parse(enrollmentJson.getString("incidentDate")));
                         if (enrollmentJson.has("organisationUnit"))
                             enrollmentBuilder.organisationUnit(enrollmentJson.getString("organisationUnit"));
                         if (enrollmentJson.has("trackedEntityInstance"))

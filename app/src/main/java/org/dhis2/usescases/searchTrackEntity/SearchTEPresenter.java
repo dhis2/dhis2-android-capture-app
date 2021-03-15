@@ -44,13 +44,11 @@ import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
-import org.dhis2.utils.filters.OrgUnitFilter;
-import org.dhis2.utils.filters.PeriodFilter;
-import org.dhis2.utils.filters.SyncStateFilter;
 import org.dhis2.utils.filters.workingLists.TeiFilterToWorkingListItemMapper;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
@@ -84,10 +82,12 @@ import timber.log.Timber;
 import static android.app.Activity.RESULT_OK;
 import static org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment.TEI_A_UID;
 import static org.dhis2.utils.analytics.AnalyticsConstants.ADD_RELATIONSHIP;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_ENROLL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_RELATIONSHIP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SEARCH_TEI;
+import static org.dhis2.utils.analytics.matomo.Actions.SYNC_TEI;
+import static org.dhis2.utils.analytics.matomo.Categories.TRACKER_LIST;
+import static org.dhis2.utils.analytics.matomo.Labels.CLICK;
 
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
@@ -128,6 +128,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private DhisMapUtils mapUtils;
     private final Flowable<RowAction> fieldProcessor;
     private DisableHomeFiltersFromSettingsApp disableHomeFilters;
+    private MatomoAnalyticsController matomoAnalyticsController;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -144,7 +145,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              TeiFilterToWorkingListItemMapper workingListMapper,
                              FilterRepository filterRepository,
                              Flowable<RowAction> fieldProcessor,
-                             DisableHomeFiltersFromSettingsApp disableHomeFilters) {
+                             DisableHomeFiltersFromSettingsApp disableHomeFilters,
+                             MatomoAnalyticsController matomoAnalyticsController) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -161,6 +163,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.eventToEventUiComponent = eventToEventUiComponent;
         this.filterRepository = filterRepository;
         this.disableHomeFilters = disableHomeFilters;
+        this.matomoAnalyticsController = matomoAnalyticsController;
         compositeDisposable = new CompositeDisposable();
         queryData = new HashMap<>();
         queryProcessor = PublishProcessor.create();
@@ -867,6 +870,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onSyncIconClick(String teiUid) {
+        matomoAnalyticsController.trackEvent(TRACKER_LIST, SYNC_TEI, CLICK);
         view.showSyncDialog(
                 new SyncStatusDialog.Builder()
                         .setConflictType(SyncStatusDialog.ConflictType.TEI)

@@ -21,7 +21,7 @@ class AnalyticsHelper @Inject constructor(
             put(param, value)
         }
 
-        trackMatomoEvent(param, value, event)
+        // trackMatomoEvent(param, value, event)
         setEvent(event, params)
     }
 
@@ -56,12 +56,19 @@ class AnalyticsHelper @Inject constructor(
         logEvent(event, bundle)
     }
 
-    fun updateMatomoSecondaryTracker(any: Any) {
-        // TODO: finish when SDK provides matomo configuration
-//        matomoAnalyticsController.updateDhisImplementationTracker()
+    fun updateMatomoSecondaryTracker(matomoUrl: String, matomoID: Int, trackerName: String) {
+        matomoAnalyticsController.updateDhisImplementationTracker(
+            matomoUrl,
+            matomoID,
+            trackerName
+        )
     }
 
     private fun logEvent(event: String, bundle: Bundle) {
         analytics.logEvent(event, bundle)
+    }
+
+    fun clearMatomoSecondaryTracker() {
+        matomoAnalyticsController.clearDhisImplementation()
     }
 }

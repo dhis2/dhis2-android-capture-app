@@ -22,6 +22,7 @@ import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp
 import org.dhis2.utils.filters.FilterItem
 import org.dhis2.utils.filters.FilterManager
@@ -55,6 +56,7 @@ class ProgramEventDetailPresenterTest {
     private val workingListMapper: EventFilterToWorkingListItemMapper = mock()
     private val filterPresenter: FilterPresenter = mock()
     private val disableHomeFilters: DisableHomeFiltersFromSettingsApp = mock()
+    private val matomoAnalyticsController: MatomoAnalyticsController = mock()
 
     @Before
     fun setUp() {
@@ -68,7 +70,8 @@ class ProgramEventDetailPresenterTest {
             workingListMapper,
             filterRepository,
             filterPresenter,
-            disableHomeFilters
+            disableHomeFilters,
+            matomoAnalyticsController
         )
     }
 
