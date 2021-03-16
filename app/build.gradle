@@ -83,6 +83,9 @@ android {
     }
 
     buildTypes {
+
+        def bitriseSentryDSN = System.getenv("SENTRY_DSN") != null ? System.getenv("SENTRY_DSN") : ""
+
         debug {
             // custom application suffix which allows to
             // install debug and release builds at the same time
@@ -104,6 +107,13 @@ android {
             buildConfigField "String", "ACRA_USER", "\"$acraUserDebug\""
             buildConfigField "String", "ACRA_PASSWORD", "\"$acraPassDebug\""
             buildConfigField "int", "MATOMO_ID", "2"
+
+            //Sentry variables
+            manifestPlaceholders = [
+                    sentry_dsn        : bitriseSentryDSN,
+                    sentry_environment: "debug",
+                    sentry_debug      : "true"
+            ]
         }
         release {
             minifyEnabled false
@@ -118,6 +128,13 @@ android {
             buildConfigField "String", "ACRA_PASSWORD", "\"$acraPassProd\""
             buildConfigField "int", "MATOMO_ID", "1"
             resValue "string", "content_provider", "com.dhis2.provider"
+
+            //Sentry variables
+            manifestPlaceholders = [
+                    sentry_dsn        : bitriseSentryDSN,
+                    sentry_environment: "production",
+                    sentry_debug      : "false"
+            ]
         }
     }
 
@@ -332,6 +349,9 @@ dependencies {
 
     /*openId*/
     implementation 'net.openid:appauth:0.7.1'
+
+    /*Sentry*/
+    implementation "io.sentry:sentry-android:${libraries.sentry}"
 
     //Test
     implementation fileTree(include: ['*.jar'], dir: 'libs')
