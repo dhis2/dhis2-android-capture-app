@@ -39,7 +39,6 @@
     <string name="data_sync_warning_program">WARNING: la mayoría de tus datos se han sincronizado, pero algunos generaron conflictos. Sincroniza tu configuración y prueba otra vez. Si el error persiste, revisa el estado de sincronización: los programas, TEIs y events con conflictos tienen el icono @</string>
     <string name="data_sync_error">ERROR: algunos de tus datos fallaron al sincronizar. Revisa su estado de sincronización: los programas con errores están marcados como @, TEIs y eventos como $  </string>
     <string name="data_sync_error_program">ERROR: algunos de tus datos fallaron al sincronizar. Revisa su estado de sincronización:  TEIs y eventos con errores están marcados como $</string>
-
     <string name="search_result_text">%s resultados</string>
     <string name="add_new">Agregar nuevo</string>
     <string name="add">Añadir</string>

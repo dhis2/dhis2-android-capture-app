@@ -34,7 +34,6 @@
     <string name="data_sync_warning_program">警告：你的大多数数据已经同步，但是有些字段存在冲突，同步你的配置再试。如果警告仍然存在，检查你的同步状态：项目、跟踪实体和事件如果有冲突会标记为@。</string>
     <string name="data_sync_error">错误：你有些数据同步失败。检查你的同步状态：项目、跟踪实体和事件如果有冲突会标记为@。</string>
     <string name="data_sync_error_program">错误：同步数据失败。检查同步状态：所有冲突的实体和事件标记为$\" 。</string>
-
     <string name="search_result_text">发现结果：1%s</string>
     <string name="add_new">新加</string>
     <string name="add">添加</string>
