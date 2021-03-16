@@ -18,7 +18,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -62,9 +61,11 @@ import timber.log.Timber;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.text.TextUtils.isEmpty;
+import static android.view.inputmethod.EditorInfo.IME_ACTION_DONE;
+import static android.view.inputmethod.EditorInfo.IME_ACTION_NEXT;
 import static java.lang.String.valueOf;
 import static org.dhis2.Bindings.ValueExtensionsKt.withValueTypeCheck;
-import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
+import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
 
 
 public class CustomTextView extends FieldLayout {
@@ -108,6 +109,7 @@ public class CustomTextView extends FieldLayout {
     }
 
     public void init(Context context) {
+        super.init(context);
         inflater = LayoutInflater.from(context);
         validators = ((Components) context.getApplicationContext()).appComponent().injectValidators();
     }
@@ -126,6 +128,9 @@ public class CustomTextView extends FieldLayout {
         else
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_long_text_view_accent, this, true);
 
+        this.setFocusableInTouchMode(false);
+        this.setFocusable(false);
+
         inputLayout = findViewById(R.id.input_layout);
         editText = findViewById(R.id.input_editText);
         icon = findViewById(R.id.renderImage);
@@ -138,34 +143,29 @@ public class CustomTextView extends FieldLayout {
             return false;
         });
         editText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus && viewModel.isSearchMode()) {
-                openKeyboard(v);
-                sendAction();
-            } else {
-                if (valueHasChanged()) {
-                    if (validate()) {
-                        inputLayout.setError(null);
-                    }
-                    sendAction();
-                    validateRegex();
+            if (valueHasChanged()) {
+                if (validate()) {
+                    inputLayout.setError(null);
                 }
+                sendAction();
+                validateRegex();
             }
+
         });
 
         editText.setOnEditorActionListener((v, actionId, event) -> {
-            if (viewModel.valueType() != ValueType.LONG_TEXT) {
-                if (valueHasChanged()) {
-                    if (validate()) {
-                        inputLayout.setError(null);
-                    }
-                    sendAction();
-                    validateRegex();
-                }
-                viewModel.onNext();
-                return true;
-            } else {
-                return false;
+            switch (actionId) {
+                case IME_ACTION_NEXT:
+                    viewModel.onNext();
+                    return true;
+
+                case IME_ACTION_DONE:
+                    closeKeyboard(v);
+                    return true;
+                default:
+                    return false;
             }
+
         });
 
         editText.addTextChangedListener(new TextWatcher() {
@@ -237,7 +237,6 @@ public class CustomTextView extends FieldLayout {
                     editText.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
                     editText.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
                     editText.setSingleLine(false);
-                    editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
                     clearButton.setOnClickListener(v -> {
                         editText.getText().clear();
                         sendAction();
@@ -494,16 +493,18 @@ public class CustomTextView extends FieldLayout {
 
     public void setViewModel(EditTextViewModel viewModel) {
         this.viewModel = viewModel;
+
         if (binding == null) {
             setLayout(viewModel.isBackgroundTransparent(), viewModel.isLongText());
         }
+
+        binding.setVariable(BR.keyboardActionType, viewModel.keyBoardAction());
 
         setRenderType(viewModel.renderType());
         setValueType(viewModel.valueType());
         setObjectStyle(viewModel.objectStyle());
         setLabel(viewModel.label(), viewModel.mandatory());
         setHint(viewModel.hint());
-        binding.setVariable(BR.focus, viewModel.activated());
         binding.setVariable(BR.legend, viewModel.legendValue());
         setDescription(viewModel.description());
         setText(viewModel.value());
@@ -517,6 +518,7 @@ public class CustomTextView extends FieldLayout {
         setEditable(viewModel.editable());
         setRenderingType(viewModel.fieldRendering(), viewModel.uid());
         setOnLongActionListener();
+        binding.setVariable(BR.focus, viewModel.activated());
     }
 
     private void setRenderingType(ValueTypeDeviceRendering renderingType, String uid) {
