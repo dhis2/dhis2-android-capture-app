@@ -57,6 +57,9 @@ class SectionView @JvmOverloads constructor(
             root.setOnClickListener {
                 sectionViewModel.setSelected()
             }
+            openIndicator.setOnClickListener {
+                sectionViewModel.setSelected()
+            }
             descriptionIcon.setOnClickListener {
                 showDescription()
             }
