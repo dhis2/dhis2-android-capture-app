@@ -3,7 +3,6 @@ package org.dhis2.usescases.datasets.dataSetTable;
 import android.content.pm.ActivityInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -126,7 +125,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_table);
         binding.setPresenter(presenter);
-        ViewExtensionsKt.clipWithRoundedCorners(binding.container,ExtensionsKt.getDp(16));
+        ViewExtensionsKt.clipWithRoundedCorners(binding.container, ExtensionsKt.getDp(16));
         binding.BSLayout.bottomSheetLayout.setVisibility(View.GONE);
         setViewPager();
         presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
@@ -141,12 +140,11 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     private ViewTreeObserver.OnGlobalLayoutListener layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
-            Rect rect = new Rect();
-            binding.container.getWindowVisibleDisplayFrame(rect);
-            int height = binding.container.getRootView().getHeight() - (rect.bottom - rect.top);
-
-            if (height > 100) {
+            int heightDiff = binding.getRoot().getRootView().getHeight() - binding.getRoot().getHeight();
+            if (heightDiff > ExtensionsKt.getDp(200)) {
                 isKeyboardOpened = true;
+                binding.navigationView.hide();
+                binding.saveButton.hide();
                 if (binding.BSLayout.bottomSheetLayout.getVisibility() == View.VISIBLE) {
                     if (behavior != null && behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                         behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -154,6 +152,10 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                 }
             } else {
                 isKeyboardOpened = false;
+                new Handler().postDelayed(() -> {
+                    binding.navigationView.show();
+                    binding.saveButton.show();
+                }, 700);
             }
         }
     };

@@ -3,10 +3,12 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import androidx.databinding.DataBindingUtil
@@ -15,7 +17,6 @@ import androidx.lifecycle.Observer
 import com.evrencoskun.tableview.TableView
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder.SelectionState.UNSELECTED
-import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Flowable
 import io.reactivex.processors.FlowableProcessor
 import java.util.ArrayList
@@ -385,9 +386,15 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     }
 
     override fun showSnackBar() {
-        val mySnackbar =
-            Snackbar.make(binding.root, R.string.datavalue_saved, Snackbar.LENGTH_SHORT)
-        mySnackbar.show()
+        Toast.makeText(requireContext(), R.string.datavalue_saved, Toast.LENGTH_SHORT)
+            .apply {
+                setGravity(
+                    Gravity.TOP or Gravity.START,
+                    16.dp,
+                    110.dp
+                )
+                show()
+            }
     }
 
     override fun goToTable(numTable: Int) {
