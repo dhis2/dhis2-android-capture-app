@@ -38,6 +38,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.R;
 import org.dhis2.animations.ViewAnimationsKt;
+import org.dhis2.data.forms.dataentry.fields.KeyboardActionType;
 import org.dhis2.data.forms.dataentry.fields.LegendValue;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
@@ -69,6 +70,9 @@ import java.util.List;
 
 import timber.log.Timber;
 
+import static android.view.inputmethod.EditorInfo.IME_ACTION_DONE;
+import static android.view.inputmethod.EditorInfo.IME_ACTION_NEXT;
+import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_ENTER_ACTION;
 import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
 
 
@@ -781,11 +785,26 @@ public class Bindings {
     @BindingAdapter("requestFocus")
     public static void requestFocus(EditText editText, boolean focused) {
         if (focused) {
-            editText.setFocusableInTouchMode(true);
             editText.requestFocus();
-            openKeyboard(editText);
         } else {
             editText.clearFocus();
+        }
+    }
+
+    @BindingAdapter("setImeOption")
+    public static void setImeOption(EditText editText, KeyboardActionType type) {
+        if (type != null) {
+            switch (type) {
+                case NEXT:
+                    editText.setImeOptions(IME_ACTION_NEXT);
+                    break;
+                case DONE:
+                    editText.setImeOptions(IME_ACTION_DONE);
+                    break;
+                case ENTER:
+                    editText.setImeOptions(IME_FLAG_NO_ENTER_ACTION);
+                    break;
+            }
         }
     }
 

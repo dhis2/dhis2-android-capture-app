@@ -20,6 +20,7 @@ import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.LoginActivity
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
 import org.hisp.dhis.android.core.D2
@@ -44,6 +45,7 @@ class MainPresenterTest {
     private val workManagerController: WorkManagerController = mock()
     private val filterManager: FilterManager = mock()
     private val filterRepository: FilterRepository = mock()
+    private val matomoAnalyticsController: MatomoAnalyticsController = mock()
 
     @Before
     fun setUp() {
@@ -55,7 +57,8 @@ class MainPresenterTest {
                 preferences,
                 workManagerController,
                 filterManager,
-                filterRepository
+                filterRepository,
+                matomoAnalyticsController
             )
     }
 

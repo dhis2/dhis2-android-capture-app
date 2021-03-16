@@ -26,6 +26,7 @@ import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.utils.analytics.matomo.DEFAULT_EXTERNAL_TRACKER_NAME
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.D2Progress
 import org.hisp.dhis.android.core.common.State
@@ -138,7 +139,10 @@ class SyncPresenterImpl(
                     Timber.log(1, data.toString())
                     progressUpdate.onProgressUpdate(ceil(data.percentage() ?: 0.0).toInt())
                 }
-                .doOnComplete { setUpSMS() }
+                .doOnComplete {
+                    updateProyectAnalytics()
+                    setUpSMS()
+                }
 
         ).blockingAwait()
     }
@@ -454,7 +458,14 @@ class SyncPresenterImpl(
     }
 
     override fun updateProyectAnalytics() {
-        // TODO: Depends on SDK and Settings Web app
-        analyticsHelper.updateMatomoSecondaryTracker(Any())
+        getSettings()?.let {
+            if (it.matomoID() != null && it.matomoURL() != null) {
+                analyticsHelper.updateMatomoSecondaryTracker(
+                    it.matomoURL()!!,
+                    it.matomoID()!!,
+                    DEFAULT_EXTERNAL_TRACKER_NAME
+                )
+            }
+        } ?: analyticsHelper.clearMatomoSecondaryTracker()
     }
 }

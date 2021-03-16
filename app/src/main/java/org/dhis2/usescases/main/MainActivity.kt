@@ -302,6 +302,7 @@ class MainActivity :
         var tag: String? = null
         when (fragId) {
             R.id.sync_manager -> {
+                presenter.onClickSyncManager()
                 activeFragment = SyncManagerFragment()
                 tag = getString(R.string.SYNC_MANAGER)
                 binding.filterActionButton.visibility = View.GONE

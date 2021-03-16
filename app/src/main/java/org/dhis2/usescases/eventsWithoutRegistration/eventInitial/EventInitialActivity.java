@@ -198,13 +198,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void initActionButton() {
-
         disposable.add(RxView.clicks(binding.actionButton)
                 .debounce(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe(v -> {
                             binding.actionButton.setEnabled(false);
                             String programStageModelUid = programStage == null ? "" : programStage.uid();
                             if (eventUid == null) { // This is a new Event
+                                presenter.onEventCreated();
                                 analyticsHelper().setEvent(CREATE_EVENT, AnalyticsConstants.DATA_CREATION, CREATE_EVENT);
                                 if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
                                     presenter.scheduleEventPermanent(

@@ -36,6 +36,8 @@ class EventMapFragment :
 
     private var eventMapManager: EventMapManager? = null
 
+    private val fragmentLifeCycle = lifecycle
+
     private val programEventsViewModel by lazy {
         ViewModelProviders.of(requireActivity())[ProgramEventDetailViewModel::class.java]
     }
@@ -53,6 +55,8 @@ class EventMapFragment :
         binding = FragmentProgramEventDetailMapBinding.inflate(inflater, container, false)
         binding.apply {
             eventMapManager = EventMapManager(mapView)
+            eventMapManager?.let { fragmentLifeCycle.addObserver(it) }
+            eventMapManager?.onCreate(savedInstanceState)
             eventMapManager?.init(
                 onInitializationFinished = {
                     presenter.init()
@@ -73,11 +77,6 @@ class EventMapFragment :
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        eventMapManager?.onStart()
-    }
-
     override fun onResume() {
         super.onResume()
         programEventsViewModel.updateEvent?.let { eventUid ->
@@ -85,29 +84,21 @@ class EventMapFragment :
             programEventsViewModel.setProgress(true)
             presenter.getEventInfo(eventUid)
         }
-        eventMapManager?.onResume()
-    }
-
-    override fun onPause() {
-        eventMapManager?.onPause()
-        super.onPause()
     }
 
     override fun onDestroy() {
-        eventMapManager?.onDestroy()
-        binding.mapView.onDestroy()
         presenter.onDestroy()
         super.onDestroy()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        binding.mapView.onLowMemory()
+        eventMapManager?.onLowMemory()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        binding.mapView.onSaveInstanceState(outState)
+        eventMapManager?.onSaveInstanceState(outState)
     }
 
     override fun onRequestPermissionsResult(
