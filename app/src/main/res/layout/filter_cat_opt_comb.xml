@@ -44,21 +44,11 @@
                     android:id="@+id/catOptCombText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="@{filterItem.showSpinner() == true ? View.GONE : View.VISIBLE}"
                     android:onClick="@{()->filterItem.showDialog()}"
                     android:text="@string/select_option"
                     android:gravity="center_vertical"
                     android:paddingStart="16dp"/>
 
-                <androidx.appcompat.widget.AppCompatSpinner
-                    android:id="@+id/catOptCombSpinner"
-                    android:layout_width="match_parent"
-                    app:catComboAdapterData="@{filterItem.catOptionCombos}"
-                    app:catComboAdapterTitle="@{filterItem.catCombo.displayName()}"
-                    android:visibility="@{filterItem.showSpinner() == true ? View.VISIBLE : View.GONE}"
-                    android:layout_height="match_parent"
-                    app:onCatComboSelected="@{filterItem}"
-                    tools:visibility="gone" />
             </RelativeLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
