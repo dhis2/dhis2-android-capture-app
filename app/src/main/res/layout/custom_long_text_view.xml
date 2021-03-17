@@ -78,6 +78,7 @@
 
         <ImageView
             android:id="@+id/descriptionLabel"
+            style="@style/ActionIconUnwrap"
             android:layout_width="12dp"
             android:layout_height="0dp"
             android:layout_marginEnd="8dp"
@@ -121,9 +122,7 @@
 
         <ImageView
             android:id="@+id/clear_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="12dp"
+            style="@style/ActionIcon"
             app:layout_constraintEnd_toEndOf="@id/fieldBackground"
             app:layout_constraintTop_toTopOf="@id/fieldBackground"
             app:srcCompat="@drawable/ic_clear"
@@ -131,6 +130,7 @@
 
         <ImageView
             android:id="@+id/descIcon"
+            style="@style/ActionIconUnwrap"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:visibility="gone"

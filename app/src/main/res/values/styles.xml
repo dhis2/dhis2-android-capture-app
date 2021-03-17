@@ -231,6 +231,11 @@
         <item name="android:clickable">true</item>
     </style>
 
+    <style name="ActionIconUnwrap">
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+    </style>
+
     <style name="warning_appearance" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/warning_color</item>
     </style>

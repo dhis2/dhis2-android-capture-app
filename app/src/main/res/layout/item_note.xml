@@ -28,7 +28,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="16dp"
-                android:tint="?colorPrimary"
+                app:tint="?colorPrimary"
                 android:transitionName="userImage"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

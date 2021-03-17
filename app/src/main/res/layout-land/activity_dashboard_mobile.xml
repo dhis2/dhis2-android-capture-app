@@ -37,10 +37,10 @@
 
             <ImageView
                 android:id="@+id/backArrow"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                style="@style/ActionIcon"
                 android:onClick='@{()->presenter.onBackPressed()}'
                 android:padding="@dimen/default_start_margin"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"

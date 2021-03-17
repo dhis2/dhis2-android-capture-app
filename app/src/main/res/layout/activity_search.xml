@@ -44,13 +44,12 @@
 
             <ImageButton
                 android:id="@+id/back_button"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_alignParentStart="true"
-                android:layout_marginStart="16dp"
-                android:background="@android:color/transparent"
+                style="@style/ActionIcon"
+                android:layout_marginStart="4dp"
                 android:onClick="@{()->presenter.onBackClick()}"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
 
@@ -203,11 +202,11 @@
                 android:layout_marginBottom="120dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHeight_max="wrap"
-                app:layout_constraintVertical_bias="0"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_max="wrap"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop"
+                app:layout_constraintVertical_bias="0"
                 tools:listitem="@layout/item_header_filter" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -216,9 +215,9 @@
                 android:layout_height="0dp"
                 android:focusableInTouchMode="true"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/mainLayout"
@@ -242,17 +241,16 @@
                         android:id="@+id/view"
                         android:layout_width="24dp"
                         android:layout_height="4dp"
-                        android:background="@drawable/ic_bottom_sheet_thumb"
                         android:layout_marginTop="8dp"
-                        app:layout_constraintTop_toTopOf="parent"
+                        android:background="@drawable/ic_bottom_sheet_thumb"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageView
                         android:id="@+id/clear_filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="4dp"
                         android:layout_marginEnd="12dp"
                         android:onClick="@{()->presenter.clearFilterClick()}"
                         app:viewVisibility="@{totalFilters>0}"
@@ -267,10 +265,10 @@
                         android:id="@+id/close_filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="4dp"
                         android:layout_marginEnd="12dp"
-                        android:onClick="@{()->presenter.closeFilterClick()}"
                         android:background="?selectableItemBackgroundBorderless"
+                        android:onClick="@{()->presenter.closeFilterClick()}"
+                        android:padding="4dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -301,8 +299,8 @@
                     app:mapbox_uiLogoGravity="top|start"
                     app:mapbox_uiAttributionGravity="top|start"
                     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-                    app:layout_constraintTop_toBottomOf="@+id/filterOpen"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/filterOpen" />
 
                 <org.dhis2.uicomponents.map.views.CarouselView
                     android:id="@+id/map_carousel"
@@ -326,7 +324,7 @@
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/progressLayout"
-                    app:srcCompat="@drawable/ic_map_layers" />
+                    app:srcCompat="@drawable/ic_map_layers_ripple" />
 
                 <RelativeLayout
                     android:id="@+id/messageContainer"
@@ -376,7 +374,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                app:srcCompat="@drawable/ic_refresh"
                 android:id="@+id/clearFilterSearchButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -384,12 +381,13 @@
                 android:onClick="@{()->presenter.clearFilterClick()}"
                 app:fabVisibility="@{showClear}"
                 app:backgroundTint="@color/white"
-                app:fabSize="mini"
-                app:tint="?colorPrimary"
                 app:elevation="4dp"
+                app:fabSize="mini"
                 app:layout_constraintBottom_toTopOf="@id/enrollmentButton"
                 app:layout_constraintEnd_toEndOf="@id/enrollmentButton"
-                app:layout_constraintStart_toStartOf="@id/enrollmentButton"/>
+                app:layout_constraintStart_toStartOf="@id/enrollmentButton"
+                app:srcCompat="@drawable/ic_refresh"
+                app:tint="?colorPrimary" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/enrollmentButton"
