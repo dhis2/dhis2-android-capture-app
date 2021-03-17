@@ -74,4 +74,9 @@ public class RelationshipLiveAdapter extends PagedListAdapter<SearchTeiModel, Se
                     return Unit.INSTANCE;
                 });
     }
+
+    public void clearList() {
+        submitList(null);
+        notifyDataSetChanged();
+    }
 }
