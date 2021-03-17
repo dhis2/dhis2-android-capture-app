@@ -77,7 +77,7 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
             getString(R.string.go_back),
             object : OnDialogClickListener {
                 override fun onPositiveClick() {
-                    share(message!!)
+                    message?.let { share(it) }
                 }
 
                 override fun onNegativeClick() {
