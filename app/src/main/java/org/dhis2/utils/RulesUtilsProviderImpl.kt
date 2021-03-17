@@ -220,10 +220,10 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                     ruleEffect.data()
                 }
 
-            fieldViewModels.put(
-                assign.field(),
-                fieldViewModels[assign.field()]!!.withValue(valueToShow)
-            )!!.withEditMode(false)
+            fieldViewModels[assign.field()] =
+                fieldViewModels[assign.field()]!!
+                    .withValue(valueToShow)
+                    .withEditMode(false)
         }
     }
 

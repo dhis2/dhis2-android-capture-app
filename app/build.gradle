@@ -208,11 +208,16 @@ sonarqube {
 
 dependencies {
     debugImplementation project(':core')
-    implementation project(':customFab')
+    releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
+        exclude group: "org.hisp.dhis", module: "core-rules"
+    }
 
     debugImplementation project(':dhis2-rule-engine')
-    releaseImplementation project(':dhis2-rule-engine')
+    releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
+        exclude group: "junit", module: "junit"
+    }
 
+    implementation project(':customFab')
     implementation project(':viewpagerdotsindicator')
     implementation project(':tableview')
     implementation project(":dhis_android_analytics")
@@ -231,13 +236,6 @@ dependencies {
 
     implementation 'com.google.code.findbugs:jsr305:3.0.1'
 
-    releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
-        exclude group: "org.hisp.dhis", module: "core-rules"
-    }
-
-    /*  releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
-          exclude group: "junit", module: "junit"
-      }*/
     //region UI LIBRARIES
     //AndroidTreeView
     implementation "com.github.bmelnychuk:atv:${libraries.atv}"
