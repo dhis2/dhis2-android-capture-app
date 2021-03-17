@@ -20,4 +20,6 @@
     <string name="feedback_order_invalid">"គោលបំណងមតិអ្នកប្រើមិនត្រឹមត្រូវនៅក្នុងធាតុទិន្នន័យ %s"</string>
     <string name="feedback_order_duplicate">"មតិជាលំដាប់នៅក្នុងស្ទួនធាតុទិន្នន័យ %s"</string>
     <string name="feedback_order_gap">"កម្មវិធីដំណាក់កាល %s បានមានចន្លោះគោលបំណងមតិអ្នកប្រើ"</string>
+    <string name="feedback_share_conducted">"ការវាយតំលៃធ្វើឡើងលើ"</string>
+    <string name="feedback_share_assessment_type">"ប្រភេទវាយតម្លៃ"</string>
 </resources>

@@ -20,4 +20,6 @@
     <string name="feedback_order_invalid">"ຄໍາສັ່ງຕໍານິຕິຊົມບໍ່ຖືກຕ້ອງໃນອົງປະກອບຂໍ້ມູນ %s"</string>
     <string name="feedback_order_duplicate">"ຊ້ໍາກັນຕໍານິຕິຊົມສັ່ງຊື້ອົງປະກອບຂໍ້ມູນ %s"</string>
     <string name="feedback_order_gap">"ໂຄງການຂັ້ນຕອນຂອງການ %s ມີຊ່ອງຫວ່າງເພື່ອຕໍານິຕິຊົມ"</string>
+    <string name="feedback_share_conducted">"ການປະເມີນຜົນປະຕິບັດ"</string>
+    <string name="feedback_share_assessment_type">"ປະເພດການປະເມີນຜົນ"</string>
 </resources>

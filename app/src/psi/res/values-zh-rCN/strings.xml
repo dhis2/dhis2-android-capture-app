@@ -20,4 +20,6 @@
     <string name="feedback_order_invalid">"在数据元素无效反馈顺序 %s"</string>
     <string name="feedback_order_duplicate">"在数据部分的反馈顺序重复 %s"</string>
     <string name="feedback_order_gap">"计划阶段％s包含反馈顺序差距"</string>
+    <string name="feedback_share_conducted">"進行評估"</string>
+    <string name="feedback_share_assessment_type">"評估類型"</string>
 </resources>

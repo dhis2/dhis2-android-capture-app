@@ -20,4 +20,6 @@
     <string name="feedback_order_invalid">"Để phản hồi không hợp lệ trong phần tử dữ liệu %s"</string>
     <string name="feedback_order_duplicate">"Để phản hồi trùng lặp trong các yếu tố dữ liệu %s"</string>
     <string name="feedback_order_gap">"Chương trình sân khấu %s chứa khoảng trống để phản hồi"</string>
+    <string name="feedback_share_conducted">"Đánh giá được thực hiện vào"</string>
+    <string name="feedback_share_assessment_type">"Loại đánh giá"</string>
 </resources>

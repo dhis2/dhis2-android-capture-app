@@ -20,4 +20,6 @@
     <string name="feedback_order_invalid">"Ogiltigt återkopplings ordning i dataelementet %s"</string>
     <string name="feedback_order_duplicate">"Återkopplings ordning två exemplar på dataelementen %s"</string>
     <string name="feedback_order_gap">"Programsteget %s innehåller återkopplingsorder luckor"</string>
+    <string name="feedback_share_conducted">"Bedömning utförd på"</string>
+    <string name="feedback_share_assessment_type">"Bedömningstyp"</string>
 </resources>

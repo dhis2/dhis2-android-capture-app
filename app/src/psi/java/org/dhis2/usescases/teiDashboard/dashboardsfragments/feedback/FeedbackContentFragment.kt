@@ -138,8 +138,9 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
             val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
             val assessmentDateText =
-                "Assessment conducted on: ${dateFormat.format(enrollmentInfo.enrollmentDate)}"
-            val assessmentTypeText = "Assessment type: ${enrollmentInfo.programName}"
+                "${getString(R.string.feedback_share_conducted)}: ${dateFormat.format(enrollmentInfo.enrollmentDate)}"
+            val assessmentTypeText =
+                "${getString(R.string.feedback_share_assessment_type)}: ${enrollmentInfo.programName}"
             val urlText = "${getString(R.string.feedback_url)} \n $feedbackUrl"
 
             val finalText = "$assessmentDateText\n$assessmentTypeText\n\n$urlText"
