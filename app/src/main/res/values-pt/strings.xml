@@ -34,7 +34,6 @@
     <string name="data_sync_warning_program">AVISO: A maioria dos seus dados é sincronizada, mas alguns campos apresentaram conflitos. Sincronize sua configuração e tente novamente. Se o aviso persistir, verifique o status de sincronização: programas, TEIs e eventos com conflitos são marcados como @.</string>
     <string name="data_sync_error">ERRO: Alguns dados não foram sincronizados. Verifique o status da sincronização: programas com erros são marcados como @, TEI\'s e eventos como $\".</string>
     <string name="data_sync_error_program">ERRO: Alguns dados não foram sincronizados. Verifique o status da sincronização: TEIs e eventos com conflitos estão marcados como $\".</string>
-
     <string name="search_result_text">%s resultados encontrados</string>
     <string name="add_new">Novo</string>
     <string name="add">Adicionar</string>
