@@ -35,6 +35,7 @@ import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent;
 import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.filters.workingLists.TeiFilterToWorkingListItemMapper;
@@ -79,12 +80,13 @@ public class SearchTEModule {
                                                        PreferenceProvider preferenceProvider,
                                                        TeiFilterToWorkingListItemMapper teiWorkingListMapper,
                                                        FilterRepository filterRepository,
-                                                       FieldViewModelFactory fieldViewModelFactory) {
+                                                       FieldViewModelFactory fieldViewModelFactory,
+                                                       MatomoAnalyticsController matomoAnalyticsController) {
         return new SearchTEPresenter(view, d2, mapUtils, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapCoordinateFieldToFeatureCollection,
                 new EventToEventUiComponent(), preferenceProvider,
                 teiWorkingListMapper, filterRepository, fieldViewModelFactory.fieldProcessor(),
-                new DisableHomeFiltersFromSettingsApp());
+                new DisableHomeFiltersFromSettingsApp(), matomoAnalyticsController);
     }
 
     @Provides

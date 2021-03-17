@@ -15,6 +15,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import javax.inject.Inject
 import org.dhis2.App
+import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.clipWithRoundedCorners
 import org.dhis2.Bindings.dp
 import org.dhis2.R
@@ -109,10 +110,10 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
     override fun showFilterProgress() {
         binding.progressLayout.visibility = View.VISIBLE
-        binding.clearFilter.visibility = when {
-            FilterManager.getInstance().totalFilters > 0 -> View.VISIBLE
-            else -> View.GONE
-        }
+        Bindings.setViewVisibility(
+            binding.clearFilter,
+            FilterManager.getInstance().totalFilters > 0
+        )
     }
 
     override fun renderError(message: String) {

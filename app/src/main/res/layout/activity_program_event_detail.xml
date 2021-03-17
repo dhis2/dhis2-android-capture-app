@@ -180,7 +180,7 @@
                         android:background="?selectableItemBackgroundBorderless"
                         android:onClick="@{()->presenter.clearFilterClick()}"
                         android:padding="4dp"
-                        android:visibility="@{totalFilters>0?View.VISIBLE:View.GONE}"
+                        app:viewVisibility="@{totalFilters>0}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/close_filter"
                         app:layout_constraintTop_toTopOf="parent"

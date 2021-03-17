@@ -17,6 +17,7 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepositoryImpl;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 import dagger.Module;
@@ -44,15 +45,17 @@ public class EventInitialModule {
     EventInitialContract.Presenter providesPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
                                                      @NonNull EventInitialRepository eventInitialRepository,
                                                      @NonNull SchedulerProvider schedulerProvider,
-                                                    @NonNull PreferenceProvider preferenceProvider,
-                                                    @NonNull AnalyticsHelper analyticsHelper) {
+                                                     @NonNull PreferenceProvider preferenceProvider,
+                                                     @NonNull AnalyticsHelper analyticsHelper,
+                                                     @NonNull MatomoAnalyticsController matomoAnalyticsController) {
         return new EventInitialPresenter(
                 view,
                 eventSummaryRepository,
                 eventInitialRepository,
                 schedulerProvider,
                 preferenceProvider,
-                analyticsHelper);
+                analyticsHelper,
+                matomoAnalyticsController);
     }
 
 

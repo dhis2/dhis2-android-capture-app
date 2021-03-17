@@ -17,6 +17,7 @@ import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataEleme
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
@@ -51,11 +52,12 @@ public class ProgramEventDetailModule {
             @NonNull ProgramEventDetailRepository programEventDetailRepository, SchedulerProvider schedulerProvider, FilterManager filterManager,
             EventFilterToWorkingListItemMapper eventWorkingListMapper,
             FilterRepository filterRepository,
-            FilterPresenter filterPresenter) {
+            FilterPresenter filterPresenter, MatomoAnalyticsController matomoAnalyticsController) {
         return new ProgramEventDetailPresenter(view, programEventDetailRepository, schedulerProvider, filterManager,
                 eventWorkingListMapper,
                 filterRepository,
-                filterPresenter, new DisableHomeFiltersFromSettingsApp());
+                filterPresenter, new DisableHomeFiltersFromSettingsApp(),
+                matomoAnalyticsController);
     }
 
     @Provides

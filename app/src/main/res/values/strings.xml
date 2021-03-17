@@ -41,6 +41,7 @@
     <string name="data_sync_warning_program">WARNING: Most of your data is synced but some fields presented conflicts. Sync your configuration and try again. If warning persists, check their sync status: programs, TEI\'s and events with conflicts are marked as @.</string>
     <string name="data_sync_error">ERROR: Some of your data failed to sync. Check their sync status: programs with errors are marked as @, TEI\'s and events as $".</string>
     <string name="data_sync_error_program">ERROR: Some of your data failed to sync. Check their sync status: TEI\'s and events with conflicts are marked as $".</string>
+    <string name="server_sync_error">There was an error and the server did not respond. Contact your administrator.</string>
 
     <string name="search_result_text">%s results found</string>
     <string name="add_new">Add new</string>
@@ -831,4 +832,5 @@
     <string name="break_glass_hint">Describe the reason here</string>
     <string name="authenticating">Authenticating</string>
     <string name="login_error_no_dhis_instance">Provided server url is not a dhis instance</string>
+    <string name="invalid_integer">Value must be an integer</string>
 </resources>

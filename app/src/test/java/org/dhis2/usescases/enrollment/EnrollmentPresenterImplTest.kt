@@ -19,6 +19,7 @@ import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -55,6 +56,7 @@ class EnrollmentPresenterImplTest {
     private val analyticsHelper: AnalyticsHelper = mock()
     private val onRowActionProcessor: FlowableProcessor<RowAction> = mock()
     private val sectionProcessor: FlowableProcessor<String> = mock()
+    private val matomoAnalyticsController: MatomoAnalyticsController = mock()
 
     @Before
     fun setUp() {
@@ -71,7 +73,8 @@ class EnrollmentPresenterImplTest {
             analyticsHelper,
             "This field is mandatory",
             onRowActionProcessor,
-            sectionProcessor
+            sectionProcessor,
+            matomoAnalyticsController
         )
     }
 

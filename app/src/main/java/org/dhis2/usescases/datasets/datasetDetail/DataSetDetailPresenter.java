@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
@@ -14,6 +15,10 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
 
+import static org.dhis2.utils.analytics.matomo.Actions.SYNC_DATASET;
+import static org.dhis2.utils.analytics.matomo.Categories.DATASET_LIST;
+import static org.dhis2.utils.analytics.matomo.Labels.CLICK;
+
 public class DataSetDetailPresenter {
 
     private DataSetDetailView view;
@@ -22,6 +27,7 @@ public class DataSetDetailPresenter {
     private FilterManager filterManager;
     private FilterRepository filterRepository;
     private DisableHomeFiltersFromSettingsApp disableHomFilters;
+    private MatomoAnalyticsController matomoAnalyticsController;
 
     CompositeDisposable disposable;
 
@@ -30,7 +36,8 @@ public class DataSetDetailPresenter {
                                   SchedulerProvider schedulerProvider,
                                   FilterManager filterManager,
                                   FilterRepository filterRepository,
-                                  DisableHomeFiltersFromSettingsApp disableHomFilters) {
+                                  DisableHomeFiltersFromSettingsApp disableHomFilters,
+                                  MatomoAnalyticsController matomoAnalyticsController) {
 
         this.view = view;
         this.dataSetDetailRepository = dataSetDetailRepository;
@@ -38,6 +45,7 @@ public class DataSetDetailPresenter {
         this.filterManager = filterManager;
         this.filterRepository = filterRepository;
         this.disableHomFilters = disableHomFilters;
+        this.matomoAnalyticsController = matomoAnalyticsController;
         disposable = new CompositeDisposable();
     }
 
@@ -146,6 +154,7 @@ public class DataSetDetailPresenter {
 
 
     public void onSyncIconClick(DataSetDetailModel dataSet) {
+        matomoAnalyticsController.trackEvent(DATASET_LIST, SYNC_DATASET, CLICK);
         view.showSyncDialog(dataSet);
     }
 

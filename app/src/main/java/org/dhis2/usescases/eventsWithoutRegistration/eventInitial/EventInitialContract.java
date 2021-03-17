@@ -138,6 +138,8 @@ public class EventInitialContract {
         void setChangingCoordinates(boolean changingCoordinates);
 
         boolean getCompletionPercentageVisibility();
+
+        void onEventCreated();
     }
 
 }

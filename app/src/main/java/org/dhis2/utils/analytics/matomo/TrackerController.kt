@@ -5,6 +5,7 @@ import org.matomo.sdk.Matomo
 import org.matomo.sdk.Tracker
 import org.matomo.sdk.TrackerBuilder
 
+const val DEFAULT_EXTERNAL_TRACKER_NAME = "secondaryTracker"
 class TrackerController {
     companion object {
         fun dhis2InternalTracker(matomo: Matomo): Tracker? {

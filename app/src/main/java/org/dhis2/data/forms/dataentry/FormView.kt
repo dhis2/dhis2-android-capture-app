@@ -3,12 +3,14 @@ package org.dhis2.data.forms.dataentry
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.RelativeLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.utils.Constants
@@ -34,6 +36,12 @@ class FormView @JvmOverloads constructor(
         recyclerView = view.findViewById(R.id.recyclerView)
         headerContainer = view.findViewById(R.id.headerContainer)
         dataEntryHeaderHelper = DataEntryHeaderHelper(headerContainer, recyclerView)
+        recyclerView.layoutManager =
+            object : LinearLayoutManager(context, VERTICAL, false) {
+                override fun onInterceptFocusSearch(focused: View, direction: Int): View {
+                    return focused
+                }
+            }
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -75,6 +83,12 @@ class FormView @JvmOverloads constructor(
                         scrollCallback?.invoke(hasToShowFab)
                     }
                 })
+        }
+
+        recyclerView.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                closeKeyboard()
+            }
         }
     }
 

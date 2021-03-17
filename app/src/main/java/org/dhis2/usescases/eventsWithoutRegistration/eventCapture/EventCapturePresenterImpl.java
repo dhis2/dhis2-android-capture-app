@@ -16,6 +16,7 @@ import org.dhis2.data.forms.dataentry.fields.ActionType;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
+import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel;
@@ -29,6 +30,7 @@ import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.common.Unit;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleEffect;
@@ -285,7 +287,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                             }
                         },
                         Timber::e
-                        )
+                )
         );
     }
 
@@ -329,6 +331,15 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                             for (FieldViewModel fieldViewModel : fields) {
                                 if (fieldViewModel.mandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.value())) {
                                     emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
+                                }
+                            }
+                            if (!fields.isEmpty()) {
+                                int lastIndex = fields.size() - 1;
+                                FieldViewModel field = fields.get(lastIndex);
+                                if (field instanceof EditTextViewModel &&
+                                        ((EditTextViewModel) field).valueType() != ValueType.LONG_TEXT
+                                ) {
+                                    fields.set(lastIndex, ((EditTextViewModel) field).withKeyBoardActionDone());
                                 }
                             }
                             return fields;
