@@ -141,7 +141,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
             Timber.e("New security provider installed.");
         } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
             e.printStackTrace();
-            Timber.e("New security provider install failed.");
+            Timber.e("New security provider install failed. ");
         }
     }
 
