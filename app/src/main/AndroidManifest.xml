@@ -29,6 +29,16 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
 
+        <meta-data
+            android:name="io.sentry.dsn"
+            android:value="${sentry_dsn}" />
+        <meta-data
+            android:name="io.sentry.environment"
+            android:value="${sentry_environment}" />
+        <meta-data
+            android:name="io.sentry.debug"
+            android:value="${sentry_debug}" />
+
         <activity
             android:name=".usescases.splash.SplashActivity"
             android:theme="@style/SplashTheme">
@@ -94,7 +104,7 @@
         <activity
             android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustResize|stateHidden"/>
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity android:name=".usescases.sync.SyncActivity" />
         <activity android:name=".usescases.development.DevelopmentActivity" />
 
@@ -131,8 +141,10 @@
             tools:node="replace">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="*" />
             </intent-filter>
         </activity>

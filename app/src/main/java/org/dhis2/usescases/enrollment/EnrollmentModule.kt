@@ -25,7 +25,6 @@ import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRe
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
-import org.hisp.dhis.rules.RuleExpressionEvaluator
 
 @Module
 class EnrollmentModule(
@@ -160,7 +159,6 @@ class EnrollmentModule(
     fun formRepository(
         d2: D2,
         rulesRepository: RulesRepository,
-        evaluator: RuleExpressionEvaluator,
         enrollmentRepository: EnrollmentObjectRepository,
         programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
         teiRepository: TrackedEntityInstanceObjectRepository
@@ -168,7 +166,6 @@ class EnrollmentModule(
         return EnrollmentFormRepositoryImpl(
             d2,
             rulesRepository,
-            evaluator,
             enrollmentRepository,
             programRepository,
             teiRepository
