@@ -166,7 +166,6 @@ class MainPresenter(
 
     fun onNavigateBackToHome() {
         view.goToHome()
-        initFilters()
     }
 
     fun onClickSyncManager() {

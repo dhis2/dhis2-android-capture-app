@@ -31,10 +31,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-/**
- * Created by frodriguez on 10/22/2019.
- *
- */
 class MainPresenterTest {
 
     private lateinit var presenter: MainPresenter
@@ -147,16 +143,9 @@ class MainPresenterTest {
 
     @Test
     fun `should return to home section when user taps back in a different section`() {
-        val periodRequest: FlowableProcessor<Pair<FilterManager.PeriodRequest, Filters?>> =
-            BehaviorProcessor.create()
-        whenever(filterManager.asFlowable()) doReturn Flowable.just(filterManager)
-        whenever(filterManager.periodRequest) doReturn periodRequest
-        periodRequest.onNext(Pair(FilterManager.PeriodRequest.FROM_TO, null))
-
         presenter.onNavigateBackToHome()
 
         verify(view).goToHome()
-        verify(filterRepository).homeFilters()
     }
 
     private fun presenterMocks() {
