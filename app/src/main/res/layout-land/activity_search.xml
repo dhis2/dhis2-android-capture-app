@@ -67,13 +67,12 @@
 
             <ImageButton
                 android:id="@+id/back_button"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_alignParentStart="true"
-                android:layout_marginStart="16dp"
-                android:background="@android:color/transparent"
+                style="@style/ActionIcon"
+                android:layout_marginStart="4dp"
                 android:onClick="@{()->presenter.onBackClick()}"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
 
@@ -280,7 +279,7 @@
                         android:padding="4dp"
                         android:layout_marginEnd="12dp"
                         android:onClick="@{()->presenter.clearFilterClick()}"
-                        android:visibility="@{totalFilters>0?View.VISIBLE:View.GONE}"
+                        app:viewVisibility="@{totalFilters>0}"
                         android:background="?selectableItemBackgroundBorderless"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/close_filter"
@@ -345,7 +344,7 @@
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/progressLayout"
-                    app:srcCompat="@drawable/ic_map_layers" />
+                    app:srcCompat="@drawable/ic_map_layers_ripple" />
 
                 <RelativeLayout
                     android:id="@+id/messageContainer"
@@ -399,9 +398,9 @@
                 android:id="@+id/clearFilterSearchButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="16dp"
                 android:onClick="@{()->presenter.clearFilterClick()}"
-                android:visibility="@{showClear?View.VISIBLE:View.GONE}"
+                app:fabVisibility="@{showClear}"
                 app:backgroundTint="@color/white"
                 app:fabSize="mini"
                 app:tint="?colorPrimary"

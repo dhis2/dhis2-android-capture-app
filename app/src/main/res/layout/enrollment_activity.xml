@@ -35,8 +35,9 @@
 
             <ImageView
                 android:id="@+id/menu"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                style="@style/ActionIcon"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 android:onClick="@{()->view.goBack()}"
                 android:padding="@dimen/default_start_margin"
                 app:layout_constraintStart_toStartOf="parent"

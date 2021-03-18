@@ -24,7 +24,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatSpinner;
@@ -38,6 +37,7 @@ import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.R;
+import org.dhis2.animations.ViewAnimationsKt;
 import org.dhis2.data.forms.dataentry.fields.KeyboardActionType;
 import org.dhis2.data.forms.dataentry.fields.LegendValue;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
@@ -786,6 +786,7 @@ public class Bindings {
     public static void requestFocus(EditText editText, boolean focused) {
         if (focused) {
             editText.requestFocus();
+            openKeyboard(editText);
         } else {
             editText.clearFocus();
         }
@@ -842,6 +843,24 @@ public class Bindings {
                 if (drawable != null)
                     DrawableCompat.setTint(drawable, legendValue.getColor());
             }
+        }
+    }
+
+    @BindingAdapter("fabVisibility")
+    public static void setFabVisibility(FloatingActionButton fab, boolean isVisible) {
+        if (isVisible) {
+            fab.show();
+        } else {
+            fab.hide();
+        }
+    }
+
+    @BindingAdapter("viewVisibility")
+    public static void setViewVisibility(View view, boolean isVisible) {
+        if (isVisible) {
+            ViewAnimationsKt.show(view);
+        } else {
+            ViewAnimationsKt.hide(view);
         }
     }
 }

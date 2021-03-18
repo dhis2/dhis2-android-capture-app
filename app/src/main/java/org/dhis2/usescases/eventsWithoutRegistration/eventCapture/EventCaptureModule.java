@@ -22,7 +22,6 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import dagger.Module;
 import dagger.Provides;
@@ -93,10 +92,9 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    FormRepository formRepository(@NonNull RuleExpressionEvaluator evaluator,
-                                  @NonNull RulesRepository rulesRepository,
+    FormRepository formRepository(@NonNull RulesRepository rulesRepository,
                                   @NonNull D2 d2) {
-        return new EventRepository(evaluator, rulesRepository, eventUid, d2);
+        return new EventRepository(rulesRepository, eventUid, d2);
     }
 
     @Provides

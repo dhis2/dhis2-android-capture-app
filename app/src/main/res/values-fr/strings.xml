@@ -33,7 +33,6 @@
     <string name="data_sync_warning_program">AVERTISSEMENT: La plupart de vos données ont été syncrhonisées mais certains champs ont eu des conflits. Synchronisez votre configuration et ressayez, Si l\'erreur persiste, vérifiez le statut de synchronisation: les programmes, TEIs et évènements avec conflits sont marqués avec @. </string>
     <string name="data_sync_error">ERREUR: Certaines données n\'ont pas été syncrhonisées.  Vérifiez le statut de synchronisation: les programmes avec erreurs sont marqués avec @, les TEIs et évènements comme $\".</string>
     <string name="data_sync_error_program">ERREUR: Certaines données n\'ont pas été syncrhonisées. Vérifiez le statut de synchronisation: les TEIs et évènements avec erreurs sont marqués avec $\".</string>
-
     <string name="search_result_text">%s résultats trouvé</string>
     <string name="add_new">Nouveau</string>
     <string name="add">Ajouter</string>

@@ -75,6 +75,7 @@
 
             <ImageView
                 android:id="@+id/descriptionLabel"
+                style="@style/ActionIconUnwrap"
                 android:layout_width="12dp"
                 android:layout_height="0dp"
                 android:layout_marginEnd="16dp"
@@ -151,13 +152,14 @@
 
                     <ImageView
                         android:id="@+id/clearSelection"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        style="@style/ActionIcon"
                         android:clickable="true"
                         android:focusable="true"
                         android:onClick="@{v -> item.onClear()}"
                         android:padding="10dp"
                         android:visibility="@{item.isClearable() ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:enabled="@{item.editable()}"
                         android:alpha="@{item.editable() ? 1.0f : 0.5f}"

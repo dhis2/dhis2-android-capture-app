@@ -38,7 +38,7 @@ class GranularSyncContracts {
     interface View {
         fun showTitle(displayName: String)
         fun closeDialog()
-        fun setState(state: State)
+        fun setState(state: State, conflicts: MutableList<TrackerImportConflict>)
         fun prepareConflictAdapter(conflicts: MutableList<TrackerImportConflict>)
         fun emptyEnrollmentError(): String
         fun unsupportedTask(): String

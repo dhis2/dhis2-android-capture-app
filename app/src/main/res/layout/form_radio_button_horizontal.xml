@@ -63,9 +63,9 @@
                 style="@style/FieldLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:alpha="@{item.editable() ? 1.0f : 0.5f}"
                 android:text="@{item.label}"
                 android:visibility="@{label != null ? View.VISIBLE : View.GONE}"
-                android:alpha="@{item.editable() ? 1.0f : 0.5f}"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
                 app:layout_constraintHorizontal_bias="0"
@@ -76,6 +76,7 @@
 
             <ImageView
                 android:id="@+id/descriptionLabel"
+                style="@style/ActionIconUnwrap"
                 android:layout_width="12dp"
                 android:layout_height="0dp"
                 android:layout_marginEnd="16dp"
@@ -106,11 +107,11 @@
                         android:id="@+id/radiogroup"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:alpha="@{item.editable() ? 1.0f : 0.5f}"
+                        android:enabled="@{item.editable()}"
                         android:gravity="center_vertical"
                         android:orientation="@{item.renderingType() == ValueTypeRenderingType.VERTICAL_RADIOBUTTONS ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL}"
                         app:checkListener="@{item}"
-                        android:enabled="@{item.editable()}"
-                        android:alpha="@{item.editable() ? 1.0f : 0.5f}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/clearSelection"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -122,12 +123,12 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="16dp"
-                            android:text="@string/yes"
-                            app:setTextColor="@{item.backgroundTransparent}"
-                            android:textSize="@dimen/form_edit_text_size"
-                            app:tintRadioButton="@{item.backgroundTransparent}"
-                            android:enabled="@{item.editable()}"
                             android:alpha="@{item.editable() ? 1.0f : 0.5f}"
+                            android:enabled="@{item.editable()}"
+                            android:text="@string/yes"
+                            android:textSize="@dimen/form_edit_text_size"
+                            app:setTextColor="@{item.backgroundTransparent}"
+                            app:tintRadioButton="@{item.backgroundTransparent}"
                             tools:checked="true" />
 
                         <RadioButton
@@ -135,27 +136,28 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="25dp"
+                            android:alpha="@{item.editable() ? 1.0f : 0.5f}"
+                            android:enabled="@{item.editable()}"
                             android:text="@string/no"
-                            app:setTextColor="@{item.backgroundTransparent}"
                             android:textSize="@dimen/form_edit_text_size"
                             android:visibility="@{item.valueType() == ValueType.TRUE_ONLY ? View.GONE : View.VISIBLE}"
-                            android:enabled="@{item.editable()}"
-                            android:alpha="@{item.editable() ? 1.0f : 0.5f}"
+                            app:setTextColor="@{item.backgroundTransparent}"
                             app:tintRadioButton="@{item.backgroundTransparent}" />
                     </RadioGroup>
 
                     <ImageView
                         android:id="@+id/clearSelection"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        style="@style/ActionIcon"
+                        android:alpha="@{item.editable() ? 1.0f : 0.5f}"
                         android:clickable="true"
+                        android:enabled="@{item.editable()}"
                         android:focusable="true"
                         android:onClick="@{v -> item.onClear()}"
                         android:padding="10dp"
-                        android:enabled="@{item.editable()}"
-                        android:alpha="@{item.editable() ? 1.0f : 0.5f}"
                         android:visibility="@{item.isClearable() ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@drawable/ic_close" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
