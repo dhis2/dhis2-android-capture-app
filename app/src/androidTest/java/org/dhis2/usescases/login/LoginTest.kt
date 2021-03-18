@@ -11,6 +11,7 @@ import org.dhis2.usescases.main.MainActivity
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.API_ME_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.API_SYSTEM_INFO_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,6 +35,7 @@ class LoginTest : BaseTest() {
     }
 
     @Test
+    @Ignore("What is the purpose of this test? It does not check anything")
     fun shouldLoginSuccessfullyWhenCredentialsAreRight() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, API_SYSTEM_INFO_RESPONSE_OK)
