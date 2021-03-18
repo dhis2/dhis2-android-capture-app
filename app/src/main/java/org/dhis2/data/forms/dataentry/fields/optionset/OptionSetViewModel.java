@@ -31,7 +31,8 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                                             Boolean editable,
                                             String description,
                                             ObjectStyle objectStyle,
-                                            ValueTypeDeviceRendering fieldRendering) {
+                                            ValueTypeDeviceRendering fieldRendering,
+                                            String url) {
 
         return new AutoValue_OptionSetViewModel(
                 id,
@@ -47,6 +48,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description,
                 objectStyle,
                 null,
+                url,
                 fieldRendering,
                 new ArrayList<>()
         );
@@ -68,6 +70,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 fieldMask(),
+                url(),
                 fieldRendering(),
                 options()
         );
@@ -90,6 +93,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 fieldMask(),
+                url(),
                 fieldRendering(),
                 options()
         );
@@ -112,6 +116,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 fieldMask(),
+                url(),
                 fieldRendering(),
                 options()
         );
@@ -134,6 +139,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 fieldMask(),
+                url(),
                 fieldRendering(),
                 options()
         );
@@ -155,6 +161,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 fieldMask(),
+                url(),
                 fieldRendering(),
                 options
         );
@@ -177,6 +184,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 description(),
                 objectStyle(),
                 fieldMask(),
+                url(),
                 fieldRendering(),
                 options()
         );

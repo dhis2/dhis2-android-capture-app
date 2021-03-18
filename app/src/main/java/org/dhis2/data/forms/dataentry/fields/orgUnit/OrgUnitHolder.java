@@ -45,7 +45,11 @@ public class OrgUnitHolder extends FormViewHolder {
             objectStyle = model.objectStyle();
         }
         binding.orgUnitView.setLabel(viewModel.label(), viewModel.mandatory());
-        descriptionText = viewModel.description();
+        if (viewModel.url() != null){
+            descriptionText = viewModel.description() + "\n" + viewModel.url()  ;
+        } else {
+            descriptionText = viewModel.description();
+        }
         binding.orgUnitView.setDescription(descriptionText);
         binding.orgUnitView.setWarning(viewModel.warning(), viewModel.error());
         binding.orgUnitView.setValue(ouUid, ouName);

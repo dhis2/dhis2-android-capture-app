@@ -262,7 +262,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             fieldRendering,
                             options.size(),
                             objectStyle,
-                            fieldViewModel.fieldMask(),null));
+                            fieldViewModel.fieldMask(), fieldViewModel.url(),null));
 
                 }
             } else if (fieldViewModel instanceof OptionSetViewModel) {
@@ -374,6 +374,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         boolean allowFutureDates = programStageDataElement.allowFutureDate() != null ? programStageDataElement.allowFutureDate() : false;
                         String formName = de.displayFormName();
                         String description = de.displayDescription();
+                        String url = de.url();
 
                         int optionCount = 0;
                         if (!isEmpty(optionSet)) {
@@ -409,7 +410,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                         valueType, mandatory, optionSet, dataValue,
                                         programStageSection != null ? programStageSection.uid() : null, allowFutureDates,
                                         isEventEditable,
-                                        renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(),colorByLegend);
+                                        renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(), url,colorByLegend);
 
                         if (!error.isEmpty()) {
                             return fieldViewModel.withError(error);

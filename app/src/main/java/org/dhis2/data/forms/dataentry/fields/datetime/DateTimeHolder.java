@@ -65,7 +65,11 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
     public void update(DateTimeViewModel viewModel) {
         this.dateTimeViewModel = viewModel;
         fieldUid = viewModel.uid();
-        descriptionText = viewModel.description();
+        if (viewModel.url() != null){
+            descriptionText = viewModel.description() + "\n" + viewModel.url()  ;
+        } else {
+            descriptionText = viewModel.description();
+        }
         label = new StringBuilder(dateTimeViewModel.label());
         if (dateTimeViewModel.mandatory())
             label.append("*");

@@ -60,6 +60,9 @@ public abstract class FieldViewModel {
     @Nullable
     public abstract String fieldMask();
 
+    @Nullable
+    public abstract String url();
+
     public String getFormattedLabel() {
         if (mandatory()) {
             return label() + " *";

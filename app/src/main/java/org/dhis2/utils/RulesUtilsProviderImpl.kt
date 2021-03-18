@@ -172,7 +172,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
 
         val displayViewModel = DisplayViewModel.create(
             uid, "",
-            displayText.content() + " " + ruleEffect.data(), "Display"
+            displayText.content() + " " + ruleEffect.data(), "Display",null
         )
         fieldViewModels[uid] = displayViewModel
     }
@@ -187,7 +187,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
 
         val displayViewModel = DisplayViewModel.create(
             uid, displayKeyValuePair.content(),
-            ruleEffect.data(), "Display"
+            ruleEffect.data(), "Display",null
         )
         fieldViewModels[uid] = displayViewModel
         rulesActionCallbacks.setDisplayKeyValue(displayKeyValuePair.content(), ruleEffect.data())
