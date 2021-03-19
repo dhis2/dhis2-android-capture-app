@@ -266,6 +266,14 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                         editText.setError(editText.getContext().getString(R.string.invalid_percentage));
                         return false;
                     }
+                case INTEGER:
+                case NUMBER:
+                    if (validator.validate(editText.getText().toString()))
+                        return true;
+                    else {
+                        editText.setError(editText.getContext().getString(R.string.formatting_error));
+                        return false;
+                    }
                 default:
                     return true;
             }
