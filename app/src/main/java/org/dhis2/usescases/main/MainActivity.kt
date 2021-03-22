@@ -292,7 +292,7 @@ class MainActivity :
     override fun onDrawerClosed(drawerView: View) {
         if (currentFragment.get() != fragId) {
             initCurrentScreen()
-            if (fragId == R.id.menu_home){
+            if (fragId == R.id.menu_home) {
                 presenter.initFilters()
             }
         }
