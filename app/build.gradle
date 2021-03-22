@@ -49,12 +49,8 @@ android {
 
         setProperty("archivesBaseName", "dhis2-v" + versions.vName)
 
-        def bitriseAcraUrl = System.getenv("ACRA_URL")
-        def acraUrl = bitriseAcraUrl != null ? bitriseAcraUrl : "http://127.0.0.1:8080/report"
-
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
         buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"pk.eyJ1Ijoib3Jpa2dnIiwiYSI6ImNqdWpqb24zYTFsOXo0M2xwcXRseGx3aXkifQ.6N9aqvpqdrrSBwO9GyfjUw\""
-        buildConfigField "String", "ACRA_URL", "\"$acraUrl\""
         buildConfigField "String", "MATOMO_URL", "\"https://usage.analytics.dhis2.org/matomo.php\""
 
         javaCompileOptions {
@@ -98,14 +94,7 @@ android {
             // Using dataentry.jks to sign debug build type.
             signingConfig = signingConfigs.debug
 
-            def bitriseAcraUserDebug = System.getenv("ACRA_USER_DEBUG")
-            def bitriseAcraPassDebug = System.getenv("ACRA_PASS_DEBUG")
-            def acraUserDebug = bitriseAcraUserDebug != null ? bitriseAcraUserDebug : "empty"
-            def acraPassDebug = bitriseAcraPassDebug != null ? bitriseAcraPassDebug : "empty"
-
             resValue "string", "content_provider", "com.dhis2.debug.provider"
-            buildConfigField "String", "ACRA_USER", "\"$acraUserDebug\""
-            buildConfigField "String", "ACRA_PASSWORD", "\"$acraPassDebug\""
             buildConfigField "int", "MATOMO_ID", "2"
 
             //Sentry variables
@@ -119,13 +108,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
-            def bitriseAcraUserProd = System.getenv("ACRA_USER_PROD")
-            def bitriseAcraPassProd = System.getenv("ACRA_PASS_PROD")
-            def acraUserProd = bitriseAcraUserProd != null ? bitriseAcraUserProd : "empty"
-            def acraPassProd = bitriseAcraPassProd != null ? bitriseAcraPassProd : "empty"
-
-            buildConfigField "String", "ACRA_USER", "\"$acraUserProd\""
-            buildConfigField "String", "ACRA_PASSWORD", "\"$acraPassProd\""
             buildConfigField "int", "MATOMO_ID", "1"
             resValue "string", "content_provider", "com.dhis2.provider"
 
@@ -290,7 +272,6 @@ dependencies {
 
 
     implementation 'org.matomo.sdk:tracker:4.1.2'
-    implementation "ch.acra:acra-http:5.6.1"
 
     //FIREBASE
     implementation 'com.google.firebase:firebase-core:17.2.0'
