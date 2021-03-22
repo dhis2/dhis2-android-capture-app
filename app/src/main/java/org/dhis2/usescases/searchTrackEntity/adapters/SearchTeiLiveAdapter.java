@@ -90,4 +90,9 @@ public class SearchTeiLiveAdapter extends PagedListAdapter<SearchTeiModel, Searc
                 }
         );
     }
+
+    public void clearList() {
+        submitList(null);
+        notifyDataSetChanged();
+    }
 }

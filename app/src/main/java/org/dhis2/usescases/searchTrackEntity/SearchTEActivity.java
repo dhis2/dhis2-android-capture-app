@@ -39,6 +39,9 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -625,6 +628,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             @SuppressLint("RestrictedApi")
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
+                if (!fromRelationship) {
+                    liveAdapter.clearList();
+                } else {
+                    relationshipLiveAdapter.clearList();
+                }
                 if (pos > 0) {
                     analyticsHelper().setEvent(CHANGE_PROGRAM, CLICK, CHANGE_PROGRAM);
                     Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
