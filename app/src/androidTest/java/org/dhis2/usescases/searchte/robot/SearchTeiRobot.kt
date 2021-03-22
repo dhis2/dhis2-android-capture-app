@@ -93,9 +93,6 @@ class SearchTeiRobot : BaseRobot() {
     }
 
     fun checkNoSearchResult(searchWord: String, message: String) {
-        onView(withId(R.id.scrollView))
-            .check(matches(not(allElementsHave(hasDescendant(withText(searchWord))))))
-
         onView(withId(R.id.message))
             .check(matches(withText(message)))
     }

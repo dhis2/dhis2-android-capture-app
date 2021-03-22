@@ -1012,8 +1012,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void checkFilters(boolean listResultIsOk) {
-        boolean hasToShowFilters = !filterRepository.
-                programFilters(currentProgram.blockingFirst()).isEmpty();
+        boolean hasToShowFilters;
+        if (currentProgram.blockingFirst().isEmpty()) {
+            hasToShowFilters = !filterRepository.globalTrackedEntityFilters().isEmpty();
+        } else {
+            hasToShowFilters = !filterRepository
+                    .programFilters(currentProgram.blockingFirst()).isEmpty();
+        }
 
         if (listResultIsOk) {
             view.setFiltersVisibility(hasToShowFilters);

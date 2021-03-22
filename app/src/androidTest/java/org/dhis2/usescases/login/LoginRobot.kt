@@ -9,6 +9,7 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
@@ -66,7 +67,7 @@ class LoginRobot : BaseRobot() {
     }
 
     fun checkLoginButtonIsHidden() {
-        onView(withId(R.id.login)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.login)).check(matches(not(isEnabled())))
     }
 
     fun checkAuthErrorAlertIsVisible() {
