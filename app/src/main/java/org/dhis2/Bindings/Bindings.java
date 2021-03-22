@@ -786,6 +786,7 @@ public class Bindings {
     public static void requestFocus(EditText editText, boolean focused) {
         if (focused) {
             editText.requestFocus();
+            openKeyboard(editText);
         } else {
             editText.clearFocus();
         }
@@ -855,10 +856,10 @@ public class Bindings {
     }
 
     @BindingAdapter("viewVisibility")
-    public static void setViewVisibility(View view, boolean isVisible){
-        if(isVisible){
+    public static void setViewVisibility(View view, boolean isVisible) {
+        if (isVisible) {
             ViewAnimationsKt.show(view);
-        }else{
+        } else {
             ViewAnimationsKt.hide(view);
         }
     }

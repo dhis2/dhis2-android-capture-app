@@ -19,11 +19,6 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.security.ProviderInstaller;
 
-import org.acra.ACRA;
-import org.acra.config.CoreConfigurationBuilder;
-import org.acra.config.HttpSenderConfigurationBuilder;
-import org.acra.data.StringFormat;
-import org.acra.sender.HttpSender;
 import org.dhis2.data.appinspector.AppInspector;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerServer;
@@ -66,14 +61,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.exceptions.UndeliverableException;
 import io.reactivex.plugins.RxJavaPlugins;
 import timber.log.Timber;
-
-import static org.acra.ReportField.BUILD_CONFIG;
-import static org.acra.ReportField.DEVICE_FEATURES;
-import static org.acra.ReportField.DISPLAY;
-import static org.acra.ReportField.ENVIRONMENT;
-import static org.acra.ReportField.FILE_PATH;
-import static org.acra.ReportField.INITIAL_CONFIGURATION;
-import static org.acra.ReportField.LOGCAT;
 
 public class App extends MultiDexApplication implements Components, LifecycleObserver {
     static {
@@ -125,7 +112,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
         setUpServerComponent();
         setUpRxPlugin();
-        initAcra();
         initCustomCrashActivity();
     }
 
@@ -149,30 +135,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(this);
-    }
-
-    private void initAcra() {
-        CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this)
-                .setBuildConfigClass(BuildConfig.class)
-                .setReportField(DEVICE_FEATURES, false)
-                .setReportField(ENVIRONMENT, false)
-                .setReportField(INITIAL_CONFIGURATION, false)
-                .setReportField(LOGCAT, false)
-                .setReportField(DISPLAY, false)
-                .setReportField(BUILD_CONFIG, false)
-                .setReportField(FILE_PATH, false)
-                .setAlsoReportToAndroidFramework(true)
-                .setReportFormat(StringFormat.JSON);
-
-        builder.getPluginConfigurationBuilder(HttpSenderConfigurationBuilder.class)
-                .setUri(BuildConfig.ACRA_URL)
-                .setHttpMethod(HttpSender.Method.POST)
-                .setConnectionTimeout(20000)
-                .setBasicAuthLogin(BuildConfig.ACRA_USER)
-                .setBasicAuthPassword(BuildConfig.ACRA_PASSWORD)
-                .setEnabled(true);
-
-        ACRA.init(this, builder);
     }
 
     private void setUpAppComponent() {
