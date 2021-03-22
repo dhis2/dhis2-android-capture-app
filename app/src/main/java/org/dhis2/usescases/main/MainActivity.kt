@@ -292,6 +292,9 @@ class MainActivity :
     override fun onDrawerClosed(drawerView: View) {
         if (currentFragment.get() != fragId) {
             initCurrentScreen()
+            if (fragId == R.id.menu_home){
+                presenter.initFilters()
+            }
         }
     }
 
@@ -339,7 +342,6 @@ class MainActivity :
                 programFragment = activeFragment as ProgramFragment?
                 tag = getString(R.string.done_task)
                 binding.filterActionButton.visibility = View.VISIBLE
-                presenter.initFilters()
             }
             else -> {
                 activeFragment = ProgramFragment()
