@@ -21,15 +21,18 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
+import org.dhis2.data.server.ServerComponent;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.ActivityResultObservable;
 import org.dhis2.utils.ActivityResultObserver;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsConstants;
@@ -45,6 +48,7 @@ import java.lang.reflect.Method;
 
 import javax.inject.Inject;
 
+import kotlin.Unit;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
@@ -72,7 +76,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     private ActivityResultObserver activityResultObserver;
 
-    public void requestEnableLocation(){
+    public void requestEnableLocation() {
         displayMessage(getString(R.string.enable_location_message));
     }
 
@@ -88,6 +92,14 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        ServerComponent serverComponent = ((App) getApplicationContext()).getServerComponent();
+        if (serverComponent != null) {
+            serverComponent.openIdSession().setSessionCallback(this, () -> {
+                showSessionExpired();
+                return Unit.INSTANCE;
+            });
+        }
+
         FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         if (!getResources().getBoolean(R.bool.is_tablet))
@@ -385,5 +397,29 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     @Override
     public AnalyticsHelper analyticsHelper() {
         return analyticsHelper;
+    }
+
+    private void showSessionExpired() {
+        CustomDialog sessionDialog = new CustomDialog(
+                this,
+                getString(R.string.openid_session_expired),
+                getString(R.string.openid_session_expired_message),
+                getString(R.string.action_accept),
+                null,
+                Constants.SESSION_DIALOG_RQ,
+                new DialogClickListener() {
+                    @Override
+                    public void onPositive() {
+                        startActivity(LoginActivity.class, LoginActivity.Companion.bundle(true), true, true, null);
+                    }
+
+                    @Override
+                    public void onNegative() {
+
+                    }
+                }
+        );
+        sessionDialog.setCancelable(false);
+        sessionDialog.show();
     }
 }

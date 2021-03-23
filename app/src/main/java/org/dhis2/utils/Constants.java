@@ -2,10 +2,6 @@ package org.dhis2.utils;
 
 import org.jetbrains.annotations.Nullable;
 
-/**
- * QUADRAM. Created by ppajuelo on 15/01/2018.
- */
-
 public class Constants {
 
     public static final String EXTRA_DATA = "extra_data";
@@ -25,6 +21,7 @@ public class Constants {
 
     //RQ CODES
     public static final int RQ_QR_SCANNER = 101;
+    public static int SESSION_DIALOG_RQ = 201;
 
     // MAP SELECTION
     public static final int RQ_MAP_LOCATION = 102;

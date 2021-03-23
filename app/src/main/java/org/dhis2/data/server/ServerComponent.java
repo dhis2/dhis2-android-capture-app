@@ -23,6 +23,9 @@ public interface ServerComponent extends Charts.Dependencies {
     UserManager userManager();
 
     @NonNull
+    OpenIdSession openIdSession();
+
+    @NonNull
     UserComponent plus(@NonNull UserModule userModule);
 
     @NonNull
