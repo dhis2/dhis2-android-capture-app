@@ -1,7 +1,6 @@
 package org.dhis2.data.server
 
 import android.content.Context
-import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
 import dhis2.org.analytics.charts.Charts
@@ -12,7 +11,6 @@ import org.dhis2.App
 import org.dhis2.BuildConfig
 import org.dhis2.data.dagger.PerServer
 import org.dhis2.data.filter.GetFiltersApplyingWebAppConfig
-import org.dhis2.data.prefs.PreferenceProviderImpl
 import org.dhis2.utils.RulesUtilsProvider
 import org.dhis2.utils.RulesUtilsProviderImpl
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -70,11 +68,7 @@ class ServerModule {
             }
             interceptors.add(
                 AnalyticsInterceptor(
-                    AnalyticsHelper(
-                        FirebaseAnalytics.getInstance(context),
-                        PreferenceProviderImpl(context),
-                        context.appComponent().matomoController()
-                    )
+                    AnalyticsHelper(context.appComponent().matomoController())
                 )
             )
             return D2Configuration.builder()

@@ -19,7 +19,6 @@ import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.BuildConfig;
@@ -88,8 +87,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-
         if (!getResources().getBoolean(R.bool.is_tablet))
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
@@ -106,7 +103,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         final String server = prefs.getString(Constants.SERVER, null);
         if (server != null) {
             crashReportController.trackServer(server);
-            mFirebaseAnalytics.setUserId(prefs.getString(Constants.SERVER, null));
         }
 
         String userName = prefs.getString(Constants.USER, null);
