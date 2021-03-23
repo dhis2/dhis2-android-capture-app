@@ -54,6 +54,8 @@ import org.dhis2.utils.session.PinDialog
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import timber.log.Timber
 
+const val EXTRA_SKIP_SYNC = "SKIP_SYNC"
+
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private lateinit var binding: ActivityLoginBinding
@@ -70,6 +72,15 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private var testingCredentials: List<TestingCredential> = ArrayList()
     var userManager: UserManager? = null
+    private var skipSync = false
+
+    companion object {
+        fun bundle(skipSync: Boolean = false): Bundle {
+            return Bundle().apply {
+                putBoolean(EXTRA_SKIP_SYNC, skipSync)
+            }
+        }
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,6 +98,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         loginComponent.inject(this)
 
         super.onCreate(savedInstanceState)
+        skipSync = intent.getBooleanExtra(EXTRA_SKIP_SYNC, false)
         loginViewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
 
@@ -193,7 +205,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun goToNextScreen() {
-        if (isNetworkAvailable()) {
+        if (isNetworkAvailable() && !skipSync) {
             startActivity(SyncActivity::class.java, null, true, true, null)
         } else {
             startActivity(MainActivity::class.java, null, true, true, null)

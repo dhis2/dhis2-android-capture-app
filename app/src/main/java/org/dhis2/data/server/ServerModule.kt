@@ -11,6 +11,7 @@ import org.dhis2.App
 import org.dhis2.BuildConfig
 import org.dhis2.data.dagger.PerServer
 import org.dhis2.data.filter.GetFiltersApplyingWebAppConfig
+import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.RulesUtilsProvider
 import org.dhis2.utils.RulesUtilsProviderImpl
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -44,6 +45,12 @@ class ServerModule {
     @PerServer
     fun rulesUtilsProvider(d2: D2?): RulesUtilsProvider {
         return RulesUtilsProviderImpl(d2!!)
+    }
+
+    @Provides
+    @PerServer
+    fun openIdSession(d2: D2, schedulerProvider: SchedulerProvider): OpenIdSession {
+        return OpenIdSession(d2, schedulerProvider)
     }
 
     @Provides
