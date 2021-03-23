@@ -142,12 +142,12 @@ class CarouselTeiHolder(
         binding.sortingFieldValue.visibility = View.VISIBLE
     }
 
-    fun showNavigateButton() {
+    override fun showNavigateButton() {
         dataModel?.setShowNavigationButton(true)
         binding.mapNavigateFab.show()
     }
 
-    fun hideNavigateButton() {
+    override fun hideNavigateButton() {
         dataModel?.setShowNavigationButton(false)
         binding.mapNavigateFab.hide()
     }

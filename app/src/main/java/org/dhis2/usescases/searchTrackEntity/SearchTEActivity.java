@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,17 +32,11 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
-import androidx.databinding.BindingMethod;
-import androidx.databinding.BindingMethods;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.SimpleItemAnimator;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.geojson.Feature;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -57,10 +50,9 @@ import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.forms.dataentry.DataEntryAdapter;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.ActivitySearchBinding;
+import org.dhis2.uicomponents.map.ExternalMapNavigation;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
-import org.dhis2.uicomponents.map.geometry.FeatureExtensionsKt;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.TeiMapManager;
 import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
@@ -101,7 +93,6 @@ import javax.inject.Inject;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 import kotlin.Unit;
-import kotlin.reflect.jvm.internal.impl.types.KotlinTypeKt;
 import timber.log.Timber;
 
 import static android.view.View.GONE;
@@ -120,6 +111,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     CarouselViewAnimations animations;
     @Inject
     FiltersAdapter filtersAdapter;
+    @Inject
+    ExternalMapNavigation mapNavigation;
 
     private String initialProgram;
     private String tEType;
@@ -204,7 +197,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     showMap(false);
                     break;
                 case R.id.navigation_map_view:
-                    if (backDropActive) { 
+                    if (backDropActive) {
                         closeFilters();
                     }
                     showMap(true);
@@ -431,7 +424,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private void removeCarousel() {
         carouselAdapter = null;
         binding.mapCarousel.setAdapter(null);
-        binding.mapCarousel.setCallback((feature, found) -> true);
     }
 
     private void initializeCarousel() {
@@ -491,18 +483,16 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 )
                 .addOnNavigateClickListener(
                         uuid -> {
-                            navigateToMap(teiMapManager.findFeature(uuid));
+                            Feature feature = teiMapManager.findFeature(uuid);
+                            if (feature != null) {
+                                startActivity(mapNavigation.navigateToMapIntent(feature));
+                            }
                             return Unit.INSTANCE;
                         }
                 )
                 .addProgram(presenter.getProgram())
                 .build();
         binding.mapCarousel.setAdapter(carouselAdapter);
-
-        binding.mapCarousel.setCallback((feature, found) -> {
-            showNavFab(feature, found);
-            return true;
-        });
         binding.mapCarousel.attachToMapManager(teiMapManager);
     }
 
@@ -1021,25 +1011,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             return true;
         }
         return false;
-    }
-
-    private void navigateToMap(Feature feature) {
-        LatLng point = FeatureExtensionsKt.getPointLatLng(feature);
-        String longitude = String.valueOf(point.getLongitude());
-        String latitude = String.valueOf(point.getLatitude());
-        String location = "geo:0,0?q=" + latitude + "," + longitude + "";
-
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(location));
-        startActivity(intent);
-    }
-
-    private void showNavFab(Feature feature, Boolean found) {
-        if (found && feature != null && FeatureExtensionsKt.isPoint(feature)) {
-            binding.mapCarousel.showNavigateTo();
-        } else {
-            binding.mapCarousel.hideNavigateTo();
-        }
     }
 
     /*endregion*/

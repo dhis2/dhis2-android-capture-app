@@ -13,6 +13,7 @@ import java.util.ArrayList
 import javax.inject.Inject
 import org.dhis2.animations.CarouselViewAnimations
 import org.dhis2.databinding.FragmentProgramEventDetailMapBinding
+import org.dhis2.uicomponents.map.ExternalMapNavigation
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.uicomponents.map.layer.LayerType
@@ -33,6 +34,9 @@ class EventMapFragment :
 
     @Inject
     lateinit var animations: CarouselViewAnimations
+
+    @Inject
+    lateinit var mapNavigation: ExternalMapNavigation
 
     private var eventMapManager: EventMapManager? = null
 
@@ -133,9 +137,13 @@ class EventMapFragment :
                         }
                         true
                     }
+                    .addOnNavigateClickListener { uid ->
+                        eventMapManager?.findFeature(uid)?.let { feature ->
+                            startActivity(mapNavigation.navigateToMapIntent(feature))
+                        }
+                    }
                     .build()
             binding.mapCarousel.setAdapter(carouselAdapter)
-            binding.mapCarousel.setCallback { feature, found -> true }
             eventMapManager?.let { binding.mapCarousel.attachToMapManager(eventMapManager!!) }
             carouselAdapter.addItems(mapData.events)
         } else {
