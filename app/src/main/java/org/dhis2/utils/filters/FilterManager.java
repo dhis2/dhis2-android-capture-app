@@ -619,7 +619,7 @@ public class FilterManager implements Serializable {
         enrollmentPeriodFiltersApplied.set(0);
         enrollmentPeriodIdSelected.set(R.id.anytime);
         ouFilters.clear();
-        liveDataOUFilter.setValue(ouFilters);
+        liveDataOUFilter.postValue(ouFilters);
         ouFiltersApplied.set(ouFilters.size());
         stateFilters.clear();
         observableStates.set(stateFilters);
@@ -634,7 +634,9 @@ public class FilterManager implements Serializable {
         assignedFilter = false;
         assignedToMeApplied.set(0);
         catOptComboFilters.clear();
-        catComboAdapter.notifyDataSetChanged();
+        if(catComboAdapter!=null) {
+            catComboAdapter.notifyDataSetChanged();
+        }
         catOptCombFiltersApplied.set(0);
 
         periodFiltersApplied.set(scope.eventDateCount());
