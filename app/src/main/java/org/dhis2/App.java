@@ -1,7 +1,6 @@
 package org.dhis2;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.Looper;
 
 import androidx.annotation.NonNull;
@@ -15,9 +14,6 @@ import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
 import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.security.ProviderInstaller;
 
 import org.dhis2.data.appinspector.AppInspector;
 import org.dhis2.data.dagger.PerActivity;
@@ -104,9 +100,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
         MapController.Companion.init(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-            upgradeSecurityProviderSync();
-
         setUpAppComponent();
         Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree(appComponent.injectCrashReportController()));
 
@@ -119,16 +112,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         CaocConfig.Builder.create()
                 .errorDrawable(R.drawable.ic_dhis)
                 .apply();
-    }
-
-    private void upgradeSecurityProviderSync() {
-        try {
-            ProviderInstaller.installIfNeeded(this);
-            Timber.e("New security provider installed.");
-        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
-            e.printStackTrace();
-            Timber.e("New security provider install failed.");
-        }
     }
 
     @Override

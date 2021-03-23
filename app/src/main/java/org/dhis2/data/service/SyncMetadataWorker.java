@@ -13,8 +13,6 @@ import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.google.firebase.perf.metrics.AddTrace;
-
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.prefs.PreferenceProvider;
@@ -56,7 +54,6 @@ public class SyncMetadataWorker extends Worker {
 
     @NonNull
     @Override
-    @AddTrace(name = "MetadataSyncTrace")
     public Result doWork() {
         if (((App) getApplicationContext()).userComponent() != null) {
 
