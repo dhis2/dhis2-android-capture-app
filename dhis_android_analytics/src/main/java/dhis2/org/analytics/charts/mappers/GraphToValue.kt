@@ -33,7 +33,7 @@ class GraphToValue {
                 addView(
                     ItemSingleValueBinding.inflate(LayoutInflater.from(this.context)).apply {
                         singleValueTitle.text = it.fieldName
-                        singleValue.text = it.coordinates.last().fieldValue.toString()
+                        singleValue.text = it.coordinates.lastOrNull()?.fieldValue?.toString() ?: ""
                     }.root
                 )
             }
