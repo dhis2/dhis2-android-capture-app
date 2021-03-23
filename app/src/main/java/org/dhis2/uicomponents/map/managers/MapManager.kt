@@ -71,7 +71,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     private fun setUi() {
         map?.apply {
             ContextCompat.getDrawable(mapView.context, R.drawable.ic_compass_ripple)?.let {
-                uiSettings.compassImage = it
+                uiSettings.setCompassImage(it)
                 uiSettings.setCompassMargins(8.dp, 56.dp, 7.dp, 0.dp)
             }
         }
