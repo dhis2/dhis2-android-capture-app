@@ -345,6 +345,7 @@
             android:layout_height="0dp"
             android:background="@color/white"
             android:gravity="center"
+            app:clipCorners="@{16}"
             android:paddingStart="40dp"
             android:paddingEnd="40dp"
             android:visibility="gone"
