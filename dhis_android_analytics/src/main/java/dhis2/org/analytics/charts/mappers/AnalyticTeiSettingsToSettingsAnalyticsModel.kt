@@ -69,14 +69,14 @@ class AnalyticTeiSettingsToSettingsAnalyticsModel(
     private fun getZscoreContainer(y: AnalyticsTeiWHONutritionItem): Triple<String, String, Boolean> {
         return if (y.dataElements().isNullOrEmpty()) {
             Triple(
-                y.indicators().first().indicator(),
-                y.indicators().first().programStage() ?: "",
+                y.indicators().firstOrNull()?.indicator() ?: "",
+                y.indicators().firstOrNull()?.programStage() ?: "",
                 false
             )
         } else {
             Triple(
-                y.dataElements().first().dataElement(),
-                y.dataElements().first().programStage() ?: "",
+                y.dataElements().firstOrNull()?.dataElement() ?: "",
+                y.dataElements().firstOrNull()?.programStage() ?: "",
                 true
             )
         }
@@ -86,14 +86,14 @@ class AnalyticTeiSettingsToSettingsAnalyticsModel(
     private fun getAgeOrHeightContainer(x: AnalyticsTeiWHONutritionItem): Triple<String, String, Boolean> {
         return if (x.dataElements().isNullOrEmpty()) {
             Triple(
-                x.indicators().first().indicator(),
-                x.indicators().first().programStage() ?: "",
+                x.indicators().firstOrNull()?.indicator() ?: "",
+                x.indicators().firstOrNull()?.programStage() ?: "",
                 false
             )
         } else {
             Triple(
-                x.dataElements().first().dataElement(),
-                x.dataElements().first().programStage() ?: "",
+                x.dataElements().firstOrNull()?.dataElement() ?: "",
+                x.dataElements().firstOrNull()?.programStage() ?: "",
                 true
             )
         }
