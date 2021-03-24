@@ -954,44 +954,47 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setMap(TrackerMapData trackerMapData) {
         binding.progressLayout.setVisibility(GONE);
-
-        org.dhis2.data.tuples.Pair<String, Boolean> data = presenter.getMessage(trackerMapData.getTeiModels());
-        if (data.val0().isEmpty()) {
+        if (binding.messageContainer.getVisibility() == View.VISIBLE) {
             binding.messageContainer.setVisibility(GONE);
-            binding.mapView.setVisibility(View.VISIBLE);
-            binding.mapCarousel.setVisibility(View.VISIBLE);
-            binding.mapLayerButton.setVisibility(View.VISIBLE);
-
-            List<CarouselItemModel> allItems = new ArrayList<>();
-            allItems.addAll(trackerMapData.getTeiModels());
-            allItems.addAll(trackerMapData.getEventModels());
-            for (SearchTeiModel searchTeiModel : trackerMapData.getTeiModels()) {
-                allItems.addAll(new MapRelationshipToRelationshipMapModel().mapList(searchTeiModel.getRelationships()));
-            }
-
-            teiMapManager.update(
-                    trackerMapData.getTeiFeatures(),
-                    trackerMapData.getEventFeatures(),
-                    trackerMapData.getDataElementFeaturess(),
-                    trackerMapData.getTeiBoundingBox()
-            );
-            updateCarousel(allItems);
-            binding.mapLayerButton.setVisibility(View.VISIBLE);
-
-
+            showMap(true);
         } else {
-            binding.messageContainer.setVisibility(View.VISIBLE);
-            binding.message.setText(data.val0());
-            binding.mapView.setVisibility(View.GONE);
-            binding.mapCarousel.setVisibility(View.GONE);
-            binding.mapLayerButton.setVisibility(View.GONE);
+            org.dhis2.data.tuples.Pair<String, Boolean> data = presenter.getMessage(trackerMapData.getTeiModels());
+            if (data.val0().isEmpty()) {
+                binding.messageContainer.setVisibility(GONE);
+                binding.mapView.setVisibility(View.VISIBLE);
+                binding.mapCarousel.setVisibility(View.VISIBLE);
+                binding.mapLayerButton.setVisibility(View.VISIBLE);
+
+                List<CarouselItemModel> allItems = new ArrayList<>();
+                allItems.addAll(trackerMapData.getTeiModels());
+                allItems.addAll(trackerMapData.getEventModels());
+                for (SearchTeiModel searchTeiModel : trackerMapData.getTeiModels()) {
+                    allItems.addAll(new MapRelationshipToRelationshipMapModel().mapList(searchTeiModel.getRelationships()));
+                }
+
+                teiMapManager.update(
+                        trackerMapData.getTeiFeatures(),
+                        trackerMapData.getEventFeatures(),
+                        trackerMapData.getDataElementFeaturess(),
+                        trackerMapData.getTeiBoundingBox()
+                );
+                updateCarousel(allItems);
+                binding.mapLayerButton.setVisibility(View.VISIBLE);
+                animations.endMapLoading(binding.mapCarousel);
+
+            } else {
+                binding.messageContainer.setVisibility(View.VISIBLE);
+                binding.message.setText(data.val0());
+                binding.mapView.setVisibility(View.GONE);
+                binding.mapCarousel.setVisibility(View.GONE);
+                binding.mapLayerButton.setVisibility(View.GONE);
+            }
+            if (!trackerMapData.getTeiModels().isEmpty() && !data.val1()) {
+                showHideFilter();
+            }
+            binding.toolbarProgress.hide();
+            updateFilters(FilterManager.getInstance().getTotalFilters());
         }
-        if (!trackerMapData.getTeiModels().isEmpty() && !data.val1()) {
-            showHideFilter();
-        }
-        animations.endMapLoading(binding.mapCarousel);
-        binding.toolbarProgress.hide();
-        updateFilters(FilterManager.getInstance().getTotalFilters());
     }
 
     private void updateCarousel(List<CarouselItemModel> allItems) {
