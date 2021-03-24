@@ -52,12 +52,6 @@ class CarouselProgramEventHolder(
                 else -> binding.noCoordinatesLabel.root.visibility = View.GONE
             }
 
-            binding.mapNavigateFab.visibility = if (data.shouldShowNavigationButton()) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
-
             binding.mapNavigateFab.setOnClickListener {
                 onNavigate(data.uid())
             }

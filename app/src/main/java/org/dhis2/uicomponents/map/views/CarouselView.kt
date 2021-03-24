@@ -138,13 +138,23 @@ class CarouselView @JvmOverloads constructor(
     }
 
     private fun showNavigateTo() {
-        val holder = findViewHolderForAdapterPosition(getVisiblePosition())
-        (holder as CarouselBinder<*>).showNavigateButton()
+        val visiblePosition = getVisiblePosition()
+        findViewHolderForAdapterPosition(visiblePosition - 1)?.let { it as CarouselBinder<*> }
+            ?.hideNavigateButton()
+        findViewHolderForAdapterPosition(visiblePosition)?.let { it as CarouselBinder<*> }
+            ?.showNavigateButton()
+        findViewHolderForAdapterPosition(visiblePosition + 1)?.let { it as CarouselBinder<*> }
+            ?.hideNavigateButton()
     }
 
     private fun hideNavigateTo() {
-        val holder = findViewHolderForAdapterPosition(getVisiblePosition())
-        (holder as CarouselBinder<*>).hideNavigateButton()
+        val visiblePosition = getVisiblePosition()
+        findViewHolderForAdapterPosition(visiblePosition - 1)?.let { it as CarouselBinder<*> }
+            ?.hideNavigateButton()
+        findViewHolderForAdapterPosition(visiblePosition)?.let { it as CarouselBinder<*> }
+            ?.hideNavigateButton()
+        findViewHolderForAdapterPosition(visiblePosition + 1)?.let { it as CarouselBinder<*> }
+            ?.hideNavigateButton()
     }
 
     private fun showNavFab(
