@@ -143,8 +143,9 @@
                 style="@style/ActionIcon"
                 android:onClick="@{()->presenter.showFilterGeneral()}"
                 android:visibility="gone"
+                android:layout_marginEnd="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_filter"
                 tools:ignore="ContentDescription"
@@ -159,17 +160,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_search_add"
                 app:tint="@color/white"
-                tools:ignore="ContentDescription" />
-
-            <ImageView
-                android:id="@+id/moreOptions"
-                style="@style/ActionIcon"
-                android:layout_alignParentEnd="true"
-                android:onClick="showMoreOptions"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_more"
                 tools:ignore="ContentDescription" />
 
             <Spinner
