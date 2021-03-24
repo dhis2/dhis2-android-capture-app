@@ -208,7 +208,7 @@ data class CatOptionComboFilter(
     }
 
     override fun icon(): Int {
-        return R.drawable.ic_filter_sync
+        return R.drawable.ic_category_option_combo_filter
     }
 }
 
