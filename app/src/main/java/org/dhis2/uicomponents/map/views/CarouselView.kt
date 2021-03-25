@@ -11,8 +11,9 @@ import kotlin.math.abs
 import org.dhis2.uicomponents.map.camera.centerCameraOnFeature
 import org.dhis2.uicomponents.map.camera.centerCameraOnFeatures
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
+import org.dhis2.uicomponents.map.carousel.CarouselBinder
 import org.dhis2.uicomponents.map.carousel.CarouselLayoutManager
-import org.dhis2.uicomponents.map.carousel.CarouselTeiHolder
+import org.dhis2.uicomponents.map.geometry.isPoint
 import org.dhis2.uicomponents.map.managers.MapManager
 
 class CarouselView @JvmOverloads constructor(
@@ -26,7 +27,6 @@ class CarouselView @JvmOverloads constructor(
     private val CAROUSEL_SMOOTH_THREADSHOLD = 10
     private val CAROUSEL_PROXIMITY_THREADSHOLD = 3
     private lateinit var mapManager: MapManager
-    private lateinit var callback: (feature: Feature?, found: Boolean) -> Boolean
 
     init {
         layoutManager = CarouselLayoutManager(context, HORIZONTAL, false)
@@ -43,37 +43,34 @@ class CarouselView @JvmOverloads constructor(
         manager: MapManager
     ) {
         mapManager = manager
-        if (::callback.isInitialized) {
-            addOnScrollListener(object : OnScrollListener() {
-                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                    super.onScrollStateChanged(recyclerView, newState)
-                    if (
-                        newState == SCROLL_STATE_DRAGGING ||
-                        newState == SCROLL_STATE_SETTLING &&
-                        carouselEnabled
-                    ) {
-                        callback.invoke(null, false)
-                    }
-                    if (newState == SCROLL_STATE_IDLE && carouselEnabled) {
-                        mapManager.requestMapLayerManager()?.selectFeature(null)
-                        val features = mapManager.findFeatures(currentItem())
-                        if (features != null && features.isNotEmpty() && features.size > 1) {
-                            mapManager.map?.centerCameraOnFeatures(features)
+        addOnScrollListener(object : OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (
+                    newState == SCROLL_STATE_DRAGGING ||
+                    newState == SCROLL_STATE_SETTLING &&
+                    carouselEnabled
+                ) {
+                    showNavFab(null, false)
+                }
+                if (newState == SCROLL_STATE_IDLE && carouselEnabled) {
+                    mapManager.requestMapLayerManager()?.selectFeature(null)
+                    val features = mapManager.findFeatures(currentItem())
+                    if (features != null && features.isNotEmpty() && features.size > 1) {
+                        mapManager.map?.centerCameraOnFeatures(features)
+                        showNavFab(features.firstOrNull(), true)
+                    } else {
+                        val feature = mapManager.findFeature(currentItem())
+                        if (feature == null) {
+                            showNavFab(feature, false)
                         } else {
-                            val feature = mapManager.findFeature(currentItem())
-                            if (feature == null) {
-                                callback.invoke(feature, false)
-                            } else {
-                                mapManager.map?.centerCameraOnFeature(feature)
-                                callback.invoke(feature, true)
-                            }
+                            mapManager.map?.centerCameraOnFeature(feature)
+                            showNavFab(feature, true)
                         }
                     }
                 }
-            })
-        } else {
-            throw IllegalArgumentException("Callback cannot be null, set it with .setCallback()")
-        }
+            }
+        })
     }
 
     fun selectFirstItem() {
@@ -83,9 +80,9 @@ class CarouselView @JvmOverloads constructor(
                     val feature = mapManager.findFeature(currentItem())
                     if (feature != null) {
                         mapManager.mapLayerManager.selectFeature(feature)
-                        callback.invoke(feature, true)
+                        showNavFab(feature, true)
                     } else {
-                        callback.invoke(feature, false)
+                        showNavFab(feature, false)
                     }
                 }
             }
@@ -140,17 +137,34 @@ class CarouselView @JvmOverloads constructor(
         (layoutManager as CarouselLayoutManager).setEnabled(enabled)
     }
 
-    fun showNavigateTo() {
-        val holder = findViewHolderForAdapterPosition(getVisiblePosition())
-        (holder as CarouselTeiHolder).showNavigateButton()
+    private fun showNavigateTo() {
+        val visiblePosition = getVisiblePosition()
+        findViewHolderForAdapterPosition(visiblePosition - 1)?.let { it as CarouselBinder<*> }
+            ?.hideNavigateButton()
+        findViewHolderForAdapterPosition(visiblePosition)?.let { it as CarouselBinder<*> }
+            ?.showNavigateButton()
+        findViewHolderForAdapterPosition(visiblePosition + 1)?.let { it as CarouselBinder<*> }
+            ?.hideNavigateButton()
     }
 
-    fun hideNavigateTo() {
-        val holder = findViewHolderForAdapterPosition(getVisiblePosition())
-        (holder as CarouselTeiHolder).hideNavigateButton()
+    private fun hideNavigateTo() {
+        val visiblePosition = getVisiblePosition()
+        findViewHolderForAdapterPosition(visiblePosition - 1)?.let { it as CarouselBinder<*> }
+            ?.hideNavigateButton()
+        findViewHolderForAdapterPosition(visiblePosition)?.let { it as CarouselBinder<*> }
+            ?.hideNavigateButton()
+        findViewHolderForAdapterPosition(visiblePosition + 1)?.let { it as CarouselBinder<*> }
+            ?.hideNavigateButton()
     }
 
-    fun setCallback(callback: (feature: Feature?, found: Boolean) -> Boolean) {
-        this.callback = callback
+    private fun showNavFab(
+        feature: Feature?,
+        found: Boolean
+    ) {
+        if (found && feature?.isPoint() == true) {
+            showNavigateTo()
+        } else {
+            hideNavigateTo()
+        }
     }
 }

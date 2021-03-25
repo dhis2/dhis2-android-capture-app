@@ -6,38 +6,10 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
+import org.dhis2.Bindings.dp
 import org.dhis2.R
 
 object TeiMarkers {
-
-    private fun initMarkerCanvas(context: Context, color: Int): Pair<Canvas, Bitmap> {
-        val drawable: Drawable =
-            ContextCompat.getDrawable(context, R.drawable.ic_img_marker_frame)!!
-        tintDrawable(drawable, color)
-        drawable.mutate()
-
-        val canvasMarker = Bitmap.createBitmap(
-            drawable.intrinsicWidth,
-            drawable.intrinsicHeight,
-            Bitmap.Config.ARGB_8888
-        )
-        val markerBitmap =
-            Bitmap.createBitmap(canvasMarker.width, canvasMarker.height, canvasMarker.config)
-        val canvas = Canvas(markerBitmap)
-
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
-        drawable.draw(canvas)
-
-        return Pair(canvas, markerBitmap)
-    }
-
-    private fun tintDrawable(drawable: Drawable, color: Int) {
-        if (color != -1) {
-            val wrapped = DrawableCompat.wrap(drawable)
-            DrawableCompat.setTint(wrapped, color)
-        }
-    }
 
     fun getMarker(context: Context, bitmap: Bitmap): Bitmap {
         val drawable: Drawable =
@@ -59,7 +31,7 @@ object TeiMarkers {
         canvas.drawBitmap(
             bitmap,
             canvas.width / 2f - bitmap.width / 2f,
-            canvas.height / 2f - bitmap.height / 2f - 5,
+            1.dp.toFloat(),
             null
         )
         return markerBitmap
