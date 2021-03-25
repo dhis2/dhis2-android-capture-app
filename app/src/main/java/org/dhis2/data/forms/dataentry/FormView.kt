@@ -64,6 +64,12 @@ class FormView @JvmOverloads constructor(
                 null
             ).show()
         }
+        adapter.onNextClicked = { position ->
+            val viewHolder = recyclerView.findViewHolderForLayoutPosition(position + 1);
+            if (viewHolder == null) {
+                recyclerView.smoothScrollToPosition(position + 1);
+            }
+        }
         recyclerView.adapter = adapter
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -73,16 +79,16 @@ class FormView @JvmOverloads constructor(
             }
         } else {
             recyclerView.setOnScrollListener(object :
-                    RecyclerView.OnScrollListener() {
-                    override fun onScrolled(
-                        recyclerView: RecyclerView,
-                        dx: Int,
-                        dy: Int
-                    ) {
-                        val hasToShowFab = checkLastItem()
-                        scrollCallback?.invoke(hasToShowFab)
-                    }
-                })
+                RecyclerView.OnScrollListener() {
+                override fun onScrolled(
+                    recyclerView: RecyclerView,
+                    dx: Int,
+                    dy: Int
+                ) {
+                    val hasToShowFab = checkLastItem()
+                    scrollCallback?.invoke(hasToShowFab)
+                }
+            })
         }
 
         recyclerView.setOnFocusChangeListener { _, hasFocus ->

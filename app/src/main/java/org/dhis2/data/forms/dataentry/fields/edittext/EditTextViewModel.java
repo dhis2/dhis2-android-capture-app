@@ -184,4 +184,8 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
         return super.equals(o)
                 && (o instanceof EditTextViewModel && ((EditTextViewModel) o).legendValue() == legendValue());
     }
+
+    public void triggerOnNextCallback(){
+        onNextCallback.onNext();
+    }
 }

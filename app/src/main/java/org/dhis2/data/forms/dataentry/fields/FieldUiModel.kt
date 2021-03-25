@@ -18,4 +18,8 @@ interface FieldUiModel {
 
         fun showDialog(title: String, message: String?)
     }
+
+    interface OnNextCallback {
+        fun onNext()
+    }
 }

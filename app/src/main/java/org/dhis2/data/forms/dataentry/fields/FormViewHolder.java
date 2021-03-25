@@ -27,13 +27,14 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
     public void bind(FieldUiModel uiModel, FieldItemCallback callback) {
         FieldViewModel viewModel = (FieldViewModel) uiModel;
         viewModel.setCallback(callback::onShowDialog);
+        viewModel.setOnNextCallback(() -> callback.onNext(getLayoutPosition()));
 
         binding.setVariable(BR.item, viewModel);
         binding.executePendingBindings();
     }
 
     public interface FieldItemCallback {
-
         void onShowDialog(String title, @Nullable String message);
+        void onNext(int layoutPosition);
     }
 }

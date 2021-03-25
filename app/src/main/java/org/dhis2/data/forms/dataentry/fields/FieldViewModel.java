@@ -77,7 +77,21 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Nullable
     public abstract FlowableProcessor<RowAction> processor();
 
+    public OnNextCallback onNextCallback;
+
     public Callback callback;
+
+    public Callback getCallback() {
+        return callback;
+    }
+
+    public OnNextCallback getOnNextCallback() {
+        return onNextCallback;
+    }
+
+    public void setOnNextCallback(OnNextCallback onNextCallback) {
+        this.onNextCallback = onNextCallback;
+    }
 
     @NonNull
     public abstract Boolean activated();

@@ -22,17 +22,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
-
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import org.dhis2.BR;
 import org.dhis2.Components;
 import org.dhis2.R;
@@ -50,21 +47,17 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
-
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
-
 import timber.log.Timber;
-
 import static android.content.Context.MODE_PRIVATE;
 import static android.text.TextUtils.isEmpty;
 import static android.view.inputmethod.EditorInfo.IME_ACTION_DONE;
 import static android.view.inputmethod.EditorInfo.IME_ACTION_NEXT;
 import static java.lang.String.valueOf;
-import static org.dhis2.Bindings.ValueExtensionsKt.withValueTypeCheck;
 import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
 
 
@@ -150,15 +143,14 @@ public class CustomTextView extends FieldLayout {
                 sendAction();
                 validateRegex();
             }
-
         });
 
         editText.setOnEditorActionListener((v, actionId, event) -> {
             switch (actionId) {
                 case IME_ACTION_NEXT:
+                    viewModel.triggerOnNextCallback();
                     viewModel.onNext();
                     return true;
-
                 case IME_ACTION_DONE:
                     closeKeyboard(v);
                     return true;
