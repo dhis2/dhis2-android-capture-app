@@ -10,12 +10,10 @@ import android.transition.TransitionManager
 import android.view.View
 import android.view.View.GONE
 import android.widget.TextView
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableInt
 import androidx.drawerlayout.widget.DrawerLayout
-import com.android.dbexporterlibrary.ExporterListener
 import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
@@ -49,7 +47,6 @@ private const val FRAGMENT = "Fragment"
 class MainActivity :
     ActivityGlobalAbstract(),
     MainView,
-    ExporterListener,
     DrawerLayout.DrawerListener {
     private lateinit var binding: ActivityMainBinding
     lateinit var mainComponent: MainComponent
@@ -273,14 +270,6 @@ class MainActivity :
 
     override fun hideFilters() {
         binding.filterActionButton.visibility = GONE
-    }
-
-    override fun fail(message: String, exception: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    override fun success(s: String) {
-        Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDrawerStateChanged(newState: Int) {
