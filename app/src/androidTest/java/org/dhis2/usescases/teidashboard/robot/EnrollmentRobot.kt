@@ -101,6 +101,16 @@ class EnrollmentRobot : BaseRobot() {
             )
     }
 
+    fun clickOnInputDate(label: String) {
+        onView(withId(R.id.fieldRecycler))
+            .perform(actionOnItem<DashboardProgramViewHolder>(
+                hasDescendant(withText(label)), clickChildViewWithId(R.id.inputEditText)))
+    }
+
+    fun clickOnDatePicker() {
+        onView(withId(R.id.date_picker)).perform(click())
+    }
+
     companion object {
         const val ACTIVE_PROGRAMS = "Active programs"
         const val PAST_PROGRAMS = "Past programs"
