@@ -125,7 +125,7 @@ class MainActivity :
         // end
 
         if (BuildConfig.DEBUG) {
-            binding.moreOptions.setOnLongClickListener {
+            binding.menu.setOnLongClickListener {
                 startActivity(DevelopmentActivity::class.java, null, false, false, null)
                 false
             }

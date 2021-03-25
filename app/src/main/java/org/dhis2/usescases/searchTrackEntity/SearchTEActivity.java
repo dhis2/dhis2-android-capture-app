@@ -355,39 +355,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.executePendingBindings();
     }
 
-    @Override
-    public void showMoreOptions(View view) {
-        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
-        try {
-            Field[] fields = popupMenu.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                if ("mPopup".equals(field.getName())) {
-                    field.setAccessible(true);
-                    Object menuPopupHelper = field.get(popupMenu);
-                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
-                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
-                    setForceIcons.invoke(menuPopupHelper, true);
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-        popupMenu.getMenuInflater().inflate(R.menu.search_menu, popupMenu.getMenu());
-        popupMenu.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.showHelp) {
-                analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
-                showTutorial(false);
-            }
-            return false;
-        });
-
-        boolean progressIsVisible = binding.progressLayout.getVisibility() == View.VISIBLE;
-
-        if (!progressIsVisible)
-            popupMenu.show();
-    }
-
     //endregion
 
     //-----------------------------------------------------------------------
