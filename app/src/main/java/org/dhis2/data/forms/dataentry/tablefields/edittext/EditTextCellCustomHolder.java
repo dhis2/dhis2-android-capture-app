@@ -287,7 +287,6 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
     public void selectNext() {
         editText.clearFocus();
-        closeKeyboard(editText);
 
         if (tableView.getColumnHeaderRecyclerView().get(tableView.getColumnHeaderRecyclerView().size() - 1).getAdapter().getItemCount() > tableView.getSelectedColumn() + 1) {
             tableView.setSelectedCell(tableView.getSelectedColumn() + 1, tableView.getSelectedRow());
@@ -307,6 +306,8 @@ final class EditTextCellCustomHolder extends FormViewHolder {
             editText.requestFocus();
             editText.setSelection(editText.getText().length());
             editText.post(() -> openKeyboard(editText));
+        }else if(!editTextModel.editable()){
+            closeKeyboard(editText);
         }
     }
 
