@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
 
@@ -73,16 +74,16 @@ class FormView @JvmOverloads constructor(
             }
         } else {
             recyclerView.setOnScrollListener(object :
-                    RecyclerView.OnScrollListener() {
-                    override fun onScrolled(
-                        recyclerView: RecyclerView,
-                        dx: Int,
-                        dy: Int
-                    ) {
-                        val hasToShowFab = checkLastItem()
-                        scrollCallback?.invoke(hasToShowFab)
-                    }
-                })
+                RecyclerView.OnScrollListener() {
+                override fun onScrolled(
+                    recyclerView: RecyclerView,
+                    dx: Int,
+                    dy: Int
+                ) {
+                    val hasToShowFab = checkLastItem()
+                    scrollCallback?.invoke(hasToShowFab)
+                }
+            })
         }
 
         recyclerView.setOnFocusChangeListener { _, hasFocus ->
@@ -96,6 +97,13 @@ class FormView @JvmOverloads constructor(
         val layoutManager: LinearLayoutManager = recyclerView.layoutManager as LinearLayoutManager
         val myFirstPositionIndex = layoutManager.findFirstVisibleItemPosition()
         val myFirstPositionView = layoutManager.findViewByPosition(myFirstPositionIndex)
+
+        //Close keyboard when EditText looses focus
+        items.firstOrNull { it.activated() }?.let { item ->
+            if (item !is EditTextViewModel) {
+                closeKeyboard()
+            }
+        }
 
         var offset = 0
         myFirstPositionView?.let {
