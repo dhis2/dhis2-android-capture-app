@@ -115,8 +115,8 @@ class DataEntryAdapter :
     }
 
     override fun onNext(layoutPosition: Int) {
-       onNextClicked?.let {
-           it(layoutPosition)
-       }
+        onNextClicked?.let {
+            it(layoutPosition)
+        }
     }
 }
