@@ -16,10 +16,7 @@ interface FieldUiModel {
 
     interface Callback {
 
-        fun showDialog(title: String, message: String?)
-    }
-
-    interface OnNextCallback {
         fun onNext()
+        fun showDialog(title: String, message: String?)
     }
 }

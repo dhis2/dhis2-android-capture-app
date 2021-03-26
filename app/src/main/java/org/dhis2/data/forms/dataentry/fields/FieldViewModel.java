@@ -77,16 +77,10 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Nullable
     public abstract FlowableProcessor<RowAction> processor();
 
-    public OnNextCallback onNextCallback;
-
     public Callback callback;
 
     public Callback getCallback() {
         return callback;
-    }
-
-    public void setOnNextCallback(OnNextCallback onNextCallback) {
-        this.onNextCallback = onNextCallback;
     }
 
     @NonNull
@@ -179,6 +173,7 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     @Override
     public void onNext() {
+        callback.onNext();
         if (processor() != null) {
             RowAction action = new RowAction(
                     uid(),
