@@ -65,9 +65,9 @@ class FormView @JvmOverloads constructor(
             ).show()
         }
         adapter.onNextClicked = { position ->
-            val viewHolder = recyclerView.findViewHolderForLayoutPosition(position + 1);
+            val viewHolder = recyclerView.findViewHolderForLayoutPosition(position + 1)
             if (viewHolder == null) {
-                recyclerView.smoothScrollToPosition(position + 1);
+                recyclerView.smoothScrollToPosition(position + 1)
             }
         }
         recyclerView.adapter = adapter
