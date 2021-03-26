@@ -64,7 +64,6 @@ import static android.text.TextUtils.isEmpty;
 import static android.view.inputmethod.EditorInfo.IME_ACTION_DONE;
 import static android.view.inputmethod.EditorInfo.IME_ACTION_NEXT;
 import static java.lang.String.valueOf;
-import static org.dhis2.Bindings.ValueExtensionsKt.withValueTypeCheck;
 import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
 
 

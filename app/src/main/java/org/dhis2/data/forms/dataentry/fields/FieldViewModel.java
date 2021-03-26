@@ -184,16 +184,32 @@ public abstract class FieldViewModel implements FieldUiModel {
         }
     }
 
+    public void onTextChange(String value) {
+        if (processor() != null) {
+            RowAction action = new RowAction(
+                    uid(),
+                    value,
+                    false,
+                    null,
+                    null,
+                    null,
+                    null,
+                    ActionType.ON_TEXT_CHANGE
+            );
+            Objects.requireNonNull(processor()).onNext(action);
+        }
+    }
+
     public boolean canHaveLegend() {
         return this instanceof EditTextViewModel || this instanceof SpinnerViewModel;
     }
 
-    public FieldViewModel withLegend(LegendValue legendValue){
-        if(this instanceof EditTextViewModel){
-            return ((EditTextViewModel)this).withlegendValue(legendValue);
-        }else if(this instanceof SpinnerViewModel){
-            return ((SpinnerViewModel)this).withlegendValue(legendValue);
-        }else {
+    public FieldViewModel withLegend(LegendValue legendValue) {
+        if (this instanceof EditTextViewModel) {
+            return ((EditTextViewModel) this).withlegendValue(legendValue);
+        } else if (this instanceof SpinnerViewModel) {
+            return ((SpinnerViewModel) this).withlegendValue(legendValue);
+        } else {
             return this;
         }
     }
