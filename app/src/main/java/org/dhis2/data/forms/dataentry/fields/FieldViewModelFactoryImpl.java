@@ -69,7 +69,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                                              @Nullable String value,
                                              boolean editable) {
         return create(trackedEntityAttribute.uid(),
-                programTrackedEntityAttribute != null ? programTrackedEntityAttribute.displayName() : trackedEntityAttribute.displayFormName(),
+                trackedEntityAttribute.displayFormName(),
                 trackedEntityAttribute.valueType(),
                 programTrackedEntityAttribute != null ? programTrackedEntityAttribute.mandatory() : false,
                 trackedEntityAttribute.optionSet() != null ? trackedEntityAttribute.optionSet().uid() : null,
