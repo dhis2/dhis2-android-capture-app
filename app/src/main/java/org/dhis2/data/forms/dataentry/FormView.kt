@@ -18,6 +18,7 @@ import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
+import timber.log.Timber
 
 class FormView @JvmOverloads constructor(
     context: Context,
@@ -67,6 +68,16 @@ class FormView @JvmOverloads constructor(
                 null
             ).show()
         }
+        adapter.onNextClicked = { position ->
+            val viewHolder = recyclerView.findViewHolderForLayoutPosition(position + 1)
+            if (viewHolder == null) {
+                try {
+                    recyclerView.smoothScrollToPosition(position + 1)
+                } catch (e: Exception) {
+                    Timber.e(e)
+                }
+            }
+        }
         recyclerView.adapter = adapter
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -75,17 +86,16 @@ class FormView @JvmOverloads constructor(
                 scrollCallback?.invoke(hasToShowFab)
             }
         } else {
-            recyclerView.setOnScrollListener(object :
-                    RecyclerView.OnScrollListener() {
-                    override fun onScrolled(
-                        recyclerView: RecyclerView,
-                        dx: Int,
-                        dy: Int
-                    ) {
-                        val hasToShowFab = checkLastItem()
-                        scrollCallback?.invoke(hasToShowFab)
-                    }
-                })
+            recyclerView.setOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(
+                    recyclerView: RecyclerView,
+                    dx: Int,
+                    dy: Int
+                ) {
+                    val hasToShowFab = checkLastItem()
+                    scrollCallback?.invoke(hasToShowFab)
+                }
+            })
         }
 
         recyclerView.setOnFocusChangeListener { _, hasFocus ->

@@ -79,6 +79,10 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     public Callback callback;
 
+    public Callback getCallback() {
+        return callback;
+    }
+
     @NonNull
     public abstract Boolean activated();
 
@@ -169,6 +173,7 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     @Override
     public void onNext() {
+        callback.onNext();
         if (processor() != null) {
             RowAction action = new RowAction(
                     uid(),
