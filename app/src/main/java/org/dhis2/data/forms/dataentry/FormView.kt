@@ -15,6 +15,7 @@ import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
+import timber.log.Timber
 
 class FormView @JvmOverloads constructor(
     context: Context,
@@ -67,7 +68,11 @@ class FormView @JvmOverloads constructor(
         adapter.onNextClicked = { position ->
             val viewHolder = recyclerView.findViewHolderForLayoutPosition(position + 1)
             if (viewHolder == null) {
-                recyclerView.smoothScrollToPosition(position + 1)
+                try {
+                    recyclerView.smoothScrollToPosition(position + 1)
+                } catch (e: Exception) {
+                    Timber.e(e)
+                }
             }
         }
         recyclerView.adapter = adapter
