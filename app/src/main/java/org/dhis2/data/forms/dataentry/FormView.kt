@@ -74,16 +74,16 @@ class FormView @JvmOverloads constructor(
             }
         } else {
             recyclerView.setOnScrollListener(object :
-                RecyclerView.OnScrollListener() {
-                override fun onScrolled(
-                    recyclerView: RecyclerView,
-                    dx: Int,
-                    dy: Int
-                ) {
-                    val hasToShowFab = checkLastItem()
-                    scrollCallback?.invoke(hasToShowFab)
-                }
-            })
+                    RecyclerView.OnScrollListener() {
+                    override fun onScrolled(
+                        recyclerView: RecyclerView,
+                        dx: Int,
+                        dy: Int
+                    ) {
+                        val hasToShowFab = checkLastItem()
+                        scrollCallback?.invoke(hasToShowFab)
+                    }
+                })
         }
 
         recyclerView.setOnFocusChangeListener { _, hasFocus ->
@@ -98,12 +98,7 @@ class FormView @JvmOverloads constructor(
         val myFirstPositionIndex = layoutManager.findFirstVisibleItemPosition()
         val myFirstPositionView = layoutManager.findViewByPosition(myFirstPositionIndex)
 
-        //Close keyboard when EditText looses focus
-        items.firstOrNull { it.activated() }?.let { item ->
-            if (item !is EditTextViewModel) {
-                closeKeyboard()
-            }
-        }
+        handleKeyBoardOnFocusChange(items)
 
         var offset = 0
         myFirstPositionView?.let {
@@ -127,5 +122,13 @@ class FormView @JvmOverloads constructor(
             lastVisiblePosition == adapter.itemCount - 1 ||
                 adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
             )
+    }
+
+    private fun handleKeyBoardOnFocusChange(items: List<FieldViewModel>) {
+        items.firstOrNull { it.activated() }?.let { item ->
+            if (item !is EditTextViewModel) {
+                closeKeyboard()
+            }
+        }
     }
 }
