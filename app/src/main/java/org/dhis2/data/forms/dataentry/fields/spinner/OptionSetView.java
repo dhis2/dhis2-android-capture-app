@@ -89,6 +89,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
 
         delete.setOnClickListener(view -> {
             closeKeyboard(this);
+            viewModel.onItemClick();
             deleteSelectedOption();
         });
 

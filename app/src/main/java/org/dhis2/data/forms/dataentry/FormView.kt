@@ -13,6 +13,9 @@ import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
+import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
+import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
 
@@ -97,6 +100,8 @@ class FormView @JvmOverloads constructor(
         val myFirstPositionIndex = layoutManager.findFirstVisibleItemPosition()
         val myFirstPositionView = layoutManager.findViewByPosition(myFirstPositionIndex)
 
+        handleKeyBoardOnFocusChange(items)
+
         var offset = 0
         myFirstPositionView?.let {
             offset = it.top
@@ -119,5 +124,20 @@ class FormView @JvmOverloads constructor(
             lastVisiblePosition == adapter.itemCount - 1 ||
                 adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
             )
+    }
+
+    private fun handleKeyBoardOnFocusChange(items: List<FieldViewModel>) {
+        items.firstOrNull { it.activated() }?.let {
+            if (!doesItemNeedsKeyboard(it)) {
+                closeKeyboard()
+            }
+        }
+    }
+
+    private fun doesItemNeedsKeyboard(item: FieldViewModel) = when (item) {
+        is EditTextViewModel,
+        is ScanTextViewModel,
+        is CoordinateViewModel -> true
+        else -> false
     }
 }
