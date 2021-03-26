@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
+import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
 
@@ -125,10 +127,17 @@ class FormView @JvmOverloads constructor(
     }
 
     private fun handleKeyBoardOnFocusChange(items: List<FieldViewModel>) {
-        items.firstOrNull { it.activated() }?.let { item ->
-            if (item !is EditTextViewModel) {
+        items.firstOrNull { it.activated() }?.let {
+            if (!doesItemNeedsKeyboard(it)) {
                 closeKeyboard()
             }
         }
+    }
+
+    private fun doesItemNeedsKeyboard(item: FieldViewModel) = when (item) {
+        is EditTextViewModel,
+        is ScanTextViewModel,
+        is CoordinateViewModel -> true
+        else -> false
     }
 }
