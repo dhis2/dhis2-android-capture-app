@@ -78,8 +78,7 @@ class FormView @JvmOverloads constructor(
                 scrollCallback?.invoke(hasToShowFab)
             }
         } else {
-            recyclerView.setOnScrollListener(object :
-                RecyclerView.OnScrollListener() {
+            recyclerView.setOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(
                     recyclerView: RecyclerView,
                     dx: Int,
