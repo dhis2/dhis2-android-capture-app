@@ -2,5 +2,4 @@
 <resources>
     <item name="omfm_tag" type="id" />
     <item name="omfm_main_label_id" type="id" />
-    <item name="item_key_support" type="id" />
 </resources>
