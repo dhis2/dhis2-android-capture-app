@@ -7,6 +7,7 @@ import android.text.method.DigitsKeyListener;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -54,7 +55,13 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         this.processor = processor;
 
         editText.setOnEditorActionListener((v, actionId, event) -> {
-            selectNext();
+            if(actionId == EditorInfo.IME_ACTION_NEXT) {
+                selectNext();
+            }else{
+                editText.clearFocus();
+                closeKeyboard(editText);
+                tableView.getSelectionHandler().clearSelection();
+            }
             return true;
         });
 
