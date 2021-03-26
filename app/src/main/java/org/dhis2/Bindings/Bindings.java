@@ -13,10 +13,12 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.text.method.ScrollingMovementMethod;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -41,6 +43,7 @@ import org.dhis2.animations.ViewAnimationsKt;
 import org.dhis2.data.forms.dataentry.fields.KeyboardActionType;
 import org.dhis2.data.forms.dataentry.fields.LegendValue;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
+import org.dhis2.databinding.DataElementLegendBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
 import org.dhis2.utils.CatComboAdapter;
@@ -861,6 +864,19 @@ public class Bindings {
             ViewAnimationsKt.show(view);
         } else {
             ViewAnimationsKt.hide(view);
+        }
+    }
+
+    @BindingAdapter("legendBadge")
+    public static void setLegendBadge(FrameLayout legendLayout, LegendValue legendValue){
+        legendLayout.setVisibility(
+                legendValue != null ? View.VISIBLE : View.GONE
+        );
+        if(legendValue!=null){
+            DataElementLegendBinding legendBinding = DataElementLegendBinding.inflate(LayoutInflater.from(legendLayout.getContext()));
+            legendBinding.setLegend(legendValue);
+            legendLayout.removeAllViews();
+            legendLayout.addView(legendBinding.getRoot());
         }
     }
 }

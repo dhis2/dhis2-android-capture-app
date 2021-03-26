@@ -15,13 +15,13 @@
     <string name="no_reserved_values">Il n\'y a plus de valeurs réservées. Veuillez contacter votre administrateur système.</string>
     <string name="no_reserved_values_connection">Il n\'y a plus de valeurs réservées. Veuillez vous connecter pour en obtenir d\'autres.</string>
     <!-- SyncService strings: -->
-    <string name="sync_now">Synchronisez_maintenat</string>
+    <string name="sync_now">Synchronisez_maintenant</string>
     <string name="sync_text">Synchronisation avec le serveur</string>
-    <string name="sync_title">synchronisant</string>
+    <string name="sync_title">Synchronise maintenant</string>
 
     <string name="sync_metadata">Méta-données</string>
     <string name="sync_events">Événements</string>
-    <string name="sync_tei">Entités suiviées </string>
+    <string name="sync_tei">Entités suivies </string>
 
     <string name="sync_complete_title">Fini</string>
     <string name="sync_complete_text">Synchronisation complète</string>

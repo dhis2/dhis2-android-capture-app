@@ -76,7 +76,8 @@ class CarouselAdapter private constructor(
                     ),
                     currentTei,
                     onDeleteRelationshipListener,
-                    onRelationshipClickListener
+                    onRelationshipClickListener,
+                    onNavigateListener
                 )
             CarouselItems.EVENT ->
                 CarouselEventHolder(
@@ -87,7 +88,8 @@ class CarouselAdapter private constructor(
                     ),
                     program,
                     onEventClickListener,
-                    onProfileImageClick
+                    onProfileImageClick,
+                    onNavigateListener
                 )
             CarouselItems.PROGRAM_EVENT ->
                 CarouselProgramEventHolder(
@@ -99,7 +101,8 @@ class CarouselAdapter private constructor(
                     onEventClickListener,
                     { item ->
                         (items.first { it == item } as ProgramEventViewModel).toggleAttributeList()
-                    }
+                    },
+                    onNavigateListener
                 )
         }
     }

@@ -31,6 +31,7 @@ import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
+import org.dhis2.uicomponents.map.ExternalMapNavigation;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.RelationshipMapManager;
@@ -62,6 +63,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     RelationshipPresenter presenter;
     @Inject
     CarouselViewAnimations animations;
+    @Inject
+    ExternalMapNavigation mapNavigation;
 
     private FragmentRelationshipsBinding binding;
 
@@ -320,9 +323,15 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                             }
                             return true;
                         })
+                        .addOnNavigateClickListener(uid->{
+                            Feature feature = relationshipMapManager.findFeature(uid);
+                            if(feature != null){
+                                startActivity(mapNavigation.navigateToMapIntent(feature));
+                            }
+                            return Unit.INSTANCE;
+                        })
                         .build();
         binding.mapCarousel.setAdapter(carouselAdapter);
-        binding.mapCarousel.setCallback((feature, found) -> true);
         binding.mapCarousel.attachToMapManager(relationshipMapManager);
         carouselAdapter.addItems(relationships);
 
