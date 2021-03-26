@@ -9,6 +9,7 @@ import org.dhis2.BR;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class FormViewHolder extends RecyclerView.ViewHolder {
@@ -26,14 +27,25 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
 
     public void bind(FieldUiModel uiModel, FieldItemCallback callback) {
         FieldViewModel viewModel = (FieldViewModel) uiModel;
-        viewModel.setCallback(callback::onShowDialog);
+        FieldUiModel.Callback itemCallback = new FieldUiModel.Callback() {
+            @Override
+            public void onNext() {
+                callback.onNext(getLayoutPosition());
+            }
+
+            @Override
+            public void showDialog(@NotNull String title, @Nullable String message) {
+                callback.onShowDialog(title, message);
+            }
+        };
+        viewModel.setCallback(itemCallback);
 
         binding.setVariable(BR.item, viewModel);
         binding.executePendingBindings();
     }
 
     public interface FieldItemCallback {
-
         void onShowDialog(String title, @Nullable String message);
+        void onNext(int layoutPosition);
     }
 }

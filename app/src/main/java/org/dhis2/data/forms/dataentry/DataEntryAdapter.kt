@@ -18,6 +18,7 @@ class DataEntryAdapter :
     FieldItemCallback {
 
     var didItemShowDialog: ((title: String, message: String?) -> Unit)? = null
+    var onNextClicked: ((position: Int) -> Unit)? = null
 
     private val sectionHandler = SectionHandler()
     var sectionPositions: MutableMap<String, Int> = LinkedHashMap()
@@ -33,6 +34,7 @@ class DataEntryAdapter :
         if (getItem(position) is SectionViewModel) {
             updateSectionData(position, false)
         }
+
         holder.bind(getItem(position), this)
     }
 
@@ -109,6 +111,12 @@ class DataEntryAdapter :
     override fun onShowDialog(title: String, message: String?) {
         didItemShowDialog?.let { action ->
             action(title, message)
+        }
+    }
+
+    override fun onNext(layoutPosition: Int) {
+        onNextClicked?.let {
+            it(layoutPosition)
         }
     }
 }
