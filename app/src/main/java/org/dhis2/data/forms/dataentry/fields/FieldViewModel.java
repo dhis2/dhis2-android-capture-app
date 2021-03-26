@@ -85,10 +85,6 @@ public abstract class FieldViewModel implements FieldUiModel {
         return callback;
     }
 
-    public OnNextCallback getOnNextCallback() {
-        return onNextCallback;
-    }
-
     public void setOnNextCallback(OnNextCallback onNextCallback) {
         this.onNextCallback = onNextCallback;
     }

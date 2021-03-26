@@ -185,7 +185,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
                 && (o instanceof EditTextViewModel && ((EditTextViewModel) o).legendValue() == legendValue());
     }
 
-    public void triggerOnNextCallback(){
+    public void triggerOnNextToCheckIfHasToScroll(){
         onNextCallback.onNext();
     }
 }

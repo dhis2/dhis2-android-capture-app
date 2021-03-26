@@ -148,7 +148,7 @@ public class CustomTextView extends FieldLayout {
         editText.setOnEditorActionListener((v, actionId, event) -> {
             switch (actionId) {
                 case IME_ACTION_NEXT:
-                    viewModel.triggerOnNextCallback();
+                    viewModel.triggerOnNextToCheckIfHasToScroll();
                     viewModel.onNext();
                     return true;
                 case IME_ACTION_DONE:
