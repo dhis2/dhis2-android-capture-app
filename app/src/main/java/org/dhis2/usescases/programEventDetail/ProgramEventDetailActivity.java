@@ -281,25 +281,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public void showMoreOptions(View view) {
-        new AppMenuHelper.Builder()
-                .menu(this, R.menu.event_list_menu)
-                .anchor(view)
-                .onMenuItemClicked(itemId -> {
-                    switch (itemId) {
-                        case R.id.showHelp:
-                            analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
-                            showTutorial(false);
-                            break;
-                        default:
-                            break;
-                    }
-                    return false;
-                })
-                .build().show();
-    }
-
-    @Override
     public void navigateToEvent(String eventId, String orgUnit) {
         programEventsViewModel.setUpdateEvent(eventId);
         Bundle bundle = new Bundle();

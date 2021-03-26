@@ -64,8 +64,9 @@
                 android:id="@+id/filter"
                 style="@style/ActionIcon"
                 android:onClick="@{()->presenter.showFilter()}"
+                android:layout_marginEnd="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_filter"
                 tools:ignore="ContentDescription" />
@@ -92,17 +93,6 @@
                     android:visibility="@{totalFilters>0?View.VISIBLE:View.GONE}"
                     tools:text="1" />
             </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-            <ImageView
-                android:id="@+id/moreOptions"
-                style="@style/ActionIcon"
-                android:onClick="showMoreOptions"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_more"
-                tools:ignore="ContentDescription" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/toolbar_guideline"

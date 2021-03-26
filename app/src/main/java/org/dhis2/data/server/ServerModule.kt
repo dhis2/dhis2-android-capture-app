@@ -37,12 +37,6 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun dataBaseExporter(d2: D2?): DataBaseExporter {
-        return DataBaseExporterImpl(d2)
-    }
-
-    @Provides
-    @PerServer
     fun rulesUtilsProvider(d2: D2?): RulesUtilsProvider {
         return RulesUtilsProviderImpl(d2!!)
     }

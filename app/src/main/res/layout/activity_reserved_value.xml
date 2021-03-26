@@ -50,17 +50,6 @@
                 app:layout_constraintStart_toEndOf="@id/menu"
                 tools:text="@string/reserved_value" />
 
-
-            <ImageView
-                android:id="@+id/moreOptions"
-                style="@style/ActionIcon"
-                android:onClick="showMoreOptions"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_more"
-                tools:ignore="ContentDescription" />
-
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/toolbar_guideline"
                 android:layout_width="wrap_content"

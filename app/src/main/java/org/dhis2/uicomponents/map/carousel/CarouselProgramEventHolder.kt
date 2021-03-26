@@ -20,7 +20,8 @@ import org.dhis2.usescases.programEventDetail.ProgramEventViewModel
 class CarouselProgramEventHolder(
     val binding: ItemCarouselProgramEventBinding,
     val onClick: (teiUid: String?, orgUnitUid: String?, eventUid: String?) -> Boolean,
-    val attributeVisibilityCallback: (ProgramEventViewModel) -> Unit
+    val attributeVisibilityCallback: (ProgramEventViewModel) -> Unit,
+    val onNavigate: (teiUid: String) -> Unit
 ) :
     RecyclerView.ViewHolder(binding.root),
     CarouselBinder<ProgramEventViewModel> {
@@ -49,6 +50,10 @@ class CarouselProgramEventHolder(
                         )
                 }
                 else -> binding.noCoordinatesLabel.root.visibility = View.GONE
+            }
+
+            binding.mapNavigateFab.setOnClickListener {
+                onNavigate(data.uid())
             }
         }
     }
@@ -139,5 +144,13 @@ class CarouselProgramEventHolder(
                 else -> binding.dataValue.text = stringBuilder
             }
         }
+    }
+
+    override fun showNavigateButton() {
+        binding.mapNavigateFab.show()
+    }
+
+    override fun hideNavigateButton() {
+        binding.mapNavigateFab.hide()
     }
 }

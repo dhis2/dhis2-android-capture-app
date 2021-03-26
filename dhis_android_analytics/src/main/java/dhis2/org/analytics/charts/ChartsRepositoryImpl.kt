@@ -49,7 +49,7 @@ class ChartsRepositoryImpl(
                             nutritionGenderData.attributeUid,
                             enrollment.trackedEntityInstance()
                         ).blockingGet()
-                        nutritionGenderData.isFemale(genderValue.value())
+                        nutritionGenderData.isFemale(genderValue?.value())
                     }
                 )
             } ?: emptyList()
