@@ -2,26 +2,31 @@ package org.dhis2.usescases.login
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.TextPaint
 import android.text.TextUtils.isEmpty
 import android.text.TextWatcher
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.util.Patterns
 import android.view.View
 import android.view.WindowManager
 import android.webkit.URLUtil
 import android.widget.ArrayAdapter
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import co.infinum.goldfinger.Goldfinger
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.StringWriter
-import javax.inject.Inject
 import okhttp3.HttpUrl
 import org.dhis2.App
 import org.dhis2.Bindings.app
@@ -32,6 +37,7 @@ import org.dhis2.R
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityLoginBinding
+import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.auth.AuthServiceModel
 import org.dhis2.usescases.login.auth.OpenIdProviders
@@ -53,6 +59,10 @@ import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import timber.log.Timber
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.io.StringWriter
+import javax.inject.Inject
 
 const val EXTRA_SKIP_SYNC = "SKIP_SYNC"
 
@@ -272,26 +282,43 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun showCrashlyticsDialog() {
-        showInfoDialog(
-            getString(R.string.send_user_name_title), getString(R.string.send_user_name_mesage),
-            getString(R.string.action_agree), getString(R.string.cancel),
-            object : OnDialogClickListener {
-                override fun onPositiveClick() {
-                    sharedPreferences.edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true)
-                        .apply()
-                    sharedPreferences.edit()
-                        .putString(Constants.USER, binding.userName.editText?.text.toString())
-                        .apply()
-                    showLoginProgress(true)
-                }
+        val spannable = SpannableString(
+            getString(R.string.send_user_name_mesage) + "\n" +
+                    getString(R.string.send_user_privacy_policy))
 
-                override fun onNegativeClick() {
-                    sharedPreferences.edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true)
-                        .apply()
-                    showLoginProgress(true)
+        val clickableSpan = object: ClickableSpan() {
+            override fun onClick(p0: View) {
+                navigateToPrivacyPolicy()
+            }
+            override fun updateDrawState(ds: TextPaint) {
+                ds.color = ContextCompat.getColor(context, R.color.colorPrimary)
+                ds.isUnderlineText = true
+            }
+        }
+        spannable.setSpan(
+            clickableSpan,
+            spannable.length - 14,
+            spannable.length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
+            .setTitle(title)
+            .setCancelable(false)
+            .setMessage(spannable)
+            .setPositiveButton(getString(R.string.action_agree)) { _: DialogInterface, _: Int ->
+                sharedPreferences.edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true)
+                    .apply()
+                sharedPreferences.edit()
+                    .putString(Constants.USER, binding.userName.editText?.text.toString())
+                    .apply()
+                showLoginProgress(true)
+            }
+            .show()
+            .also { dialog ->
+                dialog.findViewById<TextView>(android.R.id.message)?.apply {
+                    movementMethod = LinkMovementMethod.getInstance()
                 }
             }
-        )
     }
 
     override fun onUnlockClick(android: View) {
@@ -459,6 +486,12 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     override fun openOpenIDActivity(intentData: IntentWithRequestCode?) {
         intentData?.let {
             startActivityForResult(intentData.intent, intentData.requestCode)
+        }
+    }
+
+    fun navigateToPrivacyPolicy() {
+        activity?.let {
+            startActivity(Intent(it, PolicyView::class.java))
         }
     }
 }
