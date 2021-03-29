@@ -1,4 +1,4 @@
-# Annex G - MDM PoC: Scale Fusion (MobiLock) 
+# Annex G - MDM PoC: Scale Fusion (MobiLock) { #mdm_scale_fusion }
 
 This annex presents the outcome of the tested MDM: [https://scalefusion.com/](https://scalefusion.com/)
 
