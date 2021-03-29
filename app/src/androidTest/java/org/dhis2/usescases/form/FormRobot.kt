@@ -17,12 +17,11 @@ import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.withSize
 import org.dhis2.common.viewactions.clickChildViewWithId
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextCustomHolder
+import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION_POSITION
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.anything
 import org.hamcrest.Matchers.instanceOf
 import org.hamcrest.Matchers.not
 
@@ -35,15 +34,15 @@ fun formRobot(formRobot: FormRobot.() -> Unit) {
 class FormRobot : BaseRobot() {
 
     private fun clickOnASpecificSection(sectionLabel: String) {
-        onView(withId(R.id.formRecycler))
-            .perform(actionOnItem<EditTextCustomHolder>(allOf(hasDescendant(withText(sectionLabel)), hasDescendant(
+        onView(withId(R.id.recyclerView))
+            .perform(actionOnItem<FormViewHolder>(allOf(hasDescendant(withText(sectionLabel)), hasDescendant(
                 withId(R.id.openIndicator))), click()))
     }
 
     private fun clickOnSpinner(label: String, position: Int) {
-        onView(withId(R.id.formRecycler))
+        onView(withId(R.id.recyclerView))
             //.perform(actionOnItem<EditTextCustomHolder>(hasDescendant(withText(label)), clickChildViewWithId(R.id.input_editText)))
-            .perform(actionOnItemAtPosition<EditTextCustomHolder>(position, clickChildViewWithId(R.id.input_editText)))
+            .perform(actionOnItemAtPosition<FormViewHolder>(position, clickChildViewWithId(R.id.input_editText)))
         /*onView(withId(R.id.formRecycler))
             .perform(actionOnItem<FormViewHolder>(
                 hasDescendant(withText(label)), clickChildViewWithId(R.id.input_editText)
@@ -75,28 +74,28 @@ class FormRobot : BaseRobot() {
     }
 
     fun checkHiddenField(itemsCount: Int) {
-        onView(withId(R.id.formRecycler))
+        onView(withId(R.id.formView))
             .check(matches(withSize(itemsCount)))
     }
 
     fun checkHiddenSection(itemsCount: Int, label: String) {
         clickOnASpecificSection(label)
-        onView(withId(R.id.formRecycler)).check(matches(withSize(itemsCount)))
+        onView(withId(R.id.formView)).check(matches(withSize(itemsCount)))
         clickOnASpecificSection(label)
     }
 
     fun checkValueWasAssigned() {
-        onView(withId(R.id.formRecycler))
+        onView(withId(R.id.formView))
             .check(matches(hasItem(allOf(hasDescendant(withId(R.id.input_editText)), not(isClickable()), not(isEnabled())))))
     }
 
     fun checkWarningIsShown() {
-        onView(withId(R.id.formRecycler))
+        onView(withId(R.id.formView))
             .check(matches(hasItem(withText("Warning with Current Event "))))
     }
 
     fun checkErrorIsShown() {
-        onView(withId(R.id.formRecycler))
+        onView(withId(R.id.formView))
             .check(matches(hasItem(withText("Error with current event "))))
     }
 

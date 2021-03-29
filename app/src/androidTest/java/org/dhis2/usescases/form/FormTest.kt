@@ -32,6 +32,7 @@ class FormTest: BaseTest() {
         startSearchActivity(ruleSearch)
 
         searchTeiRobot {
+            clickOnSearchFilter()
             typeAttributeAtPosition("abc", 1)
             clickOnFab()
             clickOnFab()
@@ -45,7 +46,7 @@ class FormTest: BaseTest() {
             scrollToBottomProgramForm()
             clickOnDatePicker()
             clickOnAcceptEnrollmentDate()
-            clickOnInputDate("DD TEST DATE*")
+            clickOnInputDate("DD TEST DATE *")
             clickOnAcceptEnrollmentDate()
             clickOnSaveEnrollment()
         }
@@ -56,7 +57,6 @@ class FormTest: BaseTest() {
         }
 
         formRobot {
-            //clickOnASpecificSection()
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, HIDE_FIELD, HIDE_FIELD_POSITION)
             checkHiddenField(4)
         }

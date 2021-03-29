@@ -102,8 +102,8 @@ class EnrollmentRobot : BaseRobot() {
     }
 
     fun clickOnInputDate(label: String) {
-        onView(withId(R.id.fieldRecycler))
-            .perform(actionOnItem<DashboardProgramViewHolder>(
+        onView(withId(R.id.recyclerView))
+            .perform(actionOnItem<FormViewHolder>(
                 hasDescendant(withText(label)), clickChildViewWithId(R.id.inputEditText)))
     }
 
