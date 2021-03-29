@@ -27,6 +27,10 @@ import co.infinum.goldfinger.Goldfinger
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.io.StringWriter
+import javax.inject.Inject
 import okhttp3.HttpUrl
 import org.dhis2.App
 import org.dhis2.Bindings.app
@@ -59,10 +63,6 @@ import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import timber.log.Timber
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.StringWriter
-import javax.inject.Inject
 
 const val EXTRA_SKIP_SYNC = "SKIP_SYNC"
 
@@ -284,9 +284,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     override fun showCrashlyticsDialog() {
         val spannable = SpannableString(
             getString(R.string.send_user_name_mesage) + "\n" +
-                    getString(R.string.send_user_privacy_policy))
+                getString(R.string.send_user_privacy_policy)
+        )
 
-        val clickableSpan = object: ClickableSpan() {
+        val clickableSpan = object : ClickableSpan() {
             override fun onClick(p0: View) {
                 navigateToPrivacyPolicy()
             }
