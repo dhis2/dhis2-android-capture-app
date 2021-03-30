@@ -58,34 +58,32 @@ class FormTest: BaseTest() {
 
         formRobot {
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, HIDE_FIELD, HIDE_FIELD_POSITION)
-            checkHiddenField(4)
+            checkHiddenField("ZZ TEST LONGTEST")
         }
 
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, HIDE_SECTION, HIDE_SECTION_POSITION)
-            checkHiddenSection(3, "Gamma Rules A")
+            checkHiddenSection("Gamma Rules A")
         }
 
         formRobot {
-            resetToNoAction(rulesFirstSection, 1)
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, ASSIGN_VALUE, ASSIGN_VALUE_POSITION)
-            checkValueWasAssigned()
+            checkValueWasAssigned(ASSIGNED_VALUE_TEXT)
         }
 
         formRobot {
-            resetToNoAction(rulesFirstSection, 1)
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, SHOW_WARNING, SHOW_WARNING_POSITION)
             checkWarningIsShown()
         }
 
         formRobot {
-            resetToNoAction(rulesFirstSection, 1)
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, SHOW_ERROR, SHOW_ERROR_POSITION)
             checkErrorIsShown()
         }
-
-        Thread.sleep(10000)
     }
 
 
@@ -102,6 +100,7 @@ class FormTest: BaseTest() {
         const val HIDE_OPTION_GROUP_POSITION = 4
         const val ASSIGN_VALUE = "Assign Value"
         const val ASSIGN_VALUE_POSITION = 5
+        const val ASSIGNED_VALUE_TEXT = "Result for current event"
         const val SHOW_WARNING = "Show Warning"
         const val SHOW_WARNING_POSITION = 6
         const val WARNING_COMPLETE = "Warning on Complete"
