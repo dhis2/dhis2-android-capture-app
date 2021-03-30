@@ -708,7 +708,7 @@ class EnrollmentPresenterImpl(
             valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, true)
         } else if (!optionsGroupsToHide.containsKey(field) || !optionsGroupsToHide.contains(
             optionGroupUid
-            )
+        )
         ) {
             if (optionsGroupToShow[field] != null) {
                 optionsGroupToShow[field]!!.add(optionGroupUid)
