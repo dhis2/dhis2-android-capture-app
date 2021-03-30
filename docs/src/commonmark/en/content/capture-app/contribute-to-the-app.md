@@ -22,7 +22,7 @@ When reporting a bug please specify together with your description:
 
 <!-- DHIS2-SECTION-ID:contribute_icons -->
 
-DHIS 2 and the new DHIS 2 Android App allows you to select icons for programs, datasets and the options of an optionset. DHIS 2 2.30 incorporates 125 icons. We plan to expand the collection of icons on each future version of DHIS 2- for that we need your help: we are seeking ideas for new icons - please submit yours using [this form](https://www.google.com/url?q=https://drive.google.com/open?id%3D1LmfYJQAu3KyDfkY3X6ne7qSsuTa9jXZhoQHzkDxeCdg&sa=D&ust=1557433016134000).
+DHIS 2 and the new DHIS 2 Android App allows you to select icons for programs, datasets and the options of an optionset. DHIS 2 2.30 incorporates 125 icons. We plan to expand the collection of icons on each future version of DHIS 2- for that we need your help: we are seeking ideas for new icons - please submit yours using [this form](https://forms.gle/FkUmwfZGYAScd2326).
 
 ## How to add translations
 

@@ -217,7 +217,10 @@ public class SearchRepositoryImpl implements SearchRepository {
         for (int i = 0; i < searchParametersModel.getQueryData().keySet().size(); i++) {
             String dataId = searchParametersModel.getQueryData().keySet().toArray()[i].toString();
             String dataValue = searchParametersModel.getQueryData().get(dataId);
-            if (dataValue.contains("_os_")) {
+            boolean isUnique = d2.trackedEntityModule().trackedEntityAttributes().uid(dataId).blockingGet().unique();
+            if (isUnique) {
+                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
+            } else if (dataValue.contains("_os_")) {
                 dataValue = dataValue.split("_os_")[1];
                 trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
             } else
