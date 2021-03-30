@@ -149,19 +149,6 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
         return R.layout.form_edit_text_custom;
     }
 
-    public void onTextChange(String value) {
-        processor().onNext(new RowAction(
-                uid(),
-                value,
-                false,
-                null,
-                null,
-                null,
-                null,
-                ActionType.ON_TEXT_CHANGE
-        ));
-    }
-
     public void onTextFilled(String value, String error) {
         processor().onNext(new RowAction(
                 uid(),

@@ -164,6 +164,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
         polygon.setFocusable(false);
         polygon.setClickable(false);
+        polygon.setLongClickable(false);
 
         latitude.setFocusable(true);
         latitude.setClickable(true);

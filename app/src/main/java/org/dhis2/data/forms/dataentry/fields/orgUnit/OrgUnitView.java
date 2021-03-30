@@ -31,8 +31,9 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
 
-public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.CascadeOrgUnitCallbacks {
+public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.CascadeOrgUnitCallbacks, View.OnClickListener {
     private ViewDataBinding binding;
 
     private ImageView iconView;
@@ -81,31 +82,11 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
-                viewModel.onItemClick();
                 editText.performClick();
             }
         });
 
-        editText.setOnClickListener(v -> new OrgUnitCascadeDialog(label, value, new OrgUnitCascadeDialog.CascadeOrgUnitCallbacks() {
-            @Override
-            public void textChangedConsumer(String selectedOrgUnitUid, String selectedOrgUnitName) {
-                listener.onDataChanged(selectedOrgUnitUid);
-                editText.setText(selectedOrgUnitName);
-                editText.setEnabled(true);
-            }
-
-            @Override
-            public void onDialogCancelled() {
-                editText.setEnabled(true);
-            }
-
-            @Override
-            public void onClear() {
-                listener.onDataChanged(null);
-                editText.setText(null);
-                editText.setEnabled(true);
-            }
-        }, OrgUnitCascadeDialog.OUSelectionType.SEARCH).show(supportFragmentManager, label));
+        editText.setOnClickListener(this);
     }
 
     @Override
@@ -203,6 +184,34 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
     @Override
     public void onClear() {
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        requestFocus();
+        closeKeyboard(v);
+        viewModel.onItemClick();
+
+        new OrgUnitCascadeDialog(label, value, new OrgUnitCascadeDialog.CascadeOrgUnitCallbacks() {
+            @Override
+            public void textChangedConsumer(String selectedOrgUnitUid, String selectedOrgUnitName) {
+                listener.onDataChanged(selectedOrgUnitUid);
+                editText.setText(selectedOrgUnitName);
+                editText.setEnabled(true);
+            }
+
+            @Override
+            public void onDialogCancelled() {
+                editText.setEnabled(true);
+            }
+
+            @Override
+            public void onClear() {
+                listener.onDataChanged(null);
+                editText.setText(null);
+                editText.setEnabled(true);
+            }
+        }, OrgUnitCascadeDialog.OUSelectionType.SEARCH).show(supportFragmentManager, label);
     }
 
     public void setListener(OnDataChanged listener) {
