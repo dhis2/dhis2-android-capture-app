@@ -436,11 +436,12 @@ class EnrollmentPresenterImpl(
                 var uniqueValueAlreadyExist: Boolean
                 if (isUnique && field.value() != null) {
                     uniqueValueAlreadyExist =
-                        d2.trackedEntityModule().trackedEntityAttributeValues()
-                            .byTrackedEntityAttribute()
-                            .eq(field.uid())
-                            .byValue().eq(field.value())
-                            .blockingGet().size > 1
+                        d2.trackedEntityModule()
+                        .trackedEntityAttributeValues()
+                        .byTrackedEntityAttribute()
+                        .eq(field.uid())
+                        .byValue().eq(field.value())
+                        .blockingGet().size > 1
                     if (uniqueValueAlreadyExist) {
                         uniqueFields[field.uid()] = field.label()
                     }
