@@ -10,6 +10,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.hasSibling
 import androidx.test.espresso.matcher.ViewMatchers.withChild
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -148,5 +149,14 @@ class SearchTeiRobot : BaseRobot() {
 
     fun clickOnShowMoreFilters(){
         onView(withId(R.id.search_filter_general)).perform(click())
+    }
+
+    fun selectAnOrgUnit(orgUnit: String) {
+        onView(allOf(withId(R.id.checkbox), hasSibling(withText(orgUnit))))
+            .perform(click())
+    }
+
+    fun clickOnAcceptButton() {
+        onView(withId(R.id.accept_button)).perform(click())
     }
 }
