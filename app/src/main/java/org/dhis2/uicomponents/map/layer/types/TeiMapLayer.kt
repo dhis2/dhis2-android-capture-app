@@ -163,10 +163,11 @@ class TeiMapLayer(
 
     override fun setSelectedItem(feature: Feature?) {
         feature?.let {
-            if (featureType == FeatureType.POINT) {
-                selectPoint(feature)
-            } else {
-                selectPolygon(feature)
+            if (it.geometry()?.type() == featureType.geometryType) {
+                when (featureType) {
+                    FeatureType.POINT -> selectPoint(it)
+                    else -> selectPolygon(it)
+                }
             }
         } ?: deselectCurrentPoint()
     }
@@ -183,22 +184,18 @@ class TeiMapLayer(
     }
 
     private fun selectPolygon(feature: Feature) {
-        deselectCurrentPoint()
-
         style.getSourceAs<GeoJsonSource>(SELECTED_POLYGON_SOURCE_ID)?.apply {
-            setGeoJson(
-                FeatureCollection.fromFeatures(
-                    arrayListOf(Feature.fromGeometry(feature.geometry()))
-                )
-            )
+            setGeoJson(feature)
         }
 
         selectedPolygonLayer.setProperties(
-            PropertyFactory.fillColor(ColorUtils.withAlpha(enrollmentDarkColor))
+            PropertyFactory.fillColor(ColorUtils.withAlpha(enrollmentDarkColor)),
+            PropertyFactory.visibility(Property.VISIBLE)
         )
         selectedPolygonBorderLayer.setProperties(
             PropertyFactory.lineColor(Color.WHITE),
-            PropertyFactory.lineWidth(2.5f)
+            PropertyFactory.lineWidth(2.5f),
+            PropertyFactory.visibility(Property.VISIBLE)
         )
     }
 
@@ -209,11 +206,10 @@ class TeiMapLayer(
             )
         } else {
             selectedPolygonLayer.setProperties(
-                PropertyFactory.fillColor(ColorUtils.withAlpha(enrollmentColor))
+                PropertyFactory.visibility(Property.NONE)
             )
             selectedPolygonBorderLayer.setProperties(
-                PropertyFactory.lineColor(enrollmentDarkColor),
-                PropertyFactory.lineWidth(2f)
+                PropertyFactory.visibility(Property.NONE)
             )
         }
     }
