@@ -2,6 +2,7 @@ package org.dhis2.usescases.login
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.TypeTextAction
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.clearText
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -15,7 +16,9 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.ClickDrawableAction
+import org.dhis2.common.viewactions.clickClickableSpan
 import org.dhis2.usescases.BaseTest
+import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.utils.WebViewActivity
 import org.hamcrest.CoreMatchers
@@ -104,6 +107,18 @@ class LoginRobot : BaseRobot() {
 
     fun checkQRScanIsOpened() {
         Intents.intended(CoreMatchers.allOf(hasComponent(ScanActivity::class.java.name)))
+    }
+
+    fun checkShareDataDialogIsDisplayed() {
+        onView(withId(android.R.id.content)).check(matches(isDisplayed()))
+    }
+
+    fun clickOnPrivacyPolicy() {
+        onView(withId(android.R.id.message)).perform(clickClickableSpan("privacy policy"))
+    }
+
+    fun checkPrivacyViewIsOpened() {
+        Intents.intended(CoreMatchers.allOf(hasComponent(PolicyView::class.java.name)))
     }
 
     companion object {
