@@ -8,8 +8,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.core.types.Tree
 import org.dhis2.core.types.expand
+import org.dhis2.usescases.teiDashboard.dashboardsfragments.enrollment.EnrollmentInfo
+import org.dhis2.usescases.teiDashboard.dashboardsfragments.enrollment.GetEnrollmentInfo
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.GetSystemInfo
 import timber.log.Timber
+import java.util.Date
 
 sealed class FeedbackContentState {
     object Loading : FeedbackContentState()
@@ -25,16 +28,16 @@ sealed class FeedbackContentState {
     object NotFound : FeedbackContentState()
     object UnexpectedError : FeedbackContentState()
     data class SharingFeedback(
-        val feedbackText: String,
-        val serverUrl: String,
-        val enrollmentUID: String
+        val enrollmentInfo: EnrollmentInfo,
+        val serverUrl: String
     ) :
         FeedbackContentState()
 }
 
 class FeedbackContentPresenter(
     private val getFeedback: GetFeedback,
-    private val getSystemInfo: GetSystemInfo
+    private val getSystemInfo: GetSystemInfo,
+    private val getEnrollmentInfo: GetEnrollmentInfo
 ) :
     CoroutineScope by MainScope() {
 
@@ -69,19 +72,11 @@ class FeedbackContentPresenter(
     }
 
     fun shareFeedback(onlyFailedFilter: Boolean) = launch {
-        val result = withContext(Dispatchers.IO) {
-            getFeedback(feedbackMode, criticalFilter, onlyFailedFilter)
-        }
+        val enrollmentInfo = getEnrollmentInfo(enrollmentUid)
+        val systemInfo = getSystemInfo()
+        val serverUrl = systemInfo.contextPath
 
-        result.fold(
-                { failure -> handleFailure(failure) },
-                { feedbackResponse ->
-                    val feedbackText = nodesToText(feedbackResponse.data.children)
-                    val systemInfo = getSystemInfo()
-                    val serverUrl = systemInfo.contextPath
-
-                    render(FeedbackContentState.SharingFeedback(feedbackText, serverUrl, enrollmentUid))
-                })
+        render(FeedbackContentState.SharingFeedback(enrollmentInfo, serverUrl))
     }
 
     fun expand(node: Tree<*>, position: Int) {
@@ -117,28 +112,6 @@ class FeedbackContentPresenter(
                 )
                 render(lastLoaded!!)
             })
-    }
-
-    private fun nodesToText(nodes: List<Tree<*>>, level: Int = 0): String {
-        val builder = StringBuffer()
-
-        for (node in nodes) {
-
-            val text = if (node.content is FeedbackItem) {
-                "${node.content.name} ${node.content.value?.data ?: ""}"
-            } else {
-                (node.content as FeedbackHelpItem).text
-            }
-
-            builder.appendln("".padStart(level * 3) + text)
-            builder.appendln()
-
-            if (node is Tree.Node && node.children.isNotEmpty()) {
-                builder.append(nodesToText(node.children, level + 1))
-            }
-        }
-
-        return builder.toString()
     }
 
     private fun tryMaintainCurrentExpandedItems(feedback: Tree.Root<*>): Tree.Root<*> {

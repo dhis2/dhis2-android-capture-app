@@ -20,4 +20,6 @@
     <string name="feedback_order_invalid">"Недопустимый порядок обратной связи в элементе данных %s"</string>
     <string name="feedback_order_duplicate">"Обратная связь порядок дубликат в элементах данных %s"</string>
     <string name="feedback_order_gap">"Программа этапа %s содержит пробелы порядка обратной связи"</string>
+    <string name="feedback_share_conducted">"Оценка проводится"</string>
+    <string name="feedback_share_assessment_type">"Тип оценки"</string>
 </resources>

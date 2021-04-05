@@ -20,4 +20,6 @@
     <string name="feedback_order_invalid">"Neplatný objednat zpětná vazba v datovém prvku %s"</string>
     <string name="feedback_order_duplicate">"Zpětná vazba pořadí duplicitní v datových prvcích %s"</string>
     <string name="feedback_order_gap">"fáze programu %s obsahuje mezery zpětná vazba pořadí"</string>
+    <string name="feedback_share_conducted">"Hodnocení provedeno dne"</string>
+    <string name="feedback_share_assessment_type">"Typ posouzení"</string>
 </resources>
