@@ -637,6 +637,8 @@ class EnrollmentPresenterImpl(
         }
     }
 
+    fun hasAccess() = getProgram().access()?.data()?.write() ?: false
+
     fun saveEnrollmentGeometry(geometry: Geometry?) {
         enrollmentObjectRepository.setGeometry(geometry)
     }
