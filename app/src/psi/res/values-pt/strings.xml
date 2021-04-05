@@ -20,4 +20,6 @@
     <string name="feedback_order_invalid">"fim de feedback inválida no elemento de dados %s"</string>
     <string name="feedback_order_duplicate">"duplicado ordem realimentação nos elementos de dados %s"</string>
     <string name="feedback_order_gap">"fase programa %s contém lacunas ordem realimentação"</string>
+    <string name="feedback_share_conducted">"Avaliação realizada em"</string>
+    <string name="feedback_share_assessment_type">"Tipo de avaliação"</string>
 </resources>

@@ -20,4 +20,6 @@
     <string name="feedback_order_invalid">"Invalid feedback order in data element %s"</string>
     <string name="feedback_order_duplicate">"Feedback order duplicate in the data elements %s"</string>
     <string name="feedback_order_gap">"Program stage %s contains feedback order gaps"</string>
+    <string name="feedback_share_conducted">"Assessment conducted on"</string>
+    <string name="feedback_share_assessment_type">"Assessment type"</string>
 </resources>
