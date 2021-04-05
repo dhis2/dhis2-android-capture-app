@@ -59,6 +59,7 @@ import static android.view.inputmethod.EditorInfo.IME_ACTION_DONE;
 import static android.view.inputmethod.EditorInfo.IME_ACTION_NEXT;
 import static java.lang.String.valueOf;
 import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
+import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
 
 
 public class CustomTextView extends FieldLayout {
@@ -136,6 +137,9 @@ public class CustomTextView extends FieldLayout {
             return false;
         });
         editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && viewModel.isSearchMode()) {
+                openKeyboard(v);
+            }
             if (valueHasChanged()) {
                 if (validate()) {
                     inputLayout.setError(null);
