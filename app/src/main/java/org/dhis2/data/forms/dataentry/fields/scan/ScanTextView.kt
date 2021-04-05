@@ -176,15 +176,11 @@ class ScanTextView @JvmOverloads constructor(
         }
     }
 
-    fun setLabel(label: String, mandatory: Boolean) {
+    fun setLabel(label: String) {
         if (inputLayout.hint == null || inputLayout.hint!!.toString() != label) {
-            val labelBuilder = StringBuilder(label)
-            if (mandatory) {
-                labelBuilder.append("*")
-            }
-            this.label = labelBuilder.toString()
+            this.label = label
             inputLayout.hint = this.label
-            binding.setVariable(BR.label, this.label)
+            binding.setVariable(BR.label, label)
         }
     }
 
@@ -245,7 +241,7 @@ class ScanTextView @JvmOverloads constructor(
         viewModel.apply {
             setText(value())
             setRenderingType(fieldRendering?.type())
-            setLabel(label(), mandatory())
+            setLabel(formattedLabel)
             setHint(hint)
             setDescription(description())
             setAlert(warning(), error())
