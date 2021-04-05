@@ -215,8 +215,6 @@ dependencies {
     implementation "androidx.work:work-rxjava2:2.2.0"
     implementation "androidx.exifinterface:exifinterface:1.2.0"
 
-    implementation 'com.google.code.findbugs:jsr305:3.0.1'
-
     //region UI LIBRARIES
     //AndroidTreeView
     implementation "com.github.bmelnychuk:atv:${libraries.atv}"
