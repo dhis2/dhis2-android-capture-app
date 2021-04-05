@@ -44,7 +44,11 @@ public class RadioButtonHolder extends FormViewHolder {
 
         binding.customYesNo.setValueListener(null);
 
-        descriptionText = viewModel.description();
+        if (viewModel.url() != null){
+            descriptionText = viewModel.description() + "\n" + viewModel.url()  ;
+        } else {
+            descriptionText = viewModel.description();
+        }
         binding.setDescription(descriptionText);
         label = new StringBuilder(checkBoxViewModel.label());
         binding.customYesNo.setValueType(checkBoxViewModel.valueType());

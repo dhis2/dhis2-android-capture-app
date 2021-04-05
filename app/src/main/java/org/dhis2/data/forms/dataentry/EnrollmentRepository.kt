@@ -241,6 +241,7 @@ class EnrollmentRepository(
             optionCount,
             attribute.style(),
             attribute.fieldMask(),
+            null,
             null
         )
 
@@ -385,7 +386,7 @@ class EnrollmentRepository(
             ENROLLMENT_DATA_SECTION_UID,
             allowFutureDates,
             editable, null,
-            ObjectStyle.builder().build()
+            ObjectStyle.builder().build(), null
         )
     }
 
@@ -405,7 +406,7 @@ class EnrollmentRepository(
             ENROLLMENT_DATA_SECTION_UID,
             allowFutureDates,
             editable, null,
-            ObjectStyle.builder().build()
+            ObjectStyle.builder().build(), null
         )
     }
 
@@ -418,7 +419,7 @@ class EnrollmentRepository(
             ENROLLMENT_DATA_SECTION_UID,
             editable,
             null,
-            ObjectStyle.builder().build()
+            ObjectStyle.builder().build(),null
         )
     }
 
@@ -439,7 +440,7 @@ class EnrollmentRepository(
             ENROLLMENT_DATA_SECTION_UID,
             true, null,
             ObjectStyle.builder().build(),
-            featureType
+            featureType, null
         )
     }
 
@@ -458,7 +459,7 @@ class EnrollmentRepository(
             ENROLLMENT_DATA_SECTION_UID,
             true, null,
             ObjectStyle.builder().build(),
-            featureType
+            featureType, null
         )
     }
 

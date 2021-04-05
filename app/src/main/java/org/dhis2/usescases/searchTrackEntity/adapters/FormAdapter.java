@@ -133,28 +133,28 @@ public class FormAdapter extends RecyclerView.Adapter {
             case LONG_TEXT:
                 viewModel = EditTextViewModel.create(attr.uid(), label, false,
                         queryData.get(attr.uid()), hint, 1, attr.valueType(), null, true,
-                        attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask(),null);
+                        attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask(),null ,null);
                 break;
             case BUTTON:
-                viewModel = FileViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, attr.displayDescription(), ObjectStyle.builder().build());
+                viewModel = FileViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, attr.displayDescription(), ObjectStyle.builder().build() ,null);
                 break;
             case CHECKBOX:
             case YES_NO:
-                viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), label, attr.valueType(), false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build(), ValueTypeRenderingType.DEFAULT);
+                viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), label, attr.valueType(), false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build(), ValueTypeRenderingType.DEFAULT, null);
                 break;
             case SPINNER:
-                viewModel = SpinnerViewModel.create(attr.uid(), label, "", false, attr.optionSet().uid(), queryData.get(attr.uid()), null, true, attr.displayDescription(), 20, ObjectStyle.builder().build(),null);
+                viewModel = SpinnerViewModel.create(attr.uid(), label, "", false, attr.optionSet().uid(), queryData.get(attr.uid()), null, true, attr.displayDescription(), 20, ObjectStyle.builder().build(),null, null);
                 break;
             case COORDINATES:
-                viewModel = CoordinateViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build(), FeatureType.POINT);
+                viewModel = CoordinateViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build(), FeatureType.POINT, null);
                 break;
             case TIME:
             case DATE:
             case DATETIME:
-                viewModel = DateTimeViewModel.create(attr.uid(), label, false, attr.valueType(), queryData.get(attr.uid()), null, true, true, attr.displayDescription(), ObjectStyle.builder().build());
+                viewModel = DateTimeViewModel.create(attr.uid(), label, false, attr.valueType(), queryData.get(attr.uid()), null, true, true, attr.displayDescription(), ObjectStyle.builder().build(), null);
                 break;
             case AGEVIEW:
-                viewModel = AgeViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build());
+                viewModel = AgeViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build(), null);
                 break;
             case ORG_UNIT:
                 String value = presenter.nameOUByUid(queryData.get(attr.uid()));
@@ -163,15 +163,15 @@ public class FormAdapter extends RecyclerView.Adapter {
                 else
                     value = queryData.get(attr.uid());
 
-                viewModel = OrgUnitViewModel.create(attr.uid(), label, false, value, null, true, attr.displayDescription(), ObjectStyle.builder().build());
+                viewModel = OrgUnitViewModel.create(attr.uid(), label, false, value, null, true, attr.displayDescription(), ObjectStyle.builder().build(), null);
                 break;
             case SCAN_CODE:
-                viewModel = ScanTextViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.optionSet() != null ? attr.optionSet().uid() : null, attr.description(), ObjectStyle.builder().build(), renderingTypes.get(position), hint);
+                viewModel = ScanTextViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.optionSet() != null ? attr.optionSet().uid() : null, attr.description(), ObjectStyle.builder().build(), renderingTypes.get(position), hint, null);
                 break;
             default:
                 Crashlytics.log("Unsupported viewType " +
                         "source type: " + holder.getItemViewType());
-                viewModel = EditTextViewModel.create(attr.uid(), "UNSUPORTED", false, null, "UNSUPPORTED", 1, attr.valueType(), null, false, attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask(), null);
+                viewModel = EditTextViewModel.create(attr.uid(), "UNSUPORTED", false, null, "UNSUPPORTED", 1, attr.valueType(), null, false, attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask(), null, null);
                 break;
         }
         rows.get(holder.getItemViewType()).onBind(holder, viewModel);

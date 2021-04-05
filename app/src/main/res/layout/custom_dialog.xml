@@ -64,8 +64,10 @@
             android:textSize="14sp"
             android:visibility="@{ TextUtils.isEmpty(message) ? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintTop_toBottomOf="@id/title_dialog"
-            app:scrollingTextView="@{true}"
-            tools:text="@tools:sample/lorem/random" />
+            tools:text="@tools:sample/lorem/random"
+            android:textColorLink="?colorPrimary"
+            android:autoLink="all"
+            android:linksClickable="true"/>
 
         <Button
             android:id="@+id/negative"

@@ -25,7 +25,8 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description: String?,
             objectStyle: ObjectStyle?,
             fieldRendering: ValueTypeDeviceRendering?,
-            hint: String?
+            hint: String?,
+            url: String?
         ): FieldViewModel =
             AutoValue_ScanTextViewModel(
                 id,
@@ -41,6 +42,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
                 description,
                 objectStyle,
                 null,
+                url,
                 fieldRendering,
                 hint
             )
@@ -61,6 +63,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
+            url(),
             fieldRendering,
             hint
         )
@@ -80,6 +83,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
+            url(),
             fieldRendering,
             hint
         )
@@ -99,6 +103,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
+            url(),
             fieldRendering,
             hint
         )
@@ -118,6 +123,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
+            url(),
             fieldRendering,
             hint
         )
@@ -137,6 +143,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
+            url(),
             fieldRendering,
             hint
         )

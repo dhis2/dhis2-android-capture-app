@@ -55,7 +55,13 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         binding.optionSetView.setValue(viewModel.value());
         binding.optionSetView.setWarning(viewModel.warning(), viewModel.error());
         binding.optionSetView.setLabel(viewModel.label(), viewModel.mandatory());
-        descriptionText = viewModel.description();
+
+        if (viewModel.url() != null){
+            descriptionText = viewModel.description() + "\n" + viewModel.url()  ;
+        } else {
+            descriptionText = viewModel.description();
+        }
+
         binding.optionSetView.setDescription(descriptionText);
         binding.optionSetView.setOnClickListener(this);
         label = new StringBuilder().append(viewModel.label());
