@@ -21,7 +21,7 @@ class ValueStoreTest {
     private lateinit var deValueStore: ValueStore
     private lateinit var dvValueStore: ValueStore
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
-    private val dhisEnrollmentUtils: DhisEnrollmentUtils = mock()
+    private val dhisEnrollmentUtils: DhisEnrollmentUtils = DhisEnrollmentUtils(d2)
 
     @Before
     fun setUp() {
