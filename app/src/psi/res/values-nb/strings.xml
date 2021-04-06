@@ -20,4 +20,6 @@
     <string name="feedback_order_invalid">"Ugyldig tilbakemelding rekkefølge i dataelement %s"</string>
     <string name="feedback_order_duplicate">"Tilbakemelding orden duplikat i dataelementene %s"</string>
     <string name="feedback_order_gap">"program scenen %s inneholder tilbakemeldinger ordre hull"</string>
+    <string name="feedback_share_conducted">"Vurdering utført på"</string>
+    <string name="feedback_share_assessment_type">"Vurderingstype"</string>
 </resources>

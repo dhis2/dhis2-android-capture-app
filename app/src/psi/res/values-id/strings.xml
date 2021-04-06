@@ -20,4 +20,6 @@
     <string name="feedback_order_invalid">"Agar umpan balik tidak valid di elemen data %s"</string>
     <string name="feedback_order_duplicate">"Umpan balik urutan duplikat di elemen data %s"</string>
     <string name="feedback_order_gap">"Program tahap %s berisi agar umpan balik celah"</string>
+    <string name="feedback_share_conducted">"Penilaian dilakukan pada""</string>
+    <string name="feedback_share_assessment_type">"Jenis penilaian"</string>
 </resources>

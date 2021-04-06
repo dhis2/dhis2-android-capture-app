@@ -7,6 +7,9 @@ import org.dhis2.data.dagger.PerFragment
 import org.dhis2.data.dhislogic.DhisEventUtils
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepositoryImpl
+import org.dhis2.usescases.teiDashboard.dashboardsfragments.enrollment.EnrollmentInfoD2Repository
+import org.dhis2.usescases.teiDashboard.dashboardsfragments.enrollment.EnrollmentInfoRepository
+import org.dhis2.usescases.teiDashboard.dashboardsfragments.enrollment.GetEnrollmentInfo
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.GetSystemInfo
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.SystemInfoD2Repository
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.SystemInfoRepository
@@ -32,9 +35,10 @@ class FeedbackModule(
     @PerFragment
     fun provideFeedbackContentPresenter(
         getFeedback: GetFeedback,
-        getSystemInfo: GetSystemInfo
+        getSystemInfo: GetSystemInfo,
+        getEnrollmentInfo: GetEnrollmentInfo
     ): FeedbackContentPresenter {
-        return FeedbackContentPresenter(getFeedback, getSystemInfo)
+        return FeedbackContentPresenter(getFeedback, getSystemInfo, getEnrollmentInfo)
     }
 
     @Provides
@@ -51,6 +55,12 @@ class FeedbackModule(
     @PerFragment
     fun provideGetSystemInfo(systemInfoRepository: SystemInfoRepository): GetSystemInfo {
         return GetSystemInfo(systemInfoRepository)
+    }
+
+    @Provides
+    @PerFragment
+    fun provideGetEnrollmentInfo(enrollmentInfoRepository: EnrollmentInfoRepository): GetEnrollmentInfo {
+        return GetEnrollmentInfo(enrollmentInfoRepository)
     }
 
     @Provides
@@ -81,5 +91,11 @@ class FeedbackModule(
     @PerFragment
     fun provideSystemInfoRepository(d2: D2): SystemInfoRepository {
         return SystemInfoD2Repository(d2)
+    }
+
+    @Provides
+    @PerFragment
+    fun provideEnrollmentInfoRepository(d2: D2): EnrollmentInfoRepository {
+        return EnrollmentInfoD2Repository(d2)
     }
 }

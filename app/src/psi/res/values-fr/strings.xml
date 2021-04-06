@@ -20,4 +20,6 @@
     <string name="feedback_order_invalid">"Ordre du retour d'information non valide dans l'élément de données %s"</string>
     <string name="feedback_order_duplicate">"Doublon dans l'ordre du retour d'information pour les éléments de données %s"</string>
     <string name="feedback_order_gap">"Étape du programme %s contient des trous dans l'ordre du retour d'information"</string>
+    <string name="feedback_share_conducted">"Évaluation effectuée le"</string>
+    <string name="feedback_share_assessment_type">"Type d'évaluation"</string>
 </resources>

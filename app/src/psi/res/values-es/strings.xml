@@ -20,4 +20,6 @@
     <string name="feedback_order_invalid">"Orden de retroalimentación inválido en el elemento de datos %s"</string>
     <string name="feedback_order_duplicate">"Duplicado en el orden de retroalimentación en los elementos de datos %s"</string>
     <string name="feedback_order_gap">"Etapa de programa %s contiene lagunas en su orden de realimentación"</string>
+    <string name="feedback_share_conducted">"Evaluación realizada el"</string>
+    <string name="feedback_share_assessment_type">"Tipo de evaluación"</string>
 </resources>

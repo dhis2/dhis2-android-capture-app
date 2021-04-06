@@ -20,4 +20,6 @@
     <string name="feedback_order_invalid">"ترتيب ردود الفعل غير صالحة في العنصر البيانات %s"</string>
     <string name="feedback_order_duplicate">"مكررة ردود الفعل النظام في عناصر البيانات %s"</string>
     <string name="feedback_order_gap">"برنامج مرحلةS% يحتوي ثغرات أجل ردود الفعل"</string>
+    <string name="feedback_share_conducted">"تم إجراء التقييم على"</string>
+    <string name="feedback_share_assessment_type">"نوع التقييم"</string>
 </resources>
