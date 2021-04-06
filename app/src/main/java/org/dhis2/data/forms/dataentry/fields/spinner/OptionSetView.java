@@ -199,13 +199,10 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
             inputLayout.setError(null);
     }
 
-    public void setLabel(String label, boolean mandatory) {
+    public void setLabel(String label) {
         if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(label)) {
-            StringBuilder labelBuilder = new StringBuilder(label);
-            if (mandatory)
-                labelBuilder.append("*");
-            this.label = labelBuilder.toString();
-            binding.setVariable(BR.label, this.label);
+            this.label = label;
+            binding.setVariable(BR.label, label);
         }
     }
 
@@ -271,7 +268,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         updateEditable(viewModel.editable());
         setValue(viewModel.value());
         setWarning(viewModel.warning(), viewModel.error());
-        setLabel(viewModel.label(), viewModel.mandatory());
+        setLabel(viewModel.getFormattedLabel());
         setDescription(viewModel.description());
         setOnClickListener(this);
     }

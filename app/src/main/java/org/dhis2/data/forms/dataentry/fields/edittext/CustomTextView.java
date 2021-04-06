@@ -326,14 +326,11 @@ public class CustomTextView extends FieldLayout {
         updateDeleteVisibility(findViewById(R.id.clear_button));
     }
 
-    public void setLabel(String label, boolean mandatory) {
+    public void setLabel(String label) {
         if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(label)) {
-            StringBuilder labelBuilder = new StringBuilder(label);
-            if (mandatory)
-                labelBuilder.append("*");
-            this.label = labelBuilder.toString();
+            this.label = label;
             inputLayout.setHint(null);
-            binding.setVariable(BR.label, this.label);
+            binding.setVariable(BR.label, label);
         }
     }
 
@@ -498,7 +495,7 @@ public class CustomTextView extends FieldLayout {
         setRenderType(viewModel.renderType());
         setValueType(viewModel.valueType());
         setObjectStyle(viewModel.objectStyle());
-        setLabel(viewModel.label(), viewModel.mandatory());
+        setLabel(viewModel.getFormattedLabel());
         setHint(viewModel.hint());
         binding.setVariable(BR.legend, viewModel.legendValue());
         setDescription(viewModel.description());

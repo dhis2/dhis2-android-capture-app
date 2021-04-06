@@ -133,14 +133,11 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
             inputLayout.setError(null);
     }
 
-    public void setLabel(String label, boolean mandatory) {
+    public void setLabel(String label) {
         if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(label)) {
-            StringBuilder labelBuilder = new StringBuilder(label);
-            if (mandatory)
-                labelBuilder.append("*");
-            this.label = labelBuilder.toString();
+            this.label = label;
             inputLayout.setHint(this.label);
-            binding.setVariable(BR.label, this.label);
+            binding.setVariable(BR.label, label);
         }
 
         binding.setVariable(BR.fieldHint, getContext().getString(R.string.choose_ou));
@@ -227,7 +224,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
         if (binding == null) {
             setLayoutData(viewModel.isBackgroundTransparent(), viewModel.renderType());
         }
-        setLabel(viewModel.label(), viewModel.mandatory());
+        setLabel(viewModel.getFormattedLabel());
         setDescription(viewModel.description());
         setWarning(viewModel.warning(), viewModel.error());
 
