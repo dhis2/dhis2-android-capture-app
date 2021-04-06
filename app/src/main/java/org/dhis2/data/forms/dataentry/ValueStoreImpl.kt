@@ -141,15 +141,33 @@ class ValueStoreImpl(
 
     private fun checkUniqueFilter(uid: String, value: String?, teiUid: String): Boolean {
         return if (value != null) {
-            val isUnique =
-                d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()!!.unique()
-                    ?: false
+            val localUid =
+                d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()!!
+            val isUnique = localUid.unique() ?: false
+            val orgUnitScope = localUid.orgUnitScope() ?: false
+
             if (isUnique) {
-                val hasValue = d2.trackedEntityModule().trackedEntityAttributeValues()
-                    .byTrackedEntityAttribute().eq(uid)
-                    .byTrackedEntityInstance().neq(teiUid)
-                    .byValue().eq(value).blockingGet().isNotEmpty()
-                !hasValue
+                if (!orgUnitScope) {
+                    val hasValue = d2.trackedEntityModule().trackedEntityAttributeValues()
+                        .byTrackedEntityAttribute().eq(uid)
+                        .byTrackedEntityInstance().neq(teiUid)
+                        .byValue().eq(value).blockingGet().isNotEmpty()
+                    !hasValue
+                } else {
+                    val enrollingOrgUnit =
+                        d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet()
+                            .organisationUnit()
+                    val hasValue = d2.trackedEntityModule().trackedEntityAttributeValues()
+                        .byTrackedEntityAttribute().eq(uid)
+                        .byTrackedEntityInstance().neq(teiUid)
+                        .byValue().eq(value).blockingGet()
+                        .map {
+                            d2.trackedEntityModule().trackedEntityInstances()
+                                .uid(it.trackedEntityInstance()).blockingGet().organisationUnit()
+                        }
+                        .all { it != enrollingOrgUnit }
+                    hasValue
+                }
             } else {
                 true
             }
