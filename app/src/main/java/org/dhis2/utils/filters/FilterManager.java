@@ -59,7 +59,7 @@ public class FilterManager implements Serializable {
     private List<OrganisationUnit> ouFilters;
     private MutableLiveData<List<OrganisationUnit>> liveDataOUFilter = new MutableLiveData<>();
     private List<State> stateFilters;
-    private ObservableField<List<State>> observableStates = new ObservableField<>();
+    private MutableLiveData<List<State>> observableStates = new MutableLiveData<>();
     private List<DatePeriod> periodFilters;
     private ObservableField<List<DatePeriod>> observablePeriodFilters = new ObservableField<>();
     private ObservableField<InternalError> observablePeriodId = new ObservableField<>();
@@ -202,7 +202,7 @@ public class FilterManager implements Serializable {
                 stateValues.add(value);
             }
         }
-        observableStates.set(stateFilters);
+        observableStates.postValue(stateFilters);
 
         boolean hasNotSyncedState = stateFilters.contains(State.TO_POST) &&
                 stateFilters.contains(State.TO_UPDATE) &&
@@ -393,7 +393,7 @@ public class FilterManager implements Serializable {
         return stateFilters;
     }
 
-    public ObservableField<List<State>> observeSyncState() {
+    public LiveData<List<State>> observeSyncState() {
         return observableStates;
     }
 
@@ -511,7 +511,7 @@ public class FilterManager implements Serializable {
 
     public void clearSyncFilter(){
         stateFilters.clear();
-        observableStates.set(stateFilters);
+        observableStates.postValue(stateFilters);
         stateFiltersApplied.set(stateFilters.size());
         filterProcessor.onNext(this);
     }
@@ -530,7 +530,7 @@ public class FilterManager implements Serializable {
         observableEnrollmentStatus.set(null);
         catOptComboFilters.clear();
         stateFilters.clear();
-        observableStates.set(stateFilters);
+        observableStates.postValue(stateFilters);
         ouFilters.clear();
         liveDataOUFilter.setValue(ouFilters);
         periodFilters = new ArrayList<>();
@@ -622,7 +622,7 @@ public class FilterManager implements Serializable {
         liveDataOUFilter.postValue(ouFilters);
         ouFiltersApplied.set(ouFilters.size());
         stateFilters.clear();
-        observableStates.set(stateFilters);
+        observableStates.postValue(stateFilters);
         stateFiltersApplied.set(stateFilters.size());
         enrollmentStatusFilters.clear();
         enrollmentStatusFiltersApplied.set(0);
