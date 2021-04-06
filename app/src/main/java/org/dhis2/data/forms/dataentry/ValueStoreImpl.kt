@@ -4,6 +4,7 @@ import io.reactivex.Flowable
 import java.io.File
 import org.dhis2.Bindings.blockingSetCheck
 import org.dhis2.Bindings.withValueTypeCheck
+import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
@@ -13,7 +14,8 @@ import org.hisp.dhis.android.core.common.ValueType
 class ValueStoreImpl(
     private val d2: D2,
     private val recordUid: String,
-    private val entryMode: DataEntryStore.EntryMode
+    private val entryMode: DataEntryStore.EntryMode,
+    private val dhisEnrollmentUtils: DhisEnrollmentUtils
 ) : ValueStore {
 
     enum class ValueStoreResult {
@@ -140,40 +142,7 @@ class ValueStoreImpl(
     }
 
     private fun checkUniqueFilter(uid: String, value: String?, teiUid: String): Boolean {
-        return if (value != null) {
-            val localUid =
-                d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()!!
-            val isUnique = localUid.unique() ?: false
-            val orgUnitScope = localUid.orgUnitScope() ?: false
-
-            if (isUnique) {
-                if (!orgUnitScope) {
-                    val hasValue = d2.trackedEntityModule().trackedEntityAttributeValues()
-                        .byTrackedEntityAttribute().eq(uid)
-                        .byTrackedEntityInstance().neq(teiUid)
-                        .byValue().eq(value).blockingGet().isNotEmpty()
-                    !hasValue
-                } else {
-                    val enrollingOrgUnit =
-                        d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet()
-                            .organisationUnit()
-                    val hasValue = d2.trackedEntityModule().trackedEntityAttributeValues()
-                        .byTrackedEntityAttribute().eq(uid)
-                        .byTrackedEntityInstance().neq(teiUid)
-                        .byValue().eq(value).blockingGet()
-                        .map {
-                            d2.trackedEntityModule().trackedEntityInstances()
-                                .uid(it.trackedEntityInstance()).blockingGet().organisationUnit()
-                        }
-                        .all { it != enrollingOrgUnit }
-                    hasValue
-                }
-            } else {
-                true
-            }
-        } else {
-            true
-        }
+        return dhisEnrollmentUtils.isTrackedEntityAttributeValueUnique(uid, value, teiUid)
     }
 
     private fun saveFileResource(path: String): String {
