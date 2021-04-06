@@ -68,22 +68,6 @@ class DhisEnrollmentUtils @Inject constructor(val d2: D2) {
     }
 
     fun isTrackedEntityAttributeValueUnique(uid: String, value: String?, teiUid: String): Boolean {
-        fun getOrgUnit(teiUid: String): String? {
-            return d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet()
-                .organisationUnit()
-        }
-
-        fun getTrackedEntityAttributeValues(
-            uid: String,
-            value: String,
-            teiUid: String
-        ): List<TrackedEntityAttributeValue> {
-            return d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq(uid)
-                .byTrackedEntityInstance().neq(teiUid)
-                .byValue().eq(value).blockingGet()
-        }
-
         return if (value != null) {
             val localUid =
                 d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()!!
@@ -109,5 +93,21 @@ class DhisEnrollmentUtils @Inject constructor(val d2: D2) {
         } else {
             true
         }
+    }
+
+    private fun getOrgUnit(teiUid: String): String? {
+        return d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet()
+            .organisationUnit()
+    }
+
+    private fun getTrackedEntityAttributeValues(
+        uid: String,
+        value: String,
+        teiUid: String
+    ): List<TrackedEntityAttributeValue> {
+        return d2.trackedEntityModule().trackedEntityAttributeValues()
+            .byTrackedEntityAttribute().eq(uid)
+            .byTrackedEntityInstance().neq(teiUid)
+            .byValue().eq(value).blockingGet()
     }
 }
