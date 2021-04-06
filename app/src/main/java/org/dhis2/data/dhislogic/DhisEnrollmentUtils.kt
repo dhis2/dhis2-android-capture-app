@@ -68,30 +68,30 @@ class DhisEnrollmentUtils @Inject constructor(val d2: D2) {
     }
 
     fun isTrackedEntityAttributeValueUnique(uid: String, value: String?, teiUid: String): Boolean {
-        return if (value != null) {
-            val localUid =
-                d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()!!
-            val isUnique = localUid.unique() ?: false
-            val orgUnitScope = localUid.orgUnitScope() ?: false
+        if (value == null){
+            return true
+        }
 
-            if (isUnique) {
-                if (!orgUnitScope) {
-                    val hasValue = getTrackedEntityAttributeValues(uid, value, teiUid).isNotEmpty()
-                    !hasValue
-                } else {
-                    val enrollingOrgUnit = getOrgUnit(teiUid)
-                    val hasValue = getTrackedEntityAttributeValues(uid, value, teiUid)
-                        .map {
-                            getOrgUnit(it.trackedEntityInstance()!!)
-                        }
-                        .all { it != enrollingOrgUnit }
-                    hasValue
-                }
+        val localUid =
+            d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()!!
+        val isUnique = localUid.unique() ?: false
+        val orgUnitScope = localUid.orgUnitScope() ?: false
+
+        if (isUnique) {
+            return if (!orgUnitScope) {
+                val hasValue = getTrackedEntityAttributeValues(uid, value, teiUid).isNotEmpty()
+                !hasValue
             } else {
-                true
+                val enrollingOrgUnit = getOrgUnit(teiUid)
+                val hasValue = getTrackedEntityAttributeValues(uid, value, teiUid)
+                    .map {
+                        getOrgUnit(it.trackedEntityInstance()!!)
+                    }
+                    .all { it != enrollingOrgUnit }
+                hasValue
             }
         } else {
-            true
+            return true
         }
     }
 
