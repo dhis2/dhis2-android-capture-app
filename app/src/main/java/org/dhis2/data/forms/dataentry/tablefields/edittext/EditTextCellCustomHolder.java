@@ -119,7 +119,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         if (tableView.getSelectedRow() == SelectionHandler.UNSELECTED_POSITION) {
             closeKeyboard(editText);
             editText.clearFocus();
-        } else if (editTextModel.column() == tableView.getSelectedColumn() && editTextModel.row() == tableView.getSelectedRow())
+        } else if (editTextModel.column() == tableView.getSelectedColumn() && editTextModel.row() == tableView.getSelectedRow() && editTextModel.editable())
             setSelected(SelectionState.SELECTED);
     }
 

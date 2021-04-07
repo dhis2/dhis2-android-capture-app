@@ -151,10 +151,12 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                         behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     }
                 }
-            } else {
+            } else if(isKeyboardOpened){
                 isKeyboardOpened = false;
-                binding.navigationView.setVisibility(View.VISIBLE);
-                binding.saveButton.show();
+                new Handler().postDelayed(()->{
+                    binding.navigationView.setVisibility(View.VISIBLE);
+                    binding.saveButton.show();
+                },1000);
             }
         }
     };
