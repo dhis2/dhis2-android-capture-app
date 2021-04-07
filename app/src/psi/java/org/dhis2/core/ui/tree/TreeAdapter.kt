@@ -6,9 +6,8 @@ import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.core.types.Tree
 
 class TreeAdapter(
-    root: Tree.Root<*>,
     private val binders: List<TreeAdapterBinder>,
-    private val onTreeClickListener: (node: Tree<*>, position: Int) -> Unit,
+    private val onTreeClickListener: (node: Tree<*>) -> Unit,
     private val displayRoot: Boolean = false
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
@@ -16,8 +15,11 @@ class TreeAdapter(
     private var displayNodes: MutableList<Tree<*>> = mutableListOf()
     private var levelByNodes = HashMap<Tree<*>, Int>()
 
-    init {
+    fun refresh(root: Tree.Root<*>) {
+        displayNodes.clear()
+        levelByNodes.clear()
         findDisplayNodes(root)
+        notifyDataSetChanged()
     }
 
     private fun findDisplayNodes(root: Tree.Root<*>) {
@@ -66,7 +68,7 @@ class TreeAdapter(
             val node = displayNodes[viewHolder.adapterPosition]
 
             if (node is Tree.Node) {
-                onTreeClickListener(node, viewHolder.adapterPosition)
+                onTreeClickListener(node)
             }
         }
 
