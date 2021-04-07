@@ -153,7 +153,7 @@ android {
             applicationId "com.eyeseetea.widp"
             dimension "default"
             versionCode versions.vCode
-            versionName "2.3.1-widp-fork-1"
+            versionName "2.3.2-widp-fork-1"
         }
 
         psi {
