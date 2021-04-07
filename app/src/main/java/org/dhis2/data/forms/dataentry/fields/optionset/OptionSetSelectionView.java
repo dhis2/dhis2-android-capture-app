@@ -229,11 +229,8 @@ public class OptionSetSelectionView extends FieldLayout {
         }
     }
 
-    public void setLabel(String label, boolean mandatory) {
-        StringBuilder labelBuilder = new StringBuilder(label);
-        if (mandatory)
-            labelBuilder.append("*");
-        this.label = labelBuilder.toString();
+    public void setLabel(String label) {
+        this.label = label;
         binding.setVariable(BR.label, label);
     }
 
@@ -278,7 +275,7 @@ public class OptionSetSelectionView extends FieldLayout {
         setObjectStyle(viewModel.objectStyle());
         setEditable(viewModel.editable());
         setInitValue(viewModel.value(), viewModel.options(), viewModel.fieldRendering().type());
-        setLabel(viewModel.label(), viewModel.mandatory());
+        setLabel(viewModel.getFormattedLabel());
         setDescription(viewModel.description());
     }
 }

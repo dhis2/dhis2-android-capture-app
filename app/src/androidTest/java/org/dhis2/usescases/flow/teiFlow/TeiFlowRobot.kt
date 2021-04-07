@@ -1,6 +1,5 @@
 package org.dhis2.usescases.flow.teiFlow
 
-
 import org.dhis2.common.BaseRobot
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.searchte.robot.searchTeiRobot

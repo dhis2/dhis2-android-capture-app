@@ -144,7 +144,8 @@ class EnrollmentModule(
         return ValueStoreImpl(
             d2,
             enrollmentRepository.blockingGet().trackedEntityInstance()!!,
-            DataEntryStore.EntryMode.ATTR
+            DataEntryStore.EntryMode.ATTR,
+            DhisEnrollmentUtils(d2)
         )
     }
 

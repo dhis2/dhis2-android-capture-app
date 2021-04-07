@@ -257,7 +257,7 @@ class EnrollmentPresenterImpl(
                                 }?.let { item ->
                                     itemList = list.updated(
                                         list.indexOf(item),
-                                        item.withValue(rowAction.value).withEditMode(true)
+                                        item.withValue(rowAction.value)
                                     )
                                 }
                             }
@@ -636,6 +636,8 @@ class EnrollmentPresenterImpl(
             false
         }
     }
+
+    fun hasAccess() = getProgram().access()?.data()?.write() ?: false
 
     fun saveEnrollmentGeometry(geometry: Geometry?) {
         enrollmentObjectRepository.setGeometry(geometry)

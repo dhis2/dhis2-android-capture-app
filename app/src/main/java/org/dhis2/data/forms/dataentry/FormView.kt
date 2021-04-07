@@ -13,8 +13,12 @@ import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
+import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
+import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
+import timber.log.Timber
 
 class FormView @JvmOverloads constructor(
     context: Context,
@@ -64,6 +68,16 @@ class FormView @JvmOverloads constructor(
                 null
             ).show()
         }
+        adapter.onNextClicked = { position ->
+            val viewHolder = recyclerView.findViewHolderForLayoutPosition(position + 1)
+            if (viewHolder == null) {
+                try {
+                    recyclerView.smoothScrollToPosition(position + 1)
+                } catch (e: Exception) {
+                    Timber.e(e)
+                }
+            }
+        }
         recyclerView.adapter = adapter
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -72,17 +86,16 @@ class FormView @JvmOverloads constructor(
                 scrollCallback?.invoke(hasToShowFab)
             }
         } else {
-            recyclerView.setOnScrollListener(object :
-                    RecyclerView.OnScrollListener() {
-                    override fun onScrolled(
-                        recyclerView: RecyclerView,
-                        dx: Int,
-                        dy: Int
-                    ) {
-                        val hasToShowFab = checkLastItem()
-                        scrollCallback?.invoke(hasToShowFab)
-                    }
-                })
+            recyclerView.setOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(
+                    recyclerView: RecyclerView,
+                    dx: Int,
+                    dy: Int
+                ) {
+                    val hasToShowFab = checkLastItem()
+                    scrollCallback?.invoke(hasToShowFab)
+                }
+            })
         }
 
         recyclerView.setOnFocusChangeListener { _, hasFocus ->
@@ -96,6 +109,8 @@ class FormView @JvmOverloads constructor(
         val layoutManager: LinearLayoutManager = recyclerView.layoutManager as LinearLayoutManager
         val myFirstPositionIndex = layoutManager.findFirstVisibleItemPosition()
         val myFirstPositionView = layoutManager.findViewByPosition(myFirstPositionIndex)
+
+        handleKeyBoardOnFocusChange(items)
 
         var offset = 0
         myFirstPositionView?.let {
@@ -119,5 +134,20 @@ class FormView @JvmOverloads constructor(
             lastVisiblePosition == adapter.itemCount - 1 ||
                 adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
             )
+    }
+
+    private fun handleKeyBoardOnFocusChange(items: List<FieldViewModel>) {
+        items.firstOrNull { it.activated() }?.let {
+            if (!doesItemNeedsKeyboard(it)) {
+                closeKeyboard()
+            }
+        }
+    }
+
+    private fun doesItemNeedsKeyboard(item: FieldViewModel) = when (item) {
+        is EditTextViewModel,
+        is ScanTextViewModel,
+        is CoordinateViewModel -> true
+        else -> false
     }
 }

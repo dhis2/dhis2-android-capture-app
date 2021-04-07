@@ -3,8 +3,14 @@ package org.dhis2.data.forms.dataentry.fields.scan
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.text.Editable
+import android.text.TextUtils
+import android.text.TextWatcher
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
+import android.view.inputmethod.EditorInfo.IME_ACTION_NEXT
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
@@ -12,10 +18,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.android.synthetic.main.scan_text_view.view.delete
-import kotlinx.android.synthetic.main.scan_text_view.view.descIcon
 import org.dhis2.BR
-import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
 import org.dhis2.databinding.ScanTextViewAccentBinding
@@ -27,9 +30,9 @@ import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.EXTRA_DATA
 import org.dhis2.utils.Constants.RQ_QR_SCANNER
+import org.dhis2.utils.Preconditions.Companion.equals
 import org.dhis2.utils.customviews.CustomDialog
 import org.dhis2.utils.customviews.FieldLayout
-import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
 class ScanTextView @JvmOverloads constructor(
@@ -43,9 +46,9 @@ class ScanTextView @JvmOverloads constructor(
     private lateinit var inputLayout: TextInputLayout
     private lateinit var descriptionLabel: ImageView
     private lateinit var binding: ViewDataBinding
-    private lateinit var onScanResult: (String?) -> Unit
     private lateinit var qrIcon: ImageView
     private lateinit var labelText: TextView
+    private lateinit var delete: ImageView
     var optionSet: String? = null
     private var renderingType: ValueTypeRenderingType? = null
     private lateinit var viewModel: ScanTextViewModel
@@ -54,7 +57,7 @@ class ScanTextView @JvmOverloads constructor(
         init(context)
     }
 
-    fun setLayoutData(isBgTransparent: Boolean) {
+    private fun setLayoutData(isBgTransparent: Boolean) {
         if (!::binding.isInitialized) {
             binding = when {
                 isBgTransparent -> ScanTextViewBinding.inflate(inflater, this, true)
@@ -68,20 +71,54 @@ class ScanTextView @JvmOverloads constructor(
         this.inputLayout = binding.root.findViewById(R.id.input_layout)
         this.descriptionLabel = binding.root.findViewById(R.id.descriptionLabel)
         this.labelText = binding.root.findViewById(R.id.label)
+        this.delete = binding.root.findViewById(R.id.delete)
 
         qrIcon.setOnClickListener {
             viewModel.onItemClick()
             goToScanActivity()
         }
 
-        editText.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
-                closeKeyboard()
-                onScanResult.invoke(editText.text.toString())
-            } else {
+        editText.setOnTouchListener { _, event ->
+            if (MotionEvent.ACTION_UP == event.action) {
                 viewModel.onItemClick()
             }
+            return@setOnTouchListener false
         }
+
+        editText.setOnFocusChangeListener { _, _ ->
+            if (valueHasChanged()) {
+                viewModel.onScanSelected(editText.text.toString())
+            }
+        }
+
+        editText.setOnEditorActionListener { v, actionId, _ ->
+            when (actionId) {
+                IME_ACTION_NEXT -> {
+                    viewModel.onNext()
+                    return@setOnEditorActionListener true
+                }
+                IME_ACTION_DONE -> {
+                    v.closeKeyboard()
+                    return@setOnEditorActionListener true
+                }
+                else -> return@setOnEditorActionListener false
+            }
+        }
+
+        delete.setOnClickListener {
+            setText(null)
+            viewModel.onScanSelected(null)
+        }
+
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel.onTextChange(text.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
     }
 
     private fun goToScanActivity() {
@@ -92,23 +129,12 @@ class ScanTextView @JvmOverloads constructor(
         (context as FragmentActivity).startActivityForResult(intent, RQ_QR_SCANNER)
     }
 
-    fun setOnScannerListener(function: (String?) -> Unit) {
-        this.onScanResult = function
-        delete.setOnClickListener {
-            viewModel.onItemClick()
-            function.invoke(null)
-        }
+    private fun updateScanResult(result: String?) {
+        setText(result)
+        viewModel.onScanSelected(result)
     }
 
-    fun updateScanResult(result: String?) {
-        onScanResult.invoke(result)
-    }
-
-    fun setObjectStyle(objectStyle: ObjectStyle) {
-        Bindings.setObjectStyle(iconView, this, objectStyle)
-    }
-
-    fun updateEditable(isEditable: Boolean) {
+    private fun updateEditable(isEditable: Boolean) {
         editText.isEnabled = isEditable
         editText.isFocusable = true
         editText.isClickable = isEditable
@@ -127,7 +153,10 @@ class ScanTextView @JvmOverloads constructor(
     }
 
     fun setText(text: String?) {
-        editText.setText(text)
+        text?.let {
+            editText.setText(it)
+        } ?: editText.text?.clear()
+
         editText.setSelection(editText.text?.length ?: 0)
         delete.visibility = when (text) {
             null -> View.GONE
@@ -139,7 +168,7 @@ class ScanTextView @JvmOverloads constructor(
         inputLayout.hint = hint
     }
 
-    fun setAlert(warning: String?, error: String?) {
+    private fun setAlert(warning: String?, error: String?) {
         inputLayout.error = error.also {
             inputLayout.setErrorTextAppearance(R.style.error_appearance)
         } ?: warning.also {
@@ -147,15 +176,11 @@ class ScanTextView @JvmOverloads constructor(
         }
     }
 
-    fun setLabel(label: String, mandatory: Boolean) {
+    fun setLabel(label: String) {
         if (inputLayout.hint == null || inputLayout.hint!!.toString() != label) {
-            val labelBuilder = StringBuilder(label)
-            if (mandatory) {
-                labelBuilder.append("*")
-            }
-            this.label = labelBuilder.toString()
+            this.label = label
             inputLayout.hint = this.label
-            binding.setVariable(BR.label, this.label)
+            binding.setVariable(BR.label, label)
         }
     }
 
@@ -178,14 +203,14 @@ class ScanTextView @JvmOverloads constructor(
         }
     }
 
-    fun setRenderingType(type: ValueTypeRenderingType?) {
+    private fun setRenderingType(type: ValueTypeRenderingType?) {
         renderingType = type
         when (type) {
             ValueTypeRenderingType.BAR_CODE -> {
-                descIcon.setImageResource(R.drawable.ic_form_barcode)
+                qrIcon.setImageResource(R.drawable.ic_form_barcode)
             }
             ValueTypeRenderingType.QR_CODE -> {
-                descIcon.setImageResource(R.drawable.ic_form_qr)
+                qrIcon.setImageResource(R.drawable.ic_form_qr)
             }
             else -> {
             }
@@ -216,16 +241,13 @@ class ScanTextView @JvmOverloads constructor(
         viewModel.apply {
             setText(value())
             setRenderingType(fieldRendering?.type())
-            setLabel(label(), mandatory())
+            setLabel(formattedLabel)
             setHint(hint)
             setDescription(description())
             setAlert(warning(), error())
             updateEditable(editable() ?: false)
             optionSet = optionSet()
-            setOnScannerListener { value ->
-                setText(value)
-                viewModel.onScanSelected(value)
-            }
+            binding.setVariable(BR.focus, activated())
         }
     }
 
@@ -237,5 +259,12 @@ class ScanTextView @JvmOverloads constructor(
 
     private fun subscribe() {
         (context as ActivityResultObservable).subscribe(this)
+    }
+
+    private fun valueHasChanged(): Boolean {
+        return !equals(
+            if (TextUtils.isEmpty(editText.text)) "" else editText.text.toString(),
+            if (viewModel.value() == null) "" else viewModel.value().toString()
+        ) || viewModel.error() != null
     }
 }

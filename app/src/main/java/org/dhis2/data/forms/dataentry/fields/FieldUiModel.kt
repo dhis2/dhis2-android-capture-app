@@ -14,8 +14,11 @@ interface FieldUiModel {
 
     fun onNext()
 
+    fun onTextChange(value: String?)
+
     interface Callback {
 
+        fun onNext()
         fun showDialog(title: String, message: String?)
     }
 }

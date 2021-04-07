@@ -31,8 +31,9 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
 
-public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.CascadeOrgUnitCallbacks {
+public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.CascadeOrgUnitCallbacks, View.OnClickListener {
     private ViewDataBinding binding;
 
     private ImageView iconView;
@@ -81,31 +82,11 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
-                viewModel.onItemClick();
                 editText.performClick();
             }
         });
 
-        editText.setOnClickListener(v -> new OrgUnitCascadeDialog(label, value, new OrgUnitCascadeDialog.CascadeOrgUnitCallbacks() {
-            @Override
-            public void textChangedConsumer(String selectedOrgUnitUid, String selectedOrgUnitName) {
-                listener.onDataChanged(selectedOrgUnitUid);
-                editText.setText(selectedOrgUnitName);
-                editText.setEnabled(true);
-            }
-
-            @Override
-            public void onDialogCancelled() {
-                editText.setEnabled(true);
-            }
-
-            @Override
-            public void onClear() {
-                listener.onDataChanged(null);
-                editText.setText(null);
-                editText.setEnabled(true);
-            }
-        }, OrgUnitCascadeDialog.OUSelectionType.SEARCH).show(supportFragmentManager, label));
+        editText.setOnClickListener(this);
     }
 
     @Override
@@ -152,14 +133,11 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
             inputLayout.setError(null);
     }
 
-    public void setLabel(String label, boolean mandatory) {
+    public void setLabel(String label) {
         if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(label)) {
-            StringBuilder labelBuilder = new StringBuilder(label);
-            if (mandatory)
-                labelBuilder.append("*");
-            this.label = labelBuilder.toString();
+            this.label = label;
             inputLayout.setHint(this.label);
-            binding.setVariable(BR.label, this.label);
+            binding.setVariable(BR.label, label);
         }
 
         binding.setVariable(BR.fieldHint, getContext().getString(R.string.choose_ou));
@@ -205,6 +183,34 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
 
     }
 
+    @Override
+    public void onClick(View v) {
+        requestFocus();
+        closeKeyboard(v);
+        viewModel.onItemClick();
+
+        new OrgUnitCascadeDialog(label, value, new OrgUnitCascadeDialog.CascadeOrgUnitCallbacks() {
+            @Override
+            public void textChangedConsumer(String selectedOrgUnitUid, String selectedOrgUnitName) {
+                listener.onDataChanged(selectedOrgUnitUid);
+                editText.setText(selectedOrgUnitName);
+                editText.setEnabled(true);
+            }
+
+            @Override
+            public void onDialogCancelled() {
+                editText.setEnabled(true);
+            }
+
+            @Override
+            public void onClear() {
+                listener.onDataChanged(null);
+                editText.setText(null);
+                editText.setEnabled(true);
+            }
+        }, OrgUnitCascadeDialog.OUSelectionType.SEARCH).show(supportFragmentManager, label);
+    }
+
     public void setListener(OnDataChanged listener) {
         this.listener = listener;
     }
@@ -218,7 +224,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
         if (binding == null) {
             setLayoutData(viewModel.isBackgroundTransparent(), viewModel.renderType());
         }
-        setLabel(viewModel.label(), viewModel.mandatory());
+        setLabel(viewModel.getFormattedLabel());
         setDescription(viewModel.description());
         setWarning(viewModel.warning(), viewModel.error());
 
