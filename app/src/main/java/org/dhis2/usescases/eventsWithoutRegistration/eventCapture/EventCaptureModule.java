@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
@@ -100,7 +101,7 @@ public class EventCaptureModule {
     @Provides
     @PerActivity
     ValueStore valueStore(@NonNull D2 d2) {
-        return new ValueStoreImpl(d2, eventUid, DataEntryStore.EntryMode.DE);
+        return new ValueStoreImpl(d2, eventUid, DataEntryStore.EntryMode.DE, new DhisEnrollmentUtils(d2));
     }
 
     @Provides

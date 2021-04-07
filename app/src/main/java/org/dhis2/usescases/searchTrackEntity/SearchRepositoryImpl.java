@@ -13,6 +13,7 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.TrackedEntityInstanceExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.StoreResult;
@@ -288,7 +289,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                         if (fromRelationshipUid != null) {
                             d2.trackedEntityModule().trackedEntityInstanceService().blockingInheritAttributes(fromRelationshipUid, uid, programUid);
                         }
-                        ValueStore valueStore = new ValueStoreImpl(d2, uid, DataEntryStore.EntryMode.ATTR);
+                        ValueStore valueStore = new ValueStoreImpl(d2, uid, DataEntryStore.EntryMode.ATTR, new DhisEnrollmentUtils(d2));
 
                         if (queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
                             queryData.remove(Constants.ENROLLMENT_DATE_UID);
