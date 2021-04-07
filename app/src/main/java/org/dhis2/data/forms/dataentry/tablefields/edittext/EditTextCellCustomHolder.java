@@ -55,9 +55,9 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         this.processor = processor;
 
         editText.setOnEditorActionListener((v, actionId, event) -> {
-            if(actionId == EditorInfo.IME_ACTION_NEXT) {
+            if (actionId == EditorInfo.IME_ACTION_NEXT) {
                 selectNext();
-            }else{
+            } else {
                 editText.clearFocus();
                 closeKeyboard(editText);
                 tableView.getSelectionHandler().clearSelection();
@@ -312,15 +312,15 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         if (selectionState == SelectionState.SELECTED && editTextModel.editable()) {
             editText.requestFocus();
             editText.setSelection(editText.getText().length());
-            editText.post(() -> openKeyboard(editText));
-        }else if(!editTextModel.editable()){
+            openKeyboard(editText);
+        } else if (!editTextModel.editable()) {
             closeKeyboard(editText);
         }
     }
 
     @Override
     public void handleClickIfNeeded() {
-        if(editTextModel != null && editTextModel.valueType() == ValueType.LONG_TEXT){
+        if (editTextModel != null && editTextModel.valueType() == ValueType.LONG_TEXT) {
             showEditDialog();
         }
     }
