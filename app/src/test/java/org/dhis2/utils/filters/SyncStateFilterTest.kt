@@ -29,7 +29,7 @@ class SyncStateFilterTest {
 
     @Before
     fun setUp() {
-        FilterManager.clearAll();
+        FilterManager.clearAll()
         RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
 
         filterManager = FilterManager.initWith(resourceManger)
