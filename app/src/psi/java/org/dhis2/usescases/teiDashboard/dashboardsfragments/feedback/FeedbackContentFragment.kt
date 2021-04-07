@@ -80,6 +80,13 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
             presenter.shareFeedback(binding.failedCheckBox.isChecked)
         }
 
+        adapter = TreeAdapter(listOf(FeedbackItemBinder(), FeedbackHelpItemBinder()),
+            { node: Tree<*> ->
+                presenter.expand(node )
+            })
+
+        binding.feedbackRecyclerView.adapter = adapter
+
         return binding.root
     }
 
@@ -109,7 +116,6 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
             is FeedbackContentState.Loading -> renderLoading()
             is FeedbackContentState.Loaded -> renderLoaded(
                 state.feedback,
-                state.position,
                 state.validations
             )
             is FeedbackContentState.ValidationsWithError -> {
@@ -191,12 +197,12 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
         binding.failedCheckBox.isEnabled = false
     }
 
-    private fun renderLoaded(feedback: Tree.Root<*>, position: Int, validations: List<Validation>) {
+    private fun renderLoaded(feedback: Tree.Root<*>, validations: List<Validation>) {
         binding.msgFeedback.visibility = View.GONE
         binding.spinner.visibility = View.GONE
         binding.failedCheckBox.isEnabled = true
 
-        setFeedbackAdapter(feedback, position)
+        setFeedbackAdapter(feedback)
 
         showValidations(validations)
     }
@@ -263,14 +269,10 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
         }
     }
 
-    private fun setFeedbackAdapter(feedback: Tree.Root<*>, scrollTo: Int) {
-        val adapter = TreeAdapter(feedback, listOf(FeedbackItemBinder(), FeedbackHelpItemBinder()),
-            { node: Tree<*>, position: Int ->
-                presenter.expand(node, position)
-            })
+    private lateinit var adapter: TreeAdapter
 
-        binding.feedbackRecyclerView.adapter = adapter
-        binding.feedbackRecyclerView.smoothScrollToPosition(scrollTo)
+    private fun setFeedbackAdapter(feedback: Tree.Root<*>) {
+        adapter.refresh(feedback)
     }
 
     companion object {

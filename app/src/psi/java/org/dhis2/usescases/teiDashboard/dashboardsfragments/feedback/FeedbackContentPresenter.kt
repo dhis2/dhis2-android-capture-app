@@ -19,7 +19,6 @@ sealed class FeedbackContentState {
     data class Loaded(
         val feedback: Tree.Root<*>,
         val onlyFailedFilter: Boolean,
-        val position: Int,
         val validations: List<Validation>
     ) :
         FeedbackContentState()
@@ -79,13 +78,10 @@ class FeedbackContentPresenter(
         render(FeedbackContentState.SharingFeedback(enrollmentInfo, serverUrl))
     }
 
-    fun expand(node: Tree<*>, position: Int) {
+    fun expand(node: Tree<*>) {
         if (lastLoaded != null && node is Tree.Node) {
             lastLoaded =
-                lastLoaded!!.copy(
-                    feedback = lastLoaded!!.feedback.expand(node),
-                    position = position
-                )
+                lastLoaded!!.copy(feedback = lastLoaded!!.feedback.expand(node))
             render(lastLoaded!!)
         }
     }
@@ -107,7 +103,6 @@ class FeedbackContentPresenter(
                 lastLoaded = FeedbackContentState.Loaded(
                     finalFeedback,
                     onlyFailedFilter,
-                    0,
                     feedbackResponse.validations
                 )
                 render(lastLoaded!!)
