@@ -159,8 +159,8 @@ android {
         psi {
             applicationId "org.dhis2.psi"
             dimension "default"
-            versionCode 8
-            versionName "2.3.1-psi-fork-1"
+            versionCode 9
+            versionName "2.3.2-psi-fork-1"
         }
     }
 
