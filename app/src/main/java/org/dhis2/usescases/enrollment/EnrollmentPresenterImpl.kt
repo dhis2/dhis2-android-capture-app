@@ -591,27 +591,41 @@ class EnrollmentPresenterImpl(
         RulesUtilsProviderImpl(d2)
             .applyRuleEffects(fieldMap, result, this)
 
-        fieldMap.values.forEachIndexed { index, fieldViewModel ->
-            if (fieldViewModel is SpinnerViewModel) {
-                fieldViewModel.setOptionsToHide(
-                    optionsToHide[fieldViewModel.uid()] ?: emptyList(),
-                    optionsGroupsToHide[fieldViewModel.uid()] ?: emptyList()
-                )
-                if (optionsGroupToShow.keys.contains(fieldViewModel.uid())) {
-                    fieldViewModel.optionGroupsToShow = optionsGroupToShow[fieldViewModel.uid()]
-                }
-            }
-            if (fieldViewModel is OptionSetViewModel) {
-                fieldViewModel.optionsToHide = optionsToHide[fieldViewModel.uid()]
-                if (optionsGroupToShow.keys.contains(fieldViewModel.uid())) {
-                    fieldViewModel.optionsToShow = formRepository.getOptionsFromGroups(
-                        optionsGroupToShow[fieldViewModel.uid()] ?: arrayListOf()
+        val fieldList = ArrayList(fieldMap.values)
+
+        return fieldList.map { fieldViewModel ->
+            when (fieldViewModel) {
+                is SpinnerViewModel -> {
+                    var mappedSpinnerModel = fieldViewModel.setOptionsToHide(
+                        optionsToHide[fieldViewModel.uid()] ?: emptyList(),
+                        optionsGroupsToHide[fieldViewModel.uid()] ?: emptyList()
                     )
+                    if (optionsGroupToShow.keys.contains(fieldViewModel.uid())) {
+                        mappedSpinnerModel =
+                            fieldViewModel.setOptionGroupsToShow(
+                                optionsGroupToShow[fieldViewModel.uid()]
+                            )
+                    }
+                    mappedSpinnerModel
+                }
+                is OptionSetViewModel -> {
+                    var mappedOptionSetModel = fieldViewModel.setOptionsToHide(
+                        optionsToHide[fieldViewModel.uid()] ?: emptyList()
+                    )
+                    if (optionsGroupToShow.keys.contains(fieldViewModel.uid())) {
+                        mappedOptionSetModel = fieldViewModel.setOptionsToShow(
+                            formRepository.getOptionsFromGroups(
+                                optionsGroupToShow[fieldViewModel.uid()] ?: arrayListOf()
+                            )
+                        )
+                    }
+                    mappedOptionSetModel
+                }
+                else -> {
+                    fieldViewModel
                 }
             }
         }
-
-        return ArrayList(fieldMap.values)
     }
 
     fun getEnrollment(): Enrollment? {
