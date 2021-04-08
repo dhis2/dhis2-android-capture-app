@@ -96,6 +96,12 @@ android {
             resValue "string", "content_provider", "com.dhis2.debug.provider"
             buildConfigField "int", "MATOMO_ID", "2"
 
+            applicationVariants.all { variant ->
+                if (variant.getFlavorName() == "dhisUITesting") {
+                    bitriseSentryDSN = ""
+                }
+            }
+
             //Sentry variables
             manifestPlaceholders = [
                     sentry_dsn        : bitriseSentryDSN,
