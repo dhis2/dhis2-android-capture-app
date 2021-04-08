@@ -214,7 +214,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 value,
                 programStageSection(),
                 allowFutureDate(),
-                false,
+                editable(),
                 optionSet(),
                 warning(),
                 error(),
