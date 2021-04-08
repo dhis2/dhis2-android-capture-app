@@ -177,7 +177,7 @@ public class CustomTextView extends FieldLayout {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (valueHasChanged()) {
+                if (valueHasChanged() && editText.hasFocus()) {
                     viewModel.onTextChange(charSequence.toString());
                 }
                 if (isLongText) {
