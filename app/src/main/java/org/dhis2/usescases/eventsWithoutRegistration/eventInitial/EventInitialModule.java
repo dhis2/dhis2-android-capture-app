@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.Bindings.ValueTypeExtensionsKt;
+import org.dhis2.R;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
@@ -14,6 +15,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepositoryImpl;
 import org.dhis2.utils.analytics.AnalyticsHelper;
@@ -47,7 +49,8 @@ public class EventInitialModule {
                                                      @NonNull SchedulerProvider schedulerProvider,
                                                      @NonNull PreferenceProvider preferenceProvider,
                                                      @NonNull AnalyticsHelper analyticsHelper,
-                                                     @NonNull MatomoAnalyticsController matomoAnalyticsController) {
+                                                     @NonNull MatomoAnalyticsController matomoAnalyticsController,
+                                                     @NonNull EventFieldMapper eventFieldMapper) {
         return new EventInitialPresenter(
                 view,
                 eventSummaryRepository,
@@ -55,19 +58,29 @@ public class EventInitialModule {
                 schedulerProvider,
                 preferenceProvider,
                 analyticsHelper,
-                matomoAnalyticsController);
+                matomoAnalyticsController,
+                eventFieldMapper);
     }
 
 
     @Provides
     @PerActivity
     EventSummaryRepository eventSummaryRepository(@NonNull Context context,
-                                                  @NonNull FormRepository formRepository, D2 d2) {
-        FieldViewModelFactory fieldViewModelFactory = new FieldViewModelFactoryImpl(
-                ValueTypeExtensionsKt.valueTypeHintMap(context),
-                false
-        );
+                                                  @NonNull FormRepository formRepository, D2 d2,
+                                                  @NonNull FieldViewModelFactory fieldViewModelFactory) {
         return new EventSummaryRepositoryImpl(fieldViewModelFactory, formRepository, eventUid, d2);
+    }
+
+    @Provides
+    @PerActivity
+    EventFieldMapper provideFieldMapper(Context context, FieldViewModelFactory fieldFactory) {
+        return new EventFieldMapper(fieldFactory, context.getString(R.string.field_is_mandatory));
+    }
+
+    @Provides
+    @PerActivity
+    FieldViewModelFactory fieldFactory(Context context) {
+        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), false);
     }
 
     @Provides

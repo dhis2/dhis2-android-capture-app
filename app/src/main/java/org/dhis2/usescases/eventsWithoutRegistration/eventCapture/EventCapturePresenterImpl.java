@@ -230,7 +230,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                         fieldMapper.map(
                                                                 fields,
                                                                 sectionList,
-                                                                section/*getNextVisibleSection.get(section, sectionList)*/,
+                                                                section,
                                                                 errors,
                                                                 emptyMandatoryFields,
                                                                 showErrors
@@ -251,13 +251,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                         calculationLoop = 0;
                                         formFieldsProcessor.onNext(sectionsAndFields.component2());
                                         formAdjustProcessor.onNext(new Unit());
-                                        int completedFields = 0;
-                                        for (EventSectionModel sectionModel : sectionsAndFields.component1()) {
-                                            completedFields += sectionModel.numberOfCompletedFields();
-                                        }
+
                                         view.updatePercentage(
-                                                calculateCompletionPercentage(completedFields, fieldMapper.getTotalFields()),
-                                                calculateCompletionPercentage(fieldMapper.getUnsupportedFields(), fieldMapper.getTotalFields()));
+                                                fieldMapper.completedFieldsPercentage(),
+                                                fieldMapper.unsupportedFieldsPercentage()
+                                        );
                                     }
                                 },
                                 Timber::e
@@ -302,13 +300,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     "";
         }
         return fieldSection;
-    }
-
-    private float calculateCompletionPercentage(int completedFields, int totals) {
-        if (totals == 0) {
-            return 100;
-        }
-        return (float) completedFields / (float) totals;
     }
 
     @Override

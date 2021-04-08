@@ -1,6 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.app.DatePickerDialog;
+import android.util.ArrayMap;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Sextet;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DhisTextUtils;
@@ -46,7 +48,7 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
-import rx.exceptions.OnErrorNotImplementedException;
+import kotlin.Pair;
 import timber.log.Timber;
 
 import static org.dhis2.utils.analytics.AnalyticsConstants.BACK_EVENT;
@@ -67,6 +69,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     private final EventSummaryRepository eventSummaryRepository;
 
     private final SchedulerProvider schedulerProvider;
+    private final EventFieldMapper eventFieldMapper;
 
     private String eventId;
 
@@ -88,7 +91,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                                  @NonNull SchedulerProvider schedulerProvider,
                                  @NonNull PreferenceProvider preferenceProvider,
                                  @NonNull AnalyticsHelper analyticsHelper,
-                                 @NonNull MatomoAnalyticsController matomoAnalyticsController) {
+                                 @NonNull MatomoAnalyticsController matomoAnalyticsController,
+                                 @NonNull EventFieldMapper eventFieldMapper) {
 
         this.view = view;
         this.eventInitialRepository = eventInitialRepository;
@@ -97,6 +101,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         this.preferences = preferenceProvider;
         this.analyticsHelper = analyticsHelper;
         this.matomoAnalyticsController = matomoAnalyticsController;
+        this.eventFieldMapper = eventFieldMapper;
     }
 
     @Override
@@ -154,7 +159,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         }
 
         if (eventId != null)
-            getEventSections(eventId);
+            getSectionCompletion();
 
         if (getCurrentOrgUnit(orgInitId) != null) {
             compositeDisposable.add(eventInitialRepository.getOrganisationUnit(getCurrentOrgUnit(orgInitId))
@@ -179,13 +184,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                                 .observeOn(schedulerProvider.ui()).subscribe(categoryOptionCombos -> view
                                         .setCatComboOptions(categoryCombo, categoryOptionCombos, stringCategoryOptionMap),
                                 Timber::e));
-    }
-
-    @Override
-    public void getEventSections(@NonNull String eventId) {
-        compositeDisposable
-                .add(eventSummaryRepository.programStageSections(eventId).subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui()).subscribe(view::onEventSections, Timber::e));
     }
 
     @Override
@@ -317,9 +315,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         view.displayMessage(message);
     }
 
-    @Override
-    public void getSectionCompletion(@Nullable String sectionUid) {
-        Flowable<List<FieldViewModel>> fieldsFlowable = eventSummaryRepository.list(sectionUid, eventId);
+    private void getSectionCompletion() {
+        Flowable<List<FieldViewModel>> fieldsFlowable = eventSummaryRepository.list(eventId);
         Flowable<Result<RuleEffect>> ruleEffectFlowable = eventSummaryRepository.calculate()
                 .subscribeOn(schedulerProvider.computation())
                 .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
@@ -328,10 +325,25 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(fieldsFlowable, ruleEffectFlowable,
                 this::applyEffects);
 
-        compositeDisposable.add(viewModelsFlowable.subscribeOn(schedulerProvider.ui())
-                .observeOn(schedulerProvider.ui()).subscribe(view.showFields(sectionUid), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
+        compositeDisposable.add(
+                eventInitialRepository.eventSections()
+                        .flatMap(sectionList -> viewModelsFlowable
+                                .map(fields -> eventFieldMapper.map(
+                                        fields,
+                                        sectionList,
+                                        "",
+                                        new ArrayMap<>(),
+                                        new ArrayMap<>(),
+                                        new Pair<>(false, false)
+                                )))
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                sectionsAndFields -> view.updatePercentage(
+                                        eventFieldMapper.completedFieldsPercentage(),
+                                        eventFieldMapper.unsupportedFieldsPercentage()),
+                                Timber::d
+                        ));
     }
 
     @NonNull
