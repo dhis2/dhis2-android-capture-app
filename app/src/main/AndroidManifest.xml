@@ -39,6 +39,10 @@
             android:name="io.sentry.debug"
             android:value="${sentry_debug}" />
 
+        <meta-data
+            android:name="io.sentry.traces.sample-rate"
+            android:value="1.0" />
+
         <activity
             android:name=".usescases.splash.SplashActivity"
             android:theme="@style/SplashTheme">
