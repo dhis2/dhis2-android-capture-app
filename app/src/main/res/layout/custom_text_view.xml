@@ -138,7 +138,7 @@
             app:legendBadge="@{legend}"
             app:layout_constraintBottom_toBottomOf="@id/textContainer"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/textContainer"
+            app:layout_constraintTop_toBottomOf="@id/label"
             app:layout_constraintWidth_default="percent"
             app:layout_constraintWidth_max="wrap"
             app:layout_constraintWidth_percent="0.5"/>
