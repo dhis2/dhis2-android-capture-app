@@ -284,12 +284,12 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             )
             cornerParams.topMargin =
                 binding.headerContainer.getChildAt(0).layoutParams.height *
-                    (binding.headerContainer.childCount - 1)
+                (binding.headerContainer.childCount - 1)
             cornerView.layoutParams = cornerParams
             if (binding.headerContainer.childCount > 1) {
                 cornerView.top =
                     (binding.headerContainer.childCount - 2) *
-                        binding.headerContainer.getChildAt(0).layoutParams.height
+                    binding.headerContainer.getChildAt(0).layoutParams.height
             }
             cornerView.findViewById<View>(R.id.buttonRowScaleAdd).setOnClickListener {
                 for (i in 0 until binding.tableLayout.childCount) {
