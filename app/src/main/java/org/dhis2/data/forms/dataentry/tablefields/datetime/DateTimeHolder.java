@@ -131,7 +131,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         if(date!=null) {
             switch (dateTimeViewModel.valueType()) {
                 case DATETIME:
-                    dateFormatted = DateUtils.databaseDateFormat().format(date);
+                    dateFormatted = DateUtils.databaseDateFormatNoSeconds().format(date);
                     break;
                 case DATE:
                     dateFormatted = DateUtils.oldUiDateFormat().format(date);
