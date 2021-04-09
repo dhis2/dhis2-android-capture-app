@@ -243,4 +243,22 @@ class EventFieldMapper(
     private fun fieldIsNotOptionSetOrImage(field: FieldViewModel): Boolean {
         return field.optionSet() == null
     }
+
+    fun completedFieldsPercentage(): Float {
+        val completedFields = eventSectionModels.sumBy { it.numberOfCompletedFields() }
+        return calculateCompletionPercentage(completedFields, totalFields)
+    }
+
+    fun unsupportedFieldsPercentage(): Float {
+        return calculateCompletionPercentage(unsupportedFields, totalFields)
+    }
+
+    private fun calculateCompletionPercentage(
+        completedFields: Int,
+        totals: Int
+    ): Float {
+        return if (totals == 0) {
+            100f
+        } else completedFields.toFloat() / totals.toFloat()
+    }
 }

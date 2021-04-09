@@ -118,7 +118,7 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
 
     @Override
     public void getSectionCompletion(@Nullable String sectionUid) {
-        Flowable<List<FieldViewModel>> fieldsFlowable = eventSummaryRepository.list(sectionUid, eventUid);
+        Flowable<List<FieldViewModel>> fieldsFlowable = eventSummaryRepository.list(eventUid);
 
         Flowable<Result<RuleEffect>> ruleEffectFlowable = eventSummaryRepository.calculate().subscribeOn(schedulerProvider.computation())
                 .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));

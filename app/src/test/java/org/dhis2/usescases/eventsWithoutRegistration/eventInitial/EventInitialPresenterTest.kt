@@ -8,6 +8,7 @@ import org.dhis2.data.prefs.Preference
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
@@ -24,6 +25,7 @@ class EventInitialPresenterTest {
     val preferences: PreferenceProvider = mock()
     val analyticsHelper: AnalyticsHelper = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+    private val eventFieldMapper: EventFieldMapper = mock()
 
     @Before
     fun setUp() {
@@ -34,7 +36,8 @@ class EventInitialPresenterTest {
             schedulers,
             preferences,
             analyticsHelper,
-            matomoAnalyticsController
+            matomoAnalyticsController,
+            eventFieldMapper
         )
     }
 

@@ -96,20 +96,22 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     @NonNull
     @Override
-    public Flowable<List<FieldViewModel>> list(String section, String eventUid) {
+    public Flowable<List<FieldViewModel>> list(String eventUid) {
         return d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).get()
                 .map(event -> {
                     List<FieldViewModel> fields = new ArrayList<>();
                     ProgramStage stage = d2.programModule().programStages().uid(event.programStage()).blockingGet();
+                    List<ProgramStageSection> sections = d2.programModule().programStageSections().withDataElements().byProgramStageUid().eq(stage.uid()).blockingGet();
                     List<ProgramStageDataElement> stageDataElements = d2.programModule().programStageDataElements().byProgramStage().eq(stage.uid()).blockingGet();
 
-                    if (section != null) {
-                        ProgramStageSection stageSection = d2.programModule().programStageSections().withDataElements().uid(section).blockingGet();
-                        for (ProgramStageDataElement programStageDataElement : stageDataElements) {
-                            if (UidsHelper.getUidsList(stageSection.dataElements()).contains(programStageDataElement.dataElement().uid())) {
-                                DataElement dataelement = d2.dataElementModule().dataElements().uid(programStageDataElement.dataElement().uid()).blockingGet();
-                                fields.add(transform(programStageDataElement, dataelement,
-                                        searchValueDataElement(programStageDataElement.dataElement().uid(), event.trackedEntityDataValues()), section, event.status()));
+                    if (!sections.isEmpty()) {
+                        for(ProgramStageSection stageSection : sections) {
+                            for (ProgramStageDataElement programStageDataElement : stageDataElements) {
+                                if (UidsHelper.getUidsList(stageSection.dataElements()).contains(programStageDataElement.dataElement().uid())) {
+                                    DataElement dataelement = d2.dataElementModule().dataElements().uid(programStageDataElement.dataElement().uid()).blockingGet();
+                                    fields.add(transform(programStageDataElement, dataelement,
+                                            searchValueDataElement(programStageDataElement.dataElement().uid(), event.trackedEntityDataValues()), stageSection.uid(), event.status()));
+                                }
                             }
                         }
 
