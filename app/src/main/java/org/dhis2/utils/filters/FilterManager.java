@@ -606,8 +606,10 @@ public class FilterManager implements Serializable {
     }
 
     public void setWorkingListScope(WorkingListScope scope) {
-        currentWorkingListScope.set(scope);
-        setFilterCountersForWorkingList(scope);
+        if (!currentWorkingListScope.get().equals(scope)) {
+            currentWorkingListScope.set(scope);
+            setFilterCountersForWorkingList(scope);
+        }
     }
 
     private void setFilterCountersForWorkingList(WorkingListScope scope) {
