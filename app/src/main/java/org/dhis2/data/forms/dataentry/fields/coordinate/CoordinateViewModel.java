@@ -52,7 +52,7 @@ public abstract class CoordinateViewModel extends FieldViewModel {
     @NonNull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_CoordinateViewModel(uid(), label(), mandatory(), data, programStageSection(), null, false, null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.COORDINATES, processor(), activated(), featureType(), isBackgroundTransparent(), isSearchMode());
+        return new AutoValue_CoordinateViewModel(uid(), label(), mandatory(), data, programStageSection(), null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.COORDINATES, processor(), activated(), featureType(), isBackgroundTransparent(), isSearchMode());
     }
 
     @NonNull

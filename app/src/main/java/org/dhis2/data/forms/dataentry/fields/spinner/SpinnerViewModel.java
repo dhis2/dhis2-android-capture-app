@@ -100,7 +100,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), data, programStageSection(),
-                allowFutureDate(), false, warning(), error(), description(), objectStyle(),
+                allowFutureDate(), editable(), warning(), error(), description(), objectStyle(),
                 null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(),
                 activated(), legendValue(), hint(), optionSet(),
                 optionsToHide(), optionGroupsToHide(), optionGroupsToShow(),
