@@ -62,6 +62,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     private lateinit var section: Section
     private var tablesCount: Int = 0
     private var indicatorsTable: TableView? = null
+    private lateinit var saveToast: Toast
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -102,6 +103,13 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             sectionName,
             presenter.periodId
         )
+        saveToast = Toast.makeText(requireContext(), R.string.datavalue_saved, Toast.LENGTH_SHORT)
+        saveToast.setGravity(
+            Gravity.TOP or Gravity.START,
+            16.dp,
+            110.dp
+        )
+
         return binding.root
     }
 
@@ -386,15 +394,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     }
 
     override fun showSnackBar() {
-        Toast.makeText(requireContext(), R.string.datavalue_saved, Toast.LENGTH_SHORT)
-            .apply {
-                setGravity(
-                    Gravity.TOP or Gravity.START,
-                    16.dp,
-                    110.dp
-                )
-                show()
-            }
+        saveToast.show()
     }
 
     override fun goToTable(numTable: Int) {
