@@ -22,9 +22,9 @@ class GraphCoordinatesToEntry {
     }
 
     fun mapNutrition(coordinates: List<GraphPoint>): List<Entry> {
-        return coordinates.mapIndexed { index, graphPoint ->
+        return coordinates.map { graphPoint ->
             Entry(
-                graphPoint.position?.toFloat() ?: 0f,
+                graphPoint.position ?: 0f,
                 graphPoint.fieldValue
             )
         }
