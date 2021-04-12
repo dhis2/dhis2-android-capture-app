@@ -15,8 +15,6 @@ const val labelTag = "tag"
 @AutoValue
 abstract class MatrixOptionSetModel : FieldViewModel() {
 
-    private val optionsToHide: MutableList<String> = mutableListOf()
-
     override fun getLayoutId(): Int {
         return R.layout.matrix_option_set
     }
@@ -24,6 +22,8 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
     abstract fun options(): List<Option>
 
     abstract fun numberOfColumns(): Int
+
+    abstract fun optionsToHide(): List<String>
 
     companion object {
         @JvmStatic
@@ -59,7 +59,8 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
                 processor,
                 false,
                 options,
-                numberOfColumns
+                numberOfColumns,
+                emptyList()
             )
         }
     }
@@ -83,7 +84,8 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             processor(),
             activated(),
             options(),
-            numberOfColumns()
+            numberOfColumns(),
+            emptyList<String>()
         )
     }
 
@@ -106,7 +108,8 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             processor(),
             activated(),
             options(),
-            numberOfColumns()
+            numberOfColumns(),
+            emptyList<String>()
         )
     }
 
@@ -129,7 +132,8 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             processor(),
             activated(),
             options(),
-            numberOfColumns()
+            numberOfColumns(),
+            emptyList<String>()
         )
     }
 
@@ -152,7 +156,8 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             processor(),
             activated(),
             options(),
-            numberOfColumns()
+            numberOfColumns(),
+            emptyList<String>()
         )
     }
 
@@ -175,7 +180,8 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             processor(),
             activated(),
             options(),
-            numberOfColumns()
+            numberOfColumns(),
+            emptyList<String>()
         )
     }
 
@@ -198,7 +204,8 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             processor(),
             isFocused,
             options(),
-            numberOfColumns()
+            numberOfColumns(),
+            emptyList<String>()
         )
     }
 
@@ -223,25 +230,43 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
 
     fun labelTag(): String = "${labelTag}_${uid()}"
     fun optionTag(option: Option): String = "${labelTag}_${option.uid()}"
+
     fun setOptionsToHide(
         optionsToHide: List<String>,
         optionsInGroupsToHide: List<String>,
         optionsInGroupsToShow: List<String>
-    ) {
-        this.optionsToHide.apply {
-            clear()
-            addAll(
-                optionsToHide.union(optionsInGroupsToHide)
-                    .filter { optionUidToHide ->
-                        !optionsInGroupsToShow.contains(optionUidToHide)
-                    }
-            )
-        }
+    ): FieldViewModel {
+        val options = optionsToHide.union(optionsInGroupsToHide)
+            .filter { optionUidToHide ->
+                !optionsInGroupsToShow.contains(optionUidToHide)
+            }
+
+        return AutoValue_MatrixOptionSetModel(
+            uid(),
+            label(),
+            mandatory(),
+            value(),
+            programStageSection(),
+            false,
+            editable(),
+            optionSet(),
+            warning(),
+            error(),
+            description(),
+            objectStyle(),
+            fieldMask(),
+            dataEntryViewType(),
+            processor(),
+            activated(),
+            options(),
+            numberOfColumns(),
+            options
+        )
     }
 
     fun optionsToShow(): List<Option> {
         return options().filter { option ->
-            !optionsToHide.contains(option.uid())
+            !optionsToHide().contains(option.uid())
         }
     }
 }
