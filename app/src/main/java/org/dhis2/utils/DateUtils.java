@@ -700,63 +700,6 @@ public class DateUtils {
         return calendar.getTime();
     }
 
-    public String getPeriodUIString(PeriodType periodType, Date date, Locale locale) {
-        PeriodHelper periodHelper = D2Manager.getD2().periodModule().periodHelper();
-        String formattedDate;
-        String periodString = "%s - %s";
-        if (periodType == null)
-            periodType = PeriodType.Daily;
-        org.hisp.dhis.android.core.period.Period period = periodHelper.blockingGetPeriodForPeriodTypeAndDate(periodType, date);
-        switch (periodType) {
-            case Weekly:
-            case WeeklyWednesday:
-            case WeeklyThursday:
-            case WeeklySaturday:
-            case WeeklySunday:
-                periodString = "Week %d %s to %s";
-                formattedDate = String.format(periodString,
-                        weekOfTheYear(periodType, period.periodId()),
-                        new SimpleDateFormat(DATE_FORMAT_EXPRESSION, locale).format(period.startDate()),
-                        new SimpleDateFormat(DATE_FORMAT_EXPRESSION, locale).format(period.endDate()));
-                break;
-            case BiWeekly:
-                periodString = "%d %s - %d %s";
-                org.hisp.dhis.android.core.period.Period firstWeekPeriod = periodHelper.blockingGetPeriodForPeriodTypeAndDate(periodType, period.startDate());
-                org.hisp.dhis.android.core.period.Period secondWeekPeriod = periodHelper.blockingGetPeriodForPeriodTypeAndDate(periodType, period.endDate());
-                formattedDate = String.format(periodString,
-                        weekOfTheYear(PeriodType.Weekly,firstWeekPeriod.periodId()),
-                        new SimpleDateFormat(WEEKLY_FORMAT_EXPRESSION, locale).format(period.startDate()),
-                        weekOfTheYear(PeriodType.Weekly,secondWeekPeriod.periodId()),
-                        new SimpleDateFormat(WEEKLY_FORMAT_EXPRESSION, locale).format(period.endDate())
-                );
-                break;
-            case Monthly:
-                formattedDate = new SimpleDateFormat(MONTHLY_FORMAT_EXPRESSION, locale).format(period.startDate());
-                break;
-            case BiMonthly:
-            case Quarterly:
-            case SixMonthly:
-            case SixMonthlyApril:
-            case FinancialApril:
-            case FinancialJuly:
-            case FinancialOct:
-                formattedDate = String.format(periodString,
-                        new SimpleDateFormat(MONTHLY_FORMAT_EXPRESSION, locale).format(period.startDate()),
-                        new SimpleDateFormat(MONTHLY_FORMAT_EXPRESSION, locale).format(period.endDate())
-                );
-                break;
-            case Yearly:
-                formattedDate = new SimpleDateFormat(YEARLY_FORMAT_EXPRESSION, locale).format(period.startDate());
-                break;
-            case Daily:
-            default:
-                formattedDate = uiDateFormat().format(period.startDate());
-                break;
-        }
-
-        return WordUtils.capitalize(formattedDate);
-    }
-
     private int weekOfTheYear(PeriodType periodType,String periodId){
         Pattern pattern = Pattern.compile(periodType.getPattern());
         Matcher matcher = pattern.matcher(periodId);
