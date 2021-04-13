@@ -103,6 +103,16 @@ class FormTest: BaseTest() {
             checkPopUpWithMessageOnCompleteIsShown("Error")
             pressBack()
         }
+
+        formRobot {
+            val nonMandatoryLabel = "ZZ TEST NUMBER"
+            val mandatoryLabel = "ZZ TEST NUMBER *"
+            val position = 4
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            checkLabel(nonMandatoryLabel, position)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, MANDATORY_FIELD, MANDATORY_FIELD_POSITION)
+            checkLabel(mandatoryLabel, position)
+        }
     }
 
 
