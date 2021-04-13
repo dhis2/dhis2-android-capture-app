@@ -85,6 +85,24 @@ class FormTest: BaseTest() {
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, SHOW_ERROR, SHOW_ERROR_POSITION)
             checkErrorIsShown()
         }
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, WARNING_COMPLETE, WARNING_COMPLETE_POSITION)
+            scrollToBottomForm()
+            clickOnSaveForm()
+            checkPopUpWithMessageOnCompleteIsShown("Warning")
+            pressBack()
+        }
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, ERROR_COMPLETE, ERROR_COMPLETE_POSITION)
+            scrollToBottomForm()
+            clickOnSaveForm()
+            checkPopUpWithMessageOnCompleteIsShown("Error")
+            pressBack()
+        }
     }
 
 
