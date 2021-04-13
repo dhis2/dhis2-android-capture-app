@@ -14,6 +14,7 @@ import org.dhis2.data.filter.GetFiltersApplyingWebAppConfig
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.RulesUtilsProvider
 import org.dhis2.utils.RulesUtilsProviderImpl
+import org.dhis2.utils.SentryOkHttpInterceptor
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.AnalyticsInterceptor
 import org.hisp.dhis.android.core.D2
@@ -72,6 +73,7 @@ class ServerModule {
                     AnalyticsHelper(context.appComponent().matomoController())
                 )
             )
+            interceptors.add(SentryOkHttpInterceptor())
             return D2Configuration.builder()
                 .appName(BuildConfig.APPLICATION_ID)
                 .appVersion(BuildConfig.VERSION_NAME)
