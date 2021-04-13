@@ -1,5 +1,7 @@
 package org.dhis2.usescases.form
 
+import android.view.MenuItem
+import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.typeText
@@ -20,6 +22,7 @@ import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION_POSITION
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.containsString
+import org.hamcrest.Matchers.instanceOf
 import org.hamcrest.Matchers.not
 
 fun formRobot(formRobot: FormRobot.() -> Unit) {
@@ -48,7 +51,7 @@ class FormRobot : BaseRobot() {
     }
 
     private fun selectAction(action: String, position: Int) {
-        onView(allOf(withId(R.id.title), withText(action))).perform(click())
+        onData(instanceOf(MenuItem::class.java)).atPosition(position).perform(click())
     }
 
     fun resetToNoAction(label: String, position: Int) {
@@ -87,6 +90,13 @@ class FormRobot : BaseRobot() {
             .check(matches(allOf(isDisplayed(), withText(containsString(message)))))
     }
 
+    fun checkIndicatorIsDisplayed(name: String, value: String) {
+        onView(withId(R.id.indicator_name))
+            .check(matches(allOf(isDisplayed(), withText(name))))
+        onView(withId(R.id.indicator_value))
+            .check(matches(allOf(isDisplayed(), withText(value))))
+    }
+
     fun clickOnSaveForm() {
         onView(withId(R.id.actionButton)).perform(click())
     }
@@ -98,5 +108,13 @@ class FormRobot : BaseRobot() {
 
     fun scrollToBottomForm() {
         onView(withId(R.id.recyclerView)).perform(scrollToBottomRecyclerView())
+    }
+
+    fun goToAnalytics() {
+        onView(withId(R.id.navigation_analytics)).perform(click())
+    }
+
+    fun goToDataEntry() {
+        onView(withId(R.id.navigation_data_entry)).perform(click())
     }
 }
