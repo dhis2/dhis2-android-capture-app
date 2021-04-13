@@ -57,7 +57,7 @@ class FormTest: BaseTest() {
             waitToDebounce(3000)
         }
 
-        /*formRobot {
+        formRobot {
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, HIDE_FIELD, HIDE_FIELD_POSITION)
             checkHiddenField("ZZ TEST LONGTEST")
         }
@@ -102,7 +102,7 @@ class FormTest: BaseTest() {
             clickOnSaveForm()
             checkPopUpWithMessageOnCompleteIsShown("Error")
             pressBack()
-        }*/
+        }
 
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
