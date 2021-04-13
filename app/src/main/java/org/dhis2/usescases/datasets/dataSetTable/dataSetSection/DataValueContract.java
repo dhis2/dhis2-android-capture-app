@@ -23,7 +23,7 @@ public class DataValueContract {
 
         void update(boolean modified);
 
-        void setTableData(DataTableModel dataTableModel, List<List<FieldViewModel>> fields, List<List<String>> cells, Boolean accessDataWrite);
+        void setTableData(TableData tableData);
 
         void setDataSet(DataSet dataSet);
 

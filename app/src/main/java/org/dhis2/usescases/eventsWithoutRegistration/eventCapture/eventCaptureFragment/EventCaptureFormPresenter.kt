@@ -37,10 +37,8 @@ class EventCaptureFormPresenter(
 
                     when (rowAction.type) {
                         ActionType.ON_SAVE -> {
+                            updateErrorList(rowAction)
                             if (rowAction.error != null) {
-                                if (itemsWithError.find { it.id == rowAction.id } == null) {
-                                    itemsWithError.add(rowAction)
-                                }
                                 Flowable.just(
                                     StoreResult(
                                         rowAction.id,
@@ -48,9 +46,6 @@ class EventCaptureFormPresenter(
                                     )
                                 )
                             } else {
-                                itemsWithError.find { it.id == rowAction.id }?.let {
-                                    itemsWithError.remove(it)
-                                }
                                 valueStore.save(rowAction.id, rowAction.value)
                             }
                         }
@@ -66,6 +61,8 @@ class EventCaptureFormPresenter(
                         }
 
                         ActionType.ON_TEXT_CHANGE -> {
+                            updateErrorList(rowAction)
+
                             itemList?.let { list ->
                                 list.find { item ->
                                     item.uid() == rowAction.id
@@ -118,6 +115,18 @@ class EventCaptureFormPresenter(
                     { Timber.e(it) }
                 )
         )
+    }
+
+    private fun updateErrorList(action: RowAction) {
+        if (action.error != null) {
+            if (itemsWithError.find { it.id == action.id } == null) {
+                itemsWithError.add(action)
+            }
+        } else {
+            itemsWithError.find { it.id == action.id }?.let {
+                itemsWithError.remove(it)
+            }
+        }
     }
 
     private fun composeList() = itemList?.let {

@@ -25,10 +25,8 @@ import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.Bindings.calculateWidth
 import org.dhis2.Bindings.dp
-import org.dhis2.Bindings.maxLengthLabel
 import org.dhis2.Bindings.measureText
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.FragmentDatasetSectionBinding
@@ -62,6 +60,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     private lateinit var section: Section
     private var tablesCount: Int = 0
     private var indicatorsTable: TableView? = null
+    private lateinit var saveToast: Toast
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -102,6 +101,13 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             sectionName,
             presenter.periodId
         )
+        saveToast = Toast.makeText(requireContext(), R.string.datavalue_saved, Toast.LENGTH_SHORT)
+        saveToast.setGravity(
+            Gravity.TOP or Gravity.START,
+            16.dp,
+            110.dp
+        )
+
         return binding.root
     }
 
@@ -110,18 +116,18 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         presenterFragment.onDettach()
     }
 
-    override fun setTableData(
-        dataTableModel: DataTableModel,
-        fields: List<List<FieldViewModel>>,
-        cells: List<List<String>>,
-        accessDataWrite: Boolean
-    ) {
+    override fun setTableData(tableData: TableData) {
         binding.programProgress.visibility = View.GONE
 
         val adapter = DataSetTableAdapter(
             abstracContext,
             presenterFragment.getProcessor(),
-            presenterFragment.getProcessorOptionSet()
+            presenterFragment.getProcessorOptionSet(),
+            if (tableData.catCombo()?.isDefault == true) {
+                getString(R.string.dataset_column_default)
+            } else {
+                null
+            }
         )
         adapters.add(adapter)
 
@@ -141,12 +147,12 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         val tableView = TableView(requireContext())
         tableView.setHasFixedWidth(true)
 
-        val columnHeaders = dataTableModel.header()
+        val columnHeaders = tableData.columnHeaders()
 
         adapter.apply {
-            catCombo = dataTableModel.catCombo()!!.uid()
+            catCombo = tableData.catCombo()!!.uid()
             setTableView(tableView)
-            initializeRows(accessDataWrite)
+            initializeRows(tableData.accessDataWrite)
             setDataElementDecoration(dataSet.dataElementDecoration())
         }
 
@@ -161,27 +167,25 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         tableView.headerCount = columnHeaders!!.size
         tableView.shadowColor = ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)
 
-        adapter.swap(fields)
+        adapter.swap(tableData.fieldViewModels)
 
         val (first, second) = presenterFragment.getCurrentSectionMeasure()
         if (first != 0) {
-            adapter.setMaxLabel(dataTableModel.rows()?.maxLengthLabel())
+            adapter.setMaxLabel(tableData.maxLengthLabel())
             tableView.setRowHeaderWidth(first)
             adapter.columnHeaderHeight = second
         } else {
-            val widthFactor: Int
-            val maxColumns = dataTableModel.header()!![dataTableModel.header()!!.size - 1].size
-            widthFactor = if (isPortrait()) {
+            val widthFactor: Int = if (isPortrait()) {
                 2
             } else {
-                if (maxColumns > 1) {
+                if (tableData.maxColumns() > 1) {
                     3
                 } else {
                     2
                 }
             }
 
-            val (first, second, third) = dataTableModel.rows()!!.measureText(
+            val (first, second, third) = tableData.rows()!!.measureText(
                 requireContext(),
                 widthFactor
             )
@@ -199,8 +203,8 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
 
         adapter.setAllItems(
             columnHeaders,
-            dataTableModel.rows(),
-            cells,
+            tableData.rows(),
+            tableData.cells,
             adapter.showRowTotal!!
         )
 
@@ -386,15 +390,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     }
 
     override fun showSnackBar() {
-        Toast.makeText(requireContext(), R.string.datavalue_saved, Toast.LENGTH_SHORT)
-            .apply {
-                setGravity(
-                    Gravity.TOP or Gravity.START,
-                    16.dp,
-                    110.dp
-                )
-                show()
-            }
+        saveToast.show()
     }
 
     override fun goToTable(numTable: Int) {

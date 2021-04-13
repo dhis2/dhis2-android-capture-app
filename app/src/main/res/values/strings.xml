@@ -836,6 +836,7 @@
     <string name="invalid_integer">Value must be an integer</string>
     <string name="openid_session_expired">The session has expired</string>
     <string name="openid_session_expired_message">Your current session has expired. For security reasons you will need to provide your credentials again</string>
+    <string name="dataset_column_default">Values</string>
     <string name="period_span_default_label" translatable="false">%s - %s</string>
     <string name="week_period_span_default_label">Week %d %s to %s</string>
     <string name="biweek_period_span_default_label" translatable="false">%d %s - %d %s</string>

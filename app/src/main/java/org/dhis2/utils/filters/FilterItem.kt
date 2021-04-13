@@ -1,6 +1,7 @@
 package org.dhis2.utils.filters
 
 import androidx.annotation.DrawableRes
+import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import org.dhis2.R
@@ -174,12 +175,44 @@ data class SyncStateFilter(
     override val openFilter: ObservableField<Filters>,
     override val filterLabel: String
 ) : FilterItem(Filters.SYNC_STATE, programType, sortingItem, openFilter, filterLabel) {
+
+    private val syncedCheck = ObservableBoolean(false)
+    private val notSyncedCheck = ObservableBoolean(false)
+    private val errorCheck = ObservableBoolean(false)
+    private val smsCheck = ObservableBoolean(false)
+
     fun setSyncStatus(addState: Boolean, vararg syncStates: State) {
         FilterManager.getInstance().addState(!addState, *syncStates)
     }
 
-    fun observeSyncState(): ObservableField<List<State>> {
-        return FilterManager.getInstance().observeSyncState()
+    fun observeSyncState(state: State): ObservableBoolean {
+        FilterManager.getInstance().observeSyncState().observeForever {
+            syncedCheck.set(it.contains(State.SYNCED))
+            notSyncedCheck.set(
+                it.contains(State.TO_POST) ||
+                    it.contains(State.TO_UPDATE) ||
+                    it.contains(State.UPLOADING)
+            )
+            errorCheck.set(
+                it.contains(State.ERROR) ||
+                    it.contains(State.WARNING)
+            )
+            smsCheck.set(
+                it.contains(State.SENT_VIA_SMS) ||
+                    it.contains(State.SYNCED_VIA_SMS)
+            )
+        }
+        return when (state) {
+            State.TO_POST,
+            State.TO_UPDATE,
+            State.UPLOADING -> notSyncedCheck
+            State.RELATIONSHIP,
+            State.SYNCED -> syncedCheck
+            State.ERROR,
+            State.WARNING -> errorCheck
+            State.SENT_VIA_SMS,
+            State.SYNCED_VIA_SMS -> smsCheck
+        }
     }
 
     override fun icon(): Int {
