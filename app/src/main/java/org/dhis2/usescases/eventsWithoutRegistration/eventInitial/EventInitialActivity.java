@@ -126,9 +126,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private Date selectedOrgUnitClosedDate;
     private ProgramStage programStage;
 
-    private int totalFields;
-    private int totalCompletedFields;
-    private int unsupportedFields;
     private String tempCreate;
     private boolean fixedOrgUnit;
     private String catOptionComboUid;
@@ -720,38 +717,14 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void onEventSections(List<FormSectionViewModel> formSectionViewModels) {
-        for (FormSectionViewModel formSectionViewModel : formSectionViewModels) {
-            presenter.getSectionCompletion(formSectionViewModel.sectionUid());
-        }
-    }
-
-    @NonNull
-    @Override
-    public Consumer<List<FieldViewModel>> showFields(String sectionUid) {
-        return this::swap;
+    public void updatePercentage(float primaryValue, float secondaryValue) {
+        binding.completion.setCompletionPercentage(primaryValue);
+        binding.completion.setSecondaryPercentage(secondaryValue);
     }
 
     @Override
     public void showProgramStageSelection() {
         presenter.getProgramStage(programStageUid);
-    }
-
-    void swap(@NonNull List<FieldViewModel> updates) {
-
-        List<FieldViewModel> realUpdates = new ArrayList<>();
-        if (sectionsToHide != null && !sectionsToHide.isEmpty()) {
-            for (FieldViewModel fieldViewModel : updates)
-                if (!sectionsToHide.contains(fieldViewModel.programStageSection()))
-                    realUpdates.add(fieldViewModel);
-        } else
-            realUpdates.addAll(updates);
-
-        totalCompletedFields = totalCompletedFields + calculateCompletedFields(realUpdates);
-        unsupportedFields = unsupportedFields + calculateUnsupportedFields(updates);
-        totalFields = totalFields + realUpdates.size();
-        binding.completion.setCompletionPercentage((float) totalCompletedFields / (float) totalFields);
-        binding.completion.setSecondaryPercentage((float) unsupportedFields / (float) totalFields);
     }
 
     @Override

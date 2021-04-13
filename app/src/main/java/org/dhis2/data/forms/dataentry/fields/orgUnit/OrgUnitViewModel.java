@@ -51,7 +51,7 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_OrgUnitViewModel(uid(), label(), mandatory(), data, programStageSection(),
-                allowFutureDate(), false, optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, processor(), activated(), isBackgroundTransparent(), renderType());
+                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, processor(), activated(), isBackgroundTransparent(), renderType());
     }
 
     @NonNull

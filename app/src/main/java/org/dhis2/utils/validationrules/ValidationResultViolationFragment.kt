@@ -58,11 +58,7 @@ class ValidationResultViolationFragment : Fragment() {
         for (data in violation.dataToReview) {
             binding.dataToReviewContainer.addView(
                 ItemDataReviewBinding.inflate(layoutInflater).apply {
-                    dataPosition.text = String.format(
-                        "%s | %s",
-                        data.dataElementDisplayName,
-                        data.categoryOptionComboDisplayName
-                    )
+                    dataPosition.text = data.formattedDataLabel()
                     dataValue.text = data.value
                 }.root
             )

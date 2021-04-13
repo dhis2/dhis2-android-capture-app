@@ -13,6 +13,7 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.TrackedEntityInstanceExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.StoreResult;
@@ -20,6 +21,7 @@ import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
@@ -153,7 +155,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                             true
                     );
                 }).toList().map(list ->
-                        CollectionsKt.filter(list, item -> !(item instanceof PictureViewModel))
+                        CollectionsKt.filter(list, item ->
+                                !(item instanceof PictureViewModel) &&
+                                        !(item instanceof CoordinateViewModel))
                 ).toObservable();
     }
 
@@ -288,7 +292,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                         if (fromRelationshipUid != null) {
                             d2.trackedEntityModule().trackedEntityInstanceService().blockingInheritAttributes(fromRelationshipUid, uid, programUid);
                         }
-                        ValueStore valueStore = new ValueStoreImpl(d2, uid, DataEntryStore.EntryMode.ATTR);
+                        ValueStore valueStore = new ValueStoreImpl(d2, uid, DataEntryStore.EntryMode.ATTR, new DhisEnrollmentUtils(d2));
 
                         if (queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
                             queryData.remove(Constants.ENROLLMENT_DATE_UID);

@@ -50,6 +50,7 @@ import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import kotlin.Unit;
+import timber.log.Timber;
 
 import static org.dhis2.utils.Constants.NO_SECTION;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
@@ -143,19 +144,19 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
             int heightDiff = binding.getRoot().getRootView().getHeight() - binding.getRoot().getHeight();
             if (heightDiff > ExtensionsKt.getDp(200)) {
                 isKeyboardOpened = true;
-                binding.navigationView.hide();
+                binding.navigationView.setVisibility(View.GONE);
                 binding.saveButton.hide();
                 if (binding.BSLayout.bottomSheetLayout.getVisibility() == View.VISIBLE) {
                     if (behavior != null && behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                         behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     }
                 }
-            } else {
+            } else if(isKeyboardOpened){
                 isKeyboardOpened = false;
-                new Handler().postDelayed(() -> {
-                    binding.navigationView.show();
+                new Handler().postDelayed(()->{
+                    binding.navigationView.setVisibility(View.VISIBLE);
                     binding.saveButton.show();
-                }, 700);
+                },1000);
             }
         }
     };

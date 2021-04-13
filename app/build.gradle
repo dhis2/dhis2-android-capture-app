@@ -96,11 +96,18 @@ android {
             resValue "string", "content_provider", "com.dhis2.debug.provider"
             buildConfigField "int", "MATOMO_ID", "2"
 
+            applicationVariants.all { variant ->
+                if (variant.getFlavorName() == "dhisUITesting") {
+                    bitriseSentryDSN = ""
+                }
+            }
+
             //Sentry variables
             manifestPlaceholders = [
                     sentry_dsn        : bitriseSentryDSN,
                     sentry_environment: "debug",
-                    sentry_debug      : "true"
+                    sentry_debug      : "true",
+                    sentry_sample_rate: "1.0"
             ]
         }
         release {
@@ -114,7 +121,8 @@ android {
             manifestPlaceholders = [
                     sentry_dsn        : bitriseSentryDSN,
                     sentry_environment: "production",
-                    sentry_debug      : "false"
+                    sentry_debug      : "false",
+                    sentry_sample_rate: "0.2"
             ]
         }
     }

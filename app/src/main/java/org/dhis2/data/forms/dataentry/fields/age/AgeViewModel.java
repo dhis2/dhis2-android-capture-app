@@ -50,7 +50,7 @@ public abstract class AgeViewModel extends FieldViewModel {
     @NonNull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), false, optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.AGE_VIEW, processor(), activated(), mandatory(), data, isBackgroundTransparent(), isSearchMode());
+        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.AGE_VIEW, processor(), activated(), mandatory(), data, isBackgroundTransparent(), isSearchMode());
     }
 
     @NonNull

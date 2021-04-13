@@ -40,7 +40,7 @@ public abstract class DisplayViewModel extends FieldViewModel {
     @NonNull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_DisplayViewModel(uid(), label(), mandatory(), data, null, null, false, null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.DISPLAY, processor(), activated());
+        return new AutoValue_DisplayViewModel(uid(), label(), mandatory(), data, null, null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.DISPLAY, processor(), activated());
     }
 
     @NonNull
