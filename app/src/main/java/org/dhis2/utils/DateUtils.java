@@ -9,10 +9,12 @@ import org.dhis2.data.forms.section.viewmodels.date.DatePickerDialogFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.customviews.RxDateDialog;
 import org.dhis2.utils.filters.FilterManager;
+import org.hisp.dhis.android.core.D2Manager;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.PeriodType;
+import org.hisp.dhis.android.core.period.internal.PeriodHelper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,6 +24,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
@@ -43,6 +47,9 @@ public class DateUtils {
     public static final String DATABASE_FORMAT_EXPRESSION_NO_SECONDS = "yyyy-MM-dd'T'HH:mm";
     public static final String DATE_TIME_FORMAT_EXPRESSION = "yyyy-MM-dd HH:mm";
     public static final String DATE_FORMAT_EXPRESSION = "yyyy-MM-dd";
+    public static final String WEEKLY_FORMAT_EXPRESSION = "w yyyy";
+    public static final String MONTHLY_FORMAT_EXPRESSION = "MMM yyyy";
+    public static final String YEARLY_FORMAT_EXPRESSION = "yyyy";
     public static final String SIMPLE_DATE_FORMAT = "d/M/yyyy";
 
     public Date[] getDateFromDateAndPeriod(Date date, Period period) {
@@ -693,62 +700,14 @@ public class DateUtils {
         return calendar.getTime();
     }
 
-    public String getPeriodUIString(PeriodType periodType, Date date, Locale locale) {
-
-        String formattedDate;
-        Date initDate = getNextPeriod(periodType, date, 0);
-
-        Calendar cal = getCalendar();
-        cal.setTime(getNextPeriod(periodType, date, 1));
-        cal.add(Calendar.DAY_OF_YEAR, -1);
-        Date endDate = cal.getTime();
-        String periodString = "%s - %s";
-        if (periodType == null)
-            periodType = PeriodType.Daily;
-        switch (periodType) {
-            case Weekly:
-            case WeeklyWednesday:
-            case WeeklyThursday:
-            case WeeklySaturday:
-            case WeeklySunday:
-                Calendar endWeek = Calendar.getInstance();
-                endWeek.setTime(initDate);
-                endWeek.add(Calendar.DAY_OF_MONTH, 6);
-                String DATE_LABEL_FORMAT = "Week %s to %s";
-                formattedDate = String.format(DATE_LABEL_FORMAT, new SimpleDateFormat("w yyyy-MM-dd", locale).format(initDate),
-                        new SimpleDateFormat(" yyyy-MM-dd", locale).format(endWeek.getTime()));
-                break;
-            case BiWeekly:
-                formattedDate = String.format(periodString,
-                        new SimpleDateFormat("w yyyy", locale).format(initDate),
-                        new SimpleDateFormat("w yyyy", locale).format(endDate)
-                );
-                break;
-            case Monthly:
-                formattedDate = new SimpleDateFormat("MMM yyyy", locale).format(initDate);
-                break;
-            case BiMonthly:
-            case Quarterly:
-            case SixMonthly:
-            case SixMonthlyApril:
-            case FinancialApril:
-            case FinancialJuly:
-            case FinancialOct:
-                formattedDate = String.format(periodString,
-                        new SimpleDateFormat("MMM yyyy", locale).format(initDate),
-                        new SimpleDateFormat("MMM yyyy", locale).format(endDate)
-                );
-                break;
-            case Yearly:
-                formattedDate = new SimpleDateFormat("yyyy", locale).format(initDate);
-                break;
-            case Daily:
-            default:
-                formattedDate = uiDateFormat().format(initDate);
-                break;
+    private int weekOfTheYear(PeriodType periodType,String periodId){
+        Pattern pattern = Pattern.compile(periodType.getPattern());
+        Matcher matcher = pattern.matcher(periodId);
+        int weekNumber = 0;
+        if(matcher.find()){
+            weekNumber = Integer.parseInt(matcher.group(2));
         }
-
-        return WordUtils.capitalize(formattedDate);
+        return weekNumber;
     }
 
     /**

@@ -3,6 +3,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -23,7 +24,10 @@ import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.program.ProgramStageSection;
+import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -418,5 +422,38 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             ).visible();
         }
         return true;
+    }
+
+    @Override
+    public Flowable<List<FormSectionViewModel>> eventSections() {
+        return d2.eventModule().events().uid(eventUid).get()
+                .map(eventSingle -> {
+                    List<FormSectionViewModel> formSection = new ArrayList<>();
+                    if (eventSingle.deleted() == null || !eventSingle.deleted()) {
+                        ProgramStage stage = d2.programModule().programStages().uid(eventSingle.programStage()).blockingGet();
+                        List<ProgramStageSection> stageSections = d2.programModule().programStageSections().byProgramStageUid().eq(stage.uid()).blockingGet();
+                        if (stageSections.size() > 0) {
+                            Collections.sort(stageSections, (one, two) ->
+                                    one.sortOrder().compareTo(two.sortOrder()));
+
+                            for (ProgramStageSection section : stageSections)
+                                formSection.add(FormSectionViewModel.createForSection(
+                                        eventUid,
+                                        section.uid(),
+                                        section.displayName(),
+                                        section.renderType().mobile() != null ?
+                                                section.renderType().mobile().type().name() :
+                                                null)
+                                );
+                        } else {
+                            formSection.add(FormSectionViewModel.createForSection(
+                                    eventUid,
+                                    "",
+                                    "",
+                                    ProgramStageSectionRenderingType.LISTING.name()));
+                        }
+                    }
+                    return formSection;
+                }).toFlowable();
     }
 }

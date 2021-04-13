@@ -7,6 +7,7 @@ import android.text.method.DigitsKeyListener;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -54,7 +55,13 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         this.processor = processor;
 
         editText.setOnEditorActionListener((v, actionId, event) -> {
-            selectNext();
+            if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                selectNext();
+            } else {
+                editText.clearFocus();
+                closeKeyboard(editText);
+                tableView.getSelectionHandler().clearSelection();
+            }
             return true;
         });
 
@@ -112,7 +119,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         if (tableView.getSelectedRow() == SelectionHandler.UNSELECTED_POSITION) {
             closeKeyboard(editText);
             editText.clearFocus();
-        } else if (editTextModel.column() == tableView.getSelectedColumn() && editTextModel.row() == tableView.getSelectedRow())
+        } else if (editTextModel.column() == tableView.getSelectedColumn() && editTextModel.row() == tableView.getSelectedRow() && editTextModel.editable())
             setSelected(SelectionState.SELECTED);
     }
 
@@ -287,7 +294,6 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
     public void selectNext() {
         editText.clearFocus();
-        closeKeyboard(editText);
 
         if (tableView.getColumnHeaderRecyclerView().get(tableView.getColumnHeaderRecyclerView().size() - 1).getAdapter().getItemCount() > tableView.getSelectedColumn() + 1) {
             tableView.setSelectedCell(tableView.getSelectedColumn() + 1, tableView.getSelectedRow());
@@ -306,13 +312,15 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         if (selectionState == SelectionState.SELECTED && editTextModel.editable()) {
             editText.requestFocus();
             editText.setSelection(editText.getText().length());
-            editText.post(() -> openKeyboard(editText));
+            openKeyboard(editText);
+        } else if (!editTextModel.editable()) {
+            closeKeyboard(editText);
         }
     }
 
     @Override
     public void handleClickIfNeeded() {
-        if(editTextModel != null && editTextModel.valueType() == ValueType.LONG_TEXT){
+        if (editTextModel != null && editTextModel.valueType() == ValueType.LONG_TEXT) {
             showEditDialog();
         }
     }

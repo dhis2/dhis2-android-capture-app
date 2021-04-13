@@ -62,7 +62,7 @@
                 style="@style/FieldLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{item.label}"
+                android:text="@{item.formattedLabel}"
                 android:visibility="@{label != null ? View.VISIBLE : View.GONE}"
                 android:alpha="@{item.editable() ? 1.0f : 0.5f}"
                 app:layout_constrainedWidth="true"

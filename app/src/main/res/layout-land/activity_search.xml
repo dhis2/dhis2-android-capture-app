@@ -63,6 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
             android:background="?colorPrimary"
+            android:paddingHorizontal="8dp"
             android:gravity="center_vertical">
 
             <ImageButton
@@ -103,6 +104,7 @@
                 tools:visibility="visible">
 
                 <TextView
+                    android:id="@+id/totalFilterCount"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/ic_oval_shape_white"
@@ -126,6 +128,7 @@
                 app:layout_constraintTop_toTopOf="@id/search_filter">
 
                 <TextView
+                    android:id="@+id/totalSearchCount"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/ic_oval_shape_white"
@@ -143,7 +146,6 @@
                 style="@style/ActionIcon"
                 android:onClick="@{()->presenter.showFilterGeneral()}"
                 android:visibility="gone"
-                android:layout_marginEnd="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

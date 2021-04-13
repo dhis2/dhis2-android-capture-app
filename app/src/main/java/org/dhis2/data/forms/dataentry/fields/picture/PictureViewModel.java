@@ -42,7 +42,7 @@ public abstract class PictureViewModel extends FieldViewModel {
     @NonNull
     @Override
     public PictureViewModel withValue(String data) {
-        return new AutoValue_PictureViewModel(uid(), label(), mandatory(), data, programStageSection(), null, false, null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.PICTURE, processor(), activated(), isBackgroundTransparent());
+        return new AutoValue_PictureViewModel(uid(), label(), mandatory(), data, programStageSection(), null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.PICTURE, processor(), activated(), isBackgroundTransparent());
     }
 
     @NonNull

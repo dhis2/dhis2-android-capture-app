@@ -155,10 +155,8 @@ class EnrollmentPresenterImpl(
 
                     when (rowAction.type) {
                         ActionType.ON_SAVE -> {
+                            updateErrorList(rowAction)
                             if (rowAction.error != null) {
-                                if (itemsWithError.find { it.id == rowAction.id } == null) {
-                                    itemsWithError.add(rowAction)
-                                }
                                 Flowable.just(
                                     StoreResult(
                                         rowAction.id,
@@ -166,10 +164,6 @@ class EnrollmentPresenterImpl(
                                     )
                                 )
                             } else {
-                                itemsWithError.find { it.id == rowAction.id }?.let {
-                                    itemsWithError.remove(it)
-                                }
-
                                 when (rowAction.id) {
                                     EnrollmentRepository.ENROLLMENT_DATE_UID -> {
                                         enrollmentObjectRepository.setEnrollmentDate(
@@ -251,13 +245,15 @@ class EnrollmentPresenterImpl(
                         }
 
                         ActionType.ON_TEXT_CHANGE -> {
+                            updateErrorList(rowAction)
+
                             itemList?.let { list ->
                                 list.find { item ->
                                     item.uid() == rowAction.id
                                 }?.let { item ->
                                     itemList = list.updated(
                                         list.indexOf(item),
-                                        item.withValue(rowAction.value).withEditMode(true)
+                                        item.withValue(rowAction.value)
                                     )
                                 }
                             }
@@ -338,6 +334,18 @@ class EnrollmentPresenterImpl(
         )
 
         fields.connect()
+    }
+
+    private fun updateErrorList(action: RowAction) {
+        if (action.error != null) {
+            if (itemsWithError.find { it.id == action.id } == null) {
+                itemsWithError.add(action)
+            }
+        } else {
+            itemsWithError.find { it.id == action.id }?.let {
+                itemsWithError.remove(it)
+            }
+        }
     }
 
     private fun getNextItem(currentItemUid: String): String? {
@@ -591,27 +599,41 @@ class EnrollmentPresenterImpl(
         RulesUtilsProviderImpl(d2)
             .applyRuleEffects(fieldMap, result, this)
 
-        fieldMap.values.forEachIndexed { index, fieldViewModel ->
-            if (fieldViewModel is SpinnerViewModel) {
-                fieldViewModel.setOptionsToHide(
-                    optionsToHide[fieldViewModel.uid()] ?: emptyList(),
-                    optionsGroupsToHide[fieldViewModel.uid()] ?: emptyList()
-                )
-                if (optionsGroupToShow.keys.contains(fieldViewModel.uid())) {
-                    fieldViewModel.optionGroupsToShow = optionsGroupToShow[fieldViewModel.uid()]
-                }
-            }
-            if (fieldViewModel is OptionSetViewModel) {
-                fieldViewModel.optionsToHide = optionsToHide[fieldViewModel.uid()]
-                if (optionsGroupToShow.keys.contains(fieldViewModel.uid())) {
-                    fieldViewModel.optionsToShow = formRepository.getOptionsFromGroups(
-                        optionsGroupToShow[fieldViewModel.uid()] ?: arrayListOf()
+        val fieldList = ArrayList(fieldMap.values)
+
+        return fieldList.map { fieldViewModel ->
+            when (fieldViewModel) {
+                is SpinnerViewModel -> {
+                    var mappedSpinnerModel = fieldViewModel.setOptionsToHide(
+                        optionsToHide[fieldViewModel.uid()] ?: emptyList(),
+                        optionsGroupsToHide[fieldViewModel.uid()] ?: emptyList()
                     )
+                    if (optionsGroupToShow.keys.contains(fieldViewModel.uid())) {
+                        mappedSpinnerModel =
+                            fieldViewModel.setOptionGroupsToShow(
+                                optionsGroupToShow[fieldViewModel.uid()]
+                            )
+                    }
+                    mappedSpinnerModel
+                }
+                is OptionSetViewModel -> {
+                    var mappedOptionSetModel = fieldViewModel.setOptionsToHide(
+                        optionsToHide[fieldViewModel.uid()] ?: emptyList()
+                    )
+                    if (optionsGroupToShow.keys.contains(fieldViewModel.uid())) {
+                        mappedOptionSetModel = fieldViewModel.setOptionsToShow(
+                            formRepository.getOptionsFromGroups(
+                                optionsGroupToShow[fieldViewModel.uid()] ?: arrayListOf()
+                            )
+                        )
+                    }
+                    mappedOptionSetModel
+                }
+                else -> {
+                    fieldViewModel
                 }
             }
         }
-
-        return ArrayList(fieldMap.values)
     }
 
     fun getEnrollment(): Enrollment? {

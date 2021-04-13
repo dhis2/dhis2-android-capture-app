@@ -640,16 +640,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         int programTheme = ColorUtils.getThemeFromColor(color);
         int programColor = ColorUtils.getColorFrom(color, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
 
-
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         if (programTheme != -1) {
             prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
-            binding.enrollmentButton.setSupportImageTintList(ColorStateList.valueOf(programColor));
-            binding.clearFilterSearchButton.setSupportImageTintList(ColorStateList.valueOf(programColor));
-            binding.mainToolbar.setBackgroundColor(programColor);
-            binding.backdropLayout.setBackgroundColor(programColor);
-            binding.navigationBar.setIconsColor(programColor);
         } else {
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
             int colorPrimary;
@@ -667,12 +661,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     colorPrimary = R.color.colorPrimary;
                     break;
             }
-            binding.enrollmentButton.setSupportImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, colorPrimary)));
-            binding.clearFilterSearchButton.setSupportImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, colorPrimary)));
-            binding.mainToolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
-            binding.backdropLayout.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
-            binding.navigationBar.setIconsColor(ContextCompat.getColor(this, colorPrimary));
+            programColor = ContextCompat.getColor(this, colorPrimary);
         }
+        binding.enrollmentButton.setSupportImageTintList(ColorStateList.valueOf(programColor));
+        binding.clearFilterSearchButton.setSupportImageTintList(ColorStateList.valueOf(programColor));
+        binding.mainToolbar.setBackgroundColor(programColor);
+        binding.backdropLayout.setBackgroundColor(programColor);
+        binding.navigationBar.setIconsColor(programColor);
+        binding.totalFilterCount.setTextColor(programColor);
+        binding.totalSearchCount.setTextColor(programColor);
 
         setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
         binding.executePendingBindings();

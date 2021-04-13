@@ -9,6 +9,7 @@ import org.dhis2.Bindings.filterDeletedEnrollment
 import org.dhis2.Bindings.filterEvents
 import org.dhis2.Bindings.toDate
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.DatePeriod
@@ -43,6 +44,16 @@ class TrackedEntityInstanceExtensions {
         )
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
+                .byState().neq(State.RELATIONSHIP)
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances()
+                .byState().neq(State.RELATIONSHIP)
+                .uid(anyString())
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances()
+                .byState().neq(State.RELATIONSHIP)
                 .uid(anyString())
                 .blockingExists()
         ) doReturn true

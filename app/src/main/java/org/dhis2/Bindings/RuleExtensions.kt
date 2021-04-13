@@ -165,13 +165,21 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 "HIDE STAGE RULE IS MISSING PROGRAM STAGE",
                 name() ?: uid()
             )
-        ProgramRuleActionType.ASSIGN ->
-            data()?.let {
-                RuleActionAssign.create(content(), it, field)
-            } ?: RuleActionUnsupported.create(
-                "ASSIGN RULE IS MISSING DATA",
-                name() ?: uid()
-            )
+        ProgramRuleActionType.ASSIGN -> {
+            if (field.isEmpty() && content().isNullOrEmpty()) {
+                RuleActionUnsupported.create(
+                    "ASSIGN RULE IS MISSING FIELD TO ASSIGN TO",
+                    name() ?: uid()
+                )
+            } else {
+                data()?.let {
+                    RuleActionAssign.create(content(), it, field)
+                } ?: RuleActionUnsupported.create(
+                    "ASSIGN RULE IS MISSING DATA",
+                    name() ?: uid()
+                )
+            }
+        }
         ProgramRuleActionType.SHOWWARNING -> RuleActionShowWarning.create(content(), data(), field)
         ProgramRuleActionType.WARNINGONCOMPLETE -> RuleActionWarningOnCompletion.create(
             content(),
