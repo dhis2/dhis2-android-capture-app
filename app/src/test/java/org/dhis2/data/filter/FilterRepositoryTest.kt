@@ -21,6 +21,7 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.settings.FilterSetting
 import org.hisp.dhis.android.core.settings.HomeFilter
 import org.hisp.dhis.android.core.settings.ProgramFilter
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers
@@ -199,6 +200,84 @@ class FilterRepositoryTest {
         assert(result[5].type == Filters.EVENT_STATUS)
         assert(result[6].type == Filters.ASSIGNED_TO_ME)
         assert(result.size == 7)
+    }
+
+    @Test
+    fun `Should get dashboard filters when webapp is configured with empty result`() {
+        val program = Program.builder().uid("random")
+            .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION).build()
+        whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn true
+        whenever(
+            d2.settingModule().appearanceSettings().getProgramFiltersByUid(program.uid())
+        ) doReturn emptyMap()
+        whenever(
+            getFiltersApplyingWebAppConfig.execute(
+                any<LinkedHashMap<ProgramFilter, FilterItem>>(),
+                any<Map<ProgramFilter, FilterSetting>>()
+            )
+        ) doReturn emptyList()
+
+        val result = filterRepository.dashboardFilters(program.uid())
+
+        assert(result.isEmpty())
+    }
+
+    @Test
+    fun `Should get tracker filters with working list when webapp is configured`() {
+        val program = Program.builder().uid("random")
+            .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION).build()
+        whenever(d2.programModule().programs().uid(any())) doReturn mock()
+        whenever(d2.programModule().programs().uid(any()).get()) doReturn Single.just(program)
+        whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn true
+        whenever(
+            d2.programModule().programStages().byProgramUid().eq(program.uid())
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages().byProgramUid().eq(program.uid())
+                .byEnableUserAssignment()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages().byProgramUid().eq(program.uid())
+                .byEnableUserAssignment().eq(true)
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages().byProgramUid().eq(program.uid())
+                .byEnableUserAssignment().eq(true).blockingIsEmpty()
+        ) doReturn false
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstanceFilters().byProgram().eq(program.uid())
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstanceFilters().byProgram().eq(program.uid())
+                .withTrackedEntityInstanceEventFilters()
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstanceFilters().byProgram().eq(program.uid())
+                .withTrackedEntityInstanceEventFilters().blockingGet()
+        ) doReturn createTrackerEntityInstanceFilters()
+        whenever(
+            d2.settingModule().appearanceSettings().getProgramFiltersByUid(program.uid())
+        ) doReturn createWebAppTrackedEntityFilters()
+        whenever(
+            getFiltersApplyingWebAppConfig.execute(
+                any<LinkedHashMap<ProgramFilter, FilterItem>>(),
+                any<Map<ProgramFilter, FilterSetting>>()
+            )
+        ) doReturn createGlobalTrackerFilterResult()
+
+        val result = filterRepository.programFilters(program.uid())
+
+        assert(result[0].type == Filters.WORKING_LIST)
+        assert(result[1].type == Filters.PERIOD)
+        assert(result[2].type == Filters.ENROLLMENT_STATUS)
+        assert(result.size == 3)
+    }
+
+    private fun createTrackerEntityInstanceFilters(): List<TrackedEntityInstanceFilter> {
+        return listOf(
+            TrackedEntityInstanceFilter.builder().uid("uid").displayName("random").build(),
+            TrackedEntityInstanceFilter.builder().uid("uid2").displayName("random2").build()
+        )
     }
 
     private fun createGlobalTrackerFilterResult(): List<FilterItem> {
