@@ -103,6 +103,9 @@ class FormRobot : BaseRobot() {
         clickOnSpinner(position)
         onView(instanceOf(MenuPopupWindow.MenuDropDownListView::class.java))
             .check(matches(hasDescendant(withText(label))))
+            .also {
+                it.perform(click())
+            }
     }
 
     fun clickOnSelectOption(label: String, position: Int, option: String, optionPosition: Int) {
