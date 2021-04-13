@@ -56,7 +56,7 @@
                 style="@style/filterCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="@{filterItem.observeSyncState().contains(State.SYNCED)}"
+                android:checked="@{filterItem.observeSyncState(State.SYNCED)}"
                 android:onCheckedChanged="@{(switch, checked)->filterItem.setSyncStatus(checked,State.SYNCED)}" />
         </LinearLayout>
 
@@ -88,7 +88,7 @@
                 style="@style/filterCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="@{filterItem.observeSyncState().contains(State.TO_POST) ||filterItem.observeSyncState().contains(State.TO_UPDATE) || filterItem.observeSyncState().contains(State.UPLOADING) }"
+                android:checked="@{filterItem.observeSyncState(State.TO_POST) }"
                 android:onCheckedChanged="@{(switch, checked)->filterItem.setSyncStatus(checked,State.TO_UPDATE,State.TO_POST,State.UPLOADING)}"
                 tools:checked="true" />
         </LinearLayout>
@@ -121,7 +121,7 @@
                 style="@style/filterCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="@{filterItem.observeSyncState().contains(State.ERROR) ||filterItem.observeSyncState().contains(State.WARNING)}"
+                android:checked="@{filterItem.observeSyncState(State.ERROR)}"
                 android:onCheckedChanged="@{(switch, checked)->filterItem.setSyncStatus(checked,State.ERROR,State.WARNING)}" />
         </LinearLayout>
 
@@ -153,7 +153,7 @@
                 style="@style/filterCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="@{filterItem.observeSyncState().contains(State.SENT_VIA_SMS) ||filterItem.observeSyncState().contains(State.SYNCED_VIA_SMS)}"
+                android:checked="@{filterItem.observeSyncState(State.SENT_VIA_SMS)}"
                 android:onCheckedChanged="@{(switch, checked)->filterItem.setSyncStatus(checked,State.SENT_VIA_SMS,State.SYNCED_VIA_SMS)}" />
         </LinearLayout>
 
