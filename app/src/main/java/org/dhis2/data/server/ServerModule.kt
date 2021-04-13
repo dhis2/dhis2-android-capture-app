@@ -9,7 +9,9 @@ import java.util.ArrayList
 import okhttp3.Interceptor
 import org.dhis2.App
 import org.dhis2.BuildConfig
+import org.dhis2.R
 import org.dhis2.data.dagger.PerServer
+import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.filter.GetFiltersApplyingWebAppConfig
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.RulesUtilsProvider
@@ -57,6 +59,17 @@ class ServerModule {
     @PerServer
     fun provideGetFiltersApplyingWebAppConfig(): GetFiltersApplyingWebAppConfig {
         return GetFiltersApplyingWebAppConfig()
+    }
+
+    @Provides
+    @PerServer
+    fun provideDhisPeriodUtils(d2: D2, context: Context): DhisPeriodUtils {
+        return DhisPeriodUtils(
+            d2,
+            context.getString(R.string.period_span_default_label),
+            context.getString(R.string.week_period_span_default_label),
+            context.getString(R.string.biweek_period_span_default_label)
+        )
     }
 
     companion object {

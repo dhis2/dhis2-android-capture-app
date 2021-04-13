@@ -14,6 +14,7 @@ import org.dhis2.Bindings.TrackedEntityInstanceExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
+import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.StoreResult;
@@ -93,14 +94,17 @@ public class SearchRepositoryImpl implements SearchRepository {
     private FilterManager savedFilters;
     private FilterPresenter filterPresenter;
     private FieldViewModelFactory fieldFactory;
+    private DhisPeriodUtils periodUtils;
 
-    SearchRepositoryImpl(String teiType, D2 d2, FilterPresenter filterPresenter, ResourceManager resources, SearchSortingValueSetter sortingValueSetter, FieldViewModelFactory fieldFactory) {
+    SearchRepositoryImpl(String teiType, D2 d2, FilterPresenter filterPresenter, ResourceManager resources, SearchSortingValueSetter sortingValueSetter, FieldViewModelFactory fieldFactory,
+                         DhisPeriodUtils periodUtils) {
         this.teiType = teiType;
         this.d2 = d2;
         this.resources = resources;
         this.sortingValueSetter = sortingValueSetter;
         this.filterPresenter = filterPresenter;
         this.fieldFactory = fieldFactory;
+        this.periodUtils = periodUtils;
     }
 
     @Override
@@ -604,7 +608,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                             false,
                             false,
                             false,
-                            false
+                            false,
+                            periodUtils.getPeriodUIString(stage.periodType(), event.eventDate() != null ? event.eventDate() : event.dueDate(), Locale.getDefault())
                     ));
         }
 
@@ -635,7 +640,21 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .uid(event.organisationUnit())
                 .blockingGet();
 
-        return new EventViewModel(EventViewModelType.EVENT, stage, event, 0, null, true, true, organisationUnit.displayName(), null, null, false, false, false, false);
+        return new EventViewModel(EventViewModelType.EVENT,
+                stage,
+                event,
+                0,
+                null,
+                true,
+                true,
+                organisationUnit.displayName(),
+                null,
+                null,
+                false,
+                false,
+                false,
+                false,
+                periodUtils.getPeriodUIString(stage.periodType(), event.eventDate() != null ? event.eventDate() : event.dueDate(), Locale.getDefault()));
     }
 
     @Override
