@@ -29,14 +29,13 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.data.filter.FilterPresenter;
+import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
-import org.dhis2.utils.filters.ProgramType;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -68,8 +67,8 @@ public class DataSetDetailModule {
 
     @Provides
     @PerActivity
-    DataSetDetailRepository eventDetailRepository(D2 d2) {
-        return new DataSetDetailRepositoryImpl(dataSetUid, d2);
+    DataSetDetailRepository eventDetailRepository(D2 d2, DhisPeriodUtils periodUtils) {
+        return new DataSetDetailRepositoryImpl(dataSetUid, d2, periodUtils);
     }
 
     @Provides

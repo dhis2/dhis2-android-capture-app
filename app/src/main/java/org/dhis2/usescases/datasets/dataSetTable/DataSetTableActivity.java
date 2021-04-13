@@ -30,11 +30,11 @@ import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.AppMenuHelper;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.customviews.AlertBottomDialog;
 import org.dhis2.utils.validationrules.ValidationResultViolationsAdapter;
 import org.dhis2.utils.validationrules.Violation;
@@ -71,6 +71,9 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Inject
     DataSetTableContract.Presenter presenter;
+    @Inject
+    DhisPeriodUtils periodUtils;
+
     private ActivityDatasetTableBinding binding;
     private DataSetSectionAdapter viewPagerAdapter;
     private boolean backPressed;
@@ -243,7 +246,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public void renderDetails(DataSet dataSet, String catComboName, Period period, boolean isComplete) {
         binding.dataSetName.setText(dataSet.displayName());
         StringBuilder subtitle = new StringBuilder(
-                DateUtils.getInstance().getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault())
+                periodUtils.getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault())
         )
                 .append(" | ")
                 .append(orgUnitName);

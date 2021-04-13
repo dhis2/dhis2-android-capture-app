@@ -14,6 +14,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withSpinnerText
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -26,6 +27,7 @@ import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION_POSITION
 import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.anything
 import org.hamcrest.Matchers.instanceOf
 import org.hamcrest.Matchers.not
@@ -90,6 +92,15 @@ class FormRobot : BaseRobot() {
             .check(matches(hasItem(hasDescendant(withText("Error with current event ")))))
     }
 
+    fun checkPopUpWithMessageOnCompleteIsShown(message: String) {
+        onView(withId(R.id.txtMessageOnComplete))
+            .check(matches(allOf(isDisplayed(), withText(containsString(message)))))
+    }
+
+    fun clickOnSaveForm() {
+        onView(withId(R.id.actionButton)).perform(click())
+    }
+
     fun checkHiddenOption(label: String, position: Int) {
         clickOnSpinner(position)
         onView(instanceOf(MenuPopupWindow.MenuDropDownListView::class.java))
@@ -111,5 +122,9 @@ class FormRobot : BaseRobot() {
     fun clickOnSelectOption(label: String, position: Int, option: String, optionPosition: Int) {
         clickOnSpinner(position)
         selectAction(option, optionPosition)
+    }
+
+    fun scrollToBottomForm() {
+        onView(withId(R.id.recyclerView)).perform(scrollToBottomRecyclerView())
     }
 }

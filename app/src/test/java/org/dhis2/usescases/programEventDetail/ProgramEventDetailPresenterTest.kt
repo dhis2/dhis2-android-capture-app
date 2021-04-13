@@ -98,7 +98,8 @@ class ProgramEventDetailPresenterTest {
             catComboName = "catComboName",
             dataElementValues = emptyList(),
             groupedByStage = false,
-            valueListIsOpen = false
+            valueListIsOpen = false,
+            displayDate = "2/01/2021"
         )
         val events =
             MutableLiveData<PagedList<EventViewModel>>().also {

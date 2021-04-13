@@ -1,6 +1,7 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 
+import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -27,10 +28,12 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
     private final D2 d2;
     private final String dataSetUid;
+    private final DhisPeriodUtils periodUtils;
 
-    public DataSetDetailRepositoryImpl(String dataSetUid, D2 d2) {
+    public DataSetDetailRepositoryImpl(String dataSetUid, D2 d2,DhisPeriodUtils periodUtils) {
         this.d2 = d2;
         this.dataSetUid = dataSetUid;
+        this.periodUtils = periodUtils;
     }
 
     @Override
@@ -58,7 +61,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
         return Flowable.fromIterable(finalRepo.blockingGet())
                 .map(dataSetReport -> {
                     Period period = d2.periodModule().periods().byPeriodId().eq(dataSetReport.period()).one().blockingGet();
-                    String periodName = DateUtils.getInstance().getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault());
+                    String periodName = periodUtils.getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault());
                     DataSetCompleteRegistration dscr = d2.dataSetModule().dataSetCompleteRegistrations()
                             .byDataSetUid().eq(dataSetUid)
                             .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())

@@ -9,6 +9,7 @@ import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dhislogic.DhisMapUtils;
+import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
 import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.filter.FilterRepository;
@@ -114,8 +115,8 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchRepository searchRepository(@NonNull D2 d2, FilterPresenter filterPresenter, ResourceManager resources, SearchSortingValueSetter searchSortingValueSetter, FieldViewModelFactory fieldFactory) {
-        return new SearchRepositoryImpl(teiType, d2, filterPresenter, resources, searchSortingValueSetter, fieldFactory);
+    SearchRepository searchRepository(@NonNull D2 d2, FilterPresenter filterPresenter, ResourceManager resources, SearchSortingValueSetter searchSortingValueSetter, FieldViewModelFactory fieldFactory, DhisPeriodUtils periodUtils) {
+        return new SearchRepositoryImpl(teiType, d2, filterPresenter, resources, searchSortingValueSetter, fieldFactory, periodUtils);
     }
 
     @Provides

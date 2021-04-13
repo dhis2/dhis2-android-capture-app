@@ -88,6 +88,24 @@ class FormTest: BaseTest() {
 
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, WARNING_COMPLETE, WARNING_COMPLETE_POSITION)
+            scrollToBottomForm()
+            clickOnSaveForm()
+            checkPopUpWithMessageOnCompleteIsShown("Warning")
+            pressBack()
+        }
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, ERROR_COMPLETE, ERROR_COMPLETE_POSITION)
+            scrollToBottomForm()
+            clickOnSaveForm()
+            checkPopUpWithMessageOnCompleteIsShown("Error")
+            pressBack()
+        }
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, HIDE_OPTION, HIDE_OPTION_POSITION)
             checkHiddenOption("North", OPTION_SET_FIELD_POSITION)
         }
