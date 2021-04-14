@@ -2,7 +2,6 @@ package org.dhis2.data.filter
 
 import androidx.databinding.ObservableField
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyArray
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
@@ -11,7 +10,6 @@ import org.dhis2.utils.filters.AssignedFilter
 import org.dhis2.utils.filters.EnrollmentStatusFilter
 import org.dhis2.utils.filters.FilterItem
 import org.dhis2.utils.filters.Filters
-import org.dhis2.utils.filters.OrgUnitFilter
 import org.dhis2.utils.filters.PeriodFilter
 import org.dhis2.utils.filters.ProgramType
 import org.dhis2.utils.filters.sorting.SortingItem
@@ -24,7 +22,6 @@ import org.hisp.dhis.android.core.settings.ProgramFilter
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
 
 class FilterRepositoryTest {
