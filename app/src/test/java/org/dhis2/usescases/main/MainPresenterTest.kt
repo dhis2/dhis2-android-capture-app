@@ -155,6 +155,13 @@ class MainPresenterTest {
         verify(filterRepository).homeFilters()
     }
 
+    @Test
+    fun `Should track event when clicking on SyncManager`() {
+        presenter.onClickSyncManager()
+
+        verify(matomoAnalyticsController).trackEvent(any(), any(), any())
+    }
+
     private fun presenterMocks() {
         // UserModule
         whenever(d2.userModule()) doReturn mock()
