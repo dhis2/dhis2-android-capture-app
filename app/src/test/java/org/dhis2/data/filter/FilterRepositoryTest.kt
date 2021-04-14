@@ -207,6 +207,21 @@ class FilterRepositoryTest {
         whenever(d2.programModule().programs().uid(any()).get()) doReturn Single.just(program)
         whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn true
         whenever(
+            d2.programModule().programStages().byProgramUid().eq(program.uid())
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages().byProgramUid().eq(program.uid())
+                .byEnableUserAssignment()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages().byProgramUid().eq(program.uid())
+                .byEnableUserAssignment().eq(true)
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages().byProgramUid().eq(program.uid())
+                .byEnableUserAssignment().eq(true).blockingIsEmpty()
+        ) doReturn false
+        whenever(
             d2.settingModule().appearanceSettings().getProgramFiltersByUid(program.uid())
         ) doReturn emptyMap()
         whenever(
