@@ -203,6 +203,8 @@ class FilterRepositoryTest {
     fun `Should get dashboard filters when webapp is configured with empty result`() {
         val program = Program.builder().uid("random")
             .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION).build()
+        whenever(d2.programModule().programs().uid(any())) doReturn mock()
+        whenever(d2.programModule().programs().uid(any()).get()) doReturn Single.just(program)
         whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn true
         whenever(
             d2.settingModule().appearanceSettings().getProgramFiltersByUid(program.uid())
