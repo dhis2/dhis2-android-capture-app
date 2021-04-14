@@ -14,7 +14,7 @@ import org.dhis2.data.filter.GetFiltersApplyingWebAppConfig
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.RulesUtilsProvider
 import org.dhis2.utils.RulesUtilsProviderImpl
-import org.dhis2.utils.SentryOkHttpInterceptor
+import org.dhis2.utils.reporting.SentryOkHttpInterceptor
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.AnalyticsInterceptor
 import org.hisp.dhis.android.core.D2

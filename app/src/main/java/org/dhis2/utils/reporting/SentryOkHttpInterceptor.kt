@@ -1,9 +1,11 @@
-package org.dhis2.utils
+package org.dhis2.utils.reporting
 
 import io.sentry.Breadcrumb
 import io.sentry.HubAdapter
 import io.sentry.IHub
+import io.sentry.Sentry
 import io.sentry.SpanStatus
+import io.sentry.protocol.User
 import java.io.IOException
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -16,7 +18,11 @@ class SentryOkHttpInterceptor(
         var request = chain.request()
 
         val url = request.url().toString()
+        val endpoint = "TEST - " + url.split("?").first()
         val method = request.method()
+
+        val transaction = Sentry.startTransaction(endpoint, "http.client")
+        Sentry.configureScope { scope -> scope.setTransaction(transaction) }
 
         // read transaction from the bound scope
         val span = hub.span?.startChild("http.client", "$method $url")
@@ -39,6 +45,9 @@ class SentryOkHttpInterceptor(
             span?.finish(code?.let { SpanStatus.fromHttpStatusCode(it, SpanStatus.INTERNAL_ERROR) })
 
             val breadcrumb = Breadcrumb.http(request.url().toString(), request.method())
+            code?.let{
+                breadcrumb.setData("status_code", it)
+            }
             request.body()?.contentLength().ifHasValidLength {
                 breadcrumb.setData("requestBodySize", it)
             }
@@ -46,6 +55,8 @@ class SentryOkHttpInterceptor(
                 breadcrumb.setData("responseBodySize", it)
             }
             hub.addBreadcrumb(breadcrumb)
+
+            transaction.finish()
         }
     }
 
