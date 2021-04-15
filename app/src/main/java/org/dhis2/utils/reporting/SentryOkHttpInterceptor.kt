@@ -11,12 +11,13 @@ import java.io.IOException
 import okhttp3.Interceptor
 import okhttp3.Response
 import org.dhis2.data.prefs.PreferenceProvider
-import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.SERVER
+import org.dhis2.utils.Constants.USER
 
-class SentryOkHttpInterceptor(val preferenceProvider: PreferenceProvider) : Interceptor {
-
+class SentryOkHttpInterceptor(
+    val preferenceProvider: PreferenceProvider,
     private val hub: IHub = HubAdapter.getInstance()
+) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         var request = chain.request()
@@ -25,17 +26,16 @@ class SentryOkHttpInterceptor(val preferenceProvider: PreferenceProvider) : Inte
         val path = Uri.parse(url).path?.split("api")?.get(1) ?: url
         val method = request.method()
 
-        val transaction = Sentry.startTransaction(path, "http.client")
+        val transaction = Sentry.startTransaction(path, OPERATION)
         Sentry.configureScope { scope ->
             scope.setTransaction(transaction)
             scope.user = User().apply {
-                username = preferenceProvider.getString(Constants.USER)
+                username = preferenceProvider.getString(USER)
             }
-            scope.setTag("server_name", preferenceProvider.getString(SERVER) ?: "")
+            scope.setTag(SERVER_NAME, preferenceProvider.getString(SERVER) ?: "")
         }
 
-        // read transaction from the bound scope
-        val span = hub.span?.startChild("http.client", "$method $url")
+        val span = hub.span?.startChild(OPERATION, "$method $url")
 
         var response: Response? = null
 
@@ -55,13 +55,13 @@ class SentryOkHttpInterceptor(val preferenceProvider: PreferenceProvider) : Inte
 
             val breadcrumb = Breadcrumb.http(request.url().toString(), request.method())
             code?.let {
-                breadcrumb.setData("status_code", it)
+                breadcrumb.setData(STATUS_CODE, it)
             }
             request.body()?.contentLength().ifHasValidLength {
-                breadcrumb.setData("requestBodySize", it)
+                breadcrumb.setData(REQUEST_SIZE, it)
             }
             response?.body()?.contentLength().ifHasValidLength {
-                breadcrumb.setData("responseBodySize", it)
+                breadcrumb.setData(RESPONSE_SIZE, it)
             }
             hub.addBreadcrumb(breadcrumb)
 
@@ -73,5 +73,13 @@ class SentryOkHttpInterceptor(val preferenceProvider: PreferenceProvider) : Inte
         if (this != null && this != -1L) {
             fn.invoke(this)
         }
+    }
+
+    companion object {
+        const val SERVER_NAME = "server_name"
+        const val OPERATION = "http.client"
+        const val STATUS_CODE = "status_code"
+        const val REQUEST_SIZE = "requestBodySize"
+        const val RESPONSE_SIZE = "responseBodySize"
     }
 }
