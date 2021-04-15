@@ -24,7 +24,7 @@ class AnalyticsHelper @Inject constructor(
         matomoAnalyticsController.trackEvent(category, action, label)
     }
 
-    private fun trackUserId(){
+    private fun trackUserId() {
         val d2 = D2Manager.getD2()
 
         if (d2 != null && d2.userModule().blockingIsLogged()) {

@@ -1,6 +1,5 @@
 package org.dhis2.utils.analytics.matomo
 
-import org.hisp.dhis.android.core.D2Manager
 import org.matomo.sdk.Matomo
 import org.matomo.sdk.Tracker
 import org.matomo.sdk.extra.DownloadTracker.Extra.ApkChecksum

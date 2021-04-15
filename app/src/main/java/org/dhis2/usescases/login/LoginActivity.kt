@@ -283,7 +283,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun showCrashlyticsDialog() {
         val spannable = SpannableString(
-            getString(R.string.analytics_crash_name_message) + " "+
+            getString(R.string.analytics_crash_name_message) + " " +
                 getString(R.string.send_user_privacy_policy)
         )
 
