@@ -76,7 +76,7 @@ class EnrollmentPresenterImpl(
     private var selectedSection: String = ""
     private var errorFields = mutableMapOf<String, String>()
     private var mandatoryFields = mutableMapOf<String, String>()
-    private var uniqueFields = mutableMapOf<String, String>()
+    private var uniqueFields = mutableListOf<String>()
     private val backButtonProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
     private var showErrors: Pair<Boolean, Boolean> = Pair(first = false, second = false)
     private var hasShownIncidentDateEditionWarning = false
@@ -279,6 +279,7 @@ class EnrollmentPresenterImpl(
                                     view.hideProgress()
                                 }
                                 ValueStoreImpl.ValueStoreResult.VALUE_NOT_UNIQUE -> {
+                                    uniqueFields.add(result.uid)
                                     view.showInfoDialog(
                                         view.context.getString(R.string.error),
                                         view.context.getString(R.string.unique_warning)
@@ -438,22 +439,6 @@ class EnrollmentPresenterImpl(
             }
 
             if (field !is SectionViewModel && field !is DisplayViewModel) {
-                val isUnique =
-                    d2.trackedEntityModule().trackedEntityAttributes()
-                        .uid(field.uid()).blockingGet()?.unique() ?: false
-                var uniqueValueAlreadyExist: Boolean
-                if (isUnique && field.value() != null) {
-                    uniqueValueAlreadyExist =
-                        d2.trackedEntityModule()
-                        .trackedEntityAttributeValues()
-                        .byTrackedEntityAttribute()
-                        .eq(field.uid())
-                        .byValue().eq(field.value())
-                        .blockingGet().size > 1
-                    if (uniqueValueAlreadyExist) {
-                        uniqueFields[field.uid()] = field.label()
-                    }
-                }
                 if (field.error()?.isNotEmpty() == true) {
                     errorFields[field.programStageSection() ?: section] = field.label()
                 }
