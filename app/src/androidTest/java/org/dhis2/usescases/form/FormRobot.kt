@@ -1,22 +1,17 @@
 package org.dhis2.usescases.form
 
 import android.view.MenuItem
-import androidx.appcompat.view.menu.ListMenuItemView
 import androidx.appcompat.widget.MenuPopupWindow
-import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withSpinnerText
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
@@ -28,7 +23,6 @@ import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION_POSITION
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.containsString
-import org.hamcrest.Matchers.anything
 import org.hamcrest.Matchers.instanceOf
 import org.hamcrest.Matchers.not
 
@@ -97,6 +91,13 @@ class FormRobot : BaseRobot() {
             .check(matches(allOf(isDisplayed(), withText(containsString(message)))))
     }
 
+    fun checkIndicatorIsDisplayed(name: String, value: String) {
+        onView(withId(R.id.indicator_name))
+            .check(matches(allOf(isDisplayed(), withText(name))))
+        onView(withId(R.id.indicator_value))
+            .check(matches(allOf(isDisplayed(), withText(value))))
+    }
+
     fun clickOnSaveForm() {
         onView(withId(R.id.actionButton)).perform(click())
     }
@@ -126,5 +127,13 @@ class FormRobot : BaseRobot() {
 
     fun scrollToBottomForm() {
         onView(withId(R.id.recyclerView)).perform(scrollToBottomRecyclerView())
+    }
+
+    fun goToAnalytics() {
+        onView(withId(R.id.navigation_analytics)).perform(click())
+    }
+
+    fun goToDataEntry() {
+        onView(withId(R.id.navigation_data_entry)).perform(click())
     }
 }

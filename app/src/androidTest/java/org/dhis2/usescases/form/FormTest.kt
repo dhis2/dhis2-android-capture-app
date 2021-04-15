@@ -123,6 +123,24 @@ class FormTest: BaseTest() {
             checkDisplayedOption("North", OPTION_SET_FIELD_POSITION)
             checkDisplayedOption("West", OPTION_SET_FIELD_POSITION)
         }
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, DISPLAY_TEXT, DISPLAY_TEXT_POSITION)
+            pressBack()
+            goToAnalytics()
+            checkIndicatorIsDisplayed("Info", "Current Option Selected: DT")
+            goToDataEntry()
+        }
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, DISPLAY_KEY, DISPLAY_KEY_POSITION)
+            pressBack()
+            goToAnalytics()
+            checkIndicatorIsDisplayed("Current Option", "DKVP")
+            goToDataEntry()
+        }
     }
 
 
