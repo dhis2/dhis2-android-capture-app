@@ -413,8 +413,13 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun performSaveClick() {
-        if (!presenter.hasAccess() || presenter.dataIntegrityCheck()) {
-            presenter.finish(mode)
+        if(currentFocus!=null) {
+            presenter.setFinishing()
+            currentFocus?.apply { clearFocus() }
+        }else {
+            if (!presenter.hasAccess() || presenter.dataIntegrityCheck()) {
+                presenter.finish(mode)
+            }
         }
     }
 
