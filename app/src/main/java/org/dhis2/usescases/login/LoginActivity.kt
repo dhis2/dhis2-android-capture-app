@@ -283,7 +283,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun showCrashlyticsDialog() {
         val spannable = SpannableString(
-            getString(R.string.send_user_name_mesage) + "\n" +
+            getString(R.string.analytics_crash_name_message) + " "+
                 getString(R.string.send_user_privacy_policy)
         )
 
@@ -306,7 +306,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             .setTitle(title)
             .setCancelable(false)
             .setMessage(spannable)
-            .setPositiveButton(getString(R.string.action_agree)) { _: DialogInterface, _: Int ->
+            .setPositiveButton(getString(R.string.action_continue)) { _: DialogInterface, _: Int ->
                 sharedPreferences.edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true)
                     .apply()
                 sharedPreferences.edit()
