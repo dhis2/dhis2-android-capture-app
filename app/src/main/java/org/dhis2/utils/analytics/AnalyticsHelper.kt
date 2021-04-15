@@ -21,13 +21,16 @@ class AnalyticsHelper @Inject constructor(
     }
 
     fun trackMatomoEvent(category: String, action: String, label: String) {
+        matomoAnalyticsController.trackEvent(category, action, label)
+    }
+
+    private fun trackUserId(){
         val d2 = D2Manager.getD2()
 
         if (d2 != null && d2.userModule().blockingIsLogged()) {
             val userUid = d2.userModule().user().blockingGet()?.uid()
             matomoAnalyticsController.setUserId(userUid)
         }
-        matomoAnalyticsController.trackEvent(category, action, label)
     }
 
     fun setEvent(event: String, params: Map<String, String>) {

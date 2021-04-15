@@ -23,11 +23,6 @@ class MatomoAnalyticsControllerImpl(
     }
 
     override fun trackEvent(category: String, action: String, label: String) {
-        val d2 = D2Manager.getD2()
-        if (d2 != null && d2.userModule().blockingIsLogged()) {
-            val userUid = d2.userModule().user().blockingGet()?.uid()
-            setUserId(userUid)
-        }
         matomoTracker?.let {
             TrackHelper.track().event(category, action).name(label).with(it)
         }
