@@ -100,10 +100,11 @@ In the Android App, the color will be rendered as background color for programs 
 
 ![](resources/images/image16.png){width=80% }
 
-**Program Section**: when used in combination with icons, a Program Section with a single data element and associated Option Set can render the options in sequential or matrix layout (see screenshots).
+**Program Section**: when used in combination with icons, a Program Section with a single data element and associated Option Set can render the options in sequential or matrix layout (see screenshots). If the icon is not found, the app displays the DHIS logo.
 
 ![](resources/images/image26.png){ width=25%}
 ![](resources/images/image36.png){ width=25%}
+
 
 > **Note**
 >
@@ -120,8 +121,8 @@ This is available when:
 2. Creating a new event (Programs with and without registration).
 3. Using period filters in data sets and programs with and without registration.
 
-![](resources/images/image60.png){ width=25%}
-![](resources/images/image61.png){ width=25%}
+![](resources/images/image60.jpg){ width=25%}
+![](resources/images/image61.jpg){ width=25%}
 
 > **Note**
 > 
@@ -140,7 +141,7 @@ The available rendering options have been expanded to include horizontal and ver
 
 ![](resources/images/image112.jpg){ width=25%}
 
-- Text: When is linked to an option set can be rendered as horizontal/vertical radio buttons or horizontal/vertical checkboxes.
+- Text: When is linked to an option set can be rendered as horizontal/vertical radio buttons or horizontal/vertical checkboxes. The option set must be configured with value type "Text", any other value type will be displayed as a drop-down list.
 
 ![](resources/images/image110.jpg){ width=25%}
 
@@ -154,7 +155,9 @@ The available rendering options have been expanded to include horizontal and ver
 ### QR and Barcodes { #capture_app_visual_render_qr }
 
 
-Data elements or attributes or type text can be also configured as QR or barcodes. When a Data Element or Attribute is rendered as QR/Barcode, the app will open the device camera to read the code image. When the QR/Barcode is a TEI attribute configured as searchable, the user will be allowed to scan the code in order to search and identify the Tracked Entity Instance. This will also work for option sets.
+Data elements or attributes type text can be also configured as QR or barcodes. When a Data Element or Attribute is rendered as QR/Barcode, the app will open the device camera to read the code image. When the QR/Barcode is a TEI attribute configured as searchable, the user will be allowed to scan the code in order to search and identify the Tracked Entity Instance. This will also work for option sets.
+
+Barcodes also allow the user to manually enter the value.
 
 ![](resources/images/image118.png){ width=20%}
 ![](resources/images/image119.png){ width=20%}
