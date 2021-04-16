@@ -31,6 +31,7 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.option.OptionGroup
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramStageSection
 import org.hisp.dhis.android.core.settings.CompletionSpinner
@@ -230,9 +231,15 @@ class EventCaptureRepositoryImplTest {
             resourceManager
         )
 
-        repository.eventDate().test()
+        whenever(
+            d2.organisationUnitModule().organisationUnits().uid(testEventOrgUnitUid).blockingGet()
+        )doReturn OrganisationUnit.builder()
+            .uid(testEventOrgUnitUid)
+            .build()
+
+        repository.orgUnit().test()
             .assertNoErrors()
-            .assertValue { it == "1/1/2021" }
+            .assertValue { it.uid() == testEventOrgUnitUid }
     }
 
     @Test
