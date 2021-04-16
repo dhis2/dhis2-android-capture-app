@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -60,9 +61,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         binding = DataBindingUtil.inflate(inflater, R.layout.section_selector_fragment, container, false);
         binding.setPresenter(activity.getPresenter());
         binding.actionButton.setOnClickListener(view -> {
-            view.requestFocus();
             ViewExtensionsKt.closeKeyboard(view);
-            presenter.onActionButtonClick();
+            performSaveClick();
         });
         binding.formView.setScrollCallback(isSectionVisible -> {
             animateFabButton(isSectionVisible);
@@ -101,5 +101,15 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         if (sectionIsVisible) translationX = 0;
 
         binding.actionButton.animate().translationX(translationX).setDuration(500).start();
+    }
+
+    @Override
+    public void performSaveClick() {
+        if (activity.getCurrentFocus() instanceof EditText) {
+            presenter.setFinishing();
+            activity.getCurrentFocus().clearFocus();
+        } else {
+            presenter.onActionButtonClick();
+        }
     }
 }
