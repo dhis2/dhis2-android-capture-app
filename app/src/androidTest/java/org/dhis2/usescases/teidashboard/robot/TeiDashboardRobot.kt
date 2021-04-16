@@ -388,6 +388,11 @@ class TeiDashboardRobot : BaseRobot() {
             .perform(actionOnItem<EventViewHolder>(hasDescendant(allOf(withText(orgUnit), withId(R.id.organisationUnit))), click()))
     }
 
+    fun checkProgramStageIsHidden(stageName: String) {
+        onView(withId(R.id.tei_recycler))
+            .check(matches(not(hasItem(hasDescendant(withText(stageName))))))
+    }
+
     companion object {
         const val OPEN_EVENT_STATUS = R.string.event_open
         const val OVERDUE_EVENT_STATUS = R.string.event_overdue

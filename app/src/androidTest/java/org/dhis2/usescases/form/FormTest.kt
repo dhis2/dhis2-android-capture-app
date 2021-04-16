@@ -2,7 +2,6 @@ package org.dhis2.usescases.form
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import kotlinx.coroutines.delay
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
@@ -10,6 +9,7 @@ import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
+import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -120,6 +120,19 @@ class FormTest: BaseTest() {
             goToAnalytics()
             checkIndicatorIsDisplayed("Current Option", "DKVP")
             goToDataEntry()
+        }
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption("ZZ TEST RULE ACTIONS C", 7, HIDE_PROGRAM_STAGE, HIDE_PROGRAM_STAGE_POSITION)
+            scrollToBottomForm()
+            clickOnSaveForm()
+            clickOnFinish()
+        }
+        teiDashboardRobot {
+            checkProgramStageIsHidden("Delta")
+            clickOnStageGroup("Gamma")
+            clickOnEventWithPosition(1)
         }
     }
 

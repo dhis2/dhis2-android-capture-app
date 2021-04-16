@@ -101,6 +101,10 @@ class FormRobot : BaseRobot() {
         onView(withId(R.id.actionButton)).perform(click())
     }
 
+    fun clickOnFinish() {
+        onView(withId(R.id.finish)).perform(click())
+    }
+
     fun clickOnSelectOption(label: String, position: Int, option: String, optionPosition: Int) {
         clickOnSpinner(label, position)
         selectAction(option, optionPosition)
