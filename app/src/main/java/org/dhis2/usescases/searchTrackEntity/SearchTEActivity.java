@@ -18,13 +18,11 @@ import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.PopupMenu;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
@@ -82,7 +80,6 @@ import org.hisp.dhis.android.core.program.Program;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -99,7 +96,6 @@ import static android.view.View.GONE;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CHANGE_PROGRAM;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
 public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View,
         MapboxMap.OnMapClickListener {
@@ -585,10 +581,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             @SuppressLint("RestrictedApi")
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
-                if (!fromRelationship) {
-                    liveAdapter.clearList();
-                } else {
-                    relationshipLiveAdapter.clearList();
+                Program programSelected = (Program) binding.programSpinner.getSelectedItem();
+                if (programSelected.uid().equals(initialProgram)) {
+                    if (!fromRelationship) {
+                        liveAdapter.clearList();
+                    } else {
+                        relationshipLiveAdapter.clearList();
+                    }
                 }
                 if (pos > 0) {
                     analyticsHelper().setEvent(CHANGE_PROGRAM, CLICK, CHANGE_PROGRAM);
