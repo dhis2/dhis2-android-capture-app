@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.EditText
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
@@ -413,8 +414,13 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun performSaveClick() {
-        if (!presenter.hasAccess() || presenter.dataIntegrityCheck()) {
-            presenter.finish(mode)
+        if (currentFocus is EditText) {
+            presenter.setFinishing()
+            currentFocus?.apply { clearFocus() }
+        } else {
+            if (!presenter.hasAccess() || presenter.dataIntegrityCheck()) {
+                presenter.finish(mode)
+            }
         }
     }
 

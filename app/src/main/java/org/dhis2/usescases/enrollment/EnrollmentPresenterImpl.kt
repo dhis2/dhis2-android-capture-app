@@ -69,6 +69,7 @@ class EnrollmentPresenterImpl(
     private val matomoAnalyticsController: MatomoAnalyticsController
 ) : RulesActionCallbacks {
 
+    private var finishing: Boolean = false
     private val disposable = CompositeDisposable()
     private val optionsToHide = HashMap<String, ArrayList<String>>()
     private val optionsGroupsToHide = HashMap<String, ArrayList<String>>()
@@ -317,10 +318,12 @@ class EnrollmentPresenterImpl(
                                         view.showDateEditionWarning()
                                     }
                                     fieldsFlowable.onNext(true)
+                                    checkFinishing(true)
                                 }
                                 ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
                                     composeList()
                                     view.hideProgress()
+                                    checkFinishing(true)
                                 }
                                 ValueStoreImpl.ValueStoreResult.VALUE_NOT_UNIQUE -> {
                                     uniqueFields.add(result.uid)
@@ -329,11 +332,13 @@ class EnrollmentPresenterImpl(
                                         view.context.getString(R.string.unique_warning)
                                     )
                                     view.hideProgress()
+                                    checkFinishing(false)
                                 }
                                 ValueStoreImpl.ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
                                     Timber.tag(TAG)
                                         .d("${result.uid} is not a data element or attribute")
                                     view.hideProgress()
+                                    checkFinishing(false)
                                 }
                             }
                         } ?: view.hideProgress()
@@ -341,6 +346,13 @@ class EnrollmentPresenterImpl(
                     { Timber.tag(TAG).e(it) }
                 )
         )
+    }
+
+    private fun checkFinishing(canFinish: Boolean) {
+        if (finishing && canFinish) {
+            view.performSaveClick()
+        }
+        finishing = false
     }
 
     private fun updateErrorList(action: RowAction) {
@@ -778,5 +790,9 @@ class EnrollmentPresenterImpl(
         if (picturePath.isNotEmpty()) {
             view.displayTeiPicture(picturePath)
         }
+    }
+
+    fun setFinishing() {
+        finishing = true
     }
 }
