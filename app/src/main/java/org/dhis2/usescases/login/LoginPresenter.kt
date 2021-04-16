@@ -33,6 +33,7 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.LOGIN
 import org.dhis2.utils.analytics.SERVER_QR_SCANNER
+import org.dhis2.utils.reporting.CrashReportController
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
@@ -45,7 +46,8 @@ class LoginPresenter(
     private val preferenceProvider: PreferenceProvider,
     private val schedulers: SchedulerProvider,
     private val fingerPrintController: FingerPrintController,
-    private val analyticsHelper: AnalyticsHelper
+    private val analyticsHelper: AnalyticsHelper,
+    private val crashReportController: CrashReportController
 ) {
 
     private var userManager: UserManager? = null
@@ -191,6 +193,7 @@ class LoginPresenter(
                                     setValue(SESSION_LOCKED, false)
                                     setValue(PIN, null)
                                 }
+                                trackUserInfo()
                                 Response.success<Any>(null)
                             }
                         }
@@ -247,7 +250,9 @@ class LoginPresenter(
                                 )
                                 setValue(SESSION_LOCKED, false)
                                 setValue(PIN, null)
+                                setValue(SERVER, "$serverUrl/api")
                             }
+                            trackUserInfo()
                             Response.success<Any>(null)
                         }
                     }.subscribeOn(schedulers.io())
@@ -262,6 +267,14 @@ class LoginPresenter(
                     )
             )
         }
+    }
+
+    private fun trackUserInfo() {
+        val username = preferenceProvider.getString(USER)
+        val server = preferenceProvider.getString(SERVER)
+
+        crashReportController.trackServer(server)
+        crashReportController.trackUser(username, server)
     }
 
     fun onQRClick() {
