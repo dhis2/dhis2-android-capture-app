@@ -9,7 +9,7 @@ There are two ways to access the application:
 
     > **Note**
     >
-    > Take note that the login only possible with 2.29, 2.30, 2.31 and 2.32 servers.
+    > Take note that login is only possible with servers from version 2.29.
 
 2. QR: The user can use a QR code instead of typing the URL. Username and password must be entered manually.
 
@@ -19,7 +19,7 @@ There are two ways to access the application:
     >
     > You are able to make an *offline* login only if using the same user as the last online session.
  
-![](resources/images/image62.PNG){ width=25%}
+![](resources/images/image62.png){ width=25%}
 ![](resources/images/image63.jpg){ width=25%}
 
 > **Warning**
@@ -42,7 +42,7 @@ The users will be able to restore their own password if they have the setting en
 User is able to lock the session using a 4 digit PIN. This allows to move to other apps in your phone without deleting the local data.
 If the user forgets the PIN number, log in by entering the credentials is also available.
 
-![](resources/images/image65.PNG){width=25%}
+![](resources/images/image65.png){width=25%}
 ![](resources/images/image63.jpg){width=25%}
 
 ## Fingerprint { #capture_app_generic_fingerprint }
@@ -59,7 +59,7 @@ User is able to use the fingerprint scanner if the feature is activated in the d
 ## Instructions/information buttons { #capture_app_generic_instructions }
 
 
-A contextual guide opens the first time the user opens the App.
+A contextual guide is available in Event details and TEI dashboard screen.
 
 ![](resources/images/image42.jpg){width=25%}
 ![](resources/images/image66.png){width=25%}
@@ -84,7 +84,7 @@ Filter by period, org. Unit, sync state, event status, category option combinati
 Filters will adapt to the different programs and data sets.
 
 1. Program without registration: Date, Org. Unit, Sync State, Event Status and, Category Combination.
-2. Program with registration: Event Date, Date of enrollment, Org. Unit, Sync, Enrollment Status, Event Status and Assigned to me
+2. Program with registration: Event Date, Date of enrollment, Org. Unit, Sync, Enrollment Status, Event Status and Assigned to me. The filter icon will show only if a list of events is available (Display front page list feature or search)
 3. Data Sets: Period, Org. Unit, and Sync State.
 
 ### Assigned to me { #capture_app_generic_filter_assigned }
@@ -138,7 +138,7 @@ The 'Date of Enrollment' will apply to the Enrollment date of the TEI in the pro
 
 ### Enrollment Status { #capture_app_generic_filter_enroll_status }
 
-The filter 'Enrollment status' offers three options: Active, Completed, Cancelled. Only ona option can be selected at time. If you filter by "completed" and the TEI has more than one enrollment, the app will open the "active"  enrollment. To see the completed one, select the three dot menu at the top right corner of the dashboard and select "program enrollments".
+The filter 'Enrollment status' offers three options: Active, Completed, Cancelled. Only one option can be selected at time. If you filter by "completed" and the TEI has more than one enrollment, the app will open the "active"  enrollment. To see the completed one, select the three dot menu at the top right corner of the dashboard and select "program enrollments".
 
 ### Filtering added in TEI Dashboard: { #capture_app_generic_filter_tei }
 
@@ -178,7 +178,6 @@ Allows the user to check sync information for a specific program. Now the synced
 
 ![](resources/images/image67.png){ width=20%}
 ![](resources/images/image69.png){ width=20%}
-![](resources/images/image70.png){ width=20%}
 
 ### Granular Sync { #capture_app_generic_sync_granular }
 
@@ -270,11 +269,19 @@ For TEIs, the first data element/attribute with this value type and marked as di
 ![](resources/images/image98.png){ width=25%}
 ![](resources/images/image100.png){ width=25%}
 
+Open the TEI profile image by clicking on it.
+
+![](resources/images/image138.png){ width=25%}
+
 ## Display events and TEIs in maps { #capture_app_generic_display_events }
 
 
-When a program stage or tracked entity type have a feature type (and for programs with registration the option displayFrontPageList is enabled) the listings can be switched to display the information in a map.
+When a program stage or tracked entity type have a feature type (and for programs with registration the option displayFrontPageList is enabled) the listings can be switched to display the information in a map. Make the switch by clicking on the map icon in the navigation panel.
+
 
 ![](resources/images/image101.png){ width=25%}
 ![](resources/images/image102.png){ width=25%}
+
+If the TEI has a profile image, the map will display it.
+
 ![](resources/images/image103.png){ width=25%}
