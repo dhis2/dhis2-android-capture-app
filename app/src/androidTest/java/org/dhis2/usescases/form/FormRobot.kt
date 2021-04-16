@@ -14,6 +14,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
+import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
@@ -95,6 +96,11 @@ class FormRobot : BaseRobot() {
             .check(matches(allOf(isDisplayed(), withText(name))))
         onView(withId(R.id.indicator_value))
             .check(matches(allOf(isDisplayed(), withText(value))))
+    }
+
+    fun checkLabel(label: String, position: Int) {
+        onView(withId(R.id.recyclerView))
+            .check(matches(atPosition(position, hasDescendant(withText(label)))))
     }
 
     fun clickOnSaveForm() {
