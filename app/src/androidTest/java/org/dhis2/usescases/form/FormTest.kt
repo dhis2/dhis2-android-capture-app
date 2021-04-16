@@ -113,6 +113,24 @@ class FormTest: BaseTest() {
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, MANDATORY_FIELD, MANDATORY_FIELD_POSITION)
             checkLabel(mandatoryLabel, position)
         }
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, DISPLAY_TEXT, DISPLAY_TEXT_POSITION)
+            pressBack()
+            goToAnalytics()
+            checkIndicatorIsDisplayed("Info", "Current Option Selected: DT")
+            goToDataEntry()
+        }
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, DISPLAY_KEY, DISPLAY_KEY_POSITION)
+            pressBack()
+            goToAnalytics()
+            checkIndicatorIsDisplayed("Current Option", "DKVP")
+            goToDataEntry()
+        }
     }
 
 
