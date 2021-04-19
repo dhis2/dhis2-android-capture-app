@@ -185,6 +185,7 @@ Allows the user to check sync information for a specific program. Now the synced
 Allows to sync individual records (Program, Event, TEI, DataSet, DataValues) with the server.
 
 ![](resources/images/image89.png){ width=25%}
+![](resources/images/image161.png){ width=25%}
 
 
 ### SMS Sync { #capture_app_generic_sync_sms }
