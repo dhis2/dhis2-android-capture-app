@@ -115,6 +115,26 @@ class FormTest: BaseTest() {
 
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, HIDE_OPTION, HIDE_OPTION_POSITION)
+            checkHiddenOption("North", OPTION_SET_FIELD_POSITION)
+        }
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, HIDE_OPTION_GROUP, HIDE_OPTION_GROUP_POSITION)
+            checkHiddenOption("North", OPTION_SET_FIELD_POSITION)
+            checkHiddenOption("West", OPTION_SET_FIELD_POSITION)
+        }
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, SHOW_OPTION_GROUP, SHOW_OPTION_POSITION)
+            checkDisplayedOption("North", OPTION_SET_FIELD_POSITION)
+            checkDisplayedOption("West", OPTION_SET_FIELD_POSITION)
+        }
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, DISPLAY_TEXT, DISPLAY_TEXT_POSITION)
             pressBack()
             goToAnalytics()
@@ -142,6 +162,7 @@ class FormTest: BaseTest() {
         const val HIDE_SECTION_POSITION = 2
         const val HIDE_OPTION = "Hide Option"
         const val HIDE_OPTION_POSITION = 3
+        const val OPTION_SET_FIELD_POSITION = 5
         const val HIDE_OPTION_GROUP = "Hide Option Group"
         const val HIDE_OPTION_GROUP_POSITION = 4
         const val ASSIGN_VALUE = "Assign Value"
