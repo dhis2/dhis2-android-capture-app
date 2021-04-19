@@ -122,12 +122,13 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
 
         String result = null;
         if (value != null) {
-            result = String.valueOf(value);
+            if (value() == null || !Objects.equals(value(), String.valueOf(value)))
+                result = String.valueOf(value);
         }
 
         if (processor() == null || Objects.equals(result, value())) return;
 
-        processor().onNext(new RowAction(
+        Objects.requireNonNull(processor()).onNext(new RowAction(
                 uid(),
                 result,
                 false,
