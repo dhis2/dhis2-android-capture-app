@@ -1,6 +1,7 @@
 package org.dhis2.usescases.form
 
 import android.view.MenuItem
+import androidx.appcompat.widget.MenuPopupWindow
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -14,6 +15,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
+import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
@@ -39,7 +41,7 @@ class FormRobot : BaseRobot() {
                 withId(R.id.openIndicator))), click()))
     }
 
-    private fun clickOnSpinner(label: String, position: Int) {
+    private fun clickOnSpinner(position: Int) {
         onView(withId(R.id.recyclerView))
             .perform(actionOnItemAtPosition<FormViewHolder>(
                 position, clickChildViewWithId(R.id.input_editText))
@@ -55,7 +57,7 @@ class FormRobot : BaseRobot() {
     }
 
     fun resetToNoAction(label: String, position: Int) {
-        clickOnSpinner(label, position)
+        clickOnSpinner(position)
         selectAction(NO_ACTION, NO_ACTION_POSITION)
     }
 
@@ -97,8 +99,31 @@ class FormRobot : BaseRobot() {
             .check(matches(allOf(isDisplayed(), withText(value))))
     }
 
+    fun checkLabel(label: String, position: Int) {
+        onView(withId(R.id.recyclerView))
+            .check(matches(atPosition(position, hasDescendant(withText(label)))))
+    }
+
     fun clickOnSaveForm() {
         onView(withId(R.id.actionButton)).perform(click())
+    }
+
+    fun checkHiddenOption(label: String, position: Int) {
+        clickOnSpinner(position)
+        onView(instanceOf(MenuPopupWindow.MenuDropDownListView::class.java))
+            .check(matches(not(hasDescendant(withText(label)))))
+            .also {
+                it.perform(click())
+            }
+    }
+
+    fun checkDisplayedOption(label: String, position: Int) {
+        clickOnSpinner(position)
+        onView(instanceOf(MenuPopupWindow.MenuDropDownListView::class.java))
+            .check(matches(hasDescendant(withText(label))))
+            .also {
+                it.perform(click())
+            }
     }
 
     fun clickOnFinish() {
@@ -106,7 +131,7 @@ class FormRobot : BaseRobot() {
     }
 
     fun clickOnSelectOption(label: String, position: Int, option: String, optionPosition: Int) {
-        clickOnSpinner(label, position)
+        clickOnSpinner(position)
         selectAction(option, optionPosition)
     }
 
