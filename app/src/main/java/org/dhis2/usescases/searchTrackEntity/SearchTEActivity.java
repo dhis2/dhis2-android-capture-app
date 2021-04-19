@@ -581,8 +581,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             @SuppressLint("RestrictedApi")
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
-                Program programSelected = (Program) binding.programSpinner.getSelectedItem();
-                if (programSelected.uid().equals(initialProgram)) {
+                Program programSelected;
+                if (pos == 0){
+                    programSelected = (Program) adapterView.getItemAtPosition(0);
+                } else {
+                    programSelected = (Program) adapterView.getItemAtPosition(pos - 1);
+                }
+                if (!programSelected.uid().equals(initialProgram)) {
                     if (!fromRelationship) {
                         liveAdapter.clearList();
                     } else {
