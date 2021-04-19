@@ -1,6 +1,5 @@
 package org.dhis2.utils.analytics.matomo
 
-import org.hisp.dhis.android.core.D2Manager
 import org.matomo.sdk.Matomo
 import org.matomo.sdk.Tracker
 import org.matomo.sdk.extra.DownloadTracker.Extra.ApkChecksum
@@ -23,11 +22,6 @@ class MatomoAnalyticsControllerImpl(
     }
 
     override fun trackEvent(category: String, action: String, label: String) {
-        val d2 = D2Manager.getD2()
-        if (d2 != null && d2.userModule().blockingIsLogged()) {
-            val userUid = d2.userModule().user().blockingGet()?.uid()
-            setUserId(userUid)
-        }
         matomoTracker?.let {
             TrackHelper.track().event(category, action).name(label).with(it)
         }
