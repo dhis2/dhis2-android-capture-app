@@ -507,7 +507,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 org.dhis2.data.tuples.Pair<String, Boolean> data = presenter.getMessage(searchTeiModels);
                 presenter.checkFilters(data.val0().isEmpty());
                 if (data.val0().isEmpty()) {
-                   // liveAdapter.clearList();
                     binding.messageContainer.setVisibility(GONE);
                     binding.scrollView.setVisibility(View.VISIBLE);
                     liveAdapter.submitList(searchTeiModels);
@@ -592,7 +591,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 if (!programSelected.uid().equals(initialProgram)) {
                     if (!fromRelationship) {
                         liveAdapter.clearList();
-
                     } else {
                         relationshipLiveAdapter.clearList();
                     }
