@@ -86,6 +86,7 @@ class EventCaptureFormPresenter(
                             if (result.valueStoreResult
                                 == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
                             ) {
+                                activityPresenter.setValueChanged(result.uid)
                                 activityPresenter.nextCalculation(true)
                             } else {
                                 itemList?.let { fields ->

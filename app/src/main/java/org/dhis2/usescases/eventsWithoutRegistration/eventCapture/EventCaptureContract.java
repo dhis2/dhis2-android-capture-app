@@ -10,6 +10,7 @@ import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.rules.models.RuleEffect;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 import java.util.List;
@@ -112,6 +113,8 @@ public class EventCaptureContract {
         void showProgress();
 
         boolean getCompletionPercentageVisibility();
+
+        void setValueChanged(@NotNull String uid);
     }
 
     public interface EventCaptureRepository {
@@ -167,6 +170,8 @@ public class EventCaptureContract {
         List<String> getOptionsFromGroups(List<String> optionGroupUids);
 
         boolean showCompletionPercentage();
+
+        void updateFieldValue(String uid);
     }
 
 }
