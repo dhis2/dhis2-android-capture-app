@@ -8,6 +8,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel
+import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.utils.DhisTextUtils.Companion.isEmpty
 
 const val DISPLAY_FIELD_KEY = "DISPLAY_FIELD_KEY"
@@ -19,7 +20,7 @@ class EventFieldMapper(
 
     var totalFields: Int = 0
     var unsupportedFields: Int = 0
-    private lateinit var optionSets: MutableList<String?>
+    private lateinit var visualDataElements: MutableList<String?>
     private lateinit var fieldMap: MutableMap<String?, MutableList<FieldViewModel>>
     private lateinit var eventSectionModels: MutableList<EventSectionModel>
     private lateinit var finalFieldList: MutableList<FieldViewModel>
@@ -81,7 +82,7 @@ class EventFieldMapper(
     private fun clearAll() {
         totalFields = 0
         unsupportedFields = 0
-        optionSets = mutableListOf()
+        visualDataElements = mutableListOf()
         fieldMap = HashMap()
         eventSectionModels = mutableListOf()
         finalFieldList = mutableListOf()
@@ -108,10 +109,10 @@ class EventFieldMapper(
                     }
                 )
                 if (field !is DisplayViewModel) {
-                    if (fieldIsNotOptionSetOrImage(field)) {
+                    if (fieldIsNotVisualOptionSet(field)) {
                         totalFields++
-                    } else if (!optionSets.contains(field.optionSet())) {
-                        optionSets.add(field.optionSet())
+                    } else if (!visualDataElements.contains(field.uid())) {
+                        visualDataElements.add(field.uid())
                         totalFields++
                     }
                 }
@@ -175,7 +176,7 @@ class EventFieldMapper(
 
         finalFields = HashMap()
         for (fieldViewModel in fieldViewModels) {
-            finalFields[getCorrectUid(fieldViewModel)] =
+            finalFields[fieldViewModel.uid()] =
                 !isEmpty(fieldViewModel.value())
         }
 
@@ -214,7 +215,7 @@ class EventFieldMapper(
     ) {
         for (fieldViewModel in fields) {
             if (fieldViewModel !is DisplayViewModel) {
-                finalFields[getCorrectUid(fieldViewModel)] =
+                finalFields[fieldViewModel.uid()] =
                     !isEmpty(fieldViewModel.value())
             }
         }
@@ -232,16 +233,8 @@ class EventFieldMapper(
         finalFieldList.addAll(fieldMap[sectionModel.sectionUid()] as Collection<FieldViewModel>)
     }
 
-    private fun getCorrectUid(fieldViewModel: FieldViewModel): String {
-        return if (fieldIsNotOptionSetOrImage(fieldViewModel)) {
-            fieldViewModel.uid()
-        } else {
-            fieldViewModel.optionSet()!!
-        }
-    }
-
-    private fun fieldIsNotOptionSetOrImage(field: FieldViewModel): Boolean {
-        return field.optionSet() == null
+    private fun fieldIsNotVisualOptionSet(field: FieldViewModel): Boolean {
+        return field.optionSet() == null || field !is MatrixOptionSetModel
     }
 
     fun completedFieldsPercentage(): Float {
