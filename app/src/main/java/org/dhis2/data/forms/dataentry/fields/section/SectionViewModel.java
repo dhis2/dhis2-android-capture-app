@@ -8,6 +8,7 @@ import com.google.auto.value.AutoValue;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
+import org.dhis2.data.forms.dataentry.fields.FieldUiModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
@@ -395,5 +396,22 @@ public abstract class SectionViewModel extends FieldViewModel {
 
     public boolean lastPositionShouldChangeHeight() {
         return lastPositionShouldChangeHeight;
+    }
+
+    @Override
+    public boolean equals(FieldUiModel o) {
+        return super.equals(o) &&
+                o instanceof SectionViewModel &&
+                this.showBottomShadow == ((SectionViewModel) o).showBottomShadow() &&
+                this.lastPositionShouldChangeHeight == ((SectionViewModel) o).lastPositionShouldChangeHeight() &&
+                this.isOpen() == ((SectionViewModel) o).isOpen() &&
+                this.totalFields().equals(((SectionViewModel) o).totalFields()) &&
+                this.completedFields().equals(((SectionViewModel) o).completedFields()) &&
+                Objects.equals(this.errors(), ((SectionViewModel) o).errors()) &&
+                Objects.equals(this.warnings(), ((SectionViewModel) o).warnings()) &&
+                this.rendering().equals(((SectionViewModel) o).rendering()) &&
+                this.sectionProcessor() == ((SectionViewModel) o).sectionProcessor() &&
+                this.selectedField() == ((SectionViewModel) o).selectedField() &&
+                this.sectionNumber == ((SectionViewModel) o).sectionNumber;
     }
 }

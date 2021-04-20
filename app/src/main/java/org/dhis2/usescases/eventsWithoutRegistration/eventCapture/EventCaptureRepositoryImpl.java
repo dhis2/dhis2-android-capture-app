@@ -47,12 +47,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Objects;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.processors.FlowableProcessor;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -210,41 +212,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     public Flowable<List<FieldViewModel>> list(FlowableProcessor<RowAction> processor) {
         isEventEditable = isEventEditable(eventUid);
         if (!sectionFields.isEmpty()) {
-            return Flowable.just(sectionFields)
-                    .flatMapIterable(fieldViewModels -> fieldViewModels)
-                    .map(fieldViewModel -> {
-                        String uid = fieldViewModel.uid();
-                        TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid);
-
-                        String value = null;
-                        String rawValue = null;
-                        if (valueRepository.blockingExists()) {
-                            value = valueRepository.blockingGet().value();
-                            rawValue = value;
-                            String friendlyValue = ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2);
-
-                            if (fieldViewModel instanceof OrgUnitViewModel && !isEmpty(value)) {
-                                value = value + "_ou_" + friendlyValue;
-                            } else {
-                                value = friendlyValue;
-                            }
-                        }
-
-                        String error = checkConflicts(uid, valueRepository.blockingExists() ? valueRepository.blockingGet().value() : null);
-
-                        boolean editable = fieldViewModel.editable() != null ? fieldViewModel.editable() : true;
-                        fieldViewModel = fieldViewModel.withValue(value).withEditMode(editable || isEventEditable);
-                        if (!error.isEmpty()) {
-                            fieldViewModel = fieldViewModel.withError(error);
-                        }
-                        if (fieldViewModel.canHaveLegend()) {
-                            LegendValue legend = getColorByLegend(rawValue, fieldViewModel.uid());
-                            fieldViewModel = fieldViewModel.withLegend(legend);
-                        }
-
-                        return fieldViewModel;
-                    }).toList().toFlowable()
-                    .map(fieldViewModels -> sectionFields = fieldViewModels);
+            return Flowable.just(sectionFields);
         } else {
             return Flowable.fromCallable(() -> {
                 List<ProgramStageDataElement> stageDataElements = d2.programModule().programStageDataElements()
@@ -555,6 +523,49 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             ).visible();
         }
         return true;
+    }
+
+    @Override
+    public void updateFieldValue(String uid) {
+        Timber.d("UPDATING VALUE FOR FIELD %s", uid);
+        ListIterator<FieldViewModel> iterator = sectionFields.listIterator();
+        boolean updated = false;
+        while (iterator.hasNext() || !updated){
+            FieldViewModel fieldViewModel = iterator.next();
+            if(fieldViewModel.uid().equals(uid)){
+                TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid);
+
+                String value = null;
+                String rawValue = null;
+                if (valueRepository.blockingExists()) {
+                    value = valueRepository.blockingGet().value();
+                    rawValue = value;
+                    String friendlyValue = ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2);
+
+                    if (fieldViewModel instanceof OrgUnitViewModel && !isEmpty(value)) {
+                        value = value + "_ou_" + friendlyValue;
+                    } else {
+                        value = friendlyValue;
+                    }
+                }
+
+                String error = checkConflicts(uid, valueRepository.blockingExists() ? valueRepository.blockingGet().value() : null);
+
+                boolean editable = fieldViewModel.editable() != null ? fieldViewModel.editable() : true;
+                fieldViewModel = fieldViewModel.withValue(value).withEditMode(editable || isEventEditable);
+                if (!error.isEmpty()) {
+                    fieldViewModel = fieldViewModel.withError(error);
+                }
+                if (fieldViewModel.canHaveLegend()) {
+                    LegendValue legend = getColorByLegend(rawValue, fieldViewModel.uid());
+                    fieldViewModel = fieldViewModel.withLegend(legend);
+                }
+
+                iterator.set(fieldViewModel);
+                updated = true;
+                Timber.d("DONE FOR FIELD %s", uid);
+            }
+        }
     }
 }
 

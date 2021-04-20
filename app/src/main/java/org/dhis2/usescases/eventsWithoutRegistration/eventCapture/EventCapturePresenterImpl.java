@@ -625,6 +625,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         StoreResult result = valueStore.saveWithTypeCheck(uid, value).blockingFirst();
         if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
             assignedValueChanged = true;
+            setValueChanged(uid);
         }
     }
 
@@ -648,6 +649,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         StoreResult result = valueStore.deleteOptionValueIfSelected(field, optionUid);
         if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
             assignedValueChanged = true;
+            setValueChanged(field);
         }
     }
 
@@ -665,6 +667,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             StoreResult result = valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, true);
             if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
                 assignedValueChanged = true;
+                setValueChanged(field);
             }
         } else if (!optionsGroupsToHide.containsKey(field) || !optionsGroupsToHide.get(field).contains(optionGroupUid)) {
             if (optionsGroupToShow.get(field) != null) {
@@ -675,6 +678,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             StoreResult result = valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, false);
             if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
                 assignedValueChanged = true;
+                setValueChanged(field);
             }
         }
     }
@@ -728,5 +732,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public boolean getCompletionPercentageVisibility() {
         return eventCaptureRepository.showCompletionPercentage();
+    }
+
+    @Override
+    public void setValueChanged(@NotNull String uid) {
+        eventCaptureRepository.updateFieldValue(uid);
     }
 }
