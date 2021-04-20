@@ -148,6 +148,8 @@ public class SearchTEContractsModule {
 
         void getMapData();
 
+        void getListData();
+
         Drawable getSymbolIcon();
 
         void getEnrollmentMapData();
