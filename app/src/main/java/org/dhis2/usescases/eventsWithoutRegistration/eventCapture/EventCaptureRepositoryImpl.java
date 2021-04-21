@@ -20,7 +20,6 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
-import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -333,7 +332,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     private LegendValue getColorByLegend(String value, String dataElementUid) {
-        if(value==null){
+        if (value == null) {
             return null;
         }
         try {
@@ -351,7 +350,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         .byLegendSet().eq(legendSet.uid())
                         .one()
                         .blockingGet();
-                if(legend == null){
+                if (legend == null) {
                     legend = d2.legendSetModule().legends()
                             .byEndValue().eq(Double.valueOf(value))
                             .byLegendSet().eq(legendSet.uid())
@@ -531,9 +530,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         Timber.d("UPDATING VALUE FOR FIELD %s", uid);
         ListIterator<FieldViewModel> iterator = sectionFields.listIterator();
         boolean updated = false;
-        while (iterator.hasNext() || !updated){
+        while (iterator.hasNext() || !updated) {
             FieldViewModel fieldViewModel = iterator.next();
-            if(fieldViewModel.uid().equals(uid)){
+            if (fieldViewModel.uid().equals(uid)) {
                 TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid);
 
                 String value = null;
