@@ -2,7 +2,7 @@
 
 ## Programs in Android { #capture_app_programs_android }
 
-### New Navigation Bar
+### New Navigation Bar (NEW 2.4)
 
 Use the new navigation bar to move from one screen to another.
 
@@ -13,7 +13,7 @@ Use the new navigation bar to move from one screen to another.
 3. Analytics
 4. Notes
 
-![](resources/images/image141.jpg)
+![](resources/images/image141.jpg){ width=25%}
 
 #### TEI Dashboard
 
@@ -22,15 +22,15 @@ Use the new navigation bar to move from one screen to another.
 3. Relationships
 4. Notes
    
-![](resources/images/image142.jpg)
+![](resources/images/image142.jpg){ width=25%}
 
 #### Event listing for event and tracker programs
 
   1. List view
   2. Map view
 
-![](resources/images/image143.jpg)
-![](resources/images/image144.jpg)
+![](resources/images/image143.jpg){ width=25%}
+![](resources/images/image144.jpg){ width=25%}
 
 ### Complete/Re-open event { #capture_app_programs_complete_reopen }
 
@@ -143,13 +143,13 @@ In tracker, the user can see relationships on a map by tapping the map icon on t
 
 ![](resources/images/image132.png){ width=25%}
 
-#### Map Current Location
+#### Map Current Location (NEW 2.4)
 
 If the user grants location permissions to the App, the map will show the current location represented as a blue color dot.
 
 ![](resources/images/image148.png){ width=25%}
 
-#### Map Navigation to Location
+#### Map Navigation to Location (NEW 2.4)
 
 If the TEI or event has coordinates a navigation icon will be displayed at the top right of the card. Click to open the location in a maps App.
 
@@ -157,7 +157,7 @@ If the TEI or event has coordinates a navigation icon will be displayed at the t
 ![](resources/images/image150.jpg){ width=25%}
 ![](resources/images/image151.jpg){ width=25%}
 
-### Working Lists
+### Working Lists (NEW 2.4)
 
 Working lists are now compatible with the Android app. Once a list is selected, the filters will be blocked and not allowed to change until the user resets the search.
 
@@ -166,13 +166,13 @@ Working lists are available in Event and Tracker Programs.
 ![](resources/images/image152.jpg){ width=25%}
 ![](resources/images/image153.jpg){ width=25%}
 
-### Program Indicators
+### Program Indicators (NEW 2.4)
 
 The new analytics tab now supports displaying text and key/value pair in feedback or indicator section.
 
 ![](resources/images/image154.jpg){ width=25%}
 
-### Legends
+### Legends (NEW 2.4)
 
 Legends are now available in Android App. It will be shown next to value with the respective color and label.
 
@@ -289,7 +289,7 @@ If Android users must be able to access TEI outside of their data capture org un
 
 ![](resources/images/image137.jpg){ width=25%}
 
-### Analytic charts
+### Analytic charts (NEW 2.4)
 
 It is possible to display the evolution in data elements as charts, values or tables. These data elements must be a numeric value type and configured in a repeatable stage.
 

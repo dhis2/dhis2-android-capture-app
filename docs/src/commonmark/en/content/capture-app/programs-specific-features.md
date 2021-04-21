@@ -2,7 +2,7 @@
 
 ## Data Sets in Android { #capture_app_datsets_android }
 
-### Navigation Bar
+### Navigation Bar (NEW 2.4)
 
 Use the new navigation bar to switch between the data entry form and the overview screen.
 
@@ -50,7 +50,7 @@ The length of the first column in datasets is now calculated to show the full te
 
 ![](resources/images/image113.png){ width=25%}
 
-### Indicators
+### Indicators (NEW 2.4)
 
 Indicators are now available in default and section forms and are displayed at the bottom of the data entry form.
 
