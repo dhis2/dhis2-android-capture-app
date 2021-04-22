@@ -1,5 +1,8 @@
-This is a patch version that fixes:
-- ANDROAPP-3773 TEIs in search org unit not being downloaded
-- ANDROAPP-3775 Unique attribute searching
-
+This nes version includes the following features:
+- Local analytics at TEI level
+- Working lists
+- Data elements and attributes in maps
+- Indicators for event programs and datasets
+- Improvements in the user experience and user interface
+- Fixed several bugs
 You can find all the details on Jira and Github.
