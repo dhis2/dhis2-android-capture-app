@@ -2,16 +2,22 @@ package org.dhis2.usescases.programevent
 
 import android.content.Intent
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.AppTest.Companion.DB_TO_IMPORT
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.event.eventRegistrationRobot
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
+import org.dhis2.utils.DateUtils
+import org.dhis2.utils.DateUtils.uiDateFormat
 import org.junit.Rule
 import org.junit.Test
 
 class ProgramEventTest: BaseTest() {
+
+    private val atenatalCare = "lxAQ7Zs9VYR"
+    private val informationCampaign = "q04UBOqq3rp"
 
     @get:Rule
     val rule = ActivityTestRule(ProgramEventDetailActivity::class.java, false, false)
@@ -19,7 +25,7 @@ class ProgramEventTest: BaseTest() {
     @Test
     fun shouldCreateNewEventAndCompleteIt() {
         val eventOrgUnit = "Ngelehun CHC"
-        prepareProgramAndLaunchActivity()
+        prepareProgramAndLaunchActivity(atenatalCare)
 
         programEventsRobot {
             clickOnAddEvent()
@@ -44,10 +50,9 @@ class ProgramEventTest: BaseTest() {
         val eventDate = "15/3/2020"
         val eventOrgUnit = "Ngelehun CHC"
 
-        prepareProgramAndLaunchActivity()
+        prepareProgramAndLaunchActivity(atenatalCare)
 
         programEventsRobot {
-            waitToDebounce(600)
             clickOnEvent(eventDate, eventOrgUnit)
         }
 
@@ -61,10 +66,9 @@ class ProgramEventTest: BaseTest() {
         val eventDate = "15/3/2020"
         val eventOrgUnit = "Ngelehun CHC"
 
-        prepareProgramAndLaunchActivity()
+        prepareProgramAndLaunchActivity(atenatalCare)
 
         programEventsRobot {
-            waitToDebounce(600)
             clickOnEvent(eventDate, eventOrgUnit)
         }
 
@@ -85,15 +89,63 @@ class ProgramEventTest: BaseTest() {
         }
 
         programEventsRobot {
-            waitToDebounce(600)
+            waitToDebounce(800)
             checkEventIsOpen(eventDate, eventOrgUnit)
         }
 
     }
 
-    private fun prepareProgramAndLaunchActivity() {
+    @Test
+    fun shouldOpenDetailsOfExistingEvent() {
+        val eventDate = "15/3/2020"
+        val eventOrgUnit = "Ngelehun CHC"
+
+        prepareProgramAndLaunchActivity(atenatalCare)
+
+        programEventsRobot {
+            clickOnEvent(eventDate, eventOrgUnit)
+        }
+        eventRobot {
+            clickOnDetails()
+            checkEventDetails(eventDate, eventOrgUnit)
+        }
+    }
+
+    @Test
+    fun shouldDeleteEvent() {
+        val eventDate = "15/3/2020"
+        val eventOrgUnit = "Ngelehun CHC"
+
+        prepareProgramAndLaunchActivity(atenatalCare)
+
+        programEventsRobot {
+            clickOnEvent(eventDate, eventOrgUnit)
+        }
+        eventRobot {
+            openMenuMoreOptions()
+            clickOnDelete()
+            clickOnDeleteDialog()
+        }
+        programEventsRobot {
+            checkEventWasDeleted(eventDate, eventOrgUnit)
+        }
+        rule.activity.application.deleteDatabase(DB_TO_IMPORT)
+    }
+
+    @Test
+    fun shouldOpenEventAndShowMap() {
+
+        prepareProgramAndLaunchActivity(informationCampaign)
+
+        programEventsRobot {
+            clickOnMap()
+            checkMapIsDisplayed()
+        }
+    }
+
+    private fun prepareProgramAndLaunchActivity(programUid: String) {
         Intent().apply {
-            putExtra(ProgramEventDetailActivity.EXTRA_PROGRAM_UID, "lxAQ7Zs9VYR")
+            putExtra(ProgramEventDetailActivity.EXTRA_PROGRAM_UID, programUid)
         }.also { rule.launchActivity(it) }
     }
 }

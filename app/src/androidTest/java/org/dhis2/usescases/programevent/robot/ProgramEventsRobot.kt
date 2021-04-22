@@ -7,16 +7,19 @@ import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withTagValue
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers
+import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.isOneOf
+import org.hamcrest.Matchers.not
 
 fun programEventsRobot(programEventsRobot: ProgramEventsRobot.() -> Unit) {
     ProgramEventsRobot().apply {
@@ -45,6 +48,10 @@ class ProgramEventsRobot : BaseRobot() {
 
     fun clickOnAddEvent() {
         onView(withId(R.id.addEventButton)).perform(click())
+    }
+
+    fun clickOnMap() {
+        onView(withId(R.id.navigation_map_view)).perform(click())
     }
 
     fun checkEventWasCreatedAndClosed(eventName: String, position: Int) {
@@ -96,4 +103,22 @@ class ProgramEventsRobot : BaseRobot() {
                 ))
             )))
     }
+
+    fun checkEventWasDeleted(eventDate: String, eventOrgUnit: String) {
+        onView(withId(R.id.recycler))
+            .check(matches(
+                not(hasItem(
+                    allOf(
+                        hasDescendant(withText(eventDate)),
+                        hasDescendant(withText(eventOrgUnit))
+                    )
+                ))
+            ))
+    }
+
+    fun checkMapIsDisplayed() {
+        onView(withId(R.id.mapView)).check(matches(isDisplayed()))
+        onView(withId(R.id.map_carousel)).check(matches(isDisplayed()))
+    }
+
 }
