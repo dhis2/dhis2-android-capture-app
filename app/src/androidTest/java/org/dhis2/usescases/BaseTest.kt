@@ -5,7 +5,8 @@ import android.os.Build
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
-import com.jakewharton.espresso.OkHttp3IdlingResource
+import org.dhis2.AppTest
+import org.dhis2.AppTest.Companion.DB_TO_IMPORT
 import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.common.keystore.KeyStoreRobot.Companion.KEYSTORE_PASSWORD
@@ -16,7 +17,6 @@ import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton
-import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.arch.api.internal.ServerURLWrapper
 import org.junit.After
 import org.junit.Before
@@ -79,6 +79,11 @@ open class BaseTest {
         cleanKeystore()
         stopMockServer()
         unregisterCountingIdlingResource()
+        cleanDatabase()
+    }
+
+    private fun cleanDatabase() {
+        (context.applicationContext as AppTest).deleteDatabase(DB_TO_IMPORT)
     }
 
     fun enableIntents() {

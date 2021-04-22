@@ -19,6 +19,7 @@ class DBTestLoader(private val context: Context) {
             return
         }
         try {
+            Timber.i("Database will be copied")
             val input = context.assets.open("databases/$DB_NAME_TEST")
             val output = FileOutputStream("$databasePath/$DB_NAME")
             writeExtractedFileToDisk(input, output)
