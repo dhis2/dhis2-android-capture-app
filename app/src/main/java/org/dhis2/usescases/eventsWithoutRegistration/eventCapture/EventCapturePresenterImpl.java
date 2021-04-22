@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -48,6 +47,7 @@ import java.util.Map;
 
 import javax.inject.Singleton;
 
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
@@ -56,7 +56,6 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.BehaviorSubject;
 import kotlin.Pair;
-import kotlin.collections.CollectionsKt;
 import timber.log.Timber;
 
 @Singleton
@@ -625,6 +624,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         StoreResult result = valueStore.saveWithTypeCheck(uid, value).blockingFirst();
         if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
             assignedValueChanged = true;
+            setValueChanged(uid);
         }
     }
 
@@ -648,6 +648,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         StoreResult result = valueStore.deleteOptionValueIfSelected(field, optionUid);
         if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
             assignedValueChanged = true;
+            setValueChanged(field);
         }
     }
 
@@ -665,6 +666,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             StoreResult result = valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, true);
             if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
                 assignedValueChanged = true;
+                setValueChanged(field);
             }
         } else if (!optionsGroupsToHide.containsKey(field) || !optionsGroupsToHide.get(field).contains(optionGroupUid)) {
             if (optionsGroupToShow.get(field) != null) {
@@ -675,6 +677,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             StoreResult result = valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, false);
             if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
                 assignedValueChanged = true;
+                setValueChanged(field);
             }
         }
     }
@@ -728,5 +731,19 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public boolean getCompletionPercentageVisibility() {
         return eventCaptureRepository.showCompletionPercentage();
+    }
+
+    @Override
+    public void setValueChanged(@NotNull String uid) {
+        compositeDisposable.add(
+                Completable.fromCallable(() -> {
+                    eventCaptureRepository.updateFieldValue(uid);
+                    return true;
+                })
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.io())
+                        .subscribe(() -> {
+                        }, Timber::d)
+        );
     }
 }

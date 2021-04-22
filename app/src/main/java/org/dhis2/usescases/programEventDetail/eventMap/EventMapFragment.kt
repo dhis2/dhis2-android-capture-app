@@ -61,6 +61,8 @@ class EventMapFragment :
             eventMapManager = EventMapManager(mapView)
             eventMapManager?.let { fragmentLifeCycle.addObserver(it) }
             eventMapManager?.onCreate(savedInstanceState)
+            eventMapManager?.featureType = presenter.programFeatureType()
+            eventMapManager?. onMapClickListener = this@EventMapFragment
             eventMapManager?.init(
                 onInitializationFinished = {
                     presenter.init()
@@ -70,10 +72,8 @@ class EventMapFragment :
                 }
             )
             mapLayerButton.setOnClickListener {
-                eventMapManager?.apply {
-                    featureType = presenter.programFeatureType()
-                    onMapClickListener = this@EventMapFragment
-                    MapLayerDialog(this)
+                eventMapManager?.let {
+                    MapLayerDialog(it)
                         .show(childFragmentManager, MapLayerDialog::class.java.name)
                 }
             }

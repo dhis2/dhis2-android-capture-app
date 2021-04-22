@@ -1,6 +1,7 @@
 package org.dhis2.usescases.enrollment
 
 import android.annotation.SuppressLint
+import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.flowables.ConnectableFlowable
@@ -68,6 +69,7 @@ class EnrollmentPresenterImpl(
     private val matomoAnalyticsController: MatomoAnalyticsController
 ) : RulesActionCallbacks {
 
+    private var finishing: Boolean = false
     private val disposable = CompositeDisposable()
     private val optionsToHide = HashMap<String, ArrayList<String>>()
     private val optionsGroupsToHide = HashMap<String, ArrayList<String>>()
@@ -76,7 +78,7 @@ class EnrollmentPresenterImpl(
     private var selectedSection: String = ""
     private var errorFields = mutableMapOf<String, String>()
     private var mandatoryFields = mutableMapOf<String, String>()
-    private var uniqueFields = mutableMapOf<String, String>()
+    private var uniqueFields = mutableListOf<String>()
     private val backButtonProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
     private var showErrors: Pair<Boolean, Boolean> = Pair(first = false, second = false)
     private var hasShownIncidentDateEditionWarning = false
@@ -146,6 +148,49 @@ class EnrollmentPresenterImpl(
                 )
         )
 
+        listenToActions()
+
+        val fields = getFieldFlowable()
+
+        disposable.add(
+            dataEntryRepository.enrollmentSectionUids()
+                .flatMap { sectionList ->
+                    sectionProcessor.startWith(sectionList[0])
+                        .map { setCurrentSection(it) }
+                        .doOnNext { view.showProgress() }
+                        .switchMap { section ->
+                            fields.map { fieldList ->
+                                return@map setFieldsToShow(section, fieldList)
+                            }
+                        }
+                }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe({
+                    itemList = it
+                    composeList()
+                    view.setSaveButtonVisible(true)
+                    view.hideProgress()
+                }) {
+                    Timber.tag(TAG).e(it)
+                }
+        )
+
+        disposable.add(
+            sectionProcessor
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.io())
+                .subscribe(
+                    { fieldsFlowable.onNext(true) },
+                    { Timber.tag(TAG).e(it) }
+                )
+        )
+
+        fields.connect()
+    }
+
+    @VisibleForTesting
+    fun listenToActions() {
         disposable.add(
             onRowActionProcessor
                 .onBackpressureBuffer()
@@ -273,22 +318,27 @@ class EnrollmentPresenterImpl(
                                         view.showDateEditionWarning()
                                     }
                                     fieldsFlowable.onNext(true)
+                                    checkFinishing(true)
                                 }
                                 ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
                                     composeList()
                                     view.hideProgress()
+                                    checkFinishing(true)
                                 }
                                 ValueStoreImpl.ValueStoreResult.VALUE_NOT_UNIQUE -> {
+                                    uniqueFields.add(result.uid)
                                     view.showInfoDialog(
                                         view.context.getString(R.string.error),
                                         view.context.getString(R.string.unique_warning)
                                     )
                                     view.hideProgress()
+                                    checkFinishing(false)
                                 }
                                 ValueStoreImpl.ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
                                     Timber.tag(TAG)
                                         .d("${result.uid} is not a data element or attribute")
                                     view.hideProgress()
+                                    checkFinishing(false)
                                 }
                             }
                         } ?: view.hideProgress()
@@ -296,44 +346,13 @@ class EnrollmentPresenterImpl(
                     { Timber.tag(TAG).e(it) }
                 )
         )
+    }
 
-        val fields = getFieldFlowable()
-
-        disposable.add(
-            dataEntryRepository.enrollmentSectionUids()
-                .flatMap { sectionList ->
-                    sectionProcessor.startWith(sectionList[0])
-                        .map { setCurrentSection(it) }
-                        .doOnNext { view.showProgress() }
-                        .switchMap { section ->
-                            fields.map { fieldList ->
-                                return@map setFieldsToShow(section, fieldList)
-                            }
-                        }
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe({
-                    itemList = it
-                    composeList()
-                    view.setSaveButtonVisible(true)
-                    view.hideProgress()
-                }) {
-                    Timber.tag(TAG).e(it)
-                }
-        )
-
-        disposable.add(
-            sectionProcessor
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.io())
-                .subscribe(
-                    { fieldsFlowable.onNext(true) },
-                    { Timber.tag(TAG).e(it) }
-                )
-        )
-
-        fields.connect()
+    private fun checkFinishing(canFinish: Boolean) {
+        if (finishing && canFinish) {
+            view.performSaveClick()
+        }
+        finishing = false
     }
 
     private fun updateErrorList(action: RowAction) {
@@ -438,22 +457,6 @@ class EnrollmentPresenterImpl(
             }
 
             if (field !is SectionViewModel && field !is DisplayViewModel) {
-                val isUnique =
-                    d2.trackedEntityModule().trackedEntityAttributes()
-                        .uid(field.uid()).blockingGet()?.unique() ?: false
-                var uniqueValueAlreadyExist: Boolean
-                if (isUnique && field.value() != null) {
-                    uniqueValueAlreadyExist =
-                        d2.trackedEntityModule()
-                        .trackedEntityAttributeValues()
-                        .byTrackedEntityAttribute()
-                        .eq(field.uid())
-                        .byValue().eq(field.value())
-                        .blockingGet().size > 1
-                    if (uniqueValueAlreadyExist) {
-                        uniqueFields[field.uid()] = field.label()
-                    }
-                }
                 if (field.error()?.isNotEmpty() == true) {
                     errorFields[field.programStageSection() ?: section] = field.label()
                 }
@@ -787,5 +790,9 @@ class EnrollmentPresenterImpl(
         if (picturePath.isNotEmpty()) {
             view.displayTeiPicture(picturePath)
         }
+    }
+
+    fun setFinishing() {
+        finishing = true
     }
 }

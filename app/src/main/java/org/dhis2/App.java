@@ -51,6 +51,7 @@ import java.net.SocketException;
 import javax.inject.Singleton;
 
 import cat.ereza.customactivityoncrash.config.CaocConfig;
+import io.ona.kujaku.KujakuLibrary;
 import io.reactivex.Scheduler;
 import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -102,6 +103,9 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
         setUpAppComponent();
         Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree(appComponent.injectCrashReportController()));
+
+        KujakuLibrary.setEnableMapDownloadResume(false);
+        KujakuLibrary.init(this);
 
         setUpServerComponent();
         setUpRxPlugin();

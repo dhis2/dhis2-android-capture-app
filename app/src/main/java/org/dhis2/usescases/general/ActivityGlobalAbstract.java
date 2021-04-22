@@ -112,15 +112,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         if (!(this instanceof SplashActivity) && !(this instanceof LoginActivity))
             setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
 
-        final String server = prefs.getString(Constants.SERVER, null);
-        if (server != null) {
-            crashReportController.trackServer(server);
-        }
-
-        String userName = prefs.getString(Constants.USER, null);
-        if (userName != null)
-            crashReportController.trackUser(userName);
-
         super.onCreate(savedInstanceState);
     }
 
