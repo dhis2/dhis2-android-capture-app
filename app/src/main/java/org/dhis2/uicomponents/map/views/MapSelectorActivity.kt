@@ -33,7 +33,11 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.Bindings.truncate
 import org.dhis2.R
 import org.dhis2.databinding.ActivityMapSelectorBinding
+import org.dhis2.uicomponents.map.camera.initCameraToViewAllElements
 import org.dhis2.uicomponents.map.camera.moveCameraToPosition
+import org.dhis2.uicomponents.map.extensions.polygonToLatLngBounds
+import org.dhis2.uicomponents.map.extensions.toLatLng
+import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox
 import org.dhis2.uicomponents.map.geometry.point.PointAdapter
 import org.dhis2.uicomponents.map.geometry.point.PointViewModel
 import org.dhis2.uicomponents.map.geometry.polygon.PolygonAdapter
@@ -54,7 +58,9 @@ class MapSelectorActivity :
 
         if (!init) {
             init = true
-            map.moveCameraToPosition(latLng)
+            if (initialCoordinates == null) {
+                map.moveCameraToPosition(latLng)
+            }
         }
     }
 
@@ -133,10 +139,12 @@ class MapSelectorActivity :
         if (initial_coordinates != null) {
             val initGeometry =
                 Geometry.builder().coordinates(initial_coordinates).type(location_type).build()
-            GeometryHelper.getPoint(initGeometry).let { sdkPoint ->
+            val pointGeometry = GeometryHelper.getPoint(initGeometry)
+            pointGeometry.let { sdkPoint ->
                 val point = Point.fromLngLat(sdkPoint[0], sdkPoint[1])
                 setPointToViewModel(point, viewModel)
             }
+            map.moveCameraToPosition(pointGeometry.toLatLng())
         }
     }
 
@@ -239,7 +247,8 @@ class MapSelectorActivity :
         if (initial_coordinates != null) {
             val initGeometry =
                 Geometry.builder().coordinates(initial_coordinates).type(location_type).build()
-            GeometryHelper.getPolygon(initGeometry).forEach {
+            val polygons = GeometryHelper.getPolygon(initGeometry)
+            polygons.forEach {
                 it.forEach { sdkPoint ->
                     val point = Point.fromLngLat(sdkPoint[0], sdkPoint[1])
                     val polygonPoint = viewModel.createPolygonPoint()
@@ -248,6 +257,9 @@ class MapSelectorActivity :
                     polygonPoint.source = createSource(polygonPoint.uuid, point)
                     viewModel.add(polygonPoint)
                 }
+            }
+            polygons.polygonToLatLngBounds(GetBoundingBox())?.let { bounds ->
+                map.initCameraToViewAllElements(this, bounds)
             }
         }
     }

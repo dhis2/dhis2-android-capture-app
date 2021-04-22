@@ -3,6 +3,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.dhis2.data.forms.FormSectionViewModel;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -82,4 +83,8 @@ public interface EventInitialRepository {
     int getCatOptionSize(String uid);
 
     List<CategoryOption> getCategoryOptions(String categoryUid);
+
+    boolean showCompletionPercentage();
+
+    Flowable<List<FormSectionViewModel>> eventSections();
 }

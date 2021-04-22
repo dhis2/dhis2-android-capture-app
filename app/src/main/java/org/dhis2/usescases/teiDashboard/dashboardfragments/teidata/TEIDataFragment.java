@@ -42,6 +42,7 @@ import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
+import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
@@ -58,6 +59,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -144,7 +146,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     public void onStart() {
         super.onStart();
         dashboardViewModel = ViewModelProviders.of(activity).get(DashboardViewModel.class);
-
     }
 
     @Nullable
@@ -152,16 +153,12 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
         binding.setPresenter(presenter);
-        activity.observeGrouping().observe(this, group -> {
+        activity.observeGrouping().observe(getViewLifecycleOwner(), group -> {
             binding.setIsGrouping(group);
             presenter.onGroupingChanged(group);
         });
-        activity.observeFilters().observe(this, showFilters -> showHideFilters(showFilters));
-        activity.updatedEnrollment().observe(this, enrollmentUid -> updateEnrollment(enrollmentUid));
-        if (presenter.hasAssignment()) {
-            filtersAdapter.addAssignedToMe();
-        }
-        filtersAdapter.addEventStatus();
+        activity.observeFilters().observe(getViewLifecycleOwner(), showFilters -> showHideFilters(showFilters));
+        activity.updatedEnrollment().observe(getViewLifecycleOwner(), enrollmentUid -> updateEnrollment(enrollmentUid));
 
         try {
             binding.filterLayout.setAdapter(filtersAdapter);
@@ -282,11 +279,20 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 activity.getPresenter().init();
             }
             if (requestCode == FilterManager.OU_TREE) {
-                filtersAdapter.notifyDataSetChanged();
                 activity.presenter.setTotalFilters();
                 adapter.notifyDataSetChanged();
             }
         }
+    }
+
+    @Override
+    public void setFilters(List<FilterItem> filterItems){
+        filtersAdapter.submitList(filterItems);
+    }
+
+    @Override
+    public void hideFilters() {
+        activity.hideFilter();
     }
 
     @Override
@@ -437,13 +443,12 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public void showCatComboDialog(String eventId, CategoryCombo categoryCombo, List<CategoryOptionCombo> categoryOptionCombos) {
-        if (categoryCombo.name().equals("default")) return;
+    public void showCatComboDialog(String eventId, Date eventDate, String categoryComboUid) {
         CategoryDialog categoryDialog = new CategoryDialog(
                 CategoryDialog.Type.CATEGORY_OPTION_COMBO,
-                categoryCombo.uid(),
-                false,
-                null,
+                categoryComboUid,
+                true,
+                eventDate,
                 selectedCatOptComboUid -> {
                     presenter.changeCatOption(eventId, selectedCatOptComboUid);
                     return null;

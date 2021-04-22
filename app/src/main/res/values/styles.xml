@@ -82,6 +82,21 @@
         <item name="colorControlActivated">@color/colorAccent</item>
     </style>
 
+    <style name="LoginButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:textSize">12sp</item>
+        <item name="backgroundTint">@color/login_bg_selector</item>
+        <item name="android:textColor">@color/login_text_color_selector</item>
+        <item name="rippleColor">?colorPrimaryLight</item>
+    </style>
+
+    <style name="OpenIdLoginButton" parent="Widget.MaterialComponents.Button.Icon">
+        <item name="android:textSize">12sp</item>
+        <item name="iconSize">24dp</item>
+        <item name="backgroundTint">@color/openid_login_bg_selector</item>
+        <item name="iconTint">@color/openid_icon_color_selector</item>
+        <item name="android:textColor">@color/openid_text_color_selector</item>
+    </style>
+
     <style name="dhisInputTextColorPrimary" parent="TextAppearance.AppCompat">
         <item name="android:textColorHint">?colorPrimary</item>
         <item name="colorAccent">?colorPrimary</item>
@@ -216,6 +231,11 @@
         <item name="android:clickable">true</item>
     </style>
 
+    <style name="ActionIconUnwrap">
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+    </style>
+
     <style name="warning_appearance" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/warning_color</item>
     </style>
@@ -239,7 +259,7 @@
 
     <style name="DhisMaterialDialog" parent="Base.ThemeOverlay.MaterialComponents.Dialog.Alert">
         <item name="colorAccent">@color/text_black_333</item>
-        <item name="colorPrimary">@color/text_black_333</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
     </style>
 
     <style name="radioPrimary">
@@ -290,7 +310,7 @@
     </style>
 
     <style name="pin_dialog_animation">
-<!--        <item name="android:windowEnterAnimation">@anim/fscv_fade_in</item>-->
+        <!--        <item name="android:windowEnterAnimation">@anim/fscv_fade_in</item>-->
         <item name="android:windowEnterAnimation">@anim/pin_dialog_anim_enter</item>
         <item name="android:windowExitAnimation">@anim/pin_dialog_anim_exit</item>
     </style>
@@ -309,8 +329,25 @@
     <style name="CustomBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
     </style>
+    <style name="BreakTheGlassBottomSheetDialogTheme"  parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="colorControlActivated">?colorPrimary</item>
+        <item name="colorControlHighlight">?colorPrimary</item>
+    </style>
 
     <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@android:color/transparent</item>
     </style>
+
+    <style name="roundedCornerImage" parent="">
+        <item name="cornerSize">6dp</item>
+    </style>
+
+    <style name="PopupMenuMarginStyle" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:dropDownHorizontalOffset">-4dp</item>
+        <item name="android:dropDownVerticalOffset">4dp</item>
+    </style>
+
 </resources>

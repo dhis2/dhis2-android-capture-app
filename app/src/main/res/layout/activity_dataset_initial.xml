@@ -36,10 +36,9 @@
 
             <ImageView
                 android:id="@+id/menu"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                style="@style/ActionIcon"
                 android:onClick="@{()->presenter.onBackClick()}"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="4dp"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
 
@@ -47,7 +46,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="4dp"
                 android:gravity="start|center"
                 android:text="@{dataSetModel.displayName()}"
                 android:textColor="@android:color/white"
@@ -80,7 +79,7 @@
                         android:layout_width="80dp"
                         android:layout_height="80dp"
                         android:padding="7dp"
-                        android:tint="?colorPrimaryDark"
+                        app:tint="?colorPrimaryDark"
                         app:imageBackground="@{ @drawable/photo_temp }"
                         app:srcCompat="@drawable/ic_clinical_f_outline"
                         tools:background="@drawable/photo_temp"

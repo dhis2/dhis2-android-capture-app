@@ -4,6 +4,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.uicomponents.map.model.CarouselItemModel;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
@@ -38,6 +39,8 @@ public class SearchTeiModel implements CarouselItemModel {
     private String sortingKey;
     private String sortingValue;
     private String teTypeName;
+    private String enrolledOrgUnit;
+    private boolean showNavigationButton = false;
 
     public SearchTeiModel() {
         this.tei = null;
@@ -51,6 +54,7 @@ public class SearchTeiModel implements CarouselItemModel {
         this.relationships = new ArrayList<>();
         this.sortingKey = null;
         this.sortingValue = null;
+        this.enrolledOrgUnit = null;
     }
 
 
@@ -210,5 +214,16 @@ public class SearchTeiModel implements CarouselItemModel {
     @Override
     public String uid() {
         return tei.uid();
+    }
+
+    public void setEnrolledOrgUnit(String orgUnit) { enrolledOrgUnit = orgUnit; }
+
+    public String getEnrolledOrgUnit() { return enrolledOrgUnit; }
+
+    public void setShowNavigationButton(boolean showNavigationButton){
+        this.showNavigationButton = showNavigationButton;
+    }
+    public boolean shouldShowNavigationButton(){
+        return showNavigationButton;
     }
 }

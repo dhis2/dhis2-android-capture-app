@@ -4,12 +4,14 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.processors.FlowableProcessor
 import junit.framework.Assert.assertTrue
 import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
-import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
+import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
@@ -29,6 +31,8 @@ class EventCapturePresenterTest {
     private val preferences: PreferenceProvider = mock()
     private val getNextVisibleSection: GetNextVisibleSection = GetNextVisibleSection()
     private val eventFieldMapper: EventFieldMapper = mock()
+    private val onRowActionProcessor: FlowableProcessor<RowAction> = mock()
+    private val fieldFactory: FieldViewModelFactory = mock()
 
     @Before
     fun setUp() {
@@ -41,7 +45,9 @@ class EventCapturePresenterTest {
             schedulers,
             preferences,
             getNextVisibleSection,
-            eventFieldMapper
+            eventFieldMapper,
+            onRowActionProcessor,
+            fieldFactory.sectionProcessor()
         )
     }
 
@@ -78,15 +84,6 @@ class EventCapturePresenterTest {
     }
 
     @Test
-    fun `Display field should return display section`() {
-        val section = presenter.getFieldSection(
-            DisplayViewModel.create("", "", "", "")
-        )
-
-        assertTrue(section == "display")
-    }
-
-    @Test
     fun `Field with section should return its section`() {
         val section = presenter.getFieldSection(
             SpinnerViewModel.create(
@@ -99,8 +96,10 @@ class EventCapturePresenterTest {
                 "testSection",
                 false,
                 null,
-                1,
-                ObjectStyle.builder().build()
+                ObjectStyle.builder().build(),
+                false,
+                "any",
+                null
             )
         )
 
@@ -120,8 +119,10 @@ class EventCapturePresenterTest {
                 null,
                 false,
                 null,
-                1,
-                ObjectStyle.builder().build()
+                ObjectStyle.builder().build(),
+                false,
+                "any",
+                null
             )
         )
 
@@ -130,35 +131,13 @@ class EventCapturePresenterTest {
 
     @Test
     fun `Should return current section if sectionsToHide is empty`() {
-        val activeSection = getNextVisibleSection.get("activeSection", sections(), emptyList())
+        val activeSection = getNextVisibleSection.get("activeSection", sections())
         assertTrue(activeSection == "activeSection")
     }
 
     @Test
-    fun `Should return second section if sectionsToHide contains current section`() {
-        val sectionsToHide = listOf("sectionUid_1")
-        val activeSection = getNextVisibleSection.get("sectionUid_1", sections(), sectionsToHide)
-        assertTrue(activeSection == "sectionUid_2")
-    }
-
-    @Test
-    fun `Should return visible section if sectionsToHide contains several previous sections`() {
-        val sectionsToHide = listOf("sectionUid_1", "sectionUid_2")
-        val activeSection = getNextVisibleSection.get("sectionUid_1", sections(), sectionsToHide)
-        assertTrue(activeSection == "sectionUid_3")
-    }
-
-    @Test
-    fun `Should return empty section if sectionsToHide contains all sections`() {
-        val sectionsToHide = listOf("sectionUid_1", "sectionUid_2", "sectionUid_3")
-        val activeSection = getNextVisibleSection.get("sectionUid_1", sections(), sectionsToHide)
-        assertTrue(activeSection.isEmpty())
-    }
-
-    @Test
     fun `Should return current when section is last one and hide section is not empty`() {
-        val sectionsToHide = listOf("sectionUid_2")
-        val activeSection = getNextVisibleSection.get("sectionUid_3", sections(), sectionsToHide)
+        val activeSection = getNextVisibleSection.get("sectionUid_3", sections())
         assertTrue(activeSection == "sectionUid_3")
     }
 

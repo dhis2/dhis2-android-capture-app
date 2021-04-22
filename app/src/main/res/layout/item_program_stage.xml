@@ -30,7 +30,7 @@
             android:layout_height="80dp"
             android:background="@drawable/photo_temp"
             android:padding="7dp"
-            android:tint="?colorPrimaryDark"
+            app:tint="?colorPrimaryDark"
             app:srcCompat="@drawable/ic_clinical_f_outline"
             tools:ignore="ContentDescription" />
 

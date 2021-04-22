@@ -10,12 +10,12 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.databinding.ActivityDatasetInitialBinding;
 import org.dhis2.databinding.ItemCategoryComboBinding;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.customviews.CategoryOptionPopUp;
 import org.dhis2.utils.customviews.OrgUnitDialog;
@@ -43,6 +43,8 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     View selectedView;
     @Inject
     DataSetInitialContract.Presenter presenter;
+    @Inject
+    DhisPeriodUtils periodUtils;
 
     private HashMap<String, CategoryOption> selectedCatOptions;
     private OrganisationUnit selectedOrgUnit;
@@ -152,7 +154,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(selectedDate);
                     this.selectedPeriod = calendar.getTime();
-                    binding.dataSetPeriodEditText.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
+                    binding.dataSetPeriodEditText.setText(periodUtils.getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
                     clearCatOptionCombo();
                     checkActionVisivbility();
                     periodDialog.dismiss();
@@ -186,7 +188,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                         checkActionVisivbility();
                     })
                     .show(this, selectedView);
-        }else{
+        } else {
             new CategoryDialog(
                     CategoryDialog.Type.CATEGORY_OPTIONS,
                     catOptionUid,
@@ -248,7 +250,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                 selectedOrgUnit.uid(),
                 selectedOrgUnit.name(),
                 getPeriodType(),
-                DateUtils.getInstance().getPeriodUIString(binding.getDataSetModel().periodType(), selectedPeriod, Locale.getDefault()),
+                periodUtils.getPeriodUIString(binding.getDataSetModel().periodType(), selectedPeriod, Locale.getDefault()),
                 periodId,
                 catOptionCombo
         );

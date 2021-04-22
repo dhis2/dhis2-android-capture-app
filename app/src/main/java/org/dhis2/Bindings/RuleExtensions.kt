@@ -25,6 +25,7 @@
 
 package org.dhis2.Bindings
 
+import org.dhis2.data.analytics.LOCATION_FEEDBACK_WIDGET
 import org.dhis2.data.forms.RuleActionUnsupported
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
@@ -111,7 +112,8 @@ fun ProgramRule.toRuleEngineObject(): Rule {
         priority(),
         condition() ?: "",
         programRuleActions()?.toRuleActionList() ?: ArrayList(),
-        name()
+        name(),
+        uid()
     )
 }
 
@@ -125,15 +127,30 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
 
     return when (programRuleActionType()) {
         ProgramRuleActionType.HIDEFIELD -> RuleActionHideField.create(content(), field)
-        ProgramRuleActionType.DISPLAYTEXT -> RuleActionDisplayText.createForFeedback(
-            content(),
-            data()
-        )
+        ProgramRuleActionType.DISPLAYTEXT ->
+            if (location() == LOCATION_FEEDBACK_WIDGET) {
+                RuleActionDisplayText.createForFeedback(
+                    content(),
+                    data()
+                )
+            } else {
+                RuleActionDisplayText.createForIndicators(
+                    content(),
+                    data()
+                )
+            }
         ProgramRuleActionType.DISPLAYKEYVALUEPAIR ->
-            RuleActionDisplayKeyValuePair.createForIndicators(
-                content(),
-                data()
-            )
+            if (location() == LOCATION_FEEDBACK_WIDGET) {
+                RuleActionDisplayKeyValuePair.createForFeedback(
+                    content(),
+                    data()
+                )
+            } else {
+                RuleActionDisplayKeyValuePair.createForIndicators(
+                    content(),
+                    data()
+                )
+            }
         ProgramRuleActionType.HIDESECTION ->
             programStageSection()?.let {
                 RuleActionHideSection.create(it.uid())
@@ -148,13 +165,21 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 "HIDE STAGE RULE IS MISSING PROGRAM STAGE",
                 name() ?: uid()
             )
-        ProgramRuleActionType.ASSIGN ->
-            data()?.let {
-                RuleActionAssign.create(content(), it, field)
-            } ?: RuleActionUnsupported.create(
-                "ASSIGN RULE IS MISSING DATA",
-                name() ?: uid()
-            )
+        ProgramRuleActionType.ASSIGN -> {
+            if (field.isEmpty() && content().isNullOrEmpty()) {
+                RuleActionUnsupported.create(
+                    "ASSIGN RULE IS MISSING FIELD TO ASSIGN TO",
+                    name() ?: uid()
+                )
+            } else {
+                data()?.let {
+                    RuleActionAssign.create(content(), it, field)
+                } ?: RuleActionUnsupported.create(
+                    "ASSIGN RULE IS MISSING DATA",
+                    name() ?: uid()
+                )
+            }
+        }
         ProgramRuleActionType.SHOWWARNING -> RuleActionShowWarning.create(content(), data(), field)
         ProgramRuleActionType.WARNINGONCOMPLETE -> RuleActionWarningOnCompletion.create(
             content(),

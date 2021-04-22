@@ -2,6 +2,7 @@ package org.dhis2.Bindings
 
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
@@ -15,6 +16,7 @@ fun MutableList<TrackedEntityInstance>.filterDeletedEnrollment(
         while (iterator.hasNext()) {
             val tei = iterator.next()
             val isLocal = d2.trackedEntityModule().trackedEntityInstances()
+                .byState().neq(State.RELATIONSHIP)
                 .uid(tei.uid())
                 .blockingExists()
             val hasEnrollmentInProgram =

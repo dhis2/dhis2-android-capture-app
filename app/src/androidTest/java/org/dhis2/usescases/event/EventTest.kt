@@ -60,7 +60,6 @@ class EventTest: BaseTest() {
 
         eventRegistrationRobot {
             checkEventFormDetails(eventDetails)
-            openMenuMoreOptions()
             clickOnDetails()
             checkEventDetails(eventDetails)
         }

@@ -15,7 +15,6 @@
     <string name="no_reserved_values">没有更多保留值，请联系管理员</string>
     <string name="no_reserved_values_connection">没有更多保留值，连接网络重新填充他们</string>
     <string name="errors">错误</string>
-    <string name="something_wrong">出了些问题</string>
     <!-- SyncService strings: -->
     <string name="sync_now">现在同步</string>
     <string name="sync_text">与服务器同步中</string>
@@ -35,7 +34,6 @@
     <string name="data_sync_warning_program">警告：你的大多数数据已经同步，但是有些字段存在冲突，同步你的配置再试。如果警告仍然存在，检查你的同步状态：项目、跟踪实体和事件如果有冲突会标记为@。</string>
     <string name="data_sync_error">错误：你有些数据同步失败。检查你的同步状态：项目、跟踪实体和事件如果有冲突会标记为@。</string>
     <string name="data_sync_error_program">错误：同步数据失败。检查同步状态：所有冲突的实体和事件标记为$\" 。</string>
-
     <string name="search_result_text">发现结果：1%s</string>
     <string name="add_new">新加</string>
     <string name="add">添加</string>
@@ -101,16 +99,12 @@
     <string name="cancelled">已取消</string>
     <string name="re_open">重新打开</string>
     <string name="activate">激活</string>
-    <string name="active">活跃的</string>
-
     <!-- State -->
     <string name="state_synced">同步</string>
-    <string name="state_to_post">发送</string>
     <string name="state_to_update">更新</string>
     <string name="state_to_delete">删除</string>
     <string name="state_error">错误</string>
     <string name="action_sync">同步</string>
-    <string name="action_send">发送</string>
     <string name="action_sync_sms">同步短信</string>
 
     <!--Completion-->
@@ -137,7 +131,6 @@
     <string name="cat_option">采集选项</string>
     <string name="field_required">如果你设置值，整行的值需要设置才能完成数据集。</string>
     <string name="field_mandatory">一些必需的值缺失，你需要设置强制的值才能完成数据集。</string>
-    <string name="field_mandatory_v2">有强制字段请填充后完成数据集</string>
     <string name="datavalue_saved">值已被保存</string>
     <string name="there_is_no_available_period">没有可用期间可选</string>
     <!--Event Detail-->
@@ -151,8 +144,6 @@
     <string name="confirm_delete_event">你确定删除事件</string>
     <string name="event_was_deleted">事件删除成功</string>
     <string name="total">总共</string>
-    <string name="most_recent_event_date">最近事件日期</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">注册清单</string>
     <string name="active_programs">活动项目</string>
@@ -514,8 +505,6 @@
     <string name="no_conflicts_synced_message">已经更新。所有的数据已经发送到服务器。</string>
     <string name="relationship_error_recursive">你不能关联记录到自身。</string>
     <string name="unblock_session">解锁会话</string>
-    <string name="data_set_complete">完成</string>
-    <string name="data_set_open">Open</string>
     <string name="unsupported_value_type">不支持的值类型</string>
     <string name="change_calendar_view">改变日历视图。</string>
     <string name="data_every_fifteen_minutes">15分钟</string>
@@ -596,7 +585,6 @@
     <string name="filters_disabled">无过滤器</string>
     <string name="filters_title_period">期间</string>
     <string name="filters_title_org_unit">机构</string>
-    <string name="filters_title_sorting">排序</string>
     <string name="filters_title_status">状态</string>
     <string name="filters_title_state">同步</string>
     <string name="filters_title_assigned">指派给我</string>
@@ -678,59 +666,7 @@
     <string name="sync_parameters_not_editable">同步参数不能编辑</string>
     <string name="rv_no_editable">下载的保留值数量不能编辑</string>
     <string name="dialog_layer_satellite">显示卫星视图</string>
-    <string name="dialog_layer_event">显示事件</string>
     <string name="dialog_layer_tei_coordinates">显示跟踪实体坐标</string>
     <string name="dialog_layer_enrollment_coordinates">显示注册坐标</string>
     <string name="dialog_layer_heatmap">显示热力图</string>
-    <string name="downloading">下载中</string>
-    <string name="filter_sync_synced">已同步</string>
-    <string name="filter_sync_not_synced">未同步</string>
-    <string name="filter_sync_error">同步错误</string>
-    <string name="filter_sync_sms">短信已同步</string>
-    <string name="dataset_overview">详情</string>
-    <string name="dataset_comments">评论</string>
-    <string name="saved">已经保存！</string>
-    <string name="run_validation_rules">你要检查数据质量？</string>
-    <string name="validation_success_title">一切都很好</string>
-    <string name="mark_dataset_complete">你要完成数据集？</string>
-    <string name="dataset_completed">标记已经完成</string>
-    <string name="name">名称</string>
-    <string name="formula">公式</string>
-    <string name="complete_anyway">任何都要完成</string>
-    <string name="fk_message">遗失 %s %s 从%s %s</string>
-    <string name="filters_title_event_status">事件状态</string>
-    <string name="filters_title_enrollment_status">注册状态</string>
-    <string name="enrollment_date">注册日期</string>
-    <string name="action_apply">应用</string>
-    <string name="dataset_empty_list_can_create">没有数据，点击“+”添加新的记录</string>
-    <string name="dataset_emtpy_list_can_not_create">没有数据，您没有权限添加新记录</string>
-    <string name="validation_rules_empty_description">没有提供描述或指导</string>
-    <string name="validation_rules_data_to_review">复查的数据</string>
-    <string name="dataset_saved_completed">保存并完成！</string>
-    <string name="status_change_error_active_exist">已经存在活动的注册</string>
-    <string name="enrollment_status_active">Open</string>
-    <string name="enrollment_status_completed">完成</string>
-    <string name="enrollment_status_cancelled">取消</string>
-    <string name="no_data">无数据</string>
-    <string name="no_coordinates_item">该%s没有坐标</string>
-    <string name="event_data">数据</string>
-    <string name="download_tei_error">选择的%s不能下载</string>
-    <string name="completed_by">%s完成：%s</string>
-    <string name="updated_time">已更新：%s</string>
-    <string name="action_done">完成！</string>
-    <string name="validation_internal_error_datasets">不能检查质量，联系管理员</string>
-    <string name="are_you_sure">你确信？</string>
-    <string name="reopen_question">你要重新打开数据集？</string>
-    <string name="group_events_by_stage">按阶段分组事件</string>
-    <string name="show_events_timeline">显示事件时间线</string>
-    <string name="filters_title_date">日期</string>
-    <string name="filters_title_event_date">事故日期</string>
-    <string name="dataset_data">数据</string>
-    <string name="tei_type_has_no_attributes">%s没有公有属性，请选择一个项目</string>
-    <string name="privacy_policy_title">私有策略</string>
-    <string name="open_privacy_policy">点击这里检查<a href="">隐私策略</a></string>
-    <string name="coordinates_error">坐标值无效</string>
-    <string name="break_glass_error">你不能从该项目的其它机构注册TEI（跟踪实体），因为被保护。联系你的管理员。</string>
-    <string name="customactivityoncrash_error_activity_restart_app">回退</string>
-    <string name="customactivityoncrash_error_activity_error_details_close">关闭</string>
-</resources>
+    </resources>

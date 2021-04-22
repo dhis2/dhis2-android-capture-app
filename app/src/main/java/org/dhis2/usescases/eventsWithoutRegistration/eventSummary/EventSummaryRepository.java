@@ -24,7 +24,7 @@ public interface EventSummaryRepository {
     Flowable<List<FormSectionViewModel>> programStageSections(String eventUid);
 
     @NonNull
-    Flowable<List<FieldViewModel>> list(String sectionUid, String eventUid);
+    Flowable<List<FieldViewModel>> list(String eventUid);
 
     @NonNull
     Flowable<Result<RuleEffect>> calculate();

@@ -44,15 +44,7 @@ public class AppModule {
 
     @Provides
     @Singleton
-    FilterManager filterManager() {
-        return FilterManager.getInstance();
-    }
-
-    @Provides
-    @Singleton
     ResourceManager resources() {
         return new ResourceManager(application);
     }
-
-
 }

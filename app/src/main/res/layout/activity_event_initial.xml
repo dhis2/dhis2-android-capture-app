@@ -166,7 +166,7 @@
                                         android:id="@+id/shareIcon"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:tint="@color/text_black_333"
+                                        app:tint="@color/text_black_333"
                                         app:srcCompat="@drawable/ic_share" />
 
                                     <TextView
@@ -231,7 +231,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical" />
 
-                        <org.dhis2.usescases.coodinates.CoordinatesView
+                        <org.dhis2.data.forms.dataentry.fields.coordinate.CoordinatesView
                             android:id="@+id/geometry"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

@@ -69,6 +69,7 @@
 
         <ImageView
             android:id="@+id/descriptionLabel"
+            style="@style/ActionIconUnwrap"
             android:layout_width="12dp"
             android:layout_height="0dp"
             android:visibility="@{(description!=null)?View.VISIBLE : View.GONE}"
@@ -131,7 +132,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:visibility="gone"
-                    android:background="@drawable/white_circle"
+                    android:background="@drawable/white_circle_ripple"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_alignEnd="@id/image"
