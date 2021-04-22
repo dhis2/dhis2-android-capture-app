@@ -89,6 +89,10 @@ class LoginRobot : BaseRobot() {
         onView(withId(R.id.user_pass_edit)).check(matches(withText(isEmptyString())))
     }
 
+    fun checkURL(url: String) {
+        onView(withId(R.id.server_url_edit)).check(matches(withText(url)))
+    }
+
     fun clickAccountRecovery() {
         onView(withId(R.id.account_recovery)).perform(click())
     }
