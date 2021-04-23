@@ -210,6 +210,7 @@ dependencies {
     implementation project(':viewpagerdotsindicator')
     implementation project(':tableview')
     implementation project(":dhis_android_analytics")
+    implementation project(":form")
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.annotation:annotation:1.1.0'
