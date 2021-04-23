@@ -1,10 +1,8 @@
-# Visual configurations
+# Visual configurations { #capture_app_visual }
 
-<!-- DHIS2-SECTION-ID:visual -->
 
-## Meta data sync error
+## Meta data sync error { #capture_app_visual_sync_error }
 
-<!-- DHIS2-SECTION-ID:visual_metadata -->
 
 In case of errors during the sync process, a message is displayed in the settings menu ('Sync data' or 'Sync configuration' section). Also, a red sync icon is displayed next to the program in the Home screen. The sync error log gives details about the error and is prepared to be shared with admins.
 
@@ -16,9 +14,8 @@ You can also open the sync errors log from **Settings**:
 ![](resources/images/image15.jpg){ width=25%}
 
 
-## Personalize your Icon
+## Personalize your Icon { #capture_app_visual_icon }
 
-<!-- DHIS2-SECTION-ID:visual_icon -->
 
 You can set your icon in the wallpaper using the DHIS 2 App Widget. The icon will be the flag configured in your server.
 
@@ -35,9 +32,8 @@ You can set your icon in the wallpaper using the DHIS 2 App Widget. The icon wil
 >
 > It will add a shortcut to your app.
 
-## Personalise the colour of the App
+## Personalise the colour of the App { #capture_app_visual_colour }
 
- <!-- DHIS2-SECTION-ID:visual_colour -->
 
 You can set the generic theme of the app by configuring the them in our server:
 
@@ -59,9 +55,8 @@ You can set the generic theme of the app by configuring the them in our server:
 >
 >![](resources/images/image23.png){ width=25%}
 
-## Icon library for metadata
+## Icon library for metadata { #capture_app_visual_icon_lib }
 
- <!-- DHIS2-SECTION-ID:visual_icon_lib -->
 
 There are currently 134 icons available that you can choose from. You can search by name in the icon picker widget. Icons are available in positive, negative and outlined shapes. We will be adding many more icons in future releases.
 
@@ -84,9 +79,8 @@ In the Android App icons render in the home screen to illustrate all the program
 
 We plan to expand the collection of icons on each future version of DHIS2- for that we need your help: we are seeking ideas for new icons - please submit yours using [this form](https://www.google.com/url?q=https://drive.google.com/open?id%3D1LmfYJQAu3KyDfkY3X6ne7qSsuTa9jXZhoQHzkDxeCdg&sa=D&ust=1557433016147000).
 
-## Colour palette for metadata
+## Colour palette for metadata { #capture_app_visual_colour_palette }
 
- <!-- DHIS2-SECTION-ID:visual_colour -->
 
 Tracker and Event capture now have the ability to render colours for programs, stages, data elements and options in option sets. A colour picker is integrated in the Maintenance App, which shows as a palette, except for options which allows the selection of any colour.
 
@@ -101,9 +95,8 @@ In the Android App, the color will be rendered as background color for programs 
 >
 > Colours will first be available in the new Android app, followed in future releases by the new web-based Capture App.
 
-## Rendering Types for Program Sections
+## Rendering Types for Program Sections { #capture_app_visual_rendering_type }
 
- <!-- DHIS2-SECTION-ID:visual_rendering -->
 
 ![](resources/images/image16.png){width=80% }
 
@@ -116,9 +109,8 @@ In the Android App, the color will be rendered as background color for programs 
 >
 > Render type for sections will first be available in the Android app, followed in future releases by the new web-based Capture App UI.
 
-## Calendar
+## Calendar { #capture_app_visual_calendar }
 
- <!-- DHIS2-SECTION-ID:visual_calendar -->
 
 Now it is possible to use two different calendars. The one on the left is the first to appear but you can change it by clicking on the calendar icon on the lower left corner.
 
@@ -135,9 +127,8 @@ This is available when:
 > 
 > For Android versions 4.4,  5.1 and small devices, the Accept option is not visible in the second calendar view.
 
-## Render types
+## Render types { #capture_app_visual_render }
 
- <!-- DHIS2-SECTION-ID:visual_render_type -->
 
 The available rendering options have been expanded to include horizontal and vertical radio buttons, checkboxes and toggles. The allowed options depend on the value type.
 
@@ -160,9 +151,8 @@ The available rendering options have been expanded to include horizontal and ver
 > ![](resources/images/options_no_search.png){ width=25% } ![](resources/images/options_search.png){ width=60% }
 
 
-### QR and Barcodes
+### QR and Barcodes { #capture_app_visual_render_qr }
 
- <!-- DHIS2-SECTION-ID:visual_render_type_qr -->
 
 Data elements or attributes or type text can be also configured as QR or barcodes. When a Data Element or Attribute is rendered as QR/Barcode, the app will open the device camera to read the code image. When the QR/Barcode is a TEI attribute configured as searchable, the user will be allowed to scan the code in order to search and identify the Tracked Entity Instance. This will also work for option sets.
 
