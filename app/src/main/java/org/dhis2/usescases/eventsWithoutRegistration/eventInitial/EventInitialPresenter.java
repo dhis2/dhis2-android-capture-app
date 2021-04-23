@@ -56,7 +56,7 @@ import static org.dhis2.utils.analytics.matomo.Actions.CREATE_EVENT;
 import static org.dhis2.utils.analytics.matomo.Categories.EVENT_LIST;
 import static org.dhis2.utils.analytics.matomo.Labels.CLICK;
 
-public class EventInitialPresenter implements EventInitialContract.Presenter {
+public class EventInitialPresenter {
 
     public static final int ACCESS_LOCATION_PERMISSION_REQUEST = 101;
     private final PreferenceProvider preferences;
@@ -104,7 +104,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         this.eventFieldMapper = eventFieldMapper;
     }
 
-    @Override
     public void init(String programId,
                      String eventId,
                      String orgInitId,
@@ -170,7 +169,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @VisibleForTesting
-    @Override
     public String getCurrentOrgUnit(String orgUnitUid) {
         if (preferences.contains(Preference.CURRENT_ORG_UNIT)) {
             return preferences.getString(Preference.CURRENT_ORG_UNIT, null);
@@ -186,12 +184,10 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                                 Timber::e));
     }
 
-    @Override
     public void onShareClick(View mView) {
         view.showQR();
     }
 
-    @Override
     public void deleteEvent(String trackedEntityInstance) {
         if (eventId != null) {
             eventInitialRepository.deleteEvent(eventId, trackedEntityInstance);
@@ -200,19 +196,16 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
             view.displayMessage(view.getContext().getString(R.string.delete_event_error));
     }
 
-    @Override
     public boolean isEnrollmentOpen() {
         return eventInitialRepository.isEnrollmentOpen();
     }
 
-    @Override
     public void getStageObjectStyle(String uid) {
         compositeDisposable.add(eventInitialRepository.getObjectStyle(uid).subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(objectStyle -> view.renderObjectStyle(objectStyle), Timber::e));
     }
 
-    @Override
     public void getProgramStage(String programStageUid) {
         compositeDisposable.add(eventInitialRepository.programStageWithId(programStageUid)
                 .subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui()).subscribe(
@@ -229,7 +222,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                                 throwable -> view.showProgramStageSelection()));
     }
 
-    @Override
     public void onBackClick() {
         setChangingCoordinates(false);
         if (eventId != null)
@@ -237,7 +229,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         view.back();
     }
 
-    @Override
     public void createEvent(String enrollmentUid, String programStageModel, Date date, String orgUnitUid,
                             String categoryOptionComboUid, String categoryOptionsUid, Geometry geometry, String trackedEntityInstance) {
         if (program != null) {
@@ -250,7 +241,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         }
     }
 
-    @Override
     public void scheduleEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel,
                                        Date dueDate, String orgUnitUid, String categoryOptionComboUid, String categoryOptionsUid, Geometry geometry) {
         if (program != null) {
@@ -264,7 +254,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         }
     }
 
-    @Override
     public void scheduleEvent(String enrollmentUid, String programStageModel, Date dueDate, String orgUnitUid,
                               String categoryOptionComboUid, String categoryOptionsUid, Geometry geometry) {
         if (program != null) {
@@ -277,7 +266,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         }
     }
 
-    @Override
     public void editEvent(String trackedEntityInstance, String programStageModel, String eventUid, String date,
                           String orgUnitUid, String catComboUid, String catOptionCombo, Geometry geometry) {
 
@@ -290,27 +278,22 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                 ));
     }
 
-    @Override
     public void onDateClick(@Nullable DatePickerDialog.OnDateSetListener listener) {
         view.showDateDialog(listener);
     }
 
-    @Override
     public void onOrgUnitButtonClick() {
         view.showOrgUnitSelector(orgUnits);
     }
 
-    @Override
     public void onFieldChanged(CharSequence s, int start, int before, int count) {
         view.checkActionButtonVisibility();
     }
 
-    @Override
     public void onDettach() {
         compositeDisposable.clear();
     }
 
-    @Override
     public void displayMessage(String message) {
         view.displayMessage(message);
     }
@@ -400,24 +383,20 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         }
     }
 
-    @Override
     public String getCatOptionCombo(String catComboUid, List<CategoryOptionCombo> categoryOptionCombos, List<CategoryOption> values) {
         return eventInitialRepository.getCategoryOptionCombo(catComboUid, UidsHelper.getUidsList(values));
     }
 
-    @Override
     public Date getStageLastDate(String programStageUid, String enrollmentUid) {
         return eventInitialRepository.getStageLastDate(programStageUid, enrollmentUid);
     }
 
-    @Override
     public void getEventOrgUnit(String ouUid) {
         compositeDisposable.add(eventInitialRepository.getOrganisationUnit(ouUid)
                 .subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui())
                 .subscribe(orgUnit -> view.setOrgUnit(orgUnit.uid(), orgUnit.displayName()), Timber::e));
     }
 
-    @Override
     public void initOrgunit(Date selectedDate) {
         compositeDisposable.add(eventInitialRepository
                 .filteredOrgUnits(DateUtils.databaseDateFormat().format(selectedDate), programId, null)
@@ -447,17 +426,14 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         );
     }
 
-    @Override
     public CategoryOption getCatOption(String selectedOption) {
         return eventInitialRepository.getCatOption(selectedOption);
     }
 
-    @Override
     public int catOptionSize(String uid) {
         return eventInitialRepository.getCatOptionSize(uid);
     }
 
-    @Override
     public void setChangingCoordinates(boolean changingCoordinates) {
         if (changingCoordinates) {
             preferences.setValue(Preference.EVENT_COORDINATE_CHANGED, true);
@@ -466,17 +442,14 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         }
     }
 
-    @Override
     public List<CategoryOption> getCatOptions(String categoryUid) {
         return eventInitialRepository.getCategoryOptions(categoryUid);
     }
 
-    @Override
     public boolean getCompletionPercentageVisibility() {
         return eventInitialRepository.showCompletionPercentage();
     }
 
-    @Override
     public void onEventCreated() {
         matomoAnalyticsController.trackEvent(EVENT_LIST, CREATE_EVENT, CLICK);
     }
