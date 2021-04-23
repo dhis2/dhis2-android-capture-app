@@ -273,8 +273,8 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
 
     override fun equals(item: FieldUiModel): Boolean {
         return super.equals(item) && item is MatrixOptionSetModel &&
-                this.options() == item.options() &&
-                this.numberOfColumns() == item.numberOfColumns() &&
-                this.optionsToHide() == item.optionsToHide()
+            this.options() == item.options() &&
+            this.numberOfColumns() == item.numberOfColumns() &&
+            this.optionsToHide() == item.optionsToHide()
     }
 }
