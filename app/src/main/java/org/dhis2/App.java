@@ -313,7 +313,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         });
     }
 
-    public FlipperOkhttpInterceptor getFlipperInterceptor() {
-        return appInspector.getFlipperInterceptor();
+    public AppInspector getAppInspector() {
+        return appInspector;
     }
 }
