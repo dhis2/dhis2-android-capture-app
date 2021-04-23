@@ -13,8 +13,6 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
-import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
-
 import org.dhis2.data.appinspector.AppInspector;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerServer;
