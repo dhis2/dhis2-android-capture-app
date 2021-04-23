@@ -5,6 +5,7 @@ import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
 import org.dhis2.data.forms.dataentry.fields.ActionType
+import org.dhis2.data.forms.dataentry.fields.FieldUiModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.hisp.dhis.android.core.common.ObjectStyle
@@ -268,5 +269,12 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
         return options().filter { option ->
             !optionsToHide().contains(option.uid())
         }
+    }
+
+    override fun equals(item: FieldUiModel): Boolean {
+        return super.equals(item) && item is MatrixOptionSetModel &&
+                this.options() == item.options() &&
+                this.numberOfColumns() == item.numberOfColumns() &&
+                this.optionsToHide() == item.optionsToHide()
     }
 }
