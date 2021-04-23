@@ -10,6 +10,12 @@ import org.hisp.dhis.antlr.ParserExceptionWithoutContext
 import org.hisp.dhis.rules.RuleVariableValue
 import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleValueType
+import org.hisp.dhis.rules.models.RuleVariableAttribute
+import org.hisp.dhis.rules.models.RuleVariableCalculatedValue
+import org.hisp.dhis.rules.models.RuleVariableCurrentEvent
+import org.hisp.dhis.rules.models.RuleVariableNewestEvent
+import org.hisp.dhis.rules.models.RuleVariableNewestStageEvent
+import org.hisp.dhis.rules.models.RuleVariablePreviousEvent
 import org.hisp.dhis.rules.parser.expression.CommonExpressionVisitor
 import org.hisp.dhis.rules.parser.expression.ParserUtils
 import org.hisp.dhis.rules.utils.RuleEngineUtils
@@ -29,7 +35,6 @@ class ProgramRulesValidations(val d2: D2) {
             hasError = false
             val ruleConditionResult = process(rule.condition(), valueMap)
             if (ruleConditionResult.isNotEmpty()) {
-                hasError = true
                 setConditionError(rule.uid(), ruleConditionResult, checkResult)
             }
             rule.actions().forEach { ruleAction ->
@@ -48,19 +53,30 @@ class ProgramRulesValidations(val d2: D2) {
         d2.programModule().programRuleVariables().blockingGet().toRuleVariableList(
             d2.trackedEntityModule().trackedEntityAttributes(),
             d2.dataElementModule().dataElements()
-        ).map { it.name() to null }.toMap()
+        ).map {
+            val ruleValueType = when (it) {
+                is RuleVariableCalculatedValue -> it.calculatedValueType()
+                is RuleVariableAttribute -> it.trackedEntityAttributeType()
+                is RuleVariableNewestStageEvent -> it.dataElementType()
+                is RuleVariableNewestEvent -> it.dataElementType()
+                is RuleVariableCurrentEvent -> it.dataElementType()
+                is RuleVariablePreviousEvent -> it.dataElementType()
+                else -> null
+            }
+            it.name() to ruleVariableValue(null, ruleValueType)
+        }.toMap()
 
     private fun ruleVariableValue(
         value: String?,
-        ruleValueType: RuleValueType,
+        ruleValueType: RuleValueType?,
         addDefaultValue: Boolean = false
-    ):RuleVariableValue? {
+    ): RuleVariableValue? {
         val valueToUse = if (addDefaultValue) {
-            ruleValueType.defaultValue()
+            ruleValueType?.defaultValue()
         } else {
             value
         }
-        return valueToUse?.let { RuleVariableValue.create(valueToUse, ruleValueType) }
+        return valueToUse?.let { RuleVariableValue.create(valueToUse, ruleValueType!!) }
     }
 
     private fun process(condition: String, valueMap: Map<String, RuleVariableValue?>): String {
