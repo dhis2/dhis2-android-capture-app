@@ -148,6 +148,7 @@ class FormTest: BaseTest() {
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, DISPLAY_KEY, DISPLAY_KEY_POSITION)
             pressBack()
             goToAnalytics()
+            waitToDebounce(1000)
             checkIndicatorIsDisplayed("Current Option", "DKVP")
             goToDataEntry()
         }
