@@ -1,6 +1,5 @@
 Android Capture App for DHIS 2 (v2.4)
 <table> 
-<tbody> 
 <tr> 
 <td> 
 <img src="https://s3-eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/android-chrome-384x384.png" width="800"> 
@@ -105,5 +104,4 @@ Please create a [Jira](https://jira.dhis2.org/secure/Dashboard.jspa) Issue if yo
 
 </td> 
 </tr> 
-</tbody> 
 </table>
