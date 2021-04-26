@@ -1,6 +1,4 @@
-# Testing
-
-<!--DHIS2-SECTION-ID:testing-->
+# Testing { #implementation_guide_testing }
 
 Now that the DHIS 2 server has been initially configured and you have installed the App in one or more devices, you are ready to start testing. While you are planning your testing you need to be aware of upcoming releases. It is important to be a part of the community at [https://community.dhis2.org/](https://community.dhis2.org/) and use [JIRA](http://jira.dhis2.org/), the software management tool that UiO utilizes. This will allow you to learn about the open issues in terms of features and bug fixing that it is scheduled for future releases.
 
@@ -15,9 +13,8 @@ The following graphs show that the next steps are iterative in nature, including
 | ![](resources/images/image35.png){ .center } | ![](resources/images/image7.png){ .center } |
 | ![](resources/images/image36.png){ .center } | ![](resources/images/image5.png){ .center } |
 
-## General Recommendations for Testing an Android App
+## General Recommendations for Testing an Android App { #implementation_guide_testing_general }
 
-<!--DHIS2-SECTION-ID:testing_recommendations-->
 
 Before we go into the different testing phases, we are going to present some general recommendations that can be applied to testing an Android App. In general any process of testing can be summarized in the following steps:
 
@@ -50,9 +47,8 @@ Before we go into the different testing phases, we are going to present some gen
 	- The table below summarises a good Bug Reporting with some examples:
 	![](resources/images/image34.png) { .center width=80% }
 
-## Internal testing and UAT testing
+## Internal testing and UAT testing { #implementation_guide_testing_internal }
 
-<!--DHIS2-SECTION-ID:testing_internal-->
 
 **What are you testing**
 
@@ -70,9 +66,8 @@ Methods and periods for testing vary from group to group, but it has to be itera
 
 Setting the right foundation for your internal testing will increase the quality and the efficiency of the testing sessions. These recommendations apply to any of the different tests that you will need to perform.
 
-### UAT Testing
+### UAT Testing { #implementation_guide_testing_uat }
 
-<!--DHIS2-SECTION-ID:testing_internal_uat-->
 
 **What are you testing**  
 You are testing your system configuration (input), your visual UI and icons, usability and your outputs. You can also test at this stage the user experience with different devices (smartphone, tablet, external keyboard, chromebook).  
@@ -91,9 +86,8 @@ The size of the group will vary depending on the type of project you are impleme
 
 When deciding who will participate in your test, think about all the different types of users and their roles. With that in mind, select your testers. You should provide your testers with the right onboarding and guidance. They need to be well informed of the methods you will be using for testing, the expectations and the overall objectives and goals of the testing. It is advisable, if at all feasible, to organize testing sessions with one or two leaders, where testers can help each other and have the possibility to ask questions and get help in the spot from the leaders. Another important aspect to consider is test data. You must have enough data in your test server to allow for the testing of different test cases.
 
-## Field Testing/Pilot
+## Field Testing/Pilot { #implementation_guide_testing_field }
 
-<!--DHIS2-SECTION-ID:testing_field-->
 
 **What are you testing**
 

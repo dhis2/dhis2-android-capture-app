@@ -1,6 +1,5 @@
-# Android Settings Web App
-
-## Overview
+# Android Settings Web App { #capture_app_andoid_settings_webapp }
+## Overview { #capture_app_andoid_settings_webapp_overview }
 
 This section focuses on the Android Settings Web App implementation.
 
@@ -9,7 +8,7 @@ The Android Settings Web App allows admins to configure synchronization paramete
 Please note that in this version of the web app, only users with 'ALL' authority are able to define those parameters in the configuration. Other users having access to the web app can see the value of the parameters, but cannot edit them. 
 
 
-## General download sync settings
+## General download sync settings { #capture_app_andoid_settings_webapp_general }
 
 Includes configurations such as how often the android app will synchronize metadata and data, number of reserved values to download per TEI, and encrypt the device database.
 
@@ -41,11 +40,11 @@ Includes configurations such as how often the android app will synchronize metad
 **Disable all settings:** By clicking this button the user will remove all android configuration settings, so no configuration will be applied to the Android Capture app (if this is the case the sync parameters applied are the ones defined in the Android Capture app).
 
 
-## Program download sync settings
+## Program download sync settings { #capture_app_andoid_settings_webapp_program }
 
 It allows admin users to specify the sync parameters for Programs. This section has two parts, global and specific settings. 
 
-### Global settings
+### Global settings { #capture_app_andoid_settings_webapp_program_global }
 
 Global settings apply to all programs that an android user has access to. 
 
@@ -60,7 +59,7 @@ Global settings apply to all programs that an android user has access to.
 
 **Event download period:** It downloads Events which event date belongs to a specific period.
 
-### Specific settings
+### Specific settings { #capture_app_andoid_settings_webapp_program_specific }
 
 This section allows the admin users to specify the behaviour of a particular program/s when syncing the data. The specific configuration overwrites the general settings for the programs listed in this section.  To add a setting for a specific program:
  
@@ -80,18 +79,18 @@ In the case that any specific settings has been saved, a table will show up a su
 
 ![](resources/images/program-specific-table.png)
 
-### Reset all values
+### Reset all values { #capture_app_andoid_settings_webapp_program_reset_all }
 
 By clicking on *Reset all values*, the admin user will restore the default settings values of the program section. Please note that in this case it means no specific settings per program. 
 
 To save any configuration, the admin user needs to click on the *Save* button (this button is disabled for the users who doesn't have the 'ALL' authority)
 
 
-## Data set download sync settings
+## Data set download sync settings { #capture_app_andoid_settings_webapp_data }
 
 It allows admin users to specify the sync parameters for DataSets. It has two parts.
 
-### Global settings
+### Global settings { #capture_app_andoid_settings_webapp_data_global }
 
 The first part is for global settings that apply to all data sets an android user has access to. 
 
@@ -99,7 +98,7 @@ The first part is for global settings that apply to all data sets an android use
 
 **Number of Periods:** Maximum number of periods to download.
 
-### Specific Settings
+### Specific Settings { #capture_app_andoid_settings_webapp_data_specific }
 
 To add a specific setting:
  - Click on *Add a Data set specific setting*, the will find a dialog with a list of data sets, 
@@ -110,7 +109,7 @@ To add a specific setting:
 ![](resources/images/dataset-specific-table.png)
 
 
-## User Sync Test
+## User Sync Test { #capture_app_andoid_settings_webapp_user_sync_test }
 
 This section checks the amount of data and metadata a user would sync to his/her device. You can run this test on any user that you have access to. This test shows up the number of organisation units, data sets, program rules, programs, etc. that an android user has access to (so the resoruces that the android app will download) , and the metadata and data download size (approx estimation). Please note that a user doesn't need to have the 'ALL' authority to run this test.
 
@@ -121,7 +120,7 @@ This section checks the amount of data and metadata a user would sync to his/her
 > The values that are highlighted in red, are because the value is considered greater than the maximum recommended value.
 
 
-## Installation
+## Installation { #capture_app_andoid_settings_webapp_installation }
 
 A user can easily install the Android Settings Web App by logging into the DHIS2 and going to **App Management**.
 
@@ -132,7 +131,7 @@ A user can easily install the Android Settings Web App by logging into the DHIS2
 ![](resources/images/app-store-install.png)
 
 
-## Log in and first time setup
+## Log in and first time setup { #capture_app_andoid_settings_webapp_login }
 
 After a user install and launch the Android Settings Web App for the first time, the web app will require to set and save the default values of the configuration. This will apply default settings to all android devices connected to the instance. 
 
@@ -147,9 +146,9 @@ After a user install and launch the Android Settings Web App for the first time,
 ![](resources/images/first-setup-no-authorities.png)
 
 
-## Enter and save configuration parameters
+## Enter and save configuration parameters { #capture_app_andoid_settings_webapp_enter_and_save }
 
-### Datastore
+### Datastore { #capture_app_andoid_settings_webapp_datastore }
 
 Internally all settings are stored in [Datastore](https://docs.dhis2.org/master/en/developer/html/webapi_data_store.html) in JSON format.
 
@@ -161,7 +160,7 @@ Datastore structure:
 | Key         | Key for identification of values | String |
 | Value       | Value holding the information for the entry | JSON |
 
-### Save configuration parameters
+### Save configuration parameters { #capture_app_andoid_settings_webapp_save_config }
 
 At the form footer of all settings sections, admin users can find a *Save* button.
 
@@ -175,7 +174,7 @@ In case an admin user wants to go to another section when there are still some u
 
 ![](resources/images/unsaved-changes.png)
  
-#### Reset all values to default
+#### Reset all values to default { #capture_app_andoid_settings_webapp_reset_all }
 
 An admin user can restore the settings at any time. There is a *Reset all values to default* button at the form footer of all settings sections. 
 

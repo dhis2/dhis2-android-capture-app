@@ -19,6 +19,7 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
+import org.dhis2.common.viewactions.scrollToPositionRecyclerview
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION_POSITION
@@ -137,6 +138,10 @@ class FormRobot : BaseRobot() {
 
     fun scrollToBottomForm() {
         onView(withId(R.id.recyclerView)).perform(scrollToBottomRecyclerView())
+    }
+
+    fun scrollToPositionForm(position: Int){
+        onView(withId(R.id.recyclerView)).perform(scrollToPositionRecyclerview(position))
     }
 
     fun goToAnalytics() {
