@@ -1,6 +1,4 @@
-# Settings
-
- <!-- DHIS2-SECTION-ID:settings -->
+# Settings { #capture_app_settings }
 
 ![New Settings](resources/images/image17.jpg){  width=25%}
 ![New Settings](resources/images/image85.jpg){  width=25%}

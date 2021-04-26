@@ -1,10 +1,7 @@
-# Generic features
+# Generic features { #capture_app_generic }
 
-<!-- DHIS2-SECTION-ID:generic -->
+## Login { #capture_app_generic_login }
 
-## Login
-
- <!-- DHIS2-SECTION-ID:generic_login -->
 
 There are two ways to access the application:
 
@@ -32,17 +29,15 @@ There are two ways to access the application:
 > Due to a change in the login API this feature is not available in 2.31, 2.32 and 2.33.
 
 
-## Account Recovery
+## Account Recovery { #capture_app_generic_recovery }
 
- <!-- DHIS2-SECTION-ID:generic_recovery -->
 
 The users will be able to restore their own password if they have the setting enabled: Enabled User Account Recovery.
 
 ![](resources/images/image64.PNG){ width=25%}
 
-## Blocking session (PIN)
+## Blocking session (PIN) { #capture_app_generic_PIN }
 
- <!-- DHIS2-SECTION-ID:generic_pin -->
 
 User is able to lock the session using a 4 digit PIN. This allows to move to other apps in your phone without deleting the local data.
 If the user forgets the PIN number, log in by entering the credentials is also available.
@@ -50,9 +45,8 @@ If the user forgets the PIN number, log in by entering the credentials is also a
 ![](resources/images/image65.PNG){width=25%}
 ![](resources/images/image63.jpg){width=25%}
 
-## Fingerprint
+## Fingerprint { #capture_app_generic_fingerprint }
 
- <!-- DHIS2-SECTION-ID:generic_fingerprint -->
 
 User is able to use the fingerprint scanner if the feature is activated in the device.
 
@@ -62,9 +56,8 @@ User is able to use the fingerprint scanner if the feature is activated in the d
 ![](resources/images/image104.jpg){width=25%}
 ![](resources/images/image105.jpg){width=25%}
 
-## Instructions/information buttons
+## Instructions/information buttons { #capture_app_generic_instructions }
 
- <!-- DHIS2-SECTION-ID:generic_instructions -->
 
 A contextual guide opens the first time the user opens the App.
 
@@ -75,9 +68,8 @@ A contextual guide opens the first time the user opens the App.
 >
 >  User is able to re-open<!-- PALD: unnecessary: (trigger)--> the instructions by clicking on the three dots at the top right corner of the screen.
 
-## Filter
+## Filter { #capture_app_generic_filter }
 
- <!-- DHIS2-SECTION-ID:generic_filter -->
 
 <!-- PALD alternative: "The Filter allows you to narrow down the data available from the ..." -->
 The app has new and improved filters for all listing screens (home, event listing, tei search and dataSets).
@@ -95,11 +87,11 @@ Filters will adapt to the different programs and data sets.
 2. Program with registration: Event Date, Date of enrollment, Org. Unit, Sync, Enrollment Status, Event Status and Assigned to me
 3. Data Sets: Period, Org. Unit, and Sync State.
 
-### Assigned to me
+### Assigned to me { #capture_app_generic_filter_assigned }
 
 It is possible to filter events based on its assignment to the current user. The “Assigned to me” filter has been added to the single event program list, the TEI list and the TEI Dashboard and the map views. It will only be displayed when the active program is configured to assign events to users.
 
-### Event Date/Date/Period
+### Event Date/Date/Period { #capture_app_generic_filter_date }
 
 Filter the Events, TEIs(based on their events) and data sets, the following periods of time are availables:
 - Today
@@ -115,11 +107,11 @@ Filter the Events, TEIs(based on their events) and data sets, the following peri
 - Other (Opens a date picker)
 - Anytime
 
-### Org. Unit
+### Org. Unit { #capture_app_generic_filter_orgunit }
 
 Allows the user to type the search or select an org unit from the tree.
 
-### Sync
+### Sync { #capture_app_generic_filter_sync }
 
 Filer by:
 - Synced (events, TEIs, Data Sets)
@@ -127,7 +119,7 @@ Filer by:
 - Sync Error
 - SMS Synced
 
-### Event Status
+### Event Status { #capture_app_generic_filter_event }
 
 Filter the events by:
 - Open
@@ -140,21 +132,21 @@ Multiple status selection is permited. Once you open a TEI, the filter will be k
 
 Events shown are up to 5 years old.
 
-### Date of Enrollment
+### Date of Enrollment { #capture_app_generic_filter_date_enroll }
 
 The 'Date of Enrollment' will apply to the Enrollment date of the TEI in the program. If there is more than one enrollment date, it should sort the results by the most recent one. The label of this filter will display when available.
 
-### Enrollment Status
+### Enrollment Status { #capture_app_generic_filter_enroll_status }
 
 The filter 'Enrollment status' offers three options: Active, Completed, Cancelled. Only ona option can be selected at time. If you filter by "completed" and the TEI has more than one enrollment, the app will open the "active"  enrollment. To see the completed one, select the three dot menu at the top right corner of the dashboard and select "program enrollments".
 
-### Filtering added in TEI Dashboard:
+### Filtering added in TEI Dashboard: { #capture_app_generic_filter_tei }
 
 Filters have been added to the TEI dashboard. It is possible to filter the events of a Tracked Entity Instance enrollment per period, organisation unit, sync status, event status, and user assignment.
 
 ![](resources/images/image114.png){ width=25%}
 
-## Sorting
+## Sorting { #capture_app_generic_sorting }
 
 Sorting has been integrated in the filter menu.
 
@@ -165,24 +157,22 @@ The sorting button will be on the filter bars with the following behavior:
 
 ![](resources/images/image135.png){ width=25%}
 
-### Dates (Period, Date, Event Date or Enrollment Date)
+### Dates (Period, Date, Event Date or Enrollment Date) { #capture_app_generic_sorting_dates }
 
 - Event Date preceds due date, only use due date when there is no event date.
 - Order from most recent to less recent. Future events (due date) goes first.
 
-### Org units
+### Org units { #capture_app_generic_sorting_orgunits }
 
 - List will be sorted in alphabetical order by org unit name.
 
-### Enrollment Status
-
+### Enrollment Status { #capture_app_generic_sorting_enrollment }
 - List will be sorted in alphabetical order by status name.
 
 ![](resources/images/image123.png){ width=25%}
 
-## Sync Information
+## Sync Information { #capture_app_generic_sync_info }
 
-<!-- DHIS2-SECTION-ID:generic_sync -->
 
 Allows the user to check sync information for a specific program. Now the synced records will not show any icon. Only unsynced, error or SMS icons will be displayed.
 
@@ -190,18 +180,16 @@ Allows the user to check sync information for a specific program. Now the synced
 ![](resources/images/image69.png){ width=20%}
 ![](resources/images/image70.png){ width=20%}
 
-### Granular Sync
+### Granular Sync { #capture_app_generic_sync_granular }
 
-<!-- DHIS2-SECTION-ID:generic_granular_sync -->
 
 Allows to sync individual records (Program, Event, TEI, DataSet, DataValues) with the server.
 
 ![](resources/images/image89.png){ width=25%}
 
 
-### SMS Sync
+### SMS Sync { #capture_app_generic_sync_sms }
 
-<!-- DHIS2-SECTION-ID:generic_sms_sync -->
 
 When there is no internet conexion, it allows to send a record though several SMS messages.
 The record is marked as “SMS synced”.
@@ -218,9 +206,8 @@ The record is marked as “SMS synced”.
 >
 >  Note that in order to user the SMS sync capabilities the SMS services needs to be enabled in the server side as described in the (official documentation)[https://docs.dhis2.org/master/en/dhis2_user_manual_en/mobile.html#sms-service]. You can also find more information on how to use different gateways in the (Android Implementation Guidelines)[https://docs.dhis2.org/master/en/dhis2_android_implementation_guideline/about-this-guide.html].
 
-## Org unit
+## Org unit { #capture_app_generic_orgunit }
 
-<!-- DHIS2-SECTION-ID:generic_ou -->
 
 ![](resources/images/image30.png){ width=25%}
 
@@ -232,9 +219,8 @@ User must check the box to select the org unit wanted.
 >
 >  Mobile users are not expected to access the org. unit hierarchy of a whole country. Maximum number of org units is difficult to set, as the App does not set the limit, but the resources on the device (memory, processor). We could say below 250 org units should be safe, but still believe that is a very big number for a mobile use case.
 
-## Data Sets
+## Data Sets { #capture_app_generic_datasets }
 
-<!-- DHIS2-SECTION-ID:generic_datasets -->
 
 The user can now enter aggregate data for an organisation Unit, a period and a set of data elements and send it to the server.
 
@@ -242,9 +228,8 @@ The user can now enter aggregate data for an organisation Unit, a period and a s
 ![](resources/images/image93.png){ width=25%}
 ![](resources/images/image92.png){ width=25%}
 
-## Differentiating Data Sets, Tracker and Event programs
+## Differentiating Data Sets, Tracker and Event programs { #capture_app_generic_differentiating }
 
- <!-- DHIS2-SECTION-ID:generic_differentiating -->
 
 ![](resources/images/image87.png){ width=25%}
 
@@ -252,36 +237,30 @@ The user can now enter aggregate data for an organisation Unit, a period and a s
 >
 >  An easy way to differentiate them is by looking at the word at the bottom left corner. The word 'Event' will always be in event programs. In tracker will appear the name of the tracked entity type (person, patient, building, etc.). For data sets, the word 'DataSets' will be shown next to the number of records.
 
-## Sharing Data
+## Sharing Data { #capture_app_generic_shargin }
 
-<!-- DHIS2-SECTION-ID:generic_sharing -->
 
 ![](resources/images/image72.png){ width=25%}
 ![](resources/images/image73.png){ width=25%}
 
-## Capture Coordinates
+## Capture Coordinates { #capture_app_generic_capture_coord }
 
-<!-- DHIS2-SECTION-ID:generic_coords -->
 
-### TEI coordinates
+### TEI coordinates { #capture_app_generic_capture_coord_tei }
 
-<!-- DHIS2-SECTION-ID:generic_coords_tei -->
 
 Capture the TEI coordinates in the registration form.  Enable this feature in the TET feature type.
 
 ![](resources/images/image94.png){ width=25%}
 
-### Polygons
-
-<!-- DHIS2-SECTION-ID:generic_coords_polygons -->
+### Polygons { #capture_app_generic_capture_coord_polygons }
 
 The app now supports the geoJSON format and the user is able to capture polygons.
 
 ![](resources/images/image95.png){ width=25%}
 
-## Images
+## Images { #capture_app_generic_images }
 
-<!-- DHIS2-SECTION-ID:generic_images -->
 
 ValueType image has been implemented app side.
 This allows to pick an image for a data element or attribute and send it to the server.
@@ -291,9 +270,8 @@ For TEIs, the first data element/attribute with this value type and marked as di
 ![](resources/images/image98.png){ width=25%}
 ![](resources/images/image100.png){ width=25%}
 
-## Display events and TEIs in maps
+## Display events and TEIs in maps { #capture_app_generic_display_events }
 
-<!-- DHIS2-SECTION-ID:generic_events_tei_maps -->
 
 When a program stage or tracked entity type have a feature type (and for programs with registration the option displayFrontPageList is enabled) the listings can be switched to display the information in a map.
 

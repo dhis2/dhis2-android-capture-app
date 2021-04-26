@@ -1,4 +1,5 @@
-# Comparison Chart
+# Comparison Chart { #mdm_comparison }
+
 The following chart (adapted from [List of Mobile Device Management software](https://en.wikipedia.org/wiki/List_of_Mobile_Device_Management_software)) aims to summarize all the content in this document and can be helpful to have a quick overview. However it is recommended to go through the whole document to understand all the advantages and disadvantages of the MDM proposed here.
 
 All the presented solutions comply with the previously defined as required features:
