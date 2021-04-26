@@ -1,5 +1,3 @@
-# Document Map
-
-<!--DHIS2-SECTION-ID:document_map-->
+# Document Map { #implementation_guide_document_map }
 
 ![](resources/images/document_map.png){ .center width=75% }

@@ -1,5 +1,10 @@
-This is a patch version that fixes:
-- ANDROAPP-3773 TEIs in search org unit not being downloaded
-- ANDROAPP-3775 Unique attribute searching
+This new version includes the following features:
+- User experience and user interface improvements.
+- Indicator form event programs and data sets.
+- Local analytics at TEI level.
+- Display attributes and data elements on maps.
+- Navigate to selected location on maps.
+- Working lists.
+- Stability improvements.
 
-You can find all the details on Jira and Github.
+You can find all details in Jira and Github (github.com/dhis2/dhis2-android-capture-app).

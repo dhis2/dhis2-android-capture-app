@@ -40,13 +40,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import javax.inject.Singleton;
 
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
@@ -230,7 +231,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                         fieldMapper.map(
                                                                 fields,
                                                                 sectionList,
-                                                                section/*getNextVisibleSection.get(section, sectionList)*/,
+                                                                section,
                                                                 errors,
                                                                 emptyMandatoryFields,
                                                                 showErrors
@@ -251,13 +252,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                         calculationLoop = 0;
                                         formFieldsProcessor.onNext(sectionsAndFields.component2());
                                         formAdjustProcessor.onNext(new Unit());
-                                        int completedFields = 0;
-                                        for (EventSectionModel sectionModel : sectionsAndFields.component1()) {
-                                            completedFields += sectionModel.numberOfCompletedFields();
-                                        }
+
                                         view.updatePercentage(
-                                                calculateCompletionPercentage(completedFields, fieldMapper.getTotalFields()),
-                                                calculateCompletionPercentage(fieldMapper.getUnsupportedFields(), fieldMapper.getTotalFields()));
+                                                fieldMapper.completedFieldsPercentage(),
+                                                fieldMapper.unsupportedFieldsPercentage()
+                                        );
                                     }
                                 },
                                 Timber::e
@@ -302,13 +301,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     "";
         }
         return fieldSection;
-    }
-
-    private float calculateCompletionPercentage(int completedFields, int totals) {
-        if (totals == 0) {
-            return 100;
-        }
-        return (float) completedFields / (float) totals;
     }
 
     @Override
@@ -397,11 +389,12 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         rulesUtils.applyRuleEffects(fieldViewModels, calcResult, this);
 
         //Set/remove for HIDEOPTION/HIDEOPTIONGROUP/SHOWOPTIONGROUP
-        Iterator<FieldViewModel> fieldIterator = fieldViewModels.values().iterator();
+        ArrayList<FieldViewModel> fieldList = new ArrayList<>(fieldViewModels.values());
+        ListIterator<FieldViewModel> fieldIterator = fieldList.listIterator();
         while (fieldIterator.hasNext()) {
             FieldViewModel field = fieldIterator.next();
             if (field instanceof MatrixOptionSetModel) {
-                ((MatrixOptionSetModel) field).setOptionsToHide(
+                FieldViewModel hiddenMatrixModel = ((MatrixOptionSetModel) field).setOptionsToHide(
                         optionsToHide.get(field.uid()) != null ? optionsToHide.get(field.uid()) : new ArrayList<>(),
                         eventCaptureRepository.getOptionsFromGroups(
                                 optionsGroupsToHide.get(field.uid()) != null ? optionsGroupsToHide.get(field.uid()) : new ArrayList<>()
@@ -410,31 +403,36 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 optionsGroupToShow.get(field.uid()) != null ? optionsGroupToShow.get(field.uid()) : new ArrayList<>()
                         )
                 );
+                fieldIterator.set(hiddenMatrixModel);
             } else if (field instanceof SpinnerViewModel) {
-                ((SpinnerViewModel) field).setOptionsToHide(
+                FieldViewModel hiddenSpinnerModel = ((SpinnerViewModel) field).setOptionsToHide(
                         optionsToHide.get(field.uid()) != null ? optionsToHide.get(field.uid()) : new ArrayList<>(),
                         optionsGroupsToHide.get(field.uid()) != null ? optionsGroupsToHide.get(field.uid()) : new ArrayList<>()
                 );
+                fieldIterator.set(hiddenSpinnerModel);
                 if (optionsGroupToShow.keySet().contains(field.uid())) {
-                    ((SpinnerViewModel) field).setOptionGroupsToShow(
+                    FieldViewModel showSpinnerModel = ((SpinnerViewModel) hiddenSpinnerModel).setOptionGroupsToShow(
                             optionsGroupToShow.get(field.uid()) != null ? optionsGroupToShow.get(field.uid()) : new ArrayList<>()
                     );
+                    fieldIterator.set(showSpinnerModel);
                 }
             } else if (field instanceof OptionSetViewModel) {
-                ((OptionSetViewModel) field).setOptionsToHide(
+                FieldViewModel hiddenOptionSetModel = ((OptionSetViewModel) field).setOptionsToHide(
                         optionsToHide.get(field.uid()) != null ? optionsToHide.get(field.uid()) : new ArrayList<>()
                 );
+                fieldIterator.set(hiddenOptionSetModel);
                 if (optionsGroupToShow.keySet().contains(field.uid())) {
-                    ((OptionSetViewModel) field).setOptionsToShow(
+                    FieldViewModel showOptionSetModel = ((OptionSetViewModel) hiddenOptionSetModel).setOptionsToShow(
                             eventCaptureRepository.getOptionsFromGroups(
                                     optionsGroupToShow.get(field.uid()) != null ? optionsGroupToShow.get(field.uid()) : new ArrayList<>()
                             )
                     );
+                    fieldIterator.set(showOptionSetModel);
                 }
             }
         }
 
-        return new ArrayList<>(fieldViewModels.values());
+        return fieldList;
     }
 
     @NonNull
@@ -626,6 +624,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         StoreResult result = valueStore.saveWithTypeCheck(uid, value).blockingFirst();
         if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
             assignedValueChanged = true;
+            setValueChanged(uid);
         }
     }
 
@@ -649,6 +648,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         StoreResult result = valueStore.deleteOptionValueIfSelected(field, optionUid);
         if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
             assignedValueChanged = true;
+            setValueChanged(field);
         }
     }
 
@@ -666,6 +666,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             StoreResult result = valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, true);
             if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
                 assignedValueChanged = true;
+                setValueChanged(field);
             }
         } else if (!optionsGroupsToHide.containsKey(field) || !optionsGroupsToHide.get(field).contains(optionGroupUid)) {
             if (optionsGroupToShow.get(field) != null) {
@@ -676,6 +677,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             StoreResult result = valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, false);
             if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
                 assignedValueChanged = true;
+                setValueChanged(field);
             }
         }
     }
@@ -729,5 +731,19 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public boolean getCompletionPercentageVisibility() {
         return eventCaptureRepository.showCompletionPercentage();
+    }
+
+    @Override
+    public void setValueChanged(@NotNull String uid) {
+        compositeDisposable.add(
+                Completable.fromCallable(() -> {
+                    eventCaptureRepository.updateFieldValue(uid);
+                    return true;
+                })
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.io())
+                        .subscribe(() -> {
+                        }, Timber::d)
+        );
     }
 }

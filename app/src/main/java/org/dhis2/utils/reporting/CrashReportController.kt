@@ -4,9 +4,9 @@ interface CrashReportController {
 
     fun trackScreenName(screen: String)
 
-    fun trackUser(user: String)
+    fun trackUser(user: String?, server: String?)
 
-    fun trackServer(server: String)
+    fun trackServer(server: String?)
 
     fun logException(exception: Exception)
 

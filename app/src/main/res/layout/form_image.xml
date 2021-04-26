@@ -20,6 +20,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clickable="@{viewModel.editable()}"
         android:onClick="@{()->viewModel.selectOption(option)}"
         tools:background="@color/colorPrimaryLightRed"
         tools:layout_height="200dp">

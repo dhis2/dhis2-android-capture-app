@@ -30,11 +30,11 @@ import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.AppMenuHelper;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.customviews.AlertBottomDialog;
 import org.dhis2.utils.validationrules.ValidationResultViolationsAdapter;
 import org.dhis2.utils.validationrules.Violation;
@@ -50,6 +50,7 @@ import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import kotlin.Unit;
+import timber.log.Timber;
 
 import static org.dhis2.utils.Constants.NO_SECTION;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
@@ -70,6 +71,9 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Inject
     DataSetTableContract.Presenter presenter;
+    @Inject
+    DhisPeriodUtils periodUtils;
+
     private ActivityDatasetTableBinding binding;
     private DataSetSectionAdapter viewPagerAdapter;
     private boolean backPressed;
@@ -143,19 +147,19 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
             int heightDiff = binding.getRoot().getRootView().getHeight() - binding.getRoot().getHeight();
             if (heightDiff > ExtensionsKt.getDp(200)) {
                 isKeyboardOpened = true;
-                binding.navigationView.hide();
+                binding.navigationView.setVisibility(View.GONE);
                 binding.saveButton.hide();
                 if (binding.BSLayout.bottomSheetLayout.getVisibility() == View.VISIBLE) {
                     if (behavior != null && behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                         behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     }
                 }
-            } else {
+            } else if(isKeyboardOpened){
                 isKeyboardOpened = false;
-                new Handler().postDelayed(() -> {
-                    binding.navigationView.show();
+                new Handler().postDelayed(()->{
+                    binding.navigationView.setVisibility(View.VISIBLE);
                     binding.saveButton.show();
-                }, 700);
+                },1000);
             }
         }
     };
@@ -242,7 +246,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public void renderDetails(DataSet dataSet, String catComboName, Period period, boolean isComplete) {
         binding.dataSetName.setText(dataSet.displayName());
         StringBuilder subtitle = new StringBuilder(
-                DateUtils.getInstance().getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault())
+                periodUtils.getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault())
         )
                 .append(" | ")
                 .append(orgUnitName);

@@ -1,6 +1,4 @@
-# Configure DHIS2 programs to work on Android apps
-
-<!--DHIS2-SECTION-ID:android_config_program-->
+# Configure DHIS2 programs to work on Android apps { #capture_app_configure }
 
 To use event programs and tracker programs on the Android **Event
 Capture** and **Tracker Capture** apps, you must configure both the

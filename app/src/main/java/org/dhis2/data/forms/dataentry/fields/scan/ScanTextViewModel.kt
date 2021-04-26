@@ -140,7 +140,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             data,
             programStageSection(),
             allowFutureDate(),
-            false,
+            editable(),
             optionSet(),
             warning(),
             error(),

@@ -24,6 +24,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
+        android:largeHeap="true"
         tools:replace="allowBackup">
         <uses-library
             android:name="org.apache.http.legacy"
@@ -38,6 +39,10 @@
         <meta-data
             android:name="io.sentry.debug"
             android:value="${sentry_debug}" />
+
+        <meta-data
+            android:name="io.sentry.traces.sample-rate"
+            android:value="${sentry_sample_rate}" />
 
         <activity
             android:name=".usescases.splash.SplashActivity"

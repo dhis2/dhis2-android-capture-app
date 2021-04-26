@@ -7,6 +7,7 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.ActionType;
+import org.dhis2.data.forms.dataentry.fields.FieldUiModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -21,9 +22,6 @@ import io.reactivex.processors.FlowableProcessor;
 @AutoValue
 public abstract class OptionSetViewModel extends FieldViewModel {
 
-    private List<String> optionsToHide = new ArrayList<>();
-    private List<String> optionsToShow = new ArrayList<>();
-
     public abstract boolean isBackgroundTransparent();
 
     public abstract String renderType();
@@ -31,6 +29,10 @@ public abstract class OptionSetViewModel extends FieldViewModel {
     public abstract ValueTypeDeviceRendering fieldRendering();
 
     public abstract List<Option> options();
+
+    public abstract List<String> optionsToHide();
+
+    public abstract List<String> optionsToShow();
 
     public static OptionSetViewModel create(String id,
                                             String label,
@@ -67,7 +69,9 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 isBackgroundTransparent,
                 renderType,
                 fieldRendering,
-                options
+                options,
+                new ArrayList<>(),
+                new ArrayList<>()
         );
     }
 
@@ -93,7 +97,9 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),
-                options()
+                options(),
+                optionsToHide(),
+                optionsToShow()
         );
     }
 
@@ -120,7 +126,9 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),
-                options()
+                options(),
+                optionsToHide(),
+                optionsToShow()
         );
     }
 
@@ -147,7 +155,9 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),
-                options()
+                options(),
+                optionsToHide(),
+                optionsToShow()
         );
     }
 
@@ -174,7 +184,9 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),
-                options()
+                options(),
+                optionsToHide(),
+                optionsToShow()
         );
     }
 
@@ -200,7 +212,9 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),
-                options
+                options,
+                optionsToHide(),
+                optionsToShow()
         );
     }
 
@@ -214,7 +228,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 value,
                 programStageSection(),
                 allowFutureDate(),
-                false,
+                editable(),
                 optionSet(),
                 warning(),
                 error(),
@@ -227,7 +241,9 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),
-                options()
+                options(),
+                optionsToHide(),
+                optionsToShow()
         );
     }
 
@@ -254,28 +270,74 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 isBackgroundTransparent(),
                 renderType(),
                 fieldRendering(),
-                options()
+                options(),
+                optionsToHide(),
+                optionsToShow()
         );
     }
 
-    public void setOptionsToHide(List<String> optionsToHide) {
-        if (optionsToHide != null) {
-            this.optionsToHide.addAll(optionsToHide);
-        }
+    @NonNull
+    public FieldViewModel setOptionsToHide(List<String> optionsToHide) {
+        return new AutoValue_OptionSetViewModel(
+                uid(),
+                label(),
+                mandatory(),
+                value(),
+                programStageSection(),
+                allowFutureDate(),
+                editable(),
+                optionSet(),
+                warning(),
+                error(),
+                description(),
+                objectStyle(),
+                fieldMask(),
+                DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                processor(),
+                activated(),
+                isBackgroundTransparent(),
+                renderType(),
+                fieldRendering(),
+                options(),
+                optionsToHide != null ? optionsToHide : new ArrayList<>(),
+                optionsToShow()
+        );
     }
 
-    public void setOptionsToShow(List<String> optionsToShow) {
-        if (optionsToShow != null) {
-            this.optionsToShow.addAll(optionsToShow);
-        }
+    @NonNull
+    public OptionSetViewModel setOptionsToShow(List<String> optionsToShow) {
+        return new AutoValue_OptionSetViewModel(
+                uid(),
+                label(),
+                mandatory(),
+                value(),
+                programStageSection(),
+                allowFutureDate(),
+                editable(),
+                optionSet(),
+                warning(),
+                error(),
+                description(),
+                objectStyle(),
+                fieldMask(),
+                DataEntryViewHolderTypes.OPTION_SET_SELECT,
+                processor(),
+                activated(),
+                isBackgroundTransparent(),
+                renderType(),
+                fieldRendering(),
+                options(),
+                optionsToHide(),
+                optionsToShow != null ? optionsToShow : new ArrayList<>()
+        );
     }
 
     public List<String> getOptionsToHide() {
-        return optionsToHide;
+        return optionsToHide();
     }
 
     public List<String> getOptionsToShow() {
-        return optionsToShow;
+        return optionsToShow();
     }
 
 
@@ -296,5 +358,16 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 null,
                 null,
                 ActionType.ON_SAVE));
+    }
+
+    @Override
+    public boolean equals(FieldUiModel o) {
+        return super.equals(o) && o instanceof OptionSetViewModel &&
+                this.options() == ((OptionSetViewModel) o).options() &&
+                this.optionsToHide() == ((OptionSetViewModel) o).optionsToHide() &&
+                this.optionsToShow() == ((OptionSetViewModel) o).optionsToShow() &&
+                this.isBackgroundTransparent() == ((OptionSetViewModel) o).isBackgroundTransparent() &&
+                this.renderType().equals(((OptionSetViewModel) o).renderType()) &&
+                this.fieldRendering() == ((OptionSetViewModel) o).fieldRendering();
     }
 }

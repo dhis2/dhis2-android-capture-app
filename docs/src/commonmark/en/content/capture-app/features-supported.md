@@ -1,14 +1,9 @@
-# Programs
+# Programs { #capture_app_programs }
 
-<!-- DHIS2-SECTION-ID:programs -->
+## Programs in Android { #capture_app_programs_android }
 
-## Programs in Android
+### Complete/Re-open event { #capture_app_programs_complete_reopen }
 
-<!-- DHIS2-SECTION-ID:programs_android -->
-
-### Complete/Re-open event
-
-<!-- DHIS2-SECTION-ID:programs_android_complete -->
 
 User must enter the event and then click the complete icon in the bottom right corner.
 
@@ -31,9 +26,8 @@ Two options will be presented:
 >
 > The app needs to take into consideration if the user has the correct authority (‘Uncomplete events’) to reopen a completed event.
 
-### Field completion percentage
+### Field completion percentage { #capture_app_programs_field_percentage }
 
-<!-- DHIS2-SECTION-ID:programs_android_percentage -->
 
 The percentage of data completed in each event is shown in the top right corner of an event when it is opened after first registration.
 
@@ -42,35 +36,32 @@ The percentage of data completed in each event is shown in the top right corner 
 > **Note**
 >
 
-### Sections Navigation
+### Sections Navigation { #capture_app_programs_sections_nav }
 
-<!-- DHIS2-SECTION-ID:programs_android_sections -->
 
 The display for sections has been redesigned for a more simple user experience. In addition, the sections in enrollment form are now supported and are aligned with the design of the event sections.
 
 ![](resources/images/image115.png){ width=25%}
 ![](resources/images/image116.png){ width=25%}
 
-### Error messages
+### Error messages { #capture_app_programs_errors }
 
-<!-- DHIS2-SECTION-ID:programs_android_error -->
 
 The app will now list the name of the mandatory fields missing when the user tries to complete an event or enrollment. The sections containing the missing fields will be highlighted to help the user find the missing fields.
 
 ![](resources/images/image117.png){ width=25%}
 
-### Event Notes
+### Event Notes { #capture_app_programs_event_notes }
 
-<!-- DHIS2-SECTION-ID:programs_android_notes -->
 
 It is possible to add notes to events in single event programs and program stage events. Notes are available in a new tab at the data entry form.
 
 ![](resources/images/image106.png){ width=25%}
 ![](resources/images/image107.jpg){ width=25%}
 
-### Maps
+### Maps { #capture_app_programs_maps }
 
-#### Map Layers
+#### Map Layers { #capture_app_programs_map_layers }
 
 The possible layers to display in maps are:
 
@@ -89,7 +80,7 @@ The maps will display coordinates and polygons.
 ![](resources/images/image125.png){ width=25%}
 ![](resources/images/image136.png){ width=25%}
 
-#### Map Carousel
+#### Map Carousel { #capture_app_programs_map_carousel }
 
 On the map view of the program, a carousel of cards is displayed, one for each enrolled TEI (Tracker programs) or Event(Event programs).
 
@@ -100,7 +91,7 @@ On the map view of the program, a carousel of cards is displayed, one for each e
 ![](resources/images/image126.jpg){ width=25%} 
 ![](resources/images/image133.png){ width=25%}
 
-#### Map Relationships
+#### Map Relationships { #capture_app_programs_map_relationships }
 
 In tracker, the user can see relationships on a map by tapping the map icon on the relationships tab.
 
@@ -112,11 +103,10 @@ In tracker, the user can see relationships on a map by tapping the map icon on t
 ![](resources/images/image132.png){ width=25%}
 ![](resources/images/image127.png){ width=25%}
 
-## Program with registration in Android
+## Program with registration in Android { #capture_app_programs_with_reg }
 
-<!-- DHIS2-SECTION-ID:programs_registration -->
 
-### TEI Card Design
+### TEI Card Design { #capture_app_programs_tei_design }
 
 The new TEI Card design includes:
 
@@ -134,17 +124,15 @@ The new TEI Card design includes:
 
 ![](resources/images/image124.png){ width=25%}
 
-### Complete/Deactivate Enrollment
+### Complete/Deactivate Enrollment { #capture_app_programs_complete_deactivate_enrollment }
 
-<!-- DHIS2-SECTION-ID:programs_registration_complete -->
 
 To complete or deactivate an enrollment, click on three dot menu in the right upper corner and select "Complete" or "Deactivate".
 
 ![](resources/images/image76.jpg){ width=25%}
 
-### Reset Search Fields
+### Reset Search Fields { #capture_app_programs_reset_search }
 
-<!-- DHIS2-SECTION-ID:programs_registration_reset -->
 
 All tracker programs will take the user to the search screen. The search fields are used to look up for a specific entity, and the circled arrow at the top right corner to reset the search. All fields will be blank for the user to do a new search.
 
@@ -153,9 +141,8 @@ At first, the user is obligated to do a search. if there are no coincidences, th
 ![](resources/images/image78.PNG){ width=25%}
 ![](resources/images/image79.PNG){ width=25%}
 
-### Search screen for all Tracked Entity Type
+### Search screen for all Tracked Entity Type { #capture_app_programs_search_screen }
 
-<!-- DHIS2-SECTION-ID:programs_registration_search -->
 
 User is able to search across all program of one tracked entity type (TET). In the Search screen there is a drop down which shows all the programs available for the active TET (active TET is defined by the selection of the program in the home screen). That drop down should also have an option with TET name. (for example: person)
 
@@ -172,9 +159,8 @@ The search will return the found TEI's in the local database and also those in t
 >
 >  When configuring search org. units, make sure that your capture org. units are contained in your search org. units, to do that capture org. units have to be selected as well as search org. units.
 
-### TEI Dashboard across programs
+### TEI Dashboard across programs { #capture_app_programs_tei_dashboard }
 
-<!-- DHIS2-SECTION-ID:programs_registration_tei_dashboard -->
 
 User can see the TEI dashboard without any program by selecting the TEI in the list if the search was without program.
 
@@ -183,9 +169,8 @@ The dashboards will show the list of active enrollments.
 ![](resources/images/image22.png){ width=25%}
 ![](resources/images/image38.png){ width=25%}
 
-### TEI enrollment history and new enrollment
+### TEI enrollment history and new enrollment { #capture_app_programs_tei_history }
 
-<!-- DHIS2-SECTION-ID:programs_registration_tei_enrollment -->
 
 User is able to see the complete historical record of the TEI. Clicking on the top right corner menu, select "Program Enrollments" and a list of Active enrollments will be displayed, followed by a list of past enrollments (completed or cancelled), followed by the programs in which the TEI could be enrolled.
 User can also return to the 'TEI Dashboard without any program' by selecting 'All enrollments'.
@@ -195,9 +180,8 @@ Users should be able to navigate to the different enrollments from the list.
 ![](resources/images/image40.jpg){ width=25%}
 ![](resources/images/image7.png){ width=25%}
 
-### Delete TEI's & Enrollments
+### Delete TEI's & Enrollments { #capture_app_programs_delete_tei }
 
-<!-- DHIS2-SECTION-ID:programs_registration_tei_delete -->
 
 To delete a TEI or an enrollment, select In the TEI dashboard, the three dots menu.
 
@@ -210,31 +194,29 @@ They will show in the TEI search list, but will not be accessible.
 
 ![](resources/images/image86.jpg){ width=25%}
 
-### Group view of Program stages in TEI Dashboard
+### Group view of Program stages in TEI Dashboard { #capture_app_programs_group_view }
 
-<!-- DHIS2-SECTION-ID:programs_registration_tei_group -->
 
 The TEI Dashboard offers now the possibility to change the list of events from the chronological view to a stage grouping view. The stage grouping view will group and collapse the events per program stage. Each program stage group can be expanded by the user and the events will be displayed chronologically.
 
 ![](resources/images/image108.png){ width=25%}
 ![](resources/images/image109.jpg){ width=25%}
 
-### Inherit Values
+### Inherit Values { #capture_app_programs_inherit_values }
 
 When creating a new TEI for a relationship, inherit any program attribute marked with the inherit check in web.
 
 This means that any existing attributes in the first TEI should have pass to the new TEI and be shown in the registration form.
 
-### Breaking the glass
+### Breaking the glass { #capture_app_programs_breaking_the_glass }
 
 The ‘breaking the glass’ feature is not yet supported in DHIS2 Android Capture App. If the program is configured as ‘Protected’, the default behavior for Android will be the same as if the program is configured as ‘closed.’ This means that an Android user will not be able to read or edit enrollments of a TEI outside of their capture org units. TEIs registered in a Search OU will be returned by the TE Type search but if the program is closed or protected the user will not be allowed to see or create a new enrollment.
 If Android users must be able to access TEI outside of their data capture org unit, the program should be configured with access level ‘Open.’
 
 ![](resources/images/image137.jpg){ width=25%}
 
-## Supported features Overview
+## Supported features Overview { #capture_app_programs_supported_features }
 
-<!-- DHIS2-SECTION-ID:programs_supported -->
 
 The following is a comprehensive list of all features available for Programs with and without registration in DHIS2, and notes on whether or not these have been implemented in the Android Capture app.
 
@@ -247,9 +229,8 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 |![](resources/images/../../admin/icon-na.png)|Not applicable|
 |![](resources/images/../../admin/icon-wip.png)|Work in progress. Feature not completely implemented yet or with unexpected behaviour already reported.|
 
-### Program
+### Program { #capture_app_programs_supported_features_program }
 
-<!-- DHIS2-SECTION-ID:programs_supported_program -->
 
 |Feature|Description of feature|Program with registration|Program without registration|Notes on implementation|
 |-|---|:-:|:-:|---|
@@ -284,9 +265,8 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 |Data sharing levels/Can view data|Enables the user to see list of events within the program.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
 |Data sharing levels/No access|The user will not be able to see the program|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
 
-### Program stage
+### Program stage { #capture_app_programs_supported_features_program_stage }
 
-<!-- DHIS2-SECTION-ID:programs_supported_program_stage -->
 
 |Feature|Description of feature|Program with registration|Program without registration|Notes on implementation|
 |-|---|:-:|:-:|---|
@@ -315,9 +295,8 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 |Block entry form after completed|Prevents all edits to events after they have been completed.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
 |Event comments|Enables the user to add overall comments to an event. These comments are cumulative (new comments are added below existing comments).|![](resources/images/../../admin/icon-incomplete.png)|![](resources/images/../../admin/icon-na.png)||
 
-### Program with registration: Tracked entity dashboard
+### Program with registration: Tracked entity dashboard { #capture_app_programs_supported_features_program_with_reg }
 
-<!-- DHIS2-SECTION-ID:programs_supported_program_registration -->
 
 |Feature|Description of feature|Status|Notes on implementation|
 |-|---|:-:|---|
@@ -334,9 +313,7 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 |TEI enrollment history and new enrollment|User is able to see the complete historical record of the TEI. By clicking on the top right corner icon they will see a list of Active enrolments, followed by a list of past enrolments (completed or cancelled), followed by the programs in which the TEI could be enrolled. Users should be able to navigate to the different enrolments from the list.|![](resources/images/../../admin/icon-complete.png)||
 |Access level-Breaking the glass|If the program is configured with access level protected, and the user searches and finds tracked entity instances that is owned by organisation unit that the user does not have data capture authority for, the user is presented with the option of breaking the glass. The user will gove a reason for breaking the glass, then gain temporary ownership of the tracked entity instance.|![](resources/images/../../admin/icon-incomplete.png)||
 
-### Program without registration: Single event program
-
-<!-- DHIS2-SECTION-ID:programs_supported_program_no_registration -->
+### Program without registration: Single event program { #capture_app_programs_supported_features_program_without_reg }
 
 |Feature|Description of feature|Status|Notes on implementation|
 |-|---|:-:|---|

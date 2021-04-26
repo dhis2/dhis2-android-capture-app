@@ -1,6 +1,4 @@
-# Program Indicators
-
-<!-- DHIS2-SECTION-ID:programindicators -->
+# Program Indicators { #capture_app_program_ind }
 
 The following is a comprehensive list of all Program indicator variables available in DHIS2, and notes on whether or not these have been implemented in the Android Capture app.
 
@@ -13,7 +11,7 @@ Any issues around using a particular feature with Android are highlighted with a
 |![](resources/images/../../admin/icon-na.png)|Not applicable|
 |![](resources/images/../../admin/icon-wip.png)|Work in progress. Feature not completely implemented yet or with unexpected behaviour already reported.|
 
-## Common functions to use in a program indicator expression or filter
+## Common functions to use in a program indicator expression or filter { #capture_app_program_ind_common_functions }
 
  Function| Description |Status|Notes on implementation|
 |-|---|:-:|---|
@@ -24,7 +22,7 @@ Any issues around using a particular feature with Android are highlighted with a
 |greatest|Returns the greatest (highest) value of the expressions given. Can be provided any number of arguments.|![](resources/images/../../admin/icon-complete.png)||
 |least|Returns the least (lowest) value of the expressions given. Can be provided any number of arguments.|![](resources/images/../../admin/icon-complete.png)||
 
-## (d2) Functions to use in a program indicator expression or filter
+## (d2) Functions to use in a program indicator expression or filter { #capture_app_program_ind_d2_functions }
 
  Function| Description |Status|Notes on implementation|
 |-|---|:-:|---|
@@ -57,9 +55,8 @@ Any issues around using a particular feature with Android are highlighted with a
 |zing|Returns zero if the expression is negative, otherwise returns the expression value.|![](resources/images/../../admin/icon-complete.png)||
 |zpvc|Returns the number of numeric zero and positive values among the given object arguments.|![](resources/images/../../admin/icon-complete.png)||
 
-## Variables to use in a program indicator expression or filter
+## Variables to use in a program indicator expression or filter { #capture_app_program_ind_variables }
 
-<!-- DHIS2-SECTION-ID:programindicators_variables -->
 
 | Variable type| Description of variable type|Status|Notes on implementation|
 |-|---|:-:|---|

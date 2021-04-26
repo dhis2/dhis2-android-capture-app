@@ -44,9 +44,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 android:visibility="gone"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:srcCompat="@drawable/sierra_leone"
                 tools:visibility="visible" />
 
@@ -55,7 +55,8 @@
                 style="@style/FieldLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{item.label}"
+                android:alpha="@{item.editable() ? 1.0f : 0.5f}"
+                android:text="@{item.formattedLabel}"
                 android:visibility="@{label != null ? View.VISIBLE : View.GONE}"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
@@ -63,7 +64,6 @@
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/renderImage"
-                android:alpha="@{item.editable() ? 1.0f : 0.5f}"
                 tools:text="@string/lorem" />
 
             <ImageView
@@ -86,19 +86,19 @@
                 style="@style/Widget.AppCompat.CompoundButton.Switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:alpha="@{item.editable() ? 1.0f : 0.5f}"
+                android:checked="@{item.isAffirmativeChecked()}"
+                android:enabled="@{item.editable()}"
+                android:onClick="@{(v) -> item.isAffirmativeChecked() ? item.onClear() : item.onValueChanged(true)}"
+                android:paddingTop="4dp"
                 android:text="@string/yes"
                 android:textAppearance="@style/TextPrimary"
                 android:textSize="@dimen/form_edit_text_size"
-                android:checked="@{item.isAffirmativeChecked()}"
-                android:onCheckedChanged="@{(v, checked) -> checked ? item.onValueChanged(true) : item.onClear()}"
                 app:layout_constraintStart_toStartOf="@+id/label"
                 app:layout_constraintTop_toBottomOf="@id/label"
-                android:paddingTop="4dp"
                 app:switchPadding="10dp"
                 app:thumbTint="@drawable/selector_material_thumb_field"
                 app:trackTint="@drawable/selector_material_track_field"
-                android:enabled="@{item.editable()}"
-                android:alpha="@{item.editable() ? 1.0f : 0.5f}"
                 app:useMaterialThemeColors="false" />
 
             <TextView

@@ -912,6 +912,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
+    public void getListData(){
+        listDataProcessor.onNext(new Unit());
+    }
+
+    @Override
     public void getEnrollmentMapData() {
         enrollmentMapProcessor.onNext(new Unit());
     }

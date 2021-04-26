@@ -22,6 +22,7 @@ class EventCaptureFormPresenter(
     val schedulerProvider: SchedulerProvider,
     private val onFieldActionProcessor: FlowableProcessor<RowAction>
 ) {
+    private var finishing: Boolean = false
     private var selectedSection: String? = null
     var disposable: CompositeDisposable = CompositeDisposable()
     private var focusedItem: RowAction? = null
@@ -85,6 +86,7 @@ class EventCaptureFormPresenter(
                             if (result.valueStoreResult
                                 == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
                             ) {
+                                activityPresenter.setValueChanged(result.uid)
                                 activityPresenter.nextCalculation(true)
                             } else {
                                 itemList?.let { fields ->
@@ -117,6 +119,13 @@ class EventCaptureFormPresenter(
         )
     }
 
+    private fun checkFinishing(canFinish: Boolean) {
+        if (finishing && canFinish) {
+            view.performSaveClick()
+        }
+        finishing = false
+    }
+
     private fun updateErrorList(action: RowAction) {
         if (action.error != null) {
             if (itemsWithError.find { it.id == action.id } == null) {
@@ -132,6 +141,7 @@ class EventCaptureFormPresenter(
     private fun composeList() = itemList?.let {
         val listWithErrors = mergeListWithErrorFields(it, itemsWithError)
         view.showFields(setFocusedItem(listWithErrors).toMutableList())
+        checkFinishing(true)
     }
 
     private fun mergeListWithErrorFields(
@@ -181,4 +191,8 @@ class EventCaptureFormPresenter(
 
     fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =
         mapIndexed { i, existing -> if (i == index) elem else existing }
+
+    fun setFinishing() {
+        finishing = true
+    }
 }

@@ -95,6 +95,7 @@
                 android:textSize="14sp" />
 
             <TextView
+                android:id="@+id/txtMessageOnComplete"
                 android:visibility="@{messageOnComplete != null ? View.VISIBLE : View.GONE}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
