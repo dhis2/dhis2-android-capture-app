@@ -11,7 +11,6 @@ import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.filter.FilterPresenter;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
 import org.dhis2.uicomponents.map.managers.EventMapManager;
@@ -148,10 +147,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @Override
     public CategoryOptionCombo getCatOptCombo(String selectedCatOptionCombo) {
         return d2.categoryModule().categoryOptionCombos().uid(selectedCatOptionCombo).blockingGet();
-    }
-
-    private String getCurrentUser() {
-        return d2.userModule().user().blockingGet().uid();
     }
 
     @NonNull

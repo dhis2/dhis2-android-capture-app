@@ -1,10 +1,7 @@
-# Scale Up
+# Scale Up { #implementation_guide_scale_up }
 
-<!--DHIS2-SECTION-ID:scale_up-->
+## Acquisitions { #implementation_guide_scale_up_acquisitions }
 
-## Acquisitions
-
-<!--DHIS2-SECTION-ID:scale_up_acquisitions-->
 
 Now that you have performed all your testing and your pilot project, you are ready to scale up your deployment, for which you will need to do acquisition of Hardware and necessary services. You will need to make decisions regarding:
 
@@ -32,9 +29,7 @@ If your installation plans to include the use of SMS for transmitting selected r
 
 The process of selecting and signing a contract with an SMS provider varies by country and it depends on the procurement procedures of your organization.
 
-### Planning large acquisitions
-
-<!--DHIS2-SECTION-ID:scale_up_acquisitions_planning-->
+### Planning large acquisitions { #implementation_guide_scale_up_planning }
 
 Each project will need a mix of device types: phones, tablets, and Chromebooks.  Most mobile devices are likely to be allocated to a dedicated user. Things to consider will include the nature of the job. For example, community workers will use smartphones or tablets. But health workers that work on a facility may prefer a tablet with an external keyboard or a Chromebook. 
 
@@ -50,9 +45,8 @@ Example of a total acquisition of 100 to 1000 devices.
 |Month X|Roll out Phase X|-->|50-500|
 |Month 36-48|Upgrade replacement|Replace devices|X|
 
-## Mobile Device Management
+## Mobile Device Management { #implementation_guide_scale_up_mdm }
 
-<!--DHIS2-SECTION-ID:scale_up_mdm-->
 
 Mobile Device Management refers to software used for the administration of mobile devices. You will need an MDM software when you have to support hundreds of devices and it becomes necessary to control the apk file distribution across the devices, provide tech support and enforce institutional policies. Most options are offered as monthly-fee services. Some free apps offer kiosk mode, but charge a monthly fee for basic remote management.
 
@@ -99,23 +93,20 @@ In the next page you can find a list of available MDM software (please keep in m
 - XenMobile (Citrix) (can be expensive - 2.03 USD /device/month for 3,000 devices)
 - Good for Enterprise (Blackberry) (can be expensive - 2 USD /device/month \+ 2.5K USD for deployment)
 
-## Training
+## Training { #implementation_guide_scale_up_training }
 
-<!--DHIS2-SECTION-ID:scale_up_training-->
 
 An important step before roll up, is the training of the users and if necessary, the training of the teams providing support to the users. There are many training strategies that you can follow and it will depend on the size of the group that needs to be trained, their skill level, the time frame available, the budget, etc. It is important that you put time and energy into designing your training strategy and allocate enough time to accomplish your training goals. Having your users well trained and informed will reduce user’s anxiety and adoption problems and it will also increase the quality of the data collected.
 
-### Technical Preparations for the Training
+### Technical Preparations for the Training { #implementation_guide_scale_up_techinical_prep }
 
-<!--DHIS2-SECTION-ID:scale_up_training_preps-->
 
 When preparing for the training, ensure that all the practical technical requirements have been met. This includes having the tablets/mobile devices ready, with the new DHIS 2 Capture Android Application installed. Depending on the availability of internet connectivity at the area where you will be performing the training, you might have all the tablets pre-synched with the server, so that you have enough data and the right configuration for the training.. Before doing the training, the exercises should be tested to ensure everything is working. Troubleshoot issues detected during testing so they do not arise during training. You may want to do a second round of the test to spot any issues missed in the first round.
 
 If the training is done with pre-synched data and configuration, at the end of the training, make sure to let the trainees experience the App accessing the DHIS 2 remote server. This will give the trainees the possibility to experience real-life sync experience, which may include delays in the network. Without experiencing delays, they may later interpret network delays as faults in their device.
 
-### Training Budget
+### Training Budget { #implementation_guide_scale_up_budget }
 
-<!--DHIS2-SECTION-ID:scale_up_training_budget-->
 
 Following, there are some guidelines on preparing the budget which are taken from the [DHIS 2 Community Health Information System Guidelines](https://s3-eu-west-1.amazonaws.com/content.dhis2.org/Publications/CHIS+Guidelines+En.pdf) published by the University of Oslo:
 
@@ -128,9 +119,8 @@ Following, there are some guidelines on preparing the budget which are taken fro
 - Build budget based on in-sheet calculations of materials needed, unit cost of that material, and number of units needed. You can also build in additional multipliers to illustrate number of units per attendee. This allows flexibility in updating the budget if unit costs change, or number of participants increases or decreases.
 - Budget anticipated expenses in local currency, with a conversion rate built in (that can be updated as needed) to convert to the desired currency of your organization or funder.(2).
 
-### Training Agenda
+### Training Agenda { #implementation_guide_scale_up_agenda }
 
-<!--DHIS2-SECTION-ID:scale_up_training_agenda-->
 
 The [DHIS 2 Community Health Information System Guidelines](https://s3-eu-west-1.amazonaws.com/content.dhis2.org/Publications/CHIS+Guidelines+En.pdf) document written by the University of Oslo recommends that you consider:
 
@@ -141,9 +131,8 @@ The [DHIS 2 Community Health Information System Guidelines](https://s3-eu-west-1
 
 Be aware of the number of attendees you expect at each training, as providing sufficient materials and space will be necessary. Event space should be large enough for the group and also appropriate for the planned activities.
 
-### Training Materials
+### Training Materials { #implementation_guide_scale_up_materials }
 
-<!--DHIS2-SECTION-ID:scale_up_training_materials-->
 
 In the same document we find recommendation for the training materials as well, which we include here. The materials you will need for your trainings will depend on your activities. To ensure you are planning for everything, walk through your training agenda with a partner, and discuss what will be done for each part of the training, taking note of the materials needed.
 

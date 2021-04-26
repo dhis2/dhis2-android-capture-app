@@ -131,11 +131,15 @@ class ValueStoreImpl(
 
         return if (currentValue != newValue) {
             if (!DhisTextUtils.isEmpty(value)) {
-                valueRepository.blockingSetCheck(d2, uid, newValue)
+                if (valueRepository.blockingSetCheck(d2, uid, newValue)) {
+                    Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_CHANGED))
+                } else {
+                    Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_HAS_NOT_CHANGED))
+                }
             } else {
                 valueRepository.blockingDeleteIfExist()
+                Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_CHANGED))
             }
-            Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_CHANGED))
         } else {
             Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_HAS_NOT_CHANGED))
         }

@@ -92,29 +92,13 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void setUpViewPagerAdapter() {
+        binding.eventViewPager.setUserInputEnabled(false);
         binding.eventViewPager.setAdapter(new EventCapturePagerAdapter(
-                getSupportFragmentManager(),
-                getContext(),
+                this,
                 getIntent().getStringExtra(PROGRAM_UID),
                 getIntent().getStringExtra(Constants.EVENT_UID)
         ));
         ViewExtensionsKt.clipWithRoundedCorners(binding.eventViewPager, ExtensionsKt.getDp(16));
-        binding.eventViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                binding.navigationBar.selectItemAt(position+1);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
     }
 
     private void setUpNavigationBar() {

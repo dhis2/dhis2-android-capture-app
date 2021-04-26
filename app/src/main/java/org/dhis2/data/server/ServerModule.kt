@@ -7,7 +7,7 @@ import dhis2.org.analytics.charts.Charts
 import dhis2.org.analytics.charts.DhisAnalyticCharts
 import java.util.ArrayList
 import okhttp3.Interceptor
-import org.dhis2.App
+import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.data.dagger.PerServer
@@ -18,6 +18,7 @@ import org.dhis2.utils.RulesUtilsProvider
 import org.dhis2.utils.RulesUtilsProviderImpl
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.AnalyticsInterceptor
+import org.dhis2.utils.reporting.SentryOkHttpInterceptor
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.D2Configuration
 import org.hisp.dhis.android.core.D2Manager
@@ -77,12 +78,17 @@ class ServerModule {
         fun getD2Configuration(context: Context): D2Configuration {
             val interceptors: MutableList<Interceptor> =
                 ArrayList()
-            if ((context as App).flipperInterceptor != null) {
-                interceptors.add(context.flipperInterceptor)
+            context.app().appInspector.flipperInterceptor?.let { flipperInterceptor ->
+                interceptors.add(flipperInterceptor)
             }
             interceptors.add(
                 AnalyticsInterceptor(
-                    AnalyticsHelper(context.appComponent().matomoController())
+                    AnalyticsHelper(context.app().appComponent().matomoController())
+                )
+            )
+            interceptors.add(
+                SentryOkHttpInterceptor(
+                    context.app().appComponent().preferenceProvider()
                 )
             )
             return D2Configuration.builder()

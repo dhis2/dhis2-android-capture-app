@@ -1,5 +1,6 @@
 package org.dhis2.usescases.enrollment
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
@@ -14,6 +15,7 @@ import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.data.forms.dataentry.fields.ActionType
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
@@ -54,7 +56,7 @@ class EnrollmentPresenterImplTest {
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val valueStore: ValueStore = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
-    private val onRowActionProcessor: FlowableProcessor<RowAction> = mock()
+    private val onRowActionProcessor: FlowableProcessor<RowAction> = PublishProcessor.create()
     private val sectionProcessor: FlowableProcessor<String> = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
 
@@ -169,31 +171,22 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Should show dialog if an unique field has a coincidence in a unique attribute`() {
-        val fields = arrayListOf(
-            dummyEditTextViewModel("uid1", "field", value = "value")
-        )
-        mockTrackedEntityAttributes()
-        mockTrackedEntityAttributeValues()
-
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("uid1").blockingGet().unique()
-        ) doReturn true
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid1")
-                .byValue().eq("value")
-                .blockingGet()
-        ) doReturn listOf(
-            TrackedEntityAttributeValue.builder().value("1").build(),
-            TrackedEntityAttributeValue.builder().value("1").build()
+        whenever(valueStore.save(any(), any())) doReturn Flowable.just(
+            StoreResult(
+                "fieldUid",
+                ValueStoreImpl.ValueStoreResult.VALUE_NOT_UNIQUE
+            )
         )
         whenever(enrollmentView.context) doReturn mock()
 
-        presenter.setFieldsToShow("testSection", fields)
+        presenter.listenToActions()
+        onRowActionProcessor.onNext(
+            RowAction("fieldUid", "123", false, null, null, null, null, ActionType.ON_SAVE)
+        )
         val checkUnique = presenter.dataIntegrityCheck()
 
         Assert.assertFalse(checkUnique)
-        verify(enrollmentView).showInfoDialog(null, null)
+        verify(enrollmentView, times(2)).showInfoDialog(null, null)
     }
 
     @Test

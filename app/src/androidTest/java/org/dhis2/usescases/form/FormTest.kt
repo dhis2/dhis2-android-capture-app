@@ -148,6 +148,7 @@ class FormTest: BaseTest() {
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, DISPLAY_KEY, DISPLAY_KEY_POSITION)
             pressBack()
             goToAnalytics()
+            waitToDebounce(1000)
             checkIndicatorIsDisplayed("Current Option", "DKVP")
             goToDataEntry()
         }
@@ -155,6 +156,7 @@ class FormTest: BaseTest() {
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption("ZZ TEST RULE ACTIONS C", 7, HIDE_PROGRAM_STAGE, HIDE_PROGRAM_STAGE_POSITION)
+            scrollToPositionForm(0)
             scrollToBottomForm()
             clickOnSaveForm()
             clickOnFinish()

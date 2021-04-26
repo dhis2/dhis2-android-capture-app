@@ -175,7 +175,7 @@ public class OptionSetSelectionView extends FieldLayout {
                 optionBinding.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     if (isChecked) {
                         listener.onSelectedOption(option.name(), option.code());
-                    } else if (currentCodeValue.equals(option.code())) {
+                    } else if (currentCodeValue.equals(option.displayName())) {
                         listener.onOptionsClear();
                     }
                 });

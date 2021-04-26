@@ -1,10 +1,7 @@
-# Contribute to the App
+# Contribute to the App { #capture_app_contribute }
 
-<!-- DHIS2-SECTION-ID:contribute -->
+## How to report a bug { #capture_app_contribute_report }
 
-## How to report a bug
-
-<!-- DHIS2-SECTION-ID:contribute_report -->
 
 First of all, please check the [List of already reported bugs in JIRA](https://jira.dhis2.org/issues/?filter=10872)
 
@@ -18,15 +15,13 @@ When reporting a bug please specify together with your description:
 - Device (when possible)
 - Error log (when possible)
 
-## How to suggest Icons to the library
+## How to suggest Icons to the library { #capture_app_contribute_icons }
 
-<!-- DHIS2-SECTION-ID:contribute_icons -->
 
 DHIS 2 and the new DHIS 2 Android App allows you to select icons for programs, datasets and the options of an optionset. DHIS 2 2.30 incorporates 125 icons. We plan to expand the collection of icons on each future version of DHIS 2- for that we need your help: we are seeking ideas for new icons - please submit yours using [this form](https://forms.gle/FkUmwfZGYAScd2326).
 
-## How to add translations
+## How to add translations { #capture_app_contribute_translations }
 
-<!-- DHIS2-SECTION-ID:contribute_translations -->
 
 The steps to contribute to the translation of the app are:
 

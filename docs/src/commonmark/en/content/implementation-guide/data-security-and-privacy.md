@@ -1,6 +1,4 @@
-# Data Security and Privacy
-
-<!--DHIS2-SECTION-ID:data_security_and_privacy-->
+# Data Security and Privacy { #implementation_guide_datasec }
 
 With the new DHIS 2 Android Capture App, users will be collecting individual data at the point of service provision, which is the lowest level of direct data capture as it involves the direct beneficiary. Capturing Data this way enables upstream analytics without compromising on detail, makes downstream analytics possible, reduces error and enables post hoc analysis to answer questions identified after data collection and system design. However, individual data brings additional challenges for information systems, including considerations of security and privacy, considerations of readiness and capacity, as lower IT literacy data collectors are provided with digital tools and additional complications with regards to analytics, storage and system responsiveness.
 
