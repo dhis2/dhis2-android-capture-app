@@ -1,6 +1,4 @@
-# Value types supported
-
-<!-- DHIS2-SECTION-ID:valuetypes -->
+# Value types supported { #capture_app_value_types }
 
 The following is a comprehensive list of all value types available in DHIS 2, and notes on whether or not these have been implemented in the Android Capture app.
 

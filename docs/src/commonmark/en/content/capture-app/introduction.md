@@ -1,6 +1,4 @@
-# Introduction
-
-<!-- DHIS2-SECTION-ID:introduction -->
+# Introduction { #capture_app_introduction }
 
 This guide is designed to assist you in configuring DHIS 2 for use with the Android Capture App.
 
