@@ -41,6 +41,15 @@ class DataSetTableRobot : BaseRobot() {
             )
     }
 
+    fun clickOnEditTextCell(column: Int, row: Int){
+        onView(withId(row))
+            .perform(
+                RecyclerViewActions.actionOnItemAtPosition<FormViewHolder>( //EditTextCustomHolder
+                    column, clickChildViewWithId(R.id.input_editText)
+                )
+            )
+    }
+
     fun checkActivityHasNotFinished(activity: DataSetTableActivity) {
         assertTrue(!activity.isDestroyed)
     }
