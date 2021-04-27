@@ -73,10 +73,10 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
         return R.layout.form_org_unit;
     }
 
-    public void onDataChange(String data) {
+    public void onDataChange(String orgUnitUid, String orgUnitName) {
         processor().onNext(new RowAction(
                 uid(),
-                data,
+                isBackgroundTransparent() ? orgUnitUid : orgUnitUid + "_ou_" + orgUnitName,
                 false,
                 null,
                 null,
