@@ -15,7 +15,7 @@ import androidx.databinding.DataBindingUtil;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
-import org.dhis2.form.data.FieldUiModel;
+import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;

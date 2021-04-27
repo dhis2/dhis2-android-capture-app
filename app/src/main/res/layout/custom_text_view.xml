@@ -29,11 +29,11 @@
 
         <variable
             name="legend"
-            type="org.dhis2.form.data.LegendValue" />
+            type="org.dhis2.form.model.LegendValue" />
 
         <variable
             name="keyboardActionType"
-            type="org.dhis2.form.data.KeyboardActionType" />
+            type="org.dhis2.form.model.KeyboardActionType" />
 
     </data>
 

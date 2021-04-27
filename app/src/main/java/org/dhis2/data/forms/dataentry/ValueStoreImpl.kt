@@ -5,8 +5,8 @@ import java.io.File
 import org.dhis2.Bindings.blockingSetCheck
 import org.dhis2.Bindings.withValueTypeCheck
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
-import org.dhis2.form.data.StoreResult
-import org.dhis2.form.data.ValueStoreResult
+import org.dhis2.form.model.StoreResult
+import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2

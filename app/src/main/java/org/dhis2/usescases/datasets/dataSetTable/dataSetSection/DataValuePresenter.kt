@@ -16,8 +16,8 @@ import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.dhis2.data.tuples.Sextet
 import org.dhis2.data.tuples.Trio
-import org.dhis2.form.data.StoreResult
-import org.dhis2.form.data.ValueStoreResult
+import org.dhis2.form.model.StoreResult
+import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DateUtils

@@ -17,7 +17,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.databinding.ActivityEventSummaryBinding;
-import org.dhis2.form.data.FieldUiModel;
+import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;

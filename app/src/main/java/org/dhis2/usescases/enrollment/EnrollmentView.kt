@@ -1,6 +1,6 @@
 package org.dhis2.usescases.enrollment
 
-import org.dhis2.form.data.FieldUiModel
+import org.dhis2.form.model.FieldUiModel
 import org.dhis2.usescases.general.AbstractActivityContracts
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 

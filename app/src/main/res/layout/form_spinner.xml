@@ -29,7 +29,7 @@
 
         <variable
             name="legend"
-            type="org.dhis2.form.data.LegendValue" />
+            type="org.dhis2.form.model.LegendValue" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

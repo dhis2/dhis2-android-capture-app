@@ -18,11 +18,11 @@ import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.form.data.ActionType
-import org.dhis2.form.data.FieldUiModel
-import org.dhis2.form.data.RowAction
-import org.dhis2.form.data.StoreResult
-import org.dhis2.form.data.ValueStoreResult
+import org.dhis2.form.model.ActionType
+import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.RowAction
+import org.dhis2.form.model.StoreResult
+import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.Result
 import org.dhis2.utils.RulesActionCallbacks

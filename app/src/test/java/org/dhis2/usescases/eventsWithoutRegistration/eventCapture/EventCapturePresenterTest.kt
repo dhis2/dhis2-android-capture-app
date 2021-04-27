@@ -7,14 +7,14 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.processors.FlowableProcessor
 import junit.framework.Assert.assertTrue
 import org.dhis2.data.forms.FormSectionViewModel
-import org.dhis2.form.data.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
-import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.form.data.RowAction
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.form.model.RowAction
+import org.dhis2.form.model.StoreResult
+import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.utils.RulesUtilsProvider
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.junit.Before
@@ -65,7 +65,7 @@ class EventCapturePresenterTest {
                 "optionGroupToHide",
                 true
             )
-        ) doReturn StoreResult("fieldUid", ValueStoreImpl.ValueStoreResult.VALUE_CHANGED)
+        ) doReturn StoreResult("fieldUid", ValueStoreResult.VALUE_CHANGED)
         presenter.setOptionGroupToHide("optionGroupToHide", true, "field")
         verify(valueStore).deleteOptionValueIfSelectedInGroup("field", "optionGroupToHide", true)
     }
@@ -78,7 +78,7 @@ class EventCapturePresenterTest {
                 "optionGroupToHide",
                 false
             )
-        ) doReturn StoreResult("fieldUid", ValueStoreImpl.ValueStoreResult.VALUE_CHANGED)
+        ) doReturn StoreResult("fieldUid", ValueStoreResult.VALUE_CHANGED)
         presenter.setOptionGroupToHide("optionGroupToHide", false, "field")
         verify(valueStore).deleteOptionValueIfSelectedInGroup("field", "optionGroupToHide", false)
     }

@@ -6,7 +6,7 @@ import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel
 import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
-import org.dhis2.form.data.FieldUiModel
+import org.dhis2.form.model.FieldUiModel
 import org.dhis2.utils.DhisTextUtils.Companion.isEmpty
 import java.util.ArrayList
 import java.util.HashMap

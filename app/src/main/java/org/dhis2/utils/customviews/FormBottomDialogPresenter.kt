@@ -1,6 +1,6 @@
 package org.dhis2.utils.customviews
 
-import org.dhis2.form.data.FieldUiModel
+import org.dhis2.form.model.FieldUiModel
 
 class FormBottomDialogPresenter {
     fun appendMandatoryFieldList(

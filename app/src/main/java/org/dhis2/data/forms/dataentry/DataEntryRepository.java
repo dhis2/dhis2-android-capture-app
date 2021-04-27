@@ -2,7 +2,7 @@ package org.dhis2.data.forms.dataentry;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.form.data.FieldUiModel;
+import org.dhis2.form.model.FieldUiModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.jetbrains.annotations.NotNull;
 

@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.ListAdapter
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder.FieldItemCallback
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
-import org.dhis2.form.data.FieldUiModel
+import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.DataEntryDiff
 import java.util.ArrayList
 import java.util.LinkedHashMap

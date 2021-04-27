@@ -15,7 +15,7 @@ import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
-import org.dhis2.form.data.FieldUiModel
+import org.dhis2.form.model.FieldUiModel
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
 import timber.log.Timber

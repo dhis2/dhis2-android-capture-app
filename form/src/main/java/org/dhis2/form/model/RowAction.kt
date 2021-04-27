@@ -1,4 +1,6 @@
-package org.dhis2.form.data
+package org.dhis2.form.model
+
+import org.dhis2.form.model.ActionType
 
 data class RowAction(
     val id: String,

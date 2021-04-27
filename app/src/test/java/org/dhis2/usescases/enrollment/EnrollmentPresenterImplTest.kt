@@ -12,14 +12,14 @@ import io.reactivex.Flowable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
-import org.dhis2.form.data.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
-import org.dhis2.data.forms.dataentry.ValueStoreImpl
-import org.dhis2.data.forms.dataentry.fields.ActionType
-import org.dhis2.form.data.RowAction
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.form.model.ActionType
+import org.dhis2.form.model.RowAction
+import org.dhis2.form.model.StoreResult
+import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
@@ -174,7 +174,7 @@ class EnrollmentPresenterImplTest {
         whenever(valueStore.save(any(), any())) doReturn Flowable.just(
             StoreResult(
                 "fieldUid",
-                ValueStoreImpl.ValueStoreResult.VALUE_NOT_UNIQUE
+                ValueStoreResult.VALUE_NOT_UNIQUE
             )
         )
         whenever(enrollmentView.context) doReturn mock()
@@ -272,7 +272,7 @@ class EnrollmentPresenterImplTest {
         whenever(valueStore.save("uid", "fileValue")) doReturn Flowable.just(
             StoreResult(
                 "uid",
-                ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+                ValueStoreResult.VALUE_CHANGED
             )
         )
         presenter.saveFile("uid", "fileValue")

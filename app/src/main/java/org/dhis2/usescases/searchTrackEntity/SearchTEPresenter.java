@@ -19,8 +19,8 @@ import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.R;
 import org.dhis2.data.dhislogic.DhisMapUtils;
-import org.dhis2.form.data.ActionType;
-import org.dhis2.form.data.RowAction;
+import org.dhis2.form.model.ActionType;
+import org.dhis2.form.model.RowAction;
 import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;

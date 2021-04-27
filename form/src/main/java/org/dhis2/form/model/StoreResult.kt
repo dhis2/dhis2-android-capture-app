@@ -1,4 +1,4 @@
-package org.dhis2.form.data
+package org.dhis2.form.model
 
 data class StoreResult(
     val uid: String,

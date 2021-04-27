@@ -1,6 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment
 
-import org.dhis2.form.data.FieldUiModel
+import org.dhis2.form.model.FieldUiModel
 
 interface EventCaptureFormView {
 

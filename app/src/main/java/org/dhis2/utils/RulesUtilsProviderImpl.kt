@@ -1,6 +1,6 @@
 package org.dhis2.utils
 
-import org.dhis2.form.data.FieldUiModel
+import org.dhis2.form.model.FieldUiModel
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.rules.models.RuleActionAssign

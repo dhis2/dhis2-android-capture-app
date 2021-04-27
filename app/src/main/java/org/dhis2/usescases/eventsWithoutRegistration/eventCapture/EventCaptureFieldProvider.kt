@@ -6,9 +6,9 @@ import org.dhis2.Bindings.blockingGetValueCheck
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel
-import org.dhis2.form.data.FieldUiModel
-import org.dhis2.form.data.LegendValue
-import org.dhis2.form.data.RowAction
+import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.LegendValue
+import org.dhis2.form.model.RowAction
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList

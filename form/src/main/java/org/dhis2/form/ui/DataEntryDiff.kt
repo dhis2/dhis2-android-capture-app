@@ -1,7 +1,7 @@
 package org.dhis2.form.ui
 
 import androidx.recyclerview.widget.DiffUtil
-import org.dhis2.form.data.FieldUiModel
+import org.dhis2.form.model.FieldUiModel
 
 class DataEntryDiff : DiffUtil.ItemCallback<FieldUiModel>() {
     override fun areItemsTheSame(oldItem: FieldUiModel, newItem: FieldUiModel): Boolean =
