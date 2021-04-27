@@ -76,7 +76,7 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
     public void onDataChange(String orgUnitUid, String orgUnitName) {
         processor().onNext(new RowAction(
                 uid(),
-                isBackgroundTransparent() ? orgUnitUid : orgUnitUid + "_ou_" + orgUnitName,
+                isBackgroundTransparent() ? orgUnitUid : orgUnitUid != null ? orgUnitUid + "_ou_" + orgUnitName : null,
                 false,
                 null,
                 null,
