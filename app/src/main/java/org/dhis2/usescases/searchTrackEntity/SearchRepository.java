@@ -5,9 +5,9 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.form.data.FieldUiModel;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
 import org.dhis2.utils.filters.sorting.SortingItem;
@@ -26,7 +26,7 @@ import io.reactivex.Observable;
 
 public interface SearchRepository {
 
-    Observable<List<FieldViewModel>> searchFields(@Nullable String programUid, Map<String, String> currentSearchValues);
+    Observable<List<FieldUiModel>> searchFields(@Nullable String programUid, Map<String, String> currentSearchValues);
 
     Observable<List<Program>> programsWithRegistration(String programTypeId);
 

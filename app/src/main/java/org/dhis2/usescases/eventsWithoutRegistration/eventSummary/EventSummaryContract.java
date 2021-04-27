@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.FormSectionViewModel;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.form.data.FieldUiModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.program.Program;
@@ -26,7 +26,7 @@ public class EventSummaryContract {
         void onEventSections(List<FormSectionViewModel> formSectionViewModels);
 
         @NonNull
-        Consumer<List<FieldViewModel>> showFields(String sectionUid);
+        Consumer<List<FieldUiModel>> showFields(String sectionUid);
 
         void onStatusChanged(Event event);
 

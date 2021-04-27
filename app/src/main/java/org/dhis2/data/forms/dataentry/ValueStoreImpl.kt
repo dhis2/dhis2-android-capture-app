@@ -5,6 +5,8 @@ import java.io.File
 import org.dhis2.Bindings.blockingSetCheck
 import org.dhis2.Bindings.withValueTypeCheck
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
+import org.dhis2.form.data.StoreResult
+import org.dhis2.form.data.ValueStoreResult
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
@@ -17,13 +19,6 @@ class ValueStoreImpl(
     private val entryMode: DataEntryStore.EntryMode,
     private val dhisEnrollmentUtils: DhisEnrollmentUtils
 ) : ValueStore {
-
-    enum class ValueStoreResult {
-        VALUE_CHANGED,
-        VALUE_HAS_NOT_CHANGED,
-        VALUE_NOT_UNIQUE,
-        UID_IS_NOT_DE_OR_ATTR
-    }
 
     override fun save(uid: String, value: String?): Flowable<StoreResult> {
         return when (entryMode) {

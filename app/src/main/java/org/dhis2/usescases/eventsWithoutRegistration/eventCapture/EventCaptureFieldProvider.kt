@@ -4,11 +4,11 @@ import io.reactivex.Flowable
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.Bindings.blockingGetValueCheck
 import org.dhis2.Bindings.userFriendlyValue
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.data.forms.dataentry.fields.LegendValue
-import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel
+import org.dhis2.form.data.FieldUiModel
+import org.dhis2.form.data.LegendValue
+import org.dhis2.form.data.RowAction
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
@@ -32,8 +32,8 @@ class EventCaptureFieldProvider(
         programStageSections: List<ProgramStageSection>,
         isEventEditable: Boolean,
         actionProcessor: FlowableProcessor<RowAction>,
-        cachedFields: List<FieldViewModel>
-    ): Flowable<List<FieldViewModel>> {
+        cachedFields: List<FieldUiModel>
+    ): Flowable<List<FieldUiModel>> {
         return if (cachedFields.isNotEmpty()) {
             updateEventFields(event, cachedFields, isEventEditable)
         } else {
@@ -46,7 +46,7 @@ class EventCaptureFieldProvider(
         programStageSections: List<ProgramStageSection>,
         isEventEditable: Boolean,
         actionProcessor: FlowableProcessor<RowAction>
-    ): Flowable<List<FieldViewModel>> {
+    ): Flowable<List<FieldUiModel>> {
         return Flowable.just(sortedStageDataElements(event.programStage()!!))
             .flatMapIterable { list -> list }
             .map { programStageDataElement ->
@@ -62,43 +62,43 @@ class EventCaptureFieldProvider(
 
     private fun updateEventFields(
         event: Event,
-        fields: List<FieldViewModel>,
+        fields: List<FieldUiModel>,
         isEventEditable: Boolean
-    ): Flowable<List<FieldViewModel>> {
+    ): Flowable<List<FieldUiModel>> {
         return Flowable.just(fields)
             .flatMapIterable { list -> list }
             .map { fieldViewModel ->
 
-                val de = dataElement(fieldViewModel.uid())
+                val de = dataElement(fieldViewModel.getUid())
 
                 val (rawValue, friendlyValue) = dataValue(
                     event.uid(),
-                    fieldViewModel.uid(),
+                    fieldViewModel.getUid(),
                     fieldViewModel is OrgUnitViewModel
                 )
 
                 val error = checkConflicts(
                     event.uid(),
-                    fieldViewModel.uid(),
+                    fieldViewModel.getUid(),
                     rawValue
                 )
 
-                val legend = if (fieldViewModel.canHaveLegend()) {
+                val legend = if (fieldViewModel.hasLegend()) {
                     getColorByLegend(rawValue, de)
                 } else {
                     null
                 }
 
-                val editable = fieldViewModel.editable() ?: true
+                val editable = fieldViewModel.isEditable() ?: true
 
-                val updatedFieldViewModel = fieldViewModel.withValue(friendlyValue)
-                    .withEditMode(editable || isEventEditable)
-                    .withLegend(legend)
+                val updatedFieldViewModel = fieldViewModel.setValue(friendlyValue)
+                    .setEditMode(editable || isEventEditable)
+                    .setLegend(legend)
                     .apply {
                         if (error.isNotEmpty()) {
-                            withError(error)
+                            setError(error)
                         } else {
-                            withError(null)
+                            setError(null)
                         }
                     }
 
@@ -131,7 +131,7 @@ class EventCaptureFieldProvider(
         programStageSections: List<ProgramStageSection>,
         isEventEditable: Boolean,
         actionProcessor: FlowableProcessor<RowAction>
-    ): FieldViewModel {
+    ): FieldUiModel {
         val de = dataElement(programStageDataElement.dataElement()!!.uid())
 
         val programStageSection: ProgramStageSection? =
@@ -151,7 +151,7 @@ class EventCaptureFieldProvider(
 
         val error: String = checkConflicts(eventUid, de.uid(), rawValue)
 
-        val fieldViewModel: FieldViewModel =
+        val fieldViewModel: FieldUiModel =
             fieldFactory.create(
                 de.uid(),
                 de.formName() ?: de.displayName()!!,
@@ -174,7 +174,7 @@ class EventCaptureFieldProvider(
             )
 
         return if (error.isNotEmpty()) {
-            fieldViewModel.withError(error)
+            fieldViewModel.setError(error)
         } else {
             fieldViewModel
         }

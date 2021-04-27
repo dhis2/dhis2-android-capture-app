@@ -15,9 +15,9 @@ import androidx.databinding.DataBindingUtil;
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.databinding.ActivityEventSummaryBinding;
+import org.dhis2.form.data.FieldUiModel;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
@@ -128,7 +128,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
 
     @NonNull
     @Override
-    public Consumer<List<FieldViewModel>> showFields(String sectionUid) {
+    public Consumer<List<FieldUiModel>> showFields(String sectionUid) {
         return fields -> swap(fields, sectionUid);
     }
 
@@ -212,7 +212,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     }
 
 
-    void swap(@NonNull List<FieldViewModel> updates, String sectionUid) {
+    void swap(@NonNull List<FieldUiModel> updates, String sectionUid) {
 
         View sectionView = sections.get(sectionUid);
         if (sectionsToHide != null && sectionsToHide.contains(sectionUid)) {
@@ -237,11 +237,11 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
 
             List<String> missingMandatoryFields = new ArrayList<>();
             List<String> errorFields = new ArrayList<>();
-            for (FieldViewModel fields : updates) {
-                if (fields.error() != null)
-                    errorFields.add(fields.label());
-                if (fields.mandatory() && fields.value() == null)
-                    missingMandatoryFields.add(fields.label());
+            for (FieldUiModel fields : updates) {
+                if (fields.getError() != null)
+                    errorFields.add(fields.getLabel());
+                if (fields.isMandatory() && fields.getValue() == null)
+                    missingMandatoryFields.add(fields.getLabel());
             }
             if (!missingMandatoryFields.isEmpty() || !errorFields.isEmpty()) {
                 sectionView.findViewById(R.id.section_info).setVisibility(View.VISIBLE);
@@ -275,28 +275,28 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
         binding.actionButton.setEnabled(fieldsToCompleteBeforeClosing <= 0 && !fieldsWithErrors);
     }
 
-    private int calculateCompletedFields(@NonNull List<FieldViewModel> updates) {
+    private int calculateCompletedFields(@NonNull List<FieldUiModel> updates) {
         int total = 0;
-        for (FieldViewModel fieldViewModel : updates) {
-            if (fieldViewModel.value() != null && !fieldViewModel.value().isEmpty())
+        for (FieldUiModel fieldViewModel : updates) {
+            if (fieldViewModel.getValue() != null && !fieldViewModel.getValue().isEmpty())
                 total++;
         }
         return total;
     }
 
-    private int calculateUnsupportedFields(@NonNull List<FieldViewModel> updates) {
+    private int calculateUnsupportedFields(@NonNull List<FieldUiModel> updates) {
         int total = 0;
-        for (FieldViewModel fieldViewModel : updates) {
+        for (FieldUiModel fieldViewModel : updates) {
             if (fieldViewModel instanceof UnsupportedViewModel)
                 total++;
         }
         return total;
     }
 
-    private int calculateMandatoryUnansweredFields(@NonNull List<FieldViewModel> updates) {
+    private int calculateMandatoryUnansweredFields(@NonNull List<FieldUiModel> updates) {
         int total = 0;
-        for (FieldViewModel fieldViewModel : updates) {
-            if ((fieldViewModel.value() == null || fieldViewModel.value().isEmpty()) && fieldViewModel.mandatory())
+        for (FieldUiModel fieldViewModel : updates) {
+            if ((fieldViewModel.getValue() == null || fieldViewModel.getValue().isEmpty()) && fieldViewModel.isMandatory())
                 total++;
         }
         return total;

@@ -1,9 +1,9 @@
 package org.dhis2.utils.customviews
 
 import io.reactivex.processors.PublishProcessor
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
+import org.dhis2.form.data.FieldUiModel
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.junit.Assert.assertTrue
@@ -28,7 +28,7 @@ class FormBottomDialogPresenterTest {
         )
     }
 
-    private fun mandatoryFields(): Map<String, FieldViewModel> {
+    private fun mandatoryFields(): Map<String, FieldUiModel> {
         return mapOf(
             Pair(
                 "uid1",

@@ -1,4 +1,4 @@
-package org.dhis2.data.forms.dataentry.fields
+package org.dhis2.form.data
 
 data class RowAction(
     val id: String,
@@ -10,7 +10,3 @@ data class RowAction(
     val error: String? = null,
     val type: ActionType
 )
-
-enum class ActionType {
-    ON_NEXT, ON_FOCUS, ON_SAVE, ON_TEXT_CHANGE
-}

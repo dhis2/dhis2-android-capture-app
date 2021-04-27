@@ -5,17 +5,16 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.processors.FlowableProcessor
-import java.util.ArrayList
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel
+import org.dhis2.form.data.FieldUiModel
+import org.dhis2.form.data.RowAction
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.DhisTextUtils
@@ -32,6 +31,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import timber.log.Timber
+import java.util.ArrayList
 
 class EnrollmentRepository(
     private val fieldFactory: FieldViewModelFactory,
@@ -66,7 +66,7 @@ class EnrollmentRepository(
             }.toFlowable()
     }
 
-    override fun list(): Flowable<MutableList<FieldViewModel>> {
+    override fun list(): Flowable<MutableList<FieldUiModel>> {
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
             .flatMap { enrollment ->
                 d2.programModule().programs().uid(enrollment.program()).get()
@@ -98,7 +98,7 @@ class EnrollmentRepository(
     }
 
     @VisibleForTesting
-    fun getFieldsForSingleSection(programUid: String): Single<List<FieldViewModel>> {
+    fun getFieldsForSingleSection(programUid: String): Single<List<FieldUiModel>> {
         return d2.programModule().programTrackedEntityAttributes().withRenderType()
             .byProgram().eq(programUid).orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get()
             .toFlowable()
@@ -106,7 +106,7 @@ class EnrollmentRepository(
             .map { transform(it) }
             .toList()
             .map {
-                val finalFieldList = mutableListOf<FieldViewModel>()
+                val finalFieldList = mutableListOf<FieldUiModel>()
                 for ((index, field) in it.withIndex()) {
                     if (field is OptionSetViewModel) {
                         val options =
@@ -132,8 +132,8 @@ class EnrollmentRepository(
     fun getFieldsForMultipleSections(
         programSections: List<ProgramSection>,
         programUid: String
-    ): Single<List<FieldViewModel>> {
-        val fields = ArrayList<FieldViewModel>()
+    ): Single<List<FieldUiModel>> {
+        val fields = ArrayList<FieldUiModel>()
         for (section in programSections) {
             fields.add(transformSection(section))
             for ((index, attribute) in section.attributes()!!.withIndex()) {
@@ -142,17 +142,17 @@ class EnrollmentRepository(
                     .byProgram().eq(programUid)
                     .byTrackedEntityAttribute().eq(attribute.uid())
                     .one().blockingGet()?.let { programTrackedEntityAttribute ->
-                    val field = transform(programTrackedEntityAttribute, section.uid())
-                    if (
-                        (index == section.attributes()!!.lastIndex) &&
-                        field is EditTextViewModel &&
-                        field.valueType() != ValueType.LONG_TEXT
-                    ) {
-                        fields.add(field.withKeyBoardActionDone())
-                    } else {
-                        fields.add(field)
+                        val field = transform(programTrackedEntityAttribute, section.uid())
+                        if (
+                            (index == section.attributes()!!.lastIndex) &&
+                            field is EditTextViewModel &&
+                            field.valueType() != ValueType.LONG_TEXT
+                        ) {
+                            fields.add(field.withKeyBoardActionDone())
+                        } else {
+                            fields.add(field)
+                        }
                     }
-                }
             }
         }
         return Single.just(fields)
@@ -167,7 +167,7 @@ class EnrollmentRepository(
     private fun transform(
         programTrackedEntityAttribute: ProgramTrackedEntityAttribute,
         sectionUid: String? = SINGLE_SECTION_UID
-    ): FieldViewModel {
+    ): FieldUiModel {
         val attribute = d2.trackedEntityModule().trackedEntityAttributes()
             .uid(programTrackedEntityAttribute.trackedEntityAttribute()!!.uid())
             .blockingGet()
@@ -250,9 +250,9 @@ class EnrollmentRepository(
         )
 
         return if (!error.isNullOrEmpty()) {
-            fieldViewModel.withError(error)
+            fieldViewModel.setError(error)
         } else if (warning != null) {
-            fieldViewModel.withWarning(warning)
+            fieldViewModel.setWarning(warning)
         } else {
             fieldViewModel
         }
@@ -291,7 +291,7 @@ class EnrollmentRepository(
         return Pair(dataValue, warning)
     }
 
-    private fun getSingleSectionList(): MutableList<FieldViewModel> {
+    private fun getSingleSectionList(): MutableList<FieldUiModel> {
         val tei = d2.trackedEntityModule().trackedEntityInstances()
             .uid(enrollmentRepository.blockingGet().trackedEntityInstance())
             .blockingGet()
@@ -307,8 +307,8 @@ class EnrollmentRepository(
         )
     }
 
-    private fun getEnrollmentData(program: Program): MutableList<FieldViewModel> {
-        val enrollmentDataList = ArrayList<FieldViewModel>()
+    private fun getEnrollmentData(program: Program): MutableList<FieldUiModel> {
+        val enrollmentDataList = ArrayList<FieldUiModel>()
         enrollmentDataList.add(getEnrollmentDataSection(program.description()))
 
         enrollmentDataList.add(
@@ -351,7 +351,7 @@ class EnrollmentRepository(
         return enrollmentDataList
     }
 
-    private fun getEnrollmentDataSection(description: String?): FieldViewModel {
+    private fun getEnrollmentDataSection(description: String?): FieldUiModel {
         return fieldFactory.createSection(
             ENROLLMENT_DATA_SECTION_UID,
             enrollmentDataSectionLabel,
@@ -366,7 +366,7 @@ class EnrollmentRepository(
     private fun getEnrollmentDateField(
         enrollmentDateLabel: String,
         allowFutureDates: Boolean?
-    ): FieldViewModel {
+    ): FieldUiModel {
         return DateTimeViewModel.create(
             ENROLLMENT_DATE_UID,
             enrollmentDateLabel,
@@ -390,7 +390,7 @@ class EnrollmentRepository(
     private fun getIncidentDateField(
         incidentDateLabel: String,
         allowFutureDates: Boolean?
-    ): FieldViewModel {
+    ): FieldUiModel {
         return DateTimeViewModel.create(
             INCIDENT_DATE_UID,
             incidentDateLabel,
@@ -410,7 +410,7 @@ class EnrollmentRepository(
         )
     }
 
-    private fun getOrgUnitField(editable: Boolean): FieldViewModel {
+    private fun getOrgUnitField(editable: Boolean): FieldUiModel {
         return OrgUnitViewModel.create(
             ORG_UNIT_UID,
             enrollmentOrgUnitLabel,
@@ -428,7 +428,7 @@ class EnrollmentRepository(
 
     private fun getTeiCoordinatesField(
         featureType: FeatureType?
-    ): FieldViewModel {
+    ): FieldUiModel {
         val tei = d2.trackedEntityModule().trackedEntityInstances()
             .uid(
                 enrollmentRepository.blockingGet()!!.trackedEntityInstance()
@@ -453,7 +453,7 @@ class EnrollmentRepository(
 
     private fun getEnrollmentCoordinatesField(
         featureType: FeatureType?
-    ): FieldViewModel {
+    ): FieldUiModel {
         return CoordinateViewModel.create(
             ENROLLMENT_COORDINATES_UID,
             enrollmentCoordinatesLabel,
@@ -473,7 +473,7 @@ class EnrollmentRepository(
         )
     }
 
-    private fun transformSection(programSection: ProgramSection): FieldViewModel {
+    private fun transformSection(programSection: ProgramSection): FieldUiModel {
         return fieldFactory.createSection(
             programSection.uid(),
             programSection.displayName(),

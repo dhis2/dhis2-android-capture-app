@@ -9,13 +9,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Sextet;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.form.data.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.utils.DateUtils;
@@ -333,13 +333,13 @@ public class EventInitialPresenter {
     }
 
     private void getSectionCompletion() {
-        Flowable<List<FieldViewModel>> fieldsFlowable = eventSummaryRepository.list(eventId);
+        Flowable<List<FieldUiModel>> fieldsFlowable = eventSummaryRepository.list(eventId);
         Flowable<Result<RuleEffect>> ruleEffectFlowable = eventSummaryRepository.calculate()
                 .subscribeOn(schedulerProvider.computation())
                 .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         // Combining results of two repositories into a single stream.
-        Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(fieldsFlowable, ruleEffectFlowable,
+        Flowable<List<FieldUiModel>> viewModelsFlowable = Flowable.zip(fieldsFlowable, ruleEffectFlowable,
                 this::applyEffects);
 
         compositeDisposable.add(
@@ -364,36 +364,36 @@ public class EventInitialPresenter {
     }
 
     @NonNull
-    private List<FieldViewModel> applyEffects(@NonNull List<FieldViewModel> viewModels,
+    private List<FieldUiModel> applyEffects(@NonNull List<FieldUiModel> viewModels,
                                               @NonNull Result<RuleEffect> calcResult) {
         if (calcResult.error() != null) {
             Timber.e(calcResult.error());
             return viewModels;
         }
 
-        Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
+        Map<String, FieldUiModel> fieldViewModels = toMap(viewModels);
         applyRuleEffects(fieldViewModels, calcResult);
 
         return new ArrayList<>(fieldViewModels.values());
     }
 
     @NonNull
-    private static Map<String, FieldViewModel> toMap(@NonNull List<FieldViewModel> fieldViewModels) {
-        Map<String, FieldViewModel> map = new LinkedHashMap<>();
-        for (FieldViewModel fieldViewModel : fieldViewModels) {
-            map.put(fieldViewModel.uid(), fieldViewModel);
+    private static Map<String, FieldUiModel> toMap(@NonNull List<FieldUiModel> fieldViewModels) {
+        Map<String, FieldUiModel> map = new LinkedHashMap<>();
+        for (FieldUiModel fieldViewModel : fieldViewModels) {
+            map.put(fieldViewModel.getUid(), fieldViewModel);
         }
         return map;
     }
 
-    private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
+    private void applyRuleEffects(Map<String, FieldUiModel> fieldViewModels, Result<RuleEffect> calcResult) {
         // TODO: APPLY RULE EFFECTS TO ALL MODELS
         view.setHideSection(null);
         for (RuleEffect ruleEffect : calcResult.items()) {
             RuleAction ruleAction = ruleEffect.ruleAction();
             if (ruleAction instanceof RuleActionShowWarning) {
                 RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
-                FieldViewModel model = fieldViewModels.get(showWarning.field());
+                FieldUiModel model = fieldViewModels.get(showWarning.field());
 
                 if (model instanceof EditTextViewModel) {
                     fieldViewModels.put(showWarning.field(),
@@ -401,7 +401,7 @@ public class EventInitialPresenter {
                 }
             } else if (ruleAction instanceof RuleActionShowError) {
                 RuleActionShowError showError = (RuleActionShowError) ruleAction;
-                FieldViewModel model = fieldViewModels.get(showError.field());
+                FieldUiModel model = fieldViewModels.get(showError.field());
 
                 if (model instanceof EditTextViewModel) {
                     fieldViewModels.put(showError.field(),

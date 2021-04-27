@@ -4,10 +4,9 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
-import java.util.ArrayList
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
+import org.dhis2.form.data.FieldUiModel
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
@@ -31,11 +30,12 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import java.util.ArrayList
 
 class RulesUtilsProviderImplTest {
 
     private lateinit var ruleUtils: RulesUtilsProvider
-    private lateinit var testFieldViewModels: MutableMap<String, FieldViewModel>
+    private lateinit var testFieldViewModels: MutableMap<String, FieldUiModel>
     private lateinit var fieldFactory: FieldViewModelFactory
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
 
@@ -50,10 +50,10 @@ class RulesUtilsProviderImplTest {
             ValueType.values().map { it to it.name }.toMap(),
             false
         )
-        testFieldViewModels = getTestingFieldViewModels().associateBy { it.uid() }.toMutableMap()
+        testFieldViewModels = getTestingFieldViewModels().associateBy { it.getUid() }.toMutableMap()
     }
 
-    private fun getTestingFieldViewModels(): MutableList<FieldViewModel> {
+    private fun getTestingFieldViewModels(): MutableList<FieldUiModel> {
         return arrayListOf(
             randomFieldViewModel("uid1", ValueType.TEXT, "section1", null),
             randomFieldViewModel("uid2", ValueType.TEXT, "section1"),
@@ -70,7 +70,7 @@ class RulesUtilsProviderImplTest {
         valueType: ValueType,
         section: String,
         value: String? = "test"
-    ): FieldViewModel {
+    ): FieldUiModel {
         return fieldFactory.create(
             uid,
             "label",
@@ -111,8 +111,8 @@ class RulesUtilsProviderImplTest {
             actionCallbacks
         )
 
-        Assert.assertNotNull(testFieldViewModels["uid1"]!!.warning())
-        Assert.assertEquals(testFieldViewModels["uid1"]!!.warning(), "content data")
+        Assert.assertNotNull(testFieldViewModels["uid1"]!!.getWarning())
+        Assert.assertEquals(testFieldViewModels["uid1"]!!.getWarning(), "content data")
     }
 
     @Test
@@ -135,8 +135,8 @@ class RulesUtilsProviderImplTest {
             actionCallbacks
         )
 
-        Assert.assertNotNull(testFieldViewModels[testingUid]!!.error())
-        Assert.assertEquals(testFieldViewModels[testingUid]!!.error(), "content data")
+        Assert.assertNotNull(testFieldViewModels[testingUid]!!.getError())
+        Assert.assertEquals(testFieldViewModels[testingUid]!!.getError(), "content data")
         verify(actionCallbacks, times(1)).setShowError(
             testRuleEffects[0].ruleAction() as RuleActionShowError,
             testModel
@@ -221,7 +221,7 @@ class RulesUtilsProviderImplTest {
 
         val mandatoryFieldUid = "uid3"
         testFieldViewModels.apply {
-            put(mandatoryFieldUid, get(mandatoryFieldUid)!!.setMandatory())
+            put(mandatoryFieldUid, get(mandatoryFieldUid)!!.setFieldMandatory())
         }
 
         ruleUtils.applyRuleEffects(
@@ -254,8 +254,8 @@ class RulesUtilsProviderImplTest {
         )
 
         verify(actionCallbacks, times(1)).save(testingUid, "data")
-        Assert.assertTrue(testFieldViewModels[testingUid]!!.value().equals("data"))
-        Assert.assertTrue(!testFieldViewModels[testingUid]!!.editable()!!)
+        Assert.assertTrue(testFieldViewModels[testingUid]!!.getValue().equals("data"))
+        Assert.assertTrue(!testFieldViewModels[testingUid]!!.isEditable()!!)
     }
 
     @Test
@@ -286,10 +286,10 @@ class RulesUtilsProviderImplTest {
 
         verify(actionCallbacks, times(1)).save(testingUid, "data")
         verify(actionCallbacks, times(0)).save(testingUid2, "test")
-        Assert.assertTrue(testFieldViewModels[testingUid]!!.value().equals("data"))
-        Assert.assertTrue(testFieldViewModels[testingUid2]!!.value().equals("test"))
-        Assert.assertTrue(!testFieldViewModels[testingUid]!!.editable()!!)
-        Assert.assertTrue(!testFieldViewModels[testingUid]!!.editable()!!)
+        Assert.assertTrue(testFieldViewModels[testingUid]!!.getValue().equals("data"))
+        Assert.assertTrue(testFieldViewModels[testingUid2]!!.getValue().equals("test"))
+        Assert.assertTrue(!testFieldViewModels[testingUid]!!.isEditable()!!)
+        Assert.assertTrue(!testFieldViewModels[testingUid]!!.isEditable()!!)
     }
 
     @Test
@@ -329,7 +329,7 @@ class RulesUtilsProviderImplTest {
             actionCallbacks
         )
 
-        Assert.assertTrue(testFieldViewModels[testingUid]!!.mandatory())
+        Assert.assertTrue(testFieldViewModels[testingUid]!!.isMandatory())
     }
 
     @Test
@@ -350,7 +350,7 @@ class RulesUtilsProviderImplTest {
             actionCallbacks
         )
 
-        Assert.assertEquals(testFieldViewModels[testingUid]!!.warning(), "content data")
+        Assert.assertEquals(testFieldViewModels[testingUid]!!.getWarning(), "content data")
         verify(actionCallbacks, times(1)).setMessageOnComplete("content", true)
     }
 
@@ -372,7 +372,7 @@ class RulesUtilsProviderImplTest {
             actionCallbacks
         )
 
-        Assert.assertEquals(testFieldViewModels[testingUid]!!.warning(), "content data")
+        Assert.assertEquals(testFieldViewModels[testingUid]!!.getWarning(), "content data")
         verify(actionCallbacks, times(1)).setMessageOnComplete("content", false)
     }
 

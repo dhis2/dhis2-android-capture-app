@@ -5,8 +5,8 @@ import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.FormSectionViewModel;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.form.data.FieldUiModel;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.Result;
@@ -96,16 +96,16 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     @NonNull
     @Override
-    public Flowable<List<FieldViewModel>> list(String eventUid) {
+    public Flowable<List<FieldUiModel>> list(String eventUid) {
         return d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).get()
                 .map(event -> {
-                    List<FieldViewModel> fields = new ArrayList<>();
+                    List<FieldUiModel> fields = new ArrayList<>();
                     ProgramStage stage = d2.programModule().programStages().uid(event.programStage()).blockingGet();
                     List<ProgramStageSection> sections = d2.programModule().programStageSections().withDataElements().byProgramStageUid().eq(stage.uid()).blockingGet();
                     List<ProgramStageDataElement> stageDataElements = d2.programModule().programStageDataElements().byProgramStage().eq(stage.uid()).blockingGet();
 
                     if (!sections.isEmpty()) {
-                        for(ProgramStageSection stageSection : sections) {
+                        for (ProgramStageSection stageSection : sections) {
                             for (ProgramStageDataElement programStageDataElement : stageDataElements) {
                                 if (UidsHelper.getUidsList(stageSection.dataElements()).contains(programStageDataElement.dataElement().uid())) {
                                     DataElement dataelement = d2.dataElementModule().dataElements().uid(programStageDataElement.dataElement().uid()).blockingGet();
@@ -137,14 +137,14 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     }
 
     @NonNull
-    private FieldViewModel transform(@NonNull ProgramStageDataElement stage, DataElement dataElement, String value, String programStageSection, EventStatus eventStatus) {
+    private FieldUiModel transform(@NonNull ProgramStageDataElement stage, DataElement dataElement, String value, String programStageSection, EventStatus eventStatus) {
         String uid = dataElement.uid();
         String displayName = dataElement.displayName();
         String valueTypeName = dataElement.valueType().name();
         boolean mandatory = stage.compulsory();
         String optionSet = dataElement.optionSetUid();
         String dataValue = value;
-        List<Option> option = optionSet!=null?d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).blockingGet() : new ArrayList<>();
+        List<Option> option = optionSet != null ? d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).blockingGet() : new ArrayList<>();
         boolean allowFurureDates = stage.allowFutureDate();
         String formName = dataElement.displayFormName();
         String description = dataElement.displayDescription();

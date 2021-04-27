@@ -6,11 +6,11 @@ import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.data.dhislogic.AuthoritiesKt;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
-import org.dhis2.data.forms.dataentry.fields.LegendValue;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
+import org.dhis2.form.data.FieldUiModel;
+import org.dhis2.form.data.LegendValue;
+import org.dhis2.form.data.RowAction;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.resources.ResourceManager;
@@ -70,7 +70,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private final ResourceManager resourceManager;
     private boolean isEventEditable;
     private final LinkedHashMap<String, ProgramStageSection> sectionMap;
-    private List<FieldViewModel> sectionFields;
+    private List<FieldUiModel> sectionFields;
 
     public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory,
                                       RuleEngineRepository ruleEngineRepository,
@@ -184,7 +184,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @NonNull
     @Override
-    public Flowable<List<FieldViewModel>> list(FlowableProcessor<RowAction> processor) {
+    public Flowable<List<FieldUiModel>> list(FlowableProcessor<RowAction> processor) {
         isEventEditable = isEventEditable(eventUid);
         if (!sectionFields.isEmpty()) {
             return Flowable.just(sectionFields);
@@ -270,7 +270,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 programStageSection.renderType().mobile() != null ?
                                 programStageSection.renderType().mobile().type() : null;
 
-                        FieldViewModel fieldViewModel =
+                        FieldUiModel fieldViewModel =
                                 fieldFactory.create(uid, formName == null ? displayName : formName,
                                         valueType, mandatory, optionSet, dataValue,
                                         programStageSection != null ? programStageSection.uid() : null, allowFutureDates,
@@ -278,7 +278,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                         renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(), legendValue, processor, options);
 
                         if (!error.isEmpty()) {
-                            return fieldViewModel.withError(error);
+                            return fieldViewModel.setError(error);
                         } else {
                             return fieldViewModel;
                         }
@@ -489,11 +489,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public void updateFieldValue(String uid) {
         Timber.d("UPDATING VALUE FOR FIELD %s", uid);
-        ListIterator<FieldViewModel> iterator = sectionFields.listIterator();
+        ListIterator<FieldUiModel> iterator = sectionFields.listIterator();
         boolean updated = false;
         while (iterator.hasNext() || !updated) {
-            FieldViewModel fieldViewModel = iterator.next();
-            if (fieldViewModel.uid().equals(uid)) {
+            FieldUiModel fieldViewModel = iterator.next();
+            if (fieldViewModel.getUid().equals(uid)) {
                 TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid);
 
                 String value = null;
@@ -512,14 +512,13 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                 String error = checkConflicts(uid, valueRepository.blockingExists() ? valueRepository.blockingGet().value() : null);
 
-                boolean editable = fieldViewModel.editable() != null ? fieldViewModel.editable() : true;
-                fieldViewModel = fieldViewModel.withValue(value).withEditMode(editable || isEventEditable);
+                fieldViewModel = fieldViewModel.setValue(value).setEditable(fieldViewModel.isEditable() || isEventEditable);
                 if (!error.isEmpty()) {
-                    fieldViewModel = fieldViewModel.withError(error);
+                    fieldViewModel = fieldViewModel.setError(error);
                 }
-                if (fieldViewModel.canHaveLegend()) {
-                    LegendValue legend = getColorByLegend(rawValue, fieldViewModel.uid());
-                    fieldViewModel = fieldViewModel.withLegend(legend);
+                if (fieldViewModel.hasLegend()) {
+                    LegendValue legend = getColorByLegend(rawValue, fieldViewModel.getUid());
+                    fieldViewModel = fieldViewModel.setLegend(legend);
                 }
 
                 iterator.set(fieldViewModel);

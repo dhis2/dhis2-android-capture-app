@@ -3,7 +3,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 import androidx.annotation.NonNull;
 
 import org.dhis2.data.forms.FormSectionViewModel;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.form.data.FieldUiModel;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.program.Program;
@@ -24,7 +24,7 @@ public interface EventSummaryRepository {
     Flowable<List<FormSectionViewModel>> programStageSections(String eventUid);
 
     @NonNull
-    Flowable<List<FieldViewModel>> list(String eventUid);
+    Flowable<List<FieldUiModel>> list(String eventUid);
 
     @NonNull
     Flowable<Result<RuleEffect>> calculate();

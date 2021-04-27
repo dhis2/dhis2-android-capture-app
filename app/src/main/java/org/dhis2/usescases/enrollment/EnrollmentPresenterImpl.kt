@@ -8,22 +8,21 @@ import io.reactivex.flowables.ConnectableFlowable
 import io.reactivex.functions.BiFunction
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import kotlin.collections.set
 import org.dhis2.Bindings.profilePicturePath
 import org.dhis2.Bindings.toDate
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
-import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
-import org.dhis2.data.forms.dataentry.ValueStoreImpl
-import org.dhis2.data.forms.dataentry.fields.ActionType
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel
-import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.form.data.ActionType
+import org.dhis2.form.data.FieldUiModel
+import org.dhis2.form.data.RowAction
+import org.dhis2.form.data.StoreResult
+import org.dhis2.form.data.ValueStoreResult
 import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.Result
 import org.dhis2.utils.RulesActionCallbacks
@@ -49,6 +48,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepos
 import org.hisp.dhis.rules.models.RuleActionShowError
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
+import kotlin.collections.set
 
 private const val TAG = "EnrollmentPresenter"
 
@@ -84,7 +84,7 @@ class EnrollmentPresenterImpl(
     private var hasShownIncidentDateEditionWarning = false
     private var hasShownEnrollmentDateEditionWarning = false
     private var focusedItem: RowAction? = null
-    private var itemList: List<FieldViewModel>? = null
+    private var itemList: List<FieldUiModel>? = null
     private val itemsWithError = mutableListOf<RowAction>()
 
     fun init() {
@@ -205,7 +205,7 @@ class EnrollmentPresenterImpl(
                                 Flowable.just(
                                     StoreResult(
                                         rowAction.id,
-                                        ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                                        ValueStoreResult.VALUE_HAS_NOT_CHANGED
                                     )
                                 )
                             } else {
@@ -217,7 +217,7 @@ class EnrollmentPresenterImpl(
                                         Flowable.just(
                                             StoreResult(
                                                 EnrollmentRepository.ENROLLMENT_DATE_UID,
-                                                ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+                                                ValueStoreResult.VALUE_CHANGED
                                             )
                                         )
                                     }
@@ -228,7 +228,7 @@ class EnrollmentPresenterImpl(
                                         Flowable.just(
                                             StoreResult(
                                                 EnrollmentRepository.INCIDENT_DATE_UID,
-                                                ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+                                                ValueStoreResult.VALUE_CHANGED
                                             )
                                         )
                                     }
@@ -236,7 +236,7 @@ class EnrollmentPresenterImpl(
                                         Flowable.just(
                                             StoreResult(
                                                 "",
-                                                ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+                                                ValueStoreResult.VALUE_CHANGED
                                             )
                                         )
                                     }
@@ -253,7 +253,7 @@ class EnrollmentPresenterImpl(
                                         Flowable.just(
                                             StoreResult(
                                                 "",
-                                                ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+                                                ValueStoreResult.VALUE_CHANGED
                                             )
                                         )
                                     }
@@ -270,7 +270,7 @@ class EnrollmentPresenterImpl(
                                         Flowable.just(
                                             StoreResult(
                                                 "",
-                                                ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+                                                ValueStoreResult.VALUE_CHANGED
                                             )
                                         )
                                     }
@@ -284,7 +284,7 @@ class EnrollmentPresenterImpl(
                             Flowable.just(
                                 StoreResult(
                                     rowAction.id,
-                                    ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                                    ValueStoreResult.VALUE_HAS_NOT_CHANGED
                                 )
                             )
                         }
@@ -294,11 +294,11 @@ class EnrollmentPresenterImpl(
 
                             itemList?.let { list ->
                                 list.find { item ->
-                                    item.uid() == rowAction.id
+                                    item.getUid() == rowAction.id
                                 }?.let { item ->
                                     itemList = list.updated(
                                         list.indexOf(item),
-                                        item.withValue(rowAction.value)
+                                        item.setValue(rowAction.value)
                                     )
                                 }
                             }
@@ -313,19 +313,19 @@ class EnrollmentPresenterImpl(
                     { result ->
                         result.valueStoreResult?.let {
                             when (it) {
-                                ValueStoreImpl.ValueStoreResult.VALUE_CHANGED -> {
+                                ValueStoreResult.VALUE_CHANGED -> {
                                     if (shouldShowDateEditionWarning(result.uid)) {
                                         view.showDateEditionWarning()
                                     }
                                     fieldsFlowable.onNext(true)
                                     checkFinishing(true)
                                 }
-                                ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
+                                ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
                                     composeList()
                                     view.hideProgress()
                                     checkFinishing(true)
                                 }
-                                ValueStoreImpl.ValueStoreResult.VALUE_NOT_UNIQUE -> {
+                                ValueStoreResult.VALUE_NOT_UNIQUE -> {
                                     uniqueFields.add(result.uid)
                                     view.showInfoDialog(
                                         view.context.getString(R.string.error),
@@ -334,7 +334,7 @@ class EnrollmentPresenterImpl(
                                     view.hideProgress()
                                     checkFinishing(false)
                                 }
-                                ValueStoreImpl.ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
+                                ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
                                     Timber.tag(TAG)
                                         .d("${result.uid} is not a data element or attribute")
                                     view.hideProgress()
@@ -369,7 +369,7 @@ class EnrollmentPresenterImpl(
 
     private fun getNextItem(currentItemUid: String): String? {
         return itemList?.let { list ->
-            val oldItem = list.find { it.uid() == currentItemUid }
+            val oldItem = list.find { it.getUid() == currentItemUid }
             val pos = list.indexOf(oldItem)
             if (pos < list.size - 1) {
                 return list[pos + 1].getUid()
@@ -384,17 +384,17 @@ class EnrollmentPresenterImpl(
     }
 
     private fun mergeListWithErrorFields(
-        list: List<FieldViewModel>,
+        list: List<FieldUiModel>,
         fieldsWithError: MutableList<RowAction>
-    ): List<FieldViewModel> {
+    ): List<FieldUiModel> {
         return list.map { item ->
-            fieldsWithError.find { it.id == item.uid() }?.let { action ->
-                item.withValue(action.value).withError(action.error)
+            fieldsWithError.find { it.id == item.getUid() }?.let { action ->
+                item.setValue(action.value).setError(action.error)
             } ?: item
         }
     }
 
-    private fun setFocusedItem(list: List<FieldViewModel>) = focusedItem?.let {
+    private fun setFocusedItem(list: List<FieldUiModel>) = focusedItem?.let {
         val uid = if (it.type == ActionType.ON_NEXT) {
             getNextItem(it.id)
         } else {
@@ -402,9 +402,9 @@ class EnrollmentPresenterImpl(
         }
 
         list.find { item ->
-            item.uid() == uid
+            item.getUid() == uid
         }?.let { item ->
-            list.updated(list.indexOf(item), item.withFocus(true))
+            list.updated(list.indexOf(item), item.setFocus())
         } ?: list
     } ?: list
 
@@ -438,7 +438,7 @@ class EnrollmentPresenterImpl(
         }
     }
 
-    fun setFieldsToShow(section: String, fieldList: List<FieldViewModel>): List<FieldViewModel> {
+    fun setFieldsToShow(section: String, fieldList: List<FieldUiModel>): List<FieldUiModel> {
         val finalList = fieldList.toMutableList()
         val iterator = finalList.listIterator()
         while (iterator.hasNext()) {
@@ -457,18 +457,18 @@ class EnrollmentPresenterImpl(
             }
 
             if (field !is SectionViewModel && field !is DisplayViewModel) {
-                if (field.error()?.isNotEmpty() == true) {
-                    errorFields[field.programStageSection() ?: section] = field.label()
+                if (field.getError()?.isNotEmpty() == true) {
+                    errorFields[field.getProgramStageSection() ?: section] = field.getLabel()
                 }
-                if (field.mandatory() && field.value().isNullOrEmpty()) {
-                    mandatoryFields[field.label()] = field.programStageSection() ?: section
+                if (field.isMandatory() && field.getValue().isNullOrEmpty()) {
+                    mandatoryFields[field.getLabel()] = field.getProgramStageSection() ?: section
                     if (showErrors.first) {
-                        iterator.set(field.withWarning(mandatoryWarning))
+                        iterator.set(field.setWarning(mandatoryWarning))
                     }
                 }
             }
 
-            if (field !is SectionViewModel && !field.programStageSection().equals(section)) {
+            if (field !is SectionViewModel && !field.getProgramStageSection().equals(section)) {
                 iterator.remove()
             }
         }
@@ -499,24 +499,24 @@ class EnrollmentPresenterImpl(
         return finalList
     }
 
-    fun getValueCount(fields: List<FieldViewModel>, sectionUid: String): Pair<Int, Int> {
+    fun getValueCount(fields: List<FieldUiModel>, sectionUid: String): Pair<Int, Int> {
         var total = 0
         var values = 0
-        fields.filter { it.programStageSection().equals(sectionUid) && it !is SectionViewModel }
+        fields.filter { it.getProgramStageSection().equals(sectionUid) && it !is SectionViewModel }
             .forEach {
                 total++
-                if (!it.value().isNullOrEmpty()) {
+                if (!it.getValue().isNullOrEmpty()) {
                     values++
                 }
             }
         return Pair(values, total)
     }
 
-    private fun getFieldFlowable(): ConnectableFlowable<List<FieldViewModel>> {
+    private fun getFieldFlowable(): ConnectableFlowable<List<FieldUiModel>> {
         return fieldsFlowable.startWith(true)
             .observeOn(schedulerProvider.io())
             .flatMap {
-                Flowable.zip<List<FieldViewModel>, Result<RuleEffect>, List<FieldViewModel>>(
+                Flowable.zip<List<FieldUiModel>, Result<RuleEffect>, List<FieldUiModel>>(
                     dataEntryRepository.list(),
                     formRepository.calculate(),
                     BiFunction { fields, result -> applyRuleEffects(fields, result) }
@@ -574,7 +574,7 @@ class EnrollmentPresenterImpl(
         val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
         val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
             d2.categoryModule().categoryCombos().uid(catComboUid)
-            .blockingGet().isDefault == false
+                .blockingGet().isDefault == false
         val needsCoordinates =
             stage.featureType() != null && stage.featureType() != FeatureType.NONE
 
@@ -582,9 +582,9 @@ class EnrollmentPresenterImpl(
     }
 
     private fun applyRuleEffects(
-        fields: List<FieldViewModel>,
+        fields: List<FieldUiModel>,
         result: Result<RuleEffect>
-    ): List<FieldViewModel> {
+    ): List<FieldUiModel> {
         if (result.error() != null) {
             Timber.tag(TAG).e(result.error())
             return fields
@@ -597,7 +597,7 @@ class EnrollmentPresenterImpl(
         optionsGroupsToHide.clear()
         optionsGroupToShow.clear()
 
-        val fieldMap = fields.map { it.uid() to it }.toMap().toMutableMap()
+        val fieldMap = fields.map { it.getUid() to it }.toMap().toMutableMap()
 
         RulesUtilsProviderImpl(d2)
             .applyRuleEffects(fieldMap, result, this)
@@ -690,7 +690,7 @@ class EnrollmentPresenterImpl(
         view.displayMessage(message)
     }
 
-    override fun setShowError(showError: RuleActionShowError, model: FieldViewModel?) {
+    override fun setShowError(showError: RuleActionShowError, model: FieldUiModel?) {
         // not used
     }
 
@@ -732,8 +732,8 @@ class EnrollmentPresenterImpl(
             )
             valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, true)
         } else if (!optionsGroupsToHide.containsKey(field) || !optionsGroupsToHide.contains(
-            optionGroupUid
-        )
+                optionGroupUid
+            )
         ) {
             if (optionsGroupToShow[field] != null) {
                 optionsGroupToShow[field]!!.add(optionGroupUid)

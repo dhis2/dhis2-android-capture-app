@@ -29,7 +29,7 @@
 
         <variable
             name="legend"
-            type="org.dhis2.data.forms.dataentry.fields.LegendValue" />
+            type="org.dhis2.form.data.LegendValue" />
 
         <variable
             name="keyboardActionType"

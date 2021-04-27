@@ -5,8 +5,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.form.data.FieldUiModel;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.rules.models.RuleAction;
@@ -118,13 +118,13 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
 
     @Override
     public void getSectionCompletion(@Nullable String sectionUid) {
-        Flowable<List<FieldViewModel>> fieldsFlowable = eventSummaryRepository.list(eventUid);
+        Flowable<List<FieldUiModel>> fieldsFlowable = eventSummaryRepository.list(eventUid);
 
         Flowable<Result<RuleEffect>> ruleEffectFlowable = eventSummaryRepository.calculate().subscribeOn(schedulerProvider.computation())
                 .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         // Combining results of two repositories into a single stream.
-        Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(fieldsFlowable, ruleEffectFlowable, this::applyEffects);
+        Flowable<List<FieldUiModel>> viewModelsFlowable = Flowable.zip(fieldsFlowable, ruleEffectFlowable, this::applyEffects);
 
         compositeDisposable.add(viewModelsFlowable
                 .subscribeOn(schedulerProvider.io())
@@ -155,30 +155,30 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
     }
 
     @NonNull
-    private List<FieldViewModel> applyEffects(
-            @NonNull List<FieldViewModel> viewModels,
+    private List<FieldUiModel> applyEffects(
+            @NonNull List<FieldUiModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
         if (calcResult.error() != null) {
             Timber.e(calcResult.error());
             return viewModels;
         }
 
-        Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
+        Map<String, FieldUiModel> fieldViewModels = toMap(viewModels);
         applyRuleEffects(fieldViewModels, calcResult);
 
         return new ArrayList<>(fieldViewModels.values());
     }
 
     @NonNull
-    private static Map<String, FieldViewModel> toMap(@NonNull List<FieldViewModel> fieldViewModels) {
-        Map<String, FieldViewModel> map = new LinkedHashMap<>();
-        for (FieldViewModel fieldViewModel : fieldViewModels) {
-            map.put(fieldViewModel.uid(), fieldViewModel);
+    private static Map<String, FieldUiModel> toMap(@NonNull List<FieldUiModel> fieldViewModels) {
+        Map<String, FieldUiModel> map = new LinkedHashMap<>();
+        for (FieldUiModel fieldViewModel : fieldViewModels) {
+            map.put(fieldViewModel.getUid(), fieldViewModel);
         }
         return map;
     }
 
-    private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
+    private void applyRuleEffects(Map<String, FieldUiModel> fieldViewModels, Result<RuleEffect> calcResult) {
         //TODO: APPLY RULE EFFECTS TO ALL MODELS
         view.messageOnComplete(null, true);
         view.fieldWithError(false);
@@ -188,16 +188,16 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
             RuleAction ruleAction = ruleEffect.ruleAction();
             if (ruleAction instanceof RuleActionShowWarning) {
                 RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
-                FieldViewModel model = fieldViewModels.get(showWarning.field());
+                FieldUiModel model = fieldViewModels.get(showWarning.field());
                 if (model != null)
-                    fieldViewModels.put(showWarning.field(), model.withWarning(showWarning.content()));
+                    fieldViewModels.put(showWarning.field(), model.setWarning(showWarning.content()));
                 else
                     Log.d("PR_FIELD_ERROR", String.format("Field with uid %s is missing", showWarning.field()));
             } else if (ruleAction instanceof RuleActionShowError) {
                 RuleActionShowError showError = (RuleActionShowError) ruleAction;
-                FieldViewModel model = fieldViewModels.get(showError.field());
+                FieldUiModel model = fieldViewModels.get(showError.field());
                 if (model != null)
-                    fieldViewModels.put(showError.field(), model.withError(showError.content()));
+                    fieldViewModels.put(showError.field(), model.setError(showError.content()));
                 else
                     Log.d("PR_FIELD_ERROR", String.format("Field with uid %s is missing", showError.field()));
                 view.fieldWithError(true);
@@ -212,9 +212,9 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
                 view.messageOnComplete(errorOnCompletion.content(), false);
             } else if (ruleAction instanceof RuleActionSetMandatoryField) {
                 RuleActionSetMandatoryField mandatoryField = (RuleActionSetMandatoryField) ruleAction;
-                FieldViewModel model = fieldViewModels.get(mandatoryField.field());
+                FieldUiModel model = fieldViewModels.get(mandatoryField.field());
                 if (model != null)
-                    fieldViewModels.put(mandatoryField.field(), model.setMandatory());
+                    fieldViewModels.put(mandatoryField.field(), model.setFieldMandatory());
             } else if (ruleAction instanceof RuleActionHideSection) {
                 RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
                 view.setHideSection(hideSection.programStageSection());

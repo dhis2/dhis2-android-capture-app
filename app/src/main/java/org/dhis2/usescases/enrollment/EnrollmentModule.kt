@@ -16,7 +16,7 @@ import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
-import org.dhis2.data.forms.dataentry.fields.RowAction
+import org.dhis2.form.data.RowAction
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
@@ -31,7 +31,7 @@ class EnrollmentModule(
     private val enrollmentView: EnrollmentView,
     val enrollmentUid: String,
     val programUid: String,
-    val enrollmentMode: EnrollmentActivity.EnrollmentMode
+    private val enrollmentMode: EnrollmentActivity.EnrollmentMode
 ) {
 
     @Provides
