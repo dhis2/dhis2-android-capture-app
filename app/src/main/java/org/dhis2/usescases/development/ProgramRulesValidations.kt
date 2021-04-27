@@ -1,6 +1,7 @@
 package org.dhis2.usescases.development
 
 import android.os.Build
+import java.util.HashMap
 import org.dhis2.Bindings.toRuleList
 import org.dhis2.Bindings.toRuleVariableList
 import org.dhis2.data.forms.RuleActionUnsupported
@@ -19,7 +20,6 @@ import org.hisp.dhis.rules.models.RuleVariablePreviousEvent
 import org.hisp.dhis.rules.parser.expression.CommonExpressionVisitor
 import org.hisp.dhis.rules.parser.expression.ParserUtils
 import org.hisp.dhis.rules.utils.RuleEngineUtils
-import java.util.HashMap
 
 const val SEPARATOR = "*************"
 const val LINE_BREAK = "\n"
