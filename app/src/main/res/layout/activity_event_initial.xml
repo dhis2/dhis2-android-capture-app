@@ -160,7 +160,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="end"
                                     android:layout_marginTop="30dp"
-                                    android:onClick="@{(view)->presenter.onShareClick(view)}">
+                                    android:onClick="@{()->presenter.onShareClick()}">
 
                                     <ImageView
                                         android:id="@+id/shareIcon"
