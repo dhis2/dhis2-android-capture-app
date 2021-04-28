@@ -5,22 +5,18 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.ValueStoreResult
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
-import org.hisp.dhis.android.core.D2
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
-import org.mockito.Mockito
 
 class FormRepositoryImplTest {
 
     private lateinit var repository: FormRepository
-    private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
-    private val recordUid = "ABCD"
 
     @Before
     fun setUp() {
-        repository = FormRepositoryImpl(d2, recordUid)
+        repository = FormRepositoryImpl()
     }
 
     @Test
