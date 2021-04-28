@@ -5,6 +5,7 @@ import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
+import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,7 +43,7 @@ class DataSetTest : BaseTest() {
     fun shouldCreateNewDataSet() {
         val period = "Mar 2021"
         val orgUnit = "Ngelehun CHC"
-        startDataSetDetailActivity(ruleDataSetDetail)
+        startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST", ruleDataSetDetail)
 
         dataSetDetailRobot {
             clickOnAddDataSet()
@@ -63,6 +64,30 @@ class DataSetTest : BaseTest() {
         }
         dataSetDetailRobot {
             checkDataSetInList(period, orgUnit)
+        }
+
+    }
+
+    @Test
+    fun shouldReopenModifyAndCompleteDataset(){
+        startDataSetDetailActivity("V8MHeZHIrcP", "Facility Assessment", ruleDataSetDetail)
+
+        dataSetRobot {
+            clickOnDataSetAtPosition(0)
+        }
+
+        dataSetTableRobot {
+            openMenuMoreOptions()
+            clickOnMenuReOpen()
+            clickOnPositiveButton()
+            clickOnEditTextCell(0, 0)
+            acceptDateSelected()
+            clickOnSaveButton()
+            waitToDebounce(500)
+            clickOnPositiveButton()
+        }
+        dataSetDetailRobot {
+            checkDataSetIsCompleteAndModified("2019")
         }
 
     }
