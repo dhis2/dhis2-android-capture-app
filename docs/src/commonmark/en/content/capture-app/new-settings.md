@@ -10,6 +10,12 @@
 
 **Sync Parameters**: these parameters allow the user to specify the maximum number of TEI’s and events that can be stored in the local device. The user can also specify if limits apply per organisation unit or in total. Values can be set to default by clicking on “Reset to default”.
 
+> **Note** 
+>
+> Sync data, Sync configuration and Sync parameters  can be overwritten using  the Android Settings Web App.
+>
+>
+
 **Reserved Values**: this will specify the number of reserved Id's available in your device and will allow you to refill them.
 
 **Open sync errors log**: The sync error log gives details about the error and is prepared to be shared with admins.

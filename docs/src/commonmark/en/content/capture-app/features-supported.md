@@ -2,6 +2,36 @@
 
 ## Programs in Android { #capture_app_programs_android }
 
+### New Navigation Bar (NEW 2.4)
+
+Use the new navigation bar to move from one screen to another.
+
+#### Events
+
+1. Details
+2. Data Entry
+3. Analytics
+4. Notes
+
+![](resources/images/image141.jpg){ width=25%}
+
+#### TEI Dashboard
+
+1. Details
+2. Analytics
+3. Relationships
+4. Notes
+   
+![](resources/images/image142.jpg){ width=25%}
+
+#### Event listing for event and tracker programs
+
+  1. List view
+  2. Map view
+
+![](resources/images/image143.jpg){ width=25%}
+![](resources/images/image144.jpg){ width=25%}
+
 ### Complete/Re-open event { #capture_app_programs_complete_reopen }
 
 
@@ -20,7 +50,7 @@ Two options will be presented:
 
 > **Note**
 >
-> To verify if an event is completed look at the color of the box, it must be grey; and also have the label 'Event Completed' on it. It applies the same legend set than the web UI.
+> To verify if an event is completed look at the icon, it must be a green checked box.
 
 > **Note**
 >
@@ -51,6 +81,10 @@ The app will now list the name of the mandatory fields missing when the user tri
 
 ![](resources/images/image117.png){ width=25%}
 
+The errors and warnings are also shown as an indicator next to the section name.
+
+![](resources/images/image145.png){ width=25%}
+
 ### Event Notes { #capture_app_programs_event_notes }
 
 
@@ -72,12 +106,15 @@ The possible layers to display in maps are:
 - Program Stage coordinates (Only for programs with registration)
 - Relationships (Only for programs with registration)
 - Heatmap (Only for programs with registration)
+- Tracked Entity Attributes (Coordinates Value Type - Only for programs with registration)
+- Data Elements (Coordinates Value Type)
 
 The user can select one or more layers to be displayed.
 
 The maps will display coordinates and polygons.
 
 ![](resources/images/image125.png){ width=25%}
+![](resources/images/image146.png){ width=25%}
 ![](resources/images/image136.png){ width=25%}
 
 #### Map Carousel { #capture_app_programs_map_carousel }
@@ -91,6 +128,10 @@ On the map view of the program, a carousel of cards is displayed, one for each e
 ![](resources/images/image126.jpg){ width=25%} 
 ![](resources/images/image133.png){ width=25%}
 
+Each card displays Tracked Entity Attributes (for Tracker Programs) and Data Elements (for Event programs) configured as 'Display in list'.
+
+![](resources/images/image147.png){ width=25%}
+
 #### Map Relationships { #capture_app_programs_map_relationships }
 
 In tracker, the user can see relationships on a map by tapping the map icon on the relationships tab.
@@ -101,10 +142,43 @@ In tracker, the user can see relationships on a map by tapping the map icon on t
 * If one or both TEIs have a polygon as coordinate, the line goes from (and to) the nearest point in the polygon of both TEIs.
 
 ![](resources/images/image132.png){ width=25%}
-![](resources/images/image127.png){ width=25%}
+
+#### Map Current Location (NEW 2.4)
+
+If the user grants location permissions to the App, the map will show the current location represented as a blue color dot.
+
+![](resources/images/image148.png){ width=25%}
+
+#### Map Navigation to Location (NEW 2.4)
+
+If the TEI or event has coordinates a navigation icon will be displayed at the top right of the card. Click to open the location in a maps App.
+
+![](resources/images/image149.jpg){ width=25%}
+![](resources/images/image150.jpg){ width=25%}
+![](resources/images/image151.jpg){ width=25%}
+
+### Working Lists (NEW 2.4)
+
+Working lists are now compatible with the Android app. Once a list is selected, the filters will be blocked and not allowed to change until the user resets the search.
+
+Working lists are available in Event and Tracker Programs.
+
+![](resources/images/image152.jpg){ width=25%}
+![](resources/images/image153.jpg){ width=25%}
+
+### Program Indicators (NEW 2.4)
+
+The new analytics tab now supports displaying text and key/value pair in feedback or indicator section.
+
+![](resources/images/image154.jpg){ width=25%}
+
+### Legends (NEW 2.4)
+
+Legends are now available in Android App. It will be shown next to value with the respective color and label.
+
+![](resources/images/image155.jpg){ width=25%}
 
 ## Program with registration in Android { #capture_app_programs_with_reg }
-
 
 ### TEI Card Design { #capture_app_programs_tei_design }
 
@@ -134,12 +208,12 @@ To complete or deactivate an enrollment, click on three dot menu in the right up
 ### Reset Search Fields { #capture_app_programs_reset_search }
 
 
-All tracker programs will take the user to the search screen. The search fields are used to look up for a specific entity, and the circled arrow at the top right corner to reset the search. All fields will be blank for the user to do a new search.
+All tracker programs will take the user to the search screen. The search fields are used to look up for a specific entity, and the circled arrow to reset the search. All fields will be blank for the user to do a new search.
 
 At first, the user is obligated to do a search. if there are no coincidences, the search button will change to an ‘Add’ button for the user to create a new enrollment.
 
-![](resources/images/image78.PNG){ width=25%}
-![](resources/images/image79.PNG){ width=25%}
+![](resources/images/image78.png){ width=25%}
+![](resources/images/image79.png){ width=25%}
 
 ### Search screen for all Tracked Entity Type { #capture_app_programs_search_screen }
 
@@ -214,6 +288,27 @@ The ‘breaking the glass’ feature is not yet supported in DHIS2 Android Captu
 If Android users must be able to access TEI outside of their data capture org unit, the program should be configured with access level ‘Open.’
 
 ![](resources/images/image137.jpg){ width=25%}
+
+### Analytic charts (NEW 2.4)
+
+It is possible to display the evolution in data elements as charts, values or tables. These data elements must be a numeric value type and configured in a repeatable stage.
+
+1. Single value: It will display the newest value in the program.
+   
+![](resources/images/image156.jpg){ width=25%}
+
+2. Charts: It is possible to display the values as a line chart o as a bar chart.
+
+![](resources/images/image157.jpg){ width=25%}
+![](resources/images/image158.jpg){ width=25%}
+
+The Nutrition Growth charts are shown according to the WHO standards.  This option will render a background image and apply the axis (0 to 5 monthly)according to the WHO model.
+
+ ![](resources/images/image159.jpg){ width=25%}
+   
+3. Tables: It will display the data elements or indicators in the rows and the periods in the columns.
+
+![](resources/images/image160.jpg){ width=25%} 
 
 ## Supported features Overview { #capture_app_programs_supported_features }
 
