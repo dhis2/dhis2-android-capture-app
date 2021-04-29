@@ -5,6 +5,7 @@ import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
+import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -64,6 +65,21 @@ class DataSetTest : BaseTest() {
         dataSetDetailRobot {
             checkDataSetInList(period, orgUnit)
         }
+    }
 
+    @Test
+    fun shouldOpenAndEditDataset(){
+        startDataSetDetailActivity(ruleDataSetDetail)
+
+        dataSetRobot {
+            clickOnDataSetAtPosition(0)
+        }
+
+        dataSetTableRobot {
+            typeOnEditTextCell("5", 0, 0)
+            clickOnSaveButton()
+            waitToDebounce(500)
+            clickOnNegativeButton()
+        }
     }
 }
