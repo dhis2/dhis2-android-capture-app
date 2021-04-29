@@ -9,7 +9,6 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.Bindings.profilePicturePath
-import org.dhis2.Bindings.toDate
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.ValueStore
@@ -18,10 +17,9 @@ import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.form.model.ActionType
+import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
-import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.Result
@@ -48,7 +46,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepos
 import org.hisp.dhis.rules.models.RuleActionShowError
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
-import kotlin.collections.set
 
 private const val TAG = "EnrollmentPresenter"
 
@@ -60,13 +57,14 @@ class EnrollmentPresenterImpl(
     private val teiRepository: TrackedEntityInstanceObjectRepository,
     private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
     private val schedulerProvider: SchedulerProvider,
-    val formRepository: EnrollmentFormRepository,
+    private val enrollmentFormRepository: EnrollmentFormRepository,
     private val valueStore: ValueStore,
     private val analyticsHelper: AnalyticsHelper,
     private val mandatoryWarning: String,
     private val onRowActionProcessor: FlowableProcessor<RowAction>,
     private val sectionProcessor: Flowable<String>,
-    private val matomoAnalyticsController: MatomoAnalyticsController
+    private val matomoAnalyticsController: MatomoAnalyticsController,
+    private val formRepository: FormRepository
 ) : RulesActionCallbacks {
 
     private var finishing: Boolean = false
@@ -83,9 +81,6 @@ class EnrollmentPresenterImpl(
     private var showErrors: Pair<Boolean, Boolean> = Pair(first = false, second = false)
     private var hasShownIncidentDateEditionWarning = false
     private var hasShownEnrollmentDateEditionWarning = false
-    private var focusedItem: RowAction? = null
-    private var itemList: List<FieldUiModel>? = null
-    private val itemsWithError = mutableListOf<RowAction>()
 
     fun init() {
         view.setSaveButtonVisible(false)
@@ -167,8 +162,7 @@ class EnrollmentPresenterImpl(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe({
-                    itemList = it
-                    composeList()
+                    populateList(it)
                     view.setSaveButtonVisible(true)
                     view.hideProgress()
                 }) {
@@ -197,115 +191,7 @@ class EnrollmentPresenterImpl(
                 .doOnNext { view.showProgress() }
                 .observeOn(schedulerProvider.io())
                 .flatMap { rowAction ->
-
-                    when (rowAction.type) {
-                        ActionType.ON_SAVE -> {
-                            updateErrorList(rowAction)
-                            if (rowAction.error != null) {
-                                Flowable.just(
-                                    StoreResult(
-                                        rowAction.id,
-                                        ValueStoreResult.VALUE_HAS_NOT_CHANGED
-                                    )
-                                )
-                            } else {
-                                when (rowAction.id) {
-                                    EnrollmentRepository.ENROLLMENT_DATE_UID -> {
-                                        enrollmentObjectRepository.setEnrollmentDate(
-                                            rowAction.value?.toDate()
-                                        )
-                                        Flowable.just(
-                                            StoreResult(
-                                                EnrollmentRepository.ENROLLMENT_DATE_UID,
-                                                ValueStoreResult.VALUE_CHANGED
-                                            )
-                                        )
-                                    }
-                                    EnrollmentRepository.INCIDENT_DATE_UID -> {
-                                        enrollmentObjectRepository.setIncidentDate(
-                                            rowAction.value?.toDate()
-                                        )
-                                        Flowable.just(
-                                            StoreResult(
-                                                EnrollmentRepository.INCIDENT_DATE_UID,
-                                                ValueStoreResult.VALUE_CHANGED
-                                            )
-                                        )
-                                    }
-                                    EnrollmentRepository.ORG_UNIT_UID -> {
-                                        Flowable.just(
-                                            StoreResult(
-                                                "",
-                                                ValueStoreResult.VALUE_CHANGED
-                                            )
-                                        )
-                                    }
-                                    EnrollmentRepository.TEI_COORDINATES_UID -> {
-                                        val geometry = rowAction.value?.let {
-                                            rowAction.extraData?.let {
-                                                Geometry.builder()
-                                                    .coordinates(rowAction.value)
-                                                    .type(FeatureType.valueOf(it))
-                                                    .build()
-                                            }
-                                        }
-                                        saveTeiGeometry(geometry)
-                                        Flowable.just(
-                                            StoreResult(
-                                                "",
-                                                ValueStoreResult.VALUE_CHANGED
-                                            )
-                                        )
-                                    }
-                                    EnrollmentRepository.ENROLLMENT_COORDINATES_UID -> {
-                                        val geometry = rowAction.value?.let {
-                                            rowAction.extraData?.let {
-                                                Geometry.builder()
-                                                    .coordinates(rowAction.value)
-                                                    .type(FeatureType.valueOf(it))
-                                                    .build()
-                                            }
-                                        }
-                                        saveEnrollmentGeometry(geometry)
-                                        Flowable.just(
-                                            StoreResult(
-                                                "",
-                                                ValueStoreResult.VALUE_CHANGED
-                                            )
-                                        )
-                                    }
-                                    else -> valueStore.save(rowAction.id, rowAction.value)
-                                }
-                            }
-                        }
-                        ActionType.ON_FOCUS, ActionType.ON_NEXT -> {
-                            this.focusedItem = rowAction
-
-                            Flowable.just(
-                                StoreResult(
-                                    rowAction.id,
-                                    ValueStoreResult.VALUE_HAS_NOT_CHANGED
-                                )
-                            )
-                        }
-
-                        ActionType.ON_TEXT_CHANGE -> {
-                            updateErrorList(rowAction)
-
-                            itemList?.let { list ->
-                                list.find { item ->
-                                    item.getUid() == rowAction.id
-                                }?.let { item ->
-                                    itemList = list.updated(
-                                        list.indexOf(item),
-                                        item.setValue(rowAction.value)
-                                    )
-                                }
-                            }
-
-                            Flowable.just(StoreResult(rowAction.id))
-                        }
-                    }
+                    Flowable.just(formRepository.processUserAction(rowAction))
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -321,7 +207,7 @@ class EnrollmentPresenterImpl(
                                     checkFinishing(true)
                                 }
                                 ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
-                                    composeList()
+                                    populateList()
                                     view.hideProgress()
                                     checkFinishing(true)
                                 }
@@ -355,63 +241,11 @@ class EnrollmentPresenterImpl(
         finishing = false
     }
 
-    private fun updateErrorList(action: RowAction) {
-        if (action.error != null) {
-            if (itemsWithError.find { it.id == action.id } == null) {
-                itemsWithError.add(action)
-            }
-        } else {
-            itemsWithError.find { it.id == action.id }?.let {
-                itemsWithError.remove(it)
-            }
-        }
+    private fun populateList(items: List<FieldUiModel>? = null) {
+        view.showFields(formRepository.composeList(items))
     }
 
-    private fun getNextItem(currentItemUid: String): String? {
-        return itemList?.let { list ->
-            val oldItem = list.find { it.getUid() == currentItemUid }
-            val pos = list.indexOf(oldItem)
-            if (pos < list.size - 1) {
-                return list[pos + 1].getUid()
-            }
-            return null
-        }
-    }
-
-    private fun composeList() = itemList?.let {
-        val listWithErrors = mergeListWithErrorFields(it, itemsWithError)
-        view.showFields(setFocusedItem(listWithErrors))
-    }
-
-    private fun mergeListWithErrorFields(
-        list: List<FieldUiModel>,
-        fieldsWithError: MutableList<RowAction>
-    ): List<FieldUiModel> {
-        return list.map { item ->
-            fieldsWithError.find { it.id == item.getUid() }?.let { action ->
-                item.setValue(action.value).setError(action.error)
-            } ?: item
-        }
-    }
-
-    private fun setFocusedItem(list: List<FieldUiModel>) = focusedItem?.let {
-        val uid = if (it.type == ActionType.ON_NEXT) {
-            getNextItem(it.id)
-        } else {
-            it.id
-        }
-
-        list.find { item ->
-            item.getUid() == uid
-        }?.let { item ->
-            list.updated(list.indexOf(item), item.setFocus())
-        } ?: list
-    } ?: list
-
-    fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =
-        mapIndexed { i, existing -> if (i == index) elem else existing }
-
-    fun setCurrentSection(sectionUid: String): String {
+    private fun setCurrentSection(sectionUid: String): String {
         if (sectionUid == selectedSection) {
             this.selectedSection = ""
         } else {
@@ -438,7 +272,7 @@ class EnrollmentPresenterImpl(
         }
     }
 
-    fun setFieldsToShow(section: String, fieldList: List<FieldUiModel>): List<FieldUiModel> {
+    fun setFieldsToShow(sectionUid: String, fieldList: List<FieldUiModel>): List<FieldUiModel> {
         val finalList = fieldList.toMutableList()
         val iterator = finalList.listIterator()
         while (iterator.hasNext()) {
@@ -450,7 +284,7 @@ class EnrollmentPresenterImpl(
                     sectionViewModel.uid()
                 )
                 sectionViewModel = sectionViewModel
-                    .setOpen(field.uid() == section)
+                    .setOpen(field.uid() == sectionUid)
                     .setCompletedFields(values)
                     .setTotalFields(totals)
                 iterator.set(sectionViewModel)
@@ -458,17 +292,17 @@ class EnrollmentPresenterImpl(
 
             if (field !is SectionViewModel && field !is DisplayViewModel) {
                 if (field.getError()?.isNotEmpty() == true) {
-                    errorFields[field.getProgramStageSection() ?: section] = field.getLabel()
+                    errorFields[field.getProgramStageSection() ?: sectionUid] = field.getLabel()
                 }
                 if (field.isMandatory() && field.getValue().isNullOrEmpty()) {
-                    mandatoryFields[field.getLabel()] = field.getProgramStageSection() ?: section
+                    mandatoryFields[field.getLabel()] = field.getProgramStageSection() ?: sectionUid
                     if (showErrors.first) {
                         iterator.set(field.setWarning(mandatoryWarning))
                     }
                 }
             }
 
-            if (field !is SectionViewModel && !field.getProgramStageSection().equals(section)) {
+            if (field !is SectionViewModel && !field.getProgramStageSection().equals(sectionUid)) {
                 iterator.remove()
             }
         }
@@ -499,7 +333,7 @@ class EnrollmentPresenterImpl(
         return finalList
     }
 
-    fun getValueCount(fields: List<FieldUiModel>, sectionUid: String): Pair<Int, Int> {
+    private fun getValueCount(fields: List<FieldUiModel>, sectionUid: String): Pair<Int, Int> {
         var total = 0
         var values = 0
         fields.filter { it.getProgramStageSection().equals(sectionUid) && it !is SectionViewModel }
@@ -518,7 +352,7 @@ class EnrollmentPresenterImpl(
             .flatMap {
                 Flowable.zip<List<FieldUiModel>, Result<RuleEffect>, List<FieldUiModel>>(
                     dataEntryRepository.list(),
-                    formRepository.calculate(),
+                    enrollmentFormRepository.calculate(),
                     BiFunction { fields, result -> applyRuleEffects(fields, result) }
                 )
             }.publish()
@@ -540,8 +374,8 @@ class EnrollmentPresenterImpl(
             EnrollmentActivity.EnrollmentMode.NEW -> {
                 matomoAnalyticsController.trackEvent(TRACKER_LIST, CREATE_TEI, CLICK)
                 disposable.add(
-                    formRepository.autoGenerateEvents()
-                        .flatMap { formRepository.useFirstStageDuringRegistration() }
+                    enrollmentFormRepository.autoGenerateEvents()
+                        .flatMap { enrollmentFormRepository.useFirstStageDuringRegistration() }
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
@@ -574,7 +408,7 @@ class EnrollmentPresenterImpl(
         val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
         val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
             d2.categoryModule().categoryCombos().uid(catComboUid)
-                .blockingGet().isDefault == false
+            .blockingGet().isDefault == false
         val needsCoordinates =
             stage.featureType() != null && stage.featureType() != FeatureType.NONE
 
@@ -625,7 +459,7 @@ class EnrollmentPresenterImpl(
                     )
                     if (optionsGroupToShow.keys.contains(fieldViewModel.uid())) {
                         mappedOptionSetModel = fieldViewModel.setOptionsToShow(
-                            formRepository.getOptionsFromGroups(
+                            enrollmentFormRepository.getOptionsFromGroups(
                                 optionsGroupToShow[fieldViewModel.uid()] ?: arrayListOf()
                             )
                         )
@@ -724,7 +558,7 @@ class EnrollmentPresenterImpl(
                 optionsToHide[field] = arrayListOf()
             }
             optionsToHide[field]!!.addAll(
-                formRepository.getOptionsFromGroups(
+                enrollmentFormRepository.getOptionsFromGroups(
                     arrayListOf(
                         optionGroupUid
                     )
@@ -732,8 +566,8 @@ class EnrollmentPresenterImpl(
             )
             valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, true)
         } else if (!optionsGroupsToHide.containsKey(field) || !optionsGroupsToHide.contains(
-                optionGroupUid
-            )
+            optionGroupUid
+        )
         ) {
             if (optionsGroupToShow[field] != null) {
                 optionsGroupToShow[field]!!.add(optionGroupUid)
@@ -786,7 +620,7 @@ class EnrollmentPresenterImpl(
     }
 
     fun onTeiImageHeaderClick() {
-        val picturePath = formRepository.getProfilePicture()
+        val picturePath = enrollmentFormRepository.getProfilePicture()
         if (picturePath.isNotEmpty()) {
             view.displayTeiPicture(picturePath)
         }

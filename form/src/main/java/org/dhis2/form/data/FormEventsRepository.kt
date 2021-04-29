@@ -3,19 +3,17 @@ package org.dhis2.form.data
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository
-import java.io.File
 
 class FormEventsRepository(
-    b: FormRepositoryImpl,
+    private val repositoryImpl: FormRepositoryImpl,
     private val d2: D2,
     private val recordUid: String
-) : FormRepository by b {
+) : FormRepository by repositoryImpl {
 
     init {
-        b.storeValue = { uid: String, value: String? ->
+        repositoryImpl.storeValue = { uid: String, value: String?, _: String? ->
             storeDataElement(uid, value)
         }
     }
@@ -25,13 +23,13 @@ class FormEventsRepository(
         val valueRepository = d2.trackedEntityModule().trackedEntityDataValues()
             .value(recordUid, uid)
         val valueType = d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType()
-        var newValue = withValueTypeCheck(value, valueType) ?: ""
+        var newValue = repositoryImpl.withValueTypeCheck(value, valueType) ?: ""
         if (valueType == ValueType.IMAGE && value != null) {
-            newValue = saveFileResource(value)
+            newValue = repositoryImpl.saveFileResource(value)
         }
 
         val currentValue = if (valueRepository.blockingExists()) {
-            withValueTypeCheck(valueRepository.blockingGet().value(), valueType)
+            repositoryImpl.withValueTypeCheck(valueRepository.blockingGet().value(), valueType)
         } else {
             ""
         }
@@ -59,7 +57,7 @@ class FormEventsRepository(
     ): Boolean {
         return d2.dataElementModule().dataElements().uid(deUid).blockingGet().let {
             if (check(it.valueType(), it.optionSet()?.uid(), value)) {
-                val finalValue = assureCodeForOptionSet(it.optionSet()?.uid(), value)
+                val finalValue = repositoryImpl.assureCodeForOptionSet(it.optionSet()?.uid(), value)
                 valueRepository.blockingSet(finalValue)
                 true
             } else {
@@ -107,39 +105,4 @@ class FormEventsRepository(
             else -> false
         }
     }
-
-    private fun assureCodeForOptionSet(optionSetUid: String?, value: String): String? {
-        return optionSetUid?.let {
-            if (d2.optionModule().options()
-                    .byOptionSetUid().eq(it)
-                    .byName().eq(value)
-                    .one().blockingExists()
-            ) {
-                d2.optionModule().options().byOptionSetUid().eq(it).byName().eq(value).one()
-                    .blockingGet().code()
-            } else {
-                value
-            }
-        } ?: value
-    }
-
-    private fun saveFileResource(path: String): String {
-        val file = FileResizerHelper.resizeFile(File(path), FileResizerHelper.Dimension.MEDIUM)
-        return d2.fileResourceModule().fileResources().blockingAdd(file)
-    }
-
-    //TODO review validations
-    private fun withValueTypeCheck(value: String?, valueType: ValueType?) = value?.let {
-        return when (valueType) {
-            ValueType.PERCENTAGE,
-            ValueType.INTEGER,
-            ValueType.INTEGER_POSITIVE,
-            ValueType.INTEGER_NEGATIVE,
-            ValueType.INTEGER_ZERO_OR_POSITIVE -> (
-                it.toIntOrNull() ?: it.toFloat().toInt()
-                ).toString()
-            ValueType.UNIT_INTERVAL -> it.toFloat().toString()
-            else -> value
-        }
-    } ?: value
 }

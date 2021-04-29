@@ -122,7 +122,7 @@ public class EventCaptureModule {
     @PerActivity
     org.dhis2.form.data.FormRepository provideEventsFormRepository(@NonNull D2 d2) {
         return new FormEventsRepository(
-                new FormRepositoryImpl(),
+                new FormRepositoryImpl(d2),
                 d2,
                 eventUid
         );
