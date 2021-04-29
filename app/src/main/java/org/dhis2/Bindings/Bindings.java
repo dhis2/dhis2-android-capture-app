@@ -836,6 +836,11 @@ public class Bindings {
         ViewExtensionsKt.clipWithRoundedCorners(view, ExtensionsKt.getDp(cornerRadiusInDp));
     }
 
+    @BindingAdapter("clipAllCorners")
+    public static void setAllClipCorners(View view, int cornerRadiusInDp) {
+        ViewExtensionsKt.clipWithAllRoundedCorners(view, ExtensionsKt.getDp(cornerRadiusInDp));
+    }
+
     @BindingAdapter("legendValue")
     public static void setLegend(TextView textView, LegendValue legendValue) {
         if (legendValue != null) {
@@ -868,11 +873,11 @@ public class Bindings {
     }
 
     @BindingAdapter("legendBadge")
-    public static void setLegendBadge(FrameLayout legendLayout, LegendValue legendValue){
+    public static void setLegendBadge(FrameLayout legendLayout, LegendValue legendValue) {
         legendLayout.setVisibility(
                 legendValue != null ? View.VISIBLE : View.GONE
         );
-        if(legendValue!=null){
+        if (legendValue != null) {
             DataElementLegendBinding legendBinding = DataElementLegendBinding.inflate(LayoutInflater.from(legendLayout.getContext()));
             legendBinding.setLegend(legendValue);
             legendLayout.removeAllViews();

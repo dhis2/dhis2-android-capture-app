@@ -26,9 +26,6 @@
             app:filterCount="@{filterItem.observeCount()}"
             app:filterItem="@{filterItem}"
             app:layout_constraintTop_toBottomOf="parent" />
-<!--
-        app:filterPresenter="@{filterPresenter}"
--->
 
         <org.dhis2.utils.filters.ou.OrgUnitFilterView
             android:id="@+id/filterOrgUnitView"

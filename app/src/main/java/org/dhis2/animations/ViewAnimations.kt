@@ -82,6 +82,49 @@ fun View.expand(callback: () -> Unit) {
     startAnimation(a)
 }
 
+fun View.expandFromInitialHeight(callback: () -> Unit) {
+    val initialHeigh = layoutParams.height
+
+    callback.invoke()
+    val matchParentMeasureSpec = View.MeasureSpec.makeMeasureSpec(
+        (parent as View).width,
+        View.MeasureSpec.EXACTLY
+    )
+    val wrapContentMeasureSpec = View.MeasureSpec.makeMeasureSpec(
+        0,
+        View.MeasureSpec.UNSPECIFIED
+    )
+    measure(matchParentMeasureSpec, wrapContentMeasureSpec)
+    val targetHeight: Int = measuredHeight
+
+    visibility = View.VISIBLE
+    val a: Animation = object : Animation() {
+        override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
+            layoutParams.height =
+                (initialHeigh + (targetHeight - initialHeigh) * interpolatedTime).toInt()
+            requestLayout()
+        }
+
+        override fun willChangeBounds(): Boolean {
+            return true
+        }
+    }
+    a.setAnimationListener(object : Animation.AnimationListener {
+        override fun onAnimationStart(animation: Animation) {
+            increment()
+        }
+
+        override fun onAnimationEnd(animation: Animation) {
+            decrement()
+            callback.invoke()
+        }
+
+        override fun onAnimationRepeat(animation: Animation) {}
+    })
+    a.duration = 200
+    startAnimation(a)
+}
+
 fun View.show() {
     if (visibility != View.VISIBLE) {
         animate()
