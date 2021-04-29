@@ -20,9 +20,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/filter_alpha"
+        android:visibility="gone"
         app:clipAllCorners="@{8}"
         app:expand_view="@{filterItem.openFilter == filterItem.type}"
-        app:request_layout="@{filterItem}">
+        app:request_layout="@{filterItem}"
+        tools:visibility="visible">
 
         <ImageView
             android:layout_width="match_parent"

@@ -25,7 +25,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.FragmentTeiDataBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.usescases.orgunitselector.OUTreeActivity;
+import org.dhis2.usescases.orgunitselector.OUTreeFragment;
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardViewModel;
@@ -46,8 +46,6 @@ import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.hisp.dhis.android.core.category.CategoryCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
@@ -278,15 +276,11 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             if (requestCode == REQ_DETAILS) {
                 activity.getPresenter().init();
             }
-            if (requestCode == FilterManager.OU_TREE) {
-                activity.presenter.setTotalFilters();
-                adapter.notifyDataSetChanged();
-            }
         }
     }
 
     @Override
-    public void setFilters(List<FilterItem> filterItems){
+    public void setFilters(List<FilterItem> filterItems) {
         filtersAdapter.submitList(filterItems);
     }
 
@@ -430,7 +424,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             Bundle bundle = new Bundle();
             bundle.putString(PROGRAM_UID, dashboardModel.getCurrentEnrollment().program());
             bundle.putString(TRACKED_ENTITY_INSTANCE, dashboardModel.getTei().uid());
-            if(presenter.enrollmentOrgUnitInCaptureScope(dashboardModel.getCurrentOrgUnit().uid())) {
+            if (presenter.enrollmentOrgUnitInCaptureScope(dashboardModel.getCurrentOrgUnit().uid())) {
                 bundle.putString(ORG_UNIT, dashboardModel.getCurrentOrgUnit().uid());
             }
             bundle.putString(ENROLLMENT_UID, dashboardModel.getCurrentEnrollment().uid());
@@ -600,12 +594,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void openOrgUnitTreeSelector(String programUid) {
-        Intent ouTreeIntent = new Intent(context, OUTreeActivity.class);
-        if (programUid != null) {
-            Bundle bundle = OUTreeActivity.Companion.getBundle(programUid);
-            ouTreeIntent.putExtras(bundle);
-        }
-        this.startActivityForResult(ouTreeIntent, FilterManager.OU_TREE);
+        OUTreeFragment.Companion.newInstance(true).show(getChildFragmentManager(), "OUTreeFragment");
     }
 
     @Override

@@ -1,7 +1,6 @@
 package org.dhis2.usescases.main.program
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
@@ -13,7 +12,6 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.clipWithRoundedCorners
@@ -23,7 +21,7 @@ import org.dhis2.databinding.FragmentProgramBinding
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.usescases.orgunitselector.OUTreeActivity
+import org.dhis2.usescases.orgunitselector.OUTreeFragment
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.utils.Constants
@@ -35,6 +33,7 @@ import org.dhis2.utils.granularsync.GranularSyncContracts
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * Created by ppajuelo on 18/10/2017.f
@@ -127,8 +126,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     }
 
     override fun openOrgUnitTreeSelector() {
-        val ouTreeIntent = Intent(context, OUTreeActivity::class.java)
-        (context as MainActivity).startActivityForResult(ouTreeIntent, FilterManager.OU_TREE)
+        OUTreeFragment.newInstance(true).show(childFragmentManager, "OUTreeFragment")
     }
 
     override fun setTutorial() {

@@ -257,13 +257,6 @@ class MainActivity :
         }
     }
 
-    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
-            updateFilters(FilterManager.getInstance().totalFilters)
-        }
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
     override fun setFilters(filters: List<FilterItem>) {
         newAdapter.submitList(filters)
     }
