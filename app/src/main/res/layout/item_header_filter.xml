@@ -64,7 +64,7 @@
                     android:text='@{""+filterCount}'
                     android:textColor="?colorPrimary"
                     android:textSize="10sp"
-                    android:visibility="@{filterCount>0?View.VISIBLE:View.GONE}"
+                    app:animated_visibility="@{filterCount>0}"
                     tools:text="1" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -85,8 +85,8 @@
                 app:layout_constraintBottom_toTopOf="@id/filterValues"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/filterIcon"
-                app:layout_constraintVertical_chainStyle="packed"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
                 tools:text="FILTER TYPE" />
 
             <TextView
@@ -112,6 +112,7 @@
 
         <ImageView
             android:id="@+id/sortingIcon"
+            style="@style/ActionIconUnwrap"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginEnd="8dp"
@@ -125,6 +126,7 @@
 
         <ImageView
             android:id="@+id/filterArrow"
+            style="@style/ActionIconUnwrap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"

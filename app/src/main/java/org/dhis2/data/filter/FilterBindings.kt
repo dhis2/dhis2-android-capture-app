@@ -5,7 +5,8 @@ import androidx.databinding.BindingAdapter
 import androidx.databinding.Observable
 import org.dhis2.animations.collapse
 import org.dhis2.animations.expand
-import org.dhis2.animations.expandFromInitialHeight
+import org.dhis2.animations.hide
+import org.dhis2.animations.show
 import org.dhis2.utils.filters.CatOptionComboFilter
 import org.dhis2.utils.filters.FilterItem
 import org.dhis2.utils.filters.OrgUnitFilter
@@ -25,8 +26,17 @@ fun View.setRequestLayout(filterItem: FilterItem) {
         filterItem.observeCount()
             .addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
                 override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-                    expandFromInitialHeight { }
+                    expand(true) { }
                 }
             })
+    }
+}
+
+@BindingAdapter("animated_visibility")
+fun View.setAnimatedVisibility(visible:Boolean){
+    if(visible){
+        show()
+    }else{
+        hide()
     }
 }
