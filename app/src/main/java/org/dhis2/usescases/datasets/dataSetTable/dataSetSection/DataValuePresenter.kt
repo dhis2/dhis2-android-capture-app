@@ -7,6 +7,8 @@ import io.reactivex.functions.Function5
 import io.reactivex.functions.Function6
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
+import java.util.ArrayList
+import java.util.HashMap
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl
@@ -34,8 +36,6 @@ import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.Section
 import org.hisp.dhis.android.core.period.Period
 import timber.log.Timber
-import java.util.ArrayList
-import java.util.HashMap
 
 class DataValuePresenter(
     private val view: DataValueContract.View,

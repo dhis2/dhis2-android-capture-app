@@ -19,7 +19,6 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
-import org.dhis2.form.data.FormEventsRepository;
 import org.dhis2.form.data.FormRepositoryImpl;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.utils.RulesUtilsProvider;
@@ -121,10 +120,13 @@ public class EventCaptureModule {
     @Provides
     @PerActivity
     org.dhis2.form.data.FormRepository provideEventsFormRepository(@NonNull D2 d2) {
-        return new FormEventsRepository(
-                new FormRepositoryImpl(d2),
-                d2,
-                eventUid
+        return new FormRepositoryImpl(
+                new ValueStoreImpl(
+                        d2,
+                        eventUid,
+                        DataEntryStore.EntryMode.DE,
+                        new DhisEnrollmentUtils(d2)
+                )
         );
     }
 }

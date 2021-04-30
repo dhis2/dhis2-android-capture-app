@@ -1,5 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
+import java.util.ArrayList
+import java.util.HashMap
 import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
@@ -8,8 +10,6 @@ import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel
 import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.utils.DhisTextUtils.Companion.isEmpty
-import java.util.ArrayList
-import java.util.HashMap
 
 const val DISPLAY_FIELD_KEY = "DISPLAY_FIELD_KEY"
 

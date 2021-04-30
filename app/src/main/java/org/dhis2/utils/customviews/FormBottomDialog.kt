@@ -9,9 +9,9 @@ import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import java.util.HashMap
 import org.dhis2.databinding.FormBottomDialogBinding
 import org.dhis2.form.model.FieldUiModel
-import java.util.HashMap
 
 class FormBottomDialog : BottomSheetDialogFragment() {
     private var mListener: OnFormBottomDialogItemSelection? = null

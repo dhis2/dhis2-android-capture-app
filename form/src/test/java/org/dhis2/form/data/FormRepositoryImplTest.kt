@@ -1,5 +1,9 @@
 package org.dhis2.form.data
 
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.Flowable
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
@@ -8,22 +12,20 @@ import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
-import org.hisp.dhis.android.core.D2
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito
 
 class FormRepositoryImplTest {
 
-    private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
+    private val formValueStore: FormValueStore = mock()
     private lateinit var repository: FormRepositoryImpl
 
     @Before
     fun setUp() {
-        repository = FormRepositoryImpl(d2)
+        repository = FormRepositoryImpl(formValueStore)
     }
 
     @Test
@@ -63,7 +65,9 @@ class FormRepositoryImplTest {
             value = "testValue",
             type = ActionType.ON_SAVE
         )
-        repository.storeValue = { uid, _, _ -> StoreResult(uid, ValueStoreResult.VALUE_CHANGED) }
+        whenever(formValueStore.save(action.id, action.value, null)) doReturn Flowable.just(
+            StoreResult(action.id, ValueStoreResult.VALUE_CHANGED)
+        )
         val result = repository.processUserAction(action)
         assertThat(result.valueStoreResult, `is`(ValueStoreResult.VALUE_CHANGED))
     }

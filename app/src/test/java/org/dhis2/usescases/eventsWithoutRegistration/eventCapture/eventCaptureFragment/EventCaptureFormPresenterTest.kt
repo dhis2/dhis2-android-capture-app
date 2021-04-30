@@ -16,8 +16,6 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormPresenter
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormView
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.times
@@ -62,14 +60,15 @@ class EventCaptureFormPresenterTest {
 
     @Test
     fun `Should save new value`() {
+        val action = RowAction("testUid", "testValue", type = ActionType.ON_SAVE)
         whenever(onRowActionProcessor.onBackpressureBuffer()) doReturn mock()
         whenever(
             onRowActionProcessor.onBackpressureBuffer().distinctUntilChanged()
-        ) doReturn Flowable.just(RowAction("testUid", "testValue", type = ActionType.ON_SAVE))
+        ) doReturn Flowable.just(action)
         whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
         presenter.init()
 
-        verify(valueStore, times(1)).save("testUid", "testValue")
+        verify(formRepository, times(1)).processUserAction(action)
     }
 
     @Test

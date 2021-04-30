@@ -5,7 +5,6 @@ import dagger.Module
 import dagger.Provides
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import org.dhis2.Bindings.FormatUtilsProviderImpl
 import org.dhis2.Bindings.valueTypeHintMap
 import org.dhis2.R
 import org.dhis2.data.dagger.PerActivity
@@ -18,7 +17,6 @@ import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
 import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.form.data.FormEnrollmentRepository
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryImpl
 import org.dhis2.form.model.RowAction
@@ -181,12 +179,18 @@ class EnrollmentModule(
 
     @Provides
     @PerActivity
-    fun provideEnrollmentFormRepository(d2: D2): FormRepository {
-        return FormEnrollmentRepository(
-            FormRepositoryImpl(d2),
-            d2,
-            enrollmentUid,
-            FormatUtilsProviderImpl()
+    fun provideEnrollmentFormRepository(
+        d2: D2,
+        enrollmentRepository: EnrollmentObjectRepository
+    ): FormRepository {
+        return FormRepositoryImpl(
+            ValueStoreImpl(
+                d2,
+                enrollmentRepository.blockingGet().trackedEntityInstance()!!,
+                DataEntryStore.EntryMode.ATTR,
+                DhisEnrollmentUtils(d2),
+                enrollmentRepository
+            )
         )
     }
 }

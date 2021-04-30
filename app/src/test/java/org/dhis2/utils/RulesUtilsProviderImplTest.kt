@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import java.util.ArrayList
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
 import org.dhis2.form.model.FieldUiModel
@@ -30,7 +31,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-import java.util.ArrayList
 
 class RulesUtilsProviderImplTest {
 
@@ -50,7 +50,7 @@ class RulesUtilsProviderImplTest {
             ValueType.values().map { it to it.name }.toMap(),
             false
         )
-        testFieldViewModels = getTestingFieldViewModels().associateBy { it.getUid() }.toMutableMap()
+        testFieldViewModels = getTestingFieldViewModels().associateBy { it.uid }.toMutableMap()
     }
 
     private fun getTestingFieldViewModels(): MutableList<FieldUiModel> {
@@ -135,8 +135,8 @@ class RulesUtilsProviderImplTest {
             actionCallbacks
         )
 
-        Assert.assertNotNull(testFieldViewModels[testingUid]!!.getError())
-        Assert.assertEquals(testFieldViewModels[testingUid]!!.getError(), "content data")
+        Assert.assertNotNull(testFieldViewModels[testingUid]!!.error)
+        Assert.assertEquals(testFieldViewModels[testingUid]!!.error, "content data")
         verify(actionCallbacks, times(1)).setShowError(
             testRuleEffects[0].ruleAction() as RuleActionShowError,
             testModel
@@ -254,8 +254,8 @@ class RulesUtilsProviderImplTest {
         )
 
         verify(actionCallbacks, times(1)).save(testingUid, "data")
-        Assert.assertTrue(testFieldViewModels[testingUid]!!.getValue().equals("data"))
-        Assert.assertTrue(!testFieldViewModels[testingUid]!!.isEditable()!!)
+        Assert.assertTrue(testFieldViewModels[testingUid]!!.value.equals("data"))
+        Assert.assertTrue(!testFieldViewModels[testingUid]!!.editable)
     }
 
     @Test
@@ -286,10 +286,10 @@ class RulesUtilsProviderImplTest {
 
         verify(actionCallbacks, times(1)).save(testingUid, "data")
         verify(actionCallbacks, times(0)).save(testingUid2, "test")
-        Assert.assertTrue(testFieldViewModels[testingUid]!!.getValue().equals("data"))
-        Assert.assertTrue(testFieldViewModels[testingUid2]!!.getValue().equals("test"))
-        Assert.assertTrue(!testFieldViewModels[testingUid]!!.isEditable()!!)
-        Assert.assertTrue(!testFieldViewModels[testingUid]!!.isEditable()!!)
+        Assert.assertTrue(testFieldViewModels[testingUid]!!.value.equals("data"))
+        Assert.assertTrue(testFieldViewModels[testingUid2]!!.value.equals("test"))
+        Assert.assertTrue(!testFieldViewModels[testingUid]!!.editable)
+        Assert.assertTrue(!testFieldViewModels[testingUid]!!.editable)
     }
 
     @Test

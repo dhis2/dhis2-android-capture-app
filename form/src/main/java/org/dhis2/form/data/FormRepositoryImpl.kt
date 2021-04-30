@@ -5,20 +5,14 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
-import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
-import org.hisp.dhis.android.core.common.ValueType
-import java.io.File
-import kotlin.properties.Delegates
 
 class FormRepositoryImpl(
-    private val d2: D2
+    private val formValueStore: FormValueStore
 ) : FormRepository {
 
     private val itemsWithError = mutableListOf<RowAction>()
     private var itemList: List<FieldUiModel> = emptyList()
     private var focusedItem: RowAction? = null
-    var storeValue: (uid: String, value: String?, extraData: String?) -> StoreResult by Delegates.notNull()
 
     override fun processUserAction(action: RowAction): StoreResult {
         return when (action.type) {
@@ -31,7 +25,7 @@ class FormRepositoryImpl(
                     )
 
                 } else {
-                    storeValue(action.id, action.value, action.extraData)
+                    formValueStore.save(action.id, action.value, action.extraData).blockingSingle()
                 }
             }
             ActionType.ON_FOCUS, ActionType.ON_NEXT -> {
@@ -117,41 +111,6 @@ class FormRepositoryImpl(
                 itemsWithError.remove(it)
             }
         }
-    }
-
-    internal fun saveFileResource(path: String): String {
-        val file = FileResizerHelper.resizeFile(File(path), FileResizerHelper.Dimension.MEDIUM)
-        return d2.fileResourceModule().fileResources().blockingAdd(file)
-    }
-
-    //TODO review validations
-    internal fun withValueTypeCheck(value: String?, valueType: ValueType?) = value?.let {
-        return when (valueType) {
-            ValueType.PERCENTAGE,
-            ValueType.INTEGER,
-            ValueType.INTEGER_POSITIVE,
-            ValueType.INTEGER_NEGATIVE,
-            ValueType.INTEGER_ZERO_OR_POSITIVE -> (
-                it.toIntOrNull() ?: it.toFloat().toInt()
-                ).toString()
-            ValueType.UNIT_INTERVAL -> it.toFloat().toString()
-            else -> value
-        }
-    } ?: value
-
-    internal fun assureCodeForOptionSet(optionSetUid: String?, value: String): String {
-        return optionSetUid?.let {
-            if (d2.optionModule().options()
-                    .byOptionSetUid().eq(it)
-                    .byName().eq(value)
-                    .one().blockingExists()
-            ) {
-                d2.optionModule().options().byOptionSetUid().eq(it).byName().eq(value).one()
-                    .blockingGet().code()
-            } else {
-                value
-            }
-        } ?: value
     }
 
     fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =

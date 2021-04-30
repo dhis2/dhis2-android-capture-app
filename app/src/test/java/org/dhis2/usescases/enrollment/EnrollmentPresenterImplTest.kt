@@ -1,6 +1,5 @@
 package org.dhis2.usescases.enrollment
 
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
@@ -16,6 +15,7 @@ import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
@@ -45,7 +45,7 @@ import org.mockito.Mockito
 
 class EnrollmentPresenterImplTest {
 
-    private val formRepository: EnrollmentFormRepository = mock()
+    private val enrollmentFormRepository: EnrollmentFormRepository = mock()
     private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program> = mock()
     private val teiRepository: TrackedEntityInstanceObjectRepository = mock()
     private val dataEntryRepository: EnrollmentRepository = mock()
@@ -59,6 +59,7 @@ class EnrollmentPresenterImplTest {
     private val onRowActionProcessor: FlowableProcessor<RowAction> = PublishProcessor.create()
     private val sectionProcessor: FlowableProcessor<String> = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+    private val formRepository: FormRepository = mock()
 
     @Before
     fun setUp() {
@@ -70,20 +71,22 @@ class EnrollmentPresenterImplTest {
             teiRepository,
             programRepository,
             schedulers,
-            formRepository,
+            enrollmentFormRepository,
             valueStore,
             analyticsHelper,
             "This field is mandatory",
             onRowActionProcessor,
             sectionProcessor,
-            matomoAnalyticsController
+            matomoAnalyticsController,
+            formRepository
         )
     }
 
     @Test
     fun `Should delete option value if selected in group to hide`() {
-        whenever(formRepository.getOptionsFromGroups(arrayListOf("optionGroupToHide"))) doReturn
-            arrayListOf("option1", "option2")
+        whenever(
+            enrollmentFormRepository.getOptionsFromGroups(arrayListOf("optionGroupToHide"))
+        ) doReturn arrayListOf("option1", "option2")
         presenter.setOptionGroupToHide("optionGroupToHide", true, "field")
         verify(valueStore)
             .deleteOptionValueIfSelectedInGroup(
@@ -171,17 +174,17 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Should show dialog if an unique field has a coincidence in a unique attribute`() {
-        whenever(valueStore.save(any(), any())) doReturn Flowable.just(
-            StoreResult(
-                "fieldUid",
-                ValueStoreResult.VALUE_NOT_UNIQUE
-            )
+        val action = RowAction("fieldUid", "123", false, null, null, null, null, ActionType.ON_SAVE)
+
+        whenever(formRepository.processUserAction(action)) doReturn StoreResult(
+            "fieldUid",
+            ValueStoreResult.VALUE_NOT_UNIQUE
         )
         whenever(enrollmentView.context) doReturn mock()
 
         presenter.listenToActions()
         onRowActionProcessor.onNext(
-            RowAction("fieldUid", "123", false, null, null, null, null, ActionType.ON_SAVE)
+            action
         )
         val checkUnique = presenter.dataIntegrityCheck()
 
@@ -311,7 +314,7 @@ class EnrollmentPresenterImplTest {
     @Test
     fun `Should show a profile picture image`() {
         val path = "route/image"
-        whenever(formRepository.getProfilePicture()) doReturn path
+        whenever(enrollmentFormRepository.getProfilePicture()) doReturn path
         presenter.onTeiImageHeaderClick()
         verify(enrollmentView).displayTeiPicture(path)
     }
@@ -319,7 +322,7 @@ class EnrollmentPresenterImplTest {
     @Test
     fun `Should not show a profile picture image`() {
         val path = ""
-        whenever(formRepository.getProfilePicture()) doReturn path
+        whenever(enrollmentFormRepository.getProfilePicture()) doReturn path
         presenter.onTeiImageHeaderClick()
         verify(enrollmentView, never()).displayTeiPicture(path)
     }
