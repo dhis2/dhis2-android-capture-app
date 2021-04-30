@@ -233,11 +233,6 @@ public abstract class FieldViewModel implements FieldUiModel {
         return withError(error);
     }
 
-    @Override
-    public boolean isFocused() {
-        return activated();
-    }
-
     public boolean canHaveLegend() {
         return this instanceof EditTextViewModel || this instanceof SpinnerViewModel;
     }
@@ -252,23 +247,11 @@ public abstract class FieldViewModel implements FieldUiModel {
         }
     }
 
-    @Override
-    public boolean isEditable() {
-        return editable() != null ? editable() : true;
-    }
-
-    @NotNull
-    @Override
-    public FieldUiModel setEditMode(boolean value) {
-        return withEditMode(value);
-    }
-
     @NotNull
     @Override
     public FieldUiModel setEditable(boolean editable) {
         return withEditMode(editable);
     }
-
 
     @Override
     public boolean hasLegend() {
@@ -326,5 +309,15 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Override
     public String getLabel() {
         return label();
+    }
+
+    @Override
+    public boolean getFocused() {
+        return activated();
+    }
+
+    @Override
+    public boolean getEditable() {
+        return editable() != null ? editable() : true;
     }
 }

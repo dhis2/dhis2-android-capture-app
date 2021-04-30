@@ -63,14 +63,14 @@ class DataEntryAdapter :
     }
 
     override fun getItemViewType(position: Int): Int {
-        return getItem(position)!!.getLayoutId()
+        return getItem(position)!!.layoutId
     }
 
     fun swap(updates: List<FieldUiModel>, commitCallback: Runnable) {
         sectionPositions = LinkedHashMap()
         for (fieldViewModel in updates) {
             if (fieldViewModel is SectionViewModel) {
-                sectionPositions[fieldViewModel.getUid()] = updates.indexOf(fieldViewModel)
+                sectionPositions[fieldViewModel.uid] = updates.indexOf(fieldViewModel)
             }
         }
 

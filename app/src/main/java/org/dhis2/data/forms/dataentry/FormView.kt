@@ -137,7 +137,7 @@ class FormView @JvmOverloads constructor(
     }
 
     private fun handleKeyBoardOnFocusChange(items: List<FieldUiModel>) {
-        items.firstOrNull { it.isFocused() }?.let {
+        items.firstOrNull { it.focused }?.let {
             if (!doesItemNeedsKeyboard(it)) {
                 closeKeyboard()
             }

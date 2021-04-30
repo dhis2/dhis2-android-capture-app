@@ -49,7 +49,7 @@ class FormRepositoryImpl(
 
                 itemList.let { list ->
                     list.find { item ->
-                        item.getUid() == action.id
+                        item.uid == action.id
                     }?.let { item ->
                         itemList = list.updated(
                             list.indexOf(item),
@@ -75,7 +75,7 @@ class FormRepositoryImpl(
         fieldsWithError: MutableList<RowAction>
     ): List<FieldUiModel> {
         return list.map { item ->
-            fieldsWithError.find { it.id == item.getUid() }?.let { action ->
+            fieldsWithError.find { it.id == item.uid }?.let { action ->
                 item.setValue(action.value).setError(action.error)
             } ?: item
         }
@@ -89,7 +89,7 @@ class FormRepositoryImpl(
         }
 
         list.find { item ->
-            item.getUid() == uid
+            item.uid == uid
         }?.let { item ->
             list.updated(list.indexOf(item), item.setFocus())
         } ?: list
@@ -97,10 +97,10 @@ class FormRepositoryImpl(
 
     private fun getNextItem(currentItemUid: String): String? {
         itemList.let { fields ->
-            val oldItem = fields.find { it.getUid() == currentItemUid }
+            val oldItem = fields.find { it.uid == currentItemUid }
             val pos = fields.indexOf(oldItem)
             if (pos < fields.size - 1) {
-                return fields[pos + 1].getUid()
+                return fields[pos + 1].uid
             }
         }
 

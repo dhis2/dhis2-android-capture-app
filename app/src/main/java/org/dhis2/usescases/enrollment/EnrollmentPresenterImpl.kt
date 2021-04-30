@@ -291,10 +291,10 @@ class EnrollmentPresenterImpl(
             }
 
             if (field !is SectionViewModel && field !is DisplayViewModel) {
-                if (field.getError()?.isNotEmpty() == true) {
+                if (field.error?.isNotEmpty() == true) {
                     errorFields[field.getProgramStageSection() ?: sectionUid] = field.getLabel()
                 }
-                if (field.isMandatory() && field.getValue().isNullOrEmpty()) {
+                if (field.isMandatory() && field.value.isNullOrEmpty()) {
                     mandatoryFields[field.getLabel()] = field.getProgramStageSection() ?: sectionUid
                     if (showErrors.first) {
                         iterator.set(field.setWarning(mandatoryWarning))
@@ -339,7 +339,7 @@ class EnrollmentPresenterImpl(
         fields.filter { it.getProgramStageSection().equals(sectionUid) && it !is SectionViewModel }
             .forEach {
                 total++
-                if (!it.getValue().isNullOrEmpty()) {
+                if (!it.value.isNullOrEmpty()) {
                     values++
                 }
             }
@@ -431,7 +431,7 @@ class EnrollmentPresenterImpl(
         optionsGroupsToHide.clear()
         optionsGroupToShow.clear()
 
-        val fieldMap = fields.map { it.getUid() to it }.toMap().toMutableMap()
+        val fieldMap = fields.map { it.uid to it }.toMap().toMutableMap()
 
         RulesUtilsProviderImpl(d2)
             .applyRuleEffects(fieldMap, result, this)

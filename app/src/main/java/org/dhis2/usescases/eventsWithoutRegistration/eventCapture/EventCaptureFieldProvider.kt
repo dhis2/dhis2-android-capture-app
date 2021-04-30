@@ -69,17 +69,17 @@ class EventCaptureFieldProvider(
             .flatMapIterable { list -> list }
             .map { fieldViewModel ->
 
-                val de = dataElement(fieldViewModel.getUid())
+                val de = dataElement(fieldViewModel.uid)
 
                 val (rawValue, friendlyValue) = dataValue(
                     event.uid(),
-                    fieldViewModel.getUid(),
+                    fieldViewModel.uid,
                     fieldViewModel is OrgUnitViewModel
                 )
 
                 val error = checkConflicts(
                     event.uid(),
-                    fieldViewModel.getUid(),
+                    fieldViewModel.uid,
                     rawValue
                 )
 
@@ -89,10 +89,8 @@ class EventCaptureFieldProvider(
                     null
                 }
 
-                val editable = fieldViewModel.isEditable() ?: true
-
                 val updatedFieldViewModel = fieldViewModel.setValue(friendlyValue)
-                    .setEditMode(editable || isEventEditable)
+                    .setEditable(fieldViewModel.editable || isEventEditable)
                     .setLegend(legend)
                     .apply {
                         if (error.isNotEmpty()) {

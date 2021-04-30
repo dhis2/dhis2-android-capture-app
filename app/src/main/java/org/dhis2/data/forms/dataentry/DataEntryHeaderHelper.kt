@@ -66,7 +66,7 @@ class DataEntryHeaderHelper(
             val binding =
                 DataBindingUtil.inflate<ViewDataBinding>(
                     layoutInflater,
-                    section.getLayoutId(),
+                    section.layoutId,
                     headerContainer,
                     false
                 )

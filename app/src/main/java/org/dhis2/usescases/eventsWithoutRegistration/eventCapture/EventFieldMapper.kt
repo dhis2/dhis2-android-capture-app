@@ -101,7 +101,7 @@ class EventFieldMapper(
                 updateFieldMap(
                     fieldSection,
                     if (showMandatoryErrors &&
-                        emptyMandatoryFields.containsKey(field.getUid())
+                        emptyMandatoryFields.containsKey(field.uid)
                     ) {
                         field.setWarning(mandatoryFieldWarning)
                     } else {
@@ -111,8 +111,8 @@ class EventFieldMapper(
                 if (field !is DisplayViewModel) {
                     if (fieldIsNotVisualOptionSet(field)) {
                         totalFields++
-                    } else if (!visualDataElements.contains(field.getUid())) {
-                        visualDataElements.add(field.getUid())
+                    } else if (!visualDataElements.contains(field.uid)) {
+                        visualDataElements.add(field.uid)
                         totalFields++
                     }
                 }
@@ -176,8 +176,8 @@ class EventFieldMapper(
 
         finalFields = HashMap()
         for (fieldViewModel in fieldViewModels) {
-            finalFields[fieldViewModel.getUid()] =
-                !isEmpty(fieldViewModel.getValue())
+            finalFields[fieldViewModel.uid] =
+                !isEmpty(fieldViewModel.value)
         }
 
         var cont = 0
@@ -215,8 +215,8 @@ class EventFieldMapper(
     ) {
         for (fieldViewModel in fields) {
             if (fieldViewModel !is DisplayViewModel) {
-                finalFields[fieldViewModel.getUid()] =
-                    !isEmpty(fieldViewModel.getValue())
+                finalFields[fieldViewModel.uid] =
+                    !isEmpty(fieldViewModel.value)
             }
         }
 

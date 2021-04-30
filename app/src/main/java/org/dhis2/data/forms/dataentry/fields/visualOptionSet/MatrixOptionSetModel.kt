@@ -15,9 +15,8 @@ const val labelTag = "tag"
 @AutoValue
 abstract class MatrixOptionSetModel : FieldViewModel() {
 
-    override fun getLayoutId(): Int {
-        return R.layout.matrix_option_set
-    }
+    override val layoutId: Int
+        get() = R.layout.matrix_option_set
 
     abstract fun options(): List<Option>
 

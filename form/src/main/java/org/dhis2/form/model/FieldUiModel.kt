@@ -2,11 +2,19 @@ package org.dhis2.form.model
 
 interface FieldUiModel {
 
+    val uid: String
+
+    val layoutId: Int
+
+    val value: String?
+
+    val focused: Boolean
+
+    val error: String?
+
+    val editable: Boolean
+
     fun setCallback(callback: Callback)
-
-    fun getLayoutId(): Int
-
-    fun getUid(): String
 
     fun equals(item: FieldUiModel): Boolean
 
@@ -20,15 +28,7 @@ interface FieldUiModel {
 
     fun setFocus(): FieldUiModel
 
-    fun getError(): String?
-
     fun setError(error: String?): FieldUiModel
-
-    fun isFocused(): Boolean
-
-    fun isEditable(): Boolean
-
-    fun setEditMode(value: Boolean): FieldUiModel
 
     fun setEditable(editable: Boolean): FieldUiModel
 
@@ -37,8 +37,6 @@ interface FieldUiModel {
     fun setLegend(legendValue: LegendValue?): FieldUiModel
 
     fun getProgramStageSection(): String?
-
-    fun getValue(): String?
 
     fun getOptionSet(): String?
 

@@ -199,12 +199,12 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             val field = fieldViewModels[assign.field()]!!
 
             val value =
-                if (field.getOptionSet() != null && field.getValue() != null) {
+                if (field.getOptionSet() != null && field.value != null) {
                     d2.optionModule().options().byOptionSetUid().eq(field.getOptionSet())
-                        .byDisplayName().eq(field.getValue())
+                        .byDisplayName().eq(field.value)
                         .one().blockingGet().code()
                 } else {
-                    field.getValue()
+                    field.value
                 }
 
             if (value == null || value != ruleEffect.data()) {
@@ -223,7 +223,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             fieldViewModels[assign.field()] =
                 fieldViewModels[assign.field()]!!
                     .setValue(valueToShow)
-                    .setEditMode(false)
+                    .setEditable(false)
         }
     }
 
