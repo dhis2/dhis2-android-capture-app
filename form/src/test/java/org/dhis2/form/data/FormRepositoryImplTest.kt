@@ -9,7 +9,9 @@ import org.dhis2.form.model.ValueStoreResult
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
 import org.hisp.dhis.android.core.D2
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -67,8 +69,82 @@ class FormRepositoryImplTest {
     }
 
     @Test
-    fun `Should set focus to first item`() {
+    fun `Should update not save an item with error when ON_SAVE`() {
+        //When user updates a field with error
+        val result = repository.processUserAction(
+            RowAction(
+                id = "testUid",
+                value = "testValue",
+                type = ActionType.ON_SAVE,
+                error = "Wrong value"
+            )
+        )
 
+        //Then item should not be saved
+        assertThat(result.valueStoreResult, `is`(ValueStoreResult.VALUE_HAS_NOT_CHANGED))
+    }
+
+    @Test
+    fun `Should set focus to first item`() {
+        //Given a list of non focused items
+        repository.composeList(provideItemList())
+
+        //When user taps on first item
+        repository.processUserAction(
+            RowAction(
+                id = "uid001",
+                value = "value",
+                type = ActionType.ON_FOCUS
+            )
+        )
+
+        //Then result list should has it's first item focused
+        assertTrue(repository.composeList()[0].focused)
+    }
+
+    @Test
+    fun `Should set focus to the next editable item when tapping on next`() {
+        //Given a list with first item focused
+        repository.composeList(provideItemList())
+        repository.processUserAction(
+            RowAction(
+                id = "uid001",
+                value = "value",
+                type = ActionType.ON_FOCUS
+            )
+        )
+
+        //When user taps on next
+        repository.processUserAction(
+            RowAction(
+                id = "uid001",
+                value = "value",
+                type = ActionType.ON_NEXT
+            )
+        )
+
+        //Then result list should has second item focused
+        assertFalse(repository.composeList()[0].focused)
+        assertTrue(repository.composeList()[1].focused)
+
+    }
+
+    @Test
+    fun `Should update value when text changes`() {
+        //Given a list of items
+        repository.composeList(provideItemList())
+
+        //When user updates second item text
+        repository.processUserAction(
+            RowAction(
+                id = "uid002",
+                value = "newValue",
+                type = ActionType.ON_TEXT_CHANGE
+            )
+        )
+
+        //Then first item value should has change
+        assertThat(repository.composeList()[1].value, `is`("newValue"))
     }
 
     private fun provideItemList() = listOf<FieldUiModel>(

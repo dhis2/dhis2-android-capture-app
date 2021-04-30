@@ -8,5 +8,5 @@ interface FormRepository {
 
     fun processUserAction(action: RowAction): StoreResult
 
-    fun composeList(list: List<FieldUiModel>?): List<FieldUiModel>
+    fun composeList(list: List<FieldUiModel>? = null): List<FieldUiModel>
 }
