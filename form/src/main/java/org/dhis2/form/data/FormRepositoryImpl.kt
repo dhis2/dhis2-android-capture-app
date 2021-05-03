@@ -97,7 +97,6 @@ class FormRepositoryImpl(
                 return fields[pos + 1].uid
             }
         }
-
         return null
     }
 

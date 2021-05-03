@@ -9,6 +9,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.form.model.ActionType;
+import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.RowAction;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -32,8 +33,10 @@ public abstract class SpinnerViewModel extends FieldViewModel {
 
     @NonNull
     public abstract List<String> optionsToHide();
+
     @NonNull
     public abstract List<String> optionGroupsToHide();
+
     @NonNull
     public abstract List<String> optionGroupsToShow();
 
@@ -191,5 +194,15 @@ public abstract class SpinnerViewModel extends FieldViewModel {
                 null,
                 ActionType.ON_SAVE
         ));
+    }
+
+    @Override
+    public boolean equals(FieldUiModel o) {
+        return super.equals(o) && o instanceof SpinnerViewModel &&
+                this.legendValue() == ((SpinnerViewModel) o).legendValue() &&
+                this.optionSet().equals(((SpinnerViewModel) o).optionSet()) &&
+                this.getOptionsToHide() == ((SpinnerViewModel) o).optionsToHide() &&
+                this.optionGroupsToHide() == ((SpinnerViewModel) o).optionGroupsToHide() &&
+                this.optionGroupsToShow() == ((SpinnerViewModel) o).optionGroupsToShow();
     }
 }
