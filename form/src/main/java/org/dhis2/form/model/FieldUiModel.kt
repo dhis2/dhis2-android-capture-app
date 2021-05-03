@@ -14,6 +14,14 @@ interface FieldUiModel {
 
     val editable: Boolean
 
+    val warning: String?
+
+    val mandatory: Boolean
+
+    val label: String
+
+    val programStageSection: String?
+
     fun setCallback(callback: Callback)
 
     fun equals(item: FieldUiModel): Boolean
@@ -36,23 +44,16 @@ interface FieldUiModel {
 
     fun setLegend(legendValue: LegendValue?): FieldUiModel
 
-    fun getProgramStageSection(): String?
-
     fun getOptionSet(): String?
-
-    fun getWarning() : String?
 
     fun setWarning(warning: String): FieldUiModel
 
     fun setFieldMandatory(): FieldUiModel
 
-    fun isMandatory(): Boolean
-
-    fun getLabel(): String
-
     interface Callback {
 
         fun onNext()
+
         fun showDialog(title: String, message: String?)
     }
 }

@@ -65,7 +65,7 @@ class EventCaptureFormPresenter(
         activityPresenter.hideProgress()
         if (items != null) {
             selectedSection ?: items
-                .mapNotNull { it.getProgramStageSection() }
+                .mapNotNull { it.programStageSection }
                 .firstOrNull()
                 .let { selectedSection = it }
         }

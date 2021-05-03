@@ -292,17 +292,17 @@ class EnrollmentPresenterImpl(
 
             if (field !is SectionViewModel && field !is DisplayViewModel) {
                 if (field.error?.isNotEmpty() == true) {
-                    errorFields[field.getProgramStageSection() ?: sectionUid] = field.getLabel()
+                    errorFields[field.programStageSection ?: sectionUid] = field.label
                 }
-                if (field.isMandatory() && field.value.isNullOrEmpty()) {
-                    mandatoryFields[field.getLabel()] = field.getProgramStageSection() ?: sectionUid
+                if (field.mandatory && field.value.isNullOrEmpty()) {
+                    mandatoryFields[field.label] = field.programStageSection ?: sectionUid
                     if (showErrors.first) {
                         iterator.set(field.setWarning(mandatoryWarning))
                     }
                 }
             }
 
-            if (field !is SectionViewModel && !field.getProgramStageSection().equals(sectionUid)) {
+            if (field !is SectionViewModel && !field.programStageSection.equals(sectionUid)) {
                 iterator.remove()
             }
         }
@@ -336,7 +336,7 @@ class EnrollmentPresenterImpl(
     private fun getValueCount(fields: List<FieldUiModel>, sectionUid: String): Pair<Int, Int> {
         var total = 0
         var values = 0
-        fields.filter { it.getProgramStageSection().equals(sectionUid) && it !is SectionViewModel }
+        fields.filter { it.programStageSection.equals(sectionUid) && it !is SectionViewModel }
             .forEach {
                 total++
                 if (!it.value.isNullOrEmpty()) {

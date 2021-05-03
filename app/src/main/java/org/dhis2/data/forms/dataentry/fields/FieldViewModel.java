@@ -301,7 +301,7 @@ public abstract class FieldViewModel implements FieldUiModel {
     }
 
     @Override
-    public boolean isMandatory() {
+    public boolean getMandatory() {
         return mandatory();
     }
 

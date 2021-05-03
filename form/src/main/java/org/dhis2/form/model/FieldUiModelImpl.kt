@@ -6,7 +6,11 @@ data class FieldUiModelImpl(
     override val value: String? = null,
     override val focused: Boolean = false,
     override val error: String? = null,
-    override val editable: Boolean = true
+    override val editable: Boolean = true,
+    override val warning: String? = null,
+    override val mandatory: Boolean = false,
+    override val label: String,
+    override val programStageSection: String? = null
 ) : FieldUiModel {
 
     override fun setCallback(callback: FieldUiModel.Callback) {
@@ -45,32 +49,12 @@ data class FieldUiModelImpl(
         TODO("Not yet implemented")
     }
 
-    override fun getProgramStageSection(): String? {
-        TODO("Not yet implemented")
-    }
-
     override fun getOptionSet(): String? {
         TODO("Not yet implemented")
     }
 
-    override fun getWarning(): String? {
-        TODO("Not yet implemented")
-    }
+    override fun setWarning(warning: String) = this.copy(warning = warning)
 
-    override fun setWarning(warning: String): FieldUiModel {
-        TODO("Not yet implemented")
-    }
-
-    override fun setFieldMandatory(): FieldUiModel {
-        TODO("Not yet implemented")
-    }
-
-    override fun isMandatory(): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun getLabel(): String {
-        TODO("Not yet implemented")
-    }
+    override fun setFieldMandatory() = this.copy(mandatory = true)
 
 }

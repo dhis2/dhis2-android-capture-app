@@ -152,8 +152,23 @@ class FormRepositoryImplTest {
     }
 
     private fun provideItemList() = listOf<FieldUiModel>(
-        FieldUiModelImpl("uid001", 1, "value"),
-        FieldUiModelImpl("uid002", 2, "value"),
-        FieldUiModelImpl("uid002", 2, "value")
+        FieldUiModelImpl(
+            uid = "uid001",
+            layoutId = 1,
+            value = "value",
+            label = "field1"
+        ),
+        FieldUiModelImpl(
+            uid = "uid002",
+            layoutId = 2,
+            value = "value",
+            label = "field2"
+        ),
+        FieldUiModelImpl(
+            uid = "uid003",
+            layoutId = 3,
+            value = "value",
+            label = "field3"
+        )
     )
 }

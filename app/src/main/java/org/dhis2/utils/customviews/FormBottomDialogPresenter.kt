@@ -10,7 +10,7 @@ class FormBottomDialogPresenter {
     ): String {
         return if (showMandatoryFields) {
             currentMessage + "\n" + emptyMandatoryFields.values.joinToString(separator = "\n") {
-                it.getLabel()
+                it.label
             }
         } else {
             currentMessage

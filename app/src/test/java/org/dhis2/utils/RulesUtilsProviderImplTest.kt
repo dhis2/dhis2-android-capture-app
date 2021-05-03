@@ -111,8 +111,8 @@ class RulesUtilsProviderImplTest {
             actionCallbacks
         )
 
-        Assert.assertNotNull(testFieldViewModels["uid1"]!!.getWarning())
-        Assert.assertEquals(testFieldViewModels["uid1"]!!.getWarning(), "content data")
+        Assert.assertNotNull(testFieldViewModels["uid1"]!!.warning)
+        Assert.assertEquals(testFieldViewModels["uid1"]!!.warning, "content data")
     }
 
     @Test
@@ -329,7 +329,7 @@ class RulesUtilsProviderImplTest {
             actionCallbacks
         )
 
-        Assert.assertTrue(testFieldViewModels[testingUid]!!.isMandatory())
+        Assert.assertTrue(testFieldViewModels[testingUid]!!.mandatory)
     }
 
     @Test
@@ -350,7 +350,7 @@ class RulesUtilsProviderImplTest {
             actionCallbacks
         )
 
-        Assert.assertEquals(testFieldViewModels[testingUid]!!.getWarning(), "content data")
+        Assert.assertEquals(testFieldViewModels[testingUid]!!.warning, "content data")
         verify(actionCallbacks, times(1)).setMessageOnComplete("content", true)
     }
 
@@ -372,7 +372,7 @@ class RulesUtilsProviderImplTest {
             actionCallbacks
         )
 
-        Assert.assertEquals(testFieldViewModels[testingUid]!!.getWarning(), "content data")
+        Assert.assertEquals(testFieldViewModels[testingUid]!!.warning, "content data")
         verify(actionCallbacks, times(1)).setMessageOnComplete("content", false)
     }
 

@@ -240,7 +240,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
             for (FieldUiModel fields : updates) {
                 if (fields.getError() != null)
                     errorFields.add(fields.getLabel());
-                if (fields.isMandatory() && fields.getValue() == null)
+                if (fields.getMandatory() && fields.getValue() == null)
                     missingMandatoryFields.add(fields.getLabel());
             }
             if (!missingMandatoryFields.isEmpty() || !errorFields.isEmpty()) {
@@ -296,7 +296,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     private int calculateMandatoryUnansweredFields(@NonNull List<FieldUiModel> updates) {
         int total = 0;
         for (FieldUiModel fieldViewModel : updates) {
-            if ((fieldViewModel.getValue() == null || fieldViewModel.getValue().isEmpty()) && fieldViewModel.isMandatory())
+            if ((fieldViewModel.getValue() == null || fieldViewModel.getValue().isEmpty()) && fieldViewModel.getMandatory())
                 total++;
         }
         return total;

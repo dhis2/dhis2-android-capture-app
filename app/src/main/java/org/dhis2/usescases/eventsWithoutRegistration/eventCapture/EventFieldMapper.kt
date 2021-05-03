@@ -55,7 +55,7 @@ class EventFieldMapper(
             if (showErrors.first) {
                 repeat(
                     emptyMandatoryFields
-                        .filter { it.value.getProgramStageSection() == section.uid() }.size
+                        .filter { it.value.programStageSection == section.uid() }.size
                 ) { mandatoryCounter++ }
             }
             if (showErrors.second) {
@@ -125,7 +125,7 @@ class EventFieldMapper(
         return if (field is DisplayViewModel) {
             DISPLAY_FIELD_KEY
         } else {
-            return field.getProgramStageSection() ?: ""
+            return field.programStageSection ?: ""
         }
     }
 

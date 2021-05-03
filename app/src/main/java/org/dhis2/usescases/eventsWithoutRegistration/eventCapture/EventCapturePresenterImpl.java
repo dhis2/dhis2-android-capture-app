@@ -322,7 +322,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         {
                             emptyMandatoryFields = new HashMap<>();
                             for (FieldUiModel fieldViewModel : fields) {
-                                if (fieldViewModel.isMandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.getValue())) {
+                                if (fieldViewModel.getMandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.getValue())) {
                                     emptyMandatoryFields.put(fieldViewModel.getUid(), fieldViewModel);
                                 }
                             }

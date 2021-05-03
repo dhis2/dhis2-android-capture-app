@@ -158,7 +158,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         fieldViewModels: MutableMap<String, FieldUiModel>,
         rulesActionCallbacks: RulesActionCallbacks
     ) {
-        if (fieldViewModels[hideField.field()]?.isMandatory() != true) {
+        if (fieldViewModels[hideField.field()]?.mandatory != true) {
             fieldViewModels.remove(hideField.field())
             rulesActionCallbacks.save(hideField.field(), null)
         }
@@ -184,8 +184,8 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         hideSection: RuleActionHideSection
     ) {
         fieldViewModels.filter {
-            it.value.getProgramStageSection() == hideSection.programStageSection() &&
-                !it.value.isMandatory()
+            it.value.programStageSection == hideSection.programStageSection() &&
+                !it.value.mandatory
         }.keys.forEach { fieldViewModels.remove(it) }
     }
 
