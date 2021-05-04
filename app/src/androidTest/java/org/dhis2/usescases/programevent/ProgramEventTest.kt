@@ -1,5 +1,6 @@
 package org.dhis2.usescases.programevent
 
+import android.Manifest
 import android.content.Intent
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
@@ -21,6 +22,10 @@ class ProgramEventTest: BaseTest() {
 
     @get:Rule
     val rule = ActivityTestRule(ProgramEventDetailActivity::class.java, false, false)
+
+    override fun getPermissionsToBeAccepted(): Array<String> {
+        return arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+    }
 
     @Test
     fun shouldCreateNewEventAndCompleteIt() {
