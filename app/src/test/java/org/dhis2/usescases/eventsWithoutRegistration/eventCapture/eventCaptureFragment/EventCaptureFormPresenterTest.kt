@@ -1,4 +1,4 @@
-package org.dhis2.usescases.eventWithoutRegistration.eventCapture.eventCaptureFragment
+package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
@@ -16,8 +16,6 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormPresenter
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormView
 import org.hisp.dhis.android.core.D2
 import org.junit.Before
 import org.junit.Test

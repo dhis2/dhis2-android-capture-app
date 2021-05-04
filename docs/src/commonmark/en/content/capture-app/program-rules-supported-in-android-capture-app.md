@@ -1,6 +1,4 @@
-# Program rules supported in Android Capture App
-
-<!-- DHIS2-SECTION-ID:programrules -->
+# Program rules supported in Android Capture App { #capture_app_pr }
 
 The following is a comprehensive list of all Program rule components (variable types and actions) available in DHIS 2, and notes on whether or not these have been implemented in the Android Capture app.
 
@@ -13,9 +11,8 @@ Any issues around using a particular feature with Android are highlighted with a
 |![](resources/images/../../admin/icon-na.png)|Not applicable|
 |![](resources/images/../../admin/icon-wip.png)|Work in progress. Feature not completely implemented yet or with unexpected behavior already reported |
 
-## Program rule Variable source types supported
+## Program rule Variable source types supported { #capture_app_pr_prv }
 
-<!-- DHIS2-SECTION-ID:programrules_variables -->
 
 | Variable type| Description of variable type| Program with registration| Program without registration| Notes on implementation|
 |-|---|:-:|:-:|---|
@@ -29,9 +26,8 @@ Any issues around using a particular feature with Android are highlighted with a
 |Tracked entity attribute|Populates the program rule variable with a specified tracked entity attribute for the current TEI (e.g. current patient).|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-na.png)||
 |Calculated value|Calculated value.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
 
-## Program rule Actions supported (Data element in current event)
+## Program rule Actions supported (Data element in current event) { #capture_app_pr_pra }
 
-<!-- DHIS2-SECTION-ID:programrules_actions -->
 
 | Action| Description of action| Program with registration| Program without registration| Notes on implementation|
 |-|---|:-:|:-:|---|
@@ -54,9 +50,8 @@ Any issues around using a particular feature with Android are highlighted with a
 |Send Message|Send Message triggers a notification based on provided message template.This action will be taken whenever there is a change in data value. However this behaviour can be controlled by providing event-enrollment status in program rule expression|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|This feature is executed on the server side.||
 |Schedule Message|Schedule Message will schedule notification at date provided by Expression in the data field.|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|This feature is executed on the server side.||
 
-## Program rule Actions supported (Other variables)
+## Program rule Actions supported (Other variables) { #capture_app_pr_pra_other }
 
-<!-- DHIS2-SECTION-ID:programrules_actions_other -->
 
 | Action| Description of Action| Data Element from the Newest Event in the Current Program (with registration)|Data Element from the Newest Event in the Current Program (without registration)| Data Element from Previous Event (with registration) |Data Element from Previous Event (without registration)| Data Element from the Newest Event for a Program Stage (with registration)|Tracked Entity Atribute (with registration) |Notes on implementation|
 |-|---|:-:|:-:|:-:|:-:|:-:|:-:|---|
@@ -78,9 +73,8 @@ Any issues around using a particular feature with Android are highlighted with a
 |Send Message|Send Message triggers a notification based on provided message template.This action will be taken whenever there is a change in data value. However this behaviour can be controlled by providing event-enrollment status in program rule expression|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|This feature is executed on the server side.||
 |Schedule Message|Schedule Message will schedule notification at date provided by Expression in the data field.|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|This feature is executed on the server side.||
 
-## Functions to use in program rule expressions
+## Functions to use in program rule expressions { #capture_app_pr_pre }
 
-<!-- DHIS2-SECTION-ID:programrules_functions -->
 
 | Function   | Description of function | Status        | Notes on implementation |
 | ---- | ----------------------------- | :----: | -- |
@@ -119,9 +113,8 @@ Any issues around using a particular feature with Android are highlighted with a
 > 
 > \*** Available in DHIS 2 v2.32
 
-## Standard variables to use in program rule expressions
+## Standard variables to use in program rule expressions { #capture_app_pr_standard_vars }
 
-<!-- DHIS2-SECTION-ID:programrules_standard_variables -->
 
 Available in DHIS2 v2.30
 
@@ -145,15 +138,13 @@ Available in DHIS2 v2.30
 > 
 > \* Only applies to tracker
 
-## Differences between the Program Rules in the web and the Android version
+## Differences between the Program Rules in the web and the Android version { #capture_app_pr_differences_web_android }
 
-<!-- DHIS2-SECTION-ID:programrules_differences -->
 
 As the web and the Android application are currently using a different *program rule engine* there might be programs rule that work in one system and not in the other. In general terms it can be said that the Android *program rule engine* is more strict and so, some Program Rules that work in the web version of DHIS2 will fail in Android. This subsection describes the main differences and how to adapt the rules in order to have them working in both systems.
 
-### Evaluation of type Boolean
+### Evaluation of type Boolean { #capture_app_pr_differences_web_android_bool }
 
-<!-- DHIS2-SECTION-ID:programrules_differences_boolean -->
 
 DHIS2 web version considers the type boolean as 0 or 1 (which can be evaluated to true or false), however Android evaluates them only as true or false. While this makes possible the addition of booleans in web, it will fail in Android; in order to fix this an additional *program rule variable* is needed to transform the boolean into an number that can be operated. Check the table below for examples and possible solutions.
 
@@ -183,9 +174,8 @@ For the examples belows consider the following:
 | PR1: #{prv_boolean_one} <br /><br />PR2: #{prv_boolean_two} <br /><br />PR3: #{prv_boolean_one} \|\| #{prv_boolean_two} | PRA1. Assign value  "1" to PRV "#{prv_bool_one_to_number}" <br /><br />PRA2. Assign value: "1" to PRV "#{prv_bool_two_to_number}" <br /><br />PRA3. Assign value to DE: "#{prv_bool_one_to_number} + #{prv_bool_two_to_number} + 1"| ![](resources/images/../../admin/icon-negative.png) | ![](resources/images/../../admin/icon-negative.png) | There are 2 variables for boolean, one gets the value via a PRV definition “value form DE” and the other one via a PRA. If a boolean is not marked it is counted as string instead of a number |
 | Four PR to assign 1 or 0 to the booleans and an additional for the addition. Priorities go from top to bottom <br /><br />PRC1: !d2:hasValue('prv_boolean_one')  \|\| !#{prv_boolean_one} <br /><br />PRC2: d2:hasValue('prv_boolean_one') && #{prv_boolean_one}<br /><br />PRC3: !d2:hasValue('prv_boolean_two')  \|\| !#{prv_boolean_two} <br /><br />PRC4: d2:hasValue('prv_boolean_two') && #{prv_boolean_two} <br /><br />PRC5: true | PRA1: Assign value: "0" to PRV "#{prv_bool_one_to_number}" <br /><br />PRA2: Assign value: "1" to PRV "#{prv_bool_one_to_number}" <br /><br />PRA3: Assign value: "0" to PRV "#{prv_bool_two_to_number}" <br /><br />PRA4: Assign value: "1" to PRV "#{prv_bool_two_to_number}" <br /><br />PRA5: Assign value: "#{prv_bool_one_to_number} + #{prv_bool_two_to_number} + 1" to DE <br /> | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | There are 2 variables for boolean, one gets the value via a PRV definition “value form DE” and the other one via a PRA.
 
-### Evaluation of numbers
+### Evaluation of numbers { #capture_app_pr_differences_web_android_numbers }
 
-<!-- DHIS2-SECTION-ID:programrules_differences_numbers -->
 
 DHIS2 web version evaluate numbers in a more flexible way casting values from integer to floats if required for a division, however, Android take numbers as such (without a casting) which my end up giving unexpected results. Check the table below for examples and possible solutions.
 
@@ -194,9 +184,9 @@ DHIS2 web version evaluate numbers in a more flexible way casting values from in
 | true | Assign value to DE: d2:daysBetween('2020-05-13', '2020-05-17') / 3 | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-negative.png) | The user would expect the division to be calculated as 4/3 with a result of 1.3333. However, Android does not cast 4 to a float (4.0 as the web version does) so the result in Android is a pure 1 as the result of the integer division 4/3 |
 | true | Assign value to DE: d2:daysBetween('2020-05-13', '2020-05-17') / 3.0 | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | Division results in 1.33333 in both web and Android | 
 
-## Changes in Program Rules (from 2.2 version )
+## Changes in Program Rules (from 2.2 version ) { #capture_app_pr_changes }
 
-### Evaluation of 'd2:hasValue'
+### Evaluation of 'd2:hasValue' { #capture_app_pr_changes_hasvalue }
 
 #### Description
 
@@ -227,7 +217,7 @@ Get programRules where either the condition or the program rule action uses the 
 
 The example above shows how different ways of using the hasValue function will have the same effect as from version 2.2. There are no mandatory changes but have in mind that while writing new program rules being consistent might help avoiding problems.
 
-### Evaluation of a variable
+### Evaluation of a variable { #capture_app_pr_changes_eval_var }
 
 #### Description
 
@@ -280,7 +270,7 @@ In the example above the condition should change from:
 To:
 <condition>d2:hasValue(‘Age in years’)</condition>`
 
-### Evaluation of texts
+### Evaluation of texts { #capture_app_pr_changes_eval_text }
 
 #### Description
 
@@ -320,7 +310,7 @@ For example we can detect here an error of a text field without quotes in the fi
 
 Scan the generated list (via the suggested API calls) to find data components of the Program Rule Action where text is not quoted, then go to each of the identified Program Rules and update them.
 
-### Concatenation of string and objects
+### Concatenation of string and objects { #capture_app_pr_changes_concat }
 
 #### Description
 

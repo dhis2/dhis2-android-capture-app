@@ -11,6 +11,7 @@ import org.dhis2.data.forms.dataentry.fields.ActionType;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.LegendValue;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.form.data.FieldUiModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 
 import java.util.ArrayList;
@@ -191,5 +192,15 @@ public abstract class SpinnerViewModel extends FieldViewModel {
                 null,
                 ActionType.ON_SAVE
         ));
+    }
+
+    @Override
+    public boolean equals(FieldUiModel o) {
+        return super.equals(o) && o instanceof SpinnerViewModel &&
+                this.legendValue() == ((SpinnerViewModel) o).legendValue() &&
+                this.optionSet().equals(((SpinnerViewModel) o).optionSet()) &&
+                this.getOptionsToHide() == ((SpinnerViewModel) o).optionsToHide() &&
+                this.optionGroupsToHide() == ((SpinnerViewModel) o).optionGroupsToHide() &&
+                this.optionGroupsToShow() == ((SpinnerViewModel) o).optionGroupsToShow();
     }
 }

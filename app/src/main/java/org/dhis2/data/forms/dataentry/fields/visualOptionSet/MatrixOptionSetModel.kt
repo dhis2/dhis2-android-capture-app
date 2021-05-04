@@ -7,6 +7,7 @@ import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
 import org.dhis2.data.forms.dataentry.fields.ActionType
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.RowAction
+import org.dhis2.form.data.FieldUiModel
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.option.Option
 
@@ -268,5 +269,12 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
         return options().filter { option ->
             !optionsToHide().contains(option.uid())
         }
+    }
+
+    override fun equals(item: FieldUiModel): Boolean {
+        return super.equals(item) && item is MatrixOptionSetModel &&
+            this.options() == item.options() &&
+            this.numberOfColumns() == item.numberOfColumns() &&
+            this.optionsToHide() == item.optionsToHide()
     }
 }

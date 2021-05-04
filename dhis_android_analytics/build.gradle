@@ -72,6 +72,10 @@ dependencies {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
 
+    releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
+        exclude group: "junit", module: "junit"
+    }
+
     implementation project(':tableview')
 
     //Graphs

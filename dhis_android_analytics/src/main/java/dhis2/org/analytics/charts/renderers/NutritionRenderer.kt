@@ -30,8 +30,8 @@ class NutritionRenderer(
             val endingIndex = bounds.range + bounds.min
             val indexInterval = 128
 
-            var currentStartIndex = 0
-            var currentEndIndex = indexInterval
+            var currentStartIndex: Int
+            var currentEndIndex: Int
             var iterations = 0
 
             // Doing this iteratively in order to avoid OutOfMemory errors that can happen on large bounds sets.

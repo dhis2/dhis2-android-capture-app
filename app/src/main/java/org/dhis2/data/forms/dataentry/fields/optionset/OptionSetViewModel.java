@@ -9,6 +9,7 @@ import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.ActionType;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.form.data.FieldUiModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.option.Option;
@@ -357,5 +358,16 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 null,
                 null,
                 ActionType.ON_SAVE));
+    }
+
+    @Override
+    public boolean equals(FieldUiModel o) {
+        return super.equals(o) && o instanceof OptionSetViewModel &&
+                this.options() == ((OptionSetViewModel) o).options() &&
+                this.optionsToHide() == ((OptionSetViewModel) o).optionsToHide() &&
+                this.optionsToShow() == ((OptionSetViewModel) o).optionsToShow() &&
+                this.isBackgroundTransparent() == ((OptionSetViewModel) o).isBackgroundTransparent() &&
+                this.renderType().equals(((OptionSetViewModel) o).renderType()) &&
+                this.fieldRendering() == ((OptionSetViewModel) o).fieldRendering();
     }
 }

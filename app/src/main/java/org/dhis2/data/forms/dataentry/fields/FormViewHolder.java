@@ -12,6 +12,8 @@ import org.dhis2.R;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import org.dhis2.form.data.FieldUiModel;
+
 public class FormViewHolder extends RecyclerView.ViewHolder {
 
     private final ViewDataBinding binding;
@@ -46,6 +48,7 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
 
     public interface FieldItemCallback {
         void onShowDialog(String title, @Nullable String message);
+
         void onNext(int layoutPosition);
     }
 }

@@ -8,13 +8,13 @@ import org.hisp.dhis.rules.functions.ZScoreTable
 
 class RuleEngineNutritionDataProviderImpl : NutritionDataProvider {
     override fun getNutritionData(nutritionChartType: NutritionChartType): List<SerieData> {
-        val (zscoreTable, genderByte) = when (nutritionChartType) {
-            NutritionChartType.WHO_WFA_BOY -> Pair(ZScoreTable.getZscoreWFATableBoy(), 0)
-            NutritionChartType.WHO_WFA_GIRL -> Pair(ZScoreTable.getZscoreWFATableGirl(), 1)
-            NutritionChartType.WHO_HFA_BOY -> Pair(ZScoreTable.getZscoreHFATableBoy(), 0)
-            NutritionChartType.WHO_HFA_GIRL -> Pair(ZScoreTable.getZscoreHFATableGirl(), 1)
-            NutritionChartType.WHO_WFH_BOY -> Pair(ZScoreTable.getZscoreWFHTableBoy(), 0)
-            NutritionChartType.WHO_WHO_WFH_GIRL -> Pair(ZScoreTable.getZscoreWFHTableGirl(), 1)
+        val zscoreTable = when (nutritionChartType) {
+            NutritionChartType.WHO_WFA_BOY -> ZScoreTable.getZscoreWFATableBoy()
+            NutritionChartType.WHO_WFA_GIRL -> ZScoreTable.getZscoreWFATableGirl()
+            NutritionChartType.WHO_HFA_BOY -> ZScoreTable.getZscoreHFATableBoy()
+            NutritionChartType.WHO_HFA_GIRL -> ZScoreTable.getZscoreHFATableGirl()
+            NutritionChartType.WHO_WFH_BOY -> ZScoreTable.getZscoreWFHTableBoy()
+            NutritionChartType.WHO_WHO_WFH_GIRL -> ZScoreTable.getZscoreWFHTableGirl()
         }
 
         val numberOfData = zscoreTable.values.first().size

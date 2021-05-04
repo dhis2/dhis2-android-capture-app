@@ -1,10 +1,6 @@
-# Data Sets
+# Data Sets { #capture_app_datsets }
 
-<!-- DHIS2-SECTION-ID:datasets -->
-
-## Data Sets in Android
-
-<!-- DHIS2-SECTION-ID:datasets_android -->
+## Data Sets in Android { #capture_app_datsets_android }
 
 ### Overview Screen
 
@@ -43,15 +39,13 @@ Validation rules and completion of data sets are integrated in the save button a
 
 ### Increase Row Headers
 
-<!-- DHIS2-SECTION-ID:datasets_android_increase -->
 
 The length of the first column in datasets is now calculated to show the full text for the Data Elements names. Users can also adjust the width to adapt it better to their screen size.
 
 ![](resources/images/image113.png){ width=25%}
 
-## Supported features overview
+## Supported features overview { #capture_app_datsets_supported_features }
 
-<!-- DHIS2-SECTION-ID:datasets_supported -->
 
 The following is a comprehensive list of all features available for Data Sets in DHIS2 and notes on whether or not these have been implemented in the Android Capture app.
 

@@ -7,7 +7,6 @@ import com.github.mikephil.charting.components.XAxis
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.DateLabelFormatter
 
-const val X_AXIS_MAX_PADDING = 10f
 const val X_AXIS_MAX_PADDING_WITH_VALUE = 4f
 const val X_AXIS_MIN_PADDING = -5f
 
@@ -40,20 +39,16 @@ class GraphToBarChart {
                     DEFAULT_GRID_SPACE_LENGTH,
                     DEFAULT_GRIP_PHASE
                 )
-                axisMaximum = (
-                    graph.maxValue()?.let { it ->
-                        it + X_AXIS_MAX_PADDING_WITH_VALUE
-                    } ?: DEFAULT_VALUE + X_AXIS_MAX_PADDING
-                    )
-                axisMinimum = (
-                    graph.minValue()?.let { it ->
-                        if (it < 0f) {
-                            it + X_AXIS_MIN_PADDING
-                        } else {
-                            DEFAULT_VALUE
-                        }
-                    } ?: DEFAULT_VALUE
-                    )
+                axisMaximum = graph.maxValue().let { it ->
+                    it + X_AXIS_MAX_PADDING_WITH_VALUE
+                }
+                axisMinimum = graph.minValue().let { it ->
+                    if (it < 0f) {
+                        it + X_AXIS_MIN_PADDING
+                    } else {
+                        DEFAULT_VALUE
+                    }
+                }
                 setDrawLimitLinesBehindData(true)
             }
             axisRight.isEnabled = false

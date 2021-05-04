@@ -1,4 +1,4 @@
-# Annex E - MDM PoC: Miradore
+# Annex E - MDM PoC: Miradore { #mdm_miradore }
 
 This annex presents the outcome of the tested MDM: [https://www.miradore.com/](https://www.miradore.com/)
 

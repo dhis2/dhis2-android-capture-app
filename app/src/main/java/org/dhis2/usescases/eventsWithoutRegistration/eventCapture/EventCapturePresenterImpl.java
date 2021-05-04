@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -48,6 +47,7 @@ import java.util.Map;
 
 import javax.inject.Singleton;
 
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
@@ -56,7 +56,6 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.BehaviorSubject;
 import kotlin.Pair;
-import kotlin.collections.CollectionsKt;
 import timber.log.Timber;
 
 @Singleton
@@ -736,6 +735,15 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void setValueChanged(@NotNull String uid) {
-        eventCaptureRepository.updateFieldValue(uid);
+        compositeDisposable.add(
+                Completable.fromCallable(() -> {
+                    eventCaptureRepository.updateFieldValue(uid);
+                    return true;
+                })
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.io())
+                        .subscribe(() -> {
+                        }, Timber::d)
+        );
     }
 }
