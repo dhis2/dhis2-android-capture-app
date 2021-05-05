@@ -259,6 +259,9 @@ public class SearchRepositoryImpl implements SearchRepository {
             } else if (dataValue.contains("_os_")) {
                 dataValue = dataValue.split("_os_")[1];
                 trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
+            } else if (dataValue.contains("_ou_")) {
+                dataValue = dataValue.split("_ou_")[0];
+                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
             } else
                 trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).like(dataValue);
         }

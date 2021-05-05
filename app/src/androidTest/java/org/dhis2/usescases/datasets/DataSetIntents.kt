@@ -3,6 +3,11 @@ package org.dhis2.usescases.datasets
 import android.content.Intent
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
+import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
+import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
+import org.dhis2.utils.Constants.ACCESS_DATA
+import org.dhis2.utils.Constants.DATASET_UID
+import org.dhis2.utils.Constants.DATA_SET_NAME
 
 fun startDataSetActivity(
     dataSetUid: String,
@@ -29,4 +34,12 @@ fun startDataSetActivity(
     }.also {
         rule.launchActivity(it)
     }
+}
+
+fun startDataSetDetailActivity(rule: ActivityTestRule<DataSetDetailActivity>) {
+    Intent().apply {
+        putExtra(DATASET_UID, "ZOV1a5R4gqH")
+        putExtra(DATA_SET_NAME, "DS EXTRA TEST")
+        putExtra(ACCESS_DATA, true)
+    }.also { rule.launchActivity(it) }
 }

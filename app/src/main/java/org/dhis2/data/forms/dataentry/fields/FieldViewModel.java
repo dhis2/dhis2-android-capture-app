@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+import org.dhis2.form.data.FieldUiModel;
 import io.reactivex.processors.FlowableProcessor;
 
 public abstract class FieldViewModel implements FieldUiModel {

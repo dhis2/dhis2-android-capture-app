@@ -3,7 +3,7 @@ ext {
             sdk   : 29,
             tools : "29.0.2",
             minSdk: 19,
-            vCode: 95,
+            vCode: 96,
             vName: "2.4"
     ]
 
@@ -57,7 +57,7 @@ ext {
             mockito          : "2.6.2",
             powermock        : "1.7.0RC2",
             assertj          : "2.5.0",
-            junit            : "4.12",
+            junit            : "4.13.2",
             spoon            : "1.7.0",
             sentry           : "4.3.0"
     ]

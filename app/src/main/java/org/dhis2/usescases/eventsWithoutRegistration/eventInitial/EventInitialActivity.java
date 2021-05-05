@@ -100,7 +100,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener {
 
     @Inject
-    EventInitialContract.Presenter presenter;
+    EventInitialPresenter presenter;
 
     @Inject
     PreferenceProvider preferences;
