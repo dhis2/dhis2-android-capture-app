@@ -11,13 +11,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.databinding.OuTreeFragmentBinding
-import javax.inject.Inject
 
 const val ARG_SHOW_AS_DIALOG = "OUTreeFragment.ARG_SHOW_AS_DIALOG"
 
-class OUTreeFragment private constructor() : DialogFragment(), OUTreeView,
+class OUTreeFragment private constructor() :
+    DialogFragment(),
+    OUTreeView,
     OrgUnitSelectorAdapter.OnOrgUnitClick {
 
     companion object {
@@ -127,7 +129,6 @@ class OUTreeFragment private constructor() : DialogFragment(), OUTreeView,
             }
         }
     }
-
 }
 
 fun DialogFragment.fixDialogSize(widthPercent: Double, heightPercent: Double) {

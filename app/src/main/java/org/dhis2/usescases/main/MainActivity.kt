@@ -1,6 +1,5 @@
 package org.dhis2.usescases.main
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences

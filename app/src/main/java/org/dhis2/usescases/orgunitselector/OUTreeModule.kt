@@ -29,7 +29,6 @@ package org.dhis2.usescases.orgunitselector
 
 import dagger.Module
 import dagger.Provides
-import org.dhis2.data.dagger.PerServer
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2

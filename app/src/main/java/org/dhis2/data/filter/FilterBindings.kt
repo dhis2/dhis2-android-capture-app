@@ -33,10 +33,10 @@ fun View.setRequestLayout(filterItem: FilterItem) {
 }
 
 @BindingAdapter("animated_visibility")
-fun View.setAnimatedVisibility(visible:Boolean){
-    if(visible){
+fun View.setAnimatedVisibility(visible: Boolean) {
+    if (visible) {
         show()
-    }else{
+    } else {
         hide()
     }
 }

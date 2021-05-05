@@ -41,7 +41,7 @@ fun View.collapse(callback: () -> Unit) {
 }
 
 fun View.expand(fromInitialHeight: Boolean = false, callback: () -> Unit) {
-    val initialHeight = if(fromInitialHeight) layoutParams.height else 0
+    val initialHeight = if (fromInitialHeight) layoutParams.height else 0
 
     callback.invoke()
     val matchParentMeasureSpec = View.MeasureSpec.makeMeasureSpec(
@@ -55,7 +55,7 @@ fun View.expand(fromInitialHeight: Boolean = false, callback: () -> Unit) {
     measure(matchParentMeasureSpec, wrapContentMeasureSpec)
     val targetHeight: Int = measuredHeight
 
-    if(!fromInitialHeight) {
+    if (!fromInitialHeight) {
         // Older versions of android (pre API 21) cancel animations for views with a height of 0.
         layoutParams.height = 1
     }
