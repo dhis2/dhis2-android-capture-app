@@ -160,7 +160,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
     @Override
     public void textChangedConsumer(String selectedOrgUnitUid, String selectedOrgUnitName) {
         editText.setText(selectedOrgUnitName);
-        listener.onDataChanged(selectedOrgUnitUid);
+        listener.onDataChanged(selectedOrgUnitUid, selectedOrgUnitName);
     }
 
     @Override
@@ -192,7 +192,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
         new OrgUnitCascadeDialog(label, value, new OrgUnitCascadeDialog.CascadeOrgUnitCallbacks() {
             @Override
             public void textChangedConsumer(String selectedOrgUnitUid, String selectedOrgUnitName) {
-                listener.onDataChanged(selectedOrgUnitUid);
+                listener.onDataChanged(selectedOrgUnitUid, selectedOrgUnitName);
                 editText.setText(selectedOrgUnitName);
                 editText.setEnabled(true);
             }
@@ -204,7 +204,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
 
             @Override
             public void onClear() {
-                listener.onDataChanged(null);
+                listener.onDataChanged(null, null);
                 editText.setText(null);
                 editText.setEnabled(true);
             }
@@ -216,7 +216,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
     }
 
     public interface OnDataChanged {
-        void onDataChanged(String orgUnitUid);
+        void onDataChanged(String orgUnitUid, String orgUnitName);
     }
 
     public void setViewModel(OrgUnitViewModel viewModel) {
