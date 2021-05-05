@@ -1,9 +1,13 @@
 package org.dhis2.usescases.settings;
 
+import androidx.annotation.Nullable;
+
 import org.dhis2.R;
 import org.dhis2.data.dagger.PerFragment;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.server.ServerComponent;
+import org.dhis2.data.server.UserManager;
 import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.usescases.settings.models.ErrorModelMapper;
@@ -17,9 +21,11 @@ import dagger.Provides;
 public final class SyncManagerModule {
 
     private final SyncManagerContracts.View view;
+    private final UserManager userManager;
 
-    SyncManagerModule(SyncManagerContracts.View view){
+    SyncManagerModule(SyncManagerContracts.View view, ServerComponent serverComponent){
         this.view = view;
+        this.userManager = serverComponent.userManager();
     }
 
     @Provides
@@ -39,6 +45,7 @@ public final class SyncManagerModule {
                 preferenceProvider,
                 workManagerController,
                 settingsRepository,
+                userManager,
                 view,
                 analyticsHelper,
                 new ErrorModelMapper(view.getContext().getString(R.string.fk_message)),

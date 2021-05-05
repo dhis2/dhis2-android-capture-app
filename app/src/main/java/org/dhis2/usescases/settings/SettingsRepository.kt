@@ -11,6 +11,7 @@ import org.dhis2.data.prefs.Preference.Companion.NUMBER_RV
 import org.dhis2.data.prefs.Preference.Companion.TIME_DAILY
 import org.dhis2.data.prefs.Preference.Companion.TIME_WEEKLY
 import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
@@ -56,13 +57,19 @@ class SettingsRepository(
         )
     }
 
-    fun metaSync(): Single<MetadataSettingsViewModel> {
+    fun metaSync(userManager: UserManager): Single<MetadataSettingsViewModel> {
+        val (flag, theme) = userManager.theme.doOnSuccess { flagAndTheme ->
+            prefs.setValue(Preference.FLAG, flagAndTheme.first)
+            prefs.setValue(Preference.THEME, flagAndTheme.second)
+        }.blockingGet()
         return Single.just(
             MetadataSettingsViewModel(
                 metadataPeriod(),
                 prefs.getString(Constants.LAST_META_SYNC, "-")!!,
                 !prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true),
-                generalSettings?.metadataSync() == null
+                generalSettings?.metadataSync() == null,
+                theme,
+                flag
             )
         )
     }

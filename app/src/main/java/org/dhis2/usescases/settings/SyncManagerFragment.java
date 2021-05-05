@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -34,6 +33,9 @@ import org.dhis2.Bindings.ContextExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.Components;
 import org.dhis2.R;
+import org.dhis2.data.prefs.Preference;
+import org.dhis2.data.prefs.PreferenceProvider;
+import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.databinding.FragmentSettingsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -80,6 +82,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Inject
     WorkManagerController workManagerController;
 
+    @Inject
+    PreferenceProvider preferences;
+
     private FragmentSettingsBinding binding;
     private Context context;
 
@@ -95,6 +100,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private boolean metadataInit;
     private boolean scopeLimitInit;
     private boolean dataWorkRunning;
+    private int theme;
 
     public SyncManagerFragment() {
         // Required empty public constructor
@@ -104,8 +110,11 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         this.context = context;
-        ((Components) context.getApplicationContext()).userComponent()
-                .plus(new SyncManagerModule(this)).inject(this);
+        ServerComponent serverComponent = ((Components) context.getApplicationContext()).serverComponent();
+        if (serverComponent != null) {
+            ((Components) context.getApplicationContext()).userComponent()
+                    .plus(new SyncManagerModule(this, serverComponent)).inject(this);
+        }
     }
 
     @Override
@@ -116,6 +125,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.setPresenter(presenter);
 
         binding.smsSettings.setVisibility(ContextExtensionsKt.showSMS(context) ? View.VISIBLE : View.GONE);
+
+        theme = preferences.getInt(Preference.THEME, R.style.AppTheme);
 
         return binding.getRoot();
     }
@@ -496,6 +507,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         metadataInit = false;
         binding.metadataPeriods.setOnItemSelectedListener(null);
 
+        int newTheme = preferences.getInt(Preference.THEME, R.style.AppTheme);
+
         if (!metadataSettings.getHasErrors()) {
             String metaText = metaSyncSettings().concat("\n").concat(String.format(getString(R.string.last_data_sync_date), metadataSettings.getLastMetadataSync()));
             binding.syncMetaLayout.message.setText(metaText);
@@ -558,6 +571,12 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 /*do nothing*/
             }
         });
+
+        if (theme != newTheme) {
+            getActivity().setTheme(preferences.getInt(Preference.THEME, R.style.AppTheme));
+            getActivity().recreate();
+        }
+
     }
 
     @Override
