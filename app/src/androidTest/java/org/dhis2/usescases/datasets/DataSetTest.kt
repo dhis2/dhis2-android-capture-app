@@ -41,7 +41,6 @@ class DataSetTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldCreateNewDataSet() {
         val period = "Mar 2021"
         val orgUnit = "Ngelehun CHC"
@@ -63,6 +62,7 @@ class DataSetTest : BaseTest() {
             clickOnSaveButton()
             waitToDebounce(500)
             clickOnNegativeButton()
+            waitToDebounce(2000)
         }
         dataSetDetailRobot {
             checkDataSetInList(period, orgUnit)
