@@ -265,12 +265,12 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
 
     public void setIsBgTransparent(Boolean isBgTransparent) {
         this.isBgTransparent = isBgTransparent;
-        if (!isBgTransparent)
+     /*   if (!isBgTransparent)
             binding = AgeCustomViewAccentBinding.inflate(inflater, this, true);
         else
-            binding = AgeCustomViewBinding.inflate(inflater, this, true);
+            binding = AgeCustomViewBinding.inflate(inflater, this, true); */
 
-        inputLayout = findViewById(R.id.inputLayout);
+       /* inputLayout = findViewById(R.id.inputLayout);
         yearInputLayout = findViewById(R.id.yearInputLayout);
         monthInputLayout = findViewById(R.id.monthInputLayout);
         dayInputLayout = findViewById(R.id.dayInputLayout);
@@ -278,27 +278,28 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         day = findViewById(R.id.input_days);
         month = findViewById(R.id.input_month);
         year = findViewById(R.id.input_year);
-        labelText = findViewById(R.id.label);
+        labelText = findViewById(R.id.label); */
         selectedCalendar = Calendar.getInstance();
         dateFormat = DateUtils.uiDateFormat();
-        descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
-        errorView = findViewById(R.id.errorMessage);
+    //    descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
+    //    errorView = findViewById(R.id.errorMessage);
 
         date.setFocusable(false); //Makes editText not editable
         date.setClickable(true);//  but clickable
+
         date.setOnFocusChangeListener(this::onFocusChanged);
         date.setOnClickListener(this);
 
-        day.setFocusable(false);
-        day.setClickable(true);
-        month.setFocusable(false);
-        month.setClickable(true);
-        year.setFocusable(false);
-        year.setClickable(true);
+   //     day.setFocusable(false);
+   //     day.setClickable(true);
+   //     month.setFocusable(false);
+   //     month.setClickable(true);
+   //     year.setFocusable(false);
+   //     year.setClickable(true);
 
-        day.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
-        month.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
-        year.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
+   //     day.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
+   //     month.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
+   //     year.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
 
         day.setOnEditorActionListener((v, actionId, event) -> {
             nextFocus(v);

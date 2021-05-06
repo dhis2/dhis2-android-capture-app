@@ -5,6 +5,8 @@
 
     <data>
         <import type="android.view.View" />
+        <import type="org.dhis2.utils.ColorUtils" />
+        <import type="org.dhis2.utils.ColorUtils.ColorType" />
 
         <variable
             name="bgTransparent"
@@ -19,7 +21,6 @@
         android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:setBackgroundColorAgeView="@{bgTransparent}"
         >
 
         <ImageView
@@ -62,7 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{item.formattedLabel}"
-                app:setTextColorAgeView="@{bgTransparent}"
+                app:setTextColorAgeView="@{item.isBackgroundTransparent()}"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintHorizontal_chainStyle="packed"
@@ -83,7 +84,8 @@
                 app:layout_constraintStart_toEndOf="@id/label"
                 app:layout_constraintTop_toTopOf="@+id/label"
                 app:srcCompat="@drawable/ic_info_outline"
-                app:tint="?colorPrimary" />
+                app:tintDescriptionLabel="@{item.isBackgroundTransparent()}"
+                />
 
             <LinearLayout
                 android:id="@+id/linearLayout"
@@ -106,10 +108,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="date"
+                        android:textColor="@{!item.isBackgroundTransparent()? @color/white_faf : @color/textPrimary}"
                         android:textSize="@dimen/form_edit_text_size"
+                        android:focusable="false"
+                        android:clickable="true"
                         tools:text="1987-06-26" />
                 </com.google.android.material.textfield.TextInputLayout>
-
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/yearInputLayout"
@@ -125,6 +129,10 @@
                         android:layout_height="wrap_content"
                         android:imeOptions="actionNext"
                         android:inputType="date"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:maxLength="4"
+                        android:textColor="@{!item.isBackgroundTransparent()? @color/white_faf : @color/textPrimary}"
                         android:textSize="@dimen/form_edit_text_size"
                         tools:text="yyyy" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -144,6 +152,10 @@
                         android:layout_height="wrap_content"
                         android:imeOptions="actionNext"
                         android:inputType="date"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:maxLength="2"
+                        android:textColor="@{!item.isBackgroundTransparent()? @color/white_faf : @color/textPrimary}"
                         android:textSize="@dimen/form_edit_text_size" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -162,6 +174,10 @@
                         android:layout_height="wrap_content"
                         android:imeOptions="actionDone"
                         android:inputType="date"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:maxLength="2"
+                        android:textColor="@{!item.isBackgroundTransparent()? @color/white_faf : @color/textPrimary}"
                         android:textSize="@dimen/form_edit_text_size" />
                 </com.google.android.material.textfield.TextInputLayout>
 
