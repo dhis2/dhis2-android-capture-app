@@ -264,7 +264,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
 
 
     public void setIsBgTransparent(Boolean isBgTransparent) {
-        this.isBgTransparent = isBgTransparent;
+     //   this.isBgTransparent = isBgTransparent;
      /*   if (!isBgTransparent)
             binding = AgeCustomViewAccentBinding.inflate(inflater, this, true);
         else
@@ -284,8 +284,8 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     //    descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
     //    errorView = findViewById(R.id.errorMessage);
 
-        date.setFocusable(false); //Makes editText not editable
-        date.setClickable(true);//  but clickable
+    //    date.setFocusable(false); //Makes editText not editable
+    //    date.setClickable(true);//  but clickable
 
         date.setOnFocusChangeListener(this::onFocusChanged);
         date.setOnClickListener(this);
@@ -321,10 +321,10 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setEditable(Boolean editable) {
-        date.setEnabled(editable);
-        day.setEnabled(editable);
-        month.setEnabled(editable);
-        year.setEnabled(editable);
+       // date.setEnabled(editable);
+    //    day.setEnabled(editable);
+    //    month.setEnabled(editable);
+    //    year.setEnabled(editable);
 
         date.setTextColor(
                 !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
@@ -343,14 +343,14 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
                         ContextCompat.getColor(getContext(), R.color.textPrimary)
         );
 
-        setEditable(editable,
-                labelText,
-                descriptionLabel,
-                inputLayout,
-                dayInputLayout,
-                monthInputLayout,
-                yearInputLayout
-        );
+    //    setEditable(editable,
+    //            labelText,
+    //            descriptionLabel,
+    //            inputLayout,
+    //            dayInputLayout,
+    //            monthInputLayout,
+    //            yearInputLayout
+    //    );
     }
 
     public void clearValues() {

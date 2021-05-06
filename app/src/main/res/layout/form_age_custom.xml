@@ -63,6 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{item.formattedLabel}"
+                android:alpha="@{item.editable()? 1f : 0.5f}"
                 app:setTextColorAgeView="@{item.isBackgroundTransparent()}"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintHorizontal_bias="0"
@@ -79,6 +80,7 @@
                 android:layout_height="0dp"
                 android:layout_marginEnd="16dp"
                 android:visibility="visible"
+                android:alpha="@{item.editable()? 1f : 0.5f}"
                 app:layout_constraintBottom_toBottomOf="@+id/label"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/label"
@@ -101,6 +103,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="2"
                     android:hint="@string/date"
+                    android:alpha="@{item.editable()? 1f : 0.5f}"
                     android:theme="@style/loginInputText">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -112,6 +115,7 @@
                         android:textSize="@dimen/form_edit_text_size"
                         android:focusable="false"
                         android:clickable="true"
+                        android:enabled="@{item.editable()}"
                         tools:text="1987-06-26" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -121,6 +125,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:hint="@string/hint_year"
+                    android:alpha="@{item.editable()? 1f : 0.5f}"
                     android:theme="@style/loginInputText">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -133,6 +138,7 @@
                         android:focusable="false"
                         android:maxLength="4"
                         android:textColor="@{!item.isBackgroundTransparent()? @color/white_faf : @color/textPrimary}"
+                        android:enabled="@{item.editable()}"
                         android:textSize="@dimen/form_edit_text_size"
                         tools:text="yyyy" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -144,6 +150,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:hint="@string/hint_month"
+                    android:alpha="@{item.editable()? 1f : 0.5f}"
                     android:theme="@style/loginInputText">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -156,6 +163,7 @@
                         android:focusable="false"
                         android:maxLength="2"
                         android:textColor="@{!item.isBackgroundTransparent()? @color/white_faf : @color/textPrimary}"
+                        android:enabled="@{item.editable()}"
                         android:textSize="@dimen/form_edit_text_size" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -166,6 +174,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:hint="@string/hint_day"
+                    android:alpha="@{item.editable()? 1f : 0.5f}"
                     android:theme="@style/loginInputText">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -178,6 +187,7 @@
                         android:clickable="true"
                         android:maxLength="2"
                         android:textColor="@{!item.isBackgroundTransparent()? @color/white_faf : @color/textPrimary}"
+                        android:enabled="@{item.editable()}"
                         android:textSize="@dimen/form_edit_text_size" />
                 </com.google.android.material.textfield.TextInputLayout>
 

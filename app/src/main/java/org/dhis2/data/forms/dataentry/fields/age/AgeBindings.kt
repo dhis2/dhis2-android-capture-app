@@ -5,6 +5,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.databinding.BindingConversion
+import com.google.android.material.textfield.TextInputLayout
 import org.dhis2.utils.ColorUtils
 
 @BindingAdapter("setTextColorAgeView")
@@ -27,7 +28,7 @@ fun tintDescriptionLabel(
     imageView: ImageView,
     isBgTransparent: Boolean
 ) {
-    val color = if (!isBgTransparent){
+    val color = if (!isBgTransparent) {
         ColorUtils.getPrimaryColor(imageView.context, ColorUtils.ColorType.ACCENT)
     } else {
         ColorUtils.getPrimaryColor(imageView.context, ColorUtils.ColorType.PRIMARY)
@@ -35,10 +36,23 @@ fun tintDescriptionLabel(
     imageView.setColorFilter(color)
 }
 
-/*@BindingAdapter({"bind:color"})
-fun setColor(textView :  , primaryTextColor :String ) {
-    textView.textColor = (ContextCompat.getColor(textView.getContext(), primaryTextColor)
-} */
+@BindingAdapter("setTextColorHint")
+fun setTextColorHintTextInputLayout(
+    textInputLayout: TextInputLayout,
+    isBgTransparent: Boolean
+) {
+    if (!isBgTransparent) {
+        textInputLayout.hintTextColor
+    }
+}
+
+@BindingAdapter("setTextColor")
+fun setTextColorTextInputLayout(
+    textInputLayout: TextInputLayout,
+    isBgTransparent: Boolean
+) {
+
+}
 
 @BindingConversion
 fun convertColorToDrawable(color: Int) = ColorDrawable(color)
