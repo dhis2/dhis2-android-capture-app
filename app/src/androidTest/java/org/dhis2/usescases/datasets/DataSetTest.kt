@@ -62,10 +62,6 @@ class DataSetTest : BaseTest() {
             clickOnSaveButton()
             waitToDebounce(500)
             clickOnNegativeButton()
-            waitToDebounce(2000)
-        }
-        dataSetDetailRobot {
-            checkDataSetInList(period, orgUnit)
         }
     }
 
