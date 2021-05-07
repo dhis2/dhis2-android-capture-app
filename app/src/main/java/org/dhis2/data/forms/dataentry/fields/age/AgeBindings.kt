@@ -91,7 +91,7 @@ fun setTextColorHintTextInputLayout(
     isBgTransparent: Boolean
 ) {
     if (!isBgTransparent) {
-        val colorStateChecked = ColorUtils.getPrimaryColor(
+        val color = ColorUtils.getPrimaryColor(
             textInputLayout.context,
             ColorUtils.ColorType.ACCENT
         )
@@ -100,13 +100,13 @@ fun setTextColorHintTextInputLayout(
                 intArrayOf(R.attr.state_focused),
                 intArrayOf(-R.attr.state_focused)
             ), intArrayOf(
-                colorStateChecked,
-                colorStateChecked
+                color,
+                color
             )
         )
         textInputLayout.apply {
-            hintTextColor = colorStateList
             defaultHintTextColor = colorStateList
+            boxBackgroundColor = color
         }
     }
 }

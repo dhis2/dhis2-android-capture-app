@@ -138,6 +138,7 @@
                         android:focusable="false"
                         android:maxLength="4"
                         app:setEditTextColor="@{item.isBackgroundTransparent()}"
+                        app:setUnderlineColorEditText="@{item.isBackgroundTransparent()}"
                         android:enabled="@{item.editable()}"
                         android:textSize="@dimen/form_edit_text_size"
                         tools:text="yyyy" />
@@ -164,6 +165,7 @@
                         android:focusable="false"
                         android:maxLength="2"
                         app:setEditTextColor="@{item.isBackgroundTransparent()}"
+                        app:setUnderlineColorEditText="@{item.isBackgroundTransparent()}"
                         android:enabled="@{item.editable()}"
                         android:textSize="@dimen/form_edit_text_size" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -189,6 +191,7 @@
                         android:clickable="true"
                         android:maxLength="2"
                         app:setEditTextColor="@{item.isBackgroundTransparent()}"
+                        app:setUnderlineColorEditText="@{item.isBackgroundTransparent()}"
                         android:enabled="@{item.editable()}"
                         android:textSize="@dimen/form_edit_text_size" />
                 </com.google.android.material.textfield.TextInputLayout>
