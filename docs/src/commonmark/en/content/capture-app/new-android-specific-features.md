@@ -19,8 +19,8 @@ There are two ways to access the application:
     >
     > You are able to make an *offline* login only if using the same user as the last online session.
  
-![](resources/images/image62.png){ width=25%}
-![](resources/images/image63.jpg){ width=25%}
+![](resources/images/capture-app-image62.png){ width=25%}
+![](resources/images/capture-app-image63.jpg){ width=25%}
 
 > **Warning**
 > 
@@ -42,8 +42,8 @@ The users will be able to restore their own password if they have the setting en
 User is able to lock the session using a 4 digit PIN. This allows to move to other apps in your phone without deleting the local data.
 If the user forgets the PIN number, log in by entering the credentials is also available.
 
-![](resources/images/image65.png){width=25%}
-![](resources/images/image63.jpg){width=25%}
+![](resources/images/capture-app-image65.PNG){width=25%}
+![](resources/images/capture-app-image63.jpg){width=25%}
 
 ## Fingerprint { #capture_app_generic_fingerprint }
 
@@ -53,16 +53,16 @@ User is able to use the fingerprint scanner if the feature is activated in the d
 * When the fingerprint scanner is enable and not the PIN, every time the app closes, goes to background or the device is blocked, the session will be locked. Once the app is open again, the user needs to tap the fingerprint icon to activate the scanner.
 * If the PIN and the fingerprint are set, when the session is locked and the user open the app again, the PIN will be asked.
 
-![](resources/images/image104.jpg){width=25%}
-![](resources/images/image105.jpg){width=25%}
+![](resources/images/capture-app-image104.jpg){width=25%}
+![](resources/images/capture-app-image105.jpg){width=25%}
 
 ## Instructions/information buttons { #capture_app_generic_instructions }
 
 
 A contextual guide is available in Event details and TEI dashboard screen.
 
-![](resources/images/image42.jpg){width=25%}
-![](resources/images/image66.png){width=25%}
+![](resources/images/capture-app-image42.jpg){width=25%}
+![](resources/images/capture-app-image66.png){width=25%}
 
 > **Tip**
 >
@@ -76,10 +76,10 @@ The app has new and improved filters for all listing screens (home, event listin
 
 Filter by period, org. Unit, sync state, event status, category option combination and "assigned to me".
 
-![](resources/images/image19.png){ width=25%}
-![](resources/images/image97.png){ width=25%}
-![](resources/images/image123.png){ width=25%}
-![](resources/images/image134.png){ width=25%}
+![](resources/images/capture-app-image19.png){ width=25%}
+![](resources/images/capture-app-image97.png){ width=25%}
+![](resources/images/capture-app-image123.png){ width=25%}
+![](resources/images/capture-app-image134.png){ width=25%}
 
 Filters will adapt to the different programs and data sets.
 
@@ -144,7 +144,7 @@ The filter 'Enrollment status' offers three options: Active, Completed, Cancelle
 
 Filters have been added to the TEI dashboard. It is possible to filter the events of a Tracked Entity Instance enrollment per period, organisation unit, sync status, event status, and user assignment.
 
-![](resources/images/image114.png){ width=25%}
+![](resources/images/capture-app-image114.png){ width=25%}
 
 ## Sorting { #capture_app_generic_sorting }
 
@@ -155,7 +155,7 @@ The sorting button will be on the filter bars with the following behavior:
 - The icon for applied sorting shows it is active, the others are inactive.  
 - Repeated clicks keep changing the order to the reverse.
 
-![](resources/images/image135.png){ width=25%}
+![](resources/images/capture-app-image135.png){ width=25%}
 
 ### Dates (Period, Date, Event Date or Enrollment Date) { #capture_app_generic_sorting_dates }
 
@@ -169,23 +169,23 @@ The sorting button will be on the filter bars with the following behavior:
 ### Enrollment Status { #capture_app_generic_sorting_enrollment }
 - List will be sorted in alphabetical order by status name.
 
-![](resources/images/image123.png){ width=25%}
+![](resources/images/capture-app-image123.png){ width=25%}
 
 ## Sync Information { #capture_app_generic_sync_info }
 
 
 Allows the user to check sync information for a specific program. Now the synced records will not show any icon. Only unsynced, error or SMS icons will be displayed.
 
-![](resources/images/image67.png){ width=20%}
-![](resources/images/image69.png){ width=20%}
+![](resources/images/capture-app-image67.png){ width=20%}
+![](resources/images/capture-app-image69.png){ width=20%}
 
 ### Granular Sync { #capture_app_generic_sync_granular }
 
 
 Allows to sync individual records (Program, Event, TEI, DataSet, DataValues) with the server.
 
-![](resources/images/image89.png){ width=25%}
-![](resources/images/image161.png){ width=25%}
+![](resources/images/capture-app-image89.png){ width=25%}
+![](resources/images/capture-app-image161.png){ width=25%}
 
 
 ### SMS Sync { #capture_app_generic_sync_sms }
@@ -194,13 +194,13 @@ Allows to sync individual records (Program, Event, TEI, DataSet, DataValues) wit
 When there is no internet conexion, it allows to send a record though several SMS messages.
 The record is marked as “SMS synced”.
 
-![](resources/images/image91.png){ width=25%}
+![](resources/images/capture-app-image91.png){ width=25%}
 
 > **Tip**
 >
 >  Edit parameters related to SMS gateway in the SMS Settings (Settings Menu)
 
-![](resources/images/image90.png){ width=25%}
+![](resources/images/capture-app-image90.png){ width=25%}
 
 > **Note**
 >
@@ -209,7 +209,7 @@ The record is marked as “SMS synced”.
 ## Org unit { #capture_app_generic_orgunit }
 
 
-![](resources/images/image30.png){ width=25%}
+![](resources/images/capture-app-image30.png){ width=25%}
 
 The whole organisation unit tree is displayed. Organisation units not available for data entry will be colored in grey.
 User must check the box to select the org unit wanted.
@@ -224,14 +224,14 @@ User must check the box to select the org unit wanted.
 
 The user can now enter aggregate data for an organisation Unit, a period and a set of data elements and send it to the server.
 
-![](resources/images/image87.png){ width=25%}
-![](resources/images/image93.png){ width=25%}
-![](resources/images/image92.png){ width=25%}
+![](resources/images/capture-app-image87.png){ width=25%}
+![](resources/images/capture-app-image93.png){ width=25%}
+![](resources/images/capture-app-image92.png){ width=25%}
 
 ## Differentiating Data Sets, Tracker and Event programs { #capture_app_generic_differentiating }
 
 
-![](resources/images/image87.png){ width=25%}
+![](resources/images/capture-app-image87.png){ width=25%}
 
 > **Tip**
 >
@@ -240,8 +240,8 @@ The user can now enter aggregate data for an organisation Unit, a period and a s
 ## Sharing Data { #capture_app_generic_shargin }
 
 
-![](resources/images/image72.png){ width=25%}
-![](resources/images/image73.png){ width=25%}
+![](resources/images/capture-app-image72.png){ width=25%}
+![](resources/images/capture-app-image73.png){ width=25%}
 
 ## Capture Coordinates { #capture_app_generic_capture_coord }
 
@@ -251,13 +251,13 @@ The user can now enter aggregate data for an organisation Unit, a period and a s
 
 Capture the TEI coordinates in the registration form.  Enable this feature in the TET feature type.
 
-![](resources/images/image94.png){ width=25%}
+![](resources/images/capture-app-image94.png){ width=25%}
 
 ### Polygons { #capture_app_generic_capture_coord_polygons }
 
 The app now supports the geoJSON format and the user is able to capture polygons.
 
-![](resources/images/image95.png){ width=25%}
+![](resources/images/capture-app-image95.png){ width=25%}
 
 ## Images { #capture_app_generic_images }
 
@@ -266,9 +266,9 @@ ValueType image has been implemented app side.
 This allows to pick an image for a data element or attribute and send it to the server.
 For TEIs, the first data element/attribute with this value type and marked as displayed in list will be used as the TEI profile image.
 
-![](resources/images/image99.png){ width=25%}
-![](resources/images/image98.png){ width=25%}
-![](resources/images/image100.png){ width=25%}
+![](resources/images/capture-app-image99.png){ width=25%}
+![](resources/images/capture-app-image98.png){ width=25%}
+![](resources/images/capture-app-image100.png){ width=25%}
 
 Open the TEI profile image by clicking on it.
 
@@ -280,9 +280,8 @@ Open the TEI profile image by clicking on it.
 When a program stage or tracked entity type have a feature type (and for programs with registration the option displayFrontPageList is enabled) the listings can be switched to display the information in a map. Make the switch by clicking on the map icon in the navigation panel.
 
 
-![](resources/images/image101.png){ width=25%}
-![](resources/images/image102.png){ width=25%}
+![](resources/images/capture-app-image101.png){ width=25%}
+![](resources/images/capture-app-image102.png){ width=25%}
 
 If the TEI has a profile image, the map will display it.
-
-![](resources/images/image103.png){ width=25%}
+![](resources/images/capture-app-image103.png){ width=25%}
