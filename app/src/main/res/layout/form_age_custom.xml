@@ -9,10 +9,6 @@
         <import type="org.dhis2.utils.ColorUtils.ColorType" />
 
         <variable
-            name="bgTransparent"
-            type="java.lang.Boolean" />
-
-        <variable
             name="item"
             type="org.dhis2.data.forms.dataentry.fields.age.AgeViewModel" />
     </data>
@@ -79,7 +75,7 @@
                 android:layout_width="12dp"
                 android:layout_height="0dp"
                 android:layout_marginEnd="16dp"
-                android:visibility="visible"
+                android:visibility="@{item.description() != null? View.VISIBLE : View.GONE}"
                 android:alpha="@{item.editable()? 1f : 0.5f}"
                 app:layout_constraintBottom_toBottomOf="@+id/label"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -104,6 +100,7 @@
                     android:layout_weight="2"
                     android:hint="@string/date"
                     android:alpha="@{item.editable()? 1f : 0.5f}"
+                    app:setTextColorHint="@{item.isBackgroundTransparent()}"
                     android:theme="@style/loginInputText">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -111,11 +108,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="date"
-                        android:textColor="@{!item.isBackgroundTransparent()? @color/white_faf : @color/textPrimary}"
+                        app:setEditTextColor="@{item.isBackgroundTransparent()}"
                         android:textSize="@dimen/form_edit_text_size"
                         android:focusable="false"
                         android:clickable="true"
                         android:enabled="@{item.editable()}"
+                        android:text="1234"
+                        app:setUnderlineColorEditText="@{item.isBackgroundTransparent()}"
                         tools:text="1987-06-26" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -126,6 +125,7 @@
                     android:layout_weight="1"
                     android:hint="@string/hint_year"
                     android:alpha="@{item.editable()? 1f : 0.5f}"
+                    app:setTextColorHint="@{item.isBackgroundTransparent()}"
                     android:theme="@style/loginInputText">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -137,7 +137,7 @@
                         android:clickable="true"
                         android:focusable="false"
                         android:maxLength="4"
-                        android:textColor="@{!item.isBackgroundTransparent()? @color/white_faf : @color/textPrimary}"
+                        app:setEditTextColor="@{item.isBackgroundTransparent()}"
                         android:enabled="@{item.editable()}"
                         android:textSize="@dimen/form_edit_text_size"
                         tools:text="yyyy" />
@@ -151,6 +151,7 @@
                     android:layout_weight="1"
                     android:hint="@string/hint_month"
                     android:alpha="@{item.editable()? 1f : 0.5f}"
+                    app:setTextColorHint="@{item.isBackgroundTransparent()}"
                     android:theme="@style/loginInputText">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -162,7 +163,7 @@
                         android:clickable="true"
                         android:focusable="false"
                         android:maxLength="2"
-                        android:textColor="@{!item.isBackgroundTransparent()? @color/white_faf : @color/textPrimary}"
+                        app:setEditTextColor="@{item.isBackgroundTransparent()}"
                         android:enabled="@{item.editable()}"
                         android:textSize="@dimen/form_edit_text_size" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -175,6 +176,7 @@
                     android:layout_weight="1"
                     android:hint="@string/hint_day"
                     android:alpha="@{item.editable()? 1f : 0.5f}"
+                    app:setTextColorHint="@{item.isBackgroundTransparent()}"
                     android:theme="@style/loginInputText">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -186,7 +188,7 @@
                         android:focusable="false"
                         android:clickable="true"
                         android:maxLength="2"
-                        android:textColor="@{!item.isBackgroundTransparent()? @color/white_faf : @color/textPrimary}"
+                        app:setEditTextColor="@{item.isBackgroundTransparent()}"
                         android:enabled="@{item.editable()}"
                         android:textSize="@dimen/form_edit_text_size" />
                 </com.google.android.material.textfield.TextInputLayout>

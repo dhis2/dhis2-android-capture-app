@@ -75,8 +75,8 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setLabel(String label, String description) {
-        this.label = label;
-        descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
+    //    this.label = label;
+    //    descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
         descriptionLabel.setOnClickListener(v ->
                 new CustomDialog(
                         getContext(),
@@ -87,13 +87,13 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
                         Constants.DESCRIPTION_DIALOG,
                         null
                 ).show());
-        if (binding instanceof AgeCustomViewAccentBinding) {
+    /*    if (binding instanceof AgeCustomViewAccentBinding) {
             ((AgeCustomViewAccentBinding) binding).setLabel(label);
             ((AgeCustomViewAccentBinding) binding).setDescription(description);
         } else {
             ((AgeCustomViewBinding) binding).setLabel(label);
             ((AgeCustomViewBinding) binding).setDescription(description);
-        }
+        } */
     }
 
     public void setWarning(String msg) {
@@ -326,7 +326,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     //    month.setEnabled(editable);
     //    year.setEnabled(editable);
 
-        date.setTextColor(
+   /*     date.setTextColor(
                 !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
                         ContextCompat.getColor(getContext(), R.color.textPrimary)
         );
@@ -341,7 +341,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         year.setTextColor(
                 !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
                         ContextCompat.getColor(getContext(), R.color.textPrimary)
-        );
+        ); */
 
     //    setEditable(editable,
     //            labelText,
@@ -365,7 +365,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setViewModel(AgeViewModel viewModel) {
-        this.viewModel = viewModel;
+    //    this.viewModel = viewModel;
         if (binding == null) {
             setIsBgTransparent(viewModel.isBackgroundTransparent());
         }
@@ -390,6 +390,6 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         else if (!viewModel.isSearchMode())
             clearErrors();
 
-        setEditable(viewModel.editable());
+       // setEditable(viewModel.editable());
     }
 }
