@@ -20,6 +20,7 @@ All the presented solutions comply with the previously defined as required featu
 |<u>Miradore</u>|C|24 $ / device / year|- NFC and mass provision<br />- Android Zero|Full potential with Samsung devices|When tested the admin console was a bit slow.<br />- Discounts available|
 |<u>Scale Fusion</u>|C|24 - 36 $ / device / yea|- Mass provision <br />- Android Zero <br />- Lot of features<br />- Remote cast<br />- Remote support chat & calls||Previously known as MobiLock|
 |<u>Manage Engine</u>|C / P|- 10-24 $ / device / year<br />- Free for <25 devices|- Lot of features and options<br /> - Android Zero<br /> - Remote chat & cast||The on-premises version requires Windows, this can be a strength or a weakness considering the current architecture although DHIS2 is only supported in Linux so another server would be mandatory.|
+|<u>Focus MDM</u>|C |- 10-24 $ / device / year<br />- Free for <25 devices|- Lot of features and options<br /> - Android Zero<br /> - Remote chat & cast||The on-premises version requires Windows, this can be a strength or a weakness considering the current architecture although DHIS2 is only supported in Linux so another server would be mandatory.|
 |**MDM Name** <br />(**not** tested)| **(C)loud / (P)remises**|**Price approx.**|**Strengths**|**Weaknesses**|**Additional Comments**|
 |Air Watch|C|4 $ / device / month|||Complies with the required and nice to have features|
 |BlackBerry UEM 12.12|C / P|?|||Complies with the required and nice to have features|
