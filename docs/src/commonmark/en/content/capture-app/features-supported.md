@@ -379,7 +379,7 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 |Ask user to complete program when stage is complete| If selected, upon completing the program stage the user should be asked to complete the program. (This setting is ignored if "Ask user to create new event" is also ticked.)|![](resources/icons/icon-complete.png)|![](resources/icons/icon-na.png)||
 |Ask user to create new event when stage is complete|If selected, when the Program Stage is completed the user is prompted to book.|![](resources/icons/icon-complete.png)|![](resources/icons/icon-na.png)||
 |Hide due date|Only shows the actual date for events, hiding the due date.|![](resources/icons/icon-complete.png)|![](resources/icons/icon-na.png)||
-|Capture coordinates (event)/Feature Type-Point|Enables the user to capture geographical coordinates when each event is created ![](resources/icons/icon-incomplete.png) particularly useful in devices that have GPS (eg Android), as instead of having to type in coordinates, the user can automatically populate them with the press of a button.|![](resources/icons/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
+|Capture coordinates (event)/Feature Type-Point|Enables the user to capture geographical coordinates when each event is created ![](resources/icons/icon-incomplete.png) particularly useful in devices that have GPS (eg Android), as instead of having to type in coordinates, the user can automatically populate them with the press of a button.|![](resources/icons/icon-complete.png)|![](resources/icons/icon-complete.png)||
 |Capture Polygon (event)/Feature Type-Polygon |Enables users to capture locations (enclosed areas) when each event is created. A Polygon must contain at least 4 points.|![](resources/icons/icon-complete.png)|![](resources/icons/icon-complete.png)||
 |Description of report date|Allows an admin to customize the label that is used for the event&rsquo;s date.|![](resources/icons/icon-complete.png)|![](resources/icons/icon-complete.png)||
 |Data elements-compulsory|This enables an admin to mark a data element as "compulsory", meaning an event can not be saved until a value is captured.|![](resources/icons/icon-complete.png)|![](resources/icons/icon-complete.png)||
@@ -390,8 +390,8 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 |Block entry form after completed|Prevents all edits to events after they have been completed.|![](resources/icons/icon-complete.png)|![](resources/icons/icon-complete.png)||
 |Event comments|Enables the user to add overall comments to an event. These comments are cumulative (new comments are added below existing comments).|![](resources/icons/icon-incomplete.png)|![](resources/icons/icon-na.png)||
 
-### Program with registration: Tracked entity dashboard { #capture_app_programs_supported_features_program_with_reg }
 
+### Program with registration: Tracked entity dashboard { #capture_app_programs_supported_features_program_with_reg }
 
 |Feature|Description of feature|Status|Notes on implementation|
 |-|---|:-:|---|
