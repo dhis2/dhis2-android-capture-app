@@ -17,6 +17,7 @@ import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.FormView;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
+import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -34,9 +35,12 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Inject
     EventCaptureFormPresenter presenter;
 
+    @Inject
+    FormRepository formRepository;
+
     private EventCaptureActivity activity;
     private SectionSelectorFragmentBinding binding;
-    private final FormView formView = new FormView();
+    private FormView formView;
 
     public static EventCaptureFormFragment newInstance(String eventUid) {
         EventCaptureFormFragment fragment = new EventCaptureFormFragment();
@@ -76,6 +80,11 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        formView = new FormView(formRepository, value -> {
+            activity.getPresenter().setValueChanged(value);
+            activity.getPresenter().nextCalculation(true);
+            return null;
+        });
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.replace(R.id.formViewContainer, formView).commit();
         formView.setScrollCallback(isSectionVisible -> {

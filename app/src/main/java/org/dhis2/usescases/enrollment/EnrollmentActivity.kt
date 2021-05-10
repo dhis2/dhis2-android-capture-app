@@ -21,6 +21,7 @@ import org.dhis2.R
 import org.dhis2.data.forms.dataentry.FormView
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.databinding.EnrollmentActivityBinding
+import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.uicomponents.map.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
@@ -51,10 +52,13 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     enum class EnrollmentMode { NEW, CHECK }
 
     private var forRelationship: Boolean = false
-    private val formView = FormView()
+    private lateinit var formView: FormView
 
     @Inject
     lateinit var presenter: EnrollmentPresenterImpl
+
+    @Inject
+    lateinit var formRepository: FormRepository
 
     lateinit var binding: EnrollmentActivityBinding
     lateinit var mode: EnrollmentMode
@@ -113,6 +117,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         mode = EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
 
+        formView = FormView(formRepository) {
+            presenter.updateFields()
+        }
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.formViewContainer, formView)
         fragmentTransaction.commit()

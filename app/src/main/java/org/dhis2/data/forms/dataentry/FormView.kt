@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.R
@@ -15,12 +17,22 @@ import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.databinding.ViewFormBinding
+import org.dhis2.form.Injector
+import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.ui.FormViewModel
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
 import timber.log.Timber
 
-class FormView : Fragment() {
+class FormView(
+    formRepository: FormRepository,
+    private val onListChangedCallback: ((value: String) -> Unit)?
+) : Fragment() {
+
+    private val viewModel: FormViewModel by viewModels {
+        Injector.provideFormViewModelFactory(formRepository)
+    }
 
     private lateinit var binding: ViewFormBinding
     private lateinit var dataEntryHeaderHelper: DataEntryHeaderHelper
@@ -100,6 +112,16 @@ class FormView : Fragment() {
                 closeKeyboard()
             }
         }
+
+        viewModel.savedValue.observe(viewLifecycleOwner, Observer { value ->
+            onListChangedCallback?.let { action ->
+                action(value)
+            }
+        })
+
+        viewModel.items.observe(viewLifecycleOwner, Observer { items ->
+            render(items)
+        })
     }
 
     fun render(items: List<FieldUiModel>) {
