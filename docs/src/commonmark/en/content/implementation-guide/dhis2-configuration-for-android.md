@@ -75,11 +75,11 @@ We include here some SOP Best Practices taken from the [DHIS 2 Community Health 
 
 Ensuring that the personal data stored on mobile devices is only accessible by the authorized health staff starts by educating users on how to use this data and ensure that it is kept secured at all times. The guidelines below are an extract taken from the PSI’s “Monitoring and Evaluation Standard Operating Procedures for Keeping Client Data Secure & Confidential” manual.
 
-![](resources/images/image31.png){ .center }
+![](resources/images/implementation-guide-image31.png){ .center }
 
 System administrators play an important role when configuring user’s access-level, by ensuring that their data access is appropriate and never unnecessarily excessive. The guidelines below are also part of PSI’s “Keeping Client Data Secure & Confidential Administrators Guide” manual
 
-.![](resources/images/image13.png){ .center }
+.![](resources/images/implementation-guide-image13.png){ .center }
 
 ## Creating an Android User { #implementation_guide_dhis2_config_creating_user }
 
@@ -95,7 +95,7 @@ For the purposes of web debugging problems with your users it is recommended tha
 - Dashboard (to be able to login)
 - Cache Cleaner (you will need to clean the cache)
 
-![](resources/images/image3.png)
+![](resources/images/implementation-guide-image3.png)
 
 ### Create user { #implementation_guide_dhis2_config_creating_user_user }
 
@@ -119,7 +119,7 @@ There are three types of organisation unit assignment:
 - **Search Org. Units:** Expands TEI search (when online) across further Org Units. Individual records can be downloaded for offline use.
 	- When configuring search org. units, make sure that your capture org. units are contained in your search org.units, to do that capture org. units have to be selected as well as search org. units.
 
-![](resources/images/image39.png){ .center width=80% }
+![](resources/images/implementation-guide-image39.png){ .center width=80% }
 
 ## Visual configuration: Understanding what renders and why { #implementation_guide_dhis2_config_visual_config }
 
@@ -130,7 +130,7 @@ In the future you will be able to upload your own as gif/ jpeg/ png (50k or less
 
 Here is an example of how to assign icons and colors to metadata:
 
-![](resources/images/image10.png)
+![](resources/images/implementation-guide-image10.png)
 
 The following table shows where you can use icons today:
 
@@ -148,11 +148,11 @@ The following table shows where you can use icons today:
 
 For program stages, sections can be rendered in three modes: Listing, Sequential and Matrix. The results of these modes are shown below:
 
-![](resources/images/image4.png){ .center }
+![](resources/images/implementation-guide-image4.png){ .center }
 
 A System Administrator can decide the best way to render the information in each program stage section by setting up the mobile rendering type, as shown on the screenshot below.
 
-![](resources/images/image15.png){ .center }
+![](resources/images/implementation-guide-image15.png){ .center }
 
 ## Setting up the Program Rules { #implementation_guide_dhis2_config_setting_pr }
 
@@ -161,15 +161,15 @@ We recommend to test the Android App in parallel with the configuration of your 
 
 The first thing you need to do when setting up the program rules is to define the context and priority for the execution of the rule. The context defines the execution of the rule for a specific program and optionally for a specific stage. The priority defines an order to execute the rules, this helps when the execution of one or more rules depends on the result of other rules.
 
-![](resources/images/image41.png){ .center }
+![](resources/images/implementation-guide-image41.png){ .center }
 
 Once the context and priority have been defined, it is time to write the program rule expression using built-in variables, variables (TEI attributes / PS data elements) and functions. Variables have to be defined by the administrator to be able to evaluate information entered for a TEI attribute or a program stage data element.
 
-![](resources/images/image40.png){ .center }
+![](resources/images/implementation-guide-image40.png){ .center }
 
 Then we need to decide on the action or actions to be executed when the program rule expression is true
 
-![](resources/images/image38.png){ .center }
+![](resources/images/implementation-guide-image38.png){ .center }
 
 When setting up your program rules you should be aware of what is supported by the DHIS 2 Android app. You can check the updated list in the [configuration guide](https://docs.dhis2.org/master/en/dhis2_android_capture_app/about-this-guide.html).
 
@@ -180,25 +180,25 @@ Indicators to be displayed in the App, can be calculated with the data from the 
 
 Aggregation types are not available, only Last Value can be used in the calculation of the indicator. All DE and constants can be used in the calculations. Variables are supported according to the following table:
 
-![](resources/images/image37.png){ .center }
+![](resources/images/implementation-guide-image37.png){ .center }
 
 You can check the updated information of what is supported when using program indicators in the [configuration guide](https://docs.dhis2.org/master/en/dhis2_android_capture_app/program-indicators.html). Analytic period boundaries are not supported, neither planned for future support, as they apply to multiple TEI’s.
 
 In order to display a program indicator in the App, you must select the checkbox “Display in form” in the DHIS 2 server indicator configuration wizard.
 
-![](resources/images/image20.png)
+![](resources/images/implementation-guide-image20.png)
 
 Once you have designed your indicator, you can assign a legend to it. In your DHIS 2 Server go to Maintenance > Others > Legends to create an new legend.
 
 |||
 |------|----|
-| ![](resources/images/image9.png) { .center } | ![](resources/images/image16.png) { .center } |
+| ![](resources/images/implementation-guide-image9.png) { .center } | ![](resources/images/implementation-guide-image16.png) { .center } |
 
 Once you have created the legend you can assign it to the indicator. Alternatively, you can assign an already existing legend. Right underneath the checkbox to display the indicator in the App, you will find the section to search and assign the legend.
 
 |||
 |------|----|
-| ![](resources/images/image32.png){ .center } | ![](resources/images/image26.png){ .center } |
+| ![](resources/images/implementation-guide-image32.png){ .center } | ![](resources/images/implementation-guide-image26.png){ .center } |
 
 ## Reserved IDs  { #implementation_guide_dhis2_config_reserved_id }
 
@@ -233,6 +233,6 @@ On the App, the user can also check the available values and refill them in the 
 
 |||
 |---|----|
-| ![](resources/images/image14.jpg){ .center width=50%} | ![](resources/images/image22.jpg){ .center width=50%} |
+| ![](resources/images/implementation-guide-image14.jpg){ .center width=50%} | ![](resources/images/implementation-guide-image22.jpg){ .center width=50%} |
 
 When the app runs out of values and the server cannot provide more, the user will receive a message on the data entry form saying that there are no more available values. Your should fix that on the server side.
