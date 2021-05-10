@@ -1,9 +1,10 @@
 package org.dhis2.usescases.programEventDetail
 
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import org.dhis2.Bindings.userFriendlyValue
-import org.dhis2.data.dhislogic.DhisEventUtils
+import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.tuples.Pair
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
@@ -14,14 +15,17 @@ import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 
-class ProgramEventMapper @Inject constructor(val d2: D2, val dhisEventUtils: DhisEventUtils) {
+class ProgramEventMapper @Inject constructor(val d2: D2, val periodUtils: DhisPeriodUtils) {
 
     fun eventToEventViewModel(event: Event): EventViewModel {
+        val programStage =
+            d2.programModule().programStages().uid(event.programStage()).blockingGet()
         return EventViewModel(
             EventViewModelType.EVENT,
-            d2.programModule().programStages().uid(event.programStage()).blockingGet(),
+            programStage,
             event,
             0,
             event.lastUpdated(),
@@ -32,7 +36,11 @@ class ProgramEventMapper @Inject constructor(val d2: D2, val dhisEventUtils: Dhi
                 .blockingGet().displayName() ?: "-",
             catComboName = getCatComboName(event.attributeOptionCombo()),
             dataElementValues = getEventValues(event.uid(), event.programStage()!!),
-            groupedByStage = true
+            groupedByStage = true,
+            displayDate = periodUtils.getPeriodUIString(
+                programStage.periodType() ?: PeriodType.Daily,
+                event.eventDate() ?: event.dueDate()!!, Locale.getDefault()
+            )
         )
     }
 
@@ -74,7 +82,7 @@ class ProgramEventMapper @Inject constructor(val d2: D2, val dhisEventUtils: Dhi
             hasExpired || !inOrgUnitRange,
             attrOptCombo,
             event.geometry(),
-            dhisEventUtils.isEventEditable(event.uid())
+            d2.eventModule().eventService().blockingIsEditable(event.uid())
         )
     }
 

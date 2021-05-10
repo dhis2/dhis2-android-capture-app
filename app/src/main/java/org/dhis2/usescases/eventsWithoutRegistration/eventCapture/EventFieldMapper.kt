@@ -4,21 +4,23 @@ import java.util.ArrayList
 import java.util.HashMap
 import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
-import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel
+import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.utils.DhisTextUtils.Companion.isEmpty
 
 const val DISPLAY_FIELD_KEY = "DISPLAY_FIELD_KEY"
 
 class EventFieldMapper(
+    private val fieldFactory: FieldViewModelFactory,
     private val mandatoryFieldWarning: String
 ) {
 
     var totalFields: Int = 0
     var unsupportedFields: Int = 0
-    private lateinit var optionSets: MutableList<String?>
+    private lateinit var visualDataElements: MutableList<String?>
     private lateinit var fieldMap: MutableMap<String?, MutableList<FieldViewModel>>
     private lateinit var eventSectionModels: MutableList<EventSectionModel>
     private lateinit var finalFieldList: MutableList<FieldViewModel>
@@ -27,16 +29,15 @@ class EventFieldMapper(
     fun map(
         fields: MutableList<FieldViewModel>,
         sectionList: MutableList<FormSectionViewModel>,
-        sectionsToHide: MutableList<String>,
         currentSection: String,
         errors: MutableMap<String, String>,
         emptyMandatoryFields: MutableMap<String, FieldViewModel>,
         showErrors: Pair<Boolean, Boolean>
     ): Pair<MutableList<EventSectionModel>, MutableList<FieldViewModel>> {
         clearAll()
-        setFieldMap(fields, sectionList, sectionsToHide, showErrors.first, emptyMandatoryFields)
+        setFieldMap(fields, sectionList, showErrors.first, emptyMandatoryFields)
         sectionList.forEach {
-            handleSection(fields, sectionList, sectionsToHide, it, currentSection)
+            handleSection(fields, sectionList, it, currentSection)
         }
 
         if (eventSectionModels.first().sectionName() == "NO_SECTION") {
@@ -81,7 +82,7 @@ class EventFieldMapper(
     private fun clearAll() {
         totalFields = 0
         unsupportedFields = 0
-        optionSets = mutableListOf()
+        visualDataElements = mutableListOf()
         fieldMap = HashMap()
         eventSectionModels = mutableListOf()
         finalFieldList = mutableListOf()
@@ -91,7 +92,6 @@ class EventFieldMapper(
     private fun setFieldMap(
         fields: List<FieldViewModel>,
         sectionList: List<FormSectionViewModel>,
-        sectionsToHide: List<String?>,
         showMandatoryErrors: Boolean,
         emptyMandatoryFields: MutableMap<String, FieldViewModel>
     ) {
@@ -100,25 +100,19 @@ class EventFieldMapper(
             if (fieldSection.isNotEmpty() || sectionList.size == 1) {
                 updateFieldMap(
                     fieldSection,
-                    if (field !is ImageViewModel && showMandatoryErrors &&
+                    if (showMandatoryErrors &&
                         emptyMandatoryFields.containsKey(field.uid())
-                    ) {
-                        field.withWarning(mandatoryFieldWarning)
-                    } else if (field is ImageViewModel && showMandatoryErrors &&
-                        emptyMandatoryFields.containsKey(field.fieldUid())
                     ) {
                         field.withWarning(mandatoryFieldWarning)
                     } else {
                         field
                     }
                 )
-                if (field !is DisplayViewModel &&
-                    !sectionsToHide.contains(field.programStageSection())
-                ) {
-                    if (fieldIsNotOptionSetOrImage(field)) {
+                if (field !is DisplayViewModel) {
+                    if (fieldIsNotVisualOptionSet(field)) {
                         totalFields++
-                    } else if (!optionSets.contains(field.optionSet())) {
-                        optionSets.add(field.optionSet())
+                    } else if (!visualDataElements.contains(field.uid())) {
+                        visualDataElements.add(field.uid())
                         totalFields++
                     }
                 }
@@ -145,11 +139,10 @@ class EventFieldMapper(
     private fun handleSection(
         fields: List<FieldViewModel>,
         sectionList: List<FormSectionViewModel>,
-        sectionsToHide: List<String?>,
         sectionModel: FormSectionViewModel,
         section: String
     ) {
-        if (isValidMultiSection(sectionList, sectionModel, sectionsToHide)) {
+        if (isValidMultiSection(sectionList, sectionModel)) {
             handleMultiSection(sectionModel, section)
         } else if (isValidSingleSection(sectionList, sectionModel)) {
             handleSingleSection(fields, sectionModel)
@@ -158,11 +151,9 @@ class EventFieldMapper(
 
     private fun isValidMultiSection(
         sectionList: List<FormSectionViewModel>,
-        sectionModel: FormSectionViewModel,
-        sectionsToHide: List<String?>
+        sectionModel: FormSectionViewModel
     ): Boolean {
-        return sectionList.isNotEmpty() && sectionModel.sectionUid()!!
-            .isNotEmpty() && !sectionsToHide.contains(sectionModel.sectionUid())
+        return sectionList.isNotEmpty() && sectionModel.sectionUid()!!.isNotEmpty()
     }
 
     private fun isValidSingleSection(
@@ -185,7 +176,7 @@ class EventFieldMapper(
 
         finalFields = HashMap()
         for (fieldViewModel in fieldViewModels) {
-            finalFields[getCorrectUid(fieldViewModel)] =
+            finalFields[fieldViewModel.uid()] =
                 !isEmpty(fieldViewModel.value())
         }
 
@@ -200,17 +191,19 @@ class EventFieldMapper(
             )
         )
         val isOpen = sectionModel.sectionUid() == section
-        finalFieldList.add(
-            SectionViewModel.create(
-                sectionModel.sectionUid(),
-                sectionModel.label(),
-                "",
-                isOpen,
-                finalFields.keys.size,
-                cont,
-                sectionModel.renderType()
+        if (fieldMap[sectionModel.sectionUid()]?.isNotEmpty() == true) {
+            finalFieldList.add(
+                fieldFactory.createSection(
+                    sectionModel.sectionUid(),
+                    sectionModel.label(),
+                    "",
+                    isOpen,
+                    finalFields.keys.size,
+                    cont,
+                    sectionModel.renderType()
+                )
             )
-        )
+        }
         if (isOpen && fieldMap[sectionModel.sectionUid()] != null) {
             finalFieldList.addAll(fieldMap[sectionModel.sectionUid()] as Collection<FieldViewModel>)
         }
@@ -222,7 +215,7 @@ class EventFieldMapper(
     ) {
         for (fieldViewModel in fields) {
             if (fieldViewModel !is DisplayViewModel) {
-                finalFields[getCorrectUid(fieldViewModel)] =
+                finalFields[fieldViewModel.uid()] =
                     !isEmpty(fieldViewModel.value())
             }
         }
@@ -240,15 +233,25 @@ class EventFieldMapper(
         finalFieldList.addAll(fieldMap[sectionModel.sectionUid()] as Collection<FieldViewModel>)
     }
 
-    private fun getCorrectUid(fieldViewModel: FieldViewModel): String {
-        return if (fieldIsNotOptionSetOrImage(fieldViewModel)) {
-            fieldViewModel.uid()
-        } else {
-            fieldViewModel.optionSet()!!
-        }
+    private fun fieldIsNotVisualOptionSet(field: FieldViewModel): Boolean {
+        return field.optionSet() == null || field !is MatrixOptionSetModel
     }
 
-    private fun fieldIsNotOptionSetOrImage(field: FieldViewModel): Boolean {
-        return field.optionSet() == null || field !is ImageViewModel
+    fun completedFieldsPercentage(): Float {
+        val completedFields = eventSectionModels.sumBy { it.numberOfCompletedFields() }
+        return calculateCompletionPercentage(completedFields, totalFields)
+    }
+
+    fun unsupportedFieldsPercentage(): Float {
+        return calculateCompletionPercentage(unsupportedFields, totalFields)
+    }
+
+    private fun calculateCompletionPercentage(
+        completedFields: Int,
+        totals: Int
+    ): Float {
+        return if (totals == 0) {
+            100f
+        } else completedFields.toFloat() / totals.toFloat()
     }
 }

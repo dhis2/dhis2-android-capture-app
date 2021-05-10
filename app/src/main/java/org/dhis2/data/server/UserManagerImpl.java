@@ -1,10 +1,15 @@
 package org.dhis2.data.server;
 
+import android.content.Intent;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.User;
 import org.hisp.dhis.android.core.user.UserCredentials;
+import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode;
+import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -21,6 +26,19 @@ public class UserManagerImpl implements UserManager {
     public Observable<User> logIn(@NonNull String username, @NonNull String password, @NonNull String serverUrl) {
         return Observable.defer(() -> d2.userModule().logIn(username, password, serverUrl).toObservable());
     }
+
+    @NonNull
+    @Override
+    public Observable<IntentWithRequestCode> logIn(@NonNull OpenIDConnectConfig config) {
+        return Observable.defer(() -> d2.userModule().openIdHandler().logIn(config).toObservable());
+    }
+
+    @NonNull
+    @Override
+    public Observable<User> handleAuthData(@NonNull String serverUrl, @Nullable Intent data, int requestCode) {
+        return Observable.defer(() -> d2.userModule().openIdHandler().handleLogInResponse(serverUrl, data, requestCode).toObservable());
+    }
+
 
     @NonNull
     @Override

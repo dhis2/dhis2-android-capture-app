@@ -143,6 +143,25 @@ class LoginTest : BaseTest() {
         }
     }
 
+    @Test
+    fun shouldDisplayShareDataDialogAndOpenPrivacyPolicy() {
+        enableIntents()
+        startLoginActivity()
+
+        loginRobot {
+            clearServerField()
+            typeServer(MOCK_SERVER_URL)
+            typeUsername(USERNAME)
+            typePassword(PASSWORD)
+            clickLoginButton()
+            checkShareDataDialogIsDisplayed()
+            clickOnPrivacyPolicy()
+            checkPrivacyViewIsOpened()
+        }
+
+        cleanDatabase()
+    }
+
     fun startMainActivity() {
         mainRule.launchActivity(null)
     }

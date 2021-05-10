@@ -1,23 +1,12 @@
 package org.dhis2.data.forms.dataentry
 
 import androidx.recyclerview.widget.DiffUtil
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel
-import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
-import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
+import org.dhis2.data.forms.dataentry.fields.FieldUiModel
 
-class DataEntryDiff : DiffUtil.ItemCallback<FieldViewModel>() {
-    override fun areItemsTheSame(oldItem: FieldViewModel, newItem: FieldViewModel): Boolean =
-        oldItem.uid() == newItem.uid()
+class DataEntryDiff : DiffUtil.ItemCallback<FieldUiModel>() {
+    override fun areItemsTheSame(oldItem: FieldUiModel, newItem: FieldUiModel): Boolean =
+        oldItem.getUid() == newItem.getUid()
 
-    override fun areContentsTheSame(oldItem: FieldViewModel, newItem: FieldViewModel): Boolean =
-        if (newItem is SectionViewModel ||
-            oldItem is SectionViewModel ||
-            oldItem is OptionSetViewModel ||
-            oldItem is SpinnerViewModel
-        ) {
-            false
-        } else {
-            oldItem == newItem
-        }
+    override fun areContentsTheSame(oldItem: FieldUiModel, newItem: FieldUiModel): Boolean =
+        oldItem.equals(newItem)
 }

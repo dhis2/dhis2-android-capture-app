@@ -1,8 +1,9 @@
 package org.dhis2.utils.customviews
 
+import io.reactivex.processors.PublishProcessor
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
-import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel
+import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.junit.Assert.assertTrue
@@ -44,21 +45,29 @@ class FormBottomDialogPresenterTest {
                     null,
                     null,
                     ObjectStyle.builder().build(),
+                    null,
+                    "any",
+                    false,
+                    false,
+                    PublishProcessor.create(),
                     null
                 )
             ),
             Pair(
                 "uid2",
-                ImageViewModel.create(
-                    "uid2.optionUid",
-                    "label2_op_optionLabel_op_optionCode",
-                    "optionSet",
-                    "",
-                    "section2",
-                    true,
+                MatrixOptionSetModel.create(
+                    "uid2",
+                    "label2",
                     true,
                     null,
-                    ObjectStyle.builder().build()
+                    "section2",
+                    true,
+                    "optionSetUid",
+                    null,
+                    ObjectStyle.builder().build(),
+                    PublishProcessor.create(),
+                    emptyList(),
+                    2
                 )
             )
         )

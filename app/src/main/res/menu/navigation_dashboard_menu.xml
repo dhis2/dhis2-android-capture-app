@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_details"
+        android:enabled="true"
+        android:icon="@drawable/ic_navigation_details"
+        android:title="@string/navigation_tei_data"/>
+
+    <item
+        android:id="@+id/navigation_events"
+        android:enabled="true"
+        android:icon="@drawable/ic_navigation_events"
+        android:visible="false"
+        android:title="@string/navigation_events"/>
+
+    <item
+        android:id="@+id/navigation_analytics"
+        android:enabled="true"
+        android:icon="@drawable/ic_navigation_analytics"
+        android:title="@string/navigation_analytics"/>
+
+    <item
+        android:id="@+id/navigation_relationships"
+        android:enabled="true"
+        android:icon="@drawable/ic_navigation_relationships"
+        android:title="@string/navigation_relationships"/>
+
+    <item
+        android:id="@+id/navigation_notes"
+        android:enabled="true"
+        android:icon="@drawable/ic_navigation_notes"
+        android:title="@string/navigation_notes"/>
+</menu>

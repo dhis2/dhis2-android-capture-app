@@ -22,6 +22,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
@@ -30,7 +31,6 @@ import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
-import org.dhis2.usescases.coodinates.CoordinatesView;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
@@ -105,6 +105,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Inject
     PreferenceProvider preferences;
 
+    @Inject
+    DhisPeriodUtils periodUtils;
+
     private Event eventModel;
 
     private ActivityEventInitialBinding binding;
@@ -127,9 +130,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private Date selectedOrgUnitClosedDate;
     private ProgramStage programStage;
 
-    private int totalFields;
-    private int totalCompletedFields;
-    private int unsupportedFields;
     private String tempCreate;
     private boolean fixedOrgUnit;
     private String catOptionComboUid;
@@ -178,12 +178,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         initVariables();
-        setScreenName(this.getLocalClassName());
         ((App) getApplicationContext()).userComponent().plus(
                 new EventInitialModule(this,
                         eventUid,
                         programStageUid)
         ).inject(this);
+        setScreenName(this.getLocalClassName());
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_initial);
@@ -199,13 +199,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void initActionButton() {
-
         disposable.add(RxView.clicks(binding.actionButton)
                 .debounce(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe(v -> {
                             binding.actionButton.setEnabled(false);
                             String programStageModelUid = programStage == null ? "" : programStage.uid();
                             if (eventUid == null) { // This is a new Event
+                                presenter.onEventCreated();
                                 analyticsHelper().setEvent(CREATE_EVENT, AnalyticsConstants.DATA_CREATION, CREATE_EVENT);
                                 if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
                                     presenter.scheduleEventPermanent(
@@ -288,6 +288,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.shareContainer.setVisibility(View.GONE);
             binding.actionButton.setText(R.string.next);
         } else {
+            fixedOrgUnit = true;
+            binding.orgUnitLayout.setEnabled(false);
             binding.actionButton.setText(R.string.update);
         }
 
@@ -301,7 +303,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void initProgressBar() {
-        binding.completion.setVisibility(eventUid == null ? View.GONE : View.VISIBLE);
+        if (eventUid != null && presenter.getCompletionPercentageVisibility()) {
+            binding.completion.setVisibility(View.VISIBLE);
+        } else {
+            binding.completion.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -374,7 +380,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             } else {
                 now.setTime(DateUtils.getInstance().getNextPeriod(periodType, now.getTime(), eventCreationType != EventCreationType.SCHEDULE ? 0 : 1));
                 selectedDate = now.getTime();
-                selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
+                selectedDateString = periodUtils.getPeriodUIString(periodType, selectedDate, Locale.getDefault());
             }
 
             binding.date.setText(selectedDateString);
@@ -404,7 +410,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         .setMaxDate(eventCreationType.equals(EventCreationType.ADDNEW) || eventCreationType.equals(EventCreationType.DEFAULT) ? DateUtils.getInstance().getToday() : null)
                         .setPossitiveListener(selectedDate -> {
                             this.selectedDate = selectedDate;
-                            binding.date.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
+                            binding.date.setText(periodUtils.getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
                             binding.date.clearFocus();
                             if (!fixedOrgUnit) {
                                 presenter.initOrgunit(selectedDate);
@@ -502,9 +508,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             this.newGeometry = geometry;
             presenter.setChangingCoordinates(true);
         });
-        binding.geometry.setMapListener(
-                (CoordinatesView.OnMapPositionClick) binding.geometry.getContext()
-        );
 
         if (periodType == null)
             periodType = programStage.periodType();
@@ -527,7 +530,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             } else {
                 now.setTime(DateUtils.getInstance().getNextPeriod(periodType, now.getTime(), eventCreationType != EventCreationType.SCHEDULE ? 0 : 1));
                 selectedDate = now.getTime();
-                selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
+                selectedDateString = periodUtils.getPeriodUIString(periodType, selectedDate, Locale.getDefault());
             }
         }
         presenter.getStageObjectStyle(this.programStage.uid());
@@ -706,9 +709,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
         Calendar c = Calendar.getInstance();
-        c.set(year, month, day, 0, 0);
+        c.set(year, month, day, 0, 0, 0);
+        c.set(Calendar.MILLISECOND, 0);
         selectedDate = c.getTime();
-        selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
+        selectedDateString = periodUtils.getPeriodUIString(periodType, selectedDate, Locale.getDefault());
         binding.date.setText(selectedDateString);
         binding.date.clearFocus();
         if (!fixedOrgUnit) {
@@ -717,39 +721,14 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void onEventSections(List<FormSectionViewModel> formSectionViewModels) {
-        for (FormSectionViewModel formSectionViewModel : formSectionViewModels) {
-            presenter.getSectionCompletion(formSectionViewModel.sectionUid());
-        }
-    }
-
-    @NonNull
-    @Override
-    public Consumer<List<FieldViewModel>> showFields(String sectionUid) {
-        return this::swap;
+    public void updatePercentage(float primaryValue, float secondaryValue) {
+        binding.completion.setCompletionPercentage(primaryValue);
+        binding.completion.setSecondaryPercentage(secondaryValue);
     }
 
     @Override
     public void showProgramStageSelection() {
         presenter.getProgramStage(programStageUid);
-    }
-
-    void swap(@NonNull List<FieldViewModel> updates) {
-
-        List<FieldViewModel> realUpdates = new ArrayList<>();
-        if (sectionsToHide != null && !sectionsToHide.isEmpty()) {
-            for (FieldViewModel fieldViewModel : updates)
-                if (!sectionsToHide.contains(fieldViewModel.programStageSection()))
-                    realUpdates.add(fieldViewModel);
-        } else
-            realUpdates.addAll(updates);
-
-        totalCompletedFields = totalCompletedFields + calculateCompletedFields(realUpdates);
-        unsupportedFields = unsupportedFields + calculateUnsupportedFields(updates);
-        totalFields = totalFields + realUpdates.size();
-        binding.completion.setCompletionPercentage((float) totalCompletedFields / (float) totalFields);
-        binding.completion.setSecondaryPercentage((float) unsupportedFields / (float) totalFields);
-
     }
 
     @Override
@@ -843,7 +822,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
                 binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
             binding.actionButton.setText(getString(R.string.check_event));
-            binding.geometry.setEditable(false);
+            if (binding.geometry.getViewModel() != null)
+                binding.geometry.setEditable(false);
             binding.executePendingBindings();
         }
     }

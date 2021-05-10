@@ -14,6 +14,7 @@ import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEvents
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.layer.MapLayerManager
+import org.dhis2.uicomponents.map.layer.types.EventMapLayer
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiEventMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
@@ -37,6 +38,7 @@ class CarouselAdapter private constructor(
         eventUid: String?
     ) -> Boolean,
     private val onProfileImageClick: (String) -> Unit,
+    private val onNavigateListener: (String) -> Unit,
     private val allItems: MutableList<CarouselItemModel>
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -58,6 +60,7 @@ class CarouselAdapter private constructor(
                     ),
                     onTeiClickListener,
                     onSyncClickListener,
+                    onNavigateListener,
                     onProfileImageClick,
                     { item ->
                         (items.first { it == item } as SearchTeiModel).toggleAttributeList()
@@ -73,7 +76,8 @@ class CarouselAdapter private constructor(
                     ),
                     currentTei,
                     onDeleteRelationshipListener,
-                    onRelationshipClickListener
+                    onRelationshipClickListener,
+                    onNavigateListener
                 )
             CarouselItems.EVENT ->
                 CarouselEventHolder(
@@ -84,7 +88,8 @@ class CarouselAdapter private constructor(
                     ),
                     program,
                     onEventClickListener,
-                    onProfileImageClick
+                    onProfileImageClick,
+                    onNavigateListener
                 )
             CarouselItems.PROGRAM_EVENT ->
                 CarouselProgramEventHolder(
@@ -96,7 +101,8 @@ class CarouselAdapter private constructor(
                     onEventClickListener,
                     { item ->
                         (items.first { it == item } as ProgramEventViewModel).toggleAttributeList()
-                    }
+                    },
+                    onNavigateListener
                 )
         }
     }
@@ -139,6 +145,8 @@ class CarouselAdapter private constructor(
                         .filter { it.programStage?.displayName() == sourceId },
                     visible
                 )
+            is EventMapLayer ->
+                updateItems(allItems.filterIsInstance<ProgramEventViewModel>(), visible)
             else -> Unit
         }
     }
@@ -157,6 +165,12 @@ class CarouselAdapter private constructor(
         notifyDataSetChanged()
     }
 
+    fun setItems(data: List<CarouselItemModel>) {
+        items.clear()
+        items.addAll(data)
+        notifyDataSetChanged()
+    }
+
     fun updateAllData(data: List<CarouselItemModel>, mapLayerManager: MapLayerManager) {
         allItems.clear()
         allItems.addAll(data)
@@ -166,7 +180,7 @@ class CarouselAdapter private constructor(
         }
     }
 
-    fun removeItems(data: List<CarouselItemModel>) {
+    private fun removeItems(data: List<CarouselItemModel>) {
         items.removeAll(data)
         notifyDataSetChanged()
     }
@@ -235,6 +249,7 @@ class CarouselAdapter private constructor(
         var onEventClickListener: (String?, String?, String?) -> Boolean =
             { _: String?, _: String?, _: String? -> false },
         var onProfileImageClick: (String) -> Unit = { },
+        var onNavigateClickListener: (String) -> Unit = { },
         var items: MutableList<CarouselItemModel> = arrayListOf(),
         var program: Program? = null
     ) {
@@ -292,6 +307,12 @@ class CarouselAdapter private constructor(
             this.items = items
         }
 
+        fun addOnNavigateClickListener(
+            onNavigateClick: (String) -> Unit
+        ) = apply {
+            this.onNavigateClickListener = onNavigateClick
+        }
+
         fun build() = CarouselAdapter(
             currentTei,
             program,
@@ -301,6 +322,7 @@ class CarouselAdapter private constructor(
             onRelationshipClickListener,
             onEventClickListener,
             onProfileImageClick,
+            onNavigateClickListener,
             items
         )
     }

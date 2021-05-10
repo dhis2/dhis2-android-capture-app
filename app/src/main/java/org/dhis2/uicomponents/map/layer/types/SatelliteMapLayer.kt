@@ -5,6 +5,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import org.dhis2.uicomponents.map.layer.MapLayer
 
+@Deprecated("This class is deprecated and should not be used")
 class SatelliteMapLayer(
     private val mapboxMap: MapboxMap,
     private val styleChangeCallback: ((Style) -> Unit)?,
@@ -37,5 +38,9 @@ class SatelliteMapLayer(
 
     override fun findFeatureWithUid(featureUidProperty: String): Feature? {
         return null
+    }
+
+    override fun getId(): String {
+        return this::class.java.name
     }
 }

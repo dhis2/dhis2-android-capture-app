@@ -219,4 +219,8 @@ class EnrollmentMapLayer(
                 Expression.eq(Expression.get("enrollmentUid"), featureUidProperty)
             )?.firstOrNull()
     }
+
+    override fun getId(): String {
+        return POINT_LAYER_ID
+    }
 }

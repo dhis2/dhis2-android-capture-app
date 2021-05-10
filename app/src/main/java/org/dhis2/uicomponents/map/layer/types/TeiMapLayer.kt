@@ -2,7 +2,6 @@ package org.dhis2.uicomponents.map.layer.types
 
 import android.graphics.Color
 import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.layers.FillLayer
@@ -61,7 +60,7 @@ class TeiMapLayer(
             ?: SymbolLayer(POINT_LAYER_ID, TEIS_SOURCE_ID)
                 .withProperties(
                     PropertyFactory.iconImage(Expression.get(TEI_UID)),
-                    PropertyFactory.iconOffset(arrayOf(0f, -25f)),
+                    PropertyFactory.iconOffset(arrayOf(0f, -12f)),
                     PropertyFactory.iconAllowOverlap(true),
                     PropertyFactory.textAllowOverlap(true)
                 ).withFilter(
@@ -76,7 +75,7 @@ class TeiMapLayer(
             ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_POINT_SOURCE_ID)
                 .withProperties(
                     PropertyFactory.iconImage(Expression.get(TEI_UID)),
-                    PropertyFactory.iconOffset(arrayOf(0f, -20f)),
+                    PropertyFactory.iconOffset(arrayOf(0f, -12f)),
                     PropertyFactory.iconAllowOverlap(true),
                     PropertyFactory.textAllowOverlap(true)
                 ).withFilter(
@@ -163,10 +162,11 @@ class TeiMapLayer(
 
     override fun setSelectedItem(feature: Feature?) {
         feature?.let {
-            if (featureType == FeatureType.POINT) {
-                selectPoint(feature)
-            } else {
-                selectPolygon(feature)
+            if (it.geometry()?.type() == featureType.geometryType) {
+                when (featureType) {
+                    FeatureType.POINT -> selectPoint(it)
+                    else -> selectPolygon(it)
+                }
             }
         } ?: deselectCurrentPoint()
     }
@@ -183,22 +183,18 @@ class TeiMapLayer(
     }
 
     private fun selectPolygon(feature: Feature) {
-        deselectCurrentPoint()
-
         style.getSourceAs<GeoJsonSource>(SELECTED_POLYGON_SOURCE_ID)?.apply {
-            setGeoJson(
-                FeatureCollection.fromFeatures(
-                    arrayListOf(Feature.fromGeometry(feature.geometry()))
-                )
-            )
+            setGeoJson(feature)
         }
 
         selectedPolygonLayer.setProperties(
-            PropertyFactory.fillColor(ColorUtils.withAlpha(enrollmentDarkColor))
+            PropertyFactory.fillColor(ColorUtils.withAlpha(enrollmentDarkColor)),
+            PropertyFactory.visibility(Property.VISIBLE)
         )
         selectedPolygonBorderLayer.setProperties(
             PropertyFactory.lineColor(Color.WHITE),
-            PropertyFactory.lineWidth(2.5f)
+            PropertyFactory.lineWidth(2.5f),
+            PropertyFactory.visibility(Property.VISIBLE)
         )
     }
 
@@ -209,11 +205,10 @@ class TeiMapLayer(
             )
         } else {
             selectedPolygonLayer.setProperties(
-                PropertyFactory.fillColor(ColorUtils.withAlpha(enrollmentColor))
+                PropertyFactory.visibility(Property.NONE)
             )
             selectedPolygonBorderLayer.setProperties(
-                PropertyFactory.lineColor(enrollmentDarkColor),
-                PropertyFactory.lineWidth(2f)
+                PropertyFactory.visibility(Property.NONE)
             )
         }
     }
@@ -223,5 +218,13 @@ class TeiMapLayer(
             ?.querySourceFeatures(Expression.eq(Expression.get("teiUid"), featureUidProperty))
             ?.firstOrNull()
             .also { setSelectedItem(it) }
+    }
+
+    override fun getId(): String {
+        return if (featureType == FeatureType.POINT) {
+            POINT_LAYER_ID
+        } else {
+            POLYGON_LAYER_ID
+        }
     }
 }

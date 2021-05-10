@@ -4,6 +4,7 @@ import io.reactivex.Flowable
 import java.io.File
 import org.dhis2.Bindings.blockingSetCheck
 import org.dhis2.Bindings.withValueTypeCheck
+import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
@@ -13,7 +14,8 @@ import org.hisp.dhis.android.core.common.ValueType
 class ValueStoreImpl(
     private val d2: D2,
     private val recordUid: String,
-    private val entryMode: DataEntryStore.EntryMode
+    private val entryMode: DataEntryStore.EntryMode,
+    private val dhisEnrollmentUtils: DhisEnrollmentUtils
 ) : ValueStore {
 
     enum class ValueStoreResult {
@@ -69,10 +71,6 @@ class ValueStoreImpl(
     }
 
     private fun saveAttribute(uid: String, value: String?): Flowable<StoreResult> {
-        if (!checkUniqueFilter(uid, value)) {
-            return Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_NOT_UNIQUE))
-        }
-
         val teiUid =
             when (entryMode) {
                 DataEntryStore.EntryMode.DE -> {
@@ -85,6 +83,10 @@ class ValueStoreImpl(
                 DataEntryStore.EntryMode.DV -> null
             }
                 ?: return Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_HAS_NOT_CHANGED))
+
+        if (!checkUniqueFilter(uid, value, teiUid)) {
+            return Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_NOT_UNIQUE))
+        }
 
         val valueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
             .value(uid, teiUid)
@@ -129,32 +131,22 @@ class ValueStoreImpl(
 
         return if (currentValue != newValue) {
             if (!DhisTextUtils.isEmpty(value)) {
-                valueRepository.blockingSetCheck(d2, uid, newValue)
+                if (valueRepository.blockingSetCheck(d2, uid, newValue)) {
+                    Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_CHANGED))
+                } else {
+                    Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_HAS_NOT_CHANGED))
+                }
             } else {
                 valueRepository.blockingDeleteIfExist()
+                Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_CHANGED))
             }
-            Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_CHANGED))
         } else {
             Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_HAS_NOT_CHANGED))
         }
     }
 
-    private fun checkUniqueFilter(uid: String, value: String?): Boolean {
-        return if (value != null) {
-            val isUnique =
-                d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()!!.unique()
-                    ?: false
-            if (isUnique) {
-                val hasValue = d2.trackedEntityModule().trackedEntityAttributeValues()
-                    .byTrackedEntityAttribute().eq(uid)
-                    .byValue().eq(value).blockingGet().isNotEmpty()
-                !hasValue
-            } else {
-                true
-            }
-        } else {
-            true
-        }
+    private fun checkUniqueFilter(uid: String, value: String?, teiUid: String): Boolean {
+        return dhisEnrollmentUtils.isTrackedEntityAttributeValueUnique(uid, value, teiUid)
     }
 
     private fun saveFileResource(path: String): String {

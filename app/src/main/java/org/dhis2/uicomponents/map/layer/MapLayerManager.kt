@@ -1,12 +1,14 @@
 package org.dhis2.uicomponents.map.layer
 
 import android.graphics.Color
+import androidx.annotation.ColorRes
 import com.mapbox.geojson.Feature
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.layer.types.EnrollmentMapLayer
 import org.dhis2.uicomponents.map.layer.types.EventMapLayer
+import org.dhis2.uicomponents.map.layer.types.FieldMapLayer
 import org.dhis2.uicomponents.map.layer.types.HeatmapMapLayer
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
 import org.dhis2.uicomponents.map.layer.types.SatelliteMapLayer
@@ -21,6 +23,7 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
     var mapLayers: HashMap<String, MapLayer> = hashMapOf()
     private var mapStyle: MapStyle? = null
     var styleChangeCallback: ((Style) -> Unit)? = null
+    var currentStyle: String = Style.MAPBOX_STREETS
     private val relationShipColors =
         mutableListOf(
             Color.parseColor("#E71409"),
@@ -79,14 +82,7 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
                     style,
                     featureType ?: FeatureType.POINT,
                     sourceId!!,
-                    if (relationshipUsedColors.containsKey(sourceId)) {
-                        relationshipUsedColors[sourceId]
-                    } else {
-                        relationShipColors.firstOrNull()?.also {
-                            relationshipUsedColors[sourceId] = relationShipColors[0]
-                            relationShipColors.removeAt(0)
-                        }
-                    }
+                    getNextAvailableColor(sourceId)
                 )
                 LayerType.EVENT_LAYER -> EventMapLayer(
                     style,
@@ -98,6 +94,10 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
                     featureType ?: FeatureType.POINT,
                     sourceId!!,
                     mapStyle?.programDarkColor!!
+                )
+                LayerType.FIELD_COORDINATE_LAYER -> FieldMapLayer(
+                    style,
+                    sourceId!!
                 )
             }
         }
@@ -137,7 +137,9 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
 
     fun selectFeature(feature: Feature?) {
         mapLayers.entries.forEach {
-            it.value.setSelectedItem(feature)
+            if (it.value.visible) {
+                it.value.setSelectedItem(feature)
+            }
         }
     }
 
@@ -154,6 +156,7 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
             LayerType.RELATIONSHIP_LAYER -> mapLayers.filterValues { it is RelationshipMapLayer }
             LayerType.EVENT_LAYER -> mapLayers.filterValues { it is EventMapLayer }
             LayerType.TEI_EVENT_LAYER -> mapLayers.filterValues { it is TeiEventMapLayer }
+            LayerType.FIELD_COORDINATE_LAYER -> mapLayers.filterValues { it is FieldMapLayer }
         }
         filterLayers.keys.forEach {
             if (!sourceIds.contains(it)) {
@@ -169,5 +172,28 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
 
     fun clearLayers() {
         mapLayers.clear()
+    }
+
+    fun changeStyle(baseMapType: BaseMapType) {
+        currentStyle = when (baseMapType) {
+            BaseMapType.STREET -> Style.MAPBOX_STREETS
+            BaseMapType.SATELLITE -> Style.SATELLITE_STREETS
+        }
+        mapboxMap.setStyle(
+            currentStyle
+        ) {
+            styleChangeCallback?.invoke(it)
+        }
+    }
+
+    @ColorRes fun getNextAvailableColor(sourceId: String): Int? {
+        return if (relationshipUsedColors.containsKey(sourceId)) {
+            relationshipUsedColors[sourceId]
+        } else {
+            relationShipColors.firstOrNull()?.also {
+                relationshipUsedColors[sourceId] = relationShipColors[0]
+                relationShipColors.removeAt(0)
+            }
+        }
     }
 }

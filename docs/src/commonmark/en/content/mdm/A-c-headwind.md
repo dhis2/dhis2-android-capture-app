@@ -1,4 +1,4 @@
-# Annex C - MDM PoC: Headwind 
+# Annex C - MDM PoC: Headwind { #mdm_headwind }
 
 This annex presents the outcome of the tested MDM: [https://h-mdm.com/](https://h-mdm.com/)
 
@@ -16,11 +16,11 @@ It is a JAVA/Tomcat application which makes it ideal in terms of compatibility w
 Console:
 
 
-![Headwindg MDM console](resources/images/image10.png)
+![Headwindg MDM console](resources/images/mdm-image10.png)
 
 Phone:
 
-![Headwindg MDM running in an Android](resources/images/image14.png){ width=25% }
+![Headwindg MDM running in an Android](resources/images/mdm-image14.png){ width=25% }
 
 
 ## Issues
