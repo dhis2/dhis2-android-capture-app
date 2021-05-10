@@ -3,31 +3,24 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureF
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
-import org.dhis2.data.forms.dataentry.StoreResult
-import org.dhis2.data.forms.dataentry.ValueStore
-import org.dhis2.data.forms.dataentry.ValueStoreImpl
-import org.dhis2.data.forms.dataentry.fields.ActionType
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel
-import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.form.data.FormRepository
+import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.RowAction
+import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
-import org.hisp.dhis.android.core.D2
 import timber.log.Timber
 
 class EventCaptureFormPresenter(
     val view: EventCaptureFormView,
     private val activityPresenter: EventCaptureContract.Presenter,
-    val d2: D2,
-    val valueStore: ValueStore,
     val schedulerProvider: SchedulerProvider,
-    private val onFieldActionProcessor: FlowableProcessor<RowAction>
+    private val onFieldActionProcessor: FlowableProcessor<RowAction>,
+    private val formRepository: FormRepository
 ) {
     private var finishing: Boolean = false
     private var selectedSection: String? = null
     var disposable: CompositeDisposable = CompositeDisposable()
-    private var focusedItem: RowAction? = null
-    private var itemList: List<FieldViewModel>? = null
-    private val itemsWithError = mutableListOf<RowAction>()
 
     fun init() {
         disposable.add(
@@ -35,64 +28,19 @@ class EventCaptureFormPresenter(
                 .doOnNext { activityPresenter.showProgress() }
                 .observeOn(schedulerProvider.io())
                 .switchMap { rowAction ->
-
-                    when (rowAction.type) {
-                        ActionType.ON_SAVE -> {
-                            updateErrorList(rowAction)
-                            if (rowAction.error != null) {
-                                Flowable.just(
-                                    StoreResult(
-                                        rowAction.id,
-                                        ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED
-                                    )
-                                )
-                            } else {
-                                valueStore.save(rowAction.id, rowAction.value)
-                            }
-                        }
-                        ActionType.ON_FOCUS, ActionType.ON_NEXT -> {
-                            this.focusedItem = rowAction
-
-                            Flowable.just(
-                                StoreResult(
-                                    rowAction.id,
-                                    ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED
-                                )
-                            )
-                        }
-
-                        ActionType.ON_TEXT_CHANGE -> {
-                            updateErrorList(rowAction)
-
-                            itemList?.let { list ->
-                                list.find { item ->
-                                    item.uid() == rowAction.id
-                                }?.let { item ->
-                                    itemList = list.updated(
-                                        list.indexOf(item),
-                                        item.withValue(rowAction.value)
-                                    )
-                                }
-                            }
-                            Flowable.just(StoreResult(rowAction.id))
-                        }
-                    }
+                    Flowable.just(formRepository.processUserAction(rowAction))
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { result ->
                         result.valueStoreResult?.let {
-                            if (result.valueStoreResult
-                                == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+                            if (result.valueStoreResult == ValueStoreResult.VALUE_CHANGED
                             ) {
                                 activityPresenter.setValueChanged(result.uid)
                                 activityPresenter.nextCalculation(true)
                             } else {
-                                itemList?.let { fields ->
-                                    activityPresenter.formFieldsFlowable()
-                                        .onNext(fields.toMutableList())
-                                }
+                                populateList()
                             }
                         } ?: activityPresenter.hideProgress()
                     },
@@ -105,18 +53,22 @@ class EventCaptureFormPresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { fields ->
-                        itemList = fields
-                        composeList()
-                        activityPresenter.hideProgress()
-                        selectedSection ?: fields
-                            .mapNotNull { it.programStageSection() }
-                            .firstOrNull()
-                            ?.let { selectedSection = it }
-                    },
+                    { fields -> populateList(fields) },
                     { Timber.e(it) }
                 )
         )
+    }
+
+    private fun populateList(items: List<FieldUiModel>? = null) {
+        view.showFields(formRepository.composeList(items).toMutableList())
+        checkFinishing(true)
+        activityPresenter.hideProgress()
+        if (items != null) {
+            selectedSection ?: items
+                .mapNotNull { it.programStageSection }
+                .firstOrNull()
+                .let { selectedSection = it }
+        }
     }
 
     private fun checkFinishing(canFinish: Boolean) {
@@ -126,35 +78,6 @@ class EventCaptureFormPresenter(
         finishing = false
     }
 
-    private fun updateErrorList(action: RowAction) {
-        if (action.error != null) {
-            if (itemsWithError.find { it.id == action.id } == null) {
-                itemsWithError.add(action)
-            }
-        } else {
-            itemsWithError.find { it.id == action.id }?.let {
-                itemsWithError.remove(it)
-            }
-        }
-    }
-
-    private fun composeList() = itemList?.let {
-        val listWithErrors = mergeListWithErrorFields(it, itemsWithError)
-        view.showFields(setFocusedItem(listWithErrors).toMutableList())
-        checkFinishing(true)
-    }
-
-    private fun mergeListWithErrorFields(
-        list: List<FieldViewModel>,
-        fieldsWithError: MutableList<RowAction>
-    ): List<FieldViewModel> {
-        return list.map { item ->
-            fieldsWithError.find { it.id == item.uid() }?.let { action ->
-                item.withValue(action.value).withError(action.error)
-            } ?: item
-        }
-    }
-
     fun onDetach() {
         disposable.clear()
     }
@@ -162,32 +85,6 @@ class EventCaptureFormPresenter(
     fun onActionButtonClick() {
         activityPresenter.attempFinish()
     }
-
-    private fun getNextItem(currentItemUid: String): String? {
-        itemList?.let { fields ->
-            val oldItem = fields.find { it.uid() == currentItemUid }
-            val pos = fields.indexOf(oldItem)
-            if (pos < fields.size - 1) {
-                return fields[pos + 1].getUid()
-            }
-        }
-
-        return null
-    }
-
-    private fun setFocusedItem(list: List<FieldViewModel>) = focusedItem?.let {
-        val uid = if (it.type == ActionType.ON_NEXT) {
-            getNextItem(it.id)
-        } else {
-            it.id
-        }
-
-        list.find { item ->
-            item.uid() == uid
-        }?.let { item ->
-            list.updated(list.indexOf(item), item.withFocus(true))
-        } ?: list
-    } ?: list
 
     fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =
         mapIndexed { i, existing -> if (i == index) elem else existing }

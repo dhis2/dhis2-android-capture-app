@@ -9,10 +9,9 @@ import org.dhis2.BR;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.form.model.FieldUiModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import org.dhis2.form.data.FieldUiModel;
 
 public class FormViewHolder extends RecyclerView.ViewHolder {
 
@@ -28,7 +27,6 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(FieldUiModel uiModel, FieldItemCallback callback) {
-        FieldViewModel viewModel = (FieldViewModel) uiModel;
         FieldUiModel.Callback itemCallback = new FieldUiModel.Callback() {
             @Override
             public void onNext() {
@@ -40,9 +38,9 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
                 callback.onShowDialog(title, message);
             }
         };
-        viewModel.setCallback(itemCallback);
+        uiModel.setCallback(itemCallback);
 
-        binding.setVariable(BR.item, viewModel);
+        binding.setVariable(BR.item, uiModel);
         binding.executePendingBindings();
     }
 

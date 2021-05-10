@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
-import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -22,9 +21,9 @@ import com.google.android.material.snackbar.Snackbar;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
+import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.AppMenuHelper;
@@ -219,7 +218,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldViewModel> emptyMandatoryFields) {
+    public void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldUiModel> emptyMandatoryFields) {
         if (binding.navigationBar.getSelectedItemId() == R.id.navigation_data_entry) {
             FormBottomDialog.getInstance()
                     .setAccessDataWrite(presenter.canWrite())

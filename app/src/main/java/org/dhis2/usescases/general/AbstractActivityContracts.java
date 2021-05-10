@@ -6,14 +6,11 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityOptionsCompat;
 
-import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-
-import java.util.List;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 
 /**
  * QUADRAM. Created by ppajuelo on 27/09/2017.
