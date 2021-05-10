@@ -15,12 +15,12 @@ This solution allows remote calls and remote control of the device and so, the m
 
 Console:
 
-![Scale Fusion MDM console](resources/images/image8.png)
+![Scale Fusion MDM console](resources/images/mdm-image8.png)
 
 
 Phone (Normal Vs Kiosk):
 
-![Scale Fusion MDM running on Android normal mode](resources/images/image13.png){ width=25% } ![Scale Fusion MDM running on Android kiosk mode](resources/images/image4.png){ width=25% }
+![Scale Fusion MDM running on Android normal mode](resources/images/mdm-image13.png){ width=25% } ![Scale Fusion MDM running on Android kiosk mode](resources/images/mdm-image4.png){ width=25% }
 
 
 ## Issues 
