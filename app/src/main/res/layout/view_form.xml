@@ -1,31 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <!--<data>
+
+    </data>-->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/form_field_background"
-        android:descendantFocusability="beforeDescendants"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:clipToPadding="false"
-        android:paddingBottom="100dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/form_unsupported" />
+        android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:id="@+id/headerContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="@id/recyclerView"
-        app:layout_constraintStart_toStartOf="@id/recyclerView"
-        app:layout_constraintTop_toTopOf="@id/recyclerView" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/form_field_background"
+            android:clipToPadding="false"
+            android:descendantFocusability="beforeDescendants"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:paddingBottom="100dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/form_unsupported" />
 
-</merge>
+        <RelativeLayout
+            android:id="@+id/headerContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@id/recyclerView"
+            app:layout_constraintStart_toStartOf="@id/recyclerView"
+            app:layout_constraintTop_toTopOf="@id/recyclerView" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
