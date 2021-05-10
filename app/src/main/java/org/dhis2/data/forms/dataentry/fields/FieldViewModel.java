@@ -14,8 +14,6 @@ import org.dhis2.form.model.RowAction;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 import io.reactivex.processors.FlowableProcessor;
 
 public abstract class FieldViewModel implements FieldUiModel {
@@ -160,53 +158,47 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     @Override
     public void onItemClick() {
-        if (processor() != null) {
-            RowAction action = new RowAction(
-                    uid(),
-                    value(),
-                    false,
-                    null,
-                    null,
-                    null,
-                    null,
-                    ActionType.ON_FOCUS
-            );
-            Objects.requireNonNull(processor()).onNext(action);
-        }
+        RowAction action = new RowAction(
+                uid(),
+                value(),
+                false,
+                null,
+                null,
+                null,
+                null,
+                ActionType.ON_FOCUS
+        );
+        callback.onItemAction(action);
     }
 
     @Override
     public void onNext() {
         callback.onNext();
-        if (processor() != null) {
-            RowAction action = new RowAction(
-                    uid(),
-                    value(),
-                    false,
-                    null,
-                    null,
-                    null,
-                    null,
-                    ActionType.ON_NEXT
-            );
-            Objects.requireNonNull(processor()).onNext(action);
-        }
+        RowAction action = new RowAction(
+                uid(),
+                value(),
+                false,
+                null,
+                null,
+                null,
+                null,
+                ActionType.ON_NEXT
+        );
+        callback.onItemAction(action);
     }
 
     public void onTextChange(String value) {
-        if (processor() != null) {
-            RowAction action = new RowAction(
-                    uid(),
-                    value,
-                    false,
-                    null,
-                    null,
-                    null,
-                    null,
-                    ActionType.ON_TEXT_CHANGE
-            );
-            Objects.requireNonNull(processor()).onNext(action);
-        }
+        RowAction action = new RowAction(
+                uid(),
+                value,
+                false,
+                null,
+                null,
+                null,
+                null,
+                ActionType.ON_TEXT_CHANGE
+        );
+        callback.onItemAction(action);
     }
 
     @NotNull
