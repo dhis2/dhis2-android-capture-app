@@ -52,4 +52,5 @@ public interface Components {
     UserComponent userComponent();
 
     void releaseUserComponent();
+
 }

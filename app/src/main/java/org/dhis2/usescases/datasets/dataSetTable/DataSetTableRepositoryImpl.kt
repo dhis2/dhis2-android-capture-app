@@ -351,13 +351,16 @@ class DataSetTableRepositoryImpl(
                 } else {
                     "?"
                 }
+                val isFromDefaultCatCombo = d2.categoryModule().categoryCombos()
+                    .uid(catOptCombo.categoryCombo()?.uid()).blockingGet().isDefault == true
                 dataToReview.add(
                     DataToReview(
                         de.uid(),
                         de.displayName(),
                         catOptCombo.uid(),
                         catOptCombo.displayName(),
-                        value
+                        value,
+                        isFromDefaultCatCombo
                     )
                 )
             }

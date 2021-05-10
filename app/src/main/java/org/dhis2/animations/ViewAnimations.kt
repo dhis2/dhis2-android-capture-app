@@ -1,8 +1,8 @@
 package org.dhis2.animations
 
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.Animation
+import android.view.animation.OvershootInterpolator
 import android.view.animation.Transformation
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton.decrement
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton.increment
@@ -40,7 +40,8 @@ fun View.collapse(callback: () -> Unit) {
     startAnimation(a)
 }
 
-fun View.expand() {
+fun View.expand(callback: () -> Unit) {
+    callback.invoke()
     val matchParentMeasureSpec = View.MeasureSpec.makeMeasureSpec(
         (parent as View).width,
         View.MeasureSpec.EXACTLY
@@ -57,11 +58,7 @@ fun View.expand() {
     visibility = View.VISIBLE
     val a: Animation = object : Animation() {
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-            layoutParams.height = if (interpolatedTime == 1f) {
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            } else {
-                (targetHeight * interpolatedTime).toInt()
-            }
+            layoutParams.height = (targetHeight * interpolatedTime).toInt()
             requestLayout()
         }
 
@@ -76,10 +73,38 @@ fun View.expand() {
 
         override fun onAnimationEnd(animation: Animation) {
             decrement()
+            callback.invoke()
         }
 
         override fun onAnimationRepeat(animation: Animation) {}
     })
     a.duration = 200
     startAnimation(a)
+}
+
+fun View.show() {
+    if (visibility != View.VISIBLE) {
+        animate()
+            .scaleX(1f)
+            .scaleY(1f)
+            .setDuration(200)
+            .setInterpolator(OvershootInterpolator())
+            .withStartAction {
+                scaleX = 0f
+                scaleY = 0f
+                visibility = View.VISIBLE
+            }
+            .start()
+    }
+}
+
+fun View.hide() {
+    if (visibility != View.GONE) {
+        animate()
+            .scaleX(0f)
+            .scaleY(0f)
+            .setDuration(200)
+            .withEndAction { visibility = View.GONE }
+            .start()
+    }
 }

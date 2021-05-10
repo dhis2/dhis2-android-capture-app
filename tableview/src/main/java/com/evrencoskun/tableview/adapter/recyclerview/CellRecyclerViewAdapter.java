@@ -150,15 +150,6 @@ public class CellRecyclerViewAdapter<C> extends AbstractRecyclerViewAdapter<C> {
     }
 
     @Override
-    public void onViewDetachedFromWindow(AbstractViewHolder holder) {
-        super.onViewDetachedFromWindow(holder);
-
-        // Clear selection status of the view holder
-        mTableView.getSelectionHandler().changeSelectionOfRecyclerView(((CellRowViewHolder)
-                holder).recyclerView, SelectionState.UNSELECTED, mTableView.getUnSelectedColor());
-    }
-
-    @Override
     public void onViewRecycled(AbstractViewHolder holder) {
         super.onViewRecycled(holder);
 

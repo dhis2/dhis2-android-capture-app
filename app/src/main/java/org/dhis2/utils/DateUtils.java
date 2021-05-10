@@ -4,32 +4,31 @@ package org.dhis2.utils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.apache.commons.text.WordUtils;
 import org.dhis2.data.forms.section.viewmodels.date.DatePickerDialogFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.customviews.RxDateDialog;
 import org.dhis2.utils.filters.FilterManager;
+import org.hisp.dhis.android.core.D2Manager;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
-import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.PeriodType;
+import org.hisp.dhis.android.core.period.internal.PeriodHelper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
-
-/**
- * QUADRAM. Created by ppajuelo on 16/01/2018.
- */
 
 public class DateUtils {
 
@@ -48,6 +47,9 @@ public class DateUtils {
     public static final String DATABASE_FORMAT_EXPRESSION_NO_SECONDS = "yyyy-MM-dd'T'HH:mm";
     public static final String DATE_TIME_FORMAT_EXPRESSION = "yyyy-MM-dd HH:mm";
     public static final String DATE_FORMAT_EXPRESSION = "yyyy-MM-dd";
+    public static final String WEEKLY_FORMAT_EXPRESSION = "w yyyy";
+    public static final String MONTHLY_FORMAT_EXPRESSION = "MMM yyyy";
+    public static final String YEARLY_FORMAT_EXPRESSION = "yyyy";
     public static final String SIMPLE_DATE_FORMAT = "d/M/yyyy";
 
     public Date[] getDateFromDateAndPeriod(Date date, Period period) {
@@ -60,7 +62,7 @@ public class DateUtils {
                 return new Date[]{getFirstDayOfWeek(date), getLastDayOfWeek(date)};
             case DAILY:
             default:
-                return new Date[]{getDate(date), getNextDate(date)};
+                return new Date[]{getDate(date), getDate(date)};
         }
     }
 
@@ -213,7 +215,7 @@ public class DateUtils {
         return new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION_NO_SECONDS, Locale.US);
     }
 
-   @NonNull
+    @NonNull
     public static Boolean dateHasNoSeconds(String dateTime) {
         try {
             databaseDateFormatNoSeconds().parse(dateTime);
@@ -698,62 +700,14 @@ public class DateUtils {
         return calendar.getTime();
     }
 
-    public String getPeriodUIString(PeriodType periodType, Date date, Locale locale) {
-
-        String formattedDate;
-        Date initDate = getNextPeriod(periodType, date, 0);
-
-        Calendar cal = getCalendar();
-        cal.setTime(getNextPeriod(periodType, date, 1));
-        cal.add(Calendar.DAY_OF_YEAR, -1);
-        Date endDate = cal.getTime();
-        String periodString = "%s - %s";
-        if (periodType == null)
-            periodType = PeriodType.Daily;
-        switch (periodType) {
-            case Weekly:
-            case WeeklyWednesday:
-            case WeeklyThursday:
-            case WeeklySaturday:
-            case WeeklySunday:
-                Calendar endWeek = Calendar.getInstance();
-                endWeek.setTime(initDate);
-                endWeek.add(Calendar.DAY_OF_MONTH, 6);
-                String DATE_LABEL_FORMAT = "Week %s to %s";
-                formattedDate = String.format(DATE_LABEL_FORMAT, new SimpleDateFormat("w yyyy-MM-dd", locale).format(initDate),
-                        new SimpleDateFormat(" yyyy-MM-dd", locale).format(endWeek.getTime()));
-                break;
-            case BiWeekly:
-                formattedDate = String.format(periodString,
-                        new SimpleDateFormat("w yyyy", locale).format(initDate),
-                        new SimpleDateFormat("w yyyy", locale).format(endDate)
-                );
-                break;
-            case Monthly:
-                formattedDate = new SimpleDateFormat("MMM yyyy", locale).format(initDate);
-                break;
-            case BiMonthly:
-            case Quarterly:
-            case SixMonthly:
-            case SixMonthlyApril:
-            case FinancialApril:
-            case FinancialJuly:
-            case FinancialOct:
-                formattedDate = String.format(periodString,
-                        new SimpleDateFormat("MMM yyyy", locale).format(initDate),
-                        new SimpleDateFormat("MMM yyyy", locale).format(endDate)
-                );
-                break;
-            case Yearly:
-                formattedDate = new SimpleDateFormat("yyyy", locale).format(initDate);
-                break;
-            case Daily:
-            default:
-                formattedDate = uiDateFormat().format(initDate);
-                break;
+    private int weekOfTheYear(PeriodType periodType,String periodId){
+        Pattern pattern = Pattern.compile(periodType.getPattern());
+        Matcher matcher = pattern.matcher(periodId);
+        int weekNumber = 0;
+        if(matcher.find()){
+            weekNumber = Integer.parseInt(matcher.group(2));
         }
-
-        return formattedDate;
+        return weekNumber;
     }
 
     /**
@@ -807,7 +761,7 @@ public class DateUtils {
                 calendar.add(Calendar.DAY_OF_YEAR, expDays);
                 expDate = calendar.getTime();
             }
-            expiredBecouseOfPeriod = expDate != null && expDate.compareTo(currentDate)<=0;
+            expiredBecouseOfPeriod = expDate != null && expDate.compareTo(currentDate) <= 0;
 
             return expiredBecouseOfPeriod || expiredBecouseOfCompletion;
         } else
@@ -832,28 +786,6 @@ public class DateUtils {
 
         return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime()
                 && Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
-    }
-
-    public String generateId(PeriodType periodType, Date date, Locale locale) {
-
-        String formattedDate;
-        Date initDate = getNextPeriod(periodType, date, 0);
-
-        switch (periodType) {
-            case Monthly:
-                formattedDate = new SimpleDateFormat("yyyyMM", locale).format(initDate);
-                break;
-            case Yearly:
-                formattedDate = new SimpleDateFormat("yyyy", locale).format(initDate);
-                break;
-            case Daily:
-                formattedDate = new SimpleDateFormat("yyyyMMdd", locale).format(initDate);
-                break;
-            default:
-                formattedDate = new SimpleDateFormat("yyyy", locale).format(initDate);
-                break;
-        }
-        return formattedDate;
     }
 
     public List<DatePeriod> getDatePeriodListFor(List<Date> selectedDates, Period period) {
@@ -904,13 +836,14 @@ public class DateUtils {
 
     public void showPeriodDialog(ActivityGlobalAbstract activity, OnFromToSelector fromToListener, boolean fromOtherPeriod) {
         DatePickerDialogFragment fromCalendar = DatePickerDialogFragment.create(true, "Daily", fromOtherPeriod);
-//        fromCalendar.setOpeningClosingDates(null, null); TODO: MAX 1 year in the future?
         if (!FilterManager.getInstance().getPeriodFilters().isEmpty())
             fromCalendar.setInitialDate(FilterManager.getInstance().getPeriodFilters().get(0).startDate());
         fromCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
             @Override
             public void onDateSet(@NonNull Date date) {
-                fromToListener.onFromToSelected(getDatePeriodListFor(Collections.singletonList(date), Period.DAILY));
+                List<Date> dates = new ArrayList<>();
+                dates.add(date);
+                fromToListener.onFromToSelected(getDatePeriodListFor(dates, Period.DAILY));
             }
 
             @Override
@@ -926,36 +859,6 @@ public class DateUtils {
         });
         fromCalendar.show(activity.getSupportFragmentManager(), "DAILY");
 
-    }
-
-    public static Date yearsBeforeNow(int years) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        if (years > 0) {
-            calendar.add(Calendar.YEAR, -years);
-        } else {
-            calendar.add(Calendar.YEAR, years);
-        }
-        return calendar.getTime();
-    }
-
-    public static Date yearsAfterNow(int years) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-
-        calendar.add(Calendar.YEAR, years);
-
-        return calendar.getTime();
-    }
-
-    public static long timeToDate(Date finaLDate) {
-        return finaLDate.getTime() - new Date().getTime();
     }
 
     public interface OnFromToSelector {

@@ -7,46 +7,40 @@
         <import type="android.view.View" />
 
         <variable
-            name="currentFilter"
-            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.Filters&gt;" />
+            name="filterItem"
+            type="org.dhis2.utils.filters.AssignedFilter" />
 
         <variable
-            name="filterCount"
-            type="androidx.databinding.ObservableField&lt;java.lang.Integer&gt;" />
-
-        <variable
-            name="filterType"
-            type="org.dhis2.utils.filters.Filters" />
-
-        <variable
-            name="currentSortItem"
-            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.sorting.SortingItem&gt;" />
+            name="workingListScope"
+            type="androidx.databinding.ObservableField&lt;org.dhis2.data.filter.WorkingListScope&gt;" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/root"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
+        android:layout_height="wrap_content"
+        android:alpha="@{workingListScope.isAssignedActive() ? 0.65f : 1.0f}">
         <include
             android:id="@+id/filterLayout"
             layout="@layout/item_header_filter"
-            app:filterCount="@{filterCount}"
-            app:currentSortItem="@{currentSortItem}"
+            app:filterCount="@{filterItem.observeCount()}"
+            app:filterItem="@{filterItem}"
             app:layout_constraintTop_toBottomOf="parent" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/filterSwitch"
             style="@style/Widget.AppCompat.CompoundButton.Switch"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:checked="true"
-            app:thumbTint="@drawable/selector_material_thumb"
-            app:useMaterialThemeColors="false"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="8dp"
+            android:checked="@{filterItem.observeAssignedToMe() || workingListScope.assignedToMeActive}"
+            android:enabled="@{!workingListScope.isAssignedActive()}"
+            android:onCheckedChanged="@{(switch, checked)->filterItem.activate(checked)}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:thumbTint="@drawable/selector_material_thumb"
+            app:useMaterialThemeColors="false" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

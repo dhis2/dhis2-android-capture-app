@@ -1,6 +1,4 @@
-# Settings
-
- <!-- DHIS2-SECTION-ID:settings -->
+# Settings { #capture_app_settings }
 
 ![New Settings](resources/images/capture-app-image17.jpg){  width=25%}
 ![New Settings](resources/images/capture-app-image85.jpg){  width=25%}
@@ -11,6 +9,12 @@
 **Configuration sync process (Metadata syncing)**: User is able to choose from a drop-down list  if the data entered in the app is uploaded to the server manually or scheduled every day or week. By default the app will sync every 24h.  This sync will update changes in programs or configurations in web.
 
 **Sync Parameters**: these parameters allow the user to specify the maximum number of TEI’s and events that can be stored in the local device. The user can also specify if limits apply per organisation unit or in total. Values can be set to default by clicking on “Reset to default”.
+
+> **Note** 
+>
+> Sync data, Sync configuration and Sync parameters  can be overwritten using  the Android Settings Web App.
+>
+>
 
 **Reserved Values**: this will specify the number of reserved Id's available in your device and will allow you to refill them.
 

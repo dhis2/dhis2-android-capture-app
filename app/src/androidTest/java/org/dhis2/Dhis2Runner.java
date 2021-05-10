@@ -5,7 +5,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.StrictMode;
 import androidx.test.runner.AndroidJUnitRunner;
-import org.dhis2.common.idlingresources.Rx2Idler;
+
+import com.squareup.rx2.idler.Rx2Idler;
+
 import io.reactivex.plugins.RxJavaPlugins;
 
 public class Dhis2Runner extends AndroidJUnitRunner {

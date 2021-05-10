@@ -31,6 +31,7 @@ import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
+import org.dhis2.uicomponents.map.ExternalMapNavigation;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.RelationshipMapManager;
@@ -41,7 +42,6 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OnDialogClickListener;
-import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,14 +53,9 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
 
 import static android.app.Activity.RESULT_OK;
 import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.RELATIONSHIP_UID;
-
-/**
- * QUADRAM. Created by ppajuelo on 29/11/2017.
- */
 
 public class RelationshipFragment extends FragmentGlobalAbstract implements RelationshipView, MapboxMap.OnMapClickListener {
 
@@ -68,6 +63,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     RelationshipPresenter presenter;
     @Inject
     CarouselViewAnimations animations;
+    @Inject
+    ExternalMapNavigation mapNavigation;
 
     private FragmentRelationshipsBinding binding;
 
@@ -98,13 +95,16 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         relationshipAdapter = new RelationshipAdapter(presenter);
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
         relationshipMapManager = new RelationshipMapManager(binding.mapView);
+        getLifecycle().addObserver(relationshipMapManager);
+        relationshipMapManager.onCreate(savedInstanceState);
         relationshipMapManager.setOnMapClickListener(this);
-        relationshipMapManager.init(() -> {
+        relationshipMapManager.init(() -> Unit.INSTANCE, (permissionManager) -> {
+            permissionManager.requestLocationPermissions(activity);
             return Unit.INSTANCE;
         });
 
         TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) getContext();
-        activity.relationshipMap().observe(this, showMap -> {
+        activity.relationshipMap().observe(getViewLifecycleOwner(), showMap -> {
             binding.relationshipRecycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
             binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
             binding.mapLayerButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
@@ -113,7 +113,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         });
 
         binding.mapLayerButton.setOnClickListener(view -> {
-            MapLayerDialog layerDialog = new MapLayerDialog(relationshipMapManager.mapLayerManager);
+            MapLayerDialog layerDialog = new MapLayerDialog(relationshipMapManager);
             layerDialog.show(getChildFragmentManager(), MapLayerDialog.class.getName());
         });
 
@@ -121,26 +121,37 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        relationshipMapManager.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (binding.mapView.getVisibility() == View.VISIBLE && relationshipMapManager.getPermissionsManager() != null) {
+            relationshipMapManager.getPermissionsManager().onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        if(binding.mapView.getVisibility() == View.VISIBLE){
+        if (binding.mapView.getVisibility() == View.VISIBLE) {
             animations.initMapLoading(binding.mapCarousel);
         }
         presenter.init();
-        relationshipMapManager.onResume();
     }
 
     @Override
     public void onPause() {
         presenter.onDettach();
-        relationshipMapManager.onPause();
         super.onPause();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        relationshipMapManager.onDestroy();
+    public void onLowMemory() {
+        super.onLowMemory();
+        relationshipMapManager.onLowMemory();
     }
 
     @Override
@@ -288,8 +299,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     @Override
     public void setFeatureCollection(
-           @NonNull String currentTei,
-           @NonNull List<RelationshipUiComponentModel> relationships,
+            @NonNull String currentTei,
+            @NonNull List<RelationshipUiComponentModel> relationships,
             @NotNull kotlin.Pair<? extends Map<String, FeatureCollection>, ? extends BoundingBox> map) {
         relationshipMapManager.update(
                 map.getFirst(),
@@ -301,20 +312,27 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                 new CarouselAdapter.Builder()
                         .addCurrentTei(currentTei)
                         .addOnDeleteRelationshipListener(relationshipUid -> {
-                            if(binding.mapCarousel.getCarouselEnabled()) {
+                            if (binding.mapCarousel.getCarouselEnabled()) {
                                 presenter.deleteRelationship(relationshipUid);
                             }
                             return true;
                         })
                         .addOnRelationshipClickListener(teiUid -> {
-                            if(binding.mapCarousel.getCarouselEnabled()) {
+                            if (binding.mapCarousel.getCarouselEnabled()) {
                                 presenter.openDashboard(teiUid);
                             }
                             return true;
                         })
+                        .addOnNavigateClickListener(uid->{
+                            Feature feature = relationshipMapManager.findFeature(uid);
+                            if(feature != null){
+                                startActivity(mapNavigation.navigateToMapIntent(feature));
+                            }
+                            return Unit.INSTANCE;
+                        })
                         .build();
         binding.mapCarousel.setAdapter(carouselAdapter);
-        binding.mapCarousel.attachToMapManager(relationshipMapManager, () -> true);
+        binding.mapCarousel.attachToMapManager(relationshipMapManager);
         carouselAdapter.addItems(relationships);
 
         animations.endMapLoading(binding.mapCarousel);

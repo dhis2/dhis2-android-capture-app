@@ -1,7 +1,6 @@
 package org.dhis2.utils.customviews
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
-import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel
 
 class FormBottomDialogPresenter {
     fun appendMandatoryFieldList(
@@ -11,11 +10,7 @@ class FormBottomDialogPresenter {
     ): String {
         return if (showMandatoryFields) {
             currentMessage + "\n" + emptyMandatoryFields.values.joinToString(separator = "\n") {
-                if (it is ImageViewModel) {
-                    it.fieldDisplayName()
-                } else {
-                    it.label()
-                }
+                it.label()
             }
         } else {
             currentMessage

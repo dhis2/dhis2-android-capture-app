@@ -34,18 +34,13 @@ public class EventRepository implements FormRepository {
     @Nullable
     private final String eventUid;
     private final RulesRepository rulesRepository;
-    private final RuleExpressionEvaluator evaluator;
-
-    private final String TAG = "ROGRAMRULEREPOSITORY";
 
     public EventRepository(
-            @NonNull RuleExpressionEvaluator evaluator,
             @NonNull RulesRepository rulesRepository,
             @Nullable String eventUid,
             @NonNull D2 d2) {
         this.eventUid = eventUid != null ? eventUid : "";
         this.rulesRepository = rulesRepository;
-        this.evaluator = evaluator;
         this.programUid = eventUid != null ? d2.eventModule().events().uid(eventUid).blockingGet().program() : "";
         this.orgUnit = !this.eventUid.isEmpty() ? d2.eventModule().events().uid(eventUid).blockingGet().organisationUnit() : "";
         // We don't want to rebuild RuleEngine on each request, since metadata of
@@ -59,11 +54,10 @@ public class EventRepository implements FormRepository {
                 rulesRepository.supplementaryData(orgUnit),
                 (rules, variables, events, enrollment, constants, supplementaryData) -> {
 
-                    RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
+                    RuleEngine.Builder builder = RuleEngineContext.builder()
                             .rules(rules)
                             .ruleVariables(variables)
                             .constantsValue(constants)
-                            .calculatedValueMap(new HashMap<>())
                             .supplementaryData(supplementaryData)
                             .build().toEngineBuilder();
                     builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
@@ -91,11 +85,10 @@ public class EventRepository implements FormRepository {
                 rulesRepository.supplementaryData(orgUnit).subscribeOn(Schedulers.io()),
                 (rules, variables, events, enrollment, constants, supplementaryData) -> {
 
-                    RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
+                    RuleEngine.Builder builder = RuleEngineContext.builder()
                             .rules(rules)
                             .ruleVariables(variables)
                             .constantsValue(constants)
-                            .calculatedValueMap(new HashMap<>())
                             .supplementaryData(supplementaryData)
                             .build().toEngineBuilder();
                     builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);

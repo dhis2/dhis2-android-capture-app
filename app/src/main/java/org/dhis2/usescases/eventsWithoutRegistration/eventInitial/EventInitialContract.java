@@ -6,8 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.dhis2.data.forms.FormSectionViewModel;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -23,8 +21,6 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import io.reactivex.functions.Consumer;
 
 public class EventInitialContract {
 
@@ -47,10 +43,7 @@ public class EventInitialContract {
 
         void setProgramStage(ProgramStage programStage);
 
-        void onEventSections(List<FormSectionViewModel> formSectionViewModels);
-
-        @NonNull
-        Consumer<List<FieldViewModel>> showFields(String sectionUid);
+        void updatePercentage(float primaryValue, float secondaryValue);
 
         void showProgramStageSelection();
 
@@ -106,12 +99,8 @@ public class EventInitialContract {
 
         void onFieldChanged(CharSequence s, int start, int before, int count);
 
-        void getSectionCompletion(@Nullable String sectionUid);
-
         @VisibleForTesting
         String getCurrentOrgUnit(String orgUnitUid);
-
-        void getEventSections(@NonNull String eventId);
 
         void onShareClick(android.view.View mView);
 
@@ -136,6 +125,10 @@ public class EventInitialContract {
         List<CategoryOption> getCatOptions(String categoryUid);
 
         void setChangingCoordinates(boolean changingCoordinates);
+
+        boolean getCompletionPercentageVisibility();
+
+        void onEventCreated();
     }
 
 }

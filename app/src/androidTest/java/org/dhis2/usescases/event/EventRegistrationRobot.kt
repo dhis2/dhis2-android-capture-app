@@ -4,6 +4,7 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withSubstring
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -12,6 +13,7 @@ import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.hasCompletedPercentage
 import org.dhis2.usescases.event.entity.EventDetailsUIModel
 import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.not
 
 fun eventRegistrationRobot(eventRegistrationRobot: EventRegistrationRobot.() -> Unit) {
     EventRegistrationRobot().apply {
@@ -39,14 +41,14 @@ class EventRegistrationRobot : BaseRobot() {
     }
 
     fun clickOnDetails() {
-        onView(withText(R.string.event_overview)).perform(click())
+        onView(withId(R.id.navigation_details)).perform(click())
     }
 
    fun checkEventDetails(eventDetails: EventDetailsUIModel) {
        onView(withId(R.id.programStageName)).check(matches(withText(eventDetails.programStage)))
        onView(withId(R.id.completion)).check(matches(hasCompletedPercentage(eventDetails.completedPercentage)))
-       onView(withId(R.id.date_layout)).check(matches(hasDescendant(allOf(withId(R.id.date), withText(eventDetails.eventDate)))))
-       onView(withId(R.id.org_unit_layout)).check(matches(hasDescendant(allOf(withId(R.id.org_unit), withText(eventDetails.orgUnit)))))
+       onView(withId(R.id.date_layout)).check(matches(allOf(isEnabled(),hasDescendant(allOf(withId(R.id.date), withText(eventDetails.eventDate))))))
+       onView(withId(R.id.org_unit_layout)).check(matches(allOf(not(isEnabled()), hasDescendant(allOf(withId(R.id.org_unit), withText(eventDetails.orgUnit))))))
    }
 
     fun clickOnShare() {
@@ -68,5 +70,13 @@ class EventRegistrationRobot : BaseRobot() {
 
     fun clickOnDeleteDialog() {
         onView(withId(R.id.possitive)).perform(click())
+    }
+
+    fun clickLocationButton() {
+        onView(withId(R.id.location1)).perform(click())
+    }
+
+    fun clickNextButton() {
+        onView(withId(R.id.action_button)).perform(click())
     }
 }

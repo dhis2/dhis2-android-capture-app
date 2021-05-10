@@ -1,5 +1,6 @@
 package org.dhis2.usescases.login
 
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.RestrictTo
 import androidx.annotation.RestrictTo.Scope
@@ -32,9 +33,11 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.LOGIN
 import org.dhis2.utils.analytics.SERVER_QR_SCANNER
+import org.dhis2.utils.reporting.CrashReportController
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
+import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 import retrofit2.Response
 import timber.log.Timber
 
@@ -43,7 +46,8 @@ class LoginPresenter(
     private val preferenceProvider: PreferenceProvider,
     private val schedulers: SchedulerProvider,
     private val fingerPrintController: FingerPrintController,
-    private val analyticsHelper: AnalyticsHelper
+    private val analyticsHelper: AnalyticsHelper,
+    private val crashReportController: CrashReportController
 ) {
 
     private var userManager: UserManager? = null
@@ -189,6 +193,7 @@ class LoginPresenter(
                                     setValue(SESSION_LOCKED, false)
                                     setValue(PIN, null)
                                 }
+                                trackUserInfo()
                                 Response.success<Any>(null)
                             }
                         }
@@ -204,6 +209,72 @@ class LoginPresenter(
                     }
                 )
         )
+    }
+
+    fun openIdLogin(config: OpenIDConnectConfig) {
+        disposable.add(
+            Observable.just(
+                (view.abstracContext.applicationContext as App).createServerComponent()
+                    .userManager()
+            )
+                .flatMap { userManager ->
+                    this.userManager = userManager
+                    userManager.logIn(config)
+                }
+                .subscribeOn(schedulers.io())
+                .observeOn(schedulers.ui())
+                .subscribe(
+                    {
+                        view.openOpenIDActivity(it)
+                    },
+                    {
+                        Timber.e(it)
+                    }
+                )
+        )
+    }
+
+    fun handleAuthResponseData(serverUrl: String, data: Intent, requestCode: Int) {
+        userManager?.let { userManager ->
+            disposable.add(
+                userManager.handleAuthData(serverUrl, data, requestCode)
+                    .map<Response<Any>> { user ->
+                        run {
+                            with(preferenceProvider) {
+                                setValue(
+                                    USER,
+                                    userManager.d2.userModule()
+                                        .userCredentials()
+                                        .blockingGet()
+                                        .username()
+                                )
+                                setValue(SESSION_LOCKED, false)
+                                setValue(PIN, null)
+                                setValue(SERVER, "$serverUrl/api")
+                            }
+                            trackUserInfo()
+                            Response.success<Any>(null)
+                        }
+                    }.subscribeOn(schedulers.io())
+                    .observeOn(schedulers.ui())
+                    .subscribe(
+                        {
+                            this.handleResponse(it, "", serverUrl)
+                        },
+                        {
+                            this.handleError(it, serverUrl, "", "")
+                        }
+                    )
+            )
+        }
+    }
+
+    private fun trackUserInfo() {
+        val username = preferenceProvider.getString(USER)
+        val server = preferenceProvider.getString(SERVER)
+
+        crashReportController.trackServer(server)
+        crashReportController.trackUser(username, server)
     }
 
     fun onQRClick() {

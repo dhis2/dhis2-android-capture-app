@@ -1,7 +1,11 @@
 package org.dhis2.data.services
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -12,6 +16,7 @@ import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.D2Progress
+import org.hisp.dhis.android.core.settings.GeneralSettings
 import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.ProgramSetting
 import org.hisp.dhis.android.core.settings.ProgramSettings
@@ -105,6 +110,73 @@ class SyncPresenterTest {
         presenter.uploadResources()
 
         completable.hasSubscription()
+    }
+
+    @Test
+    fun `Should configure secondary tracker if configuration exists`() {
+        whenever(
+            d2.metadataModule().download()
+        ) doReturn Observable.fromArray(
+            D2Progress.empty(2)
+        )
+        whenever(
+            d2.settingModule().generalSetting().blockingGet()
+        ) doReturn GeneralSettings.builder()
+            .encryptDB(false)
+            .matomoID(11111)
+            .matomoURL("MatomoURL")
+            .build()
+        presenter.syncMetadata { }
+
+        verify(analyticsHelper, times(1)).updateMatomoSecondaryTracker(any(), any(), any())
+    }
+
+    @Test
+    fun `Should not configure secondary tracker if matomo settings is missing`() {
+        whenever(
+            d2.metadataModule().download()
+        ) doReturn Observable.fromArray(
+            D2Progress.empty(2)
+        )
+        whenever(
+            d2.settingModule().generalSetting().blockingGet()
+        ) doReturn GeneralSettings.builder()
+            .encryptDB(false)
+            .build()
+        presenter.syncMetadata { }
+
+        verifyZeroInteractions(analyticsHelper)
+    }
+
+    @Test
+    fun `Should not configure secondary tracker if no configuration exists`() {
+        whenever(
+            d2.metadataModule().download()
+        ) doReturn Observable.fromArray(
+            D2Progress.empty(2)
+        )
+        whenever(
+            d2.settingModule().generalSetting().blockingGet()
+        ) doReturn null
+        presenter.syncMetadata { }
+
+        verify(analyticsHelper, times(0)).updateMatomoSecondaryTracker(any(), any(), any())
+    }
+
+    @Test
+    fun `Should clear secondary tracker`() {
+        whenever(
+            d2.metadataModule().download()
+        ) doReturn Observable.fromArray(
+            D2Progress.empty(2)
+        )
+        whenever(
+            d2.settingModule().generalSetting().blockingGet()
+        ) doReturn null
+        presenter.syncMetadata { }
+
+        verify(analyticsHelper, times(0)).updateMatomoSecondaryTracker(any(), any(), any())
+        verify(analyticsHelper).clearMatomoSecondaryTracker()
     }
 
     private fun mockedProgramSettings(

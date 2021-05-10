@@ -12,6 +12,10 @@
         <variable
             name="optionName"
             type="String" />
+
+        <variable
+            name="isBgTransparent"
+            type="Boolean" />
     </data>
 
     <com.google.android.material.checkbox.MaterialCheckBox
@@ -21,8 +25,8 @@
         android:enabled="@{editable}"
         android:text="@{optionName}"
         android:layout_marginEnd="4dp"
-        android:textColor="@color/text_black_333"
-        app:buttonTint="@color/text_black_333"
+        app:setTextColor="@{isBgTransparent}"
+        app:tintCheckboxButton="@{isBgTransparent}"
         app:layout_constraintTop_toTopOf="parent"
         tools:checked="true"
         tools:text="Option name" />

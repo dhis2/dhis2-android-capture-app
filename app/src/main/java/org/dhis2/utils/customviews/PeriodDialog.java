@@ -13,7 +13,9 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
 
+import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.databinding.DialogPeriodBinding;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.period.PeriodType;
@@ -36,6 +38,7 @@ public class PeriodDialog extends DialogFragment {
     private PeriodType period;
     private Date minDate;
     private Date maxDate;
+    DhisPeriodUtils periodUtils;
 
 
     public PeriodDialog() {
@@ -69,6 +72,7 @@ public class PeriodDialog extends DialogFragment {
 
     @Override
     public void onAttach(Context context) {
+        periodUtils = ((App) context.getApplicationContext()).serverComponent().dhisPeriodUtils();
         super.onAttach(context);
         this.context = context;
     }
@@ -103,7 +107,7 @@ public class PeriodDialog extends DialogFragment {
         else
             currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 0);
 
-        binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period, currentDate, Locale.getDefault()));
+        binding.selectedPeriod.setText(periodUtils.getPeriodUIString(period, currentDate, Locale.getDefault()));
         checkConstraintDates();
 
         binding.periodBefore.setOnClickListener(view -> {
@@ -121,12 +125,12 @@ public class PeriodDialog extends DialogFragment {
 
     public void nextPeriod() {
         currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 1);
-        binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period, currentDate, Locale.getDefault()));
+        binding.selectedPeriod.setText(periodUtils.getPeriodUIString(period, currentDate, Locale.getDefault()));
     }
 
     public void previousPeriod() {
         currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, -1);
-        binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period, currentDate, Locale.getDefault()));
+        binding.selectedPeriod.setText(periodUtils.getPeriodUIString(period, currentDate, Locale.getDefault()));
     }
 
     public void previousInputPeriod() {
@@ -138,7 +142,7 @@ public class PeriodDialog extends DialogFragment {
         if (minDate != null && minDate.equals(currentDate)) {
             binding.periodBefore.setEnabled(false);
             binding.periodBefore.setVisibility(View.INVISIBLE);
-        }else {
+        } else {
             binding.periodBefore.setEnabled(true);
             binding.periodBefore.setVisibility(View.VISIBLE);
         }
@@ -146,7 +150,7 @@ public class PeriodDialog extends DialogFragment {
         if (maxDate != null && maxDate.equals(currentDate)) {
             binding.periodNext.setEnabled(false);
             binding.periodNext.setVisibility(View.INVISIBLE);
-        }else {
+        } else {
             binding.periodNext.setEnabled(true);
             binding.periodNext.setVisibility(View.VISIBLE);
         }
@@ -174,9 +178,9 @@ public class PeriodDialog extends DialogFragment {
         return currentDate;
     }
 
-    public void setDateWithOpenFuturePeriod(Integer openFuture){
+    public void setDateWithOpenFuturePeriod(Integer openFuture) {
         currentDate = DateUtils.getInstance().getNextPeriod(period, DateUtils.getInstance().getToday(), -1);
-        if(openFuture != null && openFuture != 0) {
+        if (openFuture != null && openFuture != 0) {
             for (int i = 0; i < openFuture; i++) {
                 currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 1);
             }
@@ -212,7 +216,7 @@ public class PeriodDialog extends DialogFragment {
         this.currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, -1);
     }
 
-    protected void setRealCurrentDate(Date currentDate){
+    protected void setRealCurrentDate(Date currentDate) {
         this.currentDate = currentDate;
     }
 
