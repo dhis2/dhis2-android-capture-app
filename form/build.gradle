@@ -48,20 +48,6 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-
-    productFlavors {
-        dhis {
-
-        }
-
-        dhisNoSMS {
-
-        }
-
-        dhisUITesting {
-
-        }
-    }
 }
 
 dependencies {
