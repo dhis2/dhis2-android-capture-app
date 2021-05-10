@@ -72,6 +72,10 @@ public abstract class AgeViewModel extends FieldViewModel {
 
     public abstract Boolean isBackgroundTransparent();
 
+    public void onDescriptionClick(){
+        callback.showDialog(label(),description());
+    }
+
     public void onAgeSet(Date ageDate) {
         if (processor() == null) return;
         processor().onNext(new RowAction(

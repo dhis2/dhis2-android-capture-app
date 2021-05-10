@@ -77,7 +77,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     public void setLabel(String label, String description) {
     //    this.label = label;
     //    descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
-        descriptionLabel.setOnClickListener(v ->
+     /*   descriptionLabel.setOnClickListener(v ->
                 new CustomDialog(
                         getContext(),
                         label,
@@ -86,7 +86,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
                         null,
                         Constants.DESCRIPTION_DIALOG,
                         null
-                ).show());
+                ).show()); */
     /*    if (binding instanceof AgeCustomViewAccentBinding) {
             ((AgeCustomViewAccentBinding) binding).setLabel(label);
             ((AgeCustomViewAccentBinding) binding).setDescription(description);
@@ -98,19 +98,19 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
 
     public void setWarning(String msg) {
         setErrorColor(ContextCompat.getColor(getContext(), R.color.warning_color));
-        errorView.setText(msg);
-        errorView.setVisibility(View.VISIBLE);
+    //    errorView.setText(msg);
+    //    errorView.setVisibility(View.VISIBLE);
     }
 
     public void setError(String msg) {
         setErrorColor(ContextCompat.getColor(getContext(), R.color.error_color));
-        errorView.setText(msg);
-        errorView.setVisibility(View.VISIBLE);
+    //    errorView.setText(msg);
+    //    errorView.setVisibility(View.VISIBLE);
     }
 
     public void clearErrors() {
         setErrorColor(ContextCompat.getColor(getContext(), R.color.textPrimary));
-        errorView.setVisibility(View.GONE);
+   //     errorView.setVisibility(View.GONE);
     }
 
     private void setErrorColor(int color) {
@@ -246,11 +246,11 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         }
     }
 
-    public void setInitialValue(String initialValue) {
+  /*  public void setInitialValue(String initialValue) {
         Date initialDate = StringExtensionsKt.toDate(initialValue);
 
         if (initialDate != null) {
-            String result = dateFormat.format(initialDate);
+          //  String result = dateFormat.format(initialDate);
             selectedCalendar.setTime(initialDate);
 
             int[] dateDifference = DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
@@ -258,11 +258,13 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
             month.setText(String.valueOf(dateDifference[1]));
             year.setText(String.valueOf(dateDifference[0]));
 
-            date.setText(result);
+        //    date.setText(result);
         }
+    } */
+
+    public void setInitialValue(String initialValue) {
+
     }
-
-
     public void setIsBgTransparent(Boolean isBgTransparent) {
      //   this.isBgTransparent = isBgTransparent;
      /*   if (!isBgTransparent)
@@ -375,20 +377,20 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
             }
         });
 
-        setLabel(viewModel.getFormattedLabel(), viewModel.description());
+     //   setLabel(viewModel.getFormattedLabel(), viewModel.description());
 
-        if (!isEmpty(viewModel.value())) {
-            setInitialValue(viewModel.value());
-        } else {
-            clearValues();
-        }
+    //    if (!isEmpty(viewModel.value())) {
+    //        setInitialValue(viewModel.value());
+    //    } else {
+   //         clearValues();
+   //     }
 
-        if (viewModel.warning() != null)
-            setWarning(viewModel.warning());
-        else if (viewModel.error() != null)
-            setError(viewModel.error());
-        else if (!viewModel.isSearchMode())
-            clearErrors();
+    //    if (viewModel.warning() != null)
+    //        setWarning(viewModel.warning());
+    //    else if (viewModel.error() != null)
+    //        setError(viewModel.error());
+    //    else if (!viewModel.isSearchMode())
+    //        clearErrors();
 
        // setEditable(viewModel.editable());
     }

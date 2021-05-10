@@ -2,18 +2,21 @@ package org.dhis2.data.forms.dataentry.fields.age
 
 import android.R
 import android.content.res.ColorStateList
-import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
-import android.os.Build
+import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.databinding.BindingAdapter
 import androidx.databinding.BindingConversion
 import com.google.android.material.textfield.TextInputLayout
+import org.dhis2.Bindings.toDate
 import org.dhis2.utils.ColorUtils
+import org.dhis2.utils.DateUtils
+import java.util.Calendar
+import java.util.Date
 
 @BindingAdapter("setTextColorAgeView")
 fun setTextColorAgeView(
@@ -69,19 +72,8 @@ fun setEditTextUnderlineColor(
     isBgTransparent: Boolean
 ) {
     if (!isBgTransparent) {
-        val color = ColorUtils.getPrimaryColor(
-            editText.context,
-            ColorUtils.ColorType.ACCENT
-        )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val colorStateList = ColorStateList.valueOf(color)
-
-            editText.backgroundTintList = colorStateList
-        } else {
-            val drawable: Drawable = editText.background
-            drawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP)
-            editText.background = drawable
-        }
+        val color = ColorUtils.getPrimaryColor(editText.context, ColorUtils.ColorType.ACCENT)
+        ViewCompat.setBackgroundTintList(editText, ColorStateList.valueOf(color))
     }
 }
 
@@ -109,6 +101,77 @@ fun setTextColorHintTextInputLayout(
             boxBackgroundColor = color
         }
     }
+}
+
+@BindingAdapter("warning", "error", "isSearchMode")
+fun setWarningOrError(textView: TextView, warning: String?, error: String?, isSearchMode: Boolean) {
+    if (warning != null) {
+        val color = ContextCompat.getColor(textView.context, org.dhis2.R.color.warning_color)
+        textView.setTextColor(color)
+        textView.visibility = View.VISIBLE
+        textView.text = warning
+    } else if (error != null) {
+        val color = ContextCompat.getColor(textView.context, org.dhis2.R.color.error_color)
+        textView.setTextColor(color)
+        textView.visibility = View.VISIBLE
+        textView.text = error
+    } else if (!isSearchMode) {
+        val color = ContextCompat.getColor(textView.context, org.dhis2.R.color.textPrimary)
+        textView.setTextColor(color)
+        textView.visibility = View.GONE
+    }
+}
+
+@BindingAdapter("setInitialValueDate")
+fun setInitialValueDate(editText: EditText, value: String?){
+    if (value.isNullOrEmpty()){
+        editText.text = null
+    } else {
+        val initialDate = value.toDate()
+        val dateFormat = DateUtils.uiDateFormat()
+        val result = dateFormat.format(initialDate)
+        Calendar.getInstance().time = initialDate
+        editText.setText(result)
+    }
+}
+
+@BindingAdapter("setInitialValueYear")
+fun setInitialValueYear(editText: EditText, value: String?){
+    if (value.isNullOrEmpty()){
+        editText.text = null
+    } else {
+        val dateDifference = getDifferenceBetweenDates(value)
+        editText.setText(dateDifference[0].toString())
+    }
+}
+
+@BindingAdapter("setInitialValueMonth")
+fun setInitialValueMonth(editText: EditText, value: String?){
+    if (value.isNullOrEmpty()){
+        editText.text = null
+    } else {
+        val dateDifference = getDifferenceBetweenDates(value)
+        editText.setText(dateDifference[1].toString())
+    }
+}
+
+@BindingAdapter("setInitialValueDay")
+fun setInitialValueDay(editText: EditText, value: String?){
+    if (value.isNullOrEmpty()){
+        editText.text = null
+    } else {
+        val dateDifference = getDifferenceBetweenDates(value)
+        editText.setText(dateDifference[2].toString())
+    }
+}
+
+fun getDifferenceBetweenDates(value: String?): IntArray{
+    val initialDate: Date = value!!.toDate()
+    Calendar.getInstance().time = initialDate
+    return DateUtils.getDifference(
+        initialDate,
+        Calendar.getInstance().time
+    )
 }
 
 @BindingConversion
