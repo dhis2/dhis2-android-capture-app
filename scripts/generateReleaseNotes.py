@@ -6,9 +6,11 @@ print("*** Update Github notes ***")
 
 JIRA_AUTH = os.environ.get('JIRA_AUTH')
 JIRA_FILTER = os.environ.get('FILTER_ID')
+RELEASE_INFO_PATH = '../release.info'
+RELEASE_MD_PATH = '../RELEASE.md'
 
 release_versions = {}
-with open('release.info', 'r') as file:
+with open(RELEASE_INFO_PATH, 'r') as file:
     for line in file:
         y = line.strip().split(":")
         release_versions[y[0]] = str(y[1])
@@ -39,7 +41,7 @@ content_footer = '''
 </td>
 </tr>
 </table>'''
-f = open("RELEASE.md", "w")
+f = open(RELEASE_MD_PATH, "w")
 f.write("Android Capture App for DHIS 2 (v" + release_versions["vName"] + ") - Patch version\n")
 f.write(content_header)
 f.write("\n## Bugs fixed\n")
