@@ -15,11 +15,10 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.io.File
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.isKeyboardOpened
 import org.dhis2.R
+import org.dhis2.data.forms.dataentry.FormView
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.model.FieldUiModel
@@ -44,12 +43,15 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import java.io.File
+import javax.inject.Inject
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     enum class EnrollmentMode { NEW, CHECK }
 
     private var forRelationship: Boolean = false
+    private val formView = FormView()
 
     @Inject
     lateinit var presenter: EnrollmentPresenterImpl
@@ -111,7 +113,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         mode = EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
 
-        binding.formView.init(this)
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.formViewContainer, formView)
+        fragmentTransaction.commit()
 
         binding.save.setOnClickListener {
             performSaveClick()
@@ -397,7 +401,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             it !is DisplayViewModel
         }
 
-        binding.formView.render(fields)
+        formView.render(fields)
     }
 
     /*endregion*/

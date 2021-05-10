@@ -1,94 +1,91 @@
 package org.dhis2.data.forms.dataentry
 
 import android.content.Context
-import android.util.AttributeSet
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.widget.RelativeLayout
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.lifecycle.LifecycleOwner
+import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
+import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
 import timber.log.Timber
 
-class FormView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : ConstraintLayout(context, attrs, defStyleAttr) {
+class FormView : Fragment() {
 
-    private val inflater: LayoutInflater = LayoutInflater.from(context)
-    private val recyclerView: RecyclerView
-    private val headerContainer: RelativeLayout
-    private val dataEntryHeaderHelper: DataEntryHeaderHelper
+    private lateinit var binding: ViewFormBinding
+    private lateinit var dataEntryHeaderHelper: DataEntryHeaderHelper
     private lateinit var adapter: DataEntryAdapter
     var scrollCallback: ((Boolean) -> Unit)? = null
     var needToForceUpdate: Boolean? = null
 
-    init {
-        val params = LayoutParams(MATCH_PARENT, MATCH_PARENT)
-        layoutParams = params
-        val view = inflater.inflate(R.layout.view_form, this, true)
-        recyclerView = view.findViewById(R.id.recyclerView)
-        headerContainer = view.findViewById(R.id.headerContainer)
-        dataEntryHeaderHelper = DataEntryHeaderHelper(headerContainer, recyclerView)
-        recyclerView.background = this.background
-        recyclerView.layoutManager =
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = DataBindingUtil.inflate(inflater, R.layout.view_form, container, false)
+        binding.lifecycleOwner = this
+        dataEntryHeaderHelper = DataEntryHeaderHelper(binding.headerContainer, binding.recyclerView)
+        binding.recyclerView.background = this.background
+        binding.recyclerView.layoutManager =
             object : LinearLayoutManager(context, VERTICAL, false) {
                 override fun onInterceptFocusSearch(focused: View, direction: Int): View {
                     return focused
                 }
             }
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 dataEntryHeaderHelper.checkSectionHeader(recyclerView)
             }
         })
+        return binding.root
     }
 
-    fun init(owner: LifecycleOwner) {
-        dataEntryHeaderHelper.observeHeaderChanges(owner)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
         adapter = DataEntryAdapter()
         adapter.didItemShowDialog = { title, message ->
             CustomDialog(
-                context,
+                requireContext(),
                 title,
-                message ?: context.getString(R.string.empty_description),
-                context.getString(R.string.action_close),
+                message ?: requireContext().getString(R.string.empty_description),
+                requireContext().getString(R.string.action_close),
                 null,
                 Constants.DESCRIPTION_DIALOG,
                 null
             ).show()
         }
         adapter.onNextClicked = { position ->
-            val viewHolder = recyclerView.findViewHolderForLayoutPosition(position + 1)
+            val viewHolder = binding.recyclerView.findViewHolderForLayoutPosition(position + 1)
             if (viewHolder == null) {
                 try {
-                    recyclerView.smoothScrollToPosition(position + 1)
+                    binding.recyclerView.smoothScrollToPosition(position + 1)
                 } catch (e: Exception) {
                     Timber.e(e)
                 }
             }
         }
-        recyclerView.adapter = adapter
+        binding.recyclerView.adapter = adapter
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            recyclerView.setOnScrollChangeListener { _, _, _, _, _ ->
+            binding.recyclerView.setOnScrollChangeListener { _, _, _, _, _ ->
                 val hasToShowFab = checkLastItem()
                 scrollCallback?.invoke(hasToShowFab)
             }
         } else {
-            recyclerView.setOnScrollListener(object : RecyclerView.OnScrollListener() {
+            binding.recyclerView.setOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(
                     recyclerView: RecyclerView,
                     dx: Int,
@@ -100,7 +97,7 @@ class FormView @JvmOverloads constructor(
             })
         }
 
-        recyclerView.setOnFocusChangeListener { _, hasFocus ->
+        binding.recyclerView.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 closeKeyboard()
             }
@@ -108,7 +105,8 @@ class FormView @JvmOverloads constructor(
     }
 
     fun render(items: List<FieldUiModel>) {
-        val layoutManager: LinearLayoutManager = recyclerView.layoutManager as LinearLayoutManager
+        val layoutManager: LinearLayoutManager =
+            binding.recyclerView.layoutManager as LinearLayoutManager
         val myFirstPositionIndex = layoutManager.findFirstVisibleItemPosition()
         val myFirstPositionView = layoutManager.findViewByPosition(myFirstPositionIndex)
 
@@ -133,7 +131,7 @@ class FormView @JvmOverloads constructor(
 
     private fun checkLastItem(): Boolean {
         val layoutManager =
-            recyclerView.layoutManager as LinearLayoutManager
+            binding.recyclerView.layoutManager as LinearLayoutManager
         val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
         return lastVisiblePosition != -1 && (
             lastVisiblePosition == adapter.itemCount - 1 ||
@@ -147,6 +145,11 @@ class FormView @JvmOverloads constructor(
                 closeKeyboard()
             }
         }
+    }
+
+    private fun closeKeyboard() {
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.hideSoftInputFromWindow(binding.recyclerView.windowToken, 0)
     }
 
     private fun doesItemNeedsKeyboard(item: FieldUiModel) = when (item) {
