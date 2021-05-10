@@ -1,15 +1,19 @@
 package org.dhis2.data.forms.dataentry
 
 import android.content.Context
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.widget.DatePicker
 import android.widget.RelativeLayout
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.textfield.TextInputEditText
 import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
@@ -17,6 +21,8 @@ import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.utils.Constants
+import org.dhis2.utils.DatePickerUtils
+import org.dhis2.utils.DatePickerUtils.OnDatePickerClickListener
 import org.dhis2.utils.customviews.CustomDialog
 import timber.log.Timber
 
@@ -77,6 +83,45 @@ class FormView @JvmOverloads constructor(
                     Timber.e(e)
                 }
             }
+        }
+        adapter.onShowCustomCalendar = { label, date ->
+            DatePickerUtils.getDatePickerDialog(
+                context,
+                label,
+                date,
+                true,
+                object : OnDatePickerClickListener {
+                    override fun onNegativeClick() {
+                       // listener.onAgeSet(null)
+                       // clearValues()
+                    }
+
+                    override fun onPositiveClick(datePicker: DatePicker) {
+                      /*  handleDateInput(
+                            view,
+                            datePicker.year,
+                            datePicker.month,
+                            datePicker.dayOfMonth
+                        ) */
+                    }
+                }).show()
+        }
+        adapter.onShowYearMonthDayPicker = { year, month, day ->
+            val view = LayoutInflater.from(context).inflate(R.layout.dialog_age, null)
+
+            AlertDialog.Builder(context, R.style.CustomDialog)
+                .setView(view)
+                .setPositiveButton(R.string.action_accept) { dialog, which -> }
+                .setNegativeButton(R.string.clear) { dialog, which -> }
+                .create()
+                .show()
+
+            val yearPicker: TextInputEditText = view.findViewById(R.id.input_year)
+            val monthPicker: TextInputEditText = view.findViewById(R.id.input_month)
+            val dayPicker: TextInputEditText = view.findViewById(R.id.input_days)
+            yearPicker.setText(year.toString())
+            monthPicker.setText(month.toString())
+            dayPicker.setText(day.toString())
         }
         recyclerView.adapter = adapter
 

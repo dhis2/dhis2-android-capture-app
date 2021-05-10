@@ -303,20 +303,23 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
    //     month.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
    //     year.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
 
-        day.setOnEditorActionListener((v, actionId, event) -> {
-            nextFocus(v);
-            return true;
-        });
+        /********* REVIEW DATASETS ***********/
 
-        month.setOnEditorActionListener((v, actionId, event) -> {
-            day.requestFocus();
-            return true;
-        });
+    //    day.setOnEditorActionListener((v, actionId, event) -> {
+    //        nextFocus(v);
+    //        return true;
+    //    });
 
-        year.setOnEditorActionListener((v, actionId, event) -> {
-            month.requestFocus();
-            return true;
-        });
+    //    month.setOnEditorActionListener((v, actionId, event) -> {
+    //        day.requestFocus();
+    //        return true;
+    //    });
+
+    //    year.setOnEditorActionListener((v, actionId, event) -> {
+    //        month.requestFocus();
+    //        return true;
+    //    });
+
         day.setOnClickListener(this);
         month.setOnClickListener(this);
         year.setOnClickListener(this);

@@ -14,6 +14,8 @@ import org.jetbrains.annotations.Nullable;
 
 import org.dhis2.form.data.FieldUiModel;
 
+import java.util.Date;
+
 public class FormViewHolder extends RecyclerView.ViewHolder {
 
     private final ViewDataBinding binding;
@@ -30,6 +32,16 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
     public void bind(FieldUiModel uiModel, FieldItemCallback callback) {
         FieldViewModel viewModel = (FieldViewModel) uiModel;
         FieldUiModel.Callback itemCallback = new FieldUiModel.Callback() {
+            @Override
+            public void showYearMonthDayPicker(int year, int month, int day) {
+                callback.showYearMonthDayPicker(year, month, day);
+            }
+
+            @Override
+            public void showCustomCalendar(String label, Date date) {
+                callback.showCustomCalendar(label, date);
+            }
+
             @Override
             public void onNext() {
                 callback.onNext(getLayoutPosition());
@@ -48,6 +60,10 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
 
     public interface FieldItemCallback {
         void onShowDialog(String title, @Nullable String message);
+
+        void showCustomCalendar(String label, Date date);
+
+        void showYearMonthDayPicker(int year, int month, int day);
 
         void onNext(int layoutPosition);
     }

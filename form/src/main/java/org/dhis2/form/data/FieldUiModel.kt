@@ -1,5 +1,7 @@
 package org.dhis2.form.data
 
+import java.util.Date
+
 interface FieldUiModel {
 
     fun setCallback(callback: Callback)
@@ -20,5 +22,7 @@ interface FieldUiModel {
 
         fun onNext()
         fun showDialog(title: String, message: String?)
+        fun showCustomCalendar(label: String?, date: Date)
+        fun showYearMonthDayPicker(year: Int, month: Int, day: Int)
     }
 }

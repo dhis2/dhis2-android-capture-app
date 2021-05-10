@@ -116,6 +116,7 @@
                         android:enabled="@{item.editable()}"
                         app:setInitialValueDate="@{item.value()}"
                         app:setUnderlineColorEditText="@{item.isBackgroundTransparent()}"
+                        android:onClick="@{()-> item.onShowCustomCalendar()}"
                         tools:text="1987-06-26" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -143,6 +144,7 @@
                         app:setInitialValueYear="@{item.value()}"
                         android:enabled="@{item.editable()}"
                         android:textSize="@dimen/form_edit_text_size"
+                        android:onClick="@{()-> item.onShowDayMonthYearPicker()}"
                         tools:text="yyyy" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -169,6 +171,7 @@
                         app:setInitialValueMonth="@{item.value()}"
                         app:setEditTextColor="@{item.isBackgroundTransparent()}"
                         app:setUnderlineColorEditText="@{item.isBackgroundTransparent()}"
+                        android:onClick="@{()-> item.onShowDayMonthYearPicker()}"
                         android:enabled="@{item.editable()}"
                         android:textSize="@dimen/form_edit_text_size" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -196,6 +199,7 @@
                         app:setInitialValueDay="@{item.value()}"
                         app:setEditTextColor="@{item.isBackgroundTransparent()}"
                         app:setUnderlineColorEditText="@{item.isBackgroundTransparent()}"
+                        android:onClick="@{()-> item.onShowDayMonthYearPicker()}"
                         android:enabled="@{item.editable()}"
                         android:textSize="@dimen/form_edit_text_size" />
                 </com.google.android.material.textfield.TextInputLayout>

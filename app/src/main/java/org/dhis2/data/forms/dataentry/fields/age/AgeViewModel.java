@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
+import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.ActionType;
@@ -13,6 +14,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import io.reactivex.processors.FlowableProcessor;
@@ -74,6 +76,29 @@ public abstract class AgeViewModel extends FieldViewModel {
 
     public void onDescriptionClick(){
         callback.showDialog(label(),description());
+    }
+
+    public void onShowCustomCalendar(){
+        onItemClick();
+        Date date = Calendar.getInstance().getTime();
+        callback.showCustomCalendar(label(), date);
+    }
+
+    public void onShowDayMonthYearPicker(){
+        onItemClick();
+        int[] yearMonthDay = valueToYearMonthDay();
+        callback.showYearMonthDayPicker(yearMonthDay[0], yearMonthDay[1], yearMonthDay[2]);
+    }
+
+    private int[] valueToYearMonthDay(){
+        Date initialDate = StringExtensionsKt.toDate(value());
+
+        if (initialDate != null) {
+            Calendar.getInstance().setTime(initialDate);
+            return DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
+        }
+
+        return new int[]{0,0,0};
     }
 
     public void onAgeSet(Date ageDate) {

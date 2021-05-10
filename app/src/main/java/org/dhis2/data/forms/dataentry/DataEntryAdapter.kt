@@ -13,6 +13,7 @@ import org.dhis2.data.forms.dataentry.fields.FormViewHolder.FieldItemCallback
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.form.data.FieldUiModel
 import org.dhis2.form.ui.DataEntryDiff
+import java.util.Date
 
 class DataEntryAdapter :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),
@@ -20,6 +21,8 @@ class DataEntryAdapter :
 
     var didItemShowDialog: ((title: String, message: String?) -> Unit)? = null
     var onNextClicked: ((position: Int) -> Unit)? = null
+    var onShowCustomCalendar: ((label: String?, date: Date) -> Unit)? = null
+    var onShowYearMonthDayPicker: ((year: Int, month: Int, day: Int) -> Unit)? = null
 
     private val sectionHandler = SectionHandler()
     var sectionPositions: MutableMap<String, Int> = LinkedHashMap()
@@ -109,9 +112,21 @@ class DataEntryAdapter :
         }
     }
 
+    override fun showYearMonthDayPicker(year: Int, month: Int, day: Int) {
+        onShowYearMonthDayPicker?.let {
+            it(year, month, day)
+        }
+    }
+
     override fun onShowDialog(title: String, message: String?) {
         didItemShowDialog?.let { action ->
             action(title, message)
+        }
+    }
+
+    override fun showCustomCalendar(label: String?, date: Date) {
+        onShowCustomCalendar?.let {
+            it(label, date)
         }
     }
 
