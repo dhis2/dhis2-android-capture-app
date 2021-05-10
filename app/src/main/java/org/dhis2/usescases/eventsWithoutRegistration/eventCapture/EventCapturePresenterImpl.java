@@ -602,7 +602,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @SuppressLint("CheckResult")
     @Override
     public void saveImage(String uuid, String filePath) {
-        valueStore.save(uuid, filePath).blockingFirst();
+        if (uuid != null) {
+            valueStore.save(uuid, filePath).blockingFirst();
+        }
     }
 
     //region ruleActions
