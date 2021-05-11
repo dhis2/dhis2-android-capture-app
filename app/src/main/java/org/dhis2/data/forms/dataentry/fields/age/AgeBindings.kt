@@ -190,5 +190,3 @@ fun valueToYearMonthDay(value: String?): IntArray? {
     )
 }
 
-@BindingConversion
-fun convertColorToDrawable(color: Int) = ColorDrawable(color)
