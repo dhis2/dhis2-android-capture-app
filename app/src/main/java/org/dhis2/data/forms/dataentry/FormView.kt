@@ -87,6 +87,11 @@ class FormView(
                 }
             }
         }
+
+        adapter.onItemAction = { action ->
+            viewModel.onItemAction(action)
+        }
+
         binding.recyclerView.adapter = adapter
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {

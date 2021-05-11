@@ -5,13 +5,14 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
-import java.util.ArrayList
-import java.util.LinkedHashMap
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder.FieldItemCallback
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.DataEntryDiff
+import java.util.ArrayList
+import java.util.LinkedHashMap
 
 class DataEntryAdapter :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),
@@ -19,6 +20,7 @@ class DataEntryAdapter :
 
     var didItemShowDialog: ((title: String, message: String?) -> Unit)? = null
     var onNextClicked: ((position: Int) -> Unit)? = null
+    var onItemAction: ((action: RowAction) -> Unit)? = null
 
     private val sectionHandler = SectionHandler()
     var sectionPositions: MutableMap<String, Int> = LinkedHashMap()
@@ -117,6 +119,12 @@ class DataEntryAdapter :
     override fun onNext(layoutPosition: Int) {
         onNextClicked?.let {
             it(layoutPosition)
+        }
+    }
+
+    override fun onAction(action: RowAction) {
+        onItemAction?.let {
+            it(action)
         }
     }
 }
