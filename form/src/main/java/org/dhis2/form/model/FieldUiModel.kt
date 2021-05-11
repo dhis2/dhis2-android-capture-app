@@ -57,5 +57,6 @@ interface FieldUiModel {
         fun showDialog(title: String, message: String?)
         fun showCustomCalendar(label: String?, date: Date)
         fun showYearMonthDayPicker(year: Int, month: Int, day: Int)
+        fun onItemAction(action: RowAction)
     }
 }

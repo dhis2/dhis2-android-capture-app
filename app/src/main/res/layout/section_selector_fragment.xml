@@ -13,8 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <org.dhis2.data.forms.dataentry.FormView
-            android:id="@+id/formView"
+        <FrameLayout
+            android:id="@+id/formViewContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
