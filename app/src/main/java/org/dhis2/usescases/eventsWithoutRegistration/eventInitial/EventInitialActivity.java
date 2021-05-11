@@ -23,14 +23,13 @@ import com.jakewharton.rxbinding2.view.RxView;
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
-import org.dhis2.data.forms.FormSectionViewModel;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
+import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
+import org.dhis2.form.data.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
@@ -62,6 +61,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -79,7 +79,6 @@ import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
 import kotlin.Unit;
 import timber.log.Timber;
 
@@ -430,7 +429,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
                 binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
             binding.orgUnit.setEnabled(false);
-            binding.geometry.setEditable(false);
             binding.temp.setEnabled(false);
             binding.actionButton.setText(getString(R.string.check_event));
             binding.executePendingBindings();
@@ -462,10 +460,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (event.eventDate() != null) {
             selectedDate = event.eventDate();
             binding.date.setText(DateUtils.uiDateFormat().format(selectedDate));
-        }
-
-        if (event.geometry() != null && event.geometry().type() != FeatureType.NONE) {
-            binding.geometry.updateLocation(event.geometry());
         }
 
         eventModel = event;
@@ -500,14 +494,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void setProgramStage(ProgramStage programStage) {
         this.programStage = programStage;
         binding.setProgramStage(programStage);
-
-        binding.geometry.setIsBgTransparent(true);
-        binding.geometry.setEditable(true);
-        binding.geometry.setFeatureType(programStage.featureType());
-        binding.geometry.setCurrentLocationListener(geometry -> {
-            this.newGeometry = geometry;
-            presenter.setChangingCoordinates(true);
-        });
 
         if (periodType == null)
             periodType = programStage.periodType();
@@ -777,24 +763,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.orgUnit.setText("");
     }
 
-    private int calculateCompletedFields(@NonNull List<FieldViewModel> updates) {
-        int total = 0;
-        for (FieldViewModel fieldViewModel : updates) {
-            if (fieldViewModel.value() != null && !fieldViewModel.value().isEmpty())
-                total++;
-        }
-        return total;
-    }
-
-    private int calculateUnsupportedFields(@NonNull List<FieldViewModel> updates) {
-        int total = 0;
-        for (FieldViewModel fieldViewModel : updates) {
-            if (fieldViewModel instanceof UnsupportedViewModel)
-                total++;
-        }
-        return total;
-    }
-
     @Override
     public void setOrgUnit(String orgUnitId, String orgUnitName) {
         preferences.setValue(Preference.CURRENT_ORG_UNIT, orgUnitId);
@@ -822,8 +790,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
                 binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
             binding.actionButton.setText(getString(R.string.check_event));
-            if (binding.geometry.getViewModel() != null)
-                binding.geometry.setEditable(false);
             binding.executePendingBindings();
         }
     }
@@ -947,5 +913,42 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void showEventWasDeleted() {
         showToast(getString(R.string.event_was_deleted));
         finish();
+    }
+
+    @Override
+    public void setGeometryModel(CoordinateViewModel geometryModel) {
+        geometryModel.setCallback(new FieldUiModel.Callback() {
+            @Override
+            public void onNext() {
+                //Not used
+            }
+
+            @Override
+            public void showDialog(@NotNull String title, @org.jetbrains.annotations.Nullable String message) {
+                //Not used
+            }
+
+            @Override
+            public void currentLocation(@NotNull String coordinateFieldUid) {
+                requestCurrentLocation(geometry -> {
+                    geometryModel.onCurrentLocationClick(geometry);
+                    return Unit.INSTANCE;
+                });
+            }
+
+            @Override
+            public void mapRequest(@NotNull String coordinateFieldUid, @NotNull String featureType, @org.jetbrains.annotations.Nullable String initialCoordinates) {
+                requestMapLocation(FeatureType.valueOfFeatureType(featureType), initialCoordinates);
+            }
+        });
+        binding.geometry.setViewModel(geometryModel);
+    }
+
+    @Override
+    public void setNewGeometry(String value) {
+        this.newGeometry = Geometry.builder()
+                .coordinates(value)
+                .type(programStage.featureType())
+                .build();
     }
 }

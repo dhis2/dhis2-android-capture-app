@@ -216,4 +216,9 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         List<FilterItem> filters = filterRepository.homeFilters();
         disableHomFilters.execute(filters);
     }
+
+    @Override
+    public String getStageUid() {
+        return eventRepository.programStage().blockingGet().uid();
+    }
 }

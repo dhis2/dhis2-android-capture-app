@@ -66,5 +66,7 @@ public class ProgramEventDetailContract {
         List<WorkingListItem> workingLists();
 
         void clearOtherFiltersIfWebAppIsConfig();
+
+        String getStageUid();
     }
 }

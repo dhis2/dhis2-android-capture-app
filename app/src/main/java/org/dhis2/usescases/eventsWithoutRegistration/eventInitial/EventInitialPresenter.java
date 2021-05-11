@@ -2,7 +2,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.app.DatePickerDialog;
 import android.util.ArrayMap;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
@@ -48,6 +48,8 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 import kotlin.Pair;
 import timber.log.Timber;
 
@@ -111,10 +113,29 @@ public class EventInitialPresenter {
         this.eventId = eventId;
         this.programId = programId;
         this.programStageId = programStageId;
+        FlowableProcessor<RowAction> actionProcessor = PublishProcessor.create();
 
         view.setAccessDataWrite(
                 eventInitialRepository.accessDataWrite(programId).blockingFirst()
         );
+
+        compositeDisposable.add(
+                actionProcessor.doOnNext(action -> setChangingCoordinates(true))
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(geometryAction ->
+                                        view.setNewGeometry(geometryAction.getValue()),
+                                Timber::d
+                        ));
+
+        compositeDisposable.add(
+                eventInitialRepository.getGeometryModel(programId, actionProcessor)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(geometryModel ->
+                                        view.setGeometryModel(geometryModel),
+                                Timber::d
+                        ));
 
         if (eventId != null) {
             compositeDisposable

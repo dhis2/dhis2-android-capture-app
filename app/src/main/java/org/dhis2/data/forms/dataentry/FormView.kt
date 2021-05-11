@@ -1,6 +1,9 @@
 package org.dhis2.data.forms.dataentry
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -10,21 +13,29 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
+import org.dhis2.uicomponents.map.views.MapSelectorActivity
+import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
+import org.dhis2.utils.ActivityResultObserver
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
+import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.Geometry
 import timber.log.Timber
 
 class FormView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : ConstraintLayout(context, attrs, defStyleAttr) {
+) : ConstraintLayout(context, attrs, defStyleAttr), ActivityResultObserver {
 
     private val inflater: LayoutInflater = LayoutInflater.from(context)
     private val recyclerView: RecyclerView
@@ -32,6 +43,10 @@ class FormView @JvmOverloads constructor(
     private val dataEntryHeaderHelper: DataEntryHeaderHelper
     private lateinit var adapter: DataEntryAdapter
     var scrollCallback: ((Boolean) -> Unit)? = null
+    var onLocationRequest: ((String) -> Unit)? = null
+    var onMapRequest: ((FeatureType, String?) -> Unit)? = null
+    var onNewGeometryValue: ((String, Geometry) -> Unit)? = null
+    var geometryField: String? = null
 
     init {
         val params = LayoutParams(MATCH_PARENT, MATCH_PARENT)
@@ -77,6 +92,15 @@ class FormView @JvmOverloads constructor(
                     Timber.e(e)
                 }
             }
+        }
+        adapter.onLocationRequest = { fieldUid -> onLocationRequest?.invoke(fieldUid) }
+
+        adapter.onMapRequest = { fieldUid, featureType, initialData ->
+            geometryField = fieldUid
+            onMapRequest?.invoke(
+                featureType,
+                initialData
+            )
         }
         recyclerView.adapter = adapter
 
@@ -131,9 +155,9 @@ class FormView @JvmOverloads constructor(
             recyclerView.layoutManager as LinearLayoutManager
         val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
         return lastVisiblePosition != -1 && (
-            lastVisiblePosition == adapter.itemCount - 1 ||
-                adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
-            )
+                lastVisiblePosition == adapter.itemCount - 1 ||
+                        adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
+                )
     }
 
     private fun handleKeyBoardOnFocusChange(items: List<FieldViewModel>) {
@@ -149,5 +173,46 @@ class FormView @JvmOverloads constructor(
         is ScanTextViewModel,
         is CoordinateViewModel -> true
         else -> false
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK && requestCode == Constants.RQ_MAP_LOCATION_VIEW && data?.extras != null) {
+            val locationType =
+                FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA))
+            val dataExtra = data.getStringExtra(MapSelectorActivity.DATA_EXTRA)
+            val geometry: Geometry
+            geometry = when (locationType) {
+                FeatureType.POINT -> {
+                    val type = object : TypeToken<List<Double?>?>() {}.type
+                    GeometryHelper.createPointGeometry(
+                        Gson().fromJson(dataExtra, type)
+                    )
+                }
+                FeatureType.POLYGON -> {
+                    val type = object : TypeToken<List<List<List<Double?>?>?>?>() {}.type
+                    GeometryHelper.createPolygonGeometry(
+                        Gson().fromJson(dataExtra, type)
+                    )
+                }
+                else -> {
+                    val type = object : TypeToken<List<List<List<List<Double?>?>?>?>?>() {}.type
+                    GeometryHelper.createMultiPolygonGeometry(
+                        Gson().fromJson(dataExtra, type)
+                    )
+                }
+            }
+            geometryField?.let { onNewGeometryValue?.invoke(it, geometry) }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String?>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            geometryField?.let { onLocationRequest?.invoke(it) }
+        }
     }
 }

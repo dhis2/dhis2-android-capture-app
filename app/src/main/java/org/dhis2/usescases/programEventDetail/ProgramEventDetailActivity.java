@@ -28,9 +28,9 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.orgunitselector.OUTreeActivity;
 import org.dhis2.usescases.programEventDetail.eventList.EventListFragment;
 import org.dhis2.usescases.programEventDetail.eventMap.EventMapFragment;
-import org.dhis2.utils.AppMenuHelper;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
@@ -50,8 +50,6 @@ import static android.view.View.GONE;
 import static org.dhis2.R.layout.activity_program_event_detail;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
 public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View {
 
@@ -93,12 +91,12 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_list_view:
-                    if(isMapVisible) {
+                    if (isMapVisible) {
                         showMap(false);
                     }
                     return true;
                 case R.id.navigation_map_view:
-                    if(!isMapVisible) {
+                    if (!isMapVisible) {
                         showMap(true);
                     }
                     return true;
@@ -220,8 +218,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public void startNewEvent() {
         analyticsHelper().setEvent(AnalyticsConstants.CREATE_EVENT, AnalyticsConstants.DATA_CREATION, AnalyticsConstants.CREATE_EVENT);
         binding.addEventButton.setEnabled(false);
-        Bundle bundle = new Bundle();
-        bundle.putString(PROGRAM_UID, programUid);
+        Bundle bundle = EventInitialActivity.getBundle(programUid, null, EventCreationType.ADDNEW.name(),
+                null, null, null, presenter.getStageUid(), null,
+                0, null);
         startActivity(EventInitialActivity.class, bundle, false, false, null);
     }
 

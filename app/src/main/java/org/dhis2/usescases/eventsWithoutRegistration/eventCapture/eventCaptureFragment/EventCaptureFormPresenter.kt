@@ -195,4 +195,15 @@ class EventCaptureFormPresenter(
     fun setFinishing() {
         finishing = true
     }
+
+
+    fun saveValue(uid: String, value: String?) {
+        onFieldActionProcessor.onNext(
+            RowAction(
+                id = uid,
+                value = value,
+                type = ActionType.ON_SAVE
+            )
+        )
+    }
 }

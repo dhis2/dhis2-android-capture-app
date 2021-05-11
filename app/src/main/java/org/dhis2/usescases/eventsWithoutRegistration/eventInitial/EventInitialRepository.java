@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.FormSectionViewModel;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -20,6 +22,8 @@ import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.processors.FlowableProcessor;
 
 public interface EventInitialRepository {
 
@@ -87,4 +91,6 @@ public interface EventInitialRepository {
     boolean showCompletionPercentage();
 
     Flowable<List<FormSectionViewModel>> eventSections();
+
+    Single<CoordinateViewModel> getGeometryModel(String programUid, FlowableProcessor<RowAction> processor);
 }

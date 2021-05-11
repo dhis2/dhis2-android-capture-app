@@ -5,14 +5,15 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
-import java.util.ArrayList
-import java.util.LinkedHashMap
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder.FieldItemCallback
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.form.data.FieldUiModel
 import org.dhis2.form.ui.DataEntryDiff
+import org.hisp.dhis.android.core.common.FeatureType
+import java.util.ArrayList
+import java.util.LinkedHashMap
 
 class DataEntryAdapter :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),
@@ -20,6 +21,11 @@ class DataEntryAdapter :
 
     var didItemShowDialog: ((title: String, message: String?) -> Unit)? = null
     var onNextClicked: ((position: Int) -> Unit)? = null
+    var onLocationRequest: ((coordinateFieldUid: String) -> Unit)? = null
+    var onMapRequest: ((
+        coordinateFieldUid: String,
+        featureType: FeatureType, initialCoordinates: String?
+    ) -> Unit)? = null
 
     private val sectionHandler = SectionHandler()
     var sectionPositions: MutableMap<String, Int> = LinkedHashMap()
@@ -118,6 +124,22 @@ class DataEntryAdapter :
     override fun onNext(layoutPosition: Int) {
         onNextClicked?.let {
             it(layoutPosition)
+        }
+    }
+
+    override fun onCurrentLocationRequest(coordinateFieldUid: String) {
+        onLocationRequest?.let {
+            it(coordinateFieldUid)
+        }
+    }
+
+    override fun onMapRequest(
+        coordinateFieldUid: String,
+        featureType: FeatureType,
+        initialCoordinates: String?
+    ) {
+        onMapRequest?.let {
+            it(coordinateFieldUid, featureType, initialCoordinates)
         }
     }
 }

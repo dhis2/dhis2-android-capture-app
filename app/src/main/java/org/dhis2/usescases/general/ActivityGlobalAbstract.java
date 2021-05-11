@@ -1,5 +1,6 @@
 package org.dhis2.usescases.general;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,16 +16,19 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.dhis2.App;
+import org.dhis2.Bindings.DoubleExtensionsKt;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.server.ServerComponent;
+import org.dhis2.uicomponents.map.views.MapSelectorActivity;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.splash.SplashActivity;
@@ -40,6 +44,9 @@ import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.reporting.CrashReportController;
 import org.dhis2.utils.session.PinDialog;
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -48,12 +55,15 @@ import java.lang.reflect.Method;
 import javax.inject.Inject;
 
 import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
 
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
 import static org.dhis2.utils.Constants.CAMERA_REQUEST;
 import static org.dhis2.utils.Constants.GALLERY_REQUEST;
+import static org.dhis2.utils.Constants.RQ_MAP_LOCATION_VIEW;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 import static org.dhis2.utils.session.PinDialogKt.PIN_DIALOG_TAG;
@@ -408,5 +418,31 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         );
         sessionDialog.setCancelable(false);
         sessionDialog.show();
+    }
+
+    public void requestCurrentLocation(Function1<Geometry,Unit> locationCallback) {
+        ((App) getContext().getApplicationContext()).appComponent()
+                .locationProvider().getLastKnownLocation(
+                location -> {
+                    double longitude = DoubleExtensionsKt.truncate(location.getLongitude());
+                    double latitude = DoubleExtensionsKt.truncate(location.getLatitude());
+                    locationCallback.invoke(GeometryHelper.createPointGeometry(longitude, latitude));
+                    return Unit.INSTANCE;
+                },
+                () -> {
+                    ActivityCompat.requestPermissions((ActivityGlobalAbstract) getContext(),
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            ACCESS_LOCATION_PERMISSION_REQUEST);
+                    return Unit.INSTANCE;
+                },
+                () -> {
+                    ((ActivityGlobalAbstract) this.getContext()).requestEnableLocation();
+                    return Unit.INSTANCE;
+                });
+    }
+
+    public void requestMapLocation(FeatureType featureType, String initialData) {
+        startActivityForResult(
+                MapSelectorActivity.Companion.create(this, featureType, initialData), RQ_MAP_LOCATION_VIEW);
     }
 }

@@ -64,8 +64,24 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             ViewExtensionsKt.closeKeyboard(view);
             performSaveClick();
         });
+        activity.subscribe(binding.formView);
+        binding.formView.setOnNewGeometryValue((fieldUid, geometry) -> {
+            presenter.saveValue(fieldUid, geometry.coordinates());
+            return Unit.INSTANCE;
+        });
         binding.formView.setScrollCallback(isSectionVisible -> {
             animateFabButton(isSectionVisible);
+            return Unit.INSTANCE;
+        });
+        binding.formView.setOnLocationRequest(fieldUid -> {
+            activity.requestCurrentLocation(geometry -> {
+                binding.formView.getOnNewGeometryValue().invoke(fieldUid, geometry);
+                return Unit.INSTANCE;
+            });
+            return Unit.INSTANCE;
+        });
+        binding.formView.setOnMapRequest((featureType, initialData) -> {
+            activity.requestMapLocation(featureType, initialData);
             return Unit.INSTANCE;
         });
         binding.formView.init(this);

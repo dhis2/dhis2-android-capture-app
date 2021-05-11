@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.event.EventFilter;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.List;
 
@@ -38,4 +39,6 @@ public interface ProgramEventDetailRepository {
     CategoryOptionCombo getCatOptCombo(String selectedCatOptionCombo);
 
     Single<List<EventFilter>> workingLists();
+
+    Single<ProgramStage> programStage();
 }
