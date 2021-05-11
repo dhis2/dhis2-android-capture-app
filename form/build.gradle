@@ -4,6 +4,12 @@ plugins {
     id 'kotlin-kapt'
 }
 
+def libraries = rootProject.ext.libraries
+
+repositories {
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+}
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
@@ -27,6 +33,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    flavorDimensions "default"
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -43,9 +52,19 @@ android {
 
 dependencies {
 
+    implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.3.2'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.3.0'
+
+    releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
+        exclude group: "org.hisp.dhis", module: "core-rules"
+    }
+    debugImplementation project(':core')
+
     testImplementation "junit:junit:${libraries.junit}"
+    testImplementation 'org.mockito:mockito-core:3.4.6'
+    testImplementation 'org.mockito:mockito-inline:2.13.0'
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 }

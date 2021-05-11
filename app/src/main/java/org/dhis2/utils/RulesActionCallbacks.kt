@@ -1,11 +1,11 @@
 package org.dhis2.utils
 
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.form.model.FieldUiModel
 import org.hisp.dhis.rules.models.RuleActionShowError
 
 interface RulesActionCallbacks {
 
-    fun setShowError(showError: RuleActionShowError, model: FieldViewModel?)
+    fun setShowError(showError: RuleActionShowError, model: FieldUiModel?)
 
     fun unsupportedRuleAction()
 
