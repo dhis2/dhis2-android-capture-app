@@ -115,7 +115,7 @@
                         android:clickable="true"
                         android:enabled="@{item.editable()}"
                         app:setInitialValueDate="@{item.value()}"
-                        app:setUnderlineColorEditText="@{item.isBackgroundTransparent()}"
+                        app:setUnderlineColorEditText="@{item}"
                         android:onClick="@{()-> item.onShowCustomCalendar()}"
                         tools:text="1987-06-26" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -140,7 +140,7 @@
                         android:focusable="false"
                         android:maxLength="4"
                         app:setEditTextColor="@{item.isBackgroundTransparent()}"
-                        app:setUnderlineColorEditText="@{item.isBackgroundTransparent()}"
+                        app:setUnderlineColorEditText="@{item}"
                         app:setInitialValueYear="@{item.value()}"
                         android:enabled="@{item.editable()}"
                         android:textSize="@dimen/form_edit_text_size"
@@ -170,7 +170,7 @@
                         android:maxLength="2"
                         app:setInitialValueMonth="@{item.value()}"
                         app:setEditTextColor="@{item.isBackgroundTransparent()}"
-                        app:setUnderlineColorEditText="@{item.isBackgroundTransparent()}"
+                        app:setUnderlineColorEditText="@{item}"
                         android:onClick="@{()-> item.onShowDayMonthYearPicker()}"
                         android:enabled="@{item.editable()}"
                         android:textSize="@dimen/form_edit_text_size" />
@@ -198,7 +198,7 @@
                         android:maxLength="2"
                         app:setInitialValueDay="@{item.value()}"
                         app:setEditTextColor="@{item.isBackgroundTransparent()}"
-                        app:setUnderlineColorEditText="@{item.isBackgroundTransparent()}"
+                        app:setUnderlineColorEditText="@{item}"
                         android:onClick="@{()-> item.onShowDayMonthYearPicker()}"
                         android:enabled="@{item.editable()}"
                         android:textSize="@dimen/form_edit_text_size" />

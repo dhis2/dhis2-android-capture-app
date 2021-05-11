@@ -69,12 +69,19 @@ fun setEditTextColor(
 @BindingAdapter("setUnderlineColorEditText")
 fun setEditTextUnderlineColor(
     editText: EditText,
-    isBgTransparent: Boolean
+    model: AgeViewModel
 ) {
-    if (!isBgTransparent) {
-        val color = ColorUtils.getPrimaryColor(editText.context, ColorUtils.ColorType.ACCENT)
-        ViewCompat.setBackgroundTintList(editText, ColorStateList.valueOf(color))
+    val color = if (!model.isBackgroundTransparent) {
+        ColorUtils.getPrimaryColor(editText.context, ColorUtils.ColorType.ACCENT)
+    } else if (model.warning() != null){
+        ContextCompat.getColor(editText.context, org.dhis2.R.color.warning_color)
+    } else if(model.error() != null){
+        ContextCompat.getColor(editText.context, org.dhis2.R.color.error_color)
+    } else {
+        ContextCompat.getColor(editText.context, org.dhis2.R.color.textPrimary)
     }
+
+    ViewCompat.setBackgroundTintList(editText, ColorStateList.valueOf(color))
 }
 
 @BindingAdapter("setTextColorHint")
@@ -166,6 +173,15 @@ fun setInitialValueDay(editText: EditText, value: String?){
 }
 
 fun getDifferenceBetweenDates(value: String?): IntArray{
+    val initialDate: Date = value!!.toDate()
+    Calendar.getInstance().time = initialDate
+    return DateUtils.getDifference(
+        initialDate,
+        Calendar.getInstance().time
+    )
+}
+
+fun valueToYearMonthDay(value: String?): IntArray? {
     val initialDate: Date = value!!.toDate()
     Calendar.getInstance().time = initialDate
     return DateUtils.getDifference(
