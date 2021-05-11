@@ -30,7 +30,6 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(FieldUiModel uiModel, FieldItemCallback callback) {
-        FieldViewModel viewModel = (FieldViewModel) uiModel;
         FieldUiModel.Callback itemCallback = new FieldUiModel.Callback() {
             @Override
             public void showYearMonthDayPicker(int year, int month, int day) {
@@ -52,9 +51,9 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
                 callback.onShowDialog(title, message);
             }
         };
-        viewModel.setCallback(itemCallback);
+        uiModel.setCallback(itemCallback);
 
-        binding.setVariable(BR.item, viewModel);
+        binding.setVariable(BR.item, uiModel);
         binding.executePendingBindings();
     }
 

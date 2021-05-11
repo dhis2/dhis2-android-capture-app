@@ -6,9 +6,9 @@ import com.google.auto.value.AutoValue;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
-import org.dhis2.data.forms.dataentry.fields.ActionType;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.form.model.ActionType;
+import org.dhis2.form.model.RowAction;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 
 import io.reactivex.processors.FlowableProcessor;
@@ -73,10 +73,10 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
         return R.layout.form_org_unit;
     }
 
-    public void onDataChange(String data) {
+    public void onDataChange(String orgUnitUid, String orgUnitName) {
         processor().onNext(new RowAction(
                 uid(),
-                data,
+                isBackgroundTransparent() ? orgUnitUid : orgUnitUid != null ? orgUnitUid + "_ou_" + orgUnitName : null,
                 false,
                 null,
                 null,

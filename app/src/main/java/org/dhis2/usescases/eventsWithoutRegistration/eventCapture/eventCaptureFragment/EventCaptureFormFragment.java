@@ -14,8 +14,8 @@ import androidx.databinding.DataBindingUtil;
 
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
+import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
@@ -92,7 +92,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     }
 
     @Override
-    public void showFields(@NonNull List<FieldViewModel> updates) {
+    public void showFields(@NonNull List<FieldUiModel> updates) {
         binding.formView.render(updates);
     }
 

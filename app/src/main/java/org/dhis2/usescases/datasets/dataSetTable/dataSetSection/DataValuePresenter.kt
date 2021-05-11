@@ -9,9 +9,7 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import java.util.ArrayList
 import java.util.HashMap
-import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
-import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
@@ -20,6 +18,8 @@ import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.dhis2.data.tuples.Sextet
 import org.dhis2.data.tuples.Trio
+import org.dhis2.form.model.StoreResult
+import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DateUtils
@@ -670,14 +670,14 @@ class DataValuePresenter(
                         dataSetSectionFragment.updateData(rowAction, it.catCombo())
                         valueStore.save(it)
                     } ?: Flowable.just(
-                        StoreResult("", ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED)
+                        StoreResult("", ValueStoreResult.VALUE_HAS_NOT_CHANGED)
                     )
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { storeResult ->
-                        val valueChange = ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+                        val valueChange = ValueStoreResult.VALUE_CHANGED
                         if (storeResult.valueStoreResult == valueChange) {
                             getDataSetIndicators()
                             view.showSnackBar()
