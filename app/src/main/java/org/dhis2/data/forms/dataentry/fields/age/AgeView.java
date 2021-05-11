@@ -142,7 +142,6 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
                 getYearsDialog().show();
                 break;
         }
-
     }
 
     @Override

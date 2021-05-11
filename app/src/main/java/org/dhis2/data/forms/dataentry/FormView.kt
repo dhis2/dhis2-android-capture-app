@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import org.dhis2.R
+import org.dhis2.data.forms.dataentry.fields.age.DialogType
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
@@ -119,7 +120,8 @@ class FormView(
                             uid,
                             datePicker.year,
                             datePicker.month,
-                            datePicker.dayOfMonth
+                            datePicker.dayOfMonth,
+                            DialogType.DATE_CALENDAR
                         )
                     }
                 }).show()
@@ -148,7 +150,8 @@ class FormView(
                         uid,
                         getDateValueOrZero(year),
                         getDateValueOrZero(month),
-                        getDateValueOrZero(day)
+                        getDateValueOrZero(day),
+                        DialogType.YEAR_MONTH_DAY_PICKER
                     )
                 }
                 .setNegativeButton(R.string.clear) { dialog, which -> handleNegativeDateInput(uid) }
@@ -196,13 +199,20 @@ class FormView(
         uid: String,
         year: Int,
         month: Int,
-        day: Int
+        day: Int,
+        type: DialogType
     ) {
         val currentCalendar = Calendar.getInstance()
         val ageDate = with(currentCalendar) {
-            set(Calendar.YEAR, year)
-            set(Calendar.MONTH, month)
-            set(Calendar.DAY_OF_MONTH, day)
+            if (type == DialogType.DATE_CALENDAR){
+                set(Calendar.YEAR, year)
+                set(Calendar.MONTH, month)
+                set(Calendar.DAY_OF_MONTH, day)
+            } else {
+                add(Calendar.YEAR, year)
+                add(Calendar.MONTH, month)
+                add(Calendar.DAY_OF_MONTH, day)
+            }
             set(Calendar.HOUR_OF_DAY, 0)
             set(Calendar.MINUTE, 0)
             set(Calendar.SECOND, 0)

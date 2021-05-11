@@ -179,12 +179,3 @@ fun getDifferenceBetweenDates(value: String?): IntArray{
     )
 }
 
-fun valueToYearMonthDay(value: String?): IntArray? {
-    val initialDate: Date = value!!.toDate()
-    Calendar.getInstance().time = initialDate
-    return DateUtils.getDifference(
-        initialDate,
-        Calendar.getInstance().time
-    )
-}
-
