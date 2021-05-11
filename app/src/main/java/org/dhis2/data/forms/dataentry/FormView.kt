@@ -16,24 +16,21 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.fields.age.DialogType
+import org.dhis2.data.forms.dataentry.fields.age.AgeDialogDelegate
+import org.dhis2.data.forms.dataentry.fields.age.negativeOrZero
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
 import org.dhis2.form.data.FormRepository
-import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.utils.Constants
 import org.dhis2.utils.DatePickerUtils
 import org.dhis2.utils.DatePickerUtils.OnDatePickerClickListener
-import org.dhis2.utils.DateUtils
 import org.dhis2.utils.customviews.CustomDialog
 import timber.log.Timber
-import java.util.Calendar
 
 class FormView(
     formRepository: FormRepository,
@@ -48,6 +45,7 @@ class FormView(
     private lateinit var dataEntryHeaderHelper: DataEntryHeaderHelper
     private lateinit var adapter: DataEntryAdapter
     private lateinit var alertDialogView: View
+    private lateinit var ageDialogDelegate: AgeDialogDelegate
     var scrollCallback: ((Boolean) -> Unit)? = null
 
     override fun onCreateView(
@@ -58,6 +56,7 @@ class FormView(
         binding = DataBindingUtil.inflate(inflater, R.layout.view_form, container, false)
         binding.lifecycleOwner = this
         dataEntryHeaderHelper = DataEntryHeaderHelper(binding.headerContainer, binding.recyclerView)
+        ageDialogDelegate = AgeDialogDelegate(viewModel)
         binding.recyclerView.layoutManager =
             object : LinearLayoutManager(context, VERTICAL, false) {
                 override fun onInterceptFocusSearch(focused: View, direction: Int): View {
@@ -112,16 +111,15 @@ class FormView(
                 true,
                 object : OnDatePickerClickListener {
                     override fun onNegativeClick() {
-                        handleNegativeDateInput(uid)
+                        ageDialogDelegate.handleClearInput(uid)
                     }
 
                     override fun onPositiveClick(datePicker: DatePicker) {
-                        handlePositiveDateInput(
+                        ageDialogDelegate.handleDateInput(
                             uid,
                             datePicker.year,
                             datePicker.month,
-                            datePicker.dayOfMonth,
-                            DialogType.DATE_CALENDAR
+                            datePicker.dayOfMonth
                         )
                     }
                 }).show()
@@ -130,34 +128,26 @@ class FormView(
         adapter.onShowYearMonthDayPicker = { uid, year, month, day ->
             alertDialogView =
                 LayoutInflater.from(requireContext()).inflate(R.layout.dialog_age, null)
-            val yearPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_year)
-            val monthPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_month)
-            val dayPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_days)
-            yearPicker.setText(year.toString())
-            monthPicker.setText(month.toString())
-            dayPicker.setText(day.toString())
+                val yearPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_year)
+                val monthPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_month)
+                val dayPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_days)
+                yearPicker.setText(year.toString())
+                monthPicker.setText(month.toString())
+                dayPicker.setText(day.toString())
 
             AlertDialog.Builder(requireContext(), R.style.CustomDialog)
                 .setView(alertDialogView)
-                .setPositiveButton(R.string.action_accept) { dialog, which ->
-                    val year =
-                        alertDialogView.findViewById<TextInputEditText>(R.id.input_year).text.toString()
-                    val month =
-                        alertDialogView.findViewById<TextInputEditText>(R.id.input_month).text.toString()
-                    val day =
-                        alertDialogView.findViewById<TextInputEditText>(R.id.input_days).text.toString()
-                    handlePositiveDateInput(
+                .setPositiveButton(R.string.action_accept) { _, _ ->
+                    ageDialogDelegate.handleYearMonthDayInput(
                         uid,
-                        getDateValueOrZero(year),
-                        getDateValueOrZero(month),
-                        getDateValueOrZero(day),
-                        DialogType.YEAR_MONTH_DAY_PICKER
+                        negativeOrZero(yearPicker.text.toString()),
+                        negativeOrZero(monthPicker.text.toString()),
+                        negativeOrZero(dayPicker.text.toString())
                     )
                 }
-                .setNegativeButton(R.string.clear) { dialog, which -> handleNegativeDateInput(uid) }
+                .setNegativeButton(R.string.clear) { _, _ -> ageDialogDelegate.handleClearInput(uid) }
                 .create()
                 .show()
-
         }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -193,63 +183,6 @@ class FormView(
         viewModel.items.observe(viewLifecycleOwner, Observer { items ->
             render(items)
         })
-    }
-
-    fun handlePositiveDateInput(
-        uid: String,
-        year: Int,
-        month: Int,
-        day: Int,
-        type: DialogType
-    ) {
-        val currentCalendar = Calendar.getInstance()
-        val ageDate = with(currentCalendar) {
-            if (type == DialogType.DATE_CALENDAR){
-                set(Calendar.YEAR, year)
-                set(Calendar.MONTH, month)
-                set(Calendar.DAY_OF_MONTH, day)
-            } else {
-                add(Calendar.YEAR, year)
-                add(Calendar.MONTH, month)
-                add(Calendar.DAY_OF_MONTH, day)
-            }
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-            return@with time
-        }
-
-        val action = RowAction(
-            uid,
-            if (ageDate == null) null else DateUtils.oldUiDateFormat()
-                .format(ageDate),
-            false,
-            null,
-            null,
-            null,
-            null,
-            ActionType.ON_SAVE
-        )
-        viewModel.onItemAction(action)
-    }
-
-    fun handleNegativeDateInput(uid: String) {
-        val action = RowAction(
-            uid,
-            null,
-            false,
-            null,
-            null,
-            null,
-            null,
-            ActionType.ON_SAVE
-        )
-        viewModel.onItemAction(action)
-    }
-
-    fun getDateValueOrZero(value: String): Int {
-        return if (value.isEmpty()) 0 else -Integer.valueOf(value)
     }
 
     fun render(items: List<FieldUiModel>) {

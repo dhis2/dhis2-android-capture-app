@@ -71,9 +71,9 @@ fun setEditTextUnderlineColor(
 ) {
     val color = if (!model.isBackgroundTransparent) {
         ColorUtils.getPrimaryColor(editText.context, ColorUtils.ColorType.ACCENT)
-    } else if (model.warning() != null){
+    } else if (model.warning() != null) {
         ContextCompat.getColor(editText.context, org.dhis2.R.color.warning_color)
-    } else if(model.error() != null){
+    } else if (model.error() != null) {
         ContextCompat.getColor(editText.context, org.dhis2.R.color.error_color)
     } else {
         ContextCompat.getColor(editText.context, org.dhis2.R.color.textPrimary)
@@ -128,8 +128,8 @@ fun setWarningOrError(textView: TextView, warning: String?, error: String?, isSe
 }
 
 @BindingAdapter("setInitialValueDate")
-fun setInitialValueDate(editText: EditText, value: String?){
-    if (value.isNullOrEmpty()){
+fun setInitialValueDate(editText: EditText, value: String?) {
+    if (value.isNullOrEmpty()) {
         editText.text = null
     } else {
         val initialDate = value.toDate()
@@ -141,8 +141,8 @@ fun setInitialValueDate(editText: EditText, value: String?){
 }
 
 @BindingAdapter("setInitialValueYear")
-fun setInitialValueYear(editText: EditText, value: String?){
-    if (value.isNullOrEmpty()){
+fun setInitialValueYear(editText: EditText, value: String?) {
+    if (value.isNullOrEmpty()) {
         editText.text = null
     } else {
         val dateDifference = getDifferenceBetweenDates(value)
@@ -151,8 +151,8 @@ fun setInitialValueYear(editText: EditText, value: String?){
 }
 
 @BindingAdapter("setInitialValueMonth")
-fun setInitialValueMonth(editText: EditText, value: String?){
-    if (value.isNullOrEmpty()){
+fun setInitialValueMonth(editText: EditText, value: String?) {
+    if (value.isNullOrEmpty()) {
         editText.text = null
     } else {
         val dateDifference = getDifferenceBetweenDates(value)
@@ -161,8 +161,8 @@ fun setInitialValueMonth(editText: EditText, value: String?){
 }
 
 @BindingAdapter("setInitialValueDay")
-fun setInitialValueDay(editText: EditText, value: String?){
-    if (value.isNullOrEmpty()){
+fun setInitialValueDay(editText: EditText, value: String?) {
+    if (value.isNullOrEmpty()) {
         editText.text = null
     } else {
         val dateDifference = getDifferenceBetweenDates(value)
@@ -170,7 +170,7 @@ fun setInitialValueDay(editText: EditText, value: String?){
     }
 }
 
-fun getDifferenceBetweenDates(value: String?): IntArray{
+fun getDifferenceBetweenDates(value: String?): IntArray {
     val initialDate: Date = value!!.toDate()
     Calendar.getInstance().time = initialDate
     return DateUtils.getDifference(
@@ -179,3 +179,6 @@ fun getDifferenceBetweenDates(value: String?): IntArray{
     )
 }
 
+fun negativeOrZero(value: String): Int {
+    return if (value.isEmpty()) 0 else -Integer.valueOf(value)
+}
