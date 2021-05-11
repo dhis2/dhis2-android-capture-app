@@ -2,7 +2,6 @@ package org.dhis2.data.forms.dataentry.fields.age
 
 import android.R
 import android.content.res.ColorStateList
-import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
@@ -10,7 +9,6 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.BindingAdapter
-import androidx.databinding.BindingConversion
 import com.google.android.material.textfield.TextInputLayout
 import org.dhis2.Bindings.toDate
 import org.dhis2.utils.ColorUtils

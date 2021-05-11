@@ -21,8 +21,8 @@ class DataEntryAdapter :
 
     var didItemShowDialog: ((title: String, message: String?) -> Unit)? = null
     var onNextClicked: ((position: Int) -> Unit)? = null
-    var onShowCustomCalendar: ((label: String?, date: Date) -> Unit)? = null
-    var onShowYearMonthDayPicker: ((year: Int, month: Int, day: Int) -> Unit)? = null
+    var onShowCustomCalendar: ((uid: String, label: String?, date: Date) -> Unit)? = null
+    var onShowYearMonthDayPicker: ((uid: String, year: Int, month: Int, day: Int) -> Unit)? = null
     var onItemAction: ((action: RowAction) -> Unit)? = null
 
     private val sectionHandler = SectionHandler()
@@ -113,9 +113,9 @@ class DataEntryAdapter :
         }
     }
 
-    override fun showYearMonthDayPicker(year: Int, month: Int, day: Int) {
+    override fun showYearMonthDayPicker(uid: String, year: Int, month: Int, day: Int) {
         onShowYearMonthDayPicker?.let {
-            it(year, month, day)
+            it(uid, year, month, day)
         }
     }
 
@@ -125,9 +125,9 @@ class DataEntryAdapter :
         }
     }
 
-    override fun showCustomCalendar(label: String?, date: Date) {
+    override fun showCustomCalendar(uid: String, label: String?, date: Date) {
         onShowCustomCalendar?.let {
-            it(label, date)
+            it(uid, label, date)
         }
     }
 

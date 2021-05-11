@@ -142,6 +142,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
                 getYearsDialog().show();
                 break;
         }
+
     }
 
     @Override
@@ -231,7 +232,6 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         selectedCalendar.set(Calendar.SECOND, 0);
         selectedCalendar.set(Calendar.MILLISECOND, 0);
 
-        //DateUtils.uiDateFormat();
         String result = dateFormat.format(selectedCalendar.getTime());
 
         int[] dateDifference = DateUtils.getDifference(selectedCalendar.getTime(), Calendar.getInstance().getTime());
@@ -370,7 +370,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setViewModel(AgeViewModel viewModel) {
-    //  this.viewModel = viewModel;
+    //   this.viewModel = viewModel;
         if (binding == null) {
             setIsBgTransparent(viewModel.isBackgroundTransparent());
         }

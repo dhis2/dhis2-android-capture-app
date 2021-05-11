@@ -31,13 +31,13 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
     public void bind(FieldUiModel uiModel, FieldItemCallback callback) {
         FieldUiModel.Callback itemCallback = new FieldUiModel.Callback() {
             @Override
-            public void showYearMonthDayPicker(int year, int month, int day) {
-                callback.showYearMonthDayPicker(year, month, day);
+            public void showYearMonthDayPicker(String uid, int year, int month, int day) {
+                callback.showYearMonthDayPicker(uid, year, month, day);
             }
 
             @Override
-            public void showCustomCalendar(String label, Date date) {
-                callback.showCustomCalendar(label, date);
+            public void showCustomCalendar(String uid, String label, Date date) {
+                callback.showCustomCalendar(uid, label, date);
             }
 
             @Override
@@ -64,9 +64,9 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
     public interface FieldItemCallback {
         void onShowDialog(String title, @Nullable String message);
 
-        void showCustomCalendar(String label, Date date);
+        void showCustomCalendar(String uid, String label, Date date);
 
-        void showYearMonthDayPicker(int year, int month, int day);
+        void showYearMonthDayPicker(String uid, int year, int month, int day);
 
         void onNext(int layoutPosition);
 

@@ -1,18 +1,13 @@
 package org.dhis2.data.forms.dataentry
 
 import android.content.Context
-import android.text.TextUtils
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.widget.DatePicker
-import android.widget.RelativeLayout
-import androidx.appcompat.app.AlertDialog
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.lifecycle.LifecycleOwner
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.DatePicker
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -20,7 +15,6 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
-import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
@@ -28,13 +22,17 @@ import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
 import org.dhis2.form.data.FormRepository
+import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.utils.Constants
 import org.dhis2.utils.DatePickerUtils
 import org.dhis2.utils.DatePickerUtils.OnDatePickerClickListener
+import org.dhis2.utils.DateUtils
 import org.dhis2.utils.customviews.CustomDialog
 import timber.log.Timber
+import java.util.Calendar
 
 class FormView(
     formRepository: FormRepository,
@@ -48,6 +46,7 @@ class FormView(
     private lateinit var binding: ViewFormBinding
     private lateinit var dataEntryHeaderHelper: DataEntryHeaderHelper
     private lateinit var adapter: DataEntryAdapter
+    private lateinit var alertDialogView: View
     var scrollCallback: ((Boolean) -> Unit)? = null
 
     override fun onCreateView(
@@ -104,7 +103,7 @@ class FormView(
         }
 
         binding.recyclerView.adapter = adapter
-        adapter.onShowCustomCalendar = { label, date ->
+        adapter.onShowCustomCalendar = { uid, label, date ->
             DatePickerUtils.getDatePickerDialog(
                 requireContext(),
                 label,
@@ -112,36 +111,50 @@ class FormView(
                 true,
                 object : OnDatePickerClickListener {
                     override fun onNegativeClick() {
-                       // listener.onAgeSet(null)
-                       // clearValues()
+                        handleNegativeDateInput(uid)
                     }
 
                     override fun onPositiveClick(datePicker: DatePicker) {
-                      /*  handleDateInput(
-                            view,
+                        handlePositiveDateInput(
+                            uid,
                             datePicker.year,
                             datePicker.month,
                             datePicker.dayOfMonth
-                        ) */
+                        )
                     }
                 }).show()
         }
-        adapter.onShowYearMonthDayPicker = { year, month, day ->
-            val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_age, null)
 
-            AlertDialog.Builder(requireContext(), R.style.CustomDialog)
-                .setView(view)
-                .setPositiveButton(R.string.action_accept) { dialog, which -> }
-                .setNegativeButton(R.string.clear) { dialog, which -> }
-                .create()
-                .show()
-
-            val yearPicker: TextInputEditText = view.findViewById(R.id.input_year)
-            val monthPicker: TextInputEditText = view.findViewById(R.id.input_month)
-            val dayPicker: TextInputEditText = view.findViewById(R.id.input_days)
+        adapter.onShowYearMonthDayPicker = { uid, year, month, day ->
+            alertDialogView =
+                LayoutInflater.from(requireContext()).inflate(R.layout.dialog_age, null)
+            val yearPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_year)
+            val monthPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_month)
+            val dayPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_days)
             yearPicker.setText(year.toString())
             monthPicker.setText(month.toString())
             dayPicker.setText(day.toString())
+
+            AlertDialog.Builder(requireContext(), R.style.CustomDialog)
+                .setView(alertDialogView)
+                .setPositiveButton(R.string.action_accept) { dialog, which ->
+                    val year =
+                        alertDialogView.findViewById<TextInputEditText>(R.id.input_year).text.toString()
+                    val month =
+                        alertDialogView.findViewById<TextInputEditText>(R.id.input_month).text.toString()
+                    val day =
+                        alertDialogView.findViewById<TextInputEditText>(R.id.input_days).text.toString()
+                    handlePositiveDateInput(
+                        uid,
+                        getDateValueOrZero(year),
+                        getDateValueOrZero(month),
+                        getDateValueOrZero(day)
+                    )
+                }
+                .setNegativeButton(R.string.clear) { dialog, which -> handleNegativeDateInput(uid) }
+                .create()
+                .show()
+
         }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -177,6 +190,56 @@ class FormView(
         viewModel.items.observe(viewLifecycleOwner, Observer { items ->
             render(items)
         })
+    }
+
+    fun handlePositiveDateInput(
+        uid: String,
+        year: Int,
+        month: Int,
+        day: Int
+    ) {
+        val currentCalendar = Calendar.getInstance()
+        val ageDate = with(currentCalendar) {
+            set(Calendar.YEAR, year)
+            set(Calendar.MONTH, month)
+            set(Calendar.DAY_OF_MONTH, day)
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+            return@with time
+        }
+
+        val action = RowAction(
+            uid,
+            if (ageDate == null) null else DateUtils.oldUiDateFormat()
+                .format(ageDate),
+            false,
+            null,
+            null,
+            null,
+            null,
+            ActionType.ON_SAVE
+        )
+        viewModel.onItemAction(action)
+    }
+
+    fun handleNegativeDateInput(uid: String) {
+        val action = RowAction(
+            uid,
+            null,
+            false,
+            null,
+            null,
+            null,
+            null,
+            ActionType.ON_SAVE
+        )
+        viewModel.onItemAction(action)
+    }
+
+    fun getDateValueOrZero(value: String): Int {
+        return if (value.isEmpty()) 0 else -Integer.valueOf(value)
     }
 
     fun render(items: List<FieldUiModel>) {

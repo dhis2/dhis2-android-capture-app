@@ -81,18 +81,21 @@ public abstract class AgeViewModel extends FieldViewModel {
     public void onShowCustomCalendar(){
         onItemClick();
         Date date = Calendar.getInstance().getTime();
-        callback.showCustomCalendar(label(), date);
+        callback.showCustomCalendar(uid(), label(), date);
     }
 
     public void onShowDayMonthYearPicker(){
         onItemClick();
         int[] yearMonthDay = valueToYearMonthDay();
-        callback.showYearMonthDayPicker(yearMonthDay[0], yearMonthDay[1], yearMonthDay[2]);
+        callback.showYearMonthDayPicker(uid(), yearMonthDay[0], yearMonthDay[1], yearMonthDay[2]);
     }
 
     private int[] valueToYearMonthDay(){
-        Date initialDate = StringExtensionsKt.toDate(value());
+        if (value() == null || value().isEmpty()){
+            return new int[]{0,0,0};
+        }
 
+        Date initialDate = StringExtensionsKt.toDate(value());
         if (initialDate != null) {
             Calendar.getInstance().setTime(initialDate);
             return DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
