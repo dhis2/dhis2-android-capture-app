@@ -126,9 +126,9 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
                 result = String.valueOf(value);
         }
 
-        if (Objects.equals(result, value())) return;
+        if (processor() == null || Objects.equals(result, value())) return;
 
-        RowAction action = new RowAction(
+        Objects.requireNonNull(processor()).onNext(new RowAction(
                 uid(),
                 result,
                 false,
@@ -136,9 +136,7 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
                 null,
                 null,
                 null,
-                ActionType.ON_SAVE);
-
-        callback.onItemAction(action);
+                ActionType.ON_SAVE));
     }
 
     public abstract boolean isBackgroundTransparent();
