@@ -1,11 +1,11 @@
 package org.dhis2.data.forms.dataentry.fields.age
 
+import java.util.Calendar
+import java.util.Date
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.utils.DateUtils
-import java.util.Calendar
-import java.util.Date
 
 class AgeDialogDelegate(val viewModel: FormViewModel) {
 
@@ -31,7 +31,7 @@ class AgeDialogDelegate(val viewModel: FormViewModel) {
 
     fun handleYearMonthDayInput(uid: String, year: Int, month: Int, day: Int) {
         val currentCalendar = Calendar.getInstance()
-        val ageDate = with(currentCalendar){
+        val ageDate = with(currentCalendar) {
             add(Calendar.YEAR, year)
             add(Calendar.MONTH, month)
             add(Calendar.DAY_OF_MONTH, day)
