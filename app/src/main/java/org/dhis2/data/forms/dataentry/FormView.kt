@@ -146,7 +146,9 @@ class FormView(
                         negativeOrZero(dayPicker.text.toString())
                     )
                 }
-                .setNegativeButton(R.string.clear) { _, _ -> ageDialogDelegate.handleClearInput(uid) }
+                .setNegativeButton(R.string.clear) { _, _ ->
+                    ageDialogDelegate.handleClearInput(uid)
+                }
                 .create()
                 .show()
         }
@@ -175,15 +177,21 @@ class FormView(
             }
         }
 
-        viewModel.savedValue.observe(viewLifecycleOwner, Observer { value ->
-            onListChangedCallback?.let { action ->
-                action(value)
+        viewModel.savedValue.observe(
+            viewLifecycleOwner,
+            Observer { value ->
+                onListChangedCallback?.let { action ->
+                    action(value)
+                }
             }
-        })
+        )
 
-        viewModel.items.observe(viewLifecycleOwner, Observer { items ->
-            render(items)
-        })
+        viewModel.items.observe(
+            viewLifecycleOwner,
+            Observer { items ->
+                render(items)
+            }
+        )
     }
 
     fun render(items: List<FieldUiModel>) {
