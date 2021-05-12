@@ -10,17 +10,15 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-
 import org.dhis2.form.model.ActionType;
+import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.KeyboardActionType;
-
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.RowAction;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 
-import org.dhis2.form.model.FieldUiModel;
 import io.reactivex.processors.FlowableProcessor;
 
 /**
@@ -152,7 +150,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     }
 
     public void onTextFilled(String value, String error) {
-        processor().onNext(new RowAction(
+        RowAction action = new RowAction(
                 uid(),
                 value,
                 false,
@@ -161,7 +159,9 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
                 null,
                 error,
                 ActionType.ON_SAVE
-        ));
+        );
+
+        callback.onItemAction(action);
     }
 
     public boolean isLongText() {
