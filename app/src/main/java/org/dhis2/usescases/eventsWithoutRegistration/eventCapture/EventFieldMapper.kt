@@ -116,7 +116,7 @@ class EventFieldMapper(
                         totalFields++
                     }
                 }
-                if (field is UnsupportedViewModel) unsupportedFields++
+                if (field is UnsupportedViewModel) totalFields--
             }
         }
     }

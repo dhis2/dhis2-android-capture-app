@@ -84,7 +84,7 @@ class EventInitialPresenterTest {
         verify(view).setProgramStage(any())
         verify(view).setEvent(any())
         verify(view).setCatComboOptions(catCombo, listOf(), null)
-        verify(view).updatePercentage(any(), any())
+        verify(view).updatePercentage(any())
         verify(view).setHideSection(null)
         verify(view).setOrgUnit(any(), any())
     }

@@ -33,7 +33,7 @@ public class EventCaptureContract {
 
         EventCaptureContract.Presenter getPresenter();
 
-        void updatePercentage(float primaryValue, float secondaryValue);
+        void updatePercentage(float primaryValue);
 
         void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldUiModel> emptyMandatoryFields);
 

@@ -357,8 +357,7 @@ public class EventInitialPresenter {
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 sectionsAndFields -> view.updatePercentage(
-                                        eventFieldMapper.completedFieldsPercentage(),
-                                        eventFieldMapper.unsupportedFieldsPercentage()),
+                                        eventFieldMapper.completedFieldsPercentage()),
                                 Timber::d
                         ));
     }
