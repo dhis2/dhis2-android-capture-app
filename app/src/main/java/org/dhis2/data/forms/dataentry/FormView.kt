@@ -20,6 +20,7 @@ import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
@@ -27,7 +28,7 @@ import timber.log.Timber
 
 class FormView(
     formRepository: FormRepository,
-    private val onListChangedCallback: ((value: String) -> Unit)?
+    private val onListChangedCallback: ((action: RowAction) -> Unit)?
 ) : Fragment() {
 
     private val viewModel: FormViewModel by viewModels {
@@ -48,7 +49,6 @@ class FormView(
         binding = DataBindingUtil.inflate(inflater, R.layout.view_form, container, false)
         binding.lifecycleOwner = this
         dataEntryHeaderHelper = DataEntryHeaderHelper(binding.headerContainer, binding.recyclerView)
-        binding.recyclerView.background = this.background
         binding.recyclerView.layoutManager =
             object : LinearLayoutManager(context, VERTICAL, false) {
                 override fun onInterceptFocusSearch(focused: View, direction: Int): View {
@@ -122,10 +122,8 @@ class FormView(
 
         viewModel.savedValue.observe(
             viewLifecycleOwner,
-            Observer { value ->
-                onListChangedCallback?.let { action ->
-                    action(value)
-                }
+            Observer { rowAction ->
+                onListChangedCallback?.let { it(rowAction) }
             }
         )
 

@@ -200,8 +200,8 @@
                 app:layout_constraintVertical_bias="0"
                 tools:listitem="@layout/item_header_filter" />
 
-            <org.dhis2.data.forms.dataentry.FormView
-                android:id="@+id/searchFormView"
+            <FrameLayout
+                android:id="@+id/formViewContainer"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:focusableInTouchMode="true"

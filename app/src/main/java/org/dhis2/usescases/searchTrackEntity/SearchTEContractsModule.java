@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
 import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.model.RowAction;
 import org.dhis2.uicomponents.map.model.EventUiComponentModel;
 import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.general.AbstractActivityContracts;
@@ -23,6 +24,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import java.util.HashMap;
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
@@ -177,5 +179,7 @@ public class SearchTEContractsModule {
         void setProgramForTesting(Program program);
 
         void clearOtherFiltersIfWebAppIsConfig();
+
+        Flowable<RowAction> getFieldProcessor();
     }
 }
