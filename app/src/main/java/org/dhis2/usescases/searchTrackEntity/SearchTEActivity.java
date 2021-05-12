@@ -45,7 +45,6 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
-import org.dhis2.data.forms.dataentry.DataEntryAdapter;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.form.model.FieldUiModel;
@@ -134,7 +133,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private String updateTei;
     private String updateEvent;
     private CarouselAdapter carouselAdapter;
-    private DataEntryAdapter adapter = new DataEntryAdapter();
 
     //---------------------------------------------------------------------------------------------
 
@@ -174,7 +172,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.scrollView.setAdapter(liveAdapter);
         }
 
-        binding.formRecycler.setAdapter(adapter);
+        binding.searchFormView.init(this);
+        binding.searchFormView.setNeedToForceUpdate(true);
+
         binding.enrollmentButton.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 v.requestFocus();
@@ -462,7 +462,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void setFormData(List<FieldUiModel> data) {
-        adapter.swap(data, () -> adapter.notifyDataSetChanged());
+        binding.searchFormView.render(data);
         updateFiltersSearch(presenter.getQueryData().size());
     }
 
@@ -736,7 +736,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void showHideFilter() {
         binding.filterRecyclerLayout.setVisibility(GONE);
-        binding.formRecycler.setVisibility(View.VISIBLE);
+        binding.searchFormView.setVisibility(View.VISIBLE);
 
         swipeFilters(false);
     }
@@ -744,7 +744,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void showHideFilterGeneral() {
         binding.filterRecyclerLayout.setVisibility(View.VISIBLE);
-        binding.formRecycler.setVisibility(GONE);
+        binding.searchFormView.setVisibility(GONE);
 
         swipeFilters(true);
     }
@@ -777,7 +777,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         initSet.clone(binding.backdropLayout);
 
         if (backDropActive) {
-            initSet.connect(R.id.mainLayout, ConstraintSet.TOP, general ? R.id.filterRecyclerLayout : R.id.form_recycler, ConstraintSet.BOTTOM, general ? ExtensionsKt.getDp(16) : 0);
+            initSet.connect(R.id.mainLayout, ConstraintSet.TOP, general ? R.id.filterRecyclerLayout : R.id.searchFormView, ConstraintSet.BOTTOM, general ? ExtensionsKt.getDp(16) : 0);
         } else {
             initSet.connect(R.id.mainLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
         }
