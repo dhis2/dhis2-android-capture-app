@@ -74,7 +74,7 @@ class FormRepositoryImplTest {
 
     @Test
     fun `Should update not save an item with error when ON_SAVE`() {
-        //When user updates a field with error
+        // When user updates a field with error
         val result = repository.processUserAction(
             RowAction(
                 id = "testUid",
@@ -84,13 +84,13 @@ class FormRepositoryImplTest {
             )
         )
 
-        //Then item should not be saved
+        // Then item should not be saved
         assertThat(result.valueStoreResult, `is`(ValueStoreResult.VALUE_HAS_NOT_CHANGED))
     }
 
     @Test
     fun `Should set focus to first item`() {
-        //Given a list of non focused items
+        // Given a list of non focused items
         repository.composeList(provideItemList())
 
         //When user taps on first item
@@ -102,13 +102,13 @@ class FormRepositoryImplTest {
             )
         )
 
-        //Then result list should has it's first item focused
+        // Then result list should has it's first item focused
         assertTrue(repository.composeList()[0].focused)
     }
 
     @Test
     fun `Should set focus to the next editable item when tapping on next`() {
-        //Given a list with first item focused
+        // Given a list with first item focused
         repository.composeList(provideItemList())
         repository.processUserAction(
             RowAction(
@@ -118,7 +118,7 @@ class FormRepositoryImplTest {
             )
         )
 
-        //When user taps on next
+        // When user taps on next
         repository.processUserAction(
             RowAction(
                 id = "uid001",
@@ -127,7 +127,7 @@ class FormRepositoryImplTest {
             )
         )
 
-        //Then result list should has second item focused
+        // Then result list should has second item focused
         assertFalse(repository.composeList()[0].focused)
         assertTrue(repository.composeList()[1].focused)
 
@@ -135,10 +135,10 @@ class FormRepositoryImplTest {
 
     @Test
     fun `Should update value when text changes`() {
-        //Given a list of items
+        // Given a list of items
         repository.composeList(provideItemList())
 
-        //When user updates second item text
+        // When user updates second item text
         repository.processUserAction(
             RowAction(
                 id = "uid002",
@@ -147,7 +147,7 @@ class FormRepositoryImplTest {
             )
         )
 
-        //Then first item value should has change
+        // Then first item value should has change
         assertThat(repository.composeList()[1].value, `is`("newValue"))
     }
 

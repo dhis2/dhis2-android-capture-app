@@ -55,7 +55,7 @@ interface FieldUiModel {
     interface Callback {
         fun onNext()
         fun showDialog(title: String, message: String?)
-        fun showCustomCalendar(uid: String,label: String?, date: Date)
+        fun showCustomCalendar(uid: String, label: String?, date: Date)
         fun showYearMonthDayPicker(uid: String, year: Int, month: Int, day: Int)
         fun onItemAction(action: RowAction)
     }
