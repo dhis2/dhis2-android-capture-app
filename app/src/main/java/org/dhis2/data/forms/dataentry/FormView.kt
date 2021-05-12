@@ -122,7 +122,8 @@ class FormView(
                             datePicker.dayOfMonth
                         )
                     }
-                }).show()
+                }
+            ).show()
         }
 
         adapter.onShowYearMonthDayPicker = { uid, year, month, day ->

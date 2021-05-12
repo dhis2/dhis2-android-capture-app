@@ -95,8 +95,10 @@ fun setTextColorHintTextInputLayout(
             arrayOf(
                 intArrayOf(R.attr.state_focused),
                 intArrayOf(-R.attr.state_focused)
-            ), intArrayOf(
-                color, color
+            ),
+            intArrayOf(
+                color,
+                color
             )
         )
         textInputLayout.apply {
