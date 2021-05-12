@@ -10,11 +10,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputLayout
+import java.util.Calendar
+import java.util.Date
 import org.dhis2.Bindings.toDate
 import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.DateUtils
-import java.util.Calendar
-import java.util.Date
 
 @BindingAdapter("setTextColorAgeView")
 fun setTextColorAgeView(
@@ -43,7 +43,6 @@ fun tintDescriptionLabel(
     }
     imageView.setColorFilter(color)
 }
-
 
 @BindingAdapter("setEditTextColor")
 fun setEditTextColor(
@@ -96,7 +95,9 @@ fun setTextColorHintTextInputLayout(
             arrayOf(
                 intArrayOf(R.attr.state_focused),
                 intArrayOf(-R.attr.state_focused)
-            ), intArrayOf(color, color)
+            ), intArrayOf(
+                color, color
+            )
         )
         textInputLayout.apply {
             defaultHintTextColor = colorStateList

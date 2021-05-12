@@ -128,12 +128,12 @@ class FormView(
         adapter.onShowYearMonthDayPicker = { uid, year, month, day ->
             alertDialogView =
                 LayoutInflater.from(requireContext()).inflate(R.layout.dialog_age, null)
-                val yearPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_year)
-                val monthPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_month)
-                val dayPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_days)
-                yearPicker.setText(year.toString())
-                monthPicker.setText(month.toString())
-                dayPicker.setText(day.toString())
+            val yearPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_year)
+            val monthPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_month)
+            val dayPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_days)
+            yearPicker.setText(year.toString())
+            monthPicker.setText(month.toString())
+            dayPicker.setText(day.toString())
 
             AlertDialog.Builder(requireContext(), R.style.CustomDialog)
                 .setView(alertDialogView)
