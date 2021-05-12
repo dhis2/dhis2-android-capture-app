@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.Flowable
 import io.reactivex.processors.FlowableProcessor
 import junit.framework.Assert.assertTrue
 import org.dhis2.data.forms.FormSectionViewModel
@@ -139,6 +140,18 @@ class EventCapturePresenterTest {
     fun `Should return current when section is last one and hide section is not empty`() {
         val activeSection = getNextVisibleSection.get("sectionUid_3", sections())
         assertTrue(activeSection == "sectionUid_3")
+    }
+
+    @Test
+    fun `Should save image and save value`() {
+        val uid = "fieldUid"
+        val value = "fileValue"
+        whenever(
+            valueStore.save(uid, value)
+        ) doReturn Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_CHANGED))
+        presenter.saveImage(uid, value)
+        verify(valueStore).save(uid, value)
+        verify(eventRepository).updateFieldValue(uid)
     }
 
     private fun sections(): MutableList<FormSectionViewModel> {
