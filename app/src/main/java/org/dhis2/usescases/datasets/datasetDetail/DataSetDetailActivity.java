@@ -1,8 +1,6 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
@@ -82,6 +80,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
     @Override
     protected void onPause() {
+        presenter.setOpeningFilterToNone();
         presenter.onDettach();
         super.onPause();
     }

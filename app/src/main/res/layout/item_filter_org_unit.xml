@@ -9,10 +9,6 @@
         <variable
             name="filterItem"
             type="org.dhis2.utils.filters.OrgUnitFilter" />
-
-       <!-- <variable
-            name="filterPresenter"
-            type="org.dhis2.data.filter.FilterPresenter" />-->
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

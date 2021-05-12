@@ -209,6 +209,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void onPause() {
+        presenter.setOpeningFilterToNone();
         presenter.onDettach();
         super.onPause();
     }

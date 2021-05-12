@@ -1056,4 +1056,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             queryData.put(data.getId(), data.getValue());
         }
     }
+
+    @Override
+    public void setOpeningFilterToNone(){
+        filterRepository.collapseAllFilters();
+    }
 }

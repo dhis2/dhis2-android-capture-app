@@ -160,6 +160,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        presenter.setOpeningFilterToNone();
         presenter.onDettach();
         FilterManager.getInstance().clearEventStatus();
         FilterManager.getInstance().clearCatOptCombo();

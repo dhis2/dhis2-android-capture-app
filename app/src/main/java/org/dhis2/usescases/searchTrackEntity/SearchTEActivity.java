@@ -264,6 +264,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     protected void onPause() {
+        presenter.setOpeningFilterToNone();
         if (initSearchNeeded) {
             presenter.onDestroy();
         }

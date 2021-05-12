@@ -253,7 +253,6 @@ class FilterRepository @Inject constructor(
             .blockingGet()
 
     fun programFilters(programUid: String): List<FilterItem> {
-        collapseAllFilters()
         return d2.programModule().programs().uid(programUid).get()
             .map {
                 if (it.programType() == ProgramType.WITH_REGISTRATION) {
@@ -265,7 +264,6 @@ class FilterRepository @Inject constructor(
     }
 
     fun dashboardFilters(programUid: String): List<FilterItem> {
-        collapseAllFilters()
         return d2.programModule().programs().uid(programUid).get()
             .map {
                 if (it.programType() == ProgramType.WITH_REGISTRATION) {
@@ -277,7 +275,6 @@ class FilterRepository @Inject constructor(
     }
 
     fun globalTrackedEntityFilters(): List<FilterItem> {
-        collapseAllFilters()
         val defaultFilters = createDefaultTrackedEntityFilters()
 
         if (webAppIsNotConfigured()) {
@@ -334,7 +331,6 @@ class FilterRepository @Inject constructor(
     }
 
     fun dataSetFilters(dataSetUid: String): List<FilterItem> {
-        collapseAllFilters()
         val defaultFilters = createDefaultDatasetFilters(dataSetUid)
 
         if (webAppIsNotConfigured()) {
@@ -394,7 +390,6 @@ class FilterRepository @Inject constructor(
     }
 
     fun homeFilters(): List<FilterItem> {
-        collapseAllFilters()
         val defaultFilters = createDefaultHomeFilters()
 
         if (webAppIsNotConfigured()) {
@@ -702,7 +697,7 @@ class FilterRepository @Inject constructor(
         } ?: eventQuery
     }
 
-    private fun collapseAllFilters() {
+    fun collapseAllFilters() {
         observableOpenFilter.set(Filters.NON)
     }
 }
