@@ -75,9 +75,9 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setLabel(String label, String description) {
-    //    this.label = label;
-    //    descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
-     /*   descriptionLabel.setOnClickListener(v ->
+        this.label = label;
+        descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
+        descriptionLabel.setOnClickListener(v ->
                 new CustomDialog(
                         getContext(),
                         label,
@@ -86,31 +86,31 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
                         null,
                         Constants.DESCRIPTION_DIALOG,
                         null
-                ).show()); */
-    /*    if (binding instanceof AgeCustomViewAccentBinding) {
+                ).show());
+        if (binding instanceof AgeCustomViewAccentBinding) {
             ((AgeCustomViewAccentBinding) binding).setLabel(label);
             ((AgeCustomViewAccentBinding) binding).setDescription(description);
         } else {
             ((AgeCustomViewBinding) binding).setLabel(label);
             ((AgeCustomViewBinding) binding).setDescription(description);
-        } */
+        }
     }
 
     public void setWarning(String msg) {
         setErrorColor(ContextCompat.getColor(getContext(), R.color.warning_color));
-    //    errorView.setText(msg);
-    //    errorView.setVisibility(View.VISIBLE);
+        errorView.setText(msg);
+        errorView.setVisibility(View.VISIBLE);
     }
 
     public void setError(String msg) {
         setErrorColor(ContextCompat.getColor(getContext(), R.color.error_color));
-    //    errorView.setText(msg);
-    //    errorView.setVisibility(View.VISIBLE);
+        errorView.setText(msg);
+        errorView.setVisibility(View.VISIBLE);
     }
 
     public void clearErrors() {
         setErrorColor(ContextCompat.getColor(getContext(), R.color.textPrimary));
-   //     errorView.setVisibility(View.GONE);
+        errorView.setVisibility(View.GONE);
     }
 
     private void setErrorColor(int color) {
@@ -142,6 +142,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
                 getYearsDialog().show();
                 break;
         }
+
     }
 
     @Override
@@ -245,11 +246,11 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         }
     }
 
-  /*  public void setInitialValue(String initialValue) {
+    public void setInitialValue(String initialValue) {
         Date initialDate = StringExtensionsKt.toDate(initialValue);
 
         if (initialDate != null) {
-          //  String result = dateFormat.format(initialDate);
+            String result = dateFormat.format(initialDate);
             selectedCalendar.setTime(initialDate);
 
             int[] dateDifference = DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
@@ -257,21 +258,19 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
             month.setText(String.valueOf(dateDifference[1]));
             year.setText(String.valueOf(dateDifference[0]));
 
-        //    date.setText(result);
+            date.setText(result);
         }
-    } */
-
-    public void setInitialValue(String initialValue) {
-
     }
+
+
     public void setIsBgTransparent(Boolean isBgTransparent) {
-     //   this.isBgTransparent = isBgTransparent;
-     /*   if (!isBgTransparent)
+        this.isBgTransparent = isBgTransparent;
+        if (!isBgTransparent)
             binding = AgeCustomViewAccentBinding.inflate(inflater, this, true);
         else
-            binding = AgeCustomViewBinding.inflate(inflater, this, true); */
+            binding = AgeCustomViewBinding.inflate(inflater, this, true);
 
-       /* inputLayout = findViewById(R.id.inputLayout);
+        inputLayout = findViewById(R.id.inputLayout);
         yearInputLayout = findViewById(R.id.yearInputLayout);
         monthInputLayout = findViewById(R.id.monthInputLayout);
         dayInputLayout = findViewById(R.id.dayInputLayout);
@@ -279,58 +278,54 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         day = findViewById(R.id.input_days);
         month = findViewById(R.id.input_month);
         year = findViewById(R.id.input_year);
-        labelText = findViewById(R.id.label); */
+        labelText = findViewById(R.id.label);
         selectedCalendar = Calendar.getInstance();
         dateFormat = DateUtils.uiDateFormat();
-    //    descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
-    //    errorView = findViewById(R.id.errorMessage);
+        descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
+        errorView = findViewById(R.id.errorMessage);
 
-    //    date.setFocusable(false); //Makes editText not editable
-    //    date.setClickable(true);//  but clickable
-
+        date.setFocusable(false); //Makes editText not editable
+        date.setClickable(true);//  but clickable
         date.setOnFocusChangeListener(this::onFocusChanged);
         date.setOnClickListener(this);
 
-   //     day.setFocusable(false);
-   //     day.setClickable(true);
-   //     month.setFocusable(false);
-   //     month.setClickable(true);
-   //     year.setFocusable(false);
-   //     year.setClickable(true);
+        day.setFocusable(false);
+        day.setClickable(true);
+        month.setFocusable(false);
+        month.setClickable(true);
+        year.setFocusable(false);
+        year.setClickable(true);
 
-   //     day.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
-   //     month.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
-   //     year.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
+        day.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
+        month.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
+        year.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
 
-        /********* REVIEW DATASETS ***********/
+        day.setOnEditorActionListener((v, actionId, event) -> {
+            nextFocus(v);
+            return true;
+        });
 
-    //    day.setOnEditorActionListener((v, actionId, event) -> {
-    //        nextFocus(v);
-    //        return true;
-    //    });
+        month.setOnEditorActionListener((v, actionId, event) -> {
+            day.requestFocus();
+            return true;
+        });
 
-    //    month.setOnEditorActionListener((v, actionId, event) -> {
-    //        day.requestFocus();
-    //        return true;
-    //    });
-
-    //    year.setOnEditorActionListener((v, actionId, event) -> {
-    //        month.requestFocus();
-    //        return true;
-    //    });
-
+        year.setOnEditorActionListener((v, actionId, event) -> {
+            month.requestFocus();
+            return true;
+        });
         day.setOnClickListener(this);
         month.setOnClickListener(this);
         year.setOnClickListener(this);
     }
 
     public void setEditable(Boolean editable) {
-       // date.setEnabled(editable);
-    //    day.setEnabled(editable);
-    //    month.setEnabled(editable);
-    //    year.setEnabled(editable);
+        date.setEnabled(editable);
+        day.setEnabled(editable);
+        month.setEnabled(editable);
+        year.setEnabled(editable);
 
-   /*     date.setTextColor(
+        date.setTextColor(
                 !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
                         ContextCompat.getColor(getContext(), R.color.textPrimary)
         );
@@ -345,16 +340,16 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         year.setTextColor(
                 !isBgTransparent ? ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT) :
                         ContextCompat.getColor(getContext(), R.color.textPrimary)
-        ); */
+        );
 
-    //    setEditable(editable,
-    //            labelText,
-    //            descriptionLabel,
-    //            inputLayout,
-    //            dayInputLayout,
-    //            monthInputLayout,
-    //            yearInputLayout
-    //    );
+        setEditable(editable,
+                labelText,
+                descriptionLabel,
+                inputLayout,
+                dayInputLayout,
+                monthInputLayout,
+                yearInputLayout
+        );
     }
 
     public void clearValues() {
@@ -369,7 +364,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setViewModel(AgeViewModel viewModel) {
-    //   this.viewModel = viewModel;
+        this.viewModel = viewModel;
         if (binding == null) {
             setIsBgTransparent(viewModel.isBackgroundTransparent());
         }
@@ -379,21 +374,21 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
             }
         });
 
-     //   setLabel(viewModel.getFormattedLabel(), viewModel.description());
+        setLabel(viewModel.getFormattedLabel(), viewModel.description());
 
-    //    if (!isEmpty(viewModel.value())) {
-    //        setInitialValue(viewModel.value());
-    //    } else {
-   //         clearValues();
-   //     }
+        if (!isEmpty(viewModel.value())) {
+            setInitialValue(viewModel.value());
+        } else {
+            clearValues();
+        }
 
-    //    if (viewModel.warning() != null)
-    //        setWarning(viewModel.warning());
-    //    else if (viewModel.error() != null)
-    //        setError(viewModel.error());
-    //    else if (!viewModel.isSearchMode())
-    //        clearErrors();
+        if (viewModel.warning() != null)
+            setWarning(viewModel.warning());
+        else if (viewModel.error() != null)
+            setError(viewModel.error());
+        else if (!viewModel.isSearchMode())
+            clearErrors();
 
-       // setEditable(viewModel.editable());
+        setEditable(viewModel.editable());
     }
 }
