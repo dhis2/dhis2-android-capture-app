@@ -47,8 +47,8 @@ import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.forms.dataentry.DataEntryAdapter;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivitySearchBinding;
+import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.uicomponents.map.ExternalMapNavigation;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
@@ -461,7 +461,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void setFormData(List<FieldViewModel> data) {
+    public void setFormData(List<FieldUiModel> data) {
         adapter.swap(data, () -> adapter.notifyDataSetChanged());
         updateFiltersSearch(presenter.getQueryData().size());
     }
