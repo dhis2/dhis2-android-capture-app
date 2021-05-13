@@ -25,7 +25,7 @@ class FormRepositoryPersistenceImpl(
                     )
 
                 } else {
-                    formValueStore.save(action.id, action.value, action.extraData).blockingSingle()
+                    formValueStore.save(action.id, action.value, action.extraData)
                 }
             }
             ActionType.ON_FOCUS, ActionType.ON_NEXT -> {
@@ -111,7 +111,4 @@ class FormRepositoryPersistenceImpl(
             }
         }
     }
-
-    fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =
-        mapIndexed { i, existing -> if (i == index) elem else existing }
 }
