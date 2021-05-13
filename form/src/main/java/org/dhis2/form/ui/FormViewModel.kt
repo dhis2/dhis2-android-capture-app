@@ -24,14 +24,14 @@ class FormViewModel(
     private val _items = MutableLiveData<List<FieldUiModel>>()
     val items: LiveData<List<FieldUiModel>> = _items
 
-    private val _savedValue = MutableLiveData<String>()
-    val savedValue: LiveData<String> = _savedValue
+    private val _savedValue = MutableLiveData<RowAction>()
+    val savedValue: LiveData<RowAction> = _savedValue
 
     fun onItemAction(action: RowAction) = runBlocking {
         processAction(action).collect { result ->
             when (result.valueStoreResult) {
                 ValueStoreResult.VALUE_CHANGED -> {
-                    _savedValue.value = result.uid
+                    _savedValue.value = action
                 }
                 else -> _items.value = repository.composeList()
             }

@@ -6,7 +6,7 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 
-class FormRepositoryImpl(
+class FormRepositoryPersistenceImpl(
     private val formValueStore: FormValueStore
 ) : FormRepository {
 

@@ -80,8 +80,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        formView = new FormView(formRepository, value -> {
-            activity.getPresenter().setValueChanged(value);
+        formView = new FormView(formRepository, action -> {
+            activity.getPresenter().setValueChanged(action.getId());
             activity.getPresenter().nextCalculation(true);
             return null;
         });
