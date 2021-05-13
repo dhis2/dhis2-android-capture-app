@@ -17,10 +17,8 @@ import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
-import org.dhis2.data.forms.dataentry.StoreResult;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
@@ -28,6 +26,8 @@ import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.model.StoreResult;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
@@ -108,7 +108,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
-    public Observable<List<FieldViewModel>> searchFields(@Nullable String programUid, Map<String, String> currentSearchValues) {
+    public Observable<List<FieldUiModel>> searchFields(@Nullable String programUid, Map<String, String> currentSearchValues) {
         if (programUid == null || programUid.isEmpty()) {
             return trackedEntitySearchFields(currentSearchValues);
         } else {
@@ -116,7 +116,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
     }
 
-    private Observable<List<FieldViewModel>> trackedEntitySearchFields(Map<String, String> currentSearchValues) {
+    private Observable<List<FieldUiModel>> trackedEntitySearchFields(Map<String, String> currentSearchValues) {
         return d2.trackedEntityModule().trackedEntityTypeAttributes()
                 .byTrackedEntityTypeUid().eq(teiType)
                 .get().toFlowable()
@@ -135,7 +135,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .toList().toObservable();
     }
 
-    private Observable<List<FieldViewModel>> programTrackedEntityAttributes(String programUid, Map<String, String> currentSearchValues) {
+    private Observable<List<FieldUiModel>> programTrackedEntityAttributes(String programUid, Map<String, String> currentSearchValues) {
         return d2.programModule().programTrackedEntityAttributes()
                 .withRenderType()
                 .byProgram().eq(programUid)

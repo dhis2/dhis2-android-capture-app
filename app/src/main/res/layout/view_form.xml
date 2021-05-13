@@ -10,7 +10,6 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/form_field_background"
         android:descendantFocusability="beforeDescendants"
         android:focusable="true"
         android:focusableInTouchMode="true"
