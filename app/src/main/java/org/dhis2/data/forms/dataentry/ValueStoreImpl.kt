@@ -314,7 +314,8 @@ class ValueStoreImpl(
 
     override fun save(uid: String, value: String?, extraData: String?): StoreResult {
         return when (entryMode) {
-            DataEntryStore.EntryMode.ATTR -> checkStoreEnrollmentDetail(uid, value, extraData).blockingSingle()
+            DataEntryStore.EntryMode.ATTR ->
+                checkStoreEnrollmentDetail(uid, value, extraData).blockingSingle()
             else -> save(uid, value).blockingSingle()
         }
     }
