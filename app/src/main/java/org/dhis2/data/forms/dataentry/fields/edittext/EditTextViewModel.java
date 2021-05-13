@@ -150,7 +150,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     }
 
     public void onTextFilled(String value, String error) {
-        RowAction action = new RowAction(
+        processor().onNext(new RowAction(
                 uid(),
                 value,
                 false,
@@ -159,9 +159,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
                 null,
                 error,
                 ActionType.ON_SAVE
-        );
-
-        callback.onItemAction(action);
+        ));
     }
 
     public boolean isLongText() {

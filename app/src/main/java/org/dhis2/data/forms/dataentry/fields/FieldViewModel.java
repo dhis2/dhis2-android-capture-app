@@ -160,36 +160,37 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     @Override
     public void onItemClick() {
-        RowAction action = new RowAction(
-                uid(),
-                value(),
-                false,
-                null,
-                null,
-                null,
-                null,
-                ActionType.ON_FOCUS
-        );
-
-        callback.onItemAction(action);
+        if (processor() != null) {
+            RowAction action = new RowAction(
+                    uid(),
+                    value(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null,
+                    ActionType.ON_FOCUS
+            );
+            Objects.requireNonNull(processor()).onNext(action);
+        }
     }
 
     @Override
     public void onNext() {
         callback.onNext();
-
-        RowAction action = new RowAction(
-                uid(),
-                value(),
-                false,
-                null,
-                null,
-                null,
-                null,
-                ActionType.ON_NEXT
-        );
-
-        callback.onItemAction(action);
+        if (processor() != null) {
+            RowAction action = new RowAction(
+                    uid(),
+                    value(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null,
+                    ActionType.ON_NEXT
+            );
+            Objects.requireNonNull(processor()).onNext(action);
+        }
     }
 
     public void onTextChange(String value) {
