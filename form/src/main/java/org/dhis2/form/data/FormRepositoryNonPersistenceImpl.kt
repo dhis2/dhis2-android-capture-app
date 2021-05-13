@@ -6,7 +6,7 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 
-class FormRepositoryNonResistantImpl : FormRepository {
+class FormRepositoryNonPersistenceImpl : FormRepository {
     override fun processUserAction(action: RowAction): StoreResult {
         return when (action.type) {
             ActionType.ON_TEXT_CHANGE,

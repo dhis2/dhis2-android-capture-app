@@ -1056,8 +1056,4 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             queryData.put(data.getId(), data.getValue());
         }
     }
-
-    public Flowable<RowAction> getFieldProcessor() {
-        return fieldProcessor;
-    }
 }

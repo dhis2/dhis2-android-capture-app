@@ -48,6 +48,7 @@ import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.forms.dataentry.FormView;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.model.FieldUiModel;
@@ -90,7 +91,6 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
-import io.reactivex.processors.FlowableProcessor;
 import kotlin.Pair;
 import kotlin.Unit;
 import timber.log.Timber;
@@ -114,6 +114,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     ExternalMapNavigation mapNavigation;
     @Inject
     FormRepository formRepository;
+    @Inject
+    FieldViewModelFactory fieldViewModelFactory;
 
     private String initialProgram;
     private String tEType;
@@ -180,7 +182,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
 
         formView = new FormView(formRepository, action -> {
-            ((FlowableProcessor) presenter.getFieldProcessor()).onNext(action);
+            fieldViewModelFactory.fieldProcessor().onNext(action);
             return null;
         });
         formView.setNeedToForceUpdate(true);

@@ -19,7 +19,7 @@ import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.form.data.FormRepository;
-import org.dhis2.form.data.FormRepositoryNonResistantImpl;
+import org.dhis2.form.data.FormRepositoryNonPersistenceImpl;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
 import org.dhis2.uicomponents.map.geometry.line.MapLineRelationshipToFeature;
@@ -183,6 +183,6 @@ public class SearchTEModule {
     @Provides
     @PerActivity
     FormRepository provideFormRepository() {
-        return new FormRepositoryNonResistantImpl();
+        return new FormRepositoryNonPersistenceImpl();
     }
 }

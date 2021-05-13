@@ -18,14 +18,14 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-class FormRepositoryImplTest {
+class FormRepositoryPersistenceImplTest {
 
     private val formValueStore: FormValueStore = mock()
-    private lateinit var repository: FormRepositoryImpl
+    private lateinit var repository: FormRepositoryPersistenceImpl
 
     @Before
     fun setUp() {
-        repository = FormRepositoryImpl(formValueStore)
+        repository = FormRepositoryPersistenceImpl(formValueStore)
     }
 
     @Test
