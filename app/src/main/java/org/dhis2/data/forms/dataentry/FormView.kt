@@ -20,6 +20,7 @@ import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
@@ -27,7 +28,7 @@ import timber.log.Timber
 
 class FormView(
     formRepository: FormRepository,
-    private val onListChangedCallback: ((value: String) -> Unit)?
+    private val onListChangedCallback: ((action: RowAction) -> Unit)?
 ) : Fragment() {
 
     private val viewModel: FormViewModel by viewModels {
@@ -38,6 +39,7 @@ class FormView(
     private lateinit var dataEntryHeaderHelper: DataEntryHeaderHelper
     private lateinit var adapter: DataEntryAdapter
     var scrollCallback: ((Boolean) -> Unit)? = null
+    var needToForceUpdate: Boolean? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -118,15 +120,19 @@ class FormView(
             }
         }
 
-        viewModel.savedValue.observe(viewLifecycleOwner, Observer { value ->
-            onListChangedCallback?.let { action ->
-                action(value)
+        viewModel.savedValue.observe(
+            viewLifecycleOwner,
+            Observer { rowAction ->
+                onListChangedCallback?.let { it(rowAction) }
             }
-        })
+        )
 
-        viewModel.items.observe(viewLifecycleOwner, Observer { items ->
-            render(items)
-        })
+        viewModel.items.observe(
+            viewLifecycleOwner,
+            Observer { items ->
+                render(items)
+            }
+        )
     }
 
     fun render(items: List<FieldUiModel>) {
@@ -145,7 +151,10 @@ class FormView(
         adapter.swap(
             items,
             Runnable {
-                dataEntryHeaderHelper.onItemsUpdatedCallback()
+                when (needToForceUpdate) {
+                    true -> adapter.notifyDataSetChanged()
+                    else -> dataEntryHeaderHelper.onItemsUpdatedCallback()
+                }
             }
         )
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
