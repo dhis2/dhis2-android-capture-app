@@ -3,7 +3,6 @@ package org.dhis2.form.data
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import io.reactivex.Flowable
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
@@ -65,8 +64,9 @@ class FormRepositoryPersistenceImplTest {
             value = "testValue",
             type = ActionType.ON_SAVE
         )
-        whenever(formValueStore.save(action.id, action.value, null)) doReturn Flowable.just(
-            StoreResult(action.id, ValueStoreResult.VALUE_CHANGED)
+        whenever(formValueStore.save(action.id, action.value, null)) doReturn StoreResult(
+            action.id,
+            ValueStoreResult.VALUE_CHANGED
         )
         val result = repository.processUserAction(action)
         assertThat(result.valueStoreResult, `is`(ValueStoreResult.VALUE_CHANGED))

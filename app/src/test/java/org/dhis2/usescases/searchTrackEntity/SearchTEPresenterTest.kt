@@ -14,6 +14,7 @@ import org.dhis2.data.dhislogic.DhisMapUtils
 import org.dhis2.data.filter.FilterRepository
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
+import org.dhis2.form.data.FormRepository
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
@@ -55,6 +56,7 @@ class SearchTEPresenterTest {
     private val filterRepository: FilterRepository = mock()
     private val disableHomeFiltersFromSettingsApp: DisableHomeFiltersFromSettingsApp = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+    private val formRepository: FormRepository = mock()
 
     @Before
     fun setUp() {
@@ -82,7 +84,8 @@ class SearchTEPresenterTest {
             filterRepository,
             null,
             disableHomeFiltersFromSettingsApp,
-            matomoAnalyticsController
+            matomoAnalyticsController,
+            formRepository
         )
     }
 
