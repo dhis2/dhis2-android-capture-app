@@ -38,6 +38,8 @@
             android:background="@drawable/ic_front_backdrop_bg"
             android:visibility="gone"
             tools:visibility="visible"
+            app:mapbox_uiLogoGravity="top|start"
+            app:mapbox_uiAttributionGravity="top|start"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
