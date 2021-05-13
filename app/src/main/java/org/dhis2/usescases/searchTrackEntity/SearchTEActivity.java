@@ -183,7 +183,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         formView = new FormView(formRepository, action -> {
             fieldViewModelFactory.fieldProcessor().onNext(action);
-            return null;
+            presenter.populateList(null);
+            return Unit.INSTANCE;
         });
         formView.setNeedToForceUpdate(true);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

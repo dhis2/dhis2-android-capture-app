@@ -312,10 +312,10 @@ class ValueStoreImpl(
             }
     }
 
-    override fun save(uid: String, value: String?, extraData: String?): Flowable<StoreResult> {
+    override fun save(uid: String, value: String?, extraData: String?): StoreResult {
         return when (entryMode) {
-            DataEntryStore.EntryMode.ATTR -> checkStoreEnrollmentDetail(uid, value, extraData)
-            else -> save(uid, value)
+            DataEntryStore.EntryMode.ATTR -> checkStoreEnrollmentDetail(uid, value, extraData).blockingSingle()
+            else -> save(uid, value).blockingSingle()
         }
     }
 
