@@ -32,6 +32,7 @@ class FormView @JvmOverloads constructor(
     private val dataEntryHeaderHelper: DataEntryHeaderHelper
     private lateinit var adapter: DataEntryAdapter
     var scrollCallback: ((Boolean) -> Unit)? = null
+    var needToForceUpdate: Boolean? = null
 
     init {
         val params = LayoutParams(MATCH_PARENT, MATCH_PARENT)
@@ -40,6 +41,7 @@ class FormView @JvmOverloads constructor(
         recyclerView = view.findViewById(R.id.recyclerView)
         headerContainer = view.findViewById(R.id.headerContainer)
         dataEntryHeaderHelper = DataEntryHeaderHelper(headerContainer, recyclerView)
+        recyclerView.background = this.background
         recyclerView.layoutManager =
             object : LinearLayoutManager(context, VERTICAL, false) {
                 override fun onInterceptFocusSearch(focused: View, direction: Int): View {
@@ -120,7 +122,10 @@ class FormView @JvmOverloads constructor(
         adapter.swap(
             items,
             Runnable {
-                dataEntryHeaderHelper.onItemsUpdatedCallback()
+                when (needToForceUpdate) {
+                    true -> adapter.notifyDataSetChanged()
+                    else -> dataEntryHeaderHelper.onItemsUpdatedCallback()
+                }
             }
         )
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
