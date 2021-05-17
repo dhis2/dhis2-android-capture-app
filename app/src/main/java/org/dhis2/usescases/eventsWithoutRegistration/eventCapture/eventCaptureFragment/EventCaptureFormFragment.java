@@ -80,11 +80,15 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        formView = new FormView(formRepository, action -> {
-            activity.getPresenter().setValueChanged(action.getId());
-            activity.getPresenter().nextCalculation(true);
-            return null;
-        });
+        formView = new FormView.Builder()
+                .persistence(formRepository)
+                .onItemChangeListener(action -> {
+                    activity.getPresenter().setValueChanged(action.getId());
+                    activity.getPresenter().nextCalculation(true);
+                    return Unit.INSTANCE;
+                })
+                .build();
+
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.replace(R.id.formViewContainer, formView).commit();
         formView.setScrollCallback(isSectionVisible -> {

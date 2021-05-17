@@ -50,7 +50,6 @@ import org.dhis2.data.forms.dataentry.FormView;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.databinding.ActivitySearchBinding;
-import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.uicomponents.map.ExternalMapNavigation;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
@@ -112,8 +111,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     FiltersAdapter filtersAdapter;
     @Inject
     ExternalMapNavigation mapNavigation;
-    @Inject
-    FormRepository formRepository;
     @Inject
     FieldViewModelFactory fieldViewModelFactory;
 
@@ -181,12 +178,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.scrollView.setAdapter(liveAdapter);
         }
 
-        formView = new FormView(formRepository, action -> {
-            fieldViewModelFactory.fieldProcessor().onNext(action);
-            presenter.populateList(null);
-            return Unit.INSTANCE;
-        });
-        formView.setNeedToForceUpdate(true);
+        formView = new FormView.Builder()
+                .onItemChangeListener(action -> {
+                    fieldViewModelFactory.fieldProcessor().onNext(action);
+                    presenter.populateList(null);
+                    return Unit.INSTANCE;
+                })
+                .needToForceUpdate(true)
+                .build();
+
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.formViewContainer, formView).commit();
 

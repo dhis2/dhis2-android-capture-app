@@ -117,9 +117,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         mode = EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
 
-        formView = FormView(formRepository) {
-            presenter.updateFields()
-        }
+        formView = FormView.Builder()
+            .persistence(formRepository)
+            .onItemChangeListener { presenter.updateFields() }
+            .build()
+
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.formViewContainer, formView)
         fragmentTransaction.commit()

@@ -24,6 +24,7 @@ import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
 import org.dhis2.form.data.FormRepository
+import org.dhis2.form.data.FormRepositoryNonPersistenceImpl
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FormViewModel
@@ -33,9 +34,10 @@ import org.dhis2.utils.DatePickerUtils.OnDatePickerClickListener
 import org.dhis2.utils.customviews.CustomDialog
 import timber.log.Timber
 
-class FormView(
+class FormView private constructor(
     formRepository: FormRepository,
-    private val onListChangedCallback: ((action: RowAction) -> Unit)?
+    private val onItemChangeListener: ((action: RowAction) -> Unit)?,
+    private val needToForceUpdate: Boolean = false
 ) : Fragment() {
 
     private val viewModel: FormViewModel by viewModels {
@@ -48,7 +50,6 @@ class FormView(
     private lateinit var alertDialogView: View
     private lateinit var ageDialogDelegate: AgeDialogDelegate
     var scrollCallback: ((Boolean) -> Unit)? = null
-    var needToForceUpdate: Boolean? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -182,7 +183,7 @@ class FormView(
         viewModel.savedValue.observe(
             viewLifecycleOwner,
             Observer { rowAction ->
-                onListChangedCallback?.let { it(rowAction) }
+                onItemChangeListener?.let { it(rowAction) }
             }
         )
 
@@ -247,5 +248,45 @@ class FormView(
         is ScanTextViewModel,
         is CoordinateViewModel -> true
         else -> false
+    }
+
+    class Builder() {
+        private var persistentRepository: FormRepository? = null
+        private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
+        private var needToForceUpdate: Boolean = false
+
+        /**
+         * If you want to persist the items and it's changes in any sources, please provide an
+         * implementation of the repository that fits with your system.
+         *
+         * IF you don't provide any repository implementation, data will be kept in memory.
+         *
+         * NOTE: This step is temporary in order to facilitate refactor, in the future will be
+         * changed by some info like DataEntryStore.EntryMode and Event/Program uid. Then the
+         * library will generate the implementation of the repository.
+         */
+        fun persistence(repository: FormRepository) =
+            apply { this.persistentRepository = repository }
+
+        /**
+         * If you want to handle the behaviour of the form and be notified when any item is updated,
+         * implement this listener.
+         */
+        fun onItemChangeListener(callback: (action: RowAction) -> Unit) =
+            apply { this.onItemChangeListener = callback }
+
+        /**
+         * If it's set to true, any change on the list will make update all of it's items.
+         */
+        fun needToForceUpdate(needToForceUpdate: Boolean) =
+            apply { this.needToForceUpdate = needToForceUpdate }
+
+        fun build(): FormView {
+            return FormView(
+                formRepository = persistentRepository ?: FormRepositoryNonPersistenceImpl(),
+                onItemChangeListener = onItemChangeListener,
+                needToForceUpdate = needToForceUpdate
+            )
+        }
     }
 }
