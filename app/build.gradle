@@ -206,7 +206,6 @@ dependencies {
         exclude group: "junit", module: "junit"
     }
 
-    implementation project(':customFab')
     implementation project(':viewpagerdotsindicator')
     implementation project(':tableview')
     implementation project(":dhis_android_analytics")

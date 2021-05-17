@@ -21,6 +21,7 @@ import org.dhis2.databinding.DevelopmentActivityBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
+import org.dhis2.utils.dialFloatingActionButton.DialItem;
 import org.hisp.dhis.android.core.D2Manager;
 import org.hisp.dhis.rules.models.RuleAction;
 
@@ -31,6 +32,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -52,6 +54,7 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         loadIconsDevTools();
         loadBreakTheGlass();
         loadProgramRuleCheck();
+        loadFabItems();
     }
 
     private void loadProgramRuleCheck() {
@@ -235,5 +238,16 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
                         .show(
                                 getSupportFragmentManager(),
                                 BreakTheGlassBottomDialog.class.getName()));
+    }
+
+    private void loadFabItems() {
+        ArrayList<DialItem> items = new ArrayList<>();
+        items.add(new DialItem(1, "Item 1 with a very very looooooon name that should not be fully shown", R.drawable.ic_note_add));
+        items.add(new DialItem(2, "Item 2", R.drawable.ic_note_add));
+        items.add(new DialItem(3, "Item 3", R.drawable.ic_note_add));
+        binding.dialFabLayout.addDialItems(items, integer -> {
+            Toast.makeText(this, String.format("item %s clicked", integer.toString()), Toast.LENGTH_LONG).show();
+            return Unit.INSTANCE;
+        });
     }
 }
