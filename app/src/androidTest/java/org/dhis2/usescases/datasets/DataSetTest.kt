@@ -43,7 +43,7 @@ class DataSetTest : BaseTest() {
     fun shouldCreateNewDataSet() {
         val period = "Mar 2021"
         val orgUnit = "Ngelehun CHC"
-        startDataSetDetailActivity(ruleDataSetDetail)
+        startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST", ruleDataSetDetail)
 
         dataSetDetailRobot {
             clickOnAddDataSet()
@@ -66,7 +66,7 @@ class DataSetTest : BaseTest() {
 
     @Test
     fun shouldOpenAndEditDataset(){
-        startDataSetDetailActivity(ruleDataSetDetail)
+        startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST",ruleDataSetDetail)
 
         dataSetRobot {
             clickOnDataSetAtPosition(0)
@@ -82,7 +82,7 @@ class DataSetTest : BaseTest() {
 
     @Test
     fun shouldReopenModifyAndCompleteDataset(){
-        startDataSetDetailActivity(ruleDataSetDetail)
+        startDataSetDetailActivity("V8MHeZHIrcP", "Facility Assessment", ruleDataSetDetail)
 
         dataSetRobot {
             clickOnDataSetAtPosition(0)
