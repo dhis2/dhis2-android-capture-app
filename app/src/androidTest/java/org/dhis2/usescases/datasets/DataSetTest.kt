@@ -43,7 +43,7 @@ class DataSetTest : BaseTest() {
     fun shouldCreateNewDataSet() {
         val period = "Mar 2021"
         val orgUnit = "Ngelehun CHC"
-        startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST", ruleDataSetDetail)
+        startDataSetDetailActivity(ruleDataSetDetail)
 
         dataSetDetailRobot {
             clickOnAddDataSet()
@@ -62,15 +62,27 @@ class DataSetTest : BaseTest() {
             waitToDebounce(500)
             clickOnNegativeButton()
         }
-        dataSetDetailRobot {
-            checkDataSetInList(period, orgUnit)
+    }
+
+    @Test
+    fun shouldOpenAndEditDataset(){
+        startDataSetDetailActivity(ruleDataSetDetail)
+
+        dataSetRobot {
+            clickOnDataSetAtPosition(0)
         }
 
+        dataSetTableRobot {
+            typeOnEditTextCell("5", 0, 0)
+            clickOnSaveButton()
+            waitToDebounce(500)
+            clickOnNegativeButton()
+        }
     }
 
     @Test
     fun shouldReopenModifyAndCompleteDataset(){
-        startDataSetDetailActivity("V8MHeZHIrcP", "Facility Assessment", ruleDataSetDetail)
+        startDataSetDetailActivity(ruleDataSetDetail)
 
         dataSetRobot {
             clickOnDataSetAtPosition(0)

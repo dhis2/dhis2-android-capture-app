@@ -1,6 +1,6 @@
 package org.dhis2.usescases.enrollment
 
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.form.model.FieldUiModel
 import org.dhis2.usescases.general.AbstractActivityContracts
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 
@@ -11,7 +11,7 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun renderStatus(status: EnrollmentStatus)
     fun showStatusOptions(currentStatus: EnrollmentStatus)
 
-    fun showFields(fields: List<FieldViewModel>)
+    fun showFields(fields: List<FieldUiModel>)
 
     fun setSaveButtonVisible(visible: Boolean)
 

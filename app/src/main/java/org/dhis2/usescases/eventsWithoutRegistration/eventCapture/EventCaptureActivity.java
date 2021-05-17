@@ -9,12 +9,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
-import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -22,9 +22,9 @@ import com.google.android.material.snackbar.Snackbar;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
+import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.AppMenuHelper;
@@ -191,19 +191,26 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             case Constants.GALLERY_REQUEST:
                 if (resultCode == RESULT_OK) {
                     Uri imageUri = data.getData();
-                    presenter.saveImage(uuid, FileResourcesUtil.getFileFromGallery(this, imageUri).getPath());
-                    presenter.nextCalculation(true);
+                    try {
+                        presenter.saveImage(uuid, FileResourcesUtil.getFileFromGallery(this, imageUri).getPath());
+                        presenter.nextCalculation(true);
+                    } catch(Exception e) {
+                        crashReportController.logException(e);
+                        Toast.makeText(this, getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                    }
                 }
                 break;
             case Constants.CAMERA_REQUEST:
                 if (resultCode == RESULT_OK) {
                     File imageFile = new File(FileResourceDirectoryHelper.getFileResourceDirectory(this), "tempFile.png");
                     File file = new ImageUtils().rotateImage(this, imageFile);
-                    if (file.exists()) {
-                        presenter.saveImage(uuid, file.getPath());
-                    } else
-                        presenter.saveImage(uuid, null);
-                    presenter.nextCalculation(true);
+                    try {
+                        presenter.saveImage(uuid, file.exists() ? file.getPath() : null);
+                        presenter.nextCalculation(true);
+                    } catch (Exception e) {
+                        crashReportController.logException(e);
+                        Toast.makeText(this, getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                    }
                 }
                 break;
         }
@@ -219,7 +226,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldViewModel> emptyMandatoryFields) {
+    public void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldUiModel> emptyMandatoryFields) {
         if (binding.navigationBar.getSelectedItemId() == R.id.navigation_data_entry) {
             FormBottomDialog.getInstance()
                     .setAccessDataWrite(presenter.canWrite())

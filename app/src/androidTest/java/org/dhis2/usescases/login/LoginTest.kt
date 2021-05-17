@@ -178,8 +178,6 @@ class LoginTest : BaseTest() {
             clickOnPrivacyPolicy()
             checkPrivacyViewIsOpened()
         }
-
-        cleanDatabase()
     }
 
     fun startMainActivity() {

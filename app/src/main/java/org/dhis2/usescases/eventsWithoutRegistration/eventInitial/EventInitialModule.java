@@ -44,7 +44,7 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    EventInitialContract.Presenter providesPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
+    EventInitialPresenter providesPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
                                                      @NonNull EventInitialRepository eventInitialRepository,
                                                      @NonNull SchedulerProvider schedulerProvider,
                                                      @NonNull PreferenceProvider preferenceProvider,

@@ -73,19 +73,25 @@ do
   sleep $polling_interval
 done
 
-# Retrieve device status and tests reports
-build_status=$(echo "$build_status_response" | jq -r '.devices | to_entries[].value.status')
-test_reports_url="https://app-automate.browserstack.com/dashboard/v2/builds/$build_id"
-
 # Export test reports to bitrise
+test_reports_url="https://app-automate.browserstack.com/dashboard/v2/builds/$build_id"
 envman add --key BROWSERSTACK_TEST_REPORTS --value "$test_reports_url"
 
-# Delegate final status to CI enviroment
-if [[ $build_status = "passed" ]];
+# weird behavior from Browserstack api, you can have "done" status with failed tests
+# "devices" only show one device result which is inconsistance
+# then "device_status" is checked
+if [[ $build_status = "failed" ]];
 then
-	echo "Browserstack build passed, please check the execution of your tests $test_reports_url"
-	exit 0
-else
 	echo "Browserstack build failed, please check the execution of your tests $test_reports_url"
-	exit 1
+  exit 1
+else
+  device_status=$(echo "$build_status_response" | jq -r '.device_statuses.error | to_entries[].value')
+  if [[ $device_status = "Failed" ]]; # for this Failed Browserstack used bloq mayus
+  then
+	  echo "Browserstack build failed, please check the execution of your tests $test_reports_url"
+    exit 1
+  else
+  	echo "Browserstack build passed, please check the execution of your tests $test_reports_url"
+    exit 0
+  fi
 fi

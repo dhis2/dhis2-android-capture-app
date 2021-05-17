@@ -4,10 +4,10 @@ import com.google.auto.value.AutoValue
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
-import org.dhis2.data.forms.dataentry.fields.ActionType
-import org.dhis2.data.forms.dataentry.fields.FieldUiModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
-import org.dhis2.data.forms.dataentry.fields.RowAction
+import org.dhis2.form.model.ActionType
+import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.RowAction
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.option.Option
 
@@ -16,9 +16,8 @@ const val labelTag = "tag"
 @AutoValue
 abstract class MatrixOptionSetModel : FieldViewModel() {
 
-    override fun getLayoutId(): Int {
-        return R.layout.matrix_option_set
-    }
+    override val layoutId: Int
+        get() = R.layout.matrix_option_set
 
     abstract fun options(): List<Option>
 
