@@ -26,12 +26,13 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/dial_label_card"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="32dp"
             android:layout_marginEnd="16dp"
+            app:layout_constraintWidth_max="250dp"
+            app:layout_constraintWidth_default="wrap"
             app:layout_constraintBottom_toBottomOf="@id/dial_icon"
             app:layout_constraintEnd_toStartOf="@id/dial_icon"
-            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintTop_toTopOf="@id/dial_icon">
 
             <TextView
@@ -40,12 +41,11 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:ellipsize="end"
-                android:maxWidth="400dp"
                 android:paddingHorizontal="16dp"
                 android:singleLine="true"
                 android:textColor="@color/textSecondary"
                 android:textSize="14sp"
-                tools:text="This is a test text asdfasdfasffdsgsdgdfsgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdgfdsdfgsdfgsdfgsdfg" />
+                tools:text="This is a test text asdfasdfasffdsgsdgdfsgsdfgsdghfghfghfghfghfghfghfghfghfghfghgfhfghfghfghfgsdfgsdfgsdfgsdfgsdfgsdgfdsdfgsdfgsdfgsdfg" />
         </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

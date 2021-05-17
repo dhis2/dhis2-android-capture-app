@@ -76,7 +76,7 @@ class DialFloatingActionButtonLayout @JvmOverloads constructor(
         return DialFabItemBinding.inflate(
             LayoutInflater.from(context),
             this@DialFloatingActionButtonLayout,
-            true
+            false
         ).apply {
             dialLabel.text = dialItem.label
             dialIcon.setImageResource(dialItem.icon)
@@ -89,6 +89,7 @@ class DialFloatingActionButtonLayout @JvmOverloads constructor(
         }.root.apply {
             id = dialItem.id
             tag = dialItem.label
+            addView(this)
         }
     }
 
