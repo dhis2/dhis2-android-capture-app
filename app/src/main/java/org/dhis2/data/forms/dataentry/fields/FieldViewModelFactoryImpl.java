@@ -17,6 +17,9 @@ import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel;
+import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.model.LegendValue;
+import org.dhis2.form.model.RowAction;
 import org.dhis2.utils.DhisTextUtils;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -64,10 +67,10 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
     @Nullable
     @Override
-    public FieldViewModel createForAttribute(@$NonNull TrackedEntityAttribute trackedEntityAttribute,
-                                             @Nullable ProgramTrackedEntityAttribute programTrackedEntityAttribute,
-                                             @Nullable String value,
-                                             boolean editable) {
+    public FieldUiModel createForAttribute(@$NonNull TrackedEntityAttribute trackedEntityAttribute,
+                                           @Nullable ProgramTrackedEntityAttribute programTrackedEntityAttribute,
+                                           @Nullable String value,
+                                           boolean editable) {
         return create(trackedEntityAttribute.uid(),
                 trackedEntityAttribute.displayFormName(),
                 trackedEntityAttribute.valueType(),
@@ -90,7 +93,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
     @NonNull
     @Override
-    public FieldViewModel create(@NonNull String id, @NonNull String label, @NonNull ValueType type,
+    public FieldUiModel create(@NonNull String id, @NonNull String label, @NonNull ValueType type,
                                  @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value,
                                  @Nullable String section, @Nullable Boolean allowFutureDates, @NonNull Boolean editable, @Nullable ProgramStageSectionRenderingType renderingType,
                                  @Nullable String description, @Nullable ValueTypeDeviceRendering fieldRendering, @Nullable Integer optionCount, ObjectStyle objectStyle,
@@ -158,7 +161,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
     @NonNull
     @Override
-    public FieldViewModel createSingleSection(String singleSectionName) {
+    public FieldUiModel createSingleSection(String singleSectionName) {
         return SectionViewModel.create(
                 SINGLE_SECTION_UID,
                 singleSectionName,
@@ -174,7 +177,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
     @NonNull
     @Override
-    public FieldViewModel createSection(String sectionUid, String sectionName, String description,
+    public FieldUiModel createSection(String sectionUid, String sectionName, String description,
                                         boolean isOpen, int totalFields, int completedFields, String rendering) {
         return SectionViewModel.create(
                 sectionUid,
@@ -191,7 +194,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
     @NonNull
     @Override
-    public FieldViewModel createClosingSection() {
+    public FieldUiModel createClosingSection() {
         return SectionViewModel.createClosingSection();
     }
 
@@ -203,7 +206,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
     @NonNull
     @Override
-    public Flowable<RowAction> fieldProcessor() {
+    public FlowableProcessor<RowAction> fieldProcessor() {
         return fieldProcessor;
     }
 }

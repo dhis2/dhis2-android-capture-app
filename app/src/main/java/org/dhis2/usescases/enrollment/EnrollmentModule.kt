@@ -16,8 +16,10 @@ import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
-import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.form.data.FormRepository
+import org.dhis2.form.data.FormRepositoryPersistenceImpl
+import org.dhis2.form.model.RowAction
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
@@ -31,7 +33,7 @@ class EnrollmentModule(
     private val enrollmentView: EnrollmentView,
     val enrollmentUid: String,
     val programUid: String,
-    val enrollmentMode: EnrollmentActivity.EnrollmentMode
+    private val enrollmentMode: EnrollmentActivity.EnrollmentMode
 ) {
 
     @Provides
@@ -107,12 +109,13 @@ class EnrollmentModule(
         teiRepository: TrackedEntityInstanceObjectRepository,
         programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
         schedulerProvider: SchedulerProvider,
-        formRepository: EnrollmentFormRepository,
+        enrollmentFormRepository: EnrollmentFormRepository,
         valueStore: ValueStore,
         analyticsHelper: AnalyticsHelper,
         onRowActionProcessor: FlowableProcessor<RowAction>,
         fieldViewModelFactory: FieldViewModelFactory,
-        matomoAnalyticsController: MatomoAnalyticsController
+        matomoAnalyticsController: MatomoAnalyticsController,
+        formRepository: FormRepository
     ): EnrollmentPresenterImpl {
         return EnrollmentPresenterImpl(
             enrollmentView,
@@ -122,13 +125,14 @@ class EnrollmentModule(
             teiRepository,
             programRepository,
             schedulerProvider,
-            formRepository,
+            enrollmentFormRepository,
             valueStore,
             analyticsHelper,
             context.getString(R.string.field_is_mandatory),
             onRowActionProcessor,
             fieldViewModelFactory.sectionProcessor(),
-            matomoAnalyticsController
+            matomoAnalyticsController,
+            formRepository
         )
     }
 
@@ -170,6 +174,23 @@ class EnrollmentModule(
             enrollmentRepository,
             programRepository,
             teiRepository
+        )
+    }
+
+    @Provides
+    @PerActivity
+    fun provideEnrollmentFormRepository(
+        d2: D2,
+        enrollmentRepository: EnrollmentObjectRepository
+    ): FormRepository {
+        return FormRepositoryPersistenceImpl(
+            ValueStoreImpl(
+                d2,
+                enrollmentRepository.blockingGet().trackedEntityInstance()!!,
+                DataEntryStore.EntryMode.ATTR,
+                DhisEnrollmentUtils(d2),
+                enrollmentRepository
+            )
         )
     }
 }

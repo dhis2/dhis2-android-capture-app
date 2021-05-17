@@ -20,12 +20,12 @@
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true"
-        android:largeHeap="true"
         tools:replace="allowBackup">
         <uses-library
             android:name="org.apache.http.legacy"
@@ -44,6 +44,10 @@
         <meta-data
             android:name="io.sentry.traces.sample-rate"
             android:value="${sentry_sample_rate}" />
+
+        <meta-data
+            android:name="io.sentry.traces.activity.enable"
+            android:value="false" />
 
         <activity
             android:name=".usescases.splash.SplashActivity"

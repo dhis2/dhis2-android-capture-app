@@ -11,6 +11,8 @@ import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.form.data.FieldUiModel;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.model.RowAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +30,6 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(FieldUiModel uiModel, FieldItemCallback callback) {
-        FieldViewModel viewModel = (FieldViewModel) uiModel;
         FieldUiModel.Callback itemCallback = new FieldUiModel.Callback() {
             @Override
             public void mapRequest(@NotNull String coordinateFieldUid, @NotNull String featureType, @Nullable String initialCoordinates) {
@@ -50,10 +51,14 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
                 callback.onShowDialog(title, message);
             }
 
+            @Override
+            public void onItemAction(@NotNull RowAction action) {
+                callback.onAction(action);
+            }
         };
-        viewModel.setCallback(itemCallback);
+        uiModel.setCallback(itemCallback);
 
-        binding.setVariable(BR.item, viewModel);
+        binding.setVariable(BR.item, uiModel);
         binding.executePendingBindings();
     }
 
@@ -65,5 +70,7 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
         void onMapRequest(@NotNull String coordinateFieldUid, @NotNull FeatureType featureType, @Nullable String initialCoordinates);
 
         void onCurrentLocationRequest(@NotNull String coordinateFieldUid);
+
+        void onAction(RowAction action);
     }
 }

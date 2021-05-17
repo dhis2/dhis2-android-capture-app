@@ -842,4 +842,5 @@
     <string name="period_span_default_label" translatable="false">%s - %s</string>
     <string name="week_period_span_default_label">Week %d %s to %s</string>
     <string name="biweek_period_span_default_label" translatable="false">%d %s - %d %s</string>
+    <string name="unsupported_field_description">This field is not available for mobile capture</string>
 </resources>

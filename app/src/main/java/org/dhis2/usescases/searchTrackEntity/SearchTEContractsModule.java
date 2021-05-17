@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.uicomponents.map.model.EventUiComponentModel;
 import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.general.AbstractActivityContracts;
@@ -87,7 +87,7 @@ public class SearchTEContractsModule {
 
         void couldNotDownload(String typeName);
 
-        void setFormData(List<FieldViewModel> data);
+        void setFormData(List<FieldUiModel> data);
 
         void setFilters(List<FilterItem> filtersToDisplay);
 
@@ -177,5 +177,7 @@ public class SearchTEContractsModule {
         void setProgramForTesting(Program program);
 
         void clearOtherFiltersIfWebAppIsConfig();
+
+        void populateList(List<FieldUiModel> list);
     }
 }

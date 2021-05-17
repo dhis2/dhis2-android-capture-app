@@ -4,26 +4,32 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.util.AttributeSet
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.widget.RelativeLayout
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.lifecycle.LifecycleOwner
+import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
+import org.dhis2.databinding.ViewFormBinding
+import org.dhis2.form.Injector
+import org.dhis2.form.data.FormRepository
+import org.dhis2.form.data.FormRepositoryNonPersistenceImpl
+import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.RowAction
+import org.dhis2.form.ui.FormViewModel
 import org.dhis2.uicomponents.map.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
-import org.dhis2.utils.ActivityResultObserver
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
@@ -31,16 +37,18 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import timber.log.Timber
 
-class FormView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : ConstraintLayout(context, attrs, defStyleAttr), ActivityResultObserver {
+class FormView private constructor(
+    formRepository: FormRepository,
+    private val onItemChangeListener: ((action: RowAction) -> Unit)?,
+    private val needToForceUpdate: Boolean = false
+) : Fragment() {
 
-    private val inflater: LayoutInflater = LayoutInflater.from(context)
-    private val recyclerView: RecyclerView
-    private val headerContainer: RelativeLayout
-    private val dataEntryHeaderHelper: DataEntryHeaderHelper
+    private val viewModel: FormViewModel by viewModels {
+        Injector.provideFormViewModelFactory(formRepository)
+    }
+
+    private lateinit var binding: ViewFormBinding
+    private lateinit var dataEntryHeaderHelper: DataEntryHeaderHelper
     private lateinit var adapter: DataEntryAdapter
     var scrollCallback: ((Boolean) -> Unit)? = null
     var onLocationRequest: ((String) -> Unit)? = null
@@ -48,51 +56,59 @@ class FormView @JvmOverloads constructor(
     var onNewGeometryValue: ((String, Geometry) -> Unit)? = null
     var geometryField: String? = null
 
-    init {
-        val params = LayoutParams(MATCH_PARENT, MATCH_PARENT)
-        layoutParams = params
-        val view = inflater.inflate(R.layout.view_form, this, true)
-        recyclerView = view.findViewById(R.id.recyclerView)
-        headerContainer = view.findViewById(R.id.headerContainer)
-        dataEntryHeaderHelper = DataEntryHeaderHelper(headerContainer, recyclerView)
-        recyclerView.layoutManager =
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = DataBindingUtil.inflate(inflater, R.layout.view_form, container, false)
+        binding.lifecycleOwner = this
+        dataEntryHeaderHelper = DataEntryHeaderHelper(binding.headerContainer, binding.recyclerView)
+        binding.recyclerView.layoutManager =
             object : LinearLayoutManager(context, VERTICAL, false) {
                 override fun onInterceptFocusSearch(focused: View, direction: Int): View {
                     return focused
                 }
             }
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 dataEntryHeaderHelper.checkSectionHeader(recyclerView)
             }
         })
+        return binding.root
     }
 
-    fun init(owner: LifecycleOwner) {
-        dataEntryHeaderHelper.observeHeaderChanges(owner)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
         adapter = DataEntryAdapter()
         adapter.didItemShowDialog = { title, message ->
             CustomDialog(
-                context,
+                requireContext(),
                 title,
-                message ?: context.getString(R.string.empty_description),
-                context.getString(R.string.action_close),
+                message ?: requireContext().getString(R.string.empty_description),
+                requireContext().getString(R.string.action_close),
                 null,
                 Constants.DESCRIPTION_DIALOG,
                 null
             ).show()
         }
         adapter.onNextClicked = { position ->
-            val viewHolder = recyclerView.findViewHolderForLayoutPosition(position + 1)
+            val viewHolder = binding.recyclerView.findViewHolderForLayoutPosition(position + 1)
             if (viewHolder == null) {
                 try {
-                    recyclerView.smoothScrollToPosition(position + 1)
+                    binding.recyclerView.smoothScrollToPosition(position + 1)
                 } catch (e: Exception) {
                     Timber.e(e)
                 }
             }
         }
+
+        adapter.onItemAction = { action ->
+            viewModel.onItemAction(action)
+        }
+
         adapter.onLocationRequest = { fieldUid -> onLocationRequest?.invoke(fieldUid) }
 
         adapter.onMapRequest = { fieldUid, featureType, initialData ->
@@ -102,15 +118,16 @@ class FormView @JvmOverloads constructor(
                 initialData
             )
         }
-        recyclerView.adapter = adapter
+
+        binding.recyclerView.adapter = adapter
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            recyclerView.setOnScrollChangeListener { _, _, _, _, _ ->
+            binding.recyclerView.setOnScrollChangeListener { _, _, _, _, _ ->
                 val hasToShowFab = checkLastItem()
                 scrollCallback?.invoke(hasToShowFab)
             }
         } else {
-            recyclerView.setOnScrollListener(object : RecyclerView.OnScrollListener() {
+            binding.recyclerView.setOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(
                     recyclerView: RecyclerView,
                     dx: Int,
@@ -122,15 +139,30 @@ class FormView @JvmOverloads constructor(
             })
         }
 
-        recyclerView.setOnFocusChangeListener { _, hasFocus ->
+        binding.recyclerView.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 closeKeyboard()
             }
         }
+
+        viewModel.savedValue.observe(
+            viewLifecycleOwner,
+            Observer { rowAction ->
+                onItemChangeListener?.let { it(rowAction) }
+            }
+        )
+
+        viewModel.items.observe(
+            viewLifecycleOwner,
+            Observer { items ->
+                render(items)
+            }
+        )
     }
 
-    fun render(items: List<FieldViewModel>) {
-        val layoutManager: LinearLayoutManager = recyclerView.layoutManager as LinearLayoutManager
+    fun render(items: List<FieldUiModel>) {
+        val layoutManager: LinearLayoutManager =
+            binding.recyclerView.layoutManager as LinearLayoutManager
         val myFirstPositionIndex = layoutManager.findFirstVisibleItemPosition()
         val myFirstPositionView = layoutManager.findViewByPosition(myFirstPositionIndex)
 
@@ -144,7 +176,10 @@ class FormView @JvmOverloads constructor(
         adapter.swap(
             items,
             Runnable {
-                dataEntryHeaderHelper.onItemsUpdatedCallback()
+                when (needToForceUpdate) {
+                    true -> adapter.notifyDataSetChanged()
+                    else -> dataEntryHeaderHelper.onItemsUpdatedCallback()
+                }
             }
         )
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
@@ -152,7 +187,7 @@ class FormView @JvmOverloads constructor(
 
     private fun checkLastItem(): Boolean {
         val layoutManager =
-            recyclerView.layoutManager as LinearLayoutManager
+            binding.recyclerView.layoutManager as LinearLayoutManager
         val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
         return lastVisiblePosition != -1 && (
                 lastVisiblePosition == adapter.itemCount - 1 ||
@@ -160,15 +195,20 @@ class FormView @JvmOverloads constructor(
                 )
     }
 
-    private fun handleKeyBoardOnFocusChange(items: List<FieldViewModel>) {
-        items.firstOrNull { it.activated() }?.let {
+    private fun handleKeyBoardOnFocusChange(items: List<FieldUiModel>) {
+        items.firstOrNull { it.focused }?.let {
             if (!doesItemNeedsKeyboard(it)) {
                 closeKeyboard()
             }
         }
     }
 
-    private fun doesItemNeedsKeyboard(item: FieldViewModel) = when (item) {
+    private fun closeKeyboard() {
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.hideSoftInputFromWindow(binding.recyclerView.windowToken, 0)
+    }
+
+    private fun doesItemNeedsKeyboard(item: FieldUiModel) = when (item) {
         is EditTextViewModel,
         is ScanTextViewModel,
         is CoordinateViewModel -> true
@@ -211,8 +251,49 @@ class FormView @JvmOverloads constructor(
         grantResults: IntArray
     ) {
         if (requestCode == EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST &&
-            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            grantResults[0] == PackageManager.PERMISSION_GRANTED
+        ) {
             geometryField?.let { onLocationRequest?.invoke(it) }
+        }
+    }
+
+    class Builder() {
+        private var persistentRepository: FormRepository? = null
+        private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
+        private var needToForceUpdate: Boolean = false
+
+        /**
+         * If you want to persist the items and it's changes in any sources, please provide an
+         * implementation of the repository that fits with your system.
+         *
+         * IF you don't provide any repository implementation, data will be kept in memory.
+         *
+         * NOTE: This step is temporary in order to facilitate refactor, in the future will be
+         * changed by some info like DataEntryStore.EntryMode and Event/Program uid. Then the
+         * library will generate the implementation of the repository.
+         */
+        fun persistence(repository: FormRepository) =
+            apply { this.persistentRepository = repository }
+
+        /**
+         * If you want to handle the behaviour of the form and be notified when any item is updated,
+         * implement this listener.
+         */
+        fun onItemChangeListener(callback: (action: RowAction) -> Unit) =
+            apply { this.onItemChangeListener = callback }
+
+        /**
+         * If it's set to true, any change on the list will make update all of it's items.
+         */
+        fun needToForceUpdate(needToForceUpdate: Boolean) =
+            apply { this.needToForceUpdate = needToForceUpdate }
+
+        fun build(): FormView {
+            return FormView(
+                formRepository = persistentRepository ?: FormRepositoryNonPersistenceImpl(),
+                onItemChangeListener = onItemChangeListener,
+                needToForceUpdate = needToForceUpdate
+            )
         }
     }
 }

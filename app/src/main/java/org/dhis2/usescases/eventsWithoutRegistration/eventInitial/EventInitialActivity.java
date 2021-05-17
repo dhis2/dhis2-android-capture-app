@@ -23,12 +23,14 @@ import com.jakewharton.rxbinding2.view.RxView;
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
+import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
+import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.data.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -761,6 +763,24 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             }
         } else
             binding.orgUnit.setText("");
+    }
+
+    private int calculateCompletedFields(@NonNull List<FieldUiModel> updates) {
+        int total = 0;
+        for (FieldUiModel fieldViewModel : updates) {
+            if (fieldViewModel.getValue() != null && !fieldViewModel.getValue().isEmpty())
+                total++;
+        }
+        return total;
+    }
+
+    private int calculateUnsupportedFields(@NonNull List<FieldUiModel> updates) {
+        int total = 0;
+        for (FieldUiModel fieldViewModel : updates) {
+            if (fieldViewModel instanceof UnsupportedViewModel)
+                total++;
+        }
+        return total;
     }
 
     @Override

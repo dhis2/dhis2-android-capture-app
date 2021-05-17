@@ -18,6 +18,8 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
+import org.dhis2.form.data.FormRepository;
+import org.dhis2.form.data.FormRepositoryNonPersistenceImpl;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
 import org.dhis2.uicomponents.map.geometry.line.MapLineRelationshipToFeature;
@@ -82,12 +84,13 @@ public class SearchTEModule {
                                                        TeiFilterToWorkingListItemMapper teiWorkingListMapper,
                                                        FilterRepository filterRepository,
                                                        FieldViewModelFactory fieldViewModelFactory,
-                                                       MatomoAnalyticsController matomoAnalyticsController) {
+                                                       MatomoAnalyticsController matomoAnalyticsController,
+                                                       FormRepository formRepository) {
         return new SearchTEPresenter(view, d2, mapUtils, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapCoordinateFieldToFeatureCollection,
                 new EventToEventUiComponent(), preferenceProvider,
                 teiWorkingListMapper, filterRepository, fieldViewModelFactory.fieldProcessor(),
-                new DisableHomeFiltersFromSettingsApp(), matomoAnalyticsController);
+                new DisableHomeFiltersFromSettingsApp(), matomoAnalyticsController, formRepository);
     }
 
     @Provides
@@ -176,5 +179,11 @@ public class SearchTEModule {
     @PerActivity
     FiltersAdapter provideNewFiltersAdapter() {
         return new FiltersAdapter();
+    }
+
+    @Provides
+    @PerActivity
+    FormRepository provideFormRepository() {
+        return new FormRepositoryNonPersistenceImpl();
     }
 }

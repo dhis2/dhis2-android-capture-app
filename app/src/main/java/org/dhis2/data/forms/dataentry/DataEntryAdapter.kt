@@ -5,11 +5,14 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
+import java.util.ArrayList
+import java.util.LinkedHashMap
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder.FieldItemCallback
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
-import org.dhis2.form.data.FieldUiModel
+import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.DataEntryDiff
 import org.hisp.dhis.android.core.common.FeatureType
 import java.util.ArrayList
@@ -21,6 +24,7 @@ class DataEntryAdapter :
 
     var didItemShowDialog: ((title: String, message: String?) -> Unit)? = null
     var onNextClicked: ((position: Int) -> Unit)? = null
+    var onItemAction: ((action: RowAction) -> Unit)? = null
     var onLocationRequest: ((coordinateFieldUid: String) -> Unit)? = null
     var onMapRequest: ((
         coordinateFieldUid: String,
@@ -70,14 +74,14 @@ class DataEntryAdapter :
     }
 
     override fun getItemViewType(position: Int): Int {
-        return getItem(position)!!.getLayoutId()
+        return getItem(position)!!.layoutId
     }
 
-    fun swap(updates: List<FieldViewModel>, commitCallback: Runnable) {
+    fun swap(updates: List<FieldUiModel>, commitCallback: Runnable) {
         sectionPositions = LinkedHashMap()
         for (fieldViewModel in updates) {
             if (fieldViewModel is SectionViewModel) {
-                sectionPositions[fieldViewModel.getUid()] = updates.indexOf(fieldViewModel)
+                sectionPositions[fieldViewModel.uid] = updates.indexOf(fieldViewModel)
             }
         }
 
@@ -124,6 +128,12 @@ class DataEntryAdapter :
     override fun onNext(layoutPosition: Int) {
         onNextClicked?.let {
             it(layoutPosition)
+        }
+    }
+
+    override fun onAction(action: RowAction) {
+        onItemAction?.let {
+            it(action)
         }
     }
 

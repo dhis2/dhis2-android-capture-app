@@ -14,7 +14,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.Objects;
 
-import org.dhis2.form.data.FieldUiModel;
+import org.dhis2.form.model.FieldUiModel;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 

@@ -200,12 +200,11 @@
                 app:layout_constraintVertical_bias="0"
                 tools:listitem="@layout/item_header_filter" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/form_recycler"
+            <FrameLayout
+                android:id="@+id/formViewContainer"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:focusableInTouchMode="true"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop" />

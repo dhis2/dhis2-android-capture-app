@@ -19,8 +19,6 @@ import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.R;
 import org.dhis2.data.dhislogic.DhisMapUtils;
-import org.dhis2.data.forms.dataentry.fields.ActionType;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
@@ -28,6 +26,10 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.WidgetDatepickerBinding;
+import org.dhis2.form.data.FormRepository;
+import org.dhis2.form.model.ActionType;
+import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.model.RowAction;
 import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection;
@@ -129,6 +131,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private final Flowable<RowAction> fieldProcessor;
     private DisableHomeFiltersFromSettingsApp disableHomeFilters;
     private MatomoAnalyticsController matomoAnalyticsController;
+    private final FormRepository formRepository;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -146,7 +149,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              FilterRepository filterRepository,
                              Flowable<RowAction> fieldProcessor,
                              DisableHomeFiltersFromSettingsApp disableHomeFilters,
-                             MatomoAnalyticsController matomoAnalyticsController) {
+                             MatomoAnalyticsController matomoAnalyticsController,
+                             FormRepository formRepository) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -173,6 +177,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         listDataProcessor = PublishProcessor.create();
         selectedProgram = initialProgram != null ? d2.programModule().programs().uid(initialProgram).blockingGet() : null;
         currentProgram = BehaviorSubject.createDefault(initialProgram != null ? initialProgram : "");
+        this.formRepository = formRepository;
     }
 
     //-----------------------------------
@@ -229,7 +234,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             if (data.isEmpty()) {
                                 teiTypeHasAttributesToDisplay = false;
                             }
-                            view.setFormData(data);
+                            populateList(data);
                         },
                         Timber::d)
         );
@@ -237,14 +242,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         compositeDisposable.add(fieldProcessor
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.ui())
-                .subscribe(data -> {
-                    if (data.getType() == ActionType.ON_TEXT_CHANGE || data.getType() == ActionType.ON_SAVE) {
+                .subscribe(rowAction -> {
+                    if (rowAction.getType() == ActionType.ON_TEXT_CHANGE || rowAction.getType() == ActionType.ON_SAVE) {
+                        formRepository.processUserAction(rowAction);
                         Map<String, String> queryDataBU = new HashMap<>(queryData);
                         view.setFabIcon(true);
-                        updateQueryData(data);
+                        updateQueryData(rowAction);
 
                         if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
-                            updateQueryData(data);
+                            updateQueryData(rowAction);
                         }
                         view.showClearSearch(!queryData.isEmpty());
                     }
@@ -1013,6 +1019,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void clearOtherFiltersIfWebAppIsConfig() {
         List<FilterItem> filters = filterRepository.homeFilters();
         disableHomeFilters.execute(filters);
+    }
+
+    @Override
+    public void populateList(List<FieldUiModel> list) {
+        view.setFormData(formRepository.composeList(list));
     }
 
     @Override
