@@ -6,7 +6,7 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 
-class FormRepositoryImpl(
+class FormRepositoryPersistenceImpl(
     private val formValueStore: FormValueStore
 ) : FormRepository {
 
@@ -24,7 +24,7 @@ class FormRepositoryImpl(
                         ValueStoreResult.VALUE_HAS_NOT_CHANGED
                     )
                 } else {
-                    formValueStore.save(action.id, action.value, action.extraData).blockingSingle()
+                    formValueStore.save(action.id, action.value, action.extraData)
                 }
             }
             ActionType.ON_FOCUS, ActionType.ON_NEXT -> {
@@ -109,7 +109,4 @@ class FormRepositoryImpl(
             }
         }
     }
-
-    fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =
-        mapIndexed { i, existing -> if (i == index) elem else existing }
 }
