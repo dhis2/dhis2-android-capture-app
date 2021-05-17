@@ -1,3 +1,8 @@
+####### Instructions ########
+#  1. Save this file in /.git/hooks directory of the project
+#  2. Rename this file "pre-commit" file
+##############################
+
 #!/bin/sh
 set -e
 ######## KTLINT-GRADLE HOOK START ########
