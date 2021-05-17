@@ -10,5 +10,5 @@ interface CrashReportController {
 
     fun logException(exception: Exception)
 
-    fun logMessage(tag: String, message: String)
+    fun logMessage(message: String)
 }
