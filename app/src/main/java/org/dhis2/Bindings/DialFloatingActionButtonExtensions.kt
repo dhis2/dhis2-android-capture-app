@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.BindingAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import org.dhis2.R
 
 fun FloatingActionButton.rotate(rotate: Boolean): Boolean {
     animate()
@@ -21,7 +20,7 @@ fun FloatingActionButton.rotate(rotate: Boolean): Boolean {
     return rotate
 }
 
-fun View.showDialItem(onAnimationEnd: ()->Unit = {}) {
+fun View.showDialItem(onAnimationEnd: () -> Unit = {}) {
     visibility = View.VISIBLE
     post {
         pivotX = (this as ViewGroup).getChildAt(0).x + 20.dp
