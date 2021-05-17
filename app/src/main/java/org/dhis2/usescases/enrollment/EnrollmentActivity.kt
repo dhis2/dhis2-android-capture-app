@@ -20,8 +20,10 @@ import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.isKeyboardOpened
 import org.dhis2.R
+import org.dhis2.data.forms.dataentry.FormView
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.databinding.EnrollmentActivityBinding
+import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.uicomponents.map.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
@@ -50,9 +52,13 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     enum class EnrollmentMode { NEW, CHECK }
 
     private var forRelationship: Boolean = false
+    private lateinit var formView: FormView
 
     @Inject
     lateinit var presenter: EnrollmentPresenterImpl
+
+    @Inject
+    lateinit var formRepository: FormRepository
 
     lateinit var binding: EnrollmentActivityBinding
     lateinit var mode: EnrollmentMode
@@ -111,7 +117,14 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         mode = EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
 
-        binding.formView.init(this)
+        formView = FormView.Builder()
+            .persistence(formRepository)
+            .onItemChangeListener { presenter.updateFields() }
+            .build()
+
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.formViewContainer, formView)
+        fragmentTransaction.commit()
 
         binding.save.setOnClickListener {
             performSaveClick()
@@ -397,7 +410,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             it !is DisplayViewModel
         }
 
-        binding.formView.render(fields)
+        formView.render(fields)
     }
 
     /*endregion*/
