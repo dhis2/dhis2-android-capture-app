@@ -43,8 +43,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
+        android:id="@+id/dialFabLayout"
         android:layout_width="match_parent"
+        app:fab_visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE || isGrouping}"
         android:layout_height="match_parent">
 
         <LinearLayout
@@ -117,9 +119,9 @@
             android:visibility="gone"
             android:textSize="@dimen/primaryTextSize" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout>
 
-        <com.dekoservidoni.omfm.OneMoreFabMenu
+        <!--<com.dekoservidoni.omfm.OneMoreFabMenu
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -131,7 +133,7 @@
             app:content_options="@menu/schedule_content_options"
             app:expanded_background_color="@android:color/transparent"
             app:size_main_button="@integer/omfm_fab_size_normal"
-            app:size_secondary_buttons="@integer/omfm_fab_size_mini" />
+            app:size_secondary_buttons="@integer/omfm_fab_size_mini" />-->
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

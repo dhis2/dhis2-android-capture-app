@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.BindingAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
 
 fun FloatingActionButton.rotate(rotate: Boolean): Boolean {
     animate()
@@ -76,4 +77,9 @@ fun View.initDialItem(isDialItem: Boolean) {
         translationY = height.toFloat()
         alpha = 0f
     }
+}
+
+@BindingAdapter("fab_visibility")
+fun DialFloatingActionButtonLayout.setFloatingActionButtonVisibility(hideFab: Boolean) {
+    setFabVisible(!hideFab)
 }

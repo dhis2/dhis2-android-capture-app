@@ -226,8 +226,7 @@ dependencies {
     //region UI LIBRARIES
     //AndroidTreeView
     implementation "com.github.bmelnychuk:atv:${libraries.atv}"
-    //FAB
-    implementation "com.github.dekoservidoni:omfm:${libraries.omfm}"
+
     //FLEXBOX
     implementation "com.google.android:flexbox:${libraries.flexbox}"
 

@@ -9,7 +9,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.updateLayoutParams
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import java.util.LinkedList
 import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.hideDialItem
 import org.dhis2.Bindings.initDialItem
@@ -18,6 +17,7 @@ import org.dhis2.Bindings.showDialItem
 import org.dhis2.R
 import org.dhis2.databinding.DialFabItemBinding
 import org.dhis2.utils.ColorUtils
+import java.util.LinkedList
 
 const val FAB_ID = 99
 
@@ -71,6 +71,8 @@ class DialFloatingActionButtonLayout @JvmOverloads constructor(
             fab.hide()
         }
     }
+
+    fun isFabVisible() = fab.visibility == View.VISIBLE
 
     private fun generateDialItemView(dialItem: DialItem): View {
         return DialFabItemBinding.inflate(
