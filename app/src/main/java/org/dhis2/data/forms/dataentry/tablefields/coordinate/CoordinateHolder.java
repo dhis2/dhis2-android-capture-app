@@ -9,7 +9,7 @@ import android.widget.TextView;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomCellViewBinding;
-import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinatesView;
+import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinatesView;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.customviews.TableFieldDialog;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -71,22 +71,11 @@ public class CoordinateHolder extends FormViewHolder {
     private void showEditDialog() {
 
         CoordinatesView coordinatesView = new CoordinatesView(context);
-        coordinatesView.setViewModel(
-                org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel.create(
-                        model.uid(),
-                        model.label(),
-                        model.mandatory(),
-                        model.value(),
-                        model.programStageSection(),
-                        model.editable(),
-                        model.description(),
-                        ObjectStyle.builder().build(),
-                        FeatureType.POINT,
-                        true,
-                        false,
-                        null
-                )
-        );
+        coordinatesView.setIsBgTransparent(true);
+        coordinatesView.setFeatureType(FeatureType.POINT);
+        if (model.value() != null && !model.value().isEmpty()) {
+            coordinatesView.setInitialValue(model.value());
+        }
 
         new TableFieldDialog(
                 context,
