@@ -57,5 +57,7 @@ interface FieldUiModel {
         fun showDialog(title: String, message: String?)
 
         fun onItemAction(action: RowAction)
+        fun currentLocation(coordinateFieldUid: String)
+        fun mapRequest(coordinateFieldUid: String, featureType: String, initialCoordinates: String?)
     }
 }

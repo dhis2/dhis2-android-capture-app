@@ -93,7 +93,8 @@ fun TextInputEditText.setGeometryLongitudeValue(geometry: Geometry?) {
 @BindingAdapter("geometry_polygon_value")
 fun TextInputEditText.setGeometryPolygonValue(geometry: Geometry?) {
     val latitudeValue = when (geometry?.type()) {
-        FeatureType.POLYGON, FeatureType.MULTI_POLYGON -> context.getString(R.string.polygon_captured)
+        FeatureType.POLYGON, FeatureType.MULTI_POLYGON ->
+            context.getString(R.string.polygon_captured)
         else -> null
     }
     setText(latitudeValue)

@@ -85,10 +85,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     private ActivityResultObserver activityResultObserver;
 
-    public void requestEnableLocation() {
-        displayMessage(getString(R.string.enable_location_message));
-    }
-
     public enum Status {
         ON_PAUSE,
         ON_RESUME
@@ -357,7 +353,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         switch (requestCode) {
             case GALLERY_REQUEST:
             case CAMERA_REQUEST:
@@ -418,31 +413,5 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         );
         sessionDialog.setCancelable(false);
         sessionDialog.show();
-    }
-
-    public void requestCurrentLocation(Function1<Geometry,Unit> locationCallback) {
-        ((App) getContext().getApplicationContext()).appComponent()
-                .locationProvider().getLastKnownLocation(
-                location -> {
-                    double longitude = DoubleExtensionsKt.truncate(location.getLongitude());
-                    double latitude = DoubleExtensionsKt.truncate(location.getLatitude());
-                    locationCallback.invoke(GeometryHelper.createPointGeometry(longitude, latitude));
-                    return Unit.INSTANCE;
-                },
-                () -> {
-                    ActivityCompat.requestPermissions((ActivityGlobalAbstract) getContext(),
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                            ACCESS_LOCATION_PERMISSION_REQUEST);
-                    return Unit.INSTANCE;
-                },
-                () -> {
-                    ((ActivityGlobalAbstract) this.getContext()).requestEnableLocation();
-                    return Unit.INSTANCE;
-                });
-    }
-
-    public void requestMapLocation(FeatureType featureType, String initialData) {
-        startActivityForResult(
-                MapSelectorActivity.Companion.create(this, featureType, initialData), RQ_MAP_LOCATION_VIEW);
     }
 }

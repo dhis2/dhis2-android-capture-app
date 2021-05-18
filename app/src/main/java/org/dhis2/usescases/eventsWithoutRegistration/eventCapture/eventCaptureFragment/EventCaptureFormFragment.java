@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentTransaction;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.FormView;
+import org.dhis2.data.location.LocationProvider;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.model.FieldUiModel;
@@ -37,6 +38,9 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
     @Inject
     FormRepository formRepository;
+
+    @Inject
+    LocationProvider locationProvider;
 
     private EventCaptureActivity activity;
     private SectionSelectorFragmentBinding binding;
@@ -82,6 +86,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         super.onViewCreated(view, savedInstanceState);
         formView = new FormView.Builder()
                 .persistence(formRepository)
+                .locationProvider(locationProvider)
                 .onItemChangeListener(action -> {
                     activity.getPresenter().setValueChanged(action.getId());
                     activity.getPresenter().nextCalculation(true);

@@ -1,7 +1,7 @@
 package org.dhis2.uicomponents.map.views
 
 import android.Manifest
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -387,13 +387,13 @@ class MapSelectorActivity :
         const val LOCATION_TYPE_EXTRA = "LOCATION_TYPE_EXTRA"
         const val INITIAL_GEOMETRY_COORDINATES = "INITIAL_DATA"
 
-        fun create(activity: Activity, locationType: FeatureType): Intent {
+        fun create(activity: Context, locationType: FeatureType): Intent {
             val intent = Intent(activity, MapSelectorActivity::class.java)
             intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString())
             return intent
         }
 
-        fun create(activity: Activity, locationType: FeatureType, initialData: String?): Intent {
+        fun create(activity: Context, locationType: FeatureType, initialData: String?): Intent {
             val intent = Intent(activity, MapSelectorActivity::class.java)
             intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString())
             if (initialData != null) {

@@ -22,6 +22,7 @@ import org.dhis2.Bindings.isKeyboardOpened
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.FormView
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
+import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.FieldUiModel
@@ -59,6 +60,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     @Inject
     lateinit var formRepository: FormRepository
+
+    @Inject
+    lateinit var locationProvider: LocationProvider
 
     lateinit var binding: EnrollmentActivityBinding
     lateinit var mode: EnrollmentMode
@@ -119,6 +123,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         formView = FormView.Builder()
             .persistence(formRepository)
+            .locationProvider(locationProvider)
             .onItemChangeListener { presenter.updateFields() }
             .build()
 

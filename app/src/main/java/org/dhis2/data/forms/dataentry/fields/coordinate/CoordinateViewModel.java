@@ -10,9 +10,9 @@ import org.dhis2.Bindings.DoubleExtensionsKt;
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
-import org.dhis2.data.forms.dataentry.fields.ActionType;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.form.model.ActionType;
+import org.dhis2.form.model.RowAction;
 import org.dhis2.uicomponents.map.geometry.LngLatValidatorKt;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -83,9 +83,8 @@ public abstract class CoordinateViewModel extends FieldViewModel {
     }
 
     public void onCurrentLocationClick(Geometry geometry) {
-        if (processor() == null) return;
-
-        processor().onNext(new RowAction(
+        if (callback == null) return;
+        callback.onItemAction(new RowAction(
                 uid(),
                 geometry == null ? null : geometry.coordinates(),
                 false,

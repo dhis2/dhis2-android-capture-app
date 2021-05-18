@@ -1,5 +1,6 @@
 package org.dhis2.data.forms.dataentry
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -9,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -17,18 +19,22 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import org.dhis2.Bindings.truncate
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
+import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryNonPersistenceImpl
+import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.uicomponents.map.views.MapSelectorActivity
+import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.create
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
@@ -40,6 +46,7 @@ import timber.log.Timber
 class FormView private constructor(
     formRepository: FormRepository,
     private val onItemChangeListener: ((action: RowAction) -> Unit)?,
+    private val locationProvider: LocationProvider?,
     private val needToForceUpdate: Boolean = false
 ) : Fragment() {
 
@@ -51,10 +58,7 @@ class FormView private constructor(
     private lateinit var dataEntryHeaderHelper: DataEntryHeaderHelper
     private lateinit var adapter: DataEntryAdapter
     var scrollCallback: ((Boolean) -> Unit)? = null
-    var onLocationRequest: ((String) -> Unit)? = null
-    var onMapRequest: ((FeatureType, String?) -> Unit)? = null
-    var onNewGeometryValue: ((String, Geometry) -> Unit)? = null
-    var geometryField: String? = null
+    private var geometryField: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -109,13 +113,41 @@ class FormView private constructor(
             viewModel.onItemAction(action)
         }
 
-        adapter.onLocationRequest = { fieldUid -> onLocationRequest?.invoke(fieldUid) }
+        adapter.onLocationRequest = { fieldUid ->
+            locationProvider?.getLastKnownLocation(
+                { location ->
+                    val geometry = GeometryHelper.createPointGeometry(
+                        location.longitude.truncate(),
+                        location.latitude.truncate()
+                    )
+                    viewModel.onItemAction(
+                        RowAction(
+                            id = fieldUid,
+                            value = geometry.coordinates(),
+                            type = ActionType.ON_SAVE
+                        )
+                    )
+                },
+                {
+                    requestPermissions(
+                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                        EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST
+                    )
+                },
+                {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.enable_location_message),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            )
+        }
 
         adapter.onMapRequest = { fieldUid, featureType, initialData ->
             geometryField = fieldUid
-            onMapRequest?.invoke(
-                featureType,
-                initialData
+            startActivityForResult(
+                create(requireContext(), featureType, initialData), Constants.RQ_MAP_LOCATION_VIEW
             )
         }
 
@@ -190,9 +222,9 @@ class FormView private constructor(
             binding.recyclerView.layoutManager as LinearLayoutManager
         val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
         return lastVisiblePosition != -1 && (
-                lastVisiblePosition == adapter.itemCount - 1 ||
-                        adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
-                )
+            lastVisiblePosition == adapter.itemCount - 1 ||
+                adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
+            )
     }
 
     private fun handleKeyBoardOnFocusChange(items: List<FieldUiModel>) {
@@ -216,12 +248,13 @@ class FormView private constructor(
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK && requestCode == Constants.RQ_MAP_LOCATION_VIEW && data?.extras != null) {
+        if (resultCode == Activity.RESULT_OK &&
+            requestCode == Constants.RQ_MAP_LOCATION_VIEW && data?.extras != null
+        ) {
             val locationType =
                 FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA))
             val dataExtra = data.getStringExtra(MapSelectorActivity.DATA_EXTRA)
-            val geometry: Geometry
-            geometry = when (locationType) {
+            val geometry: Geometry = when (locationType) {
                 FeatureType.POINT -> {
                     val type = object : TypeToken<List<Double?>?>() {}.type
                     GeometryHelper.createPointGeometry(
@@ -241,7 +274,15 @@ class FormView private constructor(
                     )
                 }
             }
-            geometryField?.let { onNewGeometryValue?.invoke(it, geometry) }
+            geometryField?.let {
+                viewModel.onItemAction(
+                    RowAction(
+                        id = it,
+                        value = geometry.coordinates(),
+                        type = ActionType.ON_SAVE
+                    )
+                )
+            }
         }
     }
 
@@ -253,13 +294,16 @@ class FormView private constructor(
         if (requestCode == EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST &&
             grantResults[0] == PackageManager.PERMISSION_GRANTED
         ) {
-            geometryField?.let { onLocationRequest?.invoke(it) }
+            geometryField?.let {
+                adapter.onLocationRequest?.invoke(it)
+            }
         }
     }
 
     class Builder() {
         private var persistentRepository: FormRepository? = null
         private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
+        private var locationProvider: LocationProvider? = null
         private var needToForceUpdate: Boolean = false
 
         /**
@@ -283,6 +327,12 @@ class FormView private constructor(
             apply { this.onItemChangeListener = callback }
 
         /**
+         *
+         */
+        fun locationProvider(locationProvider: LocationProvider) =
+            apply { this.locationProvider = locationProvider }
+
+        /**
          * If it's set to true, any change on the list will make update all of it's items.
          */
         fun needToForceUpdate(needToForceUpdate: Boolean) =
@@ -291,6 +341,7 @@ class FormView private constructor(
         fun build(): FormView {
             return FormView(
                 formRepository = persistentRepository ?: FormRepositoryNonPersistenceImpl(),
+                locationProvider = locationProvider,
                 onItemChangeListener = onItemChangeListener,
                 needToForceUpdate = needToForceUpdate
             )

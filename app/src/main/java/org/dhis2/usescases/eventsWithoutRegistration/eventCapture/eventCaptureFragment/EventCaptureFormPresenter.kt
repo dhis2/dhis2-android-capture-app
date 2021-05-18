@@ -5,6 +5,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.form.data.FormRepository
+import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.ValueStoreResult
@@ -92,7 +93,6 @@ class EventCaptureFormPresenter(
     fun setFinishing() {
         finishing = true
     }
-
 
     fun saveValue(uid: String, value: String?) {
         onFieldActionProcessor.onNext(
