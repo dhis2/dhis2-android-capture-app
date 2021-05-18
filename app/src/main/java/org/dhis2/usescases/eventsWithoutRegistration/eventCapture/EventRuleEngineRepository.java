@@ -35,19 +35,22 @@ public final class EventRuleEngineRepository implements RuleEngineRepository {
     }
 
     public void initData() {
-        Event currentEvent = d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).blockingGet();
-        ProgramStage currentStage = d2.programModule().programStages().uid(currentEvent.programStage()).blockingGet();
-        OrganisationUnit ou = d2.organisationUnitModule().organisationUnits().uid(currentEvent.organisationUnit()).blockingGet();
+        eventBuilder = RuleEvent.builder();
+        if (eventUid != null) {
+            Event currentEvent = d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).blockingGet();
+            ProgramStage currentStage = d2.programModule().programStages().uid(currentEvent.programStage()).blockingGet();
+            OrganisationUnit ou = d2.organisationUnitModule().organisationUnits().uid(currentEvent.organisationUnit()).blockingGet();
 
-        eventBuilder = RuleEvent.builder()
-                .event(currentEvent.uid())
-                .programStage(currentEvent.programStage())
-                .programStageName(currentStage.displayName())
-                .status(RuleEvent.Status.valueOf(currentEvent.status().name()))
-                .eventDate(currentEvent.eventDate())
-                .dueDate(currentEvent.dueDate() != null ? currentEvent.dueDate() : currentEvent.eventDate())
-                .organisationUnit(currentEvent.organisationUnit())
-                .organisationUnitCode(ou.code());
+            eventBuilder
+                    .event(currentEvent.uid())
+                    .programStage(currentEvent.programStage())
+                    .programStageName(currentStage.displayName())
+                    .status(RuleEvent.Status.valueOf(currentEvent.status().name()))
+                    .eventDate(currentEvent.eventDate())
+                    .dueDate(currentEvent.dueDate() != null ? currentEvent.dueDate() : currentEvent.eventDate())
+                    .organisationUnit(currentEvent.organisationUnit())
+                    .organisationUnitCode(ou.code());
+        }
     }
 
     @Override

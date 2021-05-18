@@ -11,10 +11,13 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentTransaction;
 
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.FormView;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
+import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -32,8 +35,12 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Inject
     EventCaptureFormPresenter presenter;
 
+    @Inject
+    FormRepository formRepository;
+
     private EventCaptureActivity activity;
     private SectionSelectorFragmentBinding binding;
+    private FormView formView;
 
     public static EventCaptureFormFragment newInstance(String eventUid) {
         EventCaptureFormFragment fragment = new EventCaptureFormFragment();
@@ -64,15 +71,30 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             ViewExtensionsKt.closeKeyboard(view);
             performSaveClick();
         });
-        binding.formView.setScrollCallback(isSectionVisible -> {
-            animateFabButton(isSectionVisible);
-            return Unit.INSTANCE;
-        });
-        binding.formView.init(this);
 
         presenter.init();
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        formView = new FormView.Builder()
+                .persistence(formRepository)
+                .onItemChangeListener(action -> {
+                    activity.getPresenter().setValueChanged(action.getId());
+                    activity.getPresenter().nextCalculation(true);
+                    return Unit.INSTANCE;
+                })
+                .build();
+
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        transaction.replace(R.id.formViewContainer, formView).commit();
+        formView.setScrollCallback(isSectionVisible -> {
+            animateFabButton(isSectionVisible);
+            return Unit.INSTANCE;
+        });
     }
 
     @Override
@@ -93,7 +115,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
     @Override
     public void showFields(@NonNull List<FieldUiModel> updates) {
-        binding.formView.render(updates);
+        formView.render(updates);
     }
 
     private void animateFabButton(boolean sectionIsVisible) {
