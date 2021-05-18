@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
+import org.dhis2.form.ui.style.FormUiColorFactory
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
@@ -16,6 +17,7 @@ class FieldViewModelFactoryImplTest {
     private val searchMode = true
     private lateinit var fieldViewModelFactoryImpl: FieldViewModelFactoryImpl
     private val programTrackedEntityAttribute: ProgramTrackedEntityAttribute = mock()
+    private val colorFactory: FormUiColorFactory = mock()
     private val trackedEntityAttribute: TrackedEntityAttribute = mock {
         on { uid() } doReturn "1234"
         on { displayFormName() } doReturn "First name"
@@ -25,7 +27,11 @@ class FieldViewModelFactoryImplTest {
     @Before
     fun setUp() {
         valueTypeHintMap[ValueType.TEXT] = "Enter text"
-        fieldViewModelFactoryImpl = FieldViewModelFactoryImpl(valueTypeHintMap, searchMode)
+        fieldViewModelFactoryImpl = FieldViewModelFactoryImpl(
+            valueTypeHintMap,
+            searchMode,
+            colorFactory
+        )
     }
 
     @Test
