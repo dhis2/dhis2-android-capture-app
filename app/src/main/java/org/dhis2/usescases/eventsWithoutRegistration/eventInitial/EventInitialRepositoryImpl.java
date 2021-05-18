@@ -6,8 +6,8 @@ import androidx.annotation.Nullable;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
-import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
+import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DhisTextUtils;
@@ -568,13 +568,13 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             nonEditableStatus.add(EventStatus.SKIPPED);
             boolean shouldBlockEdition = eventUid != null &&
                     !d2.eventModule().eventService().blockingIsEditable(eventUid) &&
-                            nonEditableStatus.contains(d2.eventModule().events().uid(eventUid).blockingGet().status());
+                    nonEditableStatus.contains(d2.eventModule().events().uid(eventUid).blockingGet().status());
             FeatureType featureType = programStageWithId(stageUid).blockingFirst().featureType();
             boolean accessDataWrite = accessDataWrite(programUid).blockingFirst() && isEnrollmentOpen();
             String coordinatesValue = null;
-            if(eventUid!=null){
+            if (eventUid != null) {
                 Geometry geometry = d2.eventModule().events().uid(eventUid).blockingGet().geometry();
-                if(geometry!=null){
+                if (geometry != null) {
                     coordinatesValue = geometry.coordinates();
                 }
             }
