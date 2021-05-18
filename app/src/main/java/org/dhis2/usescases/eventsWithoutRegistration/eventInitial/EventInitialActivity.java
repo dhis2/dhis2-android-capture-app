@@ -954,7 +954,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void setGeometryModel(CoordinateViewModel geometryModel) {
         setGeometryCallback(geometryModel);
-        binding.geometry.setViewModel(geometryModel);
+        binding.geometry.setItem(geometryModel);
     }
 
     private void setGeometryCallback(CoordinateViewModel geometryModel) {

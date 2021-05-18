@@ -105,17 +105,19 @@ fun TextInputEditText.setGeometryPolygonValue(geometry: Geometry?) {
     requireAll = true
 )
 fun TextInputEditText.setOnGeometryEditorActionListener(
-    viewModel: CoordinateViewModel,
+    viewModel: CoordinateViewModel?,
     editTextToActivate: TextInputEditText
 ) {
-    setOnEditorActionListener { _, _, _ ->
-        val result = viewModel.onFilledCoordinate(context.getString(R.string.coordinates_error))
-        if (result) {
-            closeKeyboard()
-        } else {
-            editTextToActivate.requestFocus()
-            editTextToActivate.performClick()
+    if (viewModel != null) {
+        setOnEditorActionListener { _, _, _ ->
+            val result = viewModel.onFilledCoordinate(context.getString(R.string.coordinates_error))
+            if (result) {
+                closeKeyboard()
+            } else {
+                editTextToActivate.requestFocus()
+                editTextToActivate.performClick()
+            }
+            true
         }
-        true
     }
 }
