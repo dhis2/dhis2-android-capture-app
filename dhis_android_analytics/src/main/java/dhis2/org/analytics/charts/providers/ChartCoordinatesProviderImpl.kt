@@ -1,9 +1,9 @@
 package dhis2.org.analytics.charts.providers
 
 import dhis2.org.analytics.charts.data.GraphPoint
-import org.hisp.dhis.android.core.D2
 import java.text.SimpleDateFormat
 import java.util.Date
+import org.hisp.dhis.android.core.D2
 
 class ChartCoordinatesProviderImpl(val d2: D2) : ChartCoordinatesProvider {
 
@@ -43,7 +43,7 @@ class ChartCoordinatesProviderImpl(val d2: D2) : ChartCoordinatesProvider {
             .filter {
                 try {
                     !(it.values.first().value?.toFloat() ?: Float.NaN).isNaN()
-                }catch (e:java.lang.Exception){
+                } catch (e: java.lang.Exception) {
                     false
                 }
             }
@@ -65,7 +65,6 @@ class ChartCoordinatesProviderImpl(val d2: D2) : ChartCoordinatesProvider {
         ageOrHeightCountainerUid: String,
         ageOrHeightIsDataElement: Boolean
     ): List<GraphPoint> {
-
         var eventLineListRepository = d2.analyticsModule().eventLineList()
             .byProgramStage().eq(stageUid)
             .byTrackedEntityInstance().eq(teiUid)
@@ -105,5 +104,4 @@ class ChartCoordinatesProviderImpl(val d2: D2) : ChartCoordinatesProvider {
             date
         }
     }
-
 }

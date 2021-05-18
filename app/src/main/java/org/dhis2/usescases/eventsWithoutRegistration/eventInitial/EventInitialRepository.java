@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.FormSectionViewModel;
+import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.utils.Result;
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.form.model.RowAction;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -15,6 +17,7 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.Date;
 import java.util.List;
@@ -91,6 +94,10 @@ public interface EventInitialRepository {
     boolean showCompletionPercentage();
 
     Flowable<List<FormSectionViewModel>> eventSections();
+
+    Flowable<List<FieldUiModel>> list();
+
+    Flowable<Result<RuleEffect>> calculate();
 
     Single<CoordinateViewModel> getGeometryModel(String programUid, FlowableProcessor<RowAction> processor);
 }

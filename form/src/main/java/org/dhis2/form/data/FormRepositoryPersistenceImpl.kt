@@ -23,7 +23,6 @@ class FormRepositoryPersistenceImpl(
                         action.id,
                         ValueStoreResult.VALUE_HAS_NOT_CHANGED
                     )
-
                 } else {
                     formValueStore.save(action.id, action.value, action.extraData)
                 }
@@ -35,7 +34,6 @@ class FormRepositoryPersistenceImpl(
                     action.id,
                     ValueStoreResult.VALUE_HAS_NOT_CHANGED
                 )
-
             }
 
             ActionType.ON_TEXT_CHANGE -> {
