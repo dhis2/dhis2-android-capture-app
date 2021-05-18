@@ -177,5 +177,7 @@ public class SearchTEContractsModule {
         void setProgramForTesting(Program program);
 
         void clearOtherFiltersIfWebAppIsConfig();
+
+        void populateList(List<FieldUiModel> list);
     }
 }

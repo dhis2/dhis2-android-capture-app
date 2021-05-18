@@ -10,6 +10,7 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.model.RowAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,6 +38,11 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
             public void showDialog(@NotNull String title, @Nullable String message) {
                 callback.onShowDialog(title, message);
             }
+
+            @Override
+            public void onItemAction(@NotNull RowAction action) {
+                callback.onAction(action);
+            }
         };
         uiModel.setCallback(itemCallback);
 
@@ -48,5 +54,7 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
         void onShowDialog(String title, @Nullable String message);
 
         void onNext(int layoutPosition);
+
+        void onAction(RowAction action);
     }
 }
