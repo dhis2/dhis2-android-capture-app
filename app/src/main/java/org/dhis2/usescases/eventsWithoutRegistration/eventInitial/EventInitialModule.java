@@ -11,10 +11,12 @@ import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
+import org.dhis2.data.forms.dataentry.FormUiModelColorFactoryImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepositoryImpl;
@@ -79,8 +81,14 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    FieldViewModelFactory fieldFactory(Context context) {
-        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), false);
+    FieldViewModelFactory fieldFactory(Context context, FormUiColorFactory colorFactory) {
+        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), false, colorFactory);
+    }
+
+    @Provides
+    @PerActivity
+    FormUiColorFactory provideFormUiColorFactory(Context context) {
+        return new FormUiModelColorFactoryImpl(context, true);
     }
 
     @Provides

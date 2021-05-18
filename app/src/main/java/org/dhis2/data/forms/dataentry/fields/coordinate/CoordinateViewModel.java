@@ -16,10 +16,6 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 
 import io.reactivex.processors.FlowableProcessor;
 
-/**
- * QUADRAM. Created by frodriguez on 1/24/2018.
- */
-
 @AutoValue
 public abstract class CoordinateViewModel extends FieldViewModel {
 

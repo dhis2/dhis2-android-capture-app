@@ -12,6 +12,7 @@ import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
+import org.dhis2.data.forms.dataentry.FormUiModelColorFactoryImpl;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
@@ -21,6 +22,7 @@ import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.form.data.FormRepositoryPersistenceImpl;
 import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
@@ -76,8 +78,14 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    FieldViewModelFactory fieldFactory(Context context) {
-        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), false);
+    FieldViewModelFactory fieldFactory(Context context, FormUiColorFactory colorFactory) {
+        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), false, colorFactory);
+    }
+
+    @Provides
+    @PerActivity
+    FormUiColorFactory provideFormUiColorFactory(Context context) {
+        return new FormUiModelColorFactoryImpl(context, true);
     }
 
     @Provides

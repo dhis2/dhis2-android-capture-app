@@ -25,8 +25,6 @@ interface FieldUiModel {
 
     val programStageSection: String?
 
-    val styleFieldUiModel: FormUiModelStyle?
-
     fun setCallback(callback: Callback)
 
     fun equals(item: FieldUiModel): Boolean
@@ -54,6 +52,8 @@ interface FieldUiModel {
     fun setWarning(warning: String): FieldUiModel
 
     fun setFieldMandatory(): FieldUiModel
+
+    fun setStyle(style: FormUiModelStyle)
 
     interface Callback {
         fun onNext()

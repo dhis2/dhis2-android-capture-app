@@ -1,5 +1,7 @@
 package org.dhis2.form.model
 
+import org.dhis2.form.ui.style.FormUiModelStyle
+
 data class FieldUiModelImpl(
     override val uid: String,
     override val layoutId: Int,
@@ -56,4 +58,8 @@ data class FieldUiModelImpl(
     override fun setWarning(warning: String) = this.copy(warning = warning)
 
     override fun setFieldMandatory() = this.copy(mandatory = true)
+
+    override fun setStyle(style: FormUiModelStyle) {
+        TODO("Not yet implemented")
+    }
 }

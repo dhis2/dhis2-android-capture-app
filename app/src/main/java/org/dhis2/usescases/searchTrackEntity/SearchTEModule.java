@@ -13,6 +13,7 @@ import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
 import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.filter.FilterRepository;
+import org.dhis2.data.forms.dataentry.FormUiModelColorFactoryImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.prefs.PreferenceProvider;
@@ -20,6 +21,7 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.data.FormRepositoryNonPersistenceImpl;
+import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
 import org.dhis2.uicomponents.map.geometry.line.MapLineRelationshipToFeature;
@@ -124,8 +126,14 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    FieldViewModelFactory fieldViewModelFactory(Context context) {
-        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), true);
+    FieldViewModelFactory fieldViewModelFactory(Context context, FormUiColorFactory colorFactory) {
+        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), true, colorFactory);
+    }
+
+    @Provides
+    @PerActivity
+    FormUiColorFactory provideFormUiColorFactory(Context context) {
+        return new FormUiModelColorFactoryImpl(context, false);
     }
 
     @Provides

@@ -11,6 +11,7 @@ import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.style.FormUiModelStyle;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.jetbrains.annotations.NotNull;
 
@@ -83,8 +84,16 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     public Callback callback;
 
+    public FormUiModelStyle style;
+
+    @Nullable
     public Callback getCallback() {
         return callback;
+    }
+
+    @Nullable
+    public FormUiModelStyle getStyle() {
+        return style;
     }
 
     @NonNull
@@ -156,6 +165,11 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Override
     public void setCallback(@NotNull Callback callback) {
         this.callback = callback;
+    }
+
+    @Override
+    public void setStyle(@NotNull FormUiModelStyle style){
+        this.style = style;
     }
 
     @Override

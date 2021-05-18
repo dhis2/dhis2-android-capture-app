@@ -7,7 +7,6 @@ import org.dhis2.form.ui.style.FormUiColorType
 import org.dhis2.utils.ColorUtils
 import javax.inject.Singleton
 
-@Singleton
 class FormUiModelColorFactoryImpl(
     val context: Context,
     val isBackgroundTransparent: Boolean = false

@@ -9,9 +9,11 @@ import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
+import org.dhis2.data.forms.dataentry.FormUiModelColorFactoryImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -53,12 +55,21 @@ public class EventSummaryModule {
     @Provides
     @PerActivity
     EventSummaryRepository eventSummaryRepository(@NonNull Context context,
-                                                  @NonNull FormRepository formRepository, D2 d2) {
+                                                  @NonNull FormRepository formRepository,
+                                                  D2 d2,
+                                                  FormUiColorFactory colorFactory) {
         FieldViewModelFactory fieldViewModelFactory = new FieldViewModelFactoryImpl(
                 ValueTypeExtensionsKt.valueTypeHintMap(context),
-                false
+                false,
+                colorFactory
         );
         return new EventSummaryRepositoryImpl(fieldViewModelFactory, formRepository, eventUid, d2);
+    }
+
+    @Provides
+    @PerActivity
+    FormUiColorFactory provideFormUiColorFactory(Context context) {
+        return new FormUiModelColorFactoryImpl(context, true);
     }
 
     @Provides
