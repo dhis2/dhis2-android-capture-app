@@ -10,11 +10,12 @@ with open(RELEASE_INFO_PATH, 'r') as file:
         y = line.strip().split(":")
         release_versions[y[0]] = str(y[1])
 
-os.environ['NAME_RELEASE'] = release_versions.get('vName')
-os.environ['BRANCH_RELEASE'] = release_versions.get('vBranch')
-os.environ['SDK_VERSION'] = release_versions.get('sdkVersion')
+name = release_versions.get('vName')
+branch = release_versions.get('vBranch')
+sdk_version = release_versions.get('sdkVersion')
 
-
-print(os.environ)
+os.system(f'envman add --key NAME_RELEASE --value "{name}"')
+os.system(f'envman add --key BRANCH_RELEASE --value "{branch}"')
+os.system(f'envman add --key SDK_VERSION --value "{sdk_version}"')
 
 print("*** Done! ***")
