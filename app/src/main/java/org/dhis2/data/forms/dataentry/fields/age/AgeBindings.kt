@@ -23,7 +23,8 @@ fun setTextColorAgeView(
     textView: TextView,
     item: AgeViewModel
 ) {
-    val color = item.getStyle()!!.getColors()[FormUiColorType.FIELD_LABEL_TEXT]
+
+    val color = item.style()!!.getColors()[FormUiColorType.FIELD_LABEL_TEXT]
     color?.let {
         textView.setTextColor(color)
     }
@@ -40,7 +41,7 @@ fun tintDescriptionLabel(
         ColorUtils.getPrimaryColor(imageView.context, ColorUtils.ColorType.PRIMARY)
     }
     imageView.setColorFilter(color) */
-    val color = item.getStyle()!!.getColors()[FormUiColorType.PRIMARY]
+    val color = item.style()!!.getColors()[FormUiColorType.PRIMARY]
     color?.let {
         imageView.setColorFilter(color)
     }
@@ -68,7 +69,7 @@ fun setEditTextColor(
             ContextCompat.getColor(editText.context, org.dhis2.R.color.textPrimary)
         )
     } */
-    val color = item.getStyle()!!.getColors()[FormUiColorType.TEXT_PRIMARY]
+    val color = item.style()!!.getColors()[FormUiColorType.TEXT_PRIMARY]
     color?.let {
         editText.setTextColor(color)
     }
@@ -101,11 +102,11 @@ fun setEditTextUnderlineColor(
     )
     ViewCompat.setBackgroundTintList(editText, colorStateList) */
     val color = if (item.warning() != null){
-        item.getStyle()!!.getColors()[FormUiColorType.WARNING]
+        item.style()!!.getColors()[FormUiColorType.WARNING]
     } else if (item.error() != null) {
-        item.getStyle()!!.getColors()[FormUiColorType.ERROR]
+        item.style()!!.getColors()[FormUiColorType.ERROR]
     } else {
-        item.getStyle()!!.getColors()[FormUiColorType.TEXT_PRIMARY]
+        item.style()!!.getColors()[FormUiColorType.TEXT_PRIMARY]
     }
 
     color?.let {
@@ -118,7 +119,7 @@ fun setTextColorHintTextInputLayout(
     textInputLayout: TextInputLayout,
     item: AgeViewModel
 ) {
-  /*  if (!isBgTransparent) {
+  /*  if (!item.isBackgroundTransparent()) {
         val color = ColorUtils.getPrimaryColor(
             textInputLayout.context,
             ColorUtils.ColorType.ACCENT
@@ -138,7 +139,7 @@ fun setTextColorHintTextInputLayout(
             boxBackgroundColor = color
         }
     } */
-    val color = item.getStyle()!!.getColors()[FormUiColorType.PRIMARY]
+    val color = item.style()!!.getColors()[FormUiColorType.FIELD_LABEL_TEXT]
     color?.let {
         val colorStateList = ColorStateList(
             arrayOf(

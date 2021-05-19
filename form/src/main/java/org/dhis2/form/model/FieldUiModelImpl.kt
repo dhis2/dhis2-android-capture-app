@@ -12,7 +12,8 @@ data class FieldUiModelImpl(
     override val warning: String? = null,
     override val mandatory: Boolean = false,
     override val label: String,
-    override val programStageSection: String? = null
+    override val programStageSection: String? = null,
+    override val style: FormUiModelStyle? = null
 ) : FieldUiModel {
 
     override fun setCallback(callback: FieldUiModel.Callback) {
@@ -58,8 +59,4 @@ data class FieldUiModelImpl(
     override fun setWarning(warning: String) = this.copy(warning = warning)
 
     override fun setFieldMandatory() = this.copy(mandatory = true)
-
-    override fun setStyle(style: FormUiModelStyle) {
-        TODO("Not yet implemented")
-    }
 }

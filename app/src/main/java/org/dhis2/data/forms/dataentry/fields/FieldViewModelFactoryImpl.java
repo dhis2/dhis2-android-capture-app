@@ -21,6 +21,7 @@ import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.style.BasicFormUiModelStyle;
 import org.dhis2.form.ui.style.FormUiColorFactory;
+import org.dhis2.form.ui.style.FormUiModelStyle;
 import org.dhis2.utils.DhisTextUtils;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -121,8 +122,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
         switch (type) {
             case AGE:
-                FieldUiModel ageViewModel = AgeViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, !searchMode, searchMode, processor);
-                ageViewModel.setStyle(new BasicFormUiModelStyle(colorFactory));
+                FormUiModelStyle style = new BasicFormUiModelStyle(colorFactory);
+                FieldUiModel ageViewModel = AgeViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, !searchMode, searchMode, processor, style);
                 return ageViewModel;
             case TEXT:
             case EMAIL:

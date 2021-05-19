@@ -84,16 +84,12 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     public Callback callback;
 
-    public FormUiModelStyle style;
+    @Nullable
+    public abstract FormUiModelStyle style();
 
     @Nullable
     public Callback getCallback() {
         return callback;
-    }
-
-    @Nullable
-    public FormUiModelStyle getStyle() {
-        return style;
     }
 
     @NonNull
@@ -137,6 +133,12 @@ public abstract class FieldViewModel implements FieldUiModel {
     }
 
     @Override
+    @Nullable
+    public FormUiModelStyle getStyle(){
+        return style();
+    }
+
+    @Override
     public boolean equals(FieldUiModel o) {
         if (o == this) {
             return true;
@@ -165,11 +167,6 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Override
     public void setCallback(@NotNull Callback callback) {
         this.callback = callback;
-    }
-
-    @Override
-    public void setStyle(@NotNull FormUiModelStyle style){
-        this.style = style;
     }
 
     @Override
