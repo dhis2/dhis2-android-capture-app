@@ -171,10 +171,10 @@ public class OptionSetSelectionView extends FieldLayout {
                 optionBinding.setOptionName(option.displayName());
                 optionBinding.setVariable(BR.isBgTransparent, isBgTransparent);
                 optionBinding.checkBox.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f));
-                optionBinding.checkBox.setChecked(currentCodeValue != null && (currentCodeValue.equals(option.code()) || currentCodeValue.equals(option.name())));
+                optionBinding.checkBox.setChecked(currentCodeValue != null && (currentCodeValue.equals(option.displayName()) || currentCodeValue.equals(option.name())));
                 optionBinding.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     if (isChecked) {
-                        listener.onSelectedOption(option.name(), option.code());
+                        listener.onSelectedOption(option.code());
                     } else if (currentCodeValue.equals(option.displayName())) {
                         listener.onOptionsClear();
                     }
@@ -194,10 +194,10 @@ public class OptionSetSelectionView extends FieldLayout {
                 optionBinding.setOptionName(option.displayName());
                 optionBinding.setVariable(BR.isBgTransparent, isBgTransparent);
                 optionBinding.radio.setLayoutParams(new RadioGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f));
-                optionBinding.radio.setChecked(currentCodeValue != null && (currentCodeValue.equals(option.code()) || currentCodeValue.equals(option.name())));
+                optionBinding.radio.setChecked(currentCodeValue != null && (currentCodeValue.equals(option.displayName()) || currentCodeValue.equals(option.name())));
                 optionBinding.radio.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     if (isChecked) {
-                        listener.onSelectedOption(option.name(), option.code());
+                        listener.onSelectedOption(option.code());
                     }
                 });
                 radioGroup.addView(optionBinding.getRoot());
@@ -249,7 +249,7 @@ public class OptionSetSelectionView extends FieldLayout {
     }
 
     public interface OnSelectedOption {
-        void onSelectedOption(String optionName, String optionCode);
+        void onSelectedOption(String optionCode);
 
         void onOptionsClear();
     }
@@ -260,7 +260,7 @@ public class OptionSetSelectionView extends FieldLayout {
         }
         setOnSelectedOptionListener(new OnSelectedOption() {
             @Override
-            public void onSelectedOption(String optionName, String optionCode) {
+            public void onSelectedOption(String optionCode) {
                 viewModel.onOptionSelected(optionCode);
             }
 
