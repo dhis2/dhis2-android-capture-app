@@ -28,9 +28,11 @@ public class EventSummaryModule {
 
     @NonNull
     private String eventUid;
+    private Context activityContext;
 
-    EventSummaryModule(@NonNull String eventUid) {
+    EventSummaryModule(@NonNull String eventUid, Context context) {
         this.eventUid = eventUid;
+        this.activityContext = context;
     }
 
     @Provides
@@ -54,12 +56,11 @@ public class EventSummaryModule {
 
     @Provides
     @PerActivity
-    EventSummaryRepository eventSummaryRepository(@NonNull Context context,
-                                                  @NonNull FormRepository formRepository,
+    EventSummaryRepository eventSummaryRepository(@NonNull FormRepository formRepository,
                                                   D2 d2,
                                                   FormUiColorFactory colorFactory) {
         FieldViewModelFactory fieldViewModelFactory = new FieldViewModelFactoryImpl(
-                ValueTypeExtensionsKt.valueTypeHintMap(context),
+                ValueTypeExtensionsKt.valueTypeHintMap(activityContext),
                 false,
                 colorFactory
         );

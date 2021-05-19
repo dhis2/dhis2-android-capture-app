@@ -35,7 +35,8 @@ class EnrollmentModule(
     private val enrollmentView: EnrollmentView,
     val enrollmentUid: String,
     val programUid: String,
-    private val enrollmentMode: EnrollmentActivity.EnrollmentMode
+    private val enrollmentMode: EnrollmentActivity.EnrollmentMode,
+    val activityContext: Context
 ) {
 
     @Provides
@@ -107,8 +108,8 @@ class EnrollmentModule(
 
     @Provides
     @PerActivity
-    fun provideFormUiColorFactory(context: Context): FormUiColorFactory {
-        return FormUiModelColorFactoryImpl(context, true)
+    fun provideFormUiColorFactory(): FormUiColorFactory {
+        return FormUiModelColorFactoryImpl(activityContext, true)
     }
 
     @Provides

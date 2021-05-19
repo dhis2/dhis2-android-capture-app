@@ -3,7 +3,6 @@ package org.dhis2.data.forms.dataentry.fields;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
-
 import org.dhis2.data.forms.dataentry.fields.age.AgeViewModel;
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
@@ -61,7 +60,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             ValueTypeRenderingType.VERTICAL_RADIOBUTTONS
     );
     private final boolean searchMode;
-    private final FormUiColorFactory colorFactory;
+    private FormUiColorFactory colorFactory;
 
     public FieldViewModelFactoryImpl(Map<ValueType, String> valueTypeHintMap, boolean searchMode,
                                      FormUiColorFactory colorFactory) {

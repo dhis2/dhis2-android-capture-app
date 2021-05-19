@@ -35,13 +35,16 @@ public class EventInitialModule {
     private final String stageUid;
     @Nullable
     private String eventUid;
+    private Context activityContext;
 
     public EventInitialModule(@NonNull EventInitialContract.View view,
                               @Nullable String eventUid,
-                              String stageUid) {
+                              String stageUid,
+                              Context context) {
         this.view = view;
         this.eventUid = eventUid;
         this.stageUid = stageUid;
+        this.activityContext = context;
     }
 
     @Provides
@@ -87,8 +90,8 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    FormUiColorFactory provideFormUiColorFactory(Context context) {
-        return new FormUiModelColorFactoryImpl(context, true);
+    FormUiColorFactory provideFormUiColorFactory() {
+        return new FormUiModelColorFactoryImpl(activityContext, true);
     }
 
     @Provides

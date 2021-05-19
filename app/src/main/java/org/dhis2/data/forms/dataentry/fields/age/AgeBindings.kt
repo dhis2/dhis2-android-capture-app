@@ -1,7 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.age
 
-import android.R
 import android.content.res.ColorStateList
+import android.graphics.PorterDuff
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
@@ -13,43 +13,50 @@ import com.google.android.material.textfield.TextInputLayout
 import java.util.Calendar
 import java.util.Date
 import org.dhis2.Bindings.toDate
+import android.R
+import org.dhis2.form.ui.style.FormUiColorType
 import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.DateUtils
 
 @BindingAdapter("setTextColorAgeView")
 fun setTextColorAgeView(
     textView: TextView,
-    isBgTransparent: Boolean
+    item: AgeViewModel
 ) {
-    if (!isBgTransparent) {
-        textView.setTextColor(
-            ColorUtils.getPrimaryColor(
-                textView.context,
-                ColorUtils.ColorType.ACCENT
-            )
-        )
+    val color = item.getStyle()!!.getColors()[FormUiColorType.FIELD_LABEL_TEXT]
+    color?.let {
+        textView.setTextColor(color)
     }
 }
 
 @BindingAdapter("tintDescriptionLabel")
 fun tintDescriptionLabel(
     imageView: ImageView,
-    isBgTransparent: Boolean
+    item: AgeViewModel
 ) {
-    val color = if (!isBgTransparent) {
+   /* val color = if (!isBgTransparent) {
         ColorUtils.getPrimaryColor(imageView.context, ColorUtils.ColorType.ACCENT)
     } else {
         ColorUtils.getPrimaryColor(imageView.context, ColorUtils.ColorType.PRIMARY)
     }
-    imageView.setColorFilter(color)
+    imageView.setColorFilter(color) */
+    val color = item.getStyle()!!.getColors()[FormUiColorType.PRIMARY]
+    color?.let {
+        imageView.setColorFilter(color)
+    }
+}
+
+@BindingAdapter("onFocusChangeAgeView")
+fun onFocusChangesAgeView(editText: EditText, model: AgeViewModel){
+    editText.setOnFocusChangeListener { v, hasFocus -> setEditTextUnderlineColor(editText, model) }
 }
 
 @BindingAdapter("setEditTextColor")
 fun setEditTextColor(
     editText: EditText,
-    isBgTransparent: Boolean
+    item: AgeViewModel
 ) {
-    if (!isBgTransparent) {
+  /*  if (!isBgTransparent) {
         editText.setTextColor(
             ColorUtils.getPrimaryColor(
                 editText.context,
@@ -60,15 +67,19 @@ fun setEditTextColor(
         editText.setTextColor(
             ContextCompat.getColor(editText.context, org.dhis2.R.color.textPrimary)
         )
+    } */
+    val color = item.getStyle()!!.getColors()[FormUiColorType.TEXT_PRIMARY]
+    color?.let {
+        editText.setTextColor(color)
     }
 }
 
 @BindingAdapter("setUnderlineColorEditText")
 fun setEditTextUnderlineColor(
     editText: EditText,
-    model: AgeViewModel
+    item: AgeViewModel
 ) {
-    val color = if (!model.isBackgroundTransparent) {
+   /* val color = if (!model.isBackgroundTransparent) {
         ColorUtils.getPrimaryColor(editText.context, ColorUtils.ColorType.ACCENT)
     } else if (model.warning() != null) {
         ContextCompat.getColor(editText.context, org.dhis2.R.color.warning_color)
@@ -78,19 +89,57 @@ fun setEditTextUnderlineColor(
         ContextCompat.getColor(editText.context, org.dhis2.R.color.textPrimary)
     }
 
-    ViewCompat.setBackgroundTintList(editText, ColorStateList.valueOf(color))
+    val colorStateList = ColorStateList(
+        arrayOf(
+            intArrayOf(R.attr.state_focused),
+            intArrayOf(-R.attr.state_focused)
+        ),
+        intArrayOf(
+            color,
+            color
+        )
+    )
+    ViewCompat.setBackgroundTintList(editText, colorStateList) */
+    val color = if (item.warning() != null){
+        item.getStyle()!!.getColors()[FormUiColorType.WARNING]
+    } else if (item.error() != null) {
+        item.getStyle()!!.getColors()[FormUiColorType.ERROR]
+    } else {
+        item.getStyle()!!.getColors()[FormUiColorType.TEXT_PRIMARY]
+    }
+
+    color?.let {
+        ViewCompat.setBackgroundTintList(editText, ColorStateList.valueOf(color))
+    }
 }
 
 @BindingAdapter("setTextColorHint")
 fun setTextColorHintTextInputLayout(
     textInputLayout: TextInputLayout,
-    isBgTransparent: Boolean
+    item: AgeViewModel
 ) {
-    if (!isBgTransparent) {
+  /*  if (!isBgTransparent) {
         val color = ColorUtils.getPrimaryColor(
             textInputLayout.context,
             ColorUtils.ColorType.ACCENT
         )
+        val colorStateList = ColorStateList(
+            arrayOf(
+                intArrayOf(R.attr.state_focused),
+                intArrayOf(-R.attr.state_focused)
+            ),
+            intArrayOf(
+                color,
+                color
+            )
+        )
+        textInputLayout.apply {
+            defaultHintTextColor = colorStateList
+            boxBackgroundColor = color
+        }
+    } */
+    val color = item.getStyle()!!.getColors()[FormUiColorType.PRIMARY]
+    color?.let {
         val colorStateList = ColorStateList(
             arrayOf(
                 intArrayOf(R.attr.state_focused),

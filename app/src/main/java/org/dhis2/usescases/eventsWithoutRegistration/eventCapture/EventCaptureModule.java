@@ -36,13 +36,14 @@ import io.reactivex.processors.PublishProcessor;
 @Module
 public class EventCaptureModule {
 
-
     private final String eventUid;
     private final EventCaptureContract.View view;
+    private final Context activityContext;
 
-    public EventCaptureModule(EventCaptureContract.View view, String eventUid) {
+    public EventCaptureModule(EventCaptureContract.View view, String eventUid, Context context) {
         this.view = view;
         this.eventUid = eventUid;
+        this.activityContext = context;
     }
 
     @Provides
@@ -84,8 +85,8 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    FormUiColorFactory provideFormUiColorFactory(Context context) {
-        return new FormUiModelColorFactoryImpl(context, true);
+    FormUiColorFactory provideFormUiColorFactory() {
+        return new FormUiModelColorFactoryImpl(activityContext, true);
     }
 
     @Provides

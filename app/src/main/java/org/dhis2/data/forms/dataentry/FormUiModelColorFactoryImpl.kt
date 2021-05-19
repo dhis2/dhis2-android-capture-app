@@ -12,12 +12,14 @@ class FormUiModelColorFactoryImpl(
     val isBackgroundTransparent: Boolean = false
 ) : FormUiColorFactory {
     override fun getBasicColors(): Map<FormUiColorType, Int> {
-        if (!isBackgroundTransparent) {
+        if (isBackgroundTransparent) {
             return mapOf(
                 FormUiColorType.PRIMARY to
                     ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY),
                 FormUiColorType.TEXT_PRIMARY to
                     ContextCompat.getColor(context, org.dhis2.R.color.textPrimary),
+                FormUiColorType.FIELD_LABEL_TEXT to
+                    ContextCompat.getColor(context, org.dhis2.R.color.text_black_A63),
                 FormUiColorType.WARNING to
                     ContextCompat.getColor(context, org.dhis2.R.color.warning_color),
                 FormUiColorType.ERROR to
@@ -28,6 +30,8 @@ class FormUiModelColorFactoryImpl(
             FormUiColorType.PRIMARY to
                 ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.ACCENT),
             FormUiColorType.TEXT_PRIMARY to
+                ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.ACCENT),
+            FormUiColorType.FIELD_LABEL_TEXT to
                 ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.ACCENT),
             FormUiColorType.WARNING to
                 ContextCompat.getColor(context, org.dhis2.R.color.warning_color),

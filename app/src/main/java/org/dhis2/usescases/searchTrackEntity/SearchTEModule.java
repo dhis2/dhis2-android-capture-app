@@ -57,13 +57,16 @@ public class SearchTEModule {
     private final SearchTEContractsModule.View view;
     private final String teiType;
     private final String initialProgram;
+    private final Context moduleContext;
 
     public SearchTEModule(SearchTEContractsModule.View view,
                           String tEType,
-                          String initialProgram) {
+                          String initialProgram,
+                          Context context) {
         this.view = view;
         this.teiType = tEType;
         this.initialProgram = initialProgram;
+        this.moduleContext = context;
     }
 
     @Provides
@@ -132,8 +135,8 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    FormUiColorFactory provideFormUiColorFactory(Context context) {
-        return new FormUiModelColorFactoryImpl(context, false);
+    FormUiColorFactory provideFormUiColorFactory() {
+        return new FormUiModelColorFactoryImpl(moduleContext, false);
     }
 
     @Provides
