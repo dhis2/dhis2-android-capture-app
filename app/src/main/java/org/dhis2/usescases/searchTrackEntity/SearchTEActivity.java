@@ -241,7 +241,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         teiMapManager.onCreate(savedInstanceState);
         teiMapManager.setTeiFeatureType(presenter.getTrackedEntityType(tEType).featureType());
         teiMapManager.setEnrollmentFeatureType(presenter.getProgram() != null ? presenter.getProgram().featureType() : null);
-        teiMapManager.setCarouselAdapter(carouselAdapter);
+//        teiMapManager.setCarouselAdapter(carouselAdapter);
         teiMapManager.setOnMapClickListener(this);
     }
 
@@ -402,6 +402,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private void removeCarousel() {
         carouselAdapter = null;
+        teiMapManager.setCarouselAdapter(null);
         binding.mapCarousel.setAdapter(null);
     }
 
@@ -471,6 +472,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 )
                 .addProgram(presenter.getProgram())
                 .build();
+        teiMapManager.setCarouselAdapter(carouselAdapter);
         binding.mapCarousel.setAdapter(carouselAdapter);
         binding.mapCarousel.attachToMapManager(teiMapManager);
     }
