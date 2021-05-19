@@ -2,7 +2,6 @@ package org.dhis2.utils;
 
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
-import android.view.View;
 
 import androidx.core.widget.NestedScrollView;
 
@@ -89,9 +88,6 @@ public class HelpManager {
             case PROGRAM_EVENT_LIST:
                 help = programEventListTutorial(activity, stepCondition);
                 break;
-            case EVENT_SUMMARY:
-                help = eventSummaryTutorial(activity);
-                break;
             case EVENT_INITIAL:
                 help = eventInitialTutorial(activity, stepCondition);
                 break;
@@ -121,19 +117,6 @@ public class HelpManager {
             steps.add(tuto1);
 
         }
-        return steps;
-    }
-
-    private List<FancyShowCaseView> eventSummaryTutorial(ActivityGlobalAbstract activity) {
-        ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-        FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(activity)
-                .title(activity.getString(R.string.tuto_event_summary))
-                .enableAutoTextPosition()
-                .focusOn(activity.findViewById(R.id.action_button))
-                .closeOnTouch(true)
-                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                .build();
-        steps.add(tuto1);
         return steps;
     }
 

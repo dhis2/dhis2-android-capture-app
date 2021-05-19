@@ -44,7 +44,7 @@ class DataSetTest : BaseTest() {
     fun shouldCreateNewDataSet() {
         val period = "Mar 2021"
         val orgUnit = "Ngelehun CHC"
-        startDataSetDetailActivity(ruleDataSetDetail)
+        startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST", ruleDataSetDetail)
 
         dataSetDetailRobot {
             clickOnAddDataSet()
@@ -67,7 +67,7 @@ class DataSetTest : BaseTest() {
 
     @Test
     fun shouldOpenAndEditDataset(){
-        startDataSetDetailActivity(ruleDataSetDetail)
+        startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST",ruleDataSetDetail)
 
         dataSetRobot {
             clickOnDataSetAtPosition(0)
@@ -79,5 +79,30 @@ class DataSetTest : BaseTest() {
             waitToDebounce(500)
             clickOnNegativeButton()
         }
+    }
+
+    @Ignore("Our testing platform (Browserstack) is rotating device and making it fail")
+    @Test
+    fun shouldReopenModifyAndCompleteDataset(){
+        startDataSetDetailActivity("V8MHeZHIrcP", "Facility Assessment", ruleDataSetDetail)
+
+        dataSetRobot {
+            clickOnDataSetAtPosition(0)
+        }
+
+        dataSetTableRobot {
+            openMenuMoreOptions()
+            clickOnMenuReOpen()
+            clickOnPositiveButton()
+            clickOnEditTextCell(0, 0)
+            acceptDateSelected()
+            clickOnSaveButton()
+            waitToDebounce(500)
+            clickOnPositiveButton()
+        }
+        dataSetDetailRobot {
+            checkDataSetIsCompleteAndModified("2019")
+        }
+
     }
 }

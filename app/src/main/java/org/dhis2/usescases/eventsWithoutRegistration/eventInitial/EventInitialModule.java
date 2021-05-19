@@ -11,13 +11,14 @@ import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
+import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper;
-import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
-import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepositoryImpl;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventRuleEngineRepository;
+import org.dhis2.utils.RulesUtilsProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.D2;
@@ -44,31 +45,22 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    EventInitialPresenter providesPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
-                                                     @NonNull EventInitialRepository eventInitialRepository,
-                                                     @NonNull SchedulerProvider schedulerProvider,
-                                                     @NonNull PreferenceProvider preferenceProvider,
-                                                     @NonNull AnalyticsHelper analyticsHelper,
-                                                     @NonNull MatomoAnalyticsController matomoAnalyticsController,
-                                                     @NonNull EventFieldMapper eventFieldMapper) {
+    EventInitialPresenter providesPresenter(@NonNull RulesUtilsProvider rulesUtilsProvider,
+                                            @NonNull EventInitialRepository eventInitialRepository,
+                                            @NonNull SchedulerProvider schedulerProvider,
+                                            @NonNull PreferenceProvider preferenceProvider,
+                                            @NonNull AnalyticsHelper analyticsHelper,
+                                            @NonNull MatomoAnalyticsController matomoAnalyticsController,
+                                            @NonNull EventFieldMapper eventFieldMapper) {
         return new EventInitialPresenter(
                 view,
-                eventSummaryRepository,
+                rulesUtilsProvider,
                 eventInitialRepository,
                 schedulerProvider,
                 preferenceProvider,
                 analyticsHelper,
                 matomoAnalyticsController,
                 eventFieldMapper);
-    }
-
-
-    @Provides
-    @PerActivity
-    EventSummaryRepository eventSummaryRepository(@NonNull Context context,
-                                                  @NonNull FormRepository formRepository, D2 d2,
-                                                  @NonNull FieldViewModelFactory fieldViewModelFactory) {
-        return new EventSummaryRepositoryImpl(fieldViewModelFactory, formRepository, eventUid, d2);
     }
 
     @Provides
@@ -96,7 +88,15 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    EventInitialRepository eventDetailRepository(D2 d2) {
-        return new EventInitialRepositoryImpl(eventUid, stageUid, d2);
+    EventInitialRepository eventDetailRepository(D2 d2,
+                                                 @NonNull FieldViewModelFactory fieldViewModelFactory,
+                                                 RuleEngineRepository ruleEngineRepository) {
+        return new EventInitialRepositoryImpl(eventUid, stageUid, d2, fieldViewModelFactory, ruleEngineRepository);
+    }
+
+    @Provides
+    @PerActivity
+    RuleEngineRepository ruleEngineRepository(D2 d2, FormRepository formRepository) {
+        return new EventRuleEngineRepository(d2, formRepository, eventUid);
     }
 }

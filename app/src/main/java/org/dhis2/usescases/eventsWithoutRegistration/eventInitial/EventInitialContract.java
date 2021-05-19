@@ -43,7 +43,7 @@ public class EventInitialContract {
 
         void setProgramStage(ProgramStage programStage);
 
-        void updatePercentage(float primaryValue, float secondaryValue);
+        void updatePercentage(float primaryValue);
 
         void showProgramStageSelection();
 
