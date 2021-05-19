@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -190,28 +191,34 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             case Constants.GALLERY_REQUEST:
                 if (resultCode == RESULT_OK) {
                     Uri imageUri = data.getData();
-                    presenter.saveImage(uuid, FileResourcesUtil.getFileFromGallery(this, imageUri).getPath());
-                    presenter.nextCalculation(true);
+                    try {
+                        presenter.saveImage(uuid, FileResourcesUtil.getFileFromGallery(this, imageUri).getPath());
+                        presenter.nextCalculation(true);
+                    } catch(Exception e) {
+                        crashReportController.logException(e);
+                        Toast.makeText(this, getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                    }
                 }
                 break;
             case Constants.CAMERA_REQUEST:
                 if (resultCode == RESULT_OK) {
                     File imageFile = new File(FileResourceDirectoryHelper.getFileResourceDirectory(this), "tempFile.png");
                     File file = new ImageUtils().rotateImage(this, imageFile);
-                    if (file.exists()) {
-                        presenter.saveImage(uuid, file.getPath());
-                    } else
-                        presenter.saveImage(uuid, null);
-                    presenter.nextCalculation(true);
+                    try {
+                        presenter.saveImage(uuid, file.exists() ? file.getPath() : null);
+                        presenter.nextCalculation(true);
+                    } catch (Exception e) {
+                        crashReportController.logException(e);
+                        Toast.makeText(this, getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                    }
                 }
                 break;
         }
     }
 
     @Override
-    public void updatePercentage(float primaryValue, float secondaryValue) {
+    public void updatePercentage(float primaryValue) {
         binding.completion.setCompletionPercentage(primaryValue);
-        binding.completion.setSecondaryPercentage(secondaryValue);
         if (!presenter.getCompletionPercentageVisibility()) {
             binding.completion.setVisibility(View.GONE);
         }

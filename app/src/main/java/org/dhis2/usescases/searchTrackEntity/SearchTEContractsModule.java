@@ -179,5 +179,7 @@ public class SearchTEContractsModule {
         void clearOtherFiltersIfWebAppIsConfig();
 
         void setOpeningFilterToNone();
+
+        void populateList(List<FieldUiModel> list);
     }
 }

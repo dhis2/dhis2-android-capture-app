@@ -2,7 +2,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.app.DatePickerDialog;
 import android.util.ArrayMap;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,11 +16,12 @@ import org.dhis2.data.tuples.Sextet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper;
-import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.Result;
+import org.dhis2.utils.RulesActionCallbacks;
+import org.dhis2.utils.RulesUtilsProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -37,6 +37,7 @@ import org.hisp.dhis.rules.models.RuleActionHideSection;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionShowWarning;
 import org.hisp.dhis.rules.models.RuleEffect;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,7 +67,7 @@ public class EventInitialPresenter {
 
     private final EventInitialRepository eventInitialRepository;
 
-    private final EventSummaryRepository eventSummaryRepository;
+    private final RulesUtilsProvider ruleUtils;
 
     private final SchedulerProvider schedulerProvider;
     private final EventFieldMapper eventFieldMapper;
@@ -86,7 +87,7 @@ public class EventInitialPresenter {
     private MatomoAnalyticsController matomoAnalyticsController;
 
     public EventInitialPresenter(@NonNull EventInitialContract.View view,
-                                 @NonNull EventSummaryRepository eventSummaryRepository,
+                                 @NonNull RulesUtilsProvider ruleUtils,
                                  @NonNull EventInitialRepository eventInitialRepository,
                                  @NonNull SchedulerProvider schedulerProvider,
                                  @NonNull PreferenceProvider preferenceProvider,
@@ -96,7 +97,7 @@ public class EventInitialPresenter {
 
         this.view = view;
         this.eventInitialRepository = eventInitialRepository;
-        this.eventSummaryRepository = eventSummaryRepository;
+        this.ruleUtils = ruleUtils;
         this.schedulerProvider = schedulerProvider;
         this.preferences = preferenceProvider;
         this.analyticsHelper = analyticsHelper;
@@ -333,8 +334,8 @@ public class EventInitialPresenter {
     }
 
     private void getSectionCompletion() {
-        Flowable<List<FieldUiModel>> fieldsFlowable = eventSummaryRepository.list(eventId);
-        Flowable<Result<RuleEffect>> ruleEffectFlowable = eventSummaryRepository.calculate()
+        Flowable<List<FieldUiModel>> fieldsFlowable = eventInitialRepository.list();
+        Flowable<Result<RuleEffect>> ruleEffectFlowable = eventInitialRepository.calculate()
                 .subscribeOn(schedulerProvider.computation())
                 .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
@@ -357,8 +358,7 @@ public class EventInitialPresenter {
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 sectionsAndFields -> view.updatePercentage(
-                                        eventFieldMapper.completedFieldsPercentage(),
-                                        eventFieldMapper.unsupportedFieldsPercentage()),
+                                        eventFieldMapper.completedFieldsPercentage()),
                                 Timber::d
                         ));
     }
@@ -372,7 +372,42 @@ public class EventInitialPresenter {
         }
 
         Map<String, FieldUiModel> fieldViewModels = toMap(viewModels);
-        applyRuleEffects(fieldViewModels, calcResult);
+        ruleUtils.applyRuleEffects(fieldViewModels, calcResult, new RulesActionCallbacks() {
+            @Override
+            public void setShowError(@NotNull RuleActionShowError showError, @Nullable FieldUiModel model) {
+
+            }
+
+            @Override
+            public void unsupportedRuleAction() {
+
+            }
+
+            @Override
+            public void save(@NotNull String uid, @Nullable String value) {
+
+            }
+
+            @Override
+            public void setMessageOnComplete(@NotNull String content, boolean canComplete) {
+
+            }
+
+            @Override
+            public void setHideProgramStage(@NotNull String programStageUid) {
+
+            }
+
+            @Override
+            public void setOptionToHide(@NotNull String optionUid, @NotNull String field) {
+
+            }
+
+            @Override
+            public void setOptionGroupToHide(@NotNull String optionGroupUid, boolean toHide, @NotNull String field) {
+
+            }
+        });
 
         return new ArrayList<>(fieldViewModels.values());
     }
@@ -384,37 +419,6 @@ public class EventInitialPresenter {
             map.put(fieldViewModel.getUid(), fieldViewModel);
         }
         return map;
-    }
-
-    private void applyRuleEffects(Map<String, FieldUiModel> fieldViewModels, Result<RuleEffect> calcResult) {
-        // TODO: APPLY RULE EFFECTS TO ALL MODELS
-        view.setHideSection(null);
-        for (RuleEffect ruleEffect : calcResult.items()) {
-            RuleAction ruleAction = ruleEffect.ruleAction();
-            if (ruleAction instanceof RuleActionShowWarning) {
-                RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
-                FieldUiModel model = fieldViewModels.get(showWarning.field());
-
-                if (model instanceof EditTextViewModel) {
-                    fieldViewModels.put(showWarning.field(),
-                            ((EditTextViewModel) model).withWarning(showWarning.content()));
-                }
-            } else if (ruleAction instanceof RuleActionShowError) {
-                RuleActionShowError showError = (RuleActionShowError) ruleAction;
-                FieldUiModel model = fieldViewModels.get(showError.field());
-
-                if (model instanceof EditTextViewModel) {
-                    fieldViewModels.put(showError.field(),
-                            ((EditTextViewModel) model).withError(showError.content()));
-                }
-            } else if (ruleAction instanceof RuleActionHideField) {
-                RuleActionHideField hideField = (RuleActionHideField) ruleAction;
-                fieldViewModels.remove(hideField.field());
-            } else if (ruleAction instanceof RuleActionHideSection) {
-                RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
-                view.setHideSection(hideSection.programStageSection());
-            }
-        }
     }
 
     public String getCatOptionCombo(String catComboUid, List<CategoryOptionCombo> categoryOptionCombos, List<CategoryOption> values) {

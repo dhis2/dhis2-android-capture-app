@@ -21,9 +21,13 @@ class CrashReportControllerImpl @Inject constructor() : CrashReportController {
         }
     }
 
-    override fun logException(exception: Exception) {}
+    override fun logException(exception: Exception) {
+        Sentry.captureException(exception)
+    }
 
-    override fun logMessage(tag: String, message: String) {}
+    override fun logMessage(message: String) {
+        Sentry.captureMessage(message)
+    }
 
     companion object {
         const val SERVER_NAME = "server_name"

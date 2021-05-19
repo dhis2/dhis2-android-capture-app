@@ -56,6 +56,6 @@ public abstract class UnsupportedViewModel extends FieldViewModel {
 
     @Override
     public int getLayoutId() {
-        return R.layout.form_unsupported_custom;
+        return R.layout.form_unsupported;
     }
 }

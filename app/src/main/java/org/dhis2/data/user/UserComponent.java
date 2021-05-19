@@ -32,8 +32,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureCo
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialModule;
-import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryComponent;
-import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryModule;
 import org.dhis2.usescases.main.MainComponent;
 import org.dhis2.usescases.main.MainModule;
 import org.dhis2.usescases.main.program.ProgramComponent;
@@ -111,9 +109,6 @@ public interface UserComponent {
 
     @NonNull
     EventInitialComponent plus(EventInitialModule eventInitialModule);
-
-    @NonNull
-    EventSummaryComponent plus(EventSummaryModule eventInitialModule);
 
     @NonNull
     SyncManagerComponent plus(SyncManagerModule syncManagerModule);
