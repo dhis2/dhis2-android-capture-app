@@ -20,7 +20,6 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.Result;
-import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
@@ -50,6 +49,7 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import kotlin.Pair;
+import kotlin.jvm.functions.Function1;
 import timber.log.Timber;
 
 import static org.dhis2.utils.analytics.AnalyticsConstants.BACK_EVENT;
@@ -372,42 +372,7 @@ public class EventInitialPresenter {
         }
 
         Map<String, FieldUiModel> fieldViewModels = toMap(viewModels);
-        ruleUtils.applyRuleEffects(fieldViewModels, calcResult, new RulesActionCallbacks() {
-            @Override
-            public void setShowError(@NotNull RuleActionShowError showError, @Nullable FieldUiModel model) {
-
-            }
-
-            @Override
-            public void unsupportedRuleAction() {
-
-            }
-
-            @Override
-            public void save(@NotNull String uid, @Nullable String value) {
-
-            }
-
-            @Override
-            public void setMessageOnComplete(@NotNull String content, boolean canComplete) {
-
-            }
-
-            @Override
-            public void setHideProgramStage(@NotNull String programStageUid) {
-
-            }
-
-            @Override
-            public void setOptionToHide(@NotNull String optionUid, @NotNull String field) {
-
-            }
-
-            @Override
-            public void setOptionGroupToHide(@NotNull String optionGroupUid, boolean toHide, @NotNull String field) {
-
-            }
-        });
+        ruleUtils.applyRuleEffects(true, fieldViewModels, calcResult, null, options -> new ArrayList<>());
 
         return new ArrayList<>(fieldViewModels.values());
     }
