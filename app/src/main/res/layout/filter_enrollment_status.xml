@@ -31,15 +31,13 @@
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="fitXY"
+            android:layout_height="20dp"
             android:src="@drawable/inner_shadow_top"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="fitXY"
+            android:layout_height="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:srcCompat="@drawable/inner_shadow_bottom" />
 
