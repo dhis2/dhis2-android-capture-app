@@ -14,8 +14,8 @@ name = release_versions.get('vName')
 branch = release_versions.get('vBranch')
 sdk_version = release_versions.get('sdkVersion')
 
-os.system(f'envman add --key NAME_RELEASE --value "{name}"')
-os.system(f'envman add --key BRANCH_RELEASE --value "{branch}"')
-os.system(f'envman add --key SDK_VERSION --value "{sdk_version}"')
+os.system(f'envman add --key NAME_RELEASE --value {name}')
+os.system(f'envman add --key BRANCH_RELEASE --value {branch}')
+os.system(f'envman add --key SDK_VERSION --value {sdk_version}')
 
 print("*** Done! ***")
