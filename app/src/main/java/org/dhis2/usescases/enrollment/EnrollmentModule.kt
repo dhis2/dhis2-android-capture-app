@@ -96,7 +96,6 @@ class EnrollmentModule(
         )
     }
 
-
     @Provides
     @PerActivity
     fun fieldFactory(

@@ -1,7 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.age
 
 import android.content.res.ColorStateList
-import android.graphics.PorterDuff
+import android.R
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
@@ -13,9 +13,7 @@ import com.google.android.material.textfield.TextInputLayout
 import java.util.Calendar
 import java.util.Date
 import org.dhis2.Bindings.toDate
-import android.R
 import org.dhis2.form.ui.style.FormUiColorType
-import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.DateUtils
 
 @BindingAdapter("setTextColorAgeView")
@@ -23,7 +21,6 @@ fun setTextColorAgeView(
     textView: TextView,
     item: AgeViewModel
 ) {
-
     val color = item.style()!!.getColors()[FormUiColorType.FIELD_LABEL_TEXT]
     color?.let {
         textView.setTextColor(color)
@@ -42,7 +39,7 @@ fun tintDescriptionLabel(
 }
 
 @BindingAdapter("onFocusChangeAgeView")
-fun onFocusChangesAgeView(editText: EditText, model: AgeViewModel){
+fun onFocusChangesAgeView(editText: EditText, model: AgeViewModel) {
     editText.setOnFocusChangeListener { v, hasFocus -> setEditTextUnderlineColor(editText, model) }
 }
 
@@ -62,7 +59,7 @@ fun setEditTextUnderlineColor(
     editText: EditText,
     item: AgeViewModel
 ) {
-    val color = if (item.warning() != null){
+    val color = if (item.warning() != null) {
         item.style()!!.getColors()[FormUiColorType.WARNING]
     } else if (item.error() != null) {
         item.style()!!.getColors()[FormUiColorType.ERROR]

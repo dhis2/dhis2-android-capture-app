@@ -5,7 +5,6 @@ import androidx.core.content.ContextCompat
 import org.dhis2.form.ui.style.FormUiColorFactory
 import org.dhis2.form.ui.style.FormUiColorType
 import org.dhis2.utils.ColorUtils
-import javax.inject.Singleton
 
 class FormUiModelColorFactoryImpl(
     val context: Context,
