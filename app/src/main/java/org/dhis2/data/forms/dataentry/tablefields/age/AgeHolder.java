@@ -19,10 +19,6 @@ import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
 
-/**
- * QUADRAM. Created by frodriguez on 20/03/2018.
- */
-
 public class AgeHolder extends FormViewHolder {
 
     private final FlowableProcessor<RowAction> processor;

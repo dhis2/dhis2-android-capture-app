@@ -1,5 +1,7 @@
 package org.dhis2.form.model
 
+import java.util.Date
+
 interface FieldUiModel {
 
     val uid: String
@@ -51,11 +53,10 @@ interface FieldUiModel {
     fun setFieldMandatory(): FieldUiModel
 
     interface Callback {
-
         fun onNext()
-
         fun showDialog(title: String, message: String?)
-
+        fun showCustomCalendar(uid: String, label: String?, date: Date)
+        fun showYearMonthDayPicker(uid: String, year: Int, month: Int, day: Int)
         fun onItemAction(action: RowAction)
     }
 }
