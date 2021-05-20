@@ -9,6 +9,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import java.util.Date
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.prefs.Preference
 import org.dhis2.data.prefs.PreferenceProvider
@@ -35,7 +36,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import java.util.Date
 
 class EventInitialPresenterTest {
     lateinit var presenter: EventInitialPresenter
@@ -613,10 +613,13 @@ class EventInitialPresenterTest {
         }
 
         whenever(eventInitialRepository.accessDataWrite(uid)) doReturn Observable.just(true)
-        whenever(eventInitialRepository.getGeometryModel(uid,null))doReturn Single.just(
-            CoordinateViewModel.create("id","",false,null,null,
-                true,null,ObjectStyle.builder().build(),null,false,
-                false,null))
+        whenever(eventInitialRepository.getGeometryModel(uid, null)) doReturn Single.just(
+            CoordinateViewModel.create(
+                "id", "", false, null, null,
+                true, null, ObjectStyle.builder().build(), null, false,
+                false, null
+            )
+        )
         whenever(eventInitialRepository.getProgramWithId(uid)) doReturn Observable.just(program)
         whenever(eventInitialRepository.catCombo(uid)) doReturn Observable.just(catCombo)
         whenever(eventInitialRepository.orgUnits(uid)) doReturn Observable.just(orgUnits.toList())
