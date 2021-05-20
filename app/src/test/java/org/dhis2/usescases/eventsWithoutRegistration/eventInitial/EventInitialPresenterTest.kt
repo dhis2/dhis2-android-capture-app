@@ -14,10 +14,10 @@ import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper
-import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.EventCreationType
 import org.dhis2.utils.Result
+import org.dhis2.utils.RulesUtilsProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -37,12 +37,12 @@ import org.junit.Test
 
 class EventInitialPresenterTest {
     lateinit var presenter: EventInitialPresenter
-    val view: EventInitialContract.View = mock()
-    private val eventSummaryRepository: EventSummaryRepository = mock()
+    private val view: EventInitialContract.View = mock()
+    private val rulesUtilsProvider: RulesUtilsProvider = mock()
     private val eventInitialRepository: EventInitialRepository = mock()
-    val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
-    val preferences: PreferenceProvider = mock()
-    val analyticsHelper: AnalyticsHelper = mock()
+    private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
+    private val preferences: PreferenceProvider = mock()
+    private val analyticsHelper: AnalyticsHelper = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val eventFieldMapper: EventFieldMapper = mock()
 
@@ -50,7 +50,7 @@ class EventInitialPresenterTest {
     fun setUp() {
         presenter = EventInitialPresenter(
             view,
-            eventSummaryRepository,
+            rulesUtilsProvider,
             eventInitialRepository,
             schedulers,
             preferences,
@@ -84,8 +84,7 @@ class EventInitialPresenterTest {
         verify(view).setProgramStage(any())
         verify(view).setEvent(any())
         verify(view).setCatComboOptions(catCombo, listOf(), null)
-        verify(view).updatePercentage(any(), any())
-        verify(view).setHideSection(null)
+        verify(view).updatePercentage(any())
         verify(view).setOrgUnit(any(), any())
     }
 
@@ -644,9 +643,9 @@ class EventInitialPresenterTest {
             eventInitialRepository.getOptionsFromCatOptionCombo(eventId)
         ) doReturn Flowable.just(stringCategoryOptionMap)
 
-        whenever(eventSummaryRepository.list(eventId)) doReturn Flowable.just(listOf())
+        whenever(eventInitialRepository.list()) doReturn Flowable.just(listOf())
         whenever(
-            eventSummaryRepository.calculate()
+            eventInitialRepository.calculate()
         ) doReturn Flowable.just(Result.success(listOf()))
         whenever(eventInitialRepository.eventSections()) doReturn Flowable.just(listOf())
         whenever(

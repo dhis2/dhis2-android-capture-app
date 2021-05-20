@@ -40,7 +40,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.R;
 import org.dhis2.animations.ViewAnimationsKt;
-import org.dhis2.data.forms.dataentry.fields.LegendValue;
+import org.dhis2.form.model.LegendValue;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.databinding.DataElementLegendBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
@@ -433,26 +433,30 @@ public class Bindings {
                 case UPLOADING:
                     imageView.setImageResource(R.drawable.ic_sync_problem_grey);
                     imageView.setVisibility(View.VISIBLE);
+                    imageView.setTag(R.drawable.ic_sync_problem_grey);
                     break;
                 case ERROR:
                     imageView.setImageResource(R.drawable.ic_sync_problem_red);
                     imageView.setVisibility(View.VISIBLE);
+                    imageView.setTag(R.drawable.ic_sync_problem_red);
                     break;
                 case SYNCED:
                     imageView.setImageResource(R.drawable.ic_sync);
                     if (!showSynced) {
                         imageView.setVisibility(View.GONE);
                     }
+                    imageView.setTag(R.drawable.ic_sync);
                     break;
                 case WARNING:
                     imageView.setImageResource(R.drawable.ic_sync_warning);
                     imageView.setVisibility(View.VISIBLE);
+                    imageView.setTag(R.drawable.ic_sync_warning);
                     break;
                 case SENT_VIA_SMS:
                 case SYNCED_VIA_SMS:
                     imageView.setImageResource(R.drawable.ic_sync_sms);
                     imageView.setVisibility(View.VISIBLE);
-                    break;
+                    imageView.setTag(R.drawable.ic_sync_sms);
                 default:
                     break;
             }
@@ -693,12 +697,14 @@ public class Bindings {
 
     @BindingAdapter(value = {"dataSetStatus"})
     public static void setDataSetStatusIcon(ImageView view, Boolean isComplete) {
+        int drawableResource = isComplete ? R.drawable.ic_event_status_complete : R.drawable.ic_event_status_open;
         view.setImageDrawable(
                 AppCompatResources.getDrawable(
                         view.getContext(),
-                        isComplete ? R.drawable.ic_event_status_complete : R.drawable.ic_event_status_open
+                        drawableResource
                 )
         );
+        view.setTag(drawableResource);
     }
 
     @BindingAdapter("iconResource")

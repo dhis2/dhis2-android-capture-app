@@ -3,8 +3,8 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 import androidx.annotation.NonNull;
 
 import org.dhis2.data.forms.FormSectionViewModel;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.model.RowAction;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -33,9 +33,9 @@ public class EventCaptureContract {
 
         EventCaptureContract.Presenter getPresenter();
 
-        void updatePercentage(float primaryValue, float secondaryValue);
+        void updatePercentage(float primaryValue);
 
-        void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldViewModel> emptyMandatoryFields);
+        void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldUiModel> emptyMandatoryFields);
 
         void restartDataEntry();
 
@@ -76,7 +76,7 @@ public class EventCaptureContract {
 
         void init();
 
-        BehaviorSubject<List<FieldViewModel>> formFieldsFlowable();
+        BehaviorSubject<List<FieldUiModel>> formFieldsFlowable();
 
         void onBackClick();
 
@@ -132,7 +132,7 @@ public class EventCaptureContract {
         Flowable<List<FormSectionViewModel>> eventSections();
 
         @NonNull
-        Flowable<List<FieldViewModel>> list(FlowableProcessor<RowAction> processor);
+        Flowable<List<FieldUiModel>> list(FlowableProcessor<RowAction> processor);
 
         @NonNull
         Flowable<Result<RuleEffect>> calculate();

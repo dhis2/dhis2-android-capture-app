@@ -1,9 +1,9 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment
 
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.form.model.FieldUiModel
 
 interface EventCaptureFormView {
 
-    fun showFields(fields: MutableList<FieldViewModel>)
+    fun showFields(fields: MutableList<FieldUiModel>)
     fun performSaveClick()
 }

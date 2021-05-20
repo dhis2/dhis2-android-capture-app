@@ -5,7 +5,7 @@ import android.view.inputmethod.EditorInfo.IME_ACTION_NEXT
 import android.view.inputmethod.EditorInfo.IME_FLAG_NO_ENTER_ACTION
 import android.widget.EditText
 import androidx.databinding.BindingAdapter
-import org.dhis2.form.data.KeyboardActionType
+import org.dhis2.form.model.KeyboardActionType
 
 object ItemBindings {
 

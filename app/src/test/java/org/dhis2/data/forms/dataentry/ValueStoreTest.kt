@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
+import org.dhis2.form.model.ValueStoreResult
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -41,7 +42,7 @@ class ValueStoreTest {
 
         testSubscriber.assertValueCount(1)
         testSubscriber.assertValue {
-            it.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_NOT_UNIQUE
+            it.valueStoreResult == ValueStoreResult.VALUE_NOT_UNIQUE
         }
     }
 
@@ -110,7 +111,7 @@ class ValueStoreTest {
 
         testSubscriber.assertValueCount(1)
         testSubscriber.assertValue {
-            it.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+            it.valueStoreResult == ValueStoreResult.VALUE_CHANGED
         }
     }
 
@@ -124,7 +125,7 @@ class ValueStoreTest {
 
         testSubscriber.assertValueCount(1)
         testSubscriber.assertValue {
-            it.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+            it.valueStoreResult == ValueStoreResult.VALUE_CHANGED
         }
     }
 
@@ -156,7 +157,7 @@ class ValueStoreTest {
 
         testSubscriber.assertValueCount(1)
         testSubscriber.assertValue {
-            it.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+            it.valueStoreResult == ValueStoreResult.VALUE_CHANGED
         }
     }
 
@@ -173,7 +174,7 @@ class ValueStoreTest {
 
         testSubscriber.assertValueCount(1)
         testSubscriber.assertValue {
-            it.valueStoreResult == ValueStoreImpl.ValueStoreResult.UID_IS_NOT_DE_OR_ATTR
+            it.valueStoreResult == ValueStoreResult.UID_IS_NOT_DE_OR_ATTR
         }
     }
 
@@ -220,7 +221,7 @@ class ValueStoreTest {
             "fieldUid",
             "optionUid"
         )
-        assert(storeResult.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED)
+        assert(storeResult.valueStoreResult == ValueStoreResult.VALUE_CHANGED)
     }
 
     @Test
@@ -245,7 +246,7 @@ class ValueStoreTest {
         ) doReturn false
         val storeResult = deValueStore.deleteOptionValueIfSelected("fieldUid", "optionUid")
         assert(
-            storeResult.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED
+            storeResult.valueStoreResult == ValueStoreResult.VALUE_HAS_NOT_CHANGED
         )
     }
 
@@ -274,7 +275,7 @@ class ValueStoreTest {
             .test()
             .assertNoErrors()
             .assertValue { result ->
-                result.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                result.valueStoreResult == ValueStoreResult.VALUE_HAS_NOT_CHANGED
             }
     }
 
@@ -312,31 +313,31 @@ class ValueStoreTest {
             .test()
             .assertNoErrors()
             .assertValue { result ->
-                result.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                result.valueStoreResult == ValueStoreResult.VALUE_HAS_NOT_CHANGED
             }
     }
 
-    fun mockedAttribute(): TrackedEntityAttribute {
+    private fun mockedAttribute(): TrackedEntityAttribute {
         return TrackedEntityAttribute.builder()
             .uid("uid")
             .build()
     }
 
-    fun mockedDataElement(): DataElement {
+    private fun mockedDataElement(): DataElement {
         return DataElement.builder()
             .uid("uid")
             .valueType(ValueType.TEXT)
             .build()
     }
 
-    fun mockedUniqueAttribute(): TrackedEntityAttribute {
+    private fun mockedUniqueAttribute(): TrackedEntityAttribute {
         return TrackedEntityAttribute.builder()
             .uid("uid")
             .unique(true)
             .build()
     }
 
-    fun mockedDataElementValue(): TrackedEntityDataValue {
+    private fun mockedDataElementValue(): TrackedEntityDataValue {
         return TrackedEntityDataValue.builder()
             .dataElement("uid")
             .event("recordUid")
