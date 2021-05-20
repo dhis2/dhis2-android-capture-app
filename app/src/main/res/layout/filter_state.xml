@@ -28,10 +28,10 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible">
 
-        <ImageView
+        <View
             android:layout_width="match_parent"
             android:layout_height="20dp"
-            android:src="@drawable/inner_shadow_top"
+            android:background="@drawable/inner_shadow_top"
             app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
@@ -172,10 +172,10 @@
             </LinearLayout>
         </LinearLayout>
 
-        <ImageView
+        <View
             android:layout_width="match_parent"
             android:layout_height="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:srcCompat="@drawable/inner_shadow_bottom" />
+            android:background="@drawable/inner_shadow_bottom" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

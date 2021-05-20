@@ -26,17 +26,17 @@
         app:request_layout="@{filterItem}"
         tools:visibility="visible">
 
-        <ImageView
+        <View
             android:layout_width="match_parent"
             android:layout_height="20dp"
-            android:src="@drawable/inner_shadow_top"
+            android:background="@drawable/inner_shadow_top"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
+        <View
             android:layout_width="match_parent"
             android:layout_height="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:srcCompat="@drawable/inner_shadow_bottom" />
+            android:background="@drawable/inner_shadow_bottom"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/orgUnitSearchLayout"
