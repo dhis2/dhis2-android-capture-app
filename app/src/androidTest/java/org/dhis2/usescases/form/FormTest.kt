@@ -168,6 +168,45 @@ class FormTest: BaseTest() {
         }
     }
 
+    @Test
+    fun test(){
+        val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
+        val firstSectionPosition = 1
+        startSearchActivity(ruleSearch)
+
+        searchTeiRobot {
+            clickOnSearchFilter()
+            typeAttributeAtPosition("optionGroup", 1)
+            clickOnFab()
+            clickOnFab()
+            selectAnOrgUnit("Ngelehun CHC")
+            clickOnAcceptButton()
+            acceptDate()
+        }
+
+        enrollmentRobot {
+            clickOnPersonAttributes("Attributes - Person")
+            scrollToBottomProgramForm()
+            clickOnDatePicker()
+            clickOnAcceptEnrollmentDate()
+            clickOnInputDate("DD TEST DATE *")
+            clickOnAcceptEnrollmentDate()
+            clickOnSaveEnrollment()
+        }
+
+        eventRobot {
+            clickOnUpdate()
+            waitToDebounce(3000)
+        }
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, HIDE_OPTION_GROUP, HIDE_OPTION_GROUP_POSITION)
+            checkHiddenOption("North", OPTION_SET_FIELD_POSITION)
+            checkHiddenOption("West", OPTION_SET_FIELD_POSITION)
+        }
+    }
+
 
     companion object {
         const val NO_ACTION = "No Action"
