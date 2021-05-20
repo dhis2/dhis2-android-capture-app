@@ -288,7 +288,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
     ) {
         fieldViewModels.filter {
             it.value.programStageSection == hideSection.programStageSection() &&
-                    !it.value.mandatory
+                !it.value.mandatory
         }.keys.forEach { fieldViewModels.remove(it) }
     }
 
@@ -405,9 +405,9 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
 
         valueStore?.let {
             if (it.deleteOptionValueIfSelected(
-                    hideOption.field(),
-                    hideOption.option()
-                ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
+                hideOption.field(),
+                hideOption.option()
+            ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
             ) {
                 fieldsToUpdate.add(hideOption.field())
             }
@@ -424,10 +424,10 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
 
         valueStore?.let {
             if (it.deleteOptionValueIfSelectedInGroup(
-                    hideOptionGroup.field(),
-                    hideOptionGroup.optionGroup(),
-                    true
-                ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
+                hideOptionGroup.field(),
+                hideOptionGroup.optionGroup(),
+                true
+            ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
             ) {
                 fieldsToUpdate.add(hideOptionGroup.field())
             }
@@ -450,10 +450,10 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             }
         }
         if (valueStore?.deleteOptionValueIfSelectedInGroup(
-                fieldUid,
-                optionGroupUid,
-                false
-            )?.valueStoreResult == ValueStoreResult.VALUE_CHANGED
+            fieldUid,
+            optionGroupUid,
+            false
+        )?.valueStoreResult == ValueStoreResult.VALUE_CHANGED
         ) {
             fieldsToUpdate.add(fieldUid)
         }

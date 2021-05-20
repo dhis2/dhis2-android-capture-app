@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
+import java.util.ArrayList
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
@@ -38,7 +39,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-import java.util.ArrayList
 
 class RulesUtilsProviderImplTest {
 
@@ -528,14 +528,17 @@ class RulesUtilsProviderImplTest {
         ) { optionGroupUids -> listOf("optionToHide1", "optionToHide2") }
 
         assertTrue(
-            (testFieldViewModels["field"] as OptionSetViewModel).optionsToHide.contains("optionToHide1")
+            (testFieldViewModels["field"] as OptionSetViewModel)
+                .optionsToHide.contains("optionToHide1")
         )
         assertTrue(
-            (testFieldViewModels["field"] as OptionSetViewModel).optionsToHide.contains("optionToHide2")
+            (testFieldViewModels["field"] as OptionSetViewModel)
+                .optionsToHide.contains("optionToHide2")
         )
 
-        verify(valueStore).deleteOptionValueIfSelectedInGroup("field", "optionGroupUid", true)
-
+        verify(
+            valueStore
+        ).deleteOptionValueIfSelectedInGroup("field", "optionGroupUid", true)
     }
 
     @Test
@@ -573,12 +576,13 @@ class RulesUtilsProviderImplTest {
         ) { optionGroupUids -> listOf("optionToShow1", "optionToShow2") }
 
         assertTrue(
-            (testFieldViewModels["field"] as OptionSetViewModel).optionsToShow.contains("optionToShow1")
+            (testFieldViewModels["field"] as OptionSetViewModel)
+                .optionsToShow.contains("optionToShow1")
         )
         assertTrue(
-            (testFieldViewModels["field"] as OptionSetViewModel).optionsToShow.contains("optionToShow2")
+            (testFieldViewModels["field"] as OptionSetViewModel)
+                .optionsToShow.contains("optionToShow2")
         )
         verify(valueStore).deleteOptionValueIfSelectedInGroup("field", "optionGroupUid", false)
-
     }
 }
