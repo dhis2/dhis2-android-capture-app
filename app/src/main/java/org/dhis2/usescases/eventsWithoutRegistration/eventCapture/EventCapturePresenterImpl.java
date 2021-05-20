@@ -255,8 +255,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                         formAdjustProcessor.onNext(new Unit());
 
                                         view.updatePercentage(
-                                                fieldMapper.completedFieldsPercentage(),
-                                                fieldMapper.unsupportedFieldsPercentage()
+                                                fieldMapper.completedFieldsPercentage()
                                         );
                                     }
                                 },

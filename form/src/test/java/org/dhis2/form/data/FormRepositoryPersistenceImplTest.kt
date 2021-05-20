@@ -93,7 +93,7 @@ class FormRepositoryPersistenceImplTest {
         // Given a list of non focused items
         repository.composeList(provideItemList())
 
-        //When user taps on first item
+        // When user taps on first item
         repository.processUserAction(
             RowAction(
                 id = "uid001",
@@ -130,7 +130,6 @@ class FormRepositoryPersistenceImplTest {
         // Then result list should has second item focused
         assertFalse(repository.composeList()[0].focused)
         assertTrue(repository.composeList()[1].focused)
-
     }
 
     @Test

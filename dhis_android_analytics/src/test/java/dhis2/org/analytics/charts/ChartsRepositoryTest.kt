@@ -10,6 +10,7 @@ import dhis2.org.analytics.charts.data.SerieData
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
 import dhis2.org.analytics.charts.mappers.DataElementToGraph
 import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
+import java.util.Date
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -24,7 +25,6 @@ import org.hisp.dhis.android.core.settings.ChartType
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito
-import java.util.Date
 
 class ChartsRepositoryTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
@@ -67,9 +67,8 @@ class ChartsRepositoryTest {
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
         assertTrue(
             result.isNotEmpty() &&
-                    result.size == mockedSettingsGraphs().size &&
-                    result[0].title == "settings_1"
-
+                result.size == mockedSettingsGraphs().size &&
+                result[0].title == "settings_1"
         )
     }
 
@@ -89,9 +88,9 @@ class ChartsRepositoryTest {
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
         assertTrue(
             result.isNotEmpty() &&
-                    result.size == 2 &&
-                    result[0].title == "de_graph_1" &&
-                    result[1].title == "indicator_graph_1"
+                result.size == 2 &&
+                result[0].title == "de_graph_1" &&
+                result[1].title == "indicator_graph_1"
         )
     }
 
@@ -108,8 +107,8 @@ class ChartsRepositoryTest {
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
         assertTrue(
             result.isNotEmpty() &&
-                    result.size == 1 &&
-                    result[0].title == "de_graph_1"
+                result.size == 1 &&
+                result[0].title == "de_graph_1"
         )
     }
 
@@ -126,8 +125,8 @@ class ChartsRepositoryTest {
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
         assertTrue(
             result.isNotEmpty() &&
-                    result.size == 1 &&
-                    result[0].title == "indicator_graph_1"
+                result.size == 1 &&
+                result[0].title == "indicator_graph_1"
         )
     }
 
@@ -326,5 +325,4 @@ class ChartsRepositoryTest {
             dhis2.org.analytics.charts.data.ChartType.LINE_CHART
         )
     }
-
 }

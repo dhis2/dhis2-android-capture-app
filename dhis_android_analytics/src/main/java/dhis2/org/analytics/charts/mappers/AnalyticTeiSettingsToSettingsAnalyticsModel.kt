@@ -22,7 +22,9 @@ class AnalyticTeiSettingsToSettingsAnalyticsModel(
         }
     }
 
-    private fun mapNutrition(analyticsTeiSetting: AnalyticsTeiSetting): NutritionSettingsAnalyticsModel {
+    private fun mapNutrition(
+        analyticsTeiSetting: AnalyticsTeiSetting
+    ): NutritionSettingsAnalyticsModel {
         val (zScoreContainer, zScoreStageUid, yIsDataElement) = getZscoreContainer(
             analyticsTeiSetting.whoNutritionData()!!.y()
         )
@@ -30,7 +32,7 @@ class AnalyticTeiSettingsToSettingsAnalyticsModel(
             analyticsTeiSetting.whoNutritionData()!!.x()
         )
 
-        if(zScoreStageUid != ageOrHeightStageUid){
+        if (zScoreStageUid != ageOrHeightStageUid) {
             Log.d("NUTRITION_CHART", "Stage should be the same")
         }
 
@@ -66,7 +68,9 @@ class AnalyticTeiSettingsToSettingsAnalyticsModel(
         )
     }
 
-    private fun getZscoreContainer(y: AnalyticsTeiWHONutritionItem): Triple<String, String, Boolean> {
+    private fun getZscoreContainer(
+        y: AnalyticsTeiWHONutritionItem
+    ): Triple<String, String, Boolean> {
         return if (y.dataElements().isNullOrEmpty()) {
             Triple(
                 y.indicators().firstOrNull()?.indicator() ?: "",
@@ -82,8 +86,9 @@ class AnalyticTeiSettingsToSettingsAnalyticsModel(
         }
     }
 
-
-    private fun getAgeOrHeightContainer(x: AnalyticsTeiWHONutritionItem): Triple<String, String, Boolean> {
+    private fun getAgeOrHeightContainer(
+        x: AnalyticsTeiWHONutritionItem
+    ): Triple<String, String, Boolean> {
         return if (x.dataElements().isNullOrEmpty()) {
             Triple(
                 x.indicators().firstOrNull()?.indicator() ?: "",
