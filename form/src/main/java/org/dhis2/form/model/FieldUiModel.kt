@@ -1,7 +1,7 @@
 package org.dhis2.form.model
 
-import org.dhis2.form.ui.style.FormUiModelStyle
 import java.util.Date
+import org.dhis2.form.ui.style.FormUiModelStyle
 
 interface FieldUiModel {
 

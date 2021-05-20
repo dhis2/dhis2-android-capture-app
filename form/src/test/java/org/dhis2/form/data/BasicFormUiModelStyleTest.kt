@@ -17,13 +17,13 @@ class BasicFormUiModelStyleTest {
     private lateinit var basicFormUiModelStyle: FormUiModelStyle
 
     @Before
-    fun setUp(){
+    fun setUp() {
         basicFormUiModelStyle = BasicFormUiModelStyle(colorFactory)
     }
 
     @Test
     @Ignore
-    fun shouldGetColorsFromStyle(){
+    fun shouldGetColorsFromStyle() {
         val mapOfColors = mapOf(
             FormUiColorType.PRIMARY to 1,
             FormUiColorType.TEXT_PRIMARY to 2,
