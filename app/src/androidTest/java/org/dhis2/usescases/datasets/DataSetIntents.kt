@@ -36,10 +36,14 @@ fun startDataSetActivity(
     }
 }
 
-fun startDataSetDetailActivity(rule: ActivityTestRule<DataSetDetailActivity>) {
+fun startDataSetDetailActivity(
+    dataSetUid: String,
+    dataSetName: String,
+    rule: ActivityTestRule<DataSetDetailActivity>
+) {
     Intent().apply {
-        putExtra(DATASET_UID, "ZOV1a5R4gqH")
-        putExtra(DATA_SET_NAME, "DS EXTRA TEST")
+        putExtra(DATASET_UID, dataSetUid)
+        putExtra(DATA_SET_NAME, dataSetName)
         putExtra(ACCESS_DATA, true)
     }.also { rule.launchActivity(it) }
 }

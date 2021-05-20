@@ -124,6 +124,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
+            android:layout_marginBottom="12dp"
             android:visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE || isGrouping ? View.GONE : View.VISIBLE}"
             app:close_on_click="true"
             app:color_main_button="?colorPrimary"
