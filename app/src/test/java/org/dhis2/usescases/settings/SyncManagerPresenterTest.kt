@@ -88,9 +88,7 @@ class SyncManagerPresenterTest {
             100,
             "test",
             false,
-            canEdit = false,
-            theme = 1,
-            flag = "flag"
+            canEdit = false
         )
     }
 
@@ -142,9 +140,7 @@ class SyncManagerPresenterTest {
                 100,
                 "last date",
                 hasErrors = false,
-                canEdit = true,
-                theme = 1,
-                flag = "flag"
+                canEdit = true
             )
         )
         val period = presenter.metadataPeriodSetting

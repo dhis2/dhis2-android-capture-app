@@ -58,18 +58,15 @@ class SettingsRepository(
     }
 
     fun metaSync(userManager: UserManager): Single<MetadataSettingsViewModel> {
-        val (flag, theme) = userManager.theme.doOnSuccess { flagAndTheme ->
-            prefs.setValue(Preference.FLAG, flagAndTheme.first)
-            prefs.setValue(Preference.THEME, flagAndTheme.second)
-        }.blockingGet()
+        val (flag, theme) = userManager.theme.blockingGet()
+        prefs.setValue(Preference.FLAG, flag)
+        prefs.setValue(Preference.THEME, theme)
         return Single.just(
             MetadataSettingsViewModel(
                 metadataPeriod(),
                 prefs.getString(Constants.LAST_META_SYNC, "-")!!,
                 !prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true),
-                generalSettings?.metadataSync() == null,
-                theme,
-                flag
+                generalSettings?.metadataSync() == null
             )
         )
     }

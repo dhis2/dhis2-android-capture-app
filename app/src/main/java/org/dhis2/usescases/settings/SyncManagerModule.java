@@ -1,6 +1,5 @@
 package org.dhis2.usescases.settings;
 
-import androidx.annotation.Nullable;
 
 import org.dhis2.R;
 import org.dhis2.data.dagger.PerFragment;
