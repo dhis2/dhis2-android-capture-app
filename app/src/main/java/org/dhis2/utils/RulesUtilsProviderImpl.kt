@@ -1,6 +1,5 @@
 package org.dhis2.utils
 
-import java.util.ArrayList
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
@@ -154,49 +153,41 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
     ) {
         fieldViewModels.forEach {
             val fieldUid = it.key
+            val optionsToHide = optionsToHide[fieldUid] ?: mutableListOf()
+            val optionsInGroupsToHide = optionsFromGroup(
+                optionGroupsToHide[fieldUid] ?: mutableListOf()
+            )
+            val optionsInGroupsToShow = optionsFromGroup(
+                optionGroupsToShow[fieldUid] ?: mutableListOf()
+            )
             when (val fieldViewModel = it.value) {
                 is MatrixOptionSetModel -> {
                     val hiddenMatrixModel = fieldViewModel.setOptionsToHide(
-                        (
-                            if (optionsToHide[fieldUid] != null) {
-                                optionsToHide[fieldUid]!!
-                            } else {
-                                ArrayList()
-                            }
-                            ),
-                        optionsFromGroup(
-                            optionGroupsToHide[fieldUid] ?: emptyList()
-                        ),
-                        optionsFromGroup(
-                            optionGroupsToShow[fieldUid] ?: emptyList()
-                        )
+                        optionsToHide,
+                        optionsInGroupsToHide,
+                        optionsInGroupsToShow
                     )
                     fieldViewModels[fieldUid] = hiddenMatrixModel
                 }
                 is SpinnerViewModel -> {
                     var mappedSpinnerModel = fieldViewModel.setOptionsToHide(
-                        optionsToHide[fieldViewModel.uid()] ?: emptyList(),
-                        optionGroupsToHide[fieldViewModel.uid()] ?: emptyList()
-                    )
-                    if (optionGroupsToShow.keys.contains(fieldViewModel.uid())) {
-                        mappedSpinnerModel =
-                            fieldViewModel.setOptionGroupsToShow(
-                                optionGroupsToShow[fieldViewModel.uid()]
-                            )
-                    }
+                        optionsToHide,
+                        optionsInGroupsToHide
+                    ) as SpinnerViewModel
+                    mappedSpinnerModel = mappedSpinnerModel.setOptionGroupsToShow(
+                        optionsInGroupsToShow
+                    ) as SpinnerViewModel
                     fieldViewModels[fieldUid] = mappedSpinnerModel
                 }
                 is OptionSetViewModel -> {
                     var mappedOptionSetModel = fieldViewModel.setOptionsToHide(
-                        optionsToHide[fieldViewModel.uid()] ?: emptyList()
-                    )
-                    if (optionGroupsToShow.keys.contains(fieldViewModel.uid())) {
-                        mappedOptionSetModel = fieldViewModel.setOptionsToShow(
-                            optionsFromGroup(
-                                optionGroupsToShow[fieldViewModel.uid()] ?: arrayListOf()
-                            )
-                        )
-                    }
+                        listOf(
+                            optionsToHide,
+                            optionsInGroupsToHide
+                        ).flatten()
+                    ) as OptionSetViewModel
+                    mappedOptionSetModel =
+                        mappedOptionSetModel.setOptionsToShow(optionsInGroupsToShow)
                     fieldViewModels[fieldUid] = mappedOptionSetModel
                 }
                 else -> {
@@ -297,7 +288,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
     ) {
         fieldViewModels.filter {
             it.value.programStageSection == hideSection.programStageSection() &&
-                !it.value.mandatory
+                    !it.value.mandatory
         }.keys.forEach { fieldViewModels.remove(it) }
     }
 
@@ -414,9 +405,9 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
 
         valueStore?.let {
             if (it.deleteOptionValueIfSelected(
-                hideOption.field(),
-                hideOption.option()
-            ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
+                    hideOption.field(),
+                    hideOption.option()
+                ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
             ) {
                 fieldsToUpdate.add(hideOption.field())
             }
@@ -433,10 +424,10 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
 
         valueStore?.let {
             if (it.deleteOptionValueIfSelectedInGroup(
-                hideOptionGroup.field(),
-                hideOptionGroup.optionGroup(),
-                true
-            ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
+                    hideOptionGroup.field(),
+                    hideOptionGroup.optionGroup(),
+                    true
+                ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
             ) {
                 fieldsToUpdate.add(hideOptionGroup.field())
             }
@@ -459,10 +450,10 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             }
         }
         if (valueStore?.deleteOptionValueIfSelectedInGroup(
-            fieldUid,
-            optionGroupUid,
-            false
-        )?.valueStoreResult == ValueStoreResult.VALUE_CHANGED
+                fieldUid,
+                optionGroupUid,
+                false
+            )?.valueStoreResult == ValueStoreResult.VALUE_CHANGED
         ) {
             fieldsToUpdate.add(fieldUid)
         }
