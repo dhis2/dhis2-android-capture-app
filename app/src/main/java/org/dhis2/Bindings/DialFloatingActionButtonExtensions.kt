@@ -27,14 +27,12 @@ fun View.showDialItem(onAnimationEnd: () -> Unit = {}) {
         pivotX = (this as ViewGroup).getChildAt(0).x + 20.dp
         pivotY = (this as ViewGroup).getChildAt(0).y + 20.dp
         alpha = 0f
-        translationY = height.toFloat()
-        scaleX = 0f
-        scaleY = 0f
+        scaleX = 0.5f
+        scaleY = 0.5f
         animate()
             .scaleX(1f)
             .scaleY(1f)
-            .setDuration(200)
-            .translationY(0f)
+            .setDuration(100)
             .setListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
                     onAnimationEnd()
@@ -49,16 +47,14 @@ fun View.showDialItem(onAnimationEnd: () -> Unit = {}) {
 fun View.hideDialItem(onAnimationEnd: () -> Unit = {}) {
     visibility = View.VISIBLE
     alpha = 1f
-    translationY = 0f
     scaleX = 1f
     scaleY = 1f
     pivotX = (this as ViewGroup).getChildAt(0).x + 20.dp
     pivotY = (this as ViewGroup).getChildAt(0).y + 20.dp
     animate()
-        .scaleX(0f)
-        .scaleY(0f)
-        .setDuration(200)
-        .translationY(height.toFloat())
+        .scaleX(0.5f)
+        .scaleY(0.5f)
+        .setDuration(100)
         .setListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
                 visibility = View.GONE

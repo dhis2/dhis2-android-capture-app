@@ -18,6 +18,7 @@
             android:layout_height="wrap_content"
             app:backgroundTint="?colorPrimaryLight"
             app:fabSize="mini"
+            app:elevation="3dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_chainStyle="packed"
