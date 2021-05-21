@@ -54,7 +54,7 @@ class FormViewModel(
                 geometryController.generateLocationFromCoordinates(
                     FeatureType.valueOf(featureType),
                     coordinates
-                ).coordinates()
+                )?.coordinates()
             }
             onItemAction(
                 RowAction(
