@@ -62,5 +62,5 @@ public interface FieldViewModelFactory {
     Flowable<String> sectionProcessor();
 
     @NonNull
-    Flowable<RowAction> fieldProcessor();
+    FlowableProcessor<RowAction> fieldProcessor();
 }

@@ -206,7 +206,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
     @NonNull
     @Override
-    public Flowable<RowAction> fieldProcessor() {
+    public FlowableProcessor<RowAction> fieldProcessor() {
         return fieldProcessor;
     }
 }

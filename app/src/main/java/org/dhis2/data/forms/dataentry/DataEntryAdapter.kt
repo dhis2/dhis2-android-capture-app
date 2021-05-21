@@ -6,11 +6,13 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
 import java.util.ArrayList
+import java.util.Date
 import java.util.LinkedHashMap
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder.FieldItemCallback
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.DataEntryDiff
 
 class DataEntryAdapter :
@@ -19,6 +21,9 @@ class DataEntryAdapter :
 
     var didItemShowDialog: ((title: String, message: String?) -> Unit)? = null
     var onNextClicked: ((position: Int) -> Unit)? = null
+    var onShowCustomCalendar: ((uid: String, label: String?, date: Date) -> Unit)? = null
+    var onShowYearMonthDayPicker: ((uid: String, year: Int, month: Int, day: Int) -> Unit)? = null
+    var onItemAction: ((action: RowAction) -> Unit)? = null
 
     private val sectionHandler = SectionHandler()
     var sectionPositions: MutableMap<String, Int> = LinkedHashMap()
@@ -108,15 +113,33 @@ class DataEntryAdapter :
         }
     }
 
+    override fun showYearMonthDayPicker(uid: String, year: Int, month: Int, day: Int) {
+        onShowYearMonthDayPicker?.let {
+            it(uid, year, month, day)
+        }
+    }
+
     override fun onShowDialog(title: String, message: String?) {
         didItemShowDialog?.let { action ->
             action(title, message)
         }
     }
 
+    override fun showCustomCalendar(uid: String, label: String?, date: Date) {
+        onShowCustomCalendar?.let {
+            it(uid, label, date)
+        }
+    }
+
     override fun onNext(layoutPosition: Int) {
         onNextClicked?.let {
             it(layoutPosition)
+        }
+    }
+
+    override fun onAction(action: RowAction) {
+        onItemAction?.let {
+            it(action)
         }
     }
 }

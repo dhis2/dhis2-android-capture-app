@@ -85,11 +85,12 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <org.dhis2.data.forms.dataentry.FormView
-            android:id="@+id/formView"
+        <FrameLayout
+            android:id="@+id/formViewContainer"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:clipToPadding="false"
+            android:background="@color/form_field_background"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
 

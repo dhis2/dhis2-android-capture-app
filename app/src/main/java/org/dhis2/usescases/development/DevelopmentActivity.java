@@ -14,16 +14,13 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.App;
-import org.dhis2.Bindings.RuleExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.data.forms.RuleActionUnsupported;
 import org.dhis2.databinding.DevelopmentActivityBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
 import org.dhis2.utils.dialFloatingActionButton.DialItem;
 import org.hisp.dhis.android.core.D2Manager;
-import org.hisp.dhis.rules.models.RuleAction;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -60,19 +57,8 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
     private void loadProgramRuleCheck() {
         binding.ruleActionQualityButton.setOnClickListener(view -> {
             binding.ruleActionQualityResult.setText("Checking...");
-            List<RuleAction> programRules = RuleExtensionsKt.toRuleActionList(
-                    D2Manager.getD2().programModule().programRuleActions().blockingGet()
-            );
-            StringBuilder checkResult = new StringBuilder("");
-            for (RuleAction ruleAction : programRules) {
-                if (ruleAction instanceof RuleActionUnsupported) {
-                    checkResult.append("Program rule uid: " + ((RuleActionUnsupported) ruleAction).actionValueType());
-                    checkResult.append("\n");
-                    checkResult.append(((RuleActionUnsupported) ruleAction).content());
-                    checkResult.append("\n");
-                }
-            }
-            binding.ruleActionQualityResult.setText(checkResult);
+            String result = new ProgramRulesValidations(D2Manager.getD2()).validateRules();
+            binding.ruleActionQualityResult.setText(result);
         });
     }
 
