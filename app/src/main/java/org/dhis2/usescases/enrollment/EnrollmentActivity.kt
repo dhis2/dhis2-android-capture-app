@@ -13,8 +13,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import java.io.File
 import javax.inject.Inject
 import org.dhis2.App
@@ -25,6 +23,7 @@ import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.FormRepository
+import org.dhis2.form.data.GeometryController
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.uicomponents.map.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
@@ -43,9 +42,7 @@ import org.dhis2.utils.ImageUtils
 import org.dhis2.utils.customviews.AlertBottomDialog
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
-import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
-import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
@@ -300,22 +297,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     private fun handleGeometry(featureType: FeatureType, dataExtra: String, requestCode: Int) {
-        val geometry: Geometry? =
-            when (featureType) {
-                FeatureType.POINT -> {
-                    val type = object : TypeToken<List<Double>>() {}.type
-                    GeometryHelper.createPointGeometry(Gson().fromJson(dataExtra, type))
-                }
-                FeatureType.POLYGON -> {
-                    val type = object : TypeToken<List<List<List<Double>>>>() {}.type
-                    GeometryHelper.createPolygonGeometry(Gson().fromJson(dataExtra, type))
-                }
-                FeatureType.MULTI_POLYGON -> {
-                    val type = object : TypeToken<List<List<List<List<Double>>>>>() {}.type
-                    GeometryHelper.createMultiPolygonGeometry(Gson().fromJson(dataExtra, type))
-                }
-                else -> null
-            }
+        val geometry = GeometryController().generateLocationFromCoordinates(featureType, dataExtra)
 
         if (geometry != null) {
             when (requestCode) {

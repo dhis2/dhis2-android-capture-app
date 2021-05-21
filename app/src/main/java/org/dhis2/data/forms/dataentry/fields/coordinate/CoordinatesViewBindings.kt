@@ -8,6 +8,8 @@ import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputEditText
 import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
+import org.dhis2.uicomponents.map.geometry.isLatitudeValid
+import org.dhis2.uicomponents.map.geometry.isLongitudeValid
 import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -15,11 +17,12 @@ import org.hisp.dhis.android.core.common.Geometry
 
 @BindingAdapter("latitude_validator")
 fun EditText.setLatitudeValidator(viewModel: CoordinateViewModel?) {
-    setOnFocusChangeListener { view, hasFocus ->
-        viewModel?.onLatitudeFocusChanged(
+    setOnFocusChangeListener { _, hasFocus ->
+        viewModel?.onLatOrLogFocusChanged(
             hasFocus,
             text.toString(),
-            context.getString(R.string.coordinates_error)
+            context.getString(R.string.coordinates_error),
+            { lat -> isLatitudeValid(lat) }
         ) { latitudeValue ->
             setText(latitudeValue)
         }
@@ -28,11 +31,12 @@ fun EditText.setLatitudeValidator(viewModel: CoordinateViewModel?) {
 
 @BindingAdapter("longitude_validator")
 fun EditText.setLongitudeValidator(viewModel: CoordinateViewModel?) {
-    setOnFocusChangeListener { view, hasFocus ->
-        viewModel?.onLongitudeFocusChanged(
+    setOnFocusChangeListener { _, hasFocus ->
+        viewModel?.onLatOrLogFocusChanged(
             hasFocus,
             text.toString(),
-            context.getString(R.string.coordinates_error)
+            context.getString(R.string.coordinates_error),
+            { lon -> isLongitudeValid(lon) }
         ) { longitudeValue ->
             setText(longitudeValue)
         }

@@ -64,6 +64,7 @@ class MapSelectorActivity :
         }
     }
 
+    private var fieldUid: String? = null
     lateinit var mapView: MapView
     lateinit var map: MapboxMap
     var style: Style? = null
@@ -79,6 +80,7 @@ class MapSelectorActivity :
         binding = DataBindingUtil.setContentView(this, R.layout.activity_map_selector)
         binding.back.setOnClickListener { v -> finish() }
         location_type = FeatureType.valueOf(intent.getStringExtra(LOCATION_TYPE_EXTRA))
+        fieldUid = intent.getStringExtra(FIELD_UID)
         initialCoordinates = intent.getStringExtra(INITIAL_GEOMETRY_COORDINATES)
         mapView = binding.mapView
         mapView.onCreate(savedInstanceState)
@@ -386,6 +388,7 @@ class MapSelectorActivity :
         const val DATA_EXTRA = "data_extra"
         const val LOCATION_TYPE_EXTRA = "LOCATION_TYPE_EXTRA"
         const val INITIAL_GEOMETRY_COORDINATES = "INITIAL_DATA"
+        const val FIELD_UID = "FIELD_UID_EXTRA"
 
         fun create(activity: Context, locationType: FeatureType): Intent {
             val intent = Intent(activity, MapSelectorActivity::class.java)
@@ -401,10 +404,26 @@ class MapSelectorActivity :
             }
             return intent
         }
+
+        fun create(
+            activity: Context,
+            fieldUid: String,
+            locationType: FeatureType,
+            initialData: String?
+        ): Intent {
+            val intent = Intent(activity, MapSelectorActivity::class.java)
+            intent.putExtra(FIELD_UID, fieldUid)
+            intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString())
+            if (initialData != null) {
+                intent.putExtra(INITIAL_GEOMETRY_COORDINATES, initialData)
+            }
+            return intent
+        }
     }
 
     private fun finishResult(value: String) {
         val intent = Intent()
+        intent.putExtra(FIELD_UID, fieldUid)
         intent.putExtra(DATA_EXTRA, value)
         intent.putExtra(LOCATION_TYPE_EXTRA, location_type.toString())
         setResult(RESULT_OK, intent)

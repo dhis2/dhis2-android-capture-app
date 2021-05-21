@@ -108,37 +108,22 @@ public abstract class CoordinateViewModel extends FieldViewModel {
         return observableErrorMessage;
     }
 
-    public void onLatitudeFocusChanged(boolean hasFocus, String currentLatitudeValue, String errorMessage, Function1<String, Unit> callback) {
+    public void onLatOrLogFocusChanged(boolean hasFocus,
+                                       String coordinateValue,
+                                       String errorMessage,
+                                       Function1<Double, Boolean> coordinateValidator,
+                                       Function1<String, Unit> callback){
         if (!hasFocus) {
-            if (!currentLatitudeValue.isEmpty()) {
-                Double latString = Double.valueOf(StringExtensionsKt.parseToDouble(currentLatitudeValue));
-                Double lat = DoubleExtensionsKt.truncate(latString);
+            if (!coordinateValue.isEmpty()) {
+                Double coordinateString = Double.valueOf(StringExtensionsKt.parseToDouble(coordinateValue));
+                Double coordinate = DoubleExtensionsKt.truncate(coordinateString);
                 String error;
-                if (!LngLatValidatorKt.isLatitudeValid(lat)) {
+                if (!coordinateValidator.invoke(coordinate)) {
                     error = errorMessage;
                 } else {
                     error = null;
                 }
-                callback.invoke(lat.toString());
-                observableErrorMessage.set(error);
-            }
-        } else {
-            onItemClick();
-        }
-    }
-
-    public void onLongitudeFocusChanged(boolean hasFocus, String currentLongitudeValue, String errorMessage, Function1<String, Unit> callback) {
-        if (!hasFocus) {
-            if (!currentLongitudeValue.isEmpty()) {
-                Double lonString = Double.valueOf(StringExtensionsKt.parseToDouble(currentLongitudeValue));
-                Double lon = DoubleExtensionsKt.truncate(lonString);
-                String error;
-                if (!LngLatValidatorKt.isLongitudeValid(lon)) {
-                    error = errorMessage;
-                } else {
-                    error = null;
-                }
-                callback.invoke(lon.toString());
+                callback.invoke(coordinate.toString());
                 observableErrorMessage.set(error);
             }
         } else {
@@ -155,8 +140,6 @@ public abstract class CoordinateViewModel extends FieldViewModel {
     }
 
     public Geometry currentGeometry() {
-        if (featureType() == null)
-            throw new NullPointerException("use setFeatureType before setting an initial value");
         if (value() != null) {
             return Geometry.builder()
                     .coordinates(value())

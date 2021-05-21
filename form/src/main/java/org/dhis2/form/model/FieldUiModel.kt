@@ -53,12 +53,17 @@ interface FieldUiModel {
     fun setFieldMandatory(): FieldUiModel
 
     interface Callback {
-        fun onNext()
-        fun showDialog(title: String, message: String?)
-        fun showCustomCalendar(uid: String, label: String?, date: Date)
-        fun showYearMonthDayPicker(uid: String, year: Int, month: Int, day: Int)
-        fun onItemAction(action: RowAction)
-        fun currentLocation(coordinateFieldUid: String)
-        fun mapRequest(coordinateFieldUid: String, featureType: String, initialCoordinates: String?)
+        fun onNext() {}
+        fun showDialog(title: String, message: String?) {}
+        fun showCustomCalendar(uid: String, label: String?, date: Date) {}
+        fun showYearMonthDayPicker(uid: String, year: Int, month: Int, day: Int) {}
+        fun onItemAction(action: RowAction) {}
+        fun currentLocation(coordinateFieldUid: String) {}
+        fun mapRequest(
+            coordinateFieldUid: String,
+            featureType: String,
+            initialCoordinates: String?
+        ) {
+        }
     }
 }

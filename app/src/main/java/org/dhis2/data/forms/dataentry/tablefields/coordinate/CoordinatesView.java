@@ -20,8 +20,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.DoubleExtensionsKt;
@@ -29,8 +27,8 @@ import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.DatasetFormCoordinatesAccentBinding;
 import org.dhis2.databinding.DatasetFormCoordinatesBinding;
-import org.dhis2.databinding.FormCoordinatesAccentBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
+import org.dhis2.form.data.GeometryController;
 import org.dhis2.uicomponents.map.geometry.LngLatValidatorKt;
 import org.dhis2.uicomponents.map.views.MapSelectorActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -47,7 +45,6 @@ import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Type;
 import java.util.List;
 
 import kotlin.Unit;
@@ -404,20 +401,10 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             if (data.getExtras() != null) {
                 FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA));
                 String dataExtra = data.getStringExtra(MapSelectorActivity.DATA_EXTRA);
-                Geometry geometry;
-                if (locationType == FeatureType.POINT) {
-                    Type type = new TypeToken<List<Double>>() {
-                    }.getType();
-                    geometry = GeometryHelper.createPointGeometry(new Gson().fromJson(dataExtra, type));
-                } else if (locationType == FeatureType.POLYGON) {
-                    Type type = new TypeToken<List<List<List<Double>>>>() {
-                    }.getType();
-                    geometry = GeometryHelper.createPolygonGeometry(new Gson().fromJson(dataExtra, type));
-                } else {
-                    Type type = new TypeToken<List<List<List<List<Double>>>>>() {
-                    }.getType();
-                    geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
-                }
+                Geometry geometry = new GeometryController().generateLocationFromCoordinates(
+                        locationType,
+                        dataExtra
+                );
                 updateLocation(geometry);
             }
         }

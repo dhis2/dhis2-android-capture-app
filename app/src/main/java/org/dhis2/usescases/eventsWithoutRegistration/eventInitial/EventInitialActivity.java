@@ -21,8 +21,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import org.dhis2.App;
@@ -37,8 +35,8 @@ import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
+import org.dhis2.form.data.GeometryController;
 import org.dhis2.form.model.FieldUiModel;
-import org.dhis2.form.model.RowAction;
 import org.dhis2.uicomponents.map.views.MapSelectorActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -159,6 +157,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private CompositeDisposable disposable = new CompositeDisposable();
     private Geometry newGeometry;
     private CoordinateViewModel currentGeometryModel;
+    private GeometryController geometryController = new GeometryController();
 
     public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
                                    String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,
@@ -958,48 +957,36 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private void setGeometryCallback(CoordinateViewModel geometryModel) {
         currentGeometryModel = geometryModel;
-        geometryModel.setCallback(new FieldUiModel.Callback() {
-            @Override
-            public void onNext() {
-                //Not used
-            }
-
-            @Override
-            public void showDialog(@NotNull String title, @org.jetbrains.annotations.Nullable String message) {
-                //Not used
-            }
-
-            @Override
-            public void currentLocation(@NotNull String coordinateFieldUid) {
-                requestLocation();
-            }
-
-            @Override
-            public void mapRequest(@NotNull String coordinateFieldUid, @NotNull String featureType, @org.jetbrains.annotations.Nullable String initialCoordinates) {
-                startActivityForResult(
-                        MapSelectorActivity.Companion.create(EventInitialActivity.this,
-                                FeatureType.valueOfFeatureType(featureType),
-                                initialCoordinates),
-                        RQ_MAP_LOCATION_VIEW);
-            }
-
-            @Override
-            public void onItemAction(@NotNull RowAction action) {
-                presenter.setChangingCoordinates(true);
-                setNewGeometry(action.getValue());
-                setGeometryModel((CoordinateViewModel) geometryModel.withValue(action.getValue()));
-            }
-        });
+        geometryModel.setCallback(geometryController.getCoordinatesCallback(
+                action -> {
+                    presenter.setChangingCoordinates(true);
+                    setNewGeometry(action.getValue());
+                    setGeometryModel((CoordinateViewModel) geometryModel.withValue(action.getValue()));
+                    return Unit.INSTANCE;
+                },
+                fieldUid -> {
+                    requestLocation();
+                    return Unit.INSTANCE;
+                },
+                (fieldUid, featureType, initialCoordinates) -> {
+                    startActivityForResult(
+                            MapSelectorActivity.Companion.create(EventInitialActivity.this,
+                                    FeatureType.valueOfFeatureType(featureType),
+                                    initialCoordinates),
+                            RQ_MAP_LOCATION_VIEW);
+                    return Unit.INSTANCE;
+                }
+        ));
     }
 
     @Override
     public void setNewGeometry(String value) {
-        if(value != null) {
+        if (value != null) {
             this.newGeometry = Geometry.builder()
                     .coordinates(value)
                     .type(programStage.featureType())
                     .build();
-        }else{
+        } else {
             this.newGeometry = null;
         }
     }
@@ -1009,35 +996,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (resultCode == RESULT_OK && requestCode == RQ_MAP_LOCATION_VIEW && data != null && data.getExtras() != null) {
             FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA));
             String dataExtra = data.getStringExtra(MapSelectorActivity.DATA_EXTRA);
-            Geometry geometry = null;
-            switch (locationType) {
-                case POINT:
-                    geometry = GeometryHelper.createPointGeometry(
-                            new Gson().fromJson(
-                                    dataExtra,
-                                    new TypeToken<List<Double>>() {
-                                    }.getType()
-                            ));
-                    break;
-                case POLYGON:
-                    geometry = GeometryHelper.createPolygonGeometry(
-                            new Gson().fromJson(
-                                    dataExtra,
-                                    new TypeToken<List<List<List<Double>>>>() {
-                                    }.getType()
-                            ));
-                    break;
-                case MULTI_POLYGON:
-                    geometry = GeometryHelper.createMultiPolygonGeometry(
-                            new Gson().fromJson(
-                                    dataExtra,
-                                    new TypeToken<List<List<List<List<Double>>>>>() {
-                                    }.getType()
-                            ));
-                    break;
-                case NONE:
-                    break;
-            }
+            Geometry geometry = geometryController.generateLocationFromCoordinates(locationType, dataExtra);
             currentGeometryModel.onCurrentLocationClick(geometry);
         } else {
             super.onActivityResult(requestCode, resultCode, data);

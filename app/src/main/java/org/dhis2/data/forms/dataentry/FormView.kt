@@ -10,8 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import android.widget.DatePicker
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -20,8 +20,6 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import org.dhis2.Bindings.truncate
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.age.AgeDialogDelegate
@@ -38,7 +36,9 @@ import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FormViewModel
-import org.dhis2.uicomponents.map.views.MapSelectorActivity
+import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.DATA_EXTRA
+import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.FIELD_UID
+import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
 import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.create
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
 import org.dhis2.utils.Constants
@@ -46,8 +46,6 @@ import org.dhis2.utils.DatePickerUtils
 import org.dhis2.utils.DatePickerUtils.OnDatePickerClickListener
 import org.dhis2.utils.customviews.CustomDialog
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
-import org.hisp.dhis.android.core.common.FeatureType
-import org.hisp.dhis.android.core.common.Geometry
 import timber.log.Timber
 
 class FormView private constructor(
@@ -67,7 +65,6 @@ class FormView private constructor(
     private lateinit var alertDialogView: View
     private lateinit var ageDialogDelegate: AgeDialogDelegate
     var scrollCallback: ((Boolean) -> Unit)? = null
-    private var geometryField: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -155,9 +152,9 @@ class FormView private constructor(
         }
 
         adapter.onMapRequest = { fieldUid, featureType, initialData ->
-            geometryField = fieldUid
             startActivityForResult(
-                create(requireContext(), featureType, initialData), Constants.RQ_MAP_LOCATION_VIEW
+                create(requireContext(), fieldUid, featureType, initialData),
+                Constants.RQ_MAP_LOCATION_VIEW
             )
         }
 
@@ -310,36 +307,11 @@ class FormView private constructor(
         if (resultCode == Activity.RESULT_OK &&
             requestCode == Constants.RQ_MAP_LOCATION_VIEW && data?.extras != null
         ) {
-            val locationType =
-                FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA))
-            val dataExtra = data.getStringExtra(MapSelectorActivity.DATA_EXTRA)
-            val geometry: Geometry = when (locationType) {
-                FeatureType.POINT -> {
-                    val type = object : TypeToken<List<Double?>?>() {}.type
-                    GeometryHelper.createPointGeometry(
-                        Gson().fromJson(dataExtra, type)
-                    )
-                }
-                FeatureType.POLYGON -> {
-                    val type = object : TypeToken<List<List<List<Double?>?>?>?>() {}.type
-                    GeometryHelper.createPolygonGeometry(
-                        Gson().fromJson(dataExtra, type)
-                    )
-                }
-                else -> {
-                    val type = object : TypeToken<List<List<List<List<Double?>?>?>?>?>() {}.type
-                    GeometryHelper.createMultiPolygonGeometry(
-                        Gson().fromJson(dataExtra, type)
-                    )
-                }
-            }
-            geometryField?.let {
-                viewModel.onItemAction(
-                    RowAction(
-                        id = it,
-                        value = geometry.coordinates(),
-                        type = ActionType.ON_SAVE
-                    )
+            data.apply {
+                viewModel.setCoordinateFieldValue(
+                    getStringExtra(FIELD_UID),
+                    getStringExtra(LOCATION_TYPE_EXTRA),
+                    getStringExtra(DATA_EXTRA)
                 )
             }
         }
@@ -353,7 +325,7 @@ class FormView private constructor(
         if (requestCode == EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST &&
             grantResults[0] == PackageManager.PERMISSION_GRANTED
         ) {
-            geometryField?.let {
+            viewModel.getFocusedItemUid()?.let {
                 adapter.onLocationRequest?.invoke(it)
             }
         }
