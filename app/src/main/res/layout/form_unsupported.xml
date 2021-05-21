@@ -5,23 +5,33 @@
     <data>
 
         <variable
-            name="label"
-            type="java.lang.String" />
+            name="item"
+            type="org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel" />
 
     </data>
 
-    <Button
-        android:id="@+id/formButton"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_margin="12dp"
-        android:clickable="false"
-        android:enabled="false"
-        android:focusable="true"
-        android:paddingEnd="0dp"
-        android:paddingStart="20dp"
-        android:textAlignment="viewStart"
-        android:textAllCaps="false"
-        android:textColor="@color/gray_b2b"
-        tools:text="Unsupported" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:minHeight="70dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:id="@+id/label"
+            style="@style/FieldLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{item.label()}"
+            android:textColor="@color/placeholder"
+            tools:text="Form field name" />
+
+        <TextView
+            android:id="@+id/descriptionLabel"
+            style="@style/DescriptionFieldLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/unsupported_field_description" />
+    </LinearLayout>
 </layout>

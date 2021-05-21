@@ -54,7 +54,7 @@ class SearchTeiRobot : BaseRobot() {
     }
 
     fun typeAttributeAtPosition(searchWord: String, position:Int) {
-        onView(withId(R.id.form_recycler))
+        onView(withId(R.id.recyclerView))
             .perform(
                 actionOnItemAtPosition<SearchTEViewHolder>(position, typeChildViewWithId(searchWord, R.id.input_editText))
             )
@@ -62,7 +62,7 @@ class SearchTeiRobot : BaseRobot() {
     }
 
     fun clickOnDateField() {
-        onView(withId(R.id.form_recycler))
+        onView(withId(R.id.recyclerView))
             .perform(
                 actionOnItemAtPosition<SearchTEViewHolder>(2, clickChildViewWithId(R.id.inputEditText))
             )

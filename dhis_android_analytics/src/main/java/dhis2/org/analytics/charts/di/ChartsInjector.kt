@@ -19,8 +19,8 @@ import dhis2.org.analytics.charts.providers.NutritionDataProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProviderImpl
 import dhis2.org.analytics.charts.providers.RuleEngineNutritionDataProviderImpl
-import org.hisp.dhis.android.core.D2
 import javax.inject.Singleton
+import org.hisp.dhis.android.core.D2
 
 @Singleton
 @Component(

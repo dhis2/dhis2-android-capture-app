@@ -4,14 +4,16 @@ import android.widget.ImageView;
 
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
-
 import org.dhis2.BR;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.model.RowAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Date;
 
 public class FormViewHolder extends RecyclerView.ViewHolder {
 
@@ -29,6 +31,16 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
     public void bind(FieldUiModel uiModel, FieldItemCallback callback) {
         FieldUiModel.Callback itemCallback = new FieldUiModel.Callback() {
             @Override
+            public void showYearMonthDayPicker(String uid, int year, int month, int day) {
+                callback.showYearMonthDayPicker(uid, year, month, day);
+            }
+
+            @Override
+            public void showCustomCalendar(String uid, String label, Date date) {
+                callback.showCustomCalendar(uid, label, date);
+            }
+
+            @Override
             public void onNext() {
                 callback.onNext(getLayoutPosition());
             }
@@ -36,6 +48,11 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void showDialog(@NotNull String title, @Nullable String message) {
                 callback.onShowDialog(title, message);
+            }
+
+            @Override
+            public void onItemAction(@NotNull RowAction action) {
+                callback.onAction(action);
             }
         };
         uiModel.setCallback(itemCallback);
@@ -47,6 +64,12 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
     public interface FieldItemCallback {
         void onShowDialog(String title, @Nullable String message);
 
+        void showCustomCalendar(String uid, String label, Date date);
+
+        void showYearMonthDayPicker(String uid, int year, int month, int day);
+
         void onNext(int layoutPosition);
+
+        void onAction(RowAction action);
     }
 }

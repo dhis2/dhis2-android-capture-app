@@ -255,8 +255,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                         formAdjustProcessor.onNext(new Unit());
 
                                         view.updatePercentage(
-                                                fieldMapper.completedFieldsPercentage(),
-                                                fieldMapper.unsupportedFieldsPercentage()
+                                                fieldMapper.completedFieldsPercentage()
                                         );
                                     }
                                 },
@@ -604,6 +603,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void saveImage(String uuid, String filePath) {
         valueStore.save(uuid, filePath).blockingFirst();
+        setValueChanged(uuid);
     }
 
     //region ruleActions
