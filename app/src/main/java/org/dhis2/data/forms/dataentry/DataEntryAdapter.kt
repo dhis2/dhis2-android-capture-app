@@ -6,6 +6,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
 import java.util.ArrayList
+import java.util.Date
 import java.util.LinkedHashMap
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder.FieldItemCallback
@@ -21,6 +22,8 @@ class DataEntryAdapter :
 
     var didItemShowDialog: ((title: String, message: String?) -> Unit)? = null
     var onNextClicked: ((position: Int) -> Unit)? = null
+    var onShowCustomCalendar: ((uid: String, label: String?, date: Date) -> Unit)? = null
+    var onShowYearMonthDayPicker: ((uid: String, year: Int, month: Int, day: Int) -> Unit)? = null
     var onItemAction: ((action: RowAction) -> Unit)? = null
     var onLocationRequest: ((coordinateFieldUid: String) -> Unit)? = null
     var onMapRequest: ((fieldUid: String, type: FeatureType, initValue: String?) -> Unit)? = null
@@ -113,9 +116,21 @@ class DataEntryAdapter :
         }
     }
 
+    override fun showYearMonthDayPicker(uid: String, year: Int, month: Int, day: Int) {
+        onShowYearMonthDayPicker?.let {
+            it(uid, year, month, day)
+        }
+    }
+
     override fun onShowDialog(title: String, message: String?) {
         didItemShowDialog?.let { action ->
             action(title, message)
+        }
+    }
+
+    override fun showCustomCalendar(uid: String, label: String?, date: Date) {
+        onShowCustomCalendar?.let {
+            it(uid, label, date)
         }
     }
 

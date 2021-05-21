@@ -11,16 +11,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import android.widget.DatePicker
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.dhis2.Bindings.truncate
 import org.dhis2.R
+import org.dhis2.data.forms.dataentry.fields.age.AgeDialogDelegate
+import org.dhis2.data.forms.dataentry.fields.age.negativeOrZero
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
@@ -37,6 +42,8 @@ import org.dhis2.uicomponents.map.views.MapSelectorActivity
 import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.create
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
 import org.dhis2.utils.Constants
+import org.dhis2.utils.DatePickerUtils
+import org.dhis2.utils.DatePickerUtils.OnDatePickerClickListener
 import org.dhis2.utils.customviews.CustomDialog
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -57,6 +64,8 @@ class FormView private constructor(
     private lateinit var binding: ViewFormBinding
     private lateinit var dataEntryHeaderHelper: DataEntryHeaderHelper
     private lateinit var adapter: DataEntryAdapter
+    private lateinit var alertDialogView: View
+    private lateinit var ageDialogDelegate: AgeDialogDelegate
     var scrollCallback: ((Boolean) -> Unit)? = null
     private var geometryField: String? = null
 
@@ -68,6 +77,7 @@ class FormView private constructor(
         binding = DataBindingUtil.inflate(inflater, R.layout.view_form, container, false)
         binding.lifecycleOwner = this
         dataEntryHeaderHelper = DataEntryHeaderHelper(binding.headerContainer, binding.recyclerView)
+        ageDialogDelegate = AgeDialogDelegate(viewModel)
         binding.recyclerView.layoutManager =
             object : LinearLayoutManager(context, VERTICAL, false) {
                 override fun onInterceptFocusSearch(focused: View, direction: Int): View {
@@ -152,6 +162,55 @@ class FormView private constructor(
         }
 
         binding.recyclerView.adapter = adapter
+        adapter.onShowCustomCalendar = { uid, label, date ->
+            DatePickerUtils.getDatePickerDialog(
+                requireContext(),
+                label,
+                date,
+                true,
+                object : OnDatePickerClickListener {
+                    override fun onNegativeClick() {
+                        ageDialogDelegate.handleClearInput(uid)
+                    }
+
+                    override fun onPositiveClick(datePicker: DatePicker) {
+                        ageDialogDelegate.handleDateInput(
+                            uid,
+                            datePicker.year,
+                            datePicker.month,
+                            datePicker.dayOfMonth
+                        )
+                    }
+                }
+            ).show()
+        }
+
+        adapter.onShowYearMonthDayPicker = { uid, year, month, day ->
+            alertDialogView =
+                LayoutInflater.from(requireContext()).inflate(R.layout.dialog_age, null)
+            val yearPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_year)
+            val monthPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_month)
+            val dayPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_days)
+            yearPicker.setText(year.toString())
+            monthPicker.setText(month.toString())
+            dayPicker.setText(day.toString())
+
+            AlertDialog.Builder(requireContext(), R.style.CustomDialog)
+                .setView(alertDialogView)
+                .setPositiveButton(R.string.action_accept) { _, _ ->
+                    ageDialogDelegate.handleYearMonthDayInput(
+                        uid,
+                        negativeOrZero(yearPicker.text.toString()),
+                        negativeOrZero(monthPicker.text.toString()),
+                        negativeOrZero(dayPicker.text.toString())
+                    )
+                }
+                .setNegativeButton(R.string.clear) { _, _ ->
+                    ageDialogDelegate.handleClearInput(uid)
+                }
+                .create()
+                .show()
+        }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             binding.recyclerView.setOnScrollChangeListener { _, _, _, _, _ ->

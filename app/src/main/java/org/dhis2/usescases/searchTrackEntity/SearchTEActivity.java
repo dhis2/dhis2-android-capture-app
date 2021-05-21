@@ -51,6 +51,7 @@ import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.location.LocationProvider;
 import org.dhis2.databinding.ActivitySearchBinding;
+import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.uicomponents.map.ExternalMapNavigation;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
@@ -114,6 +115,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     ExternalMapNavigation mapNavigation;
     @Inject
     FieldViewModelFactory fieldViewModelFactory;
+    @Inject
+    FormRepository formRepository;
     @Inject
     LocationProvider locationProvider;
 
@@ -182,6 +185,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
 
         formView = new FormView.Builder()
+                .persistence(formRepository)
                 .locationProvider(locationProvider)
                 .onItemChangeListener(action -> {
                     fieldViewModelFactory.fieldProcessor().onNext(action);
