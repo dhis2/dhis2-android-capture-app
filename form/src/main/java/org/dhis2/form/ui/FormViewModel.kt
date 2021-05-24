@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.runBlocking
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
+import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
@@ -22,7 +23,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 class FormViewModel(
     private val repository: FormRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val geometryController: GeometryController = GeometryController()
+    private val geometryController: GeometryController = GeometryController(GeometryParserImpl())
 ) : ViewModel() {
 
     private val _items = MutableLiveData<List<FieldUiModel>>()
@@ -46,8 +47,6 @@ class FormViewModel(
         emit(repository.processUserAction(action))
     }.flowOn(dispatcher)
 
-    fun setCoordinateFieldValue() {
-    }
     fun setCoordinateFieldValue(fieldUid: String?, featureType: String?, coordinates: String?) {
         if (fieldUid != null && featureType != null) {
             val geometryCoordinates = coordinates?.let {

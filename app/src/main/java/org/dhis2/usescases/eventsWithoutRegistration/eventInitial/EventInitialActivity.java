@@ -21,6 +21,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
 
+import com.google.gson.Gson;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import org.dhis2.App;
@@ -36,6 +37,7 @@ import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.form.data.GeometryController;
+import org.dhis2.form.data.GeometryParserImpl;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.uicomponents.map.views.MapSelectorActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -157,7 +159,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private CompositeDisposable disposable = new CompositeDisposable();
     private Geometry newGeometry;
     private CoordinateViewModel currentGeometryModel;
-    private GeometryController geometryController = new GeometryController();
+    private GeometryController geometryController = new GeometryController(new GeometryParserImpl());
 
     public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
                                    String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,

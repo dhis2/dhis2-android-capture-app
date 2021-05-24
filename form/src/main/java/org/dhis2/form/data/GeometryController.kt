@@ -1,14 +1,12 @@
 package org.dhis2.form.data
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 
-class GeometryController {
+class GeometryController(private val geometryParser: GeometryParser) {
 
     fun generateLocationFromCoordinates(featureType: FeatureType, coordinates: String?): Geometry? {
         if (coordinates == null) {
@@ -16,21 +14,18 @@ class GeometryController {
         }
         return when (featureType) {
             FeatureType.POINT -> {
-                val type = object : TypeToken<List<Double?>?>() {}.type
                 GeometryHelper.createPointGeometry(
-                    Gson().fromJson(coordinates, type)
+                    geometryParser.parsePoint(coordinates)
                 )
             }
             FeatureType.POLYGON -> {
-                val type = object : TypeToken<List<List<List<Double?>?>?>?>() {}.type
                 GeometryHelper.createPolygonGeometry(
-                    Gson().fromJson(coordinates, type)
+                    geometryParser.parsePolygon(coordinates)
                 )
             }
             else -> {
-                val type = object : TypeToken<List<List<List<List<Double?>?>?>?>?>() {}.type
                 GeometryHelper.createMultiPolygonGeometry(
-                    Gson().fromJson(coordinates, type)
+                    geometryParser.parseMultipolygon(coordinates)
                 )
             }
         }

@@ -24,6 +24,7 @@ import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
+import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.uicomponents.map.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
@@ -297,7 +298,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     private fun handleGeometry(featureType: FeatureType, dataExtra: String, requestCode: Int) {
-        val geometry = GeometryController().generateLocationFromCoordinates(featureType, dataExtra)
+        val geometry = GeometryController(GeometryParserImpl()).generateLocationFromCoordinates(
+            featureType,
+            dataExtra
+        )
 
         if (geometry != null) {
             when (requestCode) {

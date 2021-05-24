@@ -29,6 +29,7 @@ import org.dhis2.databinding.DatasetFormCoordinatesAccentBinding;
 import org.dhis2.databinding.DatasetFormCoordinatesBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
 import org.dhis2.form.data.GeometryController;
+import org.dhis2.form.data.GeometryParserImpl;
 import org.dhis2.uicomponents.map.geometry.LngLatValidatorKt;
 import org.dhis2.uicomponents.map.views.MapSelectorActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -401,7 +402,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             if (data.getExtras() != null) {
                 FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA));
                 String dataExtra = data.getStringExtra(MapSelectorActivity.DATA_EXTRA);
-                Geometry geometry = new GeometryController().generateLocationFromCoordinates(
+                Geometry geometry = new GeometryController(new GeometryParserImpl()).generateLocationFromCoordinates(
                         locationType,
                         dataExtra
                 );
