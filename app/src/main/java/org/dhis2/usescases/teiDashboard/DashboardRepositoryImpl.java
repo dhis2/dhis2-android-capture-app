@@ -153,7 +153,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         TrackedEntityType teType = d2.trackedEntityModule().trackedEntityTypes().uid(uid).blockingGet();
         return resources.getObjectStyleDrawableResource(
                 teType.style() != null ? teType.style().icon() : null,
-                R.drawable.ic_person
+                R.drawable.ic_navigation_relationships
         );
     }
 

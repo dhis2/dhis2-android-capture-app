@@ -11,8 +11,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.DataBindingUtil;
 
 import com.mapbox.geojson.BoundingBox;
@@ -20,15 +18,10 @@ import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
-import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
-import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem;
-import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList;
-import com.wangjie.rapidfloatingactionbutton.util.RFABTextUtil;
 
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
 import org.dhis2.uicomponents.map.ExternalMapNavigation;
@@ -39,9 +32,9 @@ import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OnDialogClickListener;
+import org.dhis2.utils.dialFloatingActionButton.DialItem;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.jetbrains.annotations.NotNull;
 
@@ -69,7 +62,6 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     private FragmentRelationshipsBinding binding;
 
     private RelationshipAdapter relationshipAdapter;
-    private RapidFloatingActionHelper rfaHelper;
     private RelationshipType relationshipType;
     private RelationshipMapManager relationshipMapManager;
 
@@ -109,7 +101,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
             binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
             binding.mapLayerButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
             binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : View.GONE);
-            binding.rfabLayout.setVisibility(showMap ? View.GONE : View.VISIBLE);
+            binding.dialFabLayout.setFabVisible(!showMap);
         });
 
         binding.mapLayerButton.setOnClickListener(view -> {
@@ -196,49 +188,29 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     @Override
     public void initFab(List<Trio<RelationshipType, String, Integer>> relationshipTypes) {
-
-        RapidFloatingActionContentLabelList rfaContent = new RapidFloatingActionContentLabelList(getAbstracContext());
-        rfaContent.setOnRapidFloatingActionContentLabelListListener(new RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener() {
-            @Override
-            public void onRFACItemLabelClick(int position, RFACLabelItem item) {
-                Pair<RelationshipType, String> pair = (Pair<RelationshipType, String>) item.getWrapper();
-                goToRelationShip(pair.val0(), pair.val1());
-            }
-
-            @Override
-            public void onRFACItemIconClick(int position, RFACLabelItem item) {
-                Pair<RelationshipType, String> pair = (Pair<RelationshipType, String>) item.getWrapper();
-                goToRelationShip(pair.val0(), pair.val1());
-            }
-        });
-        List<RFACLabelItem> items = new ArrayList<>();
+        List<DialItem> items = new ArrayList<>();
+        int dialItemIndex = 1;
         for (Trio<RelationshipType, String, Integer> trio : relationshipTypes) {
             RelationshipType relationshipType = trio.val0();
             int resource = trio.val2();
-            items.add(new RFACLabelItem<Pair<RelationshipType, String>>()
-                    .setLabel(relationshipType.displayName())
-                    .setResId(resource)
-                    .setLabelTextBold(true)
-                    .setLabelBackgroundDrawable(AppCompatResources.getDrawable(getAbstracContext(), R.drawable.bg_chip))
-                    .setIconNormalColor(ColorUtils.getPrimaryColor(getAbstracContext(), ColorUtils.ColorType.PRIMARY_DARK))
-                    .setWrapper(Pair.create(relationshipType, trio.val1()))
+            items.add(
+                    new DialItem(
+                            dialItemIndex++,
+                            relationshipType.displayName(),
+                            resource)
             );
         }
 
-        if (!items.isEmpty()) {
-            rfaContent
-                    .setItems(items)
-                    .setIconShadowRadius(RFABTextUtil.dip2px(getAbstracContext(), 5))
-                    .setIconShadowColor(0xff888888)
-                    .setIconShadowDy(RFABTextUtil.dip2px(getAbstracContext(), 1));
+        binding.dialFabLayout.addDialItems(items, clickedId -> {
+            Trio<RelationshipType, String, Integer> selectedRelationShip = relationshipTypes.get(clickedId - 1);
+            goToRelationShip(selectedRelationShip.val0(), selectedRelationShip.val1());
+            return Unit.INSTANCE;
+        });
 
-            rfaHelper = new RapidFloatingActionHelper(getAbstracContext(), binding.rfabLayout, binding.rfab, rfaContent).build();
-        }
     }
 
     private void goToRelationShip(@NonNull RelationshipType relationshipTypeModel,
                                   @NonNull String teiTypeUid) {
-        rfaHelper.toggleContent();
         relationshipType = relationshipTypeModel;
         presenter.goToAddRelationship(teiTypeUid);
     }
@@ -323,9 +295,9 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                             }
                             return true;
                         })
-                        .addOnNavigateClickListener(uid->{
+                        .addOnNavigateClickListener(uid -> {
                             Feature feature = relationshipMapManager.findFeature(uid);
-                            if(feature != null){
+                            if (feature != null) {
                                 startActivity(mapNavigation.navigateToMapIntent(feature));
                             }
                             return Unit.INSTANCE;

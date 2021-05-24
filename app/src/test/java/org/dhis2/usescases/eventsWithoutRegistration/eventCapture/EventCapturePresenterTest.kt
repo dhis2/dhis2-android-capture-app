@@ -53,38 +53,6 @@ class EventCapturePresenterTest {
     }
 
     @Test
-    fun `Should delete option value if selected in group to hide`() {
-        whenever(
-            eventRepository.getOptionsFromGroups(arrayListOf("optionGroupToHide"))
-        ) doReturn arrayListOf(
-            "option1",
-            "option2"
-        )
-        whenever(
-            valueStore.deleteOptionValueIfSelectedInGroup(
-                "field",
-                "optionGroupToHide",
-                true
-            )
-        ) doReturn StoreResult("fieldUid", ValueStoreResult.VALUE_CHANGED)
-        presenter.setOptionGroupToHide("optionGroupToHide", true, "field")
-        verify(valueStore).deleteOptionValueIfSelectedInGroup("field", "optionGroupToHide", true)
-    }
-
-    @Test
-    fun `Should delete option value if selected not in group to hide`() {
-        whenever(
-            valueStore.deleteOptionValueIfSelectedInGroup(
-                "field",
-                "optionGroupToHide",
-                false
-            )
-        ) doReturn StoreResult("fieldUid", ValueStoreResult.VALUE_CHANGED)
-        presenter.setOptionGroupToHide("optionGroupToHide", false, "field")
-        verify(valueStore).deleteOptionValueIfSelectedInGroup("field", "optionGroupToHide", false)
-    }
-
-    @Test
     fun `Field with section should return its section`() {
         val section = presenter.getFieldSection(
             SpinnerViewModel.create(

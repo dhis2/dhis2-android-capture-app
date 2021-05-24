@@ -50,6 +50,7 @@ import org.dhis2.data.forms.dataentry.FormView;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.databinding.ActivitySearchBinding;
+import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.uicomponents.map.ExternalMapNavigation;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
@@ -60,7 +61,7 @@ import org.dhis2.uicomponents.map.model.CarouselItemModel;
 import org.dhis2.uicomponents.map.model.MapStyle;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.orgunitselector.OUTreeActivity;
+import org.dhis2.usescases.orgunitselector.OUTreeFragment;
 import org.dhis2.usescases.searchTrackEntity.adapters.RelationshipLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
@@ -113,6 +114,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     ExternalMapNavigation mapNavigation;
     @Inject
     FieldViewModelFactory fieldViewModelFactory;
+    @Inject
+    FormRepository formRepository;
 
     private String initialProgram;
     private String tEType;
@@ -179,6 +182,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
 
         formView = new FormView.Builder()
+                .persistence(formRepository)
                 .onItemChangeListener(action -> {
                     fieldViewModelFactory.fieldProcessor().onNext(action);
                     presenter.populateList(null);
@@ -241,7 +245,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         teiMapManager.onCreate(savedInstanceState);
         teiMapManager.setTeiFeatureType(presenter.getTrackedEntityType(tEType).featureType());
         teiMapManager.setEnrollmentFeatureType(presenter.getProgram() != null ? presenter.getProgram().featureType() : null);
-        teiMapManager.setCarouselAdapter(carouselAdapter);
         teiMapManager.setOnMapClickListener(this);
     }
 
@@ -279,6 +282,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     protected void onPause() {
+        presenter.setOpeningFilterToNone();
         if (initSearchNeeded) {
             presenter.onDestroy();
         }
@@ -328,19 +332,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         super.onSaveInstanceState(outState);
         teiMapManager.onSaveInstanceState(outState);
         outState.putSerializable(Constants.QUERY_DATA, presenter.getQueryData());
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        switch (requestCode) {
-            case FilterManager.OU_TREE:
-                if (resultCode == Activity.RESULT_OK) {
-                    filtersAdapter.notifyDataSetChanged();
-                    updateFilters(FilterManager.getInstance().getTotalFilters());
-                }
-                break;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -402,6 +393,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private void removeCarousel() {
         carouselAdapter = null;
+        teiMapManager.setCarouselAdapter(null);
         binding.mapCarousel.setAdapter(null);
     }
 
@@ -471,6 +463,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 )
                 .addProgram(presenter.getProgram())
                 .build();
+        teiMapManager.setCarouselAdapter(carouselAdapter);
         binding.mapCarousel.setAdapter(carouselAdapter);
         binding.mapCarousel.attachToMapManager(teiMapManager);
     }
@@ -865,10 +858,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void openOrgUnitTreeSelector() {
-        Intent ouTreeIntent = new Intent(this, OUTreeActivity.class);
-        Bundle bundle = OUTreeActivity.Companion.getBundle(initialProgram);
-        ouTreeIntent.putExtras(bundle);
-        startActivityForResult(ouTreeIntent, FilterManager.OU_TREE);
+        OUTreeFragment.Companion.newInstance(true).show(getSupportFragmentManager(), "OUTreeFragment");
     }
 
     @Override

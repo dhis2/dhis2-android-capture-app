@@ -34,6 +34,7 @@ class FilterPeriodView @JvmOverloads constructor(
     }
 
     fun setFilterItem(filterItem: FilterItem) {
+        binding.filterItem = filterItem
         updateSelection(R.id.anytime)
         if (filterItem is EnrollmentDateFilter) {
             setEnrollmentFilter(filterItem)

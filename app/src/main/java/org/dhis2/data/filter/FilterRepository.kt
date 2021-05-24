@@ -294,7 +294,7 @@ class FilterRepository @Inject constructor(
         return filtersToShow
     }
 
-    fun createDefaultTrackedEntityFilters(): LinkedHashMap<ProgramFilter, FilterItem> {
+    private fun createDefaultTrackedEntityFilters(): LinkedHashMap<ProgramFilter, FilterItem> {
         return linkedMapOf(
             ProgramFilter.EVENT_DATE to PeriodFilter(
                 org.dhis2.utils.filters.ProgramType.TRACKER,
@@ -695,5 +695,9 @@ class FilterRepository @Inject constructor(
         return currentWorkingList?.let {
             eventQuery.byEventFilter().eq(it.uid)
         } ?: eventQuery
+    }
+
+    fun collapseAllFilters() {
+        observableOpenFilter.set(Filters.NON)
     }
 }

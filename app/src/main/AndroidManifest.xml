@@ -133,7 +133,6 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".usescases.orgunitselector.OUTreeActivity" />
         <activity
             android:name=".usescases.enrollment.EnrollmentActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

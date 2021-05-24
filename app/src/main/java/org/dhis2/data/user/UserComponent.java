@@ -40,8 +40,6 @@ import org.dhis2.usescases.notes.NotesComponent;
 import org.dhis2.usescases.notes.NotesModule;
 import org.dhis2.usescases.notes.noteDetail.NoteDetailComponent;
 import org.dhis2.usescases.notes.noteDetail.NoteDetailModule;
-import org.dhis2.usescases.orgunitselector.OUTreeComponent;
-import org.dhis2.usescases.orgunitselector.OUTreeModule;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailComponent;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailModule;
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionComponent;
@@ -179,9 +177,6 @@ public interface UserComponent {
 
     @NonNull
     NoteDetailComponent plus(NoteDetailModule noteDetailModule);
-
-    @NonNull
-    OUTreeComponent plus(OUTreeModule ouTreeModule);
 
     @NonNull
     ProgramSettingsComponent plus(SettingsProgramModule settingsProgramModule);

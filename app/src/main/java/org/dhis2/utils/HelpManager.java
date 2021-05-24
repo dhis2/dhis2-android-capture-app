@@ -207,7 +207,7 @@ public class HelpManager {
         FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(activity)
                 .title(activity.getString(R.string.tuto_dashboard_5))
                 .enableAutoTextPosition()
-                .focusOn(activity.findViewById(R.id.fab))
+                .focusShape(FocusShape.ROUNDED_RECTANGLE)
                 .closeOnTouch(true)
                 .build();
         FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(activity)

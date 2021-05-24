@@ -25,10 +25,9 @@ import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.orgunitselector.OUTreeActivity;
+import org.dhis2.usescases.orgunitselector.OUTreeFragment;
 import org.dhis2.usescases.programEventDetail.eventList.EventListFragment;
 import org.dhis2.usescases.programEventDetail.eventMap.EventMapFragment;
-import org.dhis2.utils.AppMenuHelper;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventMode;
@@ -50,8 +49,6 @@ import static android.view.View.GONE;
 import static org.dhis2.R.layout.activity_program_event_detail;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
 public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View {
 
@@ -93,12 +90,12 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_list_view:
-                    if(isMapVisible) {
+                    if (isMapVisible) {
                         showMap(false);
                     }
                     return true;
                 case R.id.navigation_map_view:
-                    if(!isMapVisible) {
+                    if (!isMapVisible) {
                         showMap(true);
                     }
                     return true;
@@ -163,6 +160,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        presenter.setOpeningFilterToNone();
         presenter.onDettach();
         FilterManager.getInstance().clearEventStatus();
         FilterManager.getInstance().clearCatOptCombo();
@@ -261,18 +259,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void openOrgUnitTreeSelector() {
-        Intent ouTreeIntent = new Intent(this, OUTreeActivity.class);
-        Bundle bundle = OUTreeActivity.Companion.getBundle(programUid);
-        ouTreeIntent.putExtras(bundle);
-        startActivityForResult(ouTreeIntent, FilterManager.OU_TREE);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
-            updateFilters(FilterManager.getInstance().getTotalFilters());
-        }
-        super.onActivityResult(requestCode, resultCode, data);
+        OUTreeFragment.Companion.newInstance(true).show(getSupportFragmentManager(), "OUTreeFragment");
     }
 
     @Override
