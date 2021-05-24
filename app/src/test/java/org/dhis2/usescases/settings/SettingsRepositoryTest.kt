@@ -19,6 +19,7 @@ import org.dhis2.data.prefs.Preference.Companion.TIME_DATA
 import org.dhis2.data.prefs.Preference.Companion.TIME_META
 import org.dhis2.data.prefs.Preference.Companion.TIME_WEEKLY
 import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.data.server.UserManager
 import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
@@ -40,6 +41,8 @@ class SettingsRepositoryTest {
 
     private lateinit var settingsRepository: SettingsRepository
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
+    private val userManager: UserManager =
+        Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val preferencesProvider: PreferenceProvider = mock()
     private var localDbRepository: LocalDbRepository = mock()
     private var webApiRepository: WebApiRepository = mock()
@@ -71,7 +74,7 @@ class SettingsRepositoryTest {
     @Test
     fun `Should return metadata period from general settings if exist`() {
         configureGeneralSettings(true)
-        val testObserver = settingsRepository.metaSync().test()
+        val testObserver = settingsRepository.metaSync(userManager).test()
         testObserver
             .assertNoErrors()
             .assertValue { metadataSettings ->
@@ -82,7 +85,7 @@ class SettingsRepositoryTest {
     @Test
     fun `Should return metadata period from preferences if general settings does not exist`() {
         configureGeneralSettings(false)
-        val testObserver = settingsRepository.metaSync().test()
+        val testObserver = settingsRepository.metaSync(userManager).test()
         testObserver
             .assertNoErrors()
             .assertValue { metadataSettings ->
@@ -190,6 +193,7 @@ class SettingsRepositoryTest {
     private fun configureGeneralSettings(hasGeneralSettings: Boolean) {
         whenever(d2.settingModule().generalSetting().blockingExists()) doReturn
             hasGeneralSettings
+        whenever(userManager.theme) doReturn Single.just(Pair("flag", 1))
         if (hasGeneralSettings) {
             whenever(d2.settingModule().generalSetting().blockingGet()) doReturn
                 mockedGeneralSettings()

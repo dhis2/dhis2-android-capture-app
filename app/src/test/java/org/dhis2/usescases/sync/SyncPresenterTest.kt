@@ -15,17 +15,20 @@ import org.dhis2.data.prefs.Preference
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.METADATA_MESSAGE
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.utils.Constants
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 
 class SyncPresenterTest {
 
     lateinit var presenter: SyncPresenter
     private val view: SyncView = mock()
-    private val syncRepository: SyncRepository = mock()
+    private val userManager: UserManager =
+        Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val schedulerProvider: SchedulerProvider = TrampolineSchedulerProvider()
     private val workManagerController: WorkManagerController = mock()
     private val preferences: PreferenceProvider = mock()
@@ -34,7 +37,7 @@ class SyncPresenterTest {
     fun setUp() {
         presenter = SyncPresenter(
             view,
-            syncRepository,
+            userManager,
             schedulerProvider,
             workManagerController,
             preferences
@@ -92,7 +95,7 @@ class SyncPresenterTest {
     @Test
     fun `Should get flag and theme after metadata sync`() {
         val flagAndTheme = Pair<String?, Int>("flag", -1)
-        whenever(syncRepository.getTheme()) doReturn Single.just(flagAndTheme)
+        whenever(userManager.theme) doReturn Single.just(flagAndTheme)
         presenter.onMetadataSyncSuccess()
         verify(preferences, times(1)).setValue(Preference.FLAG, flagAndTheme.first)
         verify(preferences, times(1)).setValue(Preference.THEME, flagAndTheme.second)
@@ -111,7 +114,7 @@ class SyncPresenterTest {
 
     @Test
     fun `Should log out and go to login`() {
-        whenever(syncRepository.logout()) doReturn Completable.complete()
+        whenever(userManager.logout()) doReturn Completable.complete()
         presenter.onLogout()
         verify(view, times(1)).goToLogin()
     }
