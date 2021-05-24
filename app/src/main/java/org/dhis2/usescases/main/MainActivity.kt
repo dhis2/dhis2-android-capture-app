@@ -1,6 +1,5 @@
 package org.dhis2.usescases.main
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -144,6 +143,7 @@ class MainActivity :
     }
 
     override fun onPause() {
+        presenter.setOpeningFilterToNone()
         presenter.onDetach()
         super.onPause()
     }
@@ -255,13 +255,6 @@ class MainActivity :
             R.id.sync_manager -> (activeFragment as SyncManagerFragment).showTutorial()
             else -> showToast(getString(R.string.no_intructions))
         }
-    }
-
-    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
-            updateFilters(FilterManager.getInstance().totalFilters)
-        }
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun setFilters(filters: List<FilterItem>) {

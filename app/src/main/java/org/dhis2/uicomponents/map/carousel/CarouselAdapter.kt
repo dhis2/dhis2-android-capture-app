@@ -14,6 +14,7 @@ import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEvents
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.layer.MapLayerManager
+import org.dhis2.uicomponents.map.layer.types.EnrollmentMapLayer
 import org.dhis2.uicomponents.map.layer.types.EventMapLayer
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiEventMapLayer
@@ -147,6 +148,11 @@ class CarouselAdapter private constructor(
                 )
             is EventMapLayer ->
                 updateItems(allItems.filterIsInstance<ProgramEventViewModel>(), visible)
+            is EnrollmentMapLayer -> {
+                if (visible) {
+                    updateItems(allItems.filterIsInstance<SearchTeiModel>(), visible)
+                }
+            }
             else -> Unit
         }
     }

@@ -12,5 +12,6 @@ enum class Filters(@LayoutRes val layoutId: Int) {
     ASSIGNED_TO_ME(R.layout.item_filter_assigned),
     ENROLLMENT_DATE(R.layout.item_filter_period),
     ENROLLMENT_STATUS(R.layout.item_filter_enrollment_status),
-    WORKING_LIST(R.layout.item_filter_working_list)
+    WORKING_LIST(R.layout.item_filter_working_list),
+    NON(-1)
 }
