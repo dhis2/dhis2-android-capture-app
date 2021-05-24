@@ -42,12 +42,11 @@ import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
+import org.dhis2.utils.dialFloatingActionButton.DialItem;
 import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.hisp.dhis.android.core.category.CategoryCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
@@ -67,6 +66,7 @@ import javax.inject.Inject;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
+import kotlin.Unit;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
@@ -90,6 +90,11 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     private static final int RC_GENERATE_EVENT = 1501;
     private static final int RC_EVENTS_COMPLETED = 1601;
 
+    private static final int REFERAL_ID = 3;
+    private static final int ADD_NEW_ID = 2;
+    private static final int SCHEDULE_ID = 1;
+
+    private static final String PREF_COMPLETED_EVENT = "COMPLETED_EVENT";
 
     private FragmentTeiDataBinding binding;
 
@@ -105,12 +110,11 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     private EventAdapter adapter;
     private CustomDialog dialog;
-    private String lastModifiedEventUid;
     private ProgramStage programStageFromEvent;
-    private ObservableBoolean followUp = new ObservableBoolean(false);
+    private final ObservableBoolean followUp = new ObservableBoolean(false);
 
     private boolean hasCatComb;
-    private ArrayList<Event> catComboShowed = new ArrayList<>();
+    private final ArrayList<Event> catComboShowed = new ArrayList<>();
     private Context context;
     private DashboardViewModel dashboardViewModel;
     private DashboardProgramModel dashboardModel;
@@ -157,8 +161,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             binding.setIsGrouping(group);
             presenter.onGroupingChanged(group);
         });
-        activity.observeFilters().observe(getViewLifecycleOwner(), showFilters -> showHideFilters(showFilters));
-        activity.updatedEnrollment().observe(getViewLifecycleOwner(), enrollmentUid -> updateEnrollment(enrollmentUid));
+        activity.observeFilters().observe(getViewLifecycleOwner(), this::showHideFilters);
+        activity.updatedEnrollment().observe(getViewLifecycleOwner(), this::updateEnrollment);
 
         try {
             binding.filterLayout.setAdapter(filtersAdapter);
@@ -166,30 +170,40 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             Timber.e(e);
         }
 
-        binding.fab.setOptionsClick(integer -> {
-            if (integer == null)
-                return;
-            switch (integer) {
-                case R.id.referral:
-                    createEvent(EventCreationType.REFERAL, 0);
-                    break;
-                case R.id.addnew:
-                    createEvent(EventCreationType.ADDNEW, 0);
-                    break;
-                case R.id.schedulenew:
-                    createEvent(EventCreationType.SCHEDULE, 0);
-                    break;
-                default:
-                    break;
-            }
-        });
-
-
         return binding.getRoot();
     }
 
     private void updateEnrollment(String enrollmentUid) {
         presenter.getEnrollment(enrollmentUid);
+    }
+
+    private void updateFabItems() {
+        List<DialItem> dialItems = new ArrayList<>();
+        dialItems.add(
+                new DialItem(REFERAL_ID, getString(R.string.referral), R.drawable.ic_arrow_forward)
+        );
+        dialItems.add(
+                new DialItem(ADD_NEW_ID, getString(R.string.add_new), R.drawable.ic_note_add)
+        );
+        dialItems.add(
+                new DialItem(SCHEDULE_ID, getString(R.string.schedule_new), R.drawable.ic_date_range)
+        );
+        binding.dialFabLayout.addDialItems(dialItems, clickedId -> {
+            switch (clickedId) {
+                case REFERAL_ID:
+                    createEvent(EventCreationType.REFERAL, 0);
+                    break;
+                case ADD_NEW_ID:
+                    createEvent(EventCreationType.ADDNEW, 0);
+                    break;
+                case SCHEDULE_ID:
+                    createEvent(EventCreationType.SCHEDULE, 0);
+                    break;
+                default:
+                    break;
+            }
+            return Unit.INSTANCE;
+        });
     }
 
     @Override
@@ -238,12 +252,14 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         this.dashboardModel = nprogram;
 
         if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
+            binding.dialFabLayout.setFabVisible(true);
             presenter.setDashboardProgram(this.dashboardModel);
             SharedPreferences prefs = context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
             hasCatComb = nprogram.getCurrentProgram() != null && !nprogram.getCurrentProgram().categoryComboUid().equals(prefs.getString(Constants.DEFAULT_CAT_COMBO, ""));
             binding.setDashboardModel(nprogram);
+            updateFabItems();
         } else if (nprogram != null) {
-            binding.fab.setVisibility(View.GONE);
+            binding.dialFabLayout.setFabVisible(false);
             binding.teiRecycler.setAdapter(new DashboardProgramAdapter(presenter, nprogram));
             binding.teiRecycler.addItemDecoration(new DividerItemDecoration(getAbstracContext(), DividerItemDecoration.VERTICAL));
             binding.setDashboardModel(nprogram);
@@ -251,9 +267,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
         binding.executePendingBindings();
 
-        if (getSharedPreferences().getString("COMPLETED_EVENT", null) != null) {
-            presenter.displayGenerateEvent(getSharedPreferences().getString("COMPLETED_EVENT", null));
-            getSharedPreferences().edit().remove("COMPLETED_EVENT").apply();
+        if (getSharedPreferences().getString(PREF_COMPLETED_EVENT, null) != null) {
+            presenter.displayGenerateEvent(getSharedPreferences().getString(PREF_COMPLETED_EVENT, null));
+            getSharedPreferences().edit().remove(PREF_COMPLETED_EVENT).apply();
         }
 
 
@@ -266,9 +282,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         if (resultCode == RESULT_OK) {
             if (requestCode == REQ_EVENT) {
                 if (data != null) {
-                    lastModifiedEventUid = data.getStringExtra(Constants.EVENT_UID);
+                    String lastModifiedEventUid = data.getStringExtra(Constants.EVENT_UID);
                     if (!OrientationUtilsKt.isLandscape())
-                        getSharedPreferences().edit().putString("COMPLETED_EVENT", lastModifiedEventUid).apply();
+                        getSharedPreferences().edit().putString(PREF_COMPLETED_EVENT, lastModifiedEventUid).apply();
                     else {
                         if (lastModifiedEventUid != null)
                             presenter.displayGenerateEvent(lastModifiedEventUid);
@@ -286,7 +302,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public void setFilters(List<FilterItem> filterItems){
+    public void setFilters(List<FilterItem> filterItems) {
         filtersAdapter.submitList(filterItems);
     }
 
@@ -310,7 +326,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         return events -> {
             if (events.isEmpty()) {
                 binding.emptyTeis.setVisibility(View.VISIBLE);
-                if (binding.fab.getVisibility() == View.VISIBLE) {
+                if (binding.dialFabLayout.isFabVisible()) {
                     binding.emptyTeis.setText(R.string.empty_tei_add);
                 } else {
                     binding.emptyTeis.setText(R.string.empty_tei_no_add);
@@ -430,7 +446,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             Bundle bundle = new Bundle();
             bundle.putString(PROGRAM_UID, dashboardModel.getCurrentEnrollment().program());
             bundle.putString(TRACKED_ENTITY_INSTANCE, dashboardModel.getTei().uid());
-            if(presenter.enrollmentOrgUnitInCaptureScope(dashboardModel.getCurrentOrgUnit().uid())) {
+            if (presenter.enrollmentOrgUnitInCaptureScope(dashboardModel.getCurrentOrgUnit().uid())) {
                 bundle.putString(ORG_UNIT, dashboardModel.getCurrentOrgUnit().uid());
             }
             bundle.putString(ENROLLMENT_UID, dashboardModel.getCurrentEnrollment().uid());

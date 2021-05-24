@@ -347,7 +347,9 @@ class TeiDashboardTest : BaseTest() {
 
         relationshipRobot {
             clickOnFabAdd()
+            waitToDebounce(500)
             clickOnRelationshipType()
+            waitToDebounce(500)
         }
 
         searchTeiRobot {
