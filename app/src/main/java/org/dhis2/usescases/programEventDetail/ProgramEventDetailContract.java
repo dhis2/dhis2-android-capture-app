@@ -67,6 +67,8 @@ public class ProgramEventDetailContract {
 
         void clearOtherFiltersIfWebAppIsConfig();
 
+        void setOpeningFilterToNone();
+
         String getStageUid();
     }
 }

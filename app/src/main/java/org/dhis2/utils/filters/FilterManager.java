@@ -25,7 +25,6 @@ import org.hisp.dhis.android.core.period.DatePeriod;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,8 +35,6 @@ import kotlin.Pair;
 import kotlin.collections.CollectionsKt;
 
 public class FilterManager implements Serializable {
-
-    public static final int OU_TREE = 1986;
 
     public void publishData() {
         filterProcessor.onNext(this);
@@ -501,7 +498,7 @@ public class FilterManager implements Serializable {
         publishData();
     }
 
-    public void clearPeriodFilter(){
+    public void clearPeriodFilter() {
         periodFilters = new ArrayList<>();
         observablePeriodFilters.set(periodFilters);
         periodIdSelected.set(R.id.anytime);
@@ -509,14 +506,14 @@ public class FilterManager implements Serializable {
         filterProcessor.onNext(this);
     }
 
-    public void clearSyncFilter(){
+    public void clearSyncFilter() {
         stateFilters.clear();
         observableStates.postValue(stateFilters);
         stateFiltersApplied.set(stateFilters.size());
         filterProcessor.onNext(this);
     }
 
-    public void clearOuFilter(){
+    public void clearOuFilter() {
         ouFilters.clear();
         liveDataOUFilter.setValue(ouFilters);
         ouFiltersApplied.set(ouFilters.size());
@@ -636,7 +633,7 @@ public class FilterManager implements Serializable {
         assignedFilter = false;
         assignedToMeApplied.set(0);
         catOptComboFilters.clear();
-        if(catComboAdapter!=null) {
+        if (catComboAdapter != null) {
             catComboAdapter.notifyDataSetChanged();
         }
         catOptCombFiltersApplied.set(0);

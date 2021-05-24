@@ -500,4 +500,9 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                 .byUid().eq(enrollmentOrgUnit)
                 .blockingIsEmpty();
     }
+
+    @Override
+    public void setOpeningFilterToNone(){
+        filterRepository.collapseAllFilters();
+    }
 }

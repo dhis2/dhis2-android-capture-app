@@ -218,6 +218,11 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
+    public void setOpeningFilterToNone(){
+        filterRepository.collapseAllFilters();
+    }
+
+    @Override
     public String getStageUid() {
         return eventRepository.programStage().blockingGet().uid();
     }

@@ -1,7 +1,6 @@
 package org.dhis2.usescases.main.program
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
@@ -23,7 +22,7 @@ import org.dhis2.databinding.FragmentProgramBinding
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.usescases.orgunitselector.OUTreeActivity
+import org.dhis2.usescases.orgunitselector.OUTreeFragment
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.utils.Constants
@@ -127,8 +126,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     }
 
     override fun openOrgUnitTreeSelector() {
-        val ouTreeIntent = Intent(context, OUTreeActivity::class.java)
-        (context as MainActivity).startActivityForResult(ouTreeIntent, FilterManager.OU_TREE)
+        OUTreeFragment.newInstance(true).show(childFragmentManager, "OUTreeFragment")
     }
 
     override fun setTutorial() {
