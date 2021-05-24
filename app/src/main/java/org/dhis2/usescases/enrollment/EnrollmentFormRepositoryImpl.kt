@@ -277,7 +277,7 @@ class EnrollmentFormRepositoryImpl(
             }.toFlowable()
     }
 
-    override fun getOptionsFromGroups(optionGroupUids: ArrayList<String>): List<String> {
+    override fun getOptionsFromGroups(optionGroupUids: List<String>): List<String> {
         val optionsFromGroups = arrayListOf<String>()
         val optionGroups = d2.optionModule().optionGroups()
             .withOptions()
