@@ -177,4 +177,8 @@ public class DataSetDetailPresenter {
         List<FilterItem> filters = filterRepository.homeFilters();
         disableHomFilters.execute(filters);
     }
+
+    public void setOpeningFilterToNone(){
+        filterRepository.collapseAllFilters();
+    }
 }

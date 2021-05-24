@@ -25,7 +25,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.FragmentTeiDataBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.usescases.orgunitselector.OUTreeActivity;
+import org.dhis2.usescases.orgunitselector.OUTreeFragment;
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardViewModel;
@@ -225,6 +225,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void onPause() {
+        presenter.setOpeningFilterToNone();
         presenter.onDettach();
         super.onPause();
     }
@@ -293,10 +294,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             }
             if (requestCode == REQ_DETAILS) {
                 activity.getPresenter().init();
-            }
-            if (requestCode == FilterManager.OU_TREE) {
-                activity.presenter.setTotalFilters();
-                adapter.notifyDataSetChanged();
             }
         }
     }
@@ -616,12 +613,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void openOrgUnitTreeSelector(String programUid) {
-        Intent ouTreeIntent = new Intent(context, OUTreeActivity.class);
-        if (programUid != null) {
-            Bundle bundle = OUTreeActivity.Companion.getBundle(programUid);
-            ouTreeIntent.putExtras(bundle);
-        }
-        this.startActivityForResult(ouTreeIntent, FilterManager.OU_TREE);
+        OUTreeFragment.Companion.newInstance(true).show(getChildFragmentManager(), "OUTreeFragment");
     }
 
     @Override
