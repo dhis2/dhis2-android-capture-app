@@ -29,13 +29,13 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="20dp"
-            android:background="@drawable/inner_shadow_top"
+            android:background="@drawable/inner_shadow_top_straight"
             app:layout_constraintTop_toTopOf="parent" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="20dp"
-            android:background="@drawable/inner_shadow_bottom"
+            android:background="@drawable/inner_shadow_bottom_straight"
             app:layout_constraintBottom_toBottomOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
