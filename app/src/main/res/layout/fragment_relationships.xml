@@ -11,7 +11,8 @@
     <org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
         android:id="@+id/dialFabLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:fab_extra_bottom_margin="@{16}">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/relationship_recycler"
@@ -38,12 +39,12 @@
             android:layout_height="0dp"
             android:background="@drawable/ic_front_backdrop_bg"
             android:visibility="gone"
-            tools:visibility="visible"
-            app:mapbox_uiLogoGravity="top|start"
-            app:mapbox_uiAttributionGravity="top|start"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:mapbox_uiAttributionGravity="top|start"
+            app:mapbox_uiLogoGravity="top|start"
+            tools:visibility="visible" />
 
         <ImageView
             android:id="@+id/mapLayerButton"
@@ -65,10 +66,10 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:visibility="gone"
-            tools:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@id/mapView"
             app:layout_constraintStart_toStartOf="@id/mapView"
-            tools:listitem="@layout/item_carousel_tei" />
+            tools:listitem="@layout/item_carousel_tei"
+            tools:visibility="visible" />
 
     </org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout>
 </layout>

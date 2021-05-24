@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.marginBottom
 import androidx.core.view.updateLayoutParams
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.LinkedList
@@ -31,6 +32,8 @@ class DialFloatingActionButtonLayout @JvmOverloads constructor(
     private var fab: FloatingActionButton
 
     init {
+        clipToPadding = false
+        clipChildren = false
         initFab(context).also { fab ->
             this.fab = fab
             addView(fab)
@@ -131,5 +134,13 @@ class DialFloatingActionButtonLayout @JvmOverloads constructor(
 
     private fun hideDialItem(viewQueue: LinkedList<View>, nextViewToHide: View?) {
         nextViewToHide?.hideDialItem { hideDialItem(viewQueue, viewQueue.poll()) }
+    }
+
+    fun updateFabMargin(extraBottomMargin: Int) {
+        fab.updateLayoutParams<LayoutParams> {
+            setMargins(0, 0, 0, fab.marginBottom + extraBottomMargin)
+            bottomToBottom = ConstraintSet.PARENT_ID
+            endToEnd = ConstraintSet.PARENT_ID
+        }
     }
 }

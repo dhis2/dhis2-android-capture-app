@@ -79,3 +79,8 @@ fun View.initDialItem(isDialItem: Boolean) {
 fun DialFloatingActionButtonLayout.setFloatingActionButtonVisibility(hideFab: Boolean) {
     setFabVisible(!hideFab)
 }
+
+@BindingAdapter("fab_extra_bottom_margin")
+fun DialFloatingActionButtonLayout.setExtraBottomMargin(extraBottomMargin: Int) {
+    updateFabMargin(extraBottomMargin.dp)
+}
