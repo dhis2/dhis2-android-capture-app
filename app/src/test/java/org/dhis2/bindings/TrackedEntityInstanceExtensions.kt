@@ -6,7 +6,6 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import junit.framework.Assert.assertTrue
 import org.dhis2.Bindings.filterDeletedEnrollment
-import org.dhis2.Bindings.filterEvents
 import org.dhis2.Bindings.toDate
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
@@ -119,8 +118,6 @@ class TrackedEntityInstanceExtensions {
         testList.forEachIndexed { index, tei ->
             handleEventCall(tei.uid(), periods, "programUid", index == 0)
         }
-
-        testList.filterEvents(d2, periods, "programUid")
 
         assertTrue(testList.size == 2)
     }
