@@ -1,5 +1,6 @@
 package org.dhis2.data.forms.dataentry
 
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -8,6 +9,7 @@ import androidx.recyclerview.widget.ListAdapter
 import java.util.ArrayList
 import java.util.Date
 import java.util.LinkedHashMap
+import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder.FieldItemCallback
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
@@ -16,9 +18,11 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.DataEntryDiff
 import org.hisp.dhis.android.core.common.FeatureType
 
-class DataEntryAdapter :
+class DataEntryAdapter(private val searchStyle: Boolean) :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),
     FieldItemCallback {
+
+    private val refactoredViews = intArrayOf(R.layout.form_age_custom)
 
     var didItemShowDialog: ((title: String, message: String?) -> Unit)? = null
     var onNextClicked: ((position: Int) -> Unit)? = null
@@ -32,7 +36,17 @@ class DataEntryAdapter :
     var sectionPositions: MutableMap<String, Int> = LinkedHashMap()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FormViewHolder {
-        val layoutInflater = LayoutInflater.from(parent.context)
+        val layoutInflater =
+            if (refactoredViews.contains(viewType) && searchStyle) {
+                LayoutInflater.from(
+                    ContextThemeWrapper(
+                        parent.context,
+                        R.style.searchFormInputText
+                    )
+                )
+            } else {
+                LayoutInflater.from(parent.context)
+            }
         val binding =
             DataBindingUtil.inflate<ViewDataBinding>(layoutInflater, viewType, parent, false)
         return FormViewHolder(binding)
@@ -42,7 +56,6 @@ class DataEntryAdapter :
         if (getItem(position) is SectionViewModel) {
             updateSectionData(position, false)
         }
-
         holder.bind(getItem(position), this)
     }
 

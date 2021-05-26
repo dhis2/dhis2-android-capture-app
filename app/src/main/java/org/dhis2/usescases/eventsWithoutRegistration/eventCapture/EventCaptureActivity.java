@@ -79,7 +79,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         eventCaptureComponent = (ExtensionsKt.app(this)).userComponent().plus(
                 new EventCaptureModule(
                         this,
-                        getIntent().getStringExtra(Constants.EVENT_UID)));
+                        getIntent().getStringExtra(Constants.EVENT_UID),
+                        getContext()));
         eventCaptureComponent.inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture);

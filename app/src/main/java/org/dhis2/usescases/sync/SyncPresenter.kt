@@ -6,6 +6,7 @@ import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.data.prefs.Preference
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.METADATA_MESSAGE
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
@@ -15,7 +16,7 @@ import timber.log.Timber
 
 class SyncPresenter internal constructor(
     private val view: SyncView,
-    private val syncRepository: SyncRepository,
+    private val userManager: UserManager?,
     private val schedulerProvider: SchedulerProvider,
     private val workManagerController: WorkManagerController,
     private val preferences: PreferenceProvider
@@ -61,23 +62,25 @@ class SyncPresenter internal constructor(
     }
 
     fun onMetadataSyncSuccess() {
-        disposable.add(
-            syncRepository.getTheme().doOnSuccess { flagAndTheme ->
-                preferences.setValue(Preference.FLAG, flagAndTheme.first)
-                preferences.setValue(Preference.THEME, flagAndTheme.second)
-            }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { (first, second) ->
-                        view.setFlag(first)
-                        view.setServerTheme(second)
-                    },
-                    { t: Throwable? ->
-                        Timber.e(t)
-                    }
-                )
-        )
+        userManager?.let { userManager ->
+            disposable.add(
+                userManager.theme.doOnSuccess { flagAndTheme ->
+                    preferences.setValue(Preference.FLAG, flagAndTheme.first)
+                    preferences.setValue(Preference.THEME, flagAndTheme.second)
+                }
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                        { (first, second) ->
+                            view.setFlag(first)
+                            view.setServerTheme(second)
+                        },
+                        { t: Throwable? ->
+                            Timber.e(t)
+                        }
+                    )
+            )
+        }
     }
 
     fun onDataSyncSuccess() {
@@ -96,16 +99,18 @@ class SyncPresenter internal constructor(
     }
 
     fun onLogout() {
-        disposable.add(
-            syncRepository.logout()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { view.goToLogin() }
-                ) { t: Throwable? ->
-                    Timber.e(t)
-                }
-        )
+        userManager?. let { userManager ->
+            disposable.add(
+                userManager.logout()
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                        { view.goToLogin() }
+                    ) { t: Throwable? ->
+                        Timber.e(t)
+                    }
+            )
+        }
     }
 
     fun onDetach() {

@@ -199,7 +199,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         ((App) getApplicationContext()).userComponent().plus(
                 new EventInitialModule(this,
                         eventUid,
-                        programStageUid)
+                        programStageUid,
+                        getContext())
         ).inject(this);
         setScreenName(this.getLocalClassName());
         super.onCreate(savedInstanceState);

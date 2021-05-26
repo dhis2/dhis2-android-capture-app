@@ -15,6 +15,7 @@ import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.form.ui.style.FormUiColorFactory
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
@@ -47,6 +48,7 @@ class RulesUtilsProviderImplTest {
     private lateinit var fieldFactory: FieldViewModelFactory
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val valueStore: ValueStore = mock()
+    private val colorFactory: FormUiColorFactory = mock()
 
     private val testRuleEffects = ArrayList<RuleEffect>()
 
@@ -55,7 +57,8 @@ class RulesUtilsProviderImplTest {
         ruleUtils = RulesUtilsProviderImpl(d2)
         fieldFactory = FieldViewModelFactoryImpl(
             ValueType.values().map { it to it.name }.toMap(),
-            false
+            false,
+            colorFactory
         )
         testFieldViewModels = getTestingFieldViewModels().associateBy { it.uid }.toMutableMap()
     }
