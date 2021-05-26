@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.runBlocking
 import org.dhis2.form.data.FormRepository
+import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
@@ -21,6 +22,7 @@ class FormViewModel(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
+    val loading = MutableLiveData<Boolean>()
     private val _items = MutableLiveData<List<FieldUiModel>>()
     val items: LiveData<List<FieldUiModel>> = _items
 
@@ -28,6 +30,9 @@ class FormViewModel(
     val savedValue: LiveData<RowAction> = _savedValue
 
     fun onItemAction(action: RowAction) = runBlocking {
+        if (action.type == ActionType.ON_SAVE) {
+            loading.value = true
+        }
         processAction(action).collect { result ->
             when (result.valueStoreResult) {
                 ValueStoreResult.VALUE_CHANGED -> {
@@ -41,4 +46,8 @@ class FormViewModel(
     private fun processAction(action: RowAction): Flow<StoreResult> = flow {
         emit(repository.processUserAction(action))
     }.flowOn(dispatcher)
+
+    fun onItemsRendered() {
+        loading.value = false
+    }
 }
