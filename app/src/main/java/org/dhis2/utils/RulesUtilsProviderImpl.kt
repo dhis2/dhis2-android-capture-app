@@ -134,26 +134,6 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         currentRuleUid = null
         setOptionsInFields(fieldViewModels, optionsFromGroup)
 
-        repeat(10) {
-            configurationErrors.add(
-                RulesUtilsProviderConfigurationError(
-                    currentRuleUid,
-                    ActionType.ASSIGN,
-                    ConfigurationError.VALUE_TO_ASSIGN_NOT_IN_OPTION_SET,
-                    listOf("ruleUid", "Data", "optionSet")
-                )
-            )
-
-            configurationErrors.add(
-                RulesUtilsProviderConfigurationError(
-                    currentRuleUid,
-                    ActionType.ASSIGN,
-                    ConfigurationError.CURRENT_VALUE_NOT_IN_OPTION_SET,
-                    listOf("Value", "optionSetUid")
-                )
-            )
-        }
-
         return RuleUtilsProviderResult(
             canComplete = canComplete,
             messageOnComplete = messageOnComplete,
