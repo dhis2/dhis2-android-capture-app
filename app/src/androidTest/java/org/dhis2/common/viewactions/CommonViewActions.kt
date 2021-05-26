@@ -15,7 +15,6 @@ import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.util.TreeIterables
-import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
@@ -130,7 +129,7 @@ fun scrollToPositionRecyclerview(position: Int): ViewAction {
     }
 }
 
-fun clickOnFabChild(): ViewAction {
+/*fun clickOnFabChild(): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
             return "searching for fab child"
@@ -150,7 +149,7 @@ fun clickOnFabChild(): ViewAction {
             }
         }
     }
-}
+}*/
 
 fun waitForTransitionUntil(idView: Int): ViewAction {
     return object : ViewAction {

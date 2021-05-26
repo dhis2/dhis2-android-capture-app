@@ -13,9 +13,7 @@ import org.dhis2.R
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
-import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.FieldUiModel
@@ -23,7 +21,6 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.Result
-import org.dhis2.utils.RulesActionCallbacks
 import org.dhis2.utils.RulesUtilsProviderImpl
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.DELETE_AND_BACK
@@ -43,7 +40,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
-import org.hisp.dhis.rules.models.RuleActionShowError
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 
@@ -65,13 +61,10 @@ class EnrollmentPresenterImpl(
     private val sectionProcessor: Flowable<String>,
     private val matomoAnalyticsController: MatomoAnalyticsController,
     private val formRepository: FormRepository
-) : RulesActionCallbacks {
+) {
 
     private var finishing: Boolean = false
     private val disposable = CompositeDisposable()
-    private val optionsToHide = HashMap<String, ArrayList<String>>()
-    private val optionsGroupsToHide = HashMap<String, ArrayList<String>>()
-    private val optionsGroupToShow = HashMap<String, ArrayList<String>>()
     private val fieldsFlowable: FlowableProcessor<Boolean> = PublishProcessor.create()
     private var selectedSection: String = ""
     private var errorFields = mutableMapOf<String, String>()
@@ -427,50 +420,20 @@ class EnrollmentPresenterImpl(
         mandatoryFields.clear()
         errorFields.clear()
         uniqueFields.clear()
-        optionsToHide.clear()
-        optionsGroupsToHide.clear()
-        optionsGroupToShow.clear()
 
         val fieldMap = fields.map { it.uid to it }.toMap().toMutableMap()
-
-        RulesUtilsProviderImpl(d2)
-            .applyRuleEffects(fieldMap, result, this)
-
-        val fieldList = ArrayList(fieldMap.values)
-
-        return fieldList.map { fieldViewModel ->
-            when (fieldViewModel) {
-                is SpinnerViewModel -> {
-                    var mappedSpinnerModel = fieldViewModel.setOptionsToHide(
-                        optionsToHide[fieldViewModel.uid()] ?: emptyList(),
-                        optionsGroupsToHide[fieldViewModel.uid()] ?: emptyList()
-                    )
-                    if (optionsGroupToShow.keys.contains(fieldViewModel.uid())) {
-                        mappedSpinnerModel =
-                            fieldViewModel.setOptionGroupsToShow(
-                                optionsGroupToShow[fieldViewModel.uid()]
-                            )
-                    }
-                    mappedSpinnerModel
-                }
-                is OptionSetViewModel -> {
-                    var mappedOptionSetModel = fieldViewModel.setOptionsToHide(
-                        optionsToHide[fieldViewModel.uid()] ?: emptyList()
-                    )
-                    if (optionsGroupToShow.keys.contains(fieldViewModel.uid())) {
-                        mappedOptionSetModel = fieldViewModel.setOptionsToShow(
-                            enrollmentFormRepository.getOptionsFromGroups(
-                                optionsGroupToShow[fieldViewModel.uid()] ?: arrayListOf()
-                            )
-                        )
-                    }
-                    mappedOptionSetModel
-                }
-                else -> {
-                    fieldViewModel
-                }
-            }
+        RulesUtilsProviderImpl(d2).applyRuleEffects(
+            false,
+            fieldMap,
+            result,
+            valueStore
+        ) { options ->
+            enrollmentFormRepository.getOptionsFromGroups(options)
+        }.apply {
+            errorFields = errorMap().toMutableMap()
         }
+
+        return ArrayList(fieldMap.values)
     }
 
     fun getEnrollment(): Enrollment? {
@@ -522,74 +485,6 @@ class EnrollmentPresenterImpl(
 
     fun displayMessage(message: String?) {
         view.displayMessage(message)
-    }
-
-    override fun setShowError(showError: RuleActionShowError, model: FieldUiModel?) {
-        // not used
-    }
-
-    override fun unsupportedRuleAction() {
-        // not used
-    }
-
-    override fun save(uid: String, value: String?) {
-        assignValue(uid, value)
-    }
-
-    override fun setMessageOnComplete(content: String, canComplete: Boolean) = Unit
-
-    override fun setHideProgramStage(programStageUid: String) = Unit
-
-    override fun setOptionToHide(optionUid: String, field: String) {
-        if (!optionsToHide.containsKey(field)) {
-            optionsToHide[field] = arrayListOf(optionUid)
-        }
-        optionsToHide[field]!!.add(optionUid)
-        valueStore.deleteOptionValueIfSelected(field, optionUid)
-    }
-
-    override fun setOptionGroupToHide(optionGroupUid: String, toHide: Boolean, field: String) {
-        if (toHide) {
-            if (!optionsGroupsToHide.containsKey(field)) {
-                optionsGroupsToHide[field] = arrayListOf()
-            }
-            optionsGroupsToHide[field]!!.add(optionGroupUid)
-            if (!optionsToHide.containsKey(field)) {
-                optionsToHide[field] = arrayListOf()
-            }
-            optionsToHide[field]!!.addAll(
-                enrollmentFormRepository.getOptionsFromGroups(
-                    arrayListOf(
-                        optionGroupUid
-                    )
-                )
-            )
-            valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, true)
-        } else if (!optionsGroupsToHide.containsKey(field) || !optionsGroupsToHide.contains(
-            optionGroupUid
-        )
-        ) {
-            if (optionsGroupToShow[field] != null) {
-                optionsGroupToShow[field]!!.add(optionGroupUid)
-            } else {
-                optionsGroupToShow[field] = arrayListOf(optionGroupUid)
-            }
-            valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, false)
-        }
-    }
-
-    private fun assignValue(uid: String, value: String?) {
-        try {
-            if (d2.dataElementModule().dataElements().uid(uid).blockingExists()) {
-                Timber.d("Enrollments rules should not assign values to dataElements")
-            } else if (
-                d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists()
-            ) {
-                valueStore.save(uid, value).blockingFirst()
-            }
-        } catch (d2Error: D2Error) {
-            Timber.e(d2Error.originalException())
-        }
     }
 
     fun dataIntegrityCheck(): Boolean {

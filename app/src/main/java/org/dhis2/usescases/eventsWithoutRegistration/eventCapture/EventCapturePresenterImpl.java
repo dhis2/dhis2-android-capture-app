@@ -3,19 +3,14 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.databinding.ObservableField;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.ValueStore;
-
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
-import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
-import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
@@ -23,27 +18,22 @@ import org.dhis2.data.tuples.Quartet;
 import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.RowAction;
-import org.dhis2.form.model.StoreResult;
-import org.dhis2.form.model.ValueStoreResult;
 import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.Result;
-import org.dhis2.utils.RulesActionCallbacks;
+import org.dhis2.utils.RuleUtilsProviderResult;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import javax.inject.Singleton;
@@ -60,7 +50,7 @@ import kotlin.Pair;
 import timber.log.Timber;
 
 @Singleton
-public class EventCapturePresenterImpl implements EventCaptureContract.Presenter, RulesActionCallbacks {
+public class EventCapturePresenterImpl implements EventCaptureContract.Presenter {
 
     private final EventCaptureContract.EventCaptureRepository eventCaptureRepository;
     private final RulesUtilsProvider rulesUtils;
@@ -78,9 +68,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private List<FormSectionViewModel> sectionList;
     private Map<String, FieldUiModel> emptyMandatoryFields;
     //Rules data
-    private Map<String, List<String>> optionsToHide = new HashMap<>();
-    private Map<String, List<String>> optionsGroupsToHide = new HashMap<>();
-    private Map<String, List<String>> optionsGroupToShow = new HashMap<>();
     private boolean canComplete;
     private String completeMessage;
     private Map<String, String> errors;
@@ -376,62 +363,26 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             return viewModels;
         }
 
-        //Reset effectsT
-        assignedValueChanged = false;
-        optionsToHide.clear();
-        optionsGroupsToHide.clear();
-        optionsGroupToShow.clear();
-        errors.clear();
-        completeMessage = null;
-        canComplete = true;
-
         Map<String, FieldUiModel> fieldViewModels = toMap(viewModels);
-        rulesUtils.applyRuleEffects(fieldViewModels, calcResult, this);
+        RuleUtilsProviderResult ruleResults = rulesUtils.applyRuleEffects(
+                true,
+                fieldViewModels,
+                calcResult,
+                valueStore,
+                options -> eventCaptureRepository.getOptionsFromGroups(options)
+        );
+
+        assignedValueChanged = !ruleResults.getFieldsToUpdate().isEmpty();
+        for (String fieldUid : ruleResults.getFieldsToUpdate()) {
+            setValueChanged(fieldUid);
+        }
+
+        errors = ruleResults.errorMap();
+        canComplete = ruleResults.getCanComplete();
+        completeMessage = ruleResults.getMessageOnComplete();
 
         //Set/remove for HIDEOPTION/HIDEOPTIONGROUP/SHOWOPTIONGROUP
         ArrayList<FieldUiModel> fieldList = new ArrayList<>(fieldViewModels.values());
-        ListIterator<FieldUiModel> fieldIterator = fieldList.listIterator();
-        while (fieldIterator.hasNext()) {
-            FieldUiModel field = fieldIterator.next();
-            if (field instanceof MatrixOptionSetModel) {
-                FieldUiModel hiddenMatrixModel = ((MatrixOptionSetModel) field).setOptionsToHide(
-                        optionsToHide.get(field.getUid()) != null ? optionsToHide.get(field.getUid()) : new ArrayList<>(),
-                        eventCaptureRepository.getOptionsFromGroups(
-                                optionsGroupsToHide.get(field.getUid()) != null ? optionsGroupsToHide.get(field.getUid()) : new ArrayList<>()
-                        ),
-                        eventCaptureRepository.getOptionsFromGroups(
-                                optionsGroupToShow.get(field.getUid()) != null ? optionsGroupToShow.get(field.getUid()) : new ArrayList<>()
-                        )
-                );
-                fieldIterator.set(hiddenMatrixModel);
-            } else if (field instanceof SpinnerViewModel) {
-                FieldUiModel hiddenSpinnerModel = ((SpinnerViewModel) field).setOptionsToHide(
-                        optionsToHide.get(field.getUid()) != null ? optionsToHide.get(field.getUid()) : new ArrayList<>(),
-                        optionsGroupsToHide.get(field.getUid()) != null ? optionsGroupsToHide.get(field.getUid()) : new ArrayList<>()
-                );
-                fieldIterator.set(hiddenSpinnerModel);
-                if (optionsGroupToShow.keySet().contains(field.getUid())) {
-                    FieldUiModel showSpinnerModel = ((SpinnerViewModel) hiddenSpinnerModel).setOptionGroupsToShow(
-                            optionsGroupToShow.get(field.getUid()) != null ? optionsGroupToShow.get(field.getUid()) : new ArrayList<>()
-                    );
-                    fieldIterator.set(showSpinnerModel);
-                }
-            } else if (field instanceof OptionSetViewModel) {
-                FieldUiModel hiddenOptionSetModel = ((OptionSetViewModel) field).setOptionsToHide(
-                        optionsToHide.get(field.getUid()) != null ? optionsToHide.get(field.getUid()) : new ArrayList<>()
-                );
-                fieldIterator.set(hiddenOptionSetModel);
-                if (optionsGroupToShow.keySet().contains(field.getUid())) {
-                    FieldUiModel showOptionSetModel = ((OptionSetViewModel) hiddenOptionSetModel).setOptionsToShow(
-                            eventCaptureRepository.getOptionsFromGroups(
-                                    optionsGroupToShow.get(field.getUid()) != null ? optionsGroupToShow.get(field.getUid()) : new ArrayList<>()
-                            )
-                    );
-                    fieldIterator.set(showOptionSetModel);
-                }
-            }
-        }
-
         return fieldList;
     }
 
@@ -605,85 +556,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         valueStore.save(uuid, filePath).blockingFirst();
         setValueChanged(uuid);
     }
-
-    //region ruleActions
-
-    @Override
-    public void setShowError(@NonNull RuleActionShowError showError, @Nullable FieldUiModel model) {
-        canComplete = false;
-        errors.put(eventCaptureRepository.getSectionFor(showError.field()), showError.field());
-    }
-
-    @Override
-    public void unsupportedRuleAction() {
-        Timber.d(view.getContext().getString(R.string.unsupported_program_rule));
-    }
-
-    @SuppressLint("CheckResult")
-    @Override
-    public void save(@NotNull @NonNull String uid, @Nullable String value) {
-        StoreResult result = valueStore.saveWithTypeCheck(uid, value).blockingFirst();
-        if (result.component2() == ValueStoreResult.VALUE_CHANGED) {
-            assignedValueChanged = true;
-            setValueChanged(uid);
-        }
-    }
-
-    @Override
-    public void setMessageOnComplete(@NonNull String message, boolean canComplete) {
-        this.canComplete = canComplete;
-        this.completeMessage = message;
-    }
-
-    @Override
-    public void setHideProgramStage(@NonNull String programStageUid) {
-        //do not apply
-    }
-
-    @Override
-    public void setOptionToHide(@NonNull String optionUid, @NonNull String field) {
-        if (!optionsToHide.containsKey(field)) {
-            optionsToHide.put(field, new ArrayList<>());
-        }
-        optionsToHide.get(field).add(optionUid);
-        StoreResult result = valueStore.deleteOptionValueIfSelected(field, optionUid);
-        if (result.component2() == ValueStoreResult.VALUE_CHANGED) {
-            assignedValueChanged = true;
-            setValueChanged(field);
-        }
-    }
-
-    @Override
-    public void setOptionGroupToHide(@NonNull String optionGroupUid, boolean toHide, @NonNull String field) {
-        if (toHide) {
-            if (!optionsGroupsToHide.containsKey(field)) {
-                optionsGroupsToHide.put(field, new ArrayList<>());
-            }
-            optionsGroupsToHide.get(field).add(optionGroupUid);
-            if (!optionsToHide.containsKey(field)) {
-                optionsToHide.put(field, new ArrayList<>());
-            }
-            optionsToHide.get(field).addAll(eventCaptureRepository.getOptionsFromGroups(Collections.singletonList(optionGroupUid)));
-            StoreResult result = valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, true);
-            if (result.component2() == ValueStoreResult.VALUE_CHANGED) {
-                assignedValueChanged = true;
-                setValueChanged(field);
-            }
-        } else if (!optionsGroupsToHide.containsKey(field) || !optionsGroupsToHide.get(field).contains(optionGroupUid)) {
-            if (optionsGroupToShow.get(field) != null) {
-                optionsGroupToShow.get(field).add(optionGroupUid);
-            } else {
-                optionsGroupToShow.put(field, Collections.singletonList(optionGroupUid));
-            }
-            StoreResult result = valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, false);
-            if (result.component2() == ValueStoreResult.VALUE_CHANGED) {
-                assignedValueChanged = true;
-                setValueChanged(field);
-            }
-        }
-    }
-
-    //endregion
 
     @Override
     public void initNoteCounter() {

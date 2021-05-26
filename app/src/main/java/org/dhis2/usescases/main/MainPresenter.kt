@@ -172,4 +172,8 @@ class MainPresenter(
     fun onClickSyncManager() {
         matomoAnalyticsController.trackEvent(HOME, SETTINGS, CLICK)
     }
+
+    fun setOpeningFilterToNone() {
+        filterRepository.collapseAllFilters()
+    }
 }

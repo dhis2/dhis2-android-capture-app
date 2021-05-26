@@ -822,6 +822,11 @@ public class Bindings {
         ViewExtensionsKt.clipWithRoundedCorners(view, ExtensionsKt.getDp(cornerRadiusInDp));
     }
 
+    @BindingAdapter("clipAllCorners")
+    public static void setAllClipCorners(View view, int cornerRadiusInDp) {
+        ViewExtensionsKt.clipWithAllRoundedCorners(view, ExtensionsKt.getDp(cornerRadiusInDp));
+    }
+
     @BindingAdapter("legendValue")
     public static void setLegend(TextView textView, LegendValue legendValue) {
         if (legendValue != null) {
