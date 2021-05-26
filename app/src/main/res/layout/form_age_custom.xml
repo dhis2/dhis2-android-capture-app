@@ -60,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:text="@{item.formattedLabel}"
                 android:alpha="@{item.editable()? 1f : 0.5f}"
-                app:setTextColorAgeView="@{item.isBackgroundTransparent()}"
+                app:setTextColorAgeView="@{item}"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintHorizontal_chainStyle="packed"
@@ -83,7 +83,7 @@
                 app:layout_constraintStart_toEndOf="@id/label"
                 app:layout_constraintTop_toTopOf="@+id/label"
                 app:srcCompat="@drawable/ic_info_outline"
-                app:tintDescriptionLabel="@{item.isBackgroundTransparent()}"
+                app:tintDescriptionLabel="@{item}"
                 />
 
             <LinearLayout
@@ -101,7 +101,7 @@
                     android:layout_weight="2"
                     android:hint="@string/date"
                     android:alpha="@{item.editable()? 1f : 0.5f}"
-                    app:setTextColorHint="@{item.isBackgroundTransparent()}"
+                    app:setTextColorHint="@{item}"
                     android:theme="@style/loginInputText">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -109,13 +109,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="date"
-                        app:setEditTextColor="@{item.isBackgroundTransparent()}"
+                        app:setEditTextColor="@{item}"
                         android:textSize="@dimen/form_edit_text_size"
                         android:focusable="false"
                         android:clickable="true"
                         android:enabled="@{item.editable()}"
                         app:setInitialValueDate="@{item.value()}"
                         app:setUnderlineColorEditText="@{item}"
+                        app:onFocusChangeAgeView="@{item}"
                         android:onClick="@{()-> item.onShowCustomCalendar()}"
                         tools:text="1987-06-26" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -127,7 +128,7 @@
                     android:layout_weight="1"
                     android:hint="@string/hint_year"
                     android:alpha="@{item.editable()? 1f : 0.5f}"
-                    app:setTextColorHint="@{item.isBackgroundTransparent()}"
+                    app:setTextColorHint="@{item}"
                     android:theme="@style/loginInputText">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -139,7 +140,7 @@
                         android:clickable="true"
                         android:focusable="false"
                         android:maxLength="4"
-                        app:setEditTextColor="@{item.isBackgroundTransparent()}"
+                        app:setEditTextColor="@{item}"
                         app:setUnderlineColorEditText="@{item}"
                         app:setInitialValueYear="@{item.value()}"
                         android:enabled="@{item.editable()}"
@@ -156,7 +157,7 @@
                     android:layout_weight="1"
                     android:hint="@string/hint_month"
                     android:alpha="@{item.editable()? 1f : 0.5f}"
-                    app:setTextColorHint="@{item.isBackgroundTransparent()}"
+                    app:setTextColorHint="@{item}"
                     android:theme="@style/loginInputText">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -169,7 +170,7 @@
                         android:focusable="false"
                         android:maxLength="2"
                         app:setInitialValueMonth="@{item.value()}"
-                        app:setEditTextColor="@{item.isBackgroundTransparent()}"
+                        app:setEditTextColor="@{item}"
                         app:setUnderlineColorEditText="@{item}"
                         android:onClick="@{()-> item.onShowDayMonthYearPicker()}"
                         android:enabled="@{item.editable()}"
@@ -184,7 +185,7 @@
                     android:layout_weight="1"
                     android:hint="@string/hint_day"
                     android:alpha="@{item.editable()? 1f : 0.5f}"
-                    app:setTextColorHint="@{item.isBackgroundTransparent()}"
+                    app:setTextColorHint="@{item}"
                     android:theme="@style/loginInputText">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -197,7 +198,7 @@
                         android:clickable="true"
                         android:maxLength="2"
                         app:setInitialValueDay="@{item.value()}"
-                        app:setEditTextColor="@{item.isBackgroundTransparent()}"
+                        app:setEditTextColor="@{item}"
                         app:setUnderlineColorEditText="@{item}"
                         android:onClick="@{()-> item.onShowDayMonthYearPicker()}"
                         android:enabled="@{item.editable()}"

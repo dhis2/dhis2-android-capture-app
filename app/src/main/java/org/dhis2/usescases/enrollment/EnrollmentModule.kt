@@ -12,6 +12,7 @@ import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.RulesRepository
 import org.dhis2.data.forms.dataentry.DataEntryStore
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
+import org.dhis2.data.forms.dataentry.FormUiModelColorFactoryImpl
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
@@ -20,6 +21,7 @@ import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryPersistenceImpl
 import org.dhis2.form.model.RowAction
+import org.dhis2.form.ui.style.FormUiColorFactory
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
@@ -33,7 +35,8 @@ class EnrollmentModule(
     private val enrollmentView: EnrollmentView,
     val enrollmentUid: String,
     val programUid: String,
-    private val enrollmentMode: EnrollmentActivity.EnrollmentMode
+    private val enrollmentMode: EnrollmentActivity.EnrollmentMode,
+    val activityContext: Context
 ) {
 
     @Provides
@@ -95,8 +98,17 @@ class EnrollmentModule(
 
     @Provides
     @PerActivity
-    fun fieldFactory(context: Context): FieldViewModelFactory {
-        return FieldViewModelFactoryImpl(context.valueTypeHintMap(), false)
+    fun fieldFactory(
+        context: Context,
+        colorFactory: FormUiColorFactory
+    ): FieldViewModelFactory {
+        return FieldViewModelFactoryImpl(context.valueTypeHintMap(), false, colorFactory)
+    }
+
+    @Provides
+    @PerActivity
+    fun provideFormUiColorFactory(): FormUiColorFactory {
+        return FormUiModelColorFactoryImpl(activityContext, true)
     }
 
     @Provides

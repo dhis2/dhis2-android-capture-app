@@ -2,6 +2,7 @@ package org.dhis2.data.forms.dataentry
 
 import android.content.Context
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -56,12 +57,13 @@ class FormView private constructor(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val contextWrapper = ContextThemeWrapper(context, R.style.searchFormInputText)
         binding = DataBindingUtil.inflate(inflater, R.layout.view_form, container, false)
         binding.lifecycleOwner = this
         dataEntryHeaderHelper = DataEntryHeaderHelper(binding.headerContainer, binding.recyclerView)
         ageDialogDelegate = AgeDialogDelegate(viewModel)
         binding.recyclerView.layoutManager =
-            object : LinearLayoutManager(context, VERTICAL, false) {
+            object : LinearLayoutManager(contextWrapper, VERTICAL, false) {
                 override fun onInterceptFocusSearch(focused: View, direction: Int): View {
                     return focused
                 }
@@ -78,7 +80,7 @@ class FormView private constructor(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
-        adapter = DataEntryAdapter()
+        adapter = DataEntryAdapter(needToForceUpdate)
         adapter.didItemShowDialog = { title, message ->
             CustomDialog(
                 requireContext(),
