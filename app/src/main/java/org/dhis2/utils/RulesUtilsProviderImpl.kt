@@ -38,7 +38,9 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
     val optionGroupsToHide = mutableMapOf<String, MutableList<String>>()
     val optionGroupsToShow = mutableMapOf<String, MutableList<String>>()
     var fieldsToUpdate = mutableListOf<String>()
+    val configurationErrors = mutableListOf<RulesUtilsProviderConfigurationError>()
     var valueStore: ValueStore? = null
+    var currentRuleUid: String? = null
 
     override fun applyRuleEffects(
         applyForEvent: Boolean,
@@ -56,9 +58,11 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         optionGroupsToHide.clear()
         optionGroupsToShow.clear()
         fieldsToUpdate.clear()
+        configurationErrors.clear()
         this.valueStore = valueStore
 
         calcResult.items().forEach {
+            currentRuleUid = it.ruleId()
             when (it.ruleAction()) {
                 is RuleActionShowWarning -> showWarning(
                     it.ruleAction() as RuleActionShowWarning,
@@ -127,14 +131,36 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             }
         }
 
+        currentRuleUid = null
         setOptionsInFields(fieldViewModels, optionsFromGroup)
+
+        repeat(10) {
+            configurationErrors.add(
+                RulesUtilsProviderConfigurationError(
+                    currentRuleUid,
+                    ActionType.ASSIGN,
+                    ConfigurationError.VALUE_TO_ASSIGN_NOT_IN_OPTION_SET,
+                    listOf("ruleUid", "Data", "optionSet")
+                )
+            )
+
+            configurationErrors.add(
+                RulesUtilsProviderConfigurationError(
+                    currentRuleUid,
+                    ActionType.ASSIGN,
+                    ConfigurationError.CURRENT_VALUE_NOT_IN_OPTION_SET,
+                    listOf("Value", "optionSetUid")
+                )
+            )
+        }
 
         return RuleUtilsProviderResult(
             canComplete = canComplete,
             messageOnComplete = messageOnComplete,
             fieldsWithErrors = fieldsWithErrors,
             unsupportedRules = unsupportedRuleActions,
-            fieldsToUpdate = fieldsToUpdate
+            fieldsToUpdate = fieldsToUpdate,
+            configurationErrors = configurationErrors
         )
     }
 
@@ -302,24 +328,53 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
 
             val value =
                 if (field.getOptionSet() != null && field.value != null) {
-                    d2.optionModule().options().byOptionSetUid().eq(field.getOptionSet())
-                        .byDisplayName().eq(field.value)
-                        .one().blockingGet().code()
+                    val valueOption =
+                        d2.optionModule().options().byOptionSetUid().eq(field.getOptionSet())
+                            .byDisplayName().eq(field.value)
+                            .one().blockingGet()
+                    if (valueOption == null) {
+                        configurationErrors.add(
+                            RulesUtilsProviderConfigurationError(
+                                currentRuleUid,
+                                ActionType.ASSIGN,
+                                ConfigurationError.CURRENT_VALUE_NOT_IN_OPTION_SET,
+                                listOf(field.label, field.getOptionSet() ?: "")
+                            )
+                        )
+                    }
+                    valueOption?.code()
                 } else {
                     field.value
                 }
 
-            if (value == null || value != ruleEffect.data()) {
-                if (save(assign.field(), ruleEffect.data()) == ValueStoreResult.VALUE_CHANGED) {
-                    fieldsToUpdate.add(assign.field())
-                }
+            if ((value == null || value != ruleEffect.data()) && save(
+                assign.field(),
+                ruleEffect.data()
+            ) == ValueStoreResult.VALUE_CHANGED
+            ) {
+                fieldsToUpdate.add(assign.field())
             }
-
             val valueToShow =
                 if (field.getOptionSet() != null && ruleEffect.data()?.isNotEmpty() == true) {
-                    d2.optionModule().options().byOptionSetUid().eq(field.getOptionSet())
-                        .byCode().eq(ruleEffect.data())
-                        .one().blockingGet().displayName()
+                    val effectOption =
+                        d2.optionModule().options().byOptionSetUid().eq(field.getOptionSet())
+                            .byCode().eq(ruleEffect.data())
+                            .one().blockingGet()
+                    if (effectOption == null) {
+                        configurationErrors.add(
+                            RulesUtilsProviderConfigurationError(
+                                currentRuleUid,
+                                ActionType.ASSIGN,
+                                ConfigurationError.VALUE_TO_ASSIGN_NOT_IN_OPTION_SET,
+                                listOf(
+                                    currentRuleUid ?: "",
+                                    ruleEffect.data() ?: "",
+                                    field.getOptionSet() ?: ""
+                                )
+                            )
+                        )
+                    }
+                    effectOption?.displayName()
                 } else {
                     ruleEffect.data()
                 }

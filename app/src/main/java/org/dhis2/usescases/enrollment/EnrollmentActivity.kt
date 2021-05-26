@@ -39,8 +39,10 @@ import org.dhis2.utils.Constants.TEI_UID
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.FileResourcesUtil
 import org.dhis2.utils.ImageUtils
+import org.dhis2.utils.RulesUtilsProviderConfigurationError
 import org.dhis2.utils.customviews.AlertBottomDialog
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
+import org.dhis2.utils.toMessage
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -454,5 +456,21 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             .setMessage(R.string.enrollment_date_edition_warning)
             .setPositiveButton(R.string.button_ok, null)
         dialog.show()
+    }
+
+    override fun displayConfigurationErrors(
+        configurationError: List<RulesUtilsProviderConfigurationError>
+    ) {
+        MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
+            .setTitle(R.string.warning_error_on_complete_title)
+            .setMessage(configurationError.toMessage(this))
+            .setPositiveButton(
+                R.string.action_close
+            ) { _, _ -> }
+            .setNegativeButton(
+                getString(R.string.action_do_not_show_again)
+            ) { _, _ -> presenter.disableConfErrorMessage() }
+            .setCancelable(false)
+            .show()
     }
 }

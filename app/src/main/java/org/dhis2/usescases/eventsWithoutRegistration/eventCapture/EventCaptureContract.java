@@ -7,6 +7,7 @@ import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Result;
+import org.dhis2.utils.RulesUtilsProviderConfigurationError;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.rules.models.RuleEffect;
@@ -70,6 +71,8 @@ public class EventCaptureContract {
         void showNavigationBar();
 
         void hideNavigationBar();
+
+        void displayConfigurationErrors(List<RulesUtilsProviderConfigurationError> configurationError);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -115,6 +118,8 @@ public class EventCaptureContract {
         boolean getCompletionPercentageVisibility();
 
         void setValueChanged(@NotNull String uid);
+
+        void disableConfErrorMessage();
     }
 
     public interface EventCaptureRepository {

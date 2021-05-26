@@ -2,6 +2,7 @@ package org.dhis2.usescases.enrollment
 
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.usescases.general.AbstractActivityContracts
+import org.dhis2.utils.RulesUtilsProviderConfigurationError
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 
 interface EnrollmentView : AbstractActivityContracts.View {
@@ -28,4 +29,5 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun hideProgress()
     fun displayTeiPicture(picturePath: String)
     fun showDateEditionWarning()
+    fun displayConfigurationErrors(configurationError: List<RulesUtilsProviderConfigurationError>)
 }
