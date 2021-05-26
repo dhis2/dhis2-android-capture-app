@@ -84,13 +84,17 @@ public class SyncMetadataWorker extends Worker {
                             .append("\n\n")
                             .append(errorStackTrace(((D2Error) e).originalException()).split("\n\t")[0])
                             .append("\n\n")
-                            .append(errorStackTrace(e).split("\n\t")[0]);
+                            .append(errorStackTrace(e).split("\n\t")[0])
+                            .append("\n\n")
+                            .append(getErrorUrl(((D2Error) e).url()));
                 } else if (e.getCause() instanceof D2Error) {
                     message.append(D2ErrorUtils.getErrorMessage(getApplicationContext(), e.getCause()))
                             .append("\n\n")
                             .append(errorStackTrace(((D2Error) e.getCause()).originalException()).split("\n\t")[0])
                             .append("\n\n")
-                            .append(e.toString().split("\n\t")[0]);
+                            .append(e.toString().split("\n\t")[0])
+                            .append("\n\n")
+                            .append(getErrorUrl(((D2Error) e.getCause()).url()));
                 } else {
                     message.append(e.toString().split("\n\t")[0]);
                 }
@@ -124,8 +128,8 @@ public class SyncMetadataWorker extends Worker {
                 .build();
     }
 
-    private String errorStackTrace(@Nullable Exception exception){
-        if(exception == null)
+    private String errorStackTrace(@Nullable Exception exception) {
+        if (exception == null)
             return "";
         Writer writer = new StringWriter();
         exception.printStackTrace(new PrintWriter(writer));
@@ -157,6 +161,13 @@ public class SyncMetadataWorker extends Worker {
         NotificationManagerCompat notificationManager =
                 NotificationManagerCompat.from(getApplicationContext());
         notificationManager.cancel(SYNC_METADATA_ID);
+    }
+
+    private String getErrorUrl(String url) {
+        if (url == null) {
+            return "";
+        }
+        return "URL: " + url;
     }
 
     public interface OnProgressUpdate {
