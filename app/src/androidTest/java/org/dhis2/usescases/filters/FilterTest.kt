@@ -4,8 +4,11 @@ import androidx.test.rule.ActivityTestRule
 import org.dhis2.common.filters.filterRobotCommon
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.syncFlow.robot.eventWithoutRegistrationRobot
+import org.dhis2.usescases.form.FormTest
+import org.dhis2.usescases.form.formRobot
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.homeRobot
+import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.junit.Rule
 import org.junit.Test
@@ -103,12 +106,16 @@ class FilterTest: BaseTest() {
             clickOnFinishAndComplete()
             pressBack()
         }
+        homeRobot {
+            openFilters()
+        }
         filterRobotCommon {
             openFilterAtPosition(2)
             selectNotSyncedState()
         }
         homeRobot {
-            checkItemsInProgram(0,"Atenatal care visit", "1")
+            checkItemsInProgram(0,"Antenatal care visit", "1")
+            checkItemsInProgram(4,"Child Programme", "0")
         }
     }
 
@@ -118,25 +125,33 @@ class FilterTest: BaseTest() {
         startActivity()
 
         homeRobot {
+            openProgramByPosition(41)
+        }
+        eventWithoutRegistrationRobot {
+            clickOnEventAtPosition(0)
+        }
+        formRobot {
+            clickOnSelectOption("ZZ TEST RULE ACTIONS A", 1,"Hide Field", 1)
+            pressBack()
+            pressBack()
+            pressBack()
+        }
+        homeRobot {
             openFilters()
         }
 
         filterRobotCommon {
-            openFilterAtPosition(0)
-            clickOnFromToDateOption()
-            selectDate(2020,3,21)
-            acceptDateSelected()
-            selectDate(2020,11,7)
-            acceptDateSelected()
             openFilterAtPosition(1)
             typeOrgUnit("OU TEST PARENT")
             clickAddOrgUnit()
             closeKeyboard()
+            openFilterAtPosition(2)
+            selectNotSyncedState()
         }
         homeRobot {
             openFilters()
-            checkItemsInProgram(4,"Child Programme", "0")
-            checkItemsInProgram(43, "XX TEST EVENT FULL", "1")
+            checkItemsInProgram(37,"TB program", "0")
+            checkItemsInProgram(41, "XX TEST EVENT FULL", "1")
         }
     }
 
