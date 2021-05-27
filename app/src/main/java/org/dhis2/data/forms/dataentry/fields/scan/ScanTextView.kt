@@ -24,6 +24,7 @@ import org.dhis2.R
 import org.dhis2.databinding.ScanTextViewAccentBinding
 import org.dhis2.databinding.ScanTextViewBinding
 import org.dhis2.usescases.qrScanner.ScanActivity
+import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.utils.ActivityResultObservable
 import org.dhis2.utils.ActivityResultObserver
 import org.dhis2.utils.ColorUtils
@@ -126,6 +127,9 @@ class ScanTextView @JvmOverloads constructor(
         val intent = Intent(context, ScanActivity::class.java)
         intent.putExtra(Constants.OPTION_SET, optionSet)
         intent.putExtra(Constants.SCAN_RENDERING_TYPE, renderingType)
+        if (context is SearchTEActivity) {
+            (context as SearchTEActivity).initSearchNeeded = false
+        }
         (context as FragmentActivity).startActivityForResult(intent, RQ_QR_SCANNER)
     }
 

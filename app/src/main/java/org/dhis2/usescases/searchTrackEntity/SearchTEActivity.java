@@ -136,7 +136,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private SearchTeiLiveAdapter liveAdapter;
     private RelationshipLiveAdapter relationshipLiveAdapter;
     private TeiMapManager teiMapManager;
-    private boolean initSearchNeeded = true;
+    public boolean initSearchNeeded = true;
     private ObjectAnimator animation = null;
     private String updateTei;
     private String updateEvent;
