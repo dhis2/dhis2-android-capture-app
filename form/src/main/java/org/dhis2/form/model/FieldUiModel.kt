@@ -1,5 +1,6 @@
 package org.dhis2.form.model
 
+import org.dhis2.form.ui.FormIntent
 import java.util.Date
 import org.dhis2.form.ui.style.FormUiModelStyle
 
@@ -58,8 +59,9 @@ interface FieldUiModel {
     interface Callback {
         fun onNext()
         fun showDialog(title: String, message: String?)
-        fun showCustomCalendar(uid: String, label: String?, date: Date)
-        fun showYearMonthDayPicker(uid: String, year: Int, month: Int, day: Int)
+        fun intent(intent: FormIntent)
+      //  fun showCustomCalendar(uid: String, label: String?, date: Date)
+      //  fun showYearMonthDayPicker(uid: String, year: Int, month: Int, day: Int)
         fun onItemAction(action: RowAction)
     }
 }

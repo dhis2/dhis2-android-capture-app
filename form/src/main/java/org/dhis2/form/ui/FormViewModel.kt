@@ -8,10 +8,15 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
@@ -29,24 +34,36 @@ class FormViewModel(
     private val _savedValue = MutableLiveData<RowAction>()
     val savedValue: LiveData<RowAction> = _savedValue
 
-    private val pendingActions = MutableSharedFlow<RowAction>()
+    private val pendingIntents = MutableSharedFlow<FormIntent>()
 
-   /* fun onItemAction(action: RowAction) = runBlocking {
-        processAction(action).collect { result ->
-            when (result.valueStoreResult) {
-                ValueStoreResult.VALUE_CHANGED -> {
-                    _savedValue.value = action
+    /* fun onItemAction(action: RowAction) = runBlocking {
+         processAction(action).collect { result ->
+             when (result.valueStoreResult) {
+                 ValueStoreResult.VALUE_CHANGED -> {
+                     _savedValue.value = action
+                 }
+                 else -> _items.value = repository.composeList()
+             }
+         }
+     }
+ 
+     private fun processAction(action: RowAction): Flow<StoreResult> = flow {
+         emit(repository.processUserAction(action))
+     }.flowOn(dispatcher) */
+
+    init {
+        viewModelScope.launch {
+            pendingIntents
+                .map {  }
+                .flowOn(dispatcher)
+                .collect {
+
                 }
-                else -> _items.value = repository.composeList()
-            }
         }
     }
 
-    private fun processAction(action: RowAction): Flow<StoreResult> = flow {
-        emit(repository.processUserAction(action))
-    }.flowOn(dispatcher) */
-
-    fun onItemAction(action: RowAction){
+    @Deprecated("Use for legacy only")
+    fun onItemAction(action: RowAction) {
         viewModelScope.launch {
             submitRowAction(action).collect {
                 when (it.valueStoreResult) {
@@ -62,4 +79,11 @@ class FormViewModel(
     private fun submitRowAction(action: RowAction): Flow<StoreResult> = flow {
         emit(repository.processUserAction(action))
     }.flowOn(dispatcher)
+
+
+    fun submitIntent(intent: FormIntent) {
+        viewModelScope.launch {
+            pendingIntents.emit(intent)
+        }
+    }
 }

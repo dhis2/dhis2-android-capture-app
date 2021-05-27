@@ -11,6 +11,7 @@ import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.FormIntent;
 import org.dhis2.form.ui.style.FormUiModelStyle;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -81,14 +82,16 @@ public abstract class AgeViewModel extends FieldViewModel {
 
     public void onShowCustomCalendar(){
         onItemClick();
-        Date date = Calendar.getInstance().getTime();
-        callback.showCustomCalendar(uid(), label(), date);
+        callback.intent(new FormIntent.OpenCustomAgeCalendar(uid(), label()));
+        //  Date date = Calendar.getInstance().getTime();
+       // callback.showCustomCalendar(uid(), label(), date);
     }
 
     public void onShowDayMonthYearPicker(){
         onItemClick();
         int[] yearMonthDay = valueToYearMonthDay();
-        callback.showYearMonthDayPicker(uid(), yearMonthDay[0], yearMonthDay[1], yearMonthDay[2]);
+        callback.intent(new FormIntent.OpenYearMonthDayAgeCalendar(uid(), yearMonthDay[0], yearMonthDay[1], yearMonthDay[2]));
+        //callback.showYearMonthDayPicker(uid(), yearMonthDay[0], yearMonthDay[1], yearMonthDay[2]);
     }
 
     private int[] valueToYearMonthDay(){

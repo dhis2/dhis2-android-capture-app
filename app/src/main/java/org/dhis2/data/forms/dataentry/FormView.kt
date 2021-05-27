@@ -28,12 +28,14 @@ import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryNonPersistenceImpl
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
+import org.dhis2.form.ui.FormIntent
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.utils.Constants
 import org.dhis2.utils.DatePickerUtils
 import org.dhis2.utils.DatePickerUtils.OnDatePickerClickListener
 import org.dhis2.utils.customviews.CustomDialog
 import timber.log.Timber
+import java.util.Calendar
 
 class FormView private constructor(
     formRepository: FormRepository,
@@ -61,7 +63,7 @@ class FormView private constructor(
         binding = DataBindingUtil.inflate(inflater, R.layout.view_form, container, false)
         binding.lifecycleOwner = this
         dataEntryHeaderHelper = DataEntryHeaderHelper(binding.headerContainer, binding.recyclerView)
-        ageDialogDelegate = AgeDialogDelegate(viewModel)
+        ageDialogDelegate = AgeDialogDelegate()
         binding.recyclerView.layoutManager =
             object : LinearLayoutManager(contextWrapper, VERTICAL, false) {
                 override fun onInterceptFocusSearch(focused: View, direction: Int): View {
@@ -108,55 +110,61 @@ class FormView private constructor(
         }
 
         binding.recyclerView.adapter = adapter
-        adapter.onShowCustomCalendar = { uid, label, date ->
-            DatePickerUtils.getDatePickerDialog(
-                requireContext(),
-                label,
-                date,
-                true,
-                object : OnDatePickerClickListener {
-                    override fun onNegativeClick() {
-                        ageDialogDelegate.handleClearInput(uid)
-                    }
 
-                    override fun onPositiveClick(datePicker: DatePicker) {
-                        ageDialogDelegate.handleDateInput(
+        adapter.onIntent = { intent ->
+            intentHandler(intent)
+        }
+
+        //Date date = Calendar.getInstance().getTime();
+        /*    adapter.onShowCustomCalendar = { uid, label, date ->
+                DatePickerUtils.getDatePickerDialog(
+                    requireContext(),
+                    label,
+                    date,
+                    true,
+                    object : OnDatePickerClickListener {
+                        override fun onNegativeClick() {
+                            ageDialogDelegate.handleClearInput(uid)
+                        }
+
+                        override fun onPositiveClick(datePicker: DatePicker) {
+                            ageDialogDelegate.handleDateInput(
+                                uid,
+                                datePicker.year,
+                                datePicker.month,
+                                datePicker.dayOfMonth
+                            )
+                        }
+                    }
+                ).show()
+            }
+
+            adapter.onShowYearMonthDayPicker = { uid, year, month, day ->
+                alertDialogView =
+                    LayoutInflater.from(requireContext()).inflate(R.layout.dialog_age, null)
+                val yearPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_year)
+                val monthPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_month)
+                val dayPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_days)
+                yearPicker.setText(year.toString())
+                monthPicker.setText(month.toString())
+                dayPicker.setText(day.toString())
+
+                AlertDialog.Builder(requireContext(), R.style.CustomDialog)
+                    .setView(alertDialogView)
+                    .setPositiveButton(R.string.action_accept) { _, _ ->
+                        ageDialogDelegate.handleYearMonthDayInput(
                             uid,
-                            datePicker.year,
-                            datePicker.month,
-                            datePicker.dayOfMonth
+                            negativeOrZero(yearPicker.text.toString()),
+                            negativeOrZero(monthPicker.text.toString()),
+                            negativeOrZero(dayPicker.text.toString())
                         )
                     }
-                }
-            ).show()
-        }
-
-        adapter.onShowYearMonthDayPicker = { uid, year, month, day ->
-            alertDialogView =
-                LayoutInflater.from(requireContext()).inflate(R.layout.dialog_age, null)
-            val yearPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_year)
-            val monthPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_month)
-            val dayPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_days)
-            yearPicker.setText(year.toString())
-            monthPicker.setText(month.toString())
-            dayPicker.setText(day.toString())
-
-            AlertDialog.Builder(requireContext(), R.style.CustomDialog)
-                .setView(alertDialogView)
-                .setPositiveButton(R.string.action_accept) { _, _ ->
-                    ageDialogDelegate.handleYearMonthDayInput(
-                        uid,
-                        negativeOrZero(yearPicker.text.toString()),
-                        negativeOrZero(monthPicker.text.toString()),
-                        negativeOrZero(dayPicker.text.toString())
-                    )
-                }
-                .setNegativeButton(R.string.clear) { _, _ ->
-                    ageDialogDelegate.handleClearInput(uid)
-                }
-                .create()
-                .show()
-        }
+                    .setNegativeButton(R.string.clear) { _, _ ->
+                        ageDialogDelegate.handleClearInput(uid)
+                    }
+                    .create()
+                    .show()
+            } */
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             binding.recyclerView.setOnScrollChangeListener { _, _, _, _, _ ->
@@ -214,10 +222,6 @@ class FormView private constructor(
             items,
             Runnable {
                 dataEntryHeaderHelper.onItemsUpdatedCallback()
-                //when (needToForceUpdate) {
-                 //   true -> adapter.notifyDataSetChanged()
-                 //   else -> dataEntryHeaderHelper.onItemsUpdatedCallback()
-               // }
             }
         )
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
@@ -251,6 +255,75 @@ class FormView private constructor(
         is ScanTextViewModel,
         is CoordinateViewModel -> true
         else -> false
+    }
+
+    private fun intentHandler(intent: FormIntent) {
+        when (intent) {
+            is FormIntent.OpenCustomAgeCalendar -> {
+                showCustomAgeCalendar(intent)
+            }
+            is FormIntent.OpenYearMonthDayAgeCalendar -> {
+                showYearMonthDayAgeCalendar(intent)
+            }
+            else -> {
+                viewModel.submitIntent(intent)
+            }
+        }
+    }
+
+    private fun showCustomAgeCalendar(intent: FormIntent.OpenCustomAgeCalendar) {
+        val date = Calendar.getInstance().time
+        DatePickerUtils.getDatePickerDialog(
+            requireContext(),
+            intent.label,
+            date,
+            true,
+            object : OnDatePickerClickListener {
+                override fun onNegativeClick() {
+                    val clearIntent = ageDialogDelegate.handleClearInputCustomCalendar(intent.uid)
+                    intentHandler(clearIntent)
+                }
+
+                override fun onPositiveClick(datePicker: DatePicker) {
+                    val dateIntent = ageDialogDelegate.handleDateInput(
+                        intent.uid,
+                        datePicker.year,
+                        datePicker.month,
+                        datePicker.dayOfMonth
+                    )
+                    intentHandler(dateIntent)
+                }
+            }
+        ).show()
+    }
+
+    private fun showYearMonthDayAgeCalendar(intent: FormIntent.OpenYearMonthDayAgeCalendar) {
+        alertDialogView =
+            LayoutInflater.from(requireContext()).inflate(R.layout.dialog_age, null)
+        val yearPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_year)
+        val monthPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_month)
+        val dayPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_days)
+        yearPicker.setText(intent.year.toString())
+        monthPicker.setText(intent.month.toString())
+        dayPicker.setText(intent.day.toString())
+
+        AlertDialog.Builder(requireContext(), R.style.CustomDialog)
+            .setView(alertDialogView)
+            .setPositiveButton(R.string.action_accept) { _, _ ->
+                val dateIntent = ageDialogDelegate.handleYearMonthDayInput(
+                    intent.uid,
+                    negativeOrZero(yearPicker.text.toString()),
+                    negativeOrZero(monthPicker.text.toString()),
+                    negativeOrZero(dayPicker.text.toString())
+                )
+                intentHandler(dateIntent)
+            }
+            .setNegativeButton(R.string.clear) { _, _ ->
+                val clearIntent = ageDialogDelegate.handleClearInputYearMonthDayCalendar(intent.uid)
+                intentHandler(clearIntent)
+            }
+            .create()
+            .show()
     }
 
     class Builder {
