@@ -590,7 +590,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     featureType,
                     true,
                     false,
-                    processor
+                    processor,
+                    fieldFactory.style()
             );
         });
     }

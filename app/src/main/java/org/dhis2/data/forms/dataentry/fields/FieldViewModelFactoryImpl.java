@@ -104,6 +104,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                                @Nullable String description, @Nullable ValueTypeDeviceRendering fieldRendering, @Nullable Integer optionCount, ObjectStyle objectStyle,
                                @Nullable String fieldMask, @Nullable LegendValue legendValue, @NonNull FlowableProcessor<RowAction> processor, List<Option> options) {
         isNull(type, "type must be supplied");
+        FormUiModelStyle style = new BasicFormUiModelStyle(colorFactory);
+
         if (searchMode)
             mandatory = false;
         if (DhisTextUtils.Companion.isNotEmpty(optionSet)) {
@@ -122,7 +124,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
         switch (type) {
             case AGE:
-                FormUiModelStyle style = new BasicFormUiModelStyle(colorFactory);
                 FieldUiModel ageViewModel = AgeViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, !searchMode, searchMode, processor, style);
                 return ageViewModel;
             case TEXT:
@@ -150,7 +151,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case DATETIME:
                 return DateTimeViewModel.create(id, label, mandatory, type, value, section, allowFutureDates, editable, description, objectStyle, !searchMode, searchMode, processor);
             case COORDINATE:
-                return CoordinateViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, FeatureType.POINT, !searchMode, searchMode, processor);
+                return CoordinateViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, FeatureType.POINT, !searchMode, searchMode, processor, style);
             case BOOLEAN:
             case TRUE_ONLY:
                 return RadioButtonViewModel.fromRawValue(id, label, type, mandatory, value, section, editable, description, objectStyle,
@@ -215,5 +216,10 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     @Override
     public FlowableProcessor<RowAction> fieldProcessor() {
         return fieldProcessor;
+    }
+
+    @Override
+    public BasicFormUiModelStyle style(){
+        return new BasicFormUiModelStyle(colorFactory);
     }
 }

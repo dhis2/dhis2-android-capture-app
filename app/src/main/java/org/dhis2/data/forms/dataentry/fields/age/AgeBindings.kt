@@ -1,99 +1,19 @@
 package org.dhis2.data.forms.dataentry.fields.age
 
-import android.R
-import android.content.res.ColorStateList
 import android.view.View
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.databinding.BindingAdapter
-import com.google.android.material.textfield.TextInputLayout
 import java.util.Calendar
 import java.util.Date
 import org.dhis2.Bindings.toDate
-import org.dhis2.form.ui.style.FormUiColorType
+import org.dhis2.data.forms.dataentry.fields.setInputStyle
 import org.dhis2.utils.DateUtils
-
-@BindingAdapter("setTextColorAgeView")
-fun setTextColorAgeView(
-    textView: TextView,
-    item: AgeViewModel
-) {
-    val color = item.style()!!.getColors()[FormUiColorType.FIELD_LABEL_TEXT]
-    color?.let {
-        textView.setTextColor(color)
-    }
-}
-
-@BindingAdapter("tintDescriptionLabel")
-fun tintDescriptionLabel(
-    imageView: ImageView,
-    item: AgeViewModel
-) {
-    val color = item.style()!!.getColors()[FormUiColorType.PRIMARY]
-    color?.let {
-        imageView.setColorFilter(color)
-    }
-}
 
 @BindingAdapter("onFocusChangeAgeView")
 fun onFocusChangesAgeView(editText: EditText, model: AgeViewModel) {
-    editText.setOnFocusChangeListener { v, hasFocus -> setEditTextUnderlineColor(editText, model) }
-}
-
-@BindingAdapter("setEditTextColor")
-fun setEditTextColor(
-    editText: EditText,
-    item: AgeViewModel
-) {
-    val color = item.style()!!.getColors()[FormUiColorType.TEXT_PRIMARY]
-    color?.let {
-        editText.setTextColor(color)
-    }
-}
-
-@BindingAdapter("setUnderlineColorEditText")
-fun setEditTextUnderlineColor(
-    editText: EditText,
-    item: AgeViewModel
-) {
-    val color = if (item.warning() != null) {
-        item.style()!!.getColors()[FormUiColorType.WARNING]
-    } else if (item.error() != null) {
-        item.style()!!.getColors()[FormUiColorType.ERROR]
-    } else {
-        item.style()!!.getColors()[FormUiColorType.TEXT_PRIMARY]
-    }
-
-    color?.let {
-        ViewCompat.setBackgroundTintList(editText, ColorStateList.valueOf(color))
-    }
-}
-
-@BindingAdapter("setTextColorHint")
-fun setTextColorHintTextInputLayout(
-    textInputLayout: TextInputLayout,
-    item: AgeViewModel
-) {
-    val color = item.style()!!.getColors()[FormUiColorType.FIELD_LABEL_TEXT]
-    color?.let {
-        val colorStateList = ColorStateList(
-            arrayOf(
-                intArrayOf(R.attr.state_focused),
-                intArrayOf(-R.attr.state_focused)
-            ),
-            intArrayOf(
-                color,
-                color
-            )
-        )
-        textInputLayout.apply {
-            defaultHintTextColor = colorStateList
-            boxBackgroundColor = color
-        }
-    }
+    editText.setOnFocusChangeListener { v, hasFocus -> editText.setInputStyle(model) }
 }
 
 @BindingAdapter("warning", "error", "isSearchMode")

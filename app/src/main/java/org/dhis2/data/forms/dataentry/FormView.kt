@@ -47,6 +47,7 @@ import org.dhis2.utils.DatePickerUtils
 import org.dhis2.utils.DatePickerUtils.OnDatePickerClickListener
 import org.dhis2.utils.customviews.CustomDialog
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
+import org.hisp.dhis.android.core.common.FeatureType
 import timber.log.Timber
 
 class FormView private constructor(
@@ -133,7 +134,8 @@ class FormView private constructor(
                         RowAction(
                             id = fieldUid,
                             value = geometry.coordinates(),
-                            type = ActionType.ON_SAVE
+                            type = ActionType.ON_SAVE,
+                            extraData = FeatureType.POINT.name
                         )
                     )
                 },

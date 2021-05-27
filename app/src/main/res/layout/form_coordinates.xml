@@ -40,6 +40,7 @@
             android:layout_height="wrap_content"
             android:text="@{item.formattedLabel}"
             app:field_edition_alpha="@{item.editable()}"
+            app:label_text_color="@{item.style()}"
             app:layout_constrainedWidth="true"
             app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintHorizontal_bias="0"
@@ -56,12 +57,12 @@
             android:layout_marginEnd="16dp"
             android:onClick="@{v -> item.onDescriptionClick()}"
             android:visibility="@{item.description()!=null?View.VISIBLE : View.GONE}"
+            app:description_icon_tint="@{item.style()}"
             app:layout_constraintBottom_toBottomOf="@+id/label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/label"
             app:layout_constraintTop_toTopOf="@+id/label"
-            app:srcCompat="@drawable/ic_info_outline"
-            app:tint="?colorPrimary" />
+            app:srcCompat="@drawable/ic_info_outline" />
 
         <LinearLayout
             android:id="@+id/fieldLayout"
@@ -78,7 +79,8 @@
                 android:layout_weight="1"
                 android:hint="@string/polygon"
                 android:theme="@style/loginInputText"
-                android:visibility="@{item.isPoint()? View.GONE : View.VISIBLE}">
+                android:visibility="@{item.isPoint()? View.GONE : View.VISIBLE}"
+                app:input_layout_style="@{item.style()}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/polygonEditText"
@@ -89,7 +91,8 @@
                     android:imeOptions="actionNext"
                     android:longClickable="false"
                     android:textSize="@dimen/form_edit_text_size"
-                    app:geometry_polygon_value="@{item.currentGeometry()}" />
+                    app:geometry_polygon_value="@{item.currentGeometry()}"
+                    app:input_style="@{item}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -100,7 +103,9 @@
                 android:layout_weight="1"
                 android:hint="@string/latitude"
                 android:theme="@style/loginInputText"
-                app:field_edition_alpha="@{item.editable()}">
+                android:visibility="@{item.isPoint()? View.VISIBLE : View.GONE}"
+                app:field_edition_alpha="@{item.editable()}"
+                app:input_layout_style="@{item.style()}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/latitude"
@@ -116,6 +121,7 @@
                     app:geometry_editor_listener="@{item}"
                     app:geometry_editor_listener_view="@{longitude}"
                     app:geometry_latitude_value="@{item.currentGeometry()}"
+                    app:input_style="@{item}"
                     app:input_text_color="@{item.backgroundTransparent}"
                     app:latitude_validator="@{item}" />
 
@@ -128,7 +134,9 @@
                 android:layout_weight="1"
                 android:hint="@string/longitude"
                 android:theme="@style/loginInputText"
-                app:field_edition_alpha="@{item.editable()}">
+                android:visibility="@{item.isPoint()? View.VISIBLE : View.GONE}"
+                app:field_edition_alpha="@{item.editable()}"
+                app:input_layout_style="@{item.style()}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/longitude"
@@ -144,6 +152,7 @@
                     app:geometry_editor_listener="@{item}"
                     app:geometry_editor_listener_view="@{latitude}"
                     app:geometry_longitude_value="@{item.currentGeometry()}"
+                    app:input_style="@{item}"
                     app:input_text_color="@{item.backgroundTransparent}"
                     app:longitude_validator="@{item}" />
 
@@ -170,7 +179,6 @@
                 android:enabled="@{item.editable()}"
                 android:onClick="@{()->item.requestMapLocation()}"
                 android:padding="8dp"
-                android:visibility="@{item.isPoint() ? View.VISIBLE : View.GONE}"
                 app:field_edition_alpha="@{item.editable()}"
                 app:srcCompat="@drawable/ic_map"
                 tools:ignore="ContentDescription" />

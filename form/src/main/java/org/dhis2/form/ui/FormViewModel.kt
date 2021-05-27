@@ -59,7 +59,8 @@ class FormViewModel(
                 RowAction(
                     id = fieldUid,
                     value = geometryCoordinates,
-                    type = ActionType.ON_SAVE
+                    type = ActionType.ON_SAVE,
+                    extraData = featureType
                 )
             )
         }
