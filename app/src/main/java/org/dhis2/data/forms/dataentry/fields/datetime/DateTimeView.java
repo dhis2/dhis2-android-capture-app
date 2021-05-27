@@ -124,17 +124,14 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         updateDeleteVisibility(clearButton);
     }
 
-    public void setWarning(String msg) {
-        inputLayout.setErrorTextAppearance(R.style.warning_appearance);
-        inputLayout.setError(msg);
-    }
-
-    public void setError(String msg) {
-        if (msg != null) {
+    public void setWarningErrorMessage(String warning, String error) {
+        if (error != null) {
             inputLayout.setErrorTextAppearance(R.style.error_appearance);
-            inputLayout.setError(msg);
+            inputLayout.setError(error);
             editText.setText(null);
-            editText.requestFocus();
+        } else if (warning != null) {
+            inputLayout.setErrorTextAppearance(R.style.warning_appearance);
+            inputLayout.setError(warning);
         }
     }
 
@@ -290,9 +287,8 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         setLabel(viewModel.getFormattedLabel());
         setDescription(viewModel.description());
         initData(viewModel.value());
-        setError(viewModel.error());
+        setWarningErrorMessage(viewModel.warning(), viewModel.error());
         setAllowFutureDates(viewModel.allowFutureDate());
-        setWarning(viewModel.warning());
         setEditable(viewModel.editable());
         setDateListener(viewModel::onDateSelected);
     }
