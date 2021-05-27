@@ -213,10 +213,11 @@ class FormView private constructor(
         adapter.swap(
             items,
             Runnable {
-                when (needToForceUpdate) {
-                    true -> adapter.notifyDataSetChanged()
-                    else -> dataEntryHeaderHelper.onItemsUpdatedCallback()
-                }
+                dataEntryHeaderHelper.onItemsUpdatedCallback()
+                //when (needToForceUpdate) {
+                 //   true -> adapter.notifyDataSetChanged()
+                 //   else -> dataEntryHeaderHelper.onItemsUpdatedCallback()
+               // }
             }
         )
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
@@ -252,7 +253,7 @@ class FormView private constructor(
         else -> false
     }
 
-    class Builder() {
+    class Builder {
         private var persistentRepository: FormRepository? = null
         private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
         private var needToForceUpdate: Boolean = false
