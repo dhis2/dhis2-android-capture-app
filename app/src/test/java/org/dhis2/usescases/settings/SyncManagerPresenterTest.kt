@@ -10,6 +10,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
@@ -36,6 +37,8 @@ class SyncManagerPresenterTest {
     private val preferencesProvider: PreferenceProvider = mock()
     private val workManagerController: WorkManagerController = mock()
     private val settingsRepository: SettingsRepository = mock()
+    private val userManager: UserManager =
+        Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val view: SyncManagerContracts.View = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
     private val errorMapper: ErrorModelMapper = mock()
@@ -50,6 +53,7 @@ class SyncManagerPresenterTest {
             preferencesProvider,
             workManagerController,
             settingsRepository,
+            userManager,
             view,
             analyticsHelper,
             errorMapper,
@@ -60,7 +64,9 @@ class SyncManagerPresenterTest {
     @Test
     fun `Should init settings values`() {
         presenter.init()
-        whenever(settingsRepository.metaSync()) doReturn Single.just(mockedMetaViewModel())
+        whenever(
+            settingsRepository.metaSync(userManager)
+        ) doReturn Single.just(mockedMetaViewModel())
         whenever(settingsRepository.dataSync()) doReturn Single.just(mockedDataViewModel())
         whenever(settingsRepository.syncParameters()) doReturn Single.just(mockedParamsViewModel())
         whenever(settingsRepository.reservedValues()) doReturn Single.just(
@@ -129,7 +135,7 @@ class SyncManagerPresenterTest {
 
     @Test
     fun `Should return metadata period setting`() {
-        whenever(settingsRepository.metaSync()) doReturn Single.just(
+        whenever(settingsRepository.metaSync(userManager)) doReturn Single.just(
             MetadataSettingsViewModel(
                 100,
                 "last date",

@@ -5,6 +5,7 @@ import androidx.work.ExistingWorkPolicy;
 
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.server.UserManager;
 import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.data.service.workManager.WorkerItem;
 import org.dhis2.data.service.workManager.WorkerType;
@@ -45,6 +46,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     private final SchedulerProvider schedulerProvider;
     private final PreferenceProvider preferenceProvider;
     private final SettingsRepository settingsRepository;
+    private final UserManager userManager;
     private final AnalyticsHelper analyticsHelper;
     private final ErrorModelMapper errorMapper;
     private CompositeDisposable compositeDisposable;
@@ -61,6 +63,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
             PreferenceProvider preferenceProvider,
             WorkManagerController workManagerController,
             SettingsRepository settingsRepository,
+            UserManager userManager,
             SyncManagerContracts.View view,
             AnalyticsHelper analyticsHelper,
             ErrorModelMapper errorMapper,
@@ -68,6 +71,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         this.view = view;
         this.d2 = d2;
         this.settingsRepository = settingsRepository;
+        this.userManager = userManager;
         this.schedulerProvider = schedulerProvider;
         this.preferenceProvider = preferenceProvider;
         this.gatewayValidator = gatewayValidator;
@@ -90,7 +94,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 checkData.startWith(true)
                         .flatMapSingle(start ->
                                 Single.zip(
-                                        settingsRepository.metaSync(),
+                                        settingsRepository.metaSync(userManager),
                                         settingsRepository.dataSync(),
                                         settingsRepository.syncParameters(),
                                         settingsRepository.reservedValues(),
@@ -113,7 +117,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public int getMetadataPeriodSetting() {
-        return settingsRepository.metaSync()
+        return settingsRepository.metaSync(userManager)
                 .blockingGet()
                 .getMetadataSyncPeriod();
     }

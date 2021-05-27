@@ -1,4 +1,4 @@
-package org.dhis2.usescases.sync
+package org.dhis2.data.server
 
 import javax.inject.Inject
 import org.dhis2.R

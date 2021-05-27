@@ -101,7 +101,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 this,
                 intent.getStringExtra(ENROLLMENT_UID_EXTRA),
                 intent.getStringExtra(PROGRAM_UID_EXTRA),
-                EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
+                EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA)),
+                context
             )
         ).inject(this)
 

@@ -1,6 +1,7 @@
 package org.dhis2.form.model
 
 import java.util.Date
+import org.dhis2.form.ui.style.FormUiModelStyle
 
 interface FieldUiModel {
 
@@ -23,6 +24,8 @@ interface FieldUiModel {
     val label: String
 
     val programStageSection: String?
+
+    val style: FormUiModelStyle?
 
     fun setCallback(callback: Callback)
 

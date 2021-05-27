@@ -10,8 +10,10 @@ import org.hisp.dhis.android.core.user.User;
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode;
 import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig;
 
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import kotlin.Pair;
 
 public interface UserManager {
 
@@ -37,4 +39,9 @@ public interface UserManager {
     Single<String> userName();
 
     D2 getD2();
+
+    @NonNull
+    Single<Pair<String, Integer>> getTheme();
+
+    Completable logout();
 }
