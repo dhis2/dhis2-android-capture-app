@@ -30,6 +30,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.FormViewModel
+import org.dhis2.form.ui.RecyclerViewUiEvents
 import org.dhis2.utils.Constants
 import org.dhis2.utils.DatePickerUtils
 import org.dhis2.utils.DatePickerUtils.OnDatePickerClickListener
@@ -83,17 +84,6 @@ class FormView private constructor(
         super.onViewCreated(view, savedInstanceState)
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
         adapter = DataEntryAdapter(needToForceUpdate)
-        adapter.didItemShowDialog = { title, message ->
-            CustomDialog(
-                requireContext(),
-                title,
-                message ?: requireContext().getString(R.string.empty_description),
-                requireContext().getString(R.string.action_close),
-                null,
-                Constants.DESCRIPTION_DIALOG,
-                null
-            ).show()
-        }
         adapter.onNextClicked = { position ->
             val viewHolder = binding.recyclerView.findViewHolderForLayoutPosition(position + 1)
             if (viewHolder == null) {
@@ -113,6 +103,10 @@ class FormView private constructor(
 
         adapter.onIntent = { intent ->
             intentHandler(intent)
+        }
+
+        adapter.onRecyclerViewUiEvents = { uiEvent ->
+            uiEventHandler(uiEvent)
         }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -152,6 +146,14 @@ class FormView private constructor(
                 render(items)
             }
         )
+    }
+
+    private fun uiEventHandler(uiEvent: RecyclerViewUiEvents) {
+        when (uiEvent) {
+            is RecyclerViewUiEvents.OpenCustomAgeCalendar -> showCustomAgeCalendar(uiEvent)
+            is RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar -> showYearMonthDayAgeCalendar(uiEvent)
+            is RecyclerViewUiEvents.ShowDescriptionLabelDialog -> showDescriptionLabelDialog(uiEvent)
+        }
     }
 
     fun render(items: List<FieldUiModel>) {
@@ -207,20 +209,10 @@ class FormView private constructor(
     }
 
     private fun intentHandler(intent: FormIntent) {
-        when (intent) {
-            is FormIntent.OpenCustomAgeCalendar -> {
-                showCustomAgeCalendar(intent)
-            }
-            is FormIntent.OpenYearMonthDayAgeCalendar -> {
-                showYearMonthDayAgeCalendar(intent)
-            }
-            else -> {
-                viewModel.submitIntent(intent)
-            }
-        }
+        viewModel.submitIntent(intent)
     }
 
-    private fun showCustomAgeCalendar(intent: FormIntent.OpenCustomAgeCalendar) {
+    private fun showCustomAgeCalendar(intent: RecyclerViewUiEvents.OpenCustomAgeCalendar) {
         val date = Calendar.getInstance().time
         DatePickerUtils.getDatePickerDialog(
             requireContext(),
@@ -246,7 +238,7 @@ class FormView private constructor(
         ).show()
     }
 
-    private fun showYearMonthDayAgeCalendar(intent: FormIntent.OpenYearMonthDayAgeCalendar) {
+    private fun showYearMonthDayAgeCalendar(intent: RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar) {
         alertDialogView =
             LayoutInflater.from(requireContext()).inflate(R.layout.dialog_age, null)
         val yearPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_year)
@@ -273,6 +265,18 @@ class FormView private constructor(
             }
             .create()
             .show()
+    }
+
+    private fun showDescriptionLabelDialog(intent: RecyclerViewUiEvents.ShowDescriptionLabelDialog) {
+        CustomDialog(
+            requireContext(),
+            intent.title,
+            intent.message ?: requireContext().getString(R.string.empty_description),
+            requireContext().getString(R.string.action_close),
+            null,
+            Constants.DESCRIPTION_DIALOG,
+            null
+        ).show()
     }
 
     class Builder {

@@ -16,6 +16,7 @@ import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.DataEntryDiff
+import org.dhis2.form.ui.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 
 class DataEntryAdapter(private val searchStyle: Boolean) :
@@ -24,12 +25,10 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
 
     private val refactoredViews = intArrayOf(R.layout.form_age_custom)
 
-    var didItemShowDialog: ((title: String, message: String?) -> Unit)? = null
     var onNextClicked: ((position: Int) -> Unit)? = null
-    var onShowCustomCalendar: ((uid: String, label: String?, date: Date) -> Unit)? = null
-    var onShowYearMonthDayPicker: ((uid: String, year: Int, month: Int, day: Int) -> Unit)? = null
     var onItemAction: ((action: RowAction) -> Unit)? = null
     var onIntent: ((intent: FormIntent) -> Unit)? = null
+    var onRecyclerViewUiEvents: ((uiEvent: RecyclerViewUiEvents) -> Unit)? = null
 
     private val sectionHandler = SectionHandler()
     var sectionPositions: MutableMap<String, Int> = LinkedHashMap()
@@ -128,27 +127,15 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
         }
     }
 
-    /* override fun showYearMonthDayPicker(uid: String, year: Int, month: Int, day: Int) {
-         onShowYearMonthDayPicker?.let {
-             it(uid, year, month, day)
-         }
-     }
-
-     override fun showCustomCalendar(uid: String, label: String?, date: Date) {
-         onShowCustomCalendar?.let {
-             it(uid, label, date)
-         }
-     } */
-
     override fun intent(intent: FormIntent) {
         onIntent?.let {
             it(intent)
         }
     }
 
-    override fun onShowDialog(title: String, message: String?) {
-        didItemShowDialog?.let { action ->
-            action(title, message)
+    override fun recyclerViewEvent(uiEvent: RecyclerViewUiEvents) {
+        onRecyclerViewUiEvents?.let {
+            it(uiEvent)
         }
     }
 

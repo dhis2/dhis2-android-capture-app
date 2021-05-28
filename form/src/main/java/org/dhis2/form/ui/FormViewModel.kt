@@ -51,19 +51,18 @@ class FormViewModel(
     }
 
     private fun createRowActionStorePair(it: FormIntent): Pair<RowAction, StoreResult> {
-        val rowAction = rowActionFromIntent(it)!!
+        val rowAction = rowActionFromIntent(it)
         val result = repository.processUserAction(rowAction)
         return Pair(rowAction, result)
     }
 
-    private fun rowActionFromIntent(intent: FormIntent): RowAction? {
+    private fun rowActionFromIntent(intent: FormIntent): RowAction {
         return when (intent) {
             is FormIntent.SelectDateFromAgeCalendar -> createRowAction(
                 intent.uid,
                 intent.date
             )
             is FormIntent.ClearDateFromAgeCalendar -> createRowAction(intent.uid, null)
-            else -> null
         }
     }
 

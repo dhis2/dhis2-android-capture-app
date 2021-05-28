@@ -11,6 +11,7 @@ import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.RecyclerViewUiEvents;
 import org.dhis2.form.ui.intent.FormIntent;
 import org.dhis2.form.ui.style.FormUiModelStyle;
 import org.dhis2.utils.DateUtils;
@@ -77,21 +78,19 @@ public abstract class AgeViewModel extends FieldViewModel {
     public abstract Boolean isBackgroundTransparent();
 
     public void onDescriptionClick(){
-        callback.showDialog(label(),description());
+      //  callback.showDialog(label(),description());
+        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.ShowDescriptionLabelDialog(label(), description()));
     }
 
     public void onShowCustomCalendar(){
         onItemClick();
-        callback.intent(new FormIntent.OpenCustomAgeCalendar(uid(), label()));
-        //  Date date = Calendar.getInstance().getTime();
-       // callback.showCustomCalendar(uid(), label(), date);
+        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.OpenCustomAgeCalendar(uid(), label()));
     }
 
     public void onShowDayMonthYearPicker(){
         onItemClick();
         int[] yearMonthDay = valueToYearMonthDay();
-        callback.intent(new FormIntent.OpenYearMonthDayAgeCalendar(uid(), yearMonthDay[0], yearMonthDay[1], yearMonthDay[2]));
-        //callback.showYearMonthDayPicker(uid(), yearMonthDay[0], yearMonthDay[1], yearMonthDay[2]);
+        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar(uid(), yearMonthDay[0], yearMonthDay[1], yearMonthDay[2]));
     }
 
     private int[] valueToYearMonthDay(){

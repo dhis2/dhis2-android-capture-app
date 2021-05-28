@@ -1,5 +1,6 @@
 package org.dhis2.form.model
 
+import org.dhis2.form.ui.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiModelStyle
 
@@ -57,10 +58,8 @@ interface FieldUiModel {
 
     interface Callback {
         fun onNext()
-        fun showDialog(title: String, message: String?)
         fun intent(intent: FormIntent)
-      //  fun showCustomCalendar(uid: String, label: String?, date: Date)
-      //  fun showYearMonthDayPicker(uid: String, year: Int, month: Int, day: Int)
+        fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents)
         fun onItemAction(action: RowAction)
     }
 }
