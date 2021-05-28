@@ -10,11 +10,9 @@ import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.RowAction;
-import org.dhis2.form.ui.FormIntent;
+import org.dhis2.form.ui.intent.FormIntent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Date;
 
 public class FormViewHolder extends RecyclerView.ViewHolder {
 

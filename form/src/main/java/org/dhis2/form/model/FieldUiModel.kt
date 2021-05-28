@@ -1,7 +1,6 @@
 package org.dhis2.form.model
 
-import org.dhis2.form.ui.FormIntent
-import java.util.Date
+import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiModelStyle
 
 interface FieldUiModel {

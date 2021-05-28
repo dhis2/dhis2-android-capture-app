@@ -1,11 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.age
 
 import java.util.Calendar
-import java.util.Date
-import org.dhis2.form.model.ActionType
-import org.dhis2.form.model.RowAction
-import org.dhis2.form.ui.FormIntent
-import org.dhis2.form.ui.FormViewModel
+import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.utils.DateUtils
 
 class AgeDialogDelegate() {
@@ -15,7 +11,7 @@ class AgeDialogDelegate() {
         year: Int,
         month: Int,
         day: Int
-    ): FormIntent{
+    ): FormIntent {
         val currentCalendar = Calendar.getInstance()
         val ageDate = with(currentCalendar) {
             set(Calendar.YEAR, year)
@@ -30,7 +26,7 @@ class AgeDialogDelegate() {
         val date = if (ageDate == null) null else DateUtils.oldUiDateFormat()
             .format(ageDate)
 
-        return FormIntent.SelectDateFromCustomAgeCalendar(uid, date)
+        return FormIntent.SelectDateFromAgeCalendar(uid, date)
         //createAndPushRowActionWithValue(uid, ageDate)
     }
 
@@ -54,7 +50,7 @@ class AgeDialogDelegate() {
         val date = if (ageDate == null) null else DateUtils.oldUiDateFormat()
             .format(ageDate)
 
-        return FormIntent.SelectDateFromYearMonthDayAgeCalendar(uid, date)
+        return FormIntent.SelectDateFromAgeCalendar(uid, date)
         //  createAndPushRowActionWithValue(uid, ageDate)
     }
 
@@ -72,23 +68,4 @@ class AgeDialogDelegate() {
         )
         viewModel.onItemAction(action)
     } */
-
-    fun handleClearInputCustomCalendar(uid: String): FormIntent {
-        return FormIntent.SelectDateFromCustomAgeCalendar(uid, null)
-    /*    val action = RowAction(
-            uid,
-            null,
-            false,
-            null,
-            null,
-            null,
-            null,
-            ActionType.ON_SAVE
-        )
-        viewModel.onItemAction(action) */
-    }
-
-    fun handleClearInputYearMonthDayCalendar(uid: String): FormIntent {
-        return FormIntent.SelectDateFromYearMonthDayAgeCalendar(uid, null)
-    }
 }

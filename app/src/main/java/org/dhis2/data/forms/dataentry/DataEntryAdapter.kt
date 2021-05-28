@@ -16,7 +16,7 @@ import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.DataEntryDiff
-import org.dhis2.form.ui.FormIntent
+import org.dhis2.form.ui.intent.FormIntent
 
 class DataEntryAdapter(private val searchStyle: Boolean) :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),

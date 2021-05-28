@@ -28,7 +28,7 @@ import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryNonPersistenceImpl
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
-import org.dhis2.form.ui.FormIntent
+import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.utils.Constants
 import org.dhis2.utils.DatePickerUtils
@@ -114,57 +114,6 @@ class FormView private constructor(
         adapter.onIntent = { intent ->
             intentHandler(intent)
         }
-
-        //Date date = Calendar.getInstance().getTime();
-        /*    adapter.onShowCustomCalendar = { uid, label, date ->
-                DatePickerUtils.getDatePickerDialog(
-                    requireContext(),
-                    label,
-                    date,
-                    true,
-                    object : OnDatePickerClickListener {
-                        override fun onNegativeClick() {
-                            ageDialogDelegate.handleClearInput(uid)
-                        }
-
-                        override fun onPositiveClick(datePicker: DatePicker) {
-                            ageDialogDelegate.handleDateInput(
-                                uid,
-                                datePicker.year,
-                                datePicker.month,
-                                datePicker.dayOfMonth
-                            )
-                        }
-                    }
-                ).show()
-            }
-
-            adapter.onShowYearMonthDayPicker = { uid, year, month, day ->
-                alertDialogView =
-                    LayoutInflater.from(requireContext()).inflate(R.layout.dialog_age, null)
-                val yearPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_year)
-                val monthPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_month)
-                val dayPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_days)
-                yearPicker.setText(year.toString())
-                monthPicker.setText(month.toString())
-                dayPicker.setText(day.toString())
-
-                AlertDialog.Builder(requireContext(), R.style.CustomDialog)
-                    .setView(alertDialogView)
-                    .setPositiveButton(R.string.action_accept) { _, _ ->
-                        ageDialogDelegate.handleYearMonthDayInput(
-                            uid,
-                            negativeOrZero(yearPicker.text.toString()),
-                            negativeOrZero(monthPicker.text.toString()),
-                            negativeOrZero(dayPicker.text.toString())
-                        )
-                    }
-                    .setNegativeButton(R.string.clear) { _, _ ->
-                        ageDialogDelegate.handleClearInput(uid)
-                    }
-                    .create()
-                    .show()
-            } */
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             binding.recyclerView.setOnScrollChangeListener { _, _, _, _, _ ->
@@ -280,7 +229,7 @@ class FormView private constructor(
             true,
             object : OnDatePickerClickListener {
                 override fun onNegativeClick() {
-                    val clearIntent = ageDialogDelegate.handleClearInputCustomCalendar(intent.uid)
+                    val clearIntent = FormIntent.ClearDateFromAgeCalendar(intent.uid)
                     intentHandler(clearIntent)
                 }
 
@@ -319,7 +268,7 @@ class FormView private constructor(
                 intentHandler(dateIntent)
             }
             .setNegativeButton(R.string.clear) { _, _ ->
-                val clearIntent = ageDialogDelegate.handleClearInputYearMonthDayCalendar(intent.uid)
+                val clearIntent = FormIntent.ClearDateFromAgeCalendar(intent.uid)
                 intentHandler(clearIntent)
             }
             .create()

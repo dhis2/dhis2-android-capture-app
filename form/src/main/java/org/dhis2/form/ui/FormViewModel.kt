@@ -8,20 +8,18 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.dhis2.form.data.FormRepository
+import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.form.ui.intent.FormIntent
 
 class FormViewModel(
     private val repository: FormRepository,
@@ -36,29 +34,55 @@ class FormViewModel(
 
     private val pendingIntents = MutableSharedFlow<FormIntent>()
 
-    /* fun onItemAction(action: RowAction) = runBlocking {
-         processAction(action).collect { result ->
-             when (result.valueStoreResult) {
-                 ValueStoreResult.VALUE_CHANGED -> {
-                     _savedValue.value = action
-                 }
-                 else -> _items.value = repository.composeList()
-             }
-         }
-     }
- 
-     private fun processAction(action: RowAction): Flow<StoreResult> = flow {
-         emit(repository.processUserAction(action))
-     }.flowOn(dispatcher) */
-
     init {
         viewModelScope.launch {
             pendingIntents
-                .map {  }
+                .map { createRowActionStorePair(it) }
                 .flowOn(dispatcher)
                 .collect {
-
+                    when (it.second.valueStoreResult) {
+                        ValueStoreResult.VALUE_CHANGED -> {
+                            _savedValue.value = it.first
+                        }
+                        else -> _items.value = repository.composeList()
+                    }
                 }
+        }
+    }
+
+    private fun createRowActionStorePair(it: FormIntent): Pair<RowAction, StoreResult> {
+        val rowAction = rowActionFromIntent(it)!!
+        val result = repository.processUserAction(rowAction)
+        return Pair(rowAction, result)
+    }
+
+    private fun rowActionFromIntent(intent: FormIntent): RowAction? {
+        return when (intent) {
+            is FormIntent.SelectDateFromAgeCalendar -> createRowAction(
+                intent.uid,
+                intent.date
+            )
+            is FormIntent.ClearDateFromAgeCalendar -> createRowAction(intent.uid, null)
+            else -> null
+        }
+    }
+
+    private fun createRowAction(uid: String, date: String?): RowAction {
+        return RowAction(
+            uid,
+            date,
+            false,
+            null,
+            null,
+            null,
+            null,
+            ActionType.ON_SAVE
+        )
+    }
+
+    fun submitIntent(intent: FormIntent) {
+        viewModelScope.launch {
+            pendingIntents.emit(intent)
         }
     }
 
@@ -76,14 +100,9 @@ class FormViewModel(
         }
     }
 
+    @Deprecated("Use for legacy only")
     private fun submitRowAction(action: RowAction): Flow<StoreResult> = flow {
         emit(repository.processUserAction(action))
     }.flowOn(dispatcher)
-
-
-    fun submitIntent(intent: FormIntent) {
-        viewModelScope.launch {
-            pendingIntents.emit(intent)
-        }
-    }
 }
+
