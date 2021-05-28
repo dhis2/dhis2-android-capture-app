@@ -4,7 +4,7 @@ import java.util.Calendar
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.utils.DateUtils
 
-class AgeDialogDelegate() {
+class AgeDialogDelegate {
 
     fun handleDateInput(
         uid: String,
@@ -27,7 +27,6 @@ class AgeDialogDelegate() {
             .format(ageDate)
 
         return FormIntent.SelectDateFromAgeCalendar(uid, date)
-        //createAndPushRowActionWithValue(uid, ageDate)
     }
 
     fun handleYearMonthDayInput(
@@ -51,21 +50,5 @@ class AgeDialogDelegate() {
             .format(ageDate)
 
         return FormIntent.SelectDateFromAgeCalendar(uid, date)
-        //  createAndPushRowActionWithValue(uid, ageDate)
     }
-
- /*   private fun createAndPushRowActionWithValue(uid: String, ageDate: Date?) {
-        val action = RowAction(
-            uid,
-            if (ageDate == null) null else DateUtils.oldUiDateFormat()
-                .format(ageDate),
-            false,
-            null,
-            null,
-            null,
-            null,
-            ActionType.ON_SAVE
-        )
-        viewModel.onItemAction(action)
-    } */
 }

@@ -32,11 +32,12 @@ class FormViewModel(
     private val _savedValue = MutableLiveData<RowAction>()
     val savedValue: LiveData<RowAction> = _savedValue
 
-    private val pendingIntents = MutableSharedFlow<FormIntent>()
+    private val _pendingIntents = MutableSharedFlow<FormIntent>()
+    private val pendingIntents = _pendingIntents
 
     init {
         viewModelScope.launch {
-            pendingIntents
+            _pendingIntents
                 .map { createRowActionStorePair(it) }
                 .flowOn(dispatcher)
                 .collect {
@@ -81,7 +82,7 @@ class FormViewModel(
 
     fun submitIntent(intent: FormIntent) {
         viewModelScope.launch {
-            pendingIntents.emit(intent)
+            _pendingIntents.emit(intent)
         }
     }
 
@@ -104,4 +105,3 @@ class FormViewModel(
         emit(repository.processUserAction(action))
     }.flowOn(dispatcher)
 }
-

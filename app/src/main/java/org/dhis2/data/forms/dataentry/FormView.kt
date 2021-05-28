@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
+import java.util.Calendar
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.age.AgeDialogDelegate
 import org.dhis2.data.forms.dataentry.fields.age.negativeOrZero
@@ -36,7 +37,6 @@ import org.dhis2.utils.DatePickerUtils
 import org.dhis2.utils.DatePickerUtils.OnDatePickerClickListener
 import org.dhis2.utils.customviews.CustomDialog
 import timber.log.Timber
-import java.util.Calendar
 
 class FormView private constructor(
     formRepository: FormRepository,
@@ -151,8 +151,12 @@ class FormView private constructor(
     private fun uiEventHandler(uiEvent: RecyclerViewUiEvents) {
         when (uiEvent) {
             is RecyclerViewUiEvents.OpenCustomAgeCalendar -> showCustomAgeCalendar(uiEvent)
-            is RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar -> showYearMonthDayAgeCalendar(uiEvent)
-            is RecyclerViewUiEvents.ShowDescriptionLabelDialog -> showDescriptionLabelDialog(uiEvent)
+            is RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar -> showYearMonthDayAgeCalendar(
+                uiEvent
+            )
+            is RecyclerViewUiEvents.ShowDescriptionLabelDialog -> showDescriptionLabelDialog(
+                uiEvent
+            )
         }
     }
 
@@ -238,7 +242,9 @@ class FormView private constructor(
         ).show()
     }
 
-    private fun showYearMonthDayAgeCalendar(intent: RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar) {
+    private fun showYearMonthDayAgeCalendar(
+        intent: RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar
+    ) {
         alertDialogView =
             LayoutInflater.from(requireContext()).inflate(R.layout.dialog_age, null)
         val yearPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_year)
@@ -267,7 +273,9 @@ class FormView private constructor(
             .show()
     }
 
-    private fun showDescriptionLabelDialog(intent: RecyclerViewUiEvents.ShowDescriptionLabelDialog) {
+    private fun showDescriptionLabelDialog(
+        intent: RecyclerViewUiEvents.ShowDescriptionLabelDialog
+    ) {
         CustomDialog(
             requireContext(),
             intent.title,
