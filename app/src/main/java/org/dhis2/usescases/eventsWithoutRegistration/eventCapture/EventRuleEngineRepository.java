@@ -68,10 +68,12 @@ public final class EventRuleEngineRepository implements RuleEngineRepository {
                                         Flowable.fromCallable(
                                                 ruleEngine.evaluate(
                                                         eventBuilder.dataValues(dataValues).build()
-                                                )))
-                                .map(Result::success)
-                )
-                .doOnError(error -> Result.failure(new Exception(error)));
+                                                ))
+                                                .map(Result::success)
+                                                .onErrorReturn(error->Result.failure(new Exception(error)))
+
+                                )
+                );
     }
 
     @NonNull

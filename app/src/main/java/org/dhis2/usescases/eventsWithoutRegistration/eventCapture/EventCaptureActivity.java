@@ -34,12 +34,15 @@ import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.ImageUtils;
+import org.dhis2.utils.RuleUtilsProviderResultKt;
+import org.dhis2.utils.RulesUtilsProviderConfigurationError;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog;
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
 
 import java.io.File;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -529,5 +532,19 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void hideNavigationBar() {
         binding.navigationBar.hide();
+    }
+
+    @Override
+    public void displayConfigurationErrors(List<RulesUtilsProviderConfigurationError> configurationError) {
+        new MaterialAlertDialogBuilder(this,R.style.DhisMaterialDialog)
+                .setTitle(R.string.warning_on_complete_title)
+                .setMessage(RuleUtilsProviderResultKt.toMessage(configurationError,this))
+                .setPositiveButton(R.string.action_close, (dialogInterface, i) -> {
+                })
+                .setNegativeButton(R.string.action_do_not_show_again, (dialogInterface, i) -> {
+                    presenter.disableConfErrorMessage();
+                })
+                .setCancelable(false)
+                .show();
     }
 }
