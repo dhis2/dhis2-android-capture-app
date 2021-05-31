@@ -7,9 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.core.content.ContextCompat
 import androidx.core.widget.CompoundButtonCompat
-import androidx.core.widget.ImageViewCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -23,7 +21,6 @@ import org.dhis2.uicomponents.map.layer.types.FieldMapLayer
 import org.dhis2.uicomponents.map.layer.types.HEATMAP_ICON
 import org.dhis2.uicomponents.map.layer.types.HeatmapMapLayer
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
-import org.dhis2.uicomponents.map.layer.types.SatelliteMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiEventMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
 import org.dhis2.uicomponents.map.managers.EventMapManager
@@ -47,7 +44,7 @@ class MapLayerDialog(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_map_layer, container, false)
         binding.baseMapCarousel.adapter = BasemapAdapter(mapManager.mapLayerManager)
         binding.acceptButton.setTextColor(
@@ -120,14 +117,14 @@ class MapLayerDialog(
                 is TeiMapLayer -> layerMap["TEI"]?.add(
                     addCheckBox(
                         source,
-                        context!!.getString(R.string.dialog_layer_tei_coordinates),
+                        requireContext().getString(R.string.dialog_layer_tei_coordinates),
                         MapLayerManager.TEI_ICON_ID
                     )
                 )
                 is EnrollmentMapLayer -> layerMap["ENROLLMENT"]?.add(
                     addCheckBox(
                         source,
-                        context!!.getString(R.string.dialog_layer_enrollment_coordinates),
+                        requireContext().getString(R.string.dialog_layer_enrollment_coordinates),
                         MapLayerManager.ENROLLMENT_ICON_ID
                     )
                 )
@@ -140,27 +137,21 @@ class MapLayerDialog(
                 is HeatmapMapLayer -> layerMap["HEATMAP"]?.add(
                     addCheckBox(
                         source,
-                        context!!.getString(R.string.dialog_layer_heatmap),
+                        requireContext().getString(R.string.dialog_layer_heatmap),
                         HEATMAP_ICON
-                    )
-                )
-                is SatelliteMapLayer -> layerMap["SATELLITE"]?.add(
-                    addCheckBox(
-                        source,
-                        context!!.getString(R.string.dialog_layer_satellite)
                     )
                 )
                 is RelationshipMapLayer -> layerMap["RELATIONSHIP"]?.add(
                     addCheckBox(
                         source,
                         null,
-                        RELATIONSHIP_ICON
+                        "${RELATIONSHIP_ICON}_$source"
                     )
                 )
                 is EventMapLayer -> layerMap["EVENT"]?.add(
                     addCheckBox(
                         source,
-                        context!!.getString(R.string.dialog_layer_event),
+                        requireContext().getString(R.string.dialog_layer_event),
                         EventMapManager.ICON_ID
                     )
                 )
@@ -184,9 +175,9 @@ class MapLayerDialog(
 
     private fun initListeners() {
         binding.acceptButton.setOnClickListener {
-            layerVisibility.filterKeys { it != LayerType.SATELLITE_LAYER.toString() }.forEach {
-                mapManager.mapLayerManager.handleLayer(it.key, it.value)
-            }
+            mapManager.carouselAdapter?.updateLayers(
+                layerVisibility, mapManager.mapLayerManager.mapLayers
+            )
             dismiss()
         }
     }
@@ -211,26 +202,12 @@ class MapLayerDialog(
                     )
                 )
                 setOnCheckedChangeListener { _, isChecked ->
-                    if (source == LayerType.SATELLITE_LAYER.toString()) {
-                        mapManager.mapLayerManager.handleLayer(source, isChecked)
-                    }
+                    mapManager.mapLayerManager.handleLayer(source, isChecked)
                     layerVisibility[source] = isChecked
                 }
             }
             image?.let {
-                if (it == RELATIONSHIP_ICON &&
-                    mapManager.mapLayerManager.relationshipUsedColors[source] != null
-                ) {
-                    layerIcon.setImageDrawable(
-                        ContextCompat.getDrawable(context!!, R.drawable.map_marker)
-                    )
-                    ImageViewCompat.setImageTintList(
-                        layerIcon,
-                        ColorStateList.valueOf(
-                            mapManager.mapLayerManager.relationshipUsedColors[source]!!
-                        )
-                    )
-                } else if (it == HEATMAP_ICON) {
+                if (it == HEATMAP_ICON) {
                     layerIcon.setImageResource(R.drawable.ic_heatmap_icon)
                 } else {
                     layerIcon.setImageBitmap(

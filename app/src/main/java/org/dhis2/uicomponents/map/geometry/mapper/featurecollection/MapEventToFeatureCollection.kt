@@ -2,6 +2,8 @@ package org.dhis2.uicomponents.map.geometry.mapper.featurecollection
 
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.FeatureCollection
+import org.dhis2.uicomponents.map.extensions.FeatureSource
+import org.dhis2.uicomponents.map.extensions.PROPERTY_FEATURE_SOURCE
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox
 import org.dhis2.uicomponents.map.geometry.getLatLngPointList
 import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature
@@ -15,7 +17,10 @@ class MapEventToFeatureCollection(
         val features = eventList.filter { it.geometry() != null }.mapNotNull {
             mapGeometryToFeature.map(
                 it.geometry()!!,
-                mapOf(EVENT to it.uid())
+                mapOf(
+                    PROPERTY_FEATURE_SOURCE to FeatureSource.EVENT.name,
+                    EVENT to it.uid()
+                )
             )
         }
 

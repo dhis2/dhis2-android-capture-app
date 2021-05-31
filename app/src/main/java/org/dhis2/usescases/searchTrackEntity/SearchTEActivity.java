@@ -963,7 +963,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private void updateCarousel(List<CarouselItemModel> allItems) {
         if (binding.mapCarousel.getAdapter() != null) {
-            ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(allItems, teiMapManager.mapLayerManager);
+            ((CarouselAdapter) binding.mapCarousel.getAdapter()).setItems(allItems,true);
         }
     }
 

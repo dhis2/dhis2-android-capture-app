@@ -3,6 +3,8 @@ package org.dhis2.uicomponents.map.geometry.mapper.feature
 import com.mapbox.geojson.Feature
 import org.dhis2.data.dhislogic.CoordinateAttributeInfo
 import org.dhis2.data.dhislogic.CoordinateDataElementInfo
+import org.dhis2.uicomponents.map.extensions.FeatureSource
+import org.dhis2.uicomponents.map.extensions.PROPERTY_FEATURE_SOURCE
 import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection.Companion.EVENT
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection.Companion.FIELD_NAME
@@ -15,6 +17,7 @@ class MapCoordinateFieldToFeature(private val mapGeometryToFeature: MapGeometryT
         return mapGeometryToFeature.map(
             coordinateDataElementInfo.geometry,
             hashMapOf(
+                PROPERTY_FEATURE_SOURCE to FeatureSource.FIELD.name,
                 FIELD_NAME to coordinateDataElementInfo.dataElement.displayFormName()!!,
                 EVENT to coordinateDataElementInfo.event.uid()!!,
                 STAGE to coordinateDataElementInfo.stage.displayName()!!
@@ -33,6 +36,7 @@ class MapCoordinateFieldToFeature(private val mapGeometryToFeature: MapGeometryT
         return mapGeometryToFeature.map(
             coordinateAttributeInfo.geometry,
             hashMapOf(
+                PROPERTY_FEATURE_SOURCE to FeatureSource.FIELD.name,
                 FIELD_NAME to coordinateAttributeInfo.attribute.displayFormName()!!,
                 TEI to coordinateAttributeInfo.tei.uid()!!
             )
