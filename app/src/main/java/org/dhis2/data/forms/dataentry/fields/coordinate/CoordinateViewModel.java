@@ -29,8 +29,8 @@ import static android.text.TextUtils.isEmpty;
 @AutoValue
 public abstract class CoordinateViewModel extends FieldViewModel {
 
-    private final ObservableField<String> observableErrorMessage = new ObservableField<>();
-    private final ObservableField<String> observableWarningMessage = new ObservableField<>();
+    private final ObservableField<String> observableErrorMessage = new ObservableField<>(error());
+    private final ObservableField<String> observableWarningMessage = new ObservableField<>(warning());
     private final ObservableField<String> latitudeValue = new ObservableField<>();
     private final ObservableField<String> longitudeValue = new ObservableField<>();
 
@@ -100,12 +100,10 @@ public abstract class CoordinateViewModel extends FieldViewModel {
     public abstract boolean isSearchMode();
 
     public ObservableField<String> observeWarningMessage() {
-        observableWarningMessage.set(warning());
         return observableWarningMessage;
     }
 
     public ObservableField<String> observeErrorMessage() {
-        observableErrorMessage.set(error());
         return observableErrorMessage;
     }
 
