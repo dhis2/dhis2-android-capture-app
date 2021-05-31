@@ -19,6 +19,7 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import io.reactivex.processors.FlowableProcessor;
 import kotlin.Unit;
@@ -140,10 +141,19 @@ public abstract class CoordinateViewModel extends FieldViewModel {
 
     public Geometry currentGeometry() {
         if (value() != null) {
-            return Geometry.builder()
+            Geometry geometry = Geometry.builder()
                     .coordinates(value())
                     .type(featureType())
                     .build();
+            if(featureType() == FeatureType.POINT) {
+                try {
+                    latitudeValue.set(GeometryHelper.getPoint(geometry).get(1).toString());
+                    longitudeValue.set(GeometryHelper.getPoint(geometry).get(0).toString());
+                } catch (D2Error d2Error) {
+                    d2Error.printStackTrace();
+                }
+            }
+            return geometry;
         } else {
             return null;
         }
@@ -180,7 +190,7 @@ public abstract class CoordinateViewModel extends FieldViewModel {
             Double lat = parseCoordinateStringToDouble(latitudeValue.get());
             Double lon = parseCoordinateStringToDouble(longitudeValue.get());
             if (lat != null && lon != null) {
-                if (LngLatValidatorKt.areLngLatCorrect(lat, lon)) {
+                if (LngLatValidatorKt.areLngLatCorrect(lon, lat)) {
                     onCurrentLocationClick(GeometryHelper.createPointGeometry(lon, lat));
                 } else {
                     observableErrorMessage.set(coordinatesErrorMessage);
