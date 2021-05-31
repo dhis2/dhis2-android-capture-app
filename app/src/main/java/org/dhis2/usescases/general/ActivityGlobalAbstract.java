@@ -190,6 +190,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
             activityResultObserver.onRequestPermissionsResult(requestCode, permissions, grantResults);
             activityResultObserver = null;
         }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override

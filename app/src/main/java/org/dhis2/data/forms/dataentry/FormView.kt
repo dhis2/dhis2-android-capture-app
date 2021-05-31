@@ -140,7 +140,7 @@ class FormView private constructor(
                     )
                 },
                 {
-                    requestPermissions(
+                    this@FormView.requestPermissions(
                         arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                         EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST
                     )

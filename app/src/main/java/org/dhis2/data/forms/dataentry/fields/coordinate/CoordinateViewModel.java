@@ -213,10 +213,34 @@ public abstract class CoordinateViewModel extends FieldViewModel {
     }
 
     public void requestCurrentLocation() {
+        callback.onItemAction(
+                new RowAction(
+                        uid(),
+                        value(),
+                        false,
+                        null,
+                        null,
+                        null,
+                        null,
+                        ActionType.ON_FOCUS
+                )
+        );
         callback.currentLocation(uid());
     }
 
     public void requestMapLocation() {
+        callback.onItemAction(
+                new RowAction(
+                        uid(),
+                        value(),
+                        false,
+                        null,
+                        null,
+                        null,
+                        null,
+                        ActionType.ON_FOCUS
+                )
+        );
         callback.mapRequest(uid(), featureType().name(), value());
     }
 }
