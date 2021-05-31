@@ -38,12 +38,12 @@ class FormViewModel(
     init {
         viewModelScope.launch {
             _pendingIntents
-                .map { createRowActionStorePair(it) }
+                .map { intent -> createRowActionStore(intent) }
                 .flowOn(dispatcher)
-                .collect {
-                    when (it.second.valueStoreResult) {
+                .collect { result ->
+                    when (result.second.valueStoreResult) {
                         ValueStoreResult.VALUE_CHANGED -> {
-                            _savedValue.value = it.first
+                            _savedValue.value = result.first
                         }
                         else -> _items.value = repository.composeList()
                     }
@@ -51,7 +51,7 @@ class FormViewModel(
         }
     }
 
-    private fun createRowActionStorePair(it: FormIntent): Pair<RowAction, StoreResult> {
+    private fun createRowActionStore(it: FormIntent): Pair<RowAction, StoreResult> {
         val rowAction = rowActionFromIntent(it)
         val result = repository.processUserAction(rowAction)
         return Pair(rowAction, result)
