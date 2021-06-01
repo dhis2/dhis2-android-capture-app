@@ -10,26 +10,26 @@ The following graphs show that the next steps are iterative in nature, including
 
 |||
 |---|---|
-| ![](resources/images/image35.png){ .center } | ![](resources/images/image7.png){ .center } |
-| ![](resources/images/image36.png){ .center } | ![](resources/images/image5.png){ .center } |
+| ![](resources/images/implementation-guide-image35.png){ .center } | ![](resources/images/implementation-guide-image7.png){ .center } |
+| ![](resources/images/implementation-guide-image36.png){ .center } | ![](resources/images/implementation-guide-image5.png){ .center } |
 
 ## General Recommendations for Testing an Android App { #implementation_guide_testing_general }
 
 
 Before we go into the different testing phases, we are going to present some general recommendations that can be applied to testing an Android App. In general any process of testing can be summarized in the following steps:
 
-![](resources/images/image21.png){ .center width=80% }
+![](resources/images/implementation-guide-image21.png){ .center width=80% }
 
 1. **Review**. The first step is to review information about the application itself by going to [<span class="underline">https://www.DHIS 2.org/android-documentation</span>](https://www.dhis2.org/android-documentation). The documentation will provide you with information about the why’s and what's or your testing. It should help you determine if the app meets your requirements, what the app can and can’t do and help you analyze discrepancies. It should also help you identify new features and settings, features supported.
 
 2. **Plan**. In this step you need to identify the time of testing by understanding the timeline for your own implementation. As part of this planning phase you must create a detailed list of requirements and classify them as compulsory (MUST have) or nice to have.
 
 3. **Design**. In this step you must develop the test cases, decide the number of test interactions and the tools you will be using for your testing.
-	![](resources/images/image28.png){ .center width=80% }
+	![](resources/images/implementation-guide-image28.png){ .center width=80% }
 	- **Example of testing tools - Jira**
-	![](resources/images/image2.png)
+	![](resources/images/implementation-guide-image2.png)
 	- **Example of testing tool - Excel**
-	![](resources/images/image17.png)
+	![](resources/images/implementation-guide-image17.png)
 
 	- Every test case should include the following sections. The level of detail and the content of the test to be performed will depend on the level of experience-profile of the user.
 		- Identification: Cycle number / ID, Test ID, version, test summary.
@@ -43,9 +43,9 @@ Before we go into the different testing phases, we are going to present some gen
 	- The reported error must be reproducible
 	- The information must be specific and informative
 	- The report must separate facts from speculations
-	![](resources/images/image1.png) { .center width=80% }
+	![](resources/images/implementation-guide-image1.png) { .center width=80% }
 	- The table below summarises a good Bug Reporting with some examples:
-	![](resources/images/image34.png) { .center width=80% }
+	![](resources/images/implementation-guide-image34.png) { .center width=80% }
 
 ## Internal testing and UAT testing { #implementation_guide_testing_internal }
 
@@ -54,7 +54,7 @@ Before we go into the different testing phases, we are going to present some gen
 
 You are testing your DHIS 2 server configuration and the Android App itself.
 
-![](resources/images/image12.png){ .center width=40% }
+![](resources/images/implementation-guide-image12.png){ .center width=40% }
 
 **What are you looking for?**
 
@@ -72,7 +72,7 @@ Setting the right foundation for your internal testing will increase the quality
 **What are you testing**  
 You are testing your system configuration (input), your visual UI and icons, usability and your outputs. You can also test at this stage the user experience with different devices (smartphone, tablet, external keyboard, chromebook).  
 
-![](resources/images/image6.png){ .center width=40% }
+![](resources/images/implementation-guide-image6.png){ .center width=40% }
   
 **What are you looking for?** 
 
@@ -96,7 +96,7 @@ When deciding who will participate in your test, think about all the different t
 - You are testing the different devices.
 - You are testing your training procedures & materials.
 
-![](resources/images/image25.png){ .center width=40% }
+![](resources/images/implementation-guide-image25.png){ .center width=40% }
 
 **What are you looking for?**
 
