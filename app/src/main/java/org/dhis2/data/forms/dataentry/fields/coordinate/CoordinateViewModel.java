@@ -13,6 +13,7 @@ import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.RecyclerViewUiEvents;
 import org.dhis2.form.ui.style.FormUiModelStyle;
 import org.dhis2.uicomponents.map.geometry.LngLatValidatorKt;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
@@ -136,7 +137,7 @@ public abstract class CoordinateViewModel extends FieldViewModel {
     }
 
     public void onDescriptionClick() {
-        callback.showDialog(label(), description());
+        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.ShowDescriptionLabelDialog(label(), description()));
     }
 
     public Geometry currentGeometry() {

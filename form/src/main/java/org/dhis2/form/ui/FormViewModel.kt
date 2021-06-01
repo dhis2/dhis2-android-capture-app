@@ -17,7 +17,6 @@ import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
-import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
@@ -91,7 +90,7 @@ class FormViewModel(
         }
     }
 
-    @Deprecated("Use for legacy only")
+    @Deprecated("Use for legacy only. Do not use this for refactor views")
     fun onItemAction(action: RowAction) {
         viewModelScope.launch {
             submitRowAction(action).collect {
@@ -105,7 +104,7 @@ class FormViewModel(
         }
     }
 
-    @Deprecated("Use for legacy only")
+    @Deprecated("Use for legacy only. Do not use this for refactor views")
     private fun submitRowAction(action: RowAction): Flow<StoreResult> = flow {
         emit(repository.processUserAction(action))
     }.flowOn(dispatcher)
