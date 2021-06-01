@@ -29,7 +29,7 @@
 
         <variable
             name="keyboardActionType"
-            type="org.dhis2.data.forms.dataentry.fields.KeyboardActionType" />
+            type="org.dhis2.form.model.KeyboardActionType" />
 
     </data>
 

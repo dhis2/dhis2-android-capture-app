@@ -3,8 +3,8 @@ ext {
             sdk   : 29,
             tools : "29.0.2",
             minSdk: 19,
-            vCode: 98,
-            vName: "2.4"
+            vCode: 99,
+            vName: "2.4.0.1"
     ]
 
     libraries = [
@@ -57,7 +57,7 @@ ext {
             mockito          : "2.6.2",
             powermock        : "1.7.0RC2",
             assertj          : "2.5.0",
-            junit            : "4.12",
+            junit            : "4.13.2",
             spoon            : "1.7.0",
             sentry           : "4.3.0"
     ]

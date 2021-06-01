@@ -122,7 +122,7 @@ android {
                     sentry_dsn        : bitriseSentryDSN,
                     sentry_environment: "production",
                     sentry_debug      : "false",
-                    sentry_sample_rate: "0.2"
+                    sentry_sample_rate: "0.1"
             ]
         }
     }
@@ -210,6 +210,7 @@ dependencies {
     implementation project(':viewpagerdotsindicator')
     implementation project(':tableview')
     implementation project(":dhis_android_analytics")
+    implementation project(":form")
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.annotation:annotation:1.1.0'
@@ -260,11 +261,9 @@ dependencies {
     kapt "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
     //endregion
 
-    // Kujaku dependencies
-    implementation 'io.ona.kujaku:library:0.9.0'
-//    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.2.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.2.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v8:0.3.0'
-//    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.8.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.8.0'
 
 
     // Jake Wharton libraries
@@ -337,7 +336,7 @@ dependencies {
 
     testImplementation "androidx.arch.core:core-testing:2.1.0"
     testImplementation "androidx.test:core:1.3.0"
-    testImplementation 'junit:junit:4.12'
+    testImplementation "junit:junit:${libraries.junit}"
     testImplementation 'org.mockito:mockito-core:2.28.2'
     testImplementation 'org.mockito:mockito-inline:2.13.0'
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"

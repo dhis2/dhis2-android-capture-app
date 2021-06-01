@@ -114,6 +114,22 @@ fun scrollToBottomRecyclerView(): ViewAction {
     }
 }
 
+fun scrollToPositionRecyclerview(position: Int): ViewAction {
+    return object : ViewAction {
+        override fun getDescription(): String {
+            return "Recyclerview scrolling until the end"
+        }
+        override fun getConstraints(): Matcher<View> {
+            return isAssignableFrom(RecyclerView::class.java)
+        }
+        override fun perform(uiController: UiController?, view: View?) {
+            val recyclerView = view as RecyclerView
+            recyclerView.scrollToPosition(position)
+            uiController?.loopMainThreadUntilIdle()
+        }
+    }
+}
+
 fun clickOnFabChild(): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {

@@ -7,6 +7,10 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
+import org.dhis2.form.model.ActionType;
+import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.model.LegendValue;
+import org.dhis2.form.model.RowAction;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.jetbrains.annotations.NotNull;
 
@@ -205,6 +209,30 @@ public abstract class FieldViewModel implements FieldUiModel {
         }
     }
 
+    @NotNull
+    @Override
+    public FieldUiModel setValue(@Nullable String value) {
+        return withValue(value);
+    }
+
+    @NotNull
+    @Override
+    public FieldUiModel setFocus() {
+        return withFocus(true);
+    }
+
+    @Nullable
+    @Override
+    public String getError() {
+        return error();
+    }
+
+    @NotNull
+    @Override
+    public FieldUiModel setError(@Nullable String error) {
+        return withError(error);
+    }
+
     public boolean canHaveLegend() {
         return this instanceof EditTextViewModel || this instanceof SpinnerViewModel;
     }
@@ -217,5 +245,79 @@ public abstract class FieldViewModel implements FieldUiModel {
         } else {
             return this;
         }
+    }
+
+    @NotNull
+    @Override
+    public FieldUiModel setEditable(boolean editable) {
+        return withEditMode(editable);
+    }
+
+    @Override
+    public boolean hasLegend() {
+        return canHaveLegend();
+    }
+
+    @NotNull
+    @Override
+    public FieldUiModel setLegend(@Nullable LegendValue legendValue) {
+        return withLegend(legendValue);
+    }
+
+    @Nullable
+    @Override
+    public String getProgramStageSection() {
+        return programStageSection();
+    }
+
+    @Nullable
+    @Override
+    public String getValue() {
+        return value();
+    }
+
+    @Nullable
+    @Override
+    public String getOptionSet() {
+        return optionSet();
+    }
+
+    @Nullable
+    @Override
+    public String getWarning() {
+        return warning();
+    }
+
+    @NotNull
+    @Override
+    public FieldUiModel setWarning(@NotNull String warning) {
+        return withWarning(warning);
+    }
+
+    @NotNull
+    @Override
+    public FieldUiModel setFieldMandatory() {
+        return setMandatory();
+    }
+
+    @Override
+    public boolean getMandatory() {
+        return mandatory();
+    }
+
+    @NotNull
+    @Override
+    public String getLabel() {
+        return label();
+    }
+
+    @Override
+    public boolean getFocused() {
+        return activated();
+    }
+
+    @Override
+    public boolean getEditable() {
+        return editable() != null ? editable() : true;
     }
 }

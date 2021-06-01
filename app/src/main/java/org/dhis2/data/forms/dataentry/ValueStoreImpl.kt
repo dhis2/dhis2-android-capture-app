@@ -3,26 +3,43 @@ package org.dhis2.data.forms.dataentry
 import io.reactivex.Flowable
 import java.io.File
 import org.dhis2.Bindings.blockingSetCheck
+import org.dhis2.Bindings.toDate
 import org.dhis2.Bindings.withValueTypeCheck
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
+import org.dhis2.form.data.FormValueStore
+import org.dhis2.form.model.EnrollmentDetail
+import org.dhis2.form.model.StoreResult
+import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
+import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 
 class ValueStoreImpl(
     private val d2: D2,
     private val recordUid: String,
     private val entryMode: DataEntryStore.EntryMode,
     private val dhisEnrollmentUtils: DhisEnrollmentUtils
-) : ValueStore {
+) : ValueStore, FormValueStore {
+    var enrollmentRepository: EnrollmentObjectRepository? = null
 
-    enum class ValueStoreResult {
-        VALUE_CHANGED,
-        VALUE_HAS_NOT_CHANGED,
-        VALUE_NOT_UNIQUE,
-        UID_IS_NOT_DE_OR_ATTR
+    constructor(
+        d2: D2,
+        recordUid: String,
+        entryMode: DataEntryStore.EntryMode,
+        dhisEnrollmentUtils: DhisEnrollmentUtils,
+        enrollmentRepository: EnrollmentObjectRepository
+    ) : this(
+        d2,
+        recordUid,
+        entryMode,
+        dhisEnrollmentUtils
+    ) {
+        this.enrollmentRepository = enrollmentRepository
     }
 
     override fun save(uid: String, value: String?): Flowable<StoreResult> {
@@ -293,5 +310,102 @@ class ValueStoreImpl(
             }.forEach {
                 saveAttribute(it.trackedEntityAttribute()!!, null)
             }
+    }
+
+    override fun save(uid: String, value: String?, extraData: String?): Flowable<StoreResult> {
+        return when (entryMode) {
+            DataEntryStore.EntryMode.ATTR -> checkStoreEnrollmentDetail(uid, value, extraData)
+            else -> save(uid, value)
+        }
+    }
+
+    private fun checkStoreEnrollmentDetail(
+        uid: String,
+        value: String?,
+        extraData: String?
+    ): Flowable<StoreResult> {
+        return enrollmentRepository?.let { enrollmentRepository ->
+            when (uid) {
+                EnrollmentDetail.ENROLLMENT_DATE_UID.name -> {
+                    enrollmentRepository.setEnrollmentDate(
+                        value?.toDate()
+                    )
+
+                    Flowable.just(
+                        StoreResult(
+                            EnrollmentDetail.ENROLLMENT_DATE_UID.name,
+                            ValueStoreResult.VALUE_CHANGED
+                        )
+                    )
+                }
+                EnrollmentDetail.INCIDENT_DATE_UID.name -> {
+                    enrollmentRepository.setIncidentDate(
+                        value?.toDate()
+                    )
+
+                    Flowable.just(
+                        StoreResult(
+                            EnrollmentDetail.INCIDENT_DATE_UID.name,
+                            ValueStoreResult.VALUE_CHANGED
+                        )
+                    )
+                }
+                EnrollmentDetail.ORG_UNIT_UID.name -> {
+                    Flowable.just(
+                        StoreResult(
+                            "",
+                            ValueStoreResult.VALUE_CHANGED
+                        )
+                    )
+                }
+                EnrollmentDetail.TEI_COORDINATES_UID.name -> {
+                    val geometry = value?.let {
+                        extraData?.let {
+                            Geometry.builder()
+                                .coordinates(value)
+                                .type(FeatureType.valueOf(it))
+                                .build()
+                        }
+                    }
+                    saveTeiGeometry(geometry)
+                    Flowable.just(
+                        StoreResult(
+                            "",
+                            ValueStoreResult.VALUE_CHANGED
+                        )
+                    )
+                }
+                EnrollmentDetail.ENROLLMENT_COORDINATES_UID.name -> {
+                    val geometry = value?.let {
+                        extraData?.let {
+                            Geometry.builder()
+                                .coordinates(value)
+                                .type(FeatureType.valueOf(it))
+                                .build()
+                        }
+                    }
+                    saveEnrollmentGeometry(geometry)
+                    Flowable.just(
+                        StoreResult(
+                            "",
+                            ValueStoreResult.VALUE_CHANGED
+                        )
+                    )
+                }
+                else -> save(uid, value)
+            }
+        } ?: save(uid, value)
+    }
+
+    private fun saveTeiGeometry(geometry: Geometry?) {
+        enrollmentRepository?.let { enrollmentRepository ->
+            val teiRepository = d2.trackedEntityModule().trackedEntityInstances()
+                .uid(enrollmentRepository.blockingGet().trackedEntityInstance())
+            teiRepository.setGeometry(geometry)
+        }
+    }
+
+    private fun saveEnrollmentGeometry(geometry: Geometry?) {
+        enrollmentRepository?.setGeometry(geometry)
     }
 }

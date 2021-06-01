@@ -12,10 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
+import org.dhis2.form.model.FieldUiModel
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
 import timber.log.Timber
@@ -32,6 +32,7 @@ class FormView @JvmOverloads constructor(
     private val dataEntryHeaderHelper: DataEntryHeaderHelper
     private lateinit var adapter: DataEntryAdapter
     var scrollCallback: ((Boolean) -> Unit)? = null
+    var needToForceUpdate: Boolean? = null
 
     init {
         val params = LayoutParams(MATCH_PARENT, MATCH_PARENT)
@@ -40,6 +41,7 @@ class FormView @JvmOverloads constructor(
         recyclerView = view.findViewById(R.id.recyclerView)
         headerContainer = view.findViewById(R.id.headerContainer)
         dataEntryHeaderHelper = DataEntryHeaderHelper(headerContainer, recyclerView)
+        recyclerView.background = this.background
         recyclerView.layoutManager =
             object : LinearLayoutManager(context, VERTICAL, false) {
                 override fun onInterceptFocusSearch(focused: View, direction: Int): View {
@@ -105,7 +107,7 @@ class FormView @JvmOverloads constructor(
         }
     }
 
-    fun render(items: List<FieldViewModel>) {
+    fun render(items: List<FieldUiModel>) {
         val layoutManager: LinearLayoutManager = recyclerView.layoutManager as LinearLayoutManager
         val myFirstPositionIndex = layoutManager.findFirstVisibleItemPosition()
         val myFirstPositionView = layoutManager.findViewByPosition(myFirstPositionIndex)
@@ -120,7 +122,10 @@ class FormView @JvmOverloads constructor(
         adapter.swap(
             items,
             Runnable {
-                dataEntryHeaderHelper.onItemsUpdatedCallback()
+                when (needToForceUpdate) {
+                    true -> adapter.notifyDataSetChanged()
+                    else -> dataEntryHeaderHelper.onItemsUpdatedCallback()
+                }
             }
         )
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
@@ -136,15 +141,15 @@ class FormView @JvmOverloads constructor(
             )
     }
 
-    private fun handleKeyBoardOnFocusChange(items: List<FieldViewModel>) {
-        items.firstOrNull { it.activated() }?.let {
+    private fun handleKeyBoardOnFocusChange(items: List<FieldUiModel>) {
+        items.firstOrNull { it.focused }?.let {
             if (!doesItemNeedsKeyboard(it)) {
                 closeKeyboard()
             }
         }
     }
 
-    private fun doesItemNeedsKeyboard(item: FieldViewModel) = when (item) {
+    private fun doesItemNeedsKeyboard(item: FieldUiModel) = when (item) {
         is EditTextViewModel,
         is ScanTextViewModel,
         is CoordinateViewModel -> true
