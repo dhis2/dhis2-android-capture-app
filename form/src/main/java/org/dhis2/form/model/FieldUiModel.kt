@@ -1,6 +1,7 @@
 package org.dhis2.form.model
 
 import java.util.Date
+import org.dhis2.form.ui.style.FormUiModelStyle
 
 interface FieldUiModel {
 
@@ -23,6 +24,8 @@ interface FieldUiModel {
     val label: String
 
     val programStageSection: String?
+
+    val style: FormUiModelStyle?
 
     fun setCallback(callback: Callback)
 
@@ -53,10 +56,17 @@ interface FieldUiModel {
     fun setFieldMandatory(): FieldUiModel
 
     interface Callback {
-        fun onNext()
-        fun showDialog(title: String, message: String?)
-        fun showCustomCalendar(uid: String, label: String?, date: Date)
-        fun showYearMonthDayPicker(uid: String, year: Int, month: Int, day: Int)
-        fun onItemAction(action: RowAction)
+        fun onNext() {}
+        fun showDialog(title: String, message: String?) {}
+        fun showCustomCalendar(uid: String, label: String?, date: Date) {}
+        fun showYearMonthDayPicker(uid: String, year: Int, month: Int, day: Int) {}
+        fun onItemAction(action: RowAction) {}
+        fun currentLocation(coordinateFieldUid: String) {}
+        fun mapRequest(
+            coordinateFieldUid: String,
+            featureType: String,
+            initialCoordinates: String?
+        ) {
+        }
     }
 }

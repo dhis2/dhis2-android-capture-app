@@ -6,7 +6,9 @@ import androidx.annotation.Nullable;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.model.RowAction;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.Result;
@@ -51,6 +53,8 @@ import java.util.Map;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.processors.FlowableProcessor;
 import timber.log.Timber;
 
 public class EventInitialRepositoryImpl implements EventInitialRepository {
@@ -271,9 +275,14 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<ProgramStage> programStageWithId(String programStageUid) {
-        return d2.programModule().programStages().byUid().eq(programStageUid).one().get().toObservable();
+        return d2.programModule().programStages().uid(programStageUid).get().toObservable();
     }
 
+    @Override
+    public Flowable<ProgramStage> programStageForEvent(String eventId) {
+        return d2.eventModule().events().byUid().eq(eventId).one().get().toFlowable()
+                .map(event -> d2.programModule().programStages().byUid().eq(event.programStage()).one().blockingGet());
+    }
 
     @NonNull
     @Override
@@ -375,12 +384,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     public Observable<Program> getProgramWithId(String programUid) {
         return d2.programModule().programs()
                 .withTrackedEntityType().byUid().eq(programUid).one().get().toObservable();
-    }
-
-    @Override
-    public Flowable<ProgramStage> programStageForEvent(String eventId) {
-        return d2.eventModule().events().byUid().eq(eventId).one().get().toFlowable()
-                .map(event -> d2.programModule().programStages().byUid().eq(event.programStage()).one().blockingGet());
     }
 
     @Override
@@ -555,5 +558,41 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             }
 
         return "";
+    }
+
+    @Override
+    public Single<CoordinateViewModel> getGeometryModel(String programUid, FlowableProcessor<RowAction> processor) {
+        return Single.fromCallable(() -> {
+            ArrayList<EventStatus> nonEditableStatus = new ArrayList<>();
+            nonEditableStatus.add(EventStatus.COMPLETED);
+            nonEditableStatus.add(EventStatus.SKIPPED);
+            boolean shouldBlockEdition = eventUid != null &&
+                    !d2.eventModule().eventService().blockingIsEditable(eventUid) &&
+                    nonEditableStatus.contains(d2.eventModule().events().uid(eventUid).blockingGet().status());
+            FeatureType featureType = programStageWithId(stageUid).blockingFirst().featureType();
+            boolean accessDataWrite = accessDataWrite(programUid).blockingFirst() && isEnrollmentOpen();
+            String coordinatesValue = null;
+            if (eventUid != null) {
+                Geometry geometry = d2.eventModule().events().uid(eventUid).blockingGet().geometry();
+                if (geometry != null) {
+                    coordinatesValue = geometry.coordinates();
+                }
+            }
+            return CoordinateViewModel.create(
+                    "",
+                    "",
+                    false,
+                    coordinatesValue,
+                    null,
+                    accessDataWrite && !shouldBlockEdition,
+                    null,
+                    ObjectStyle.builder().build(),
+                    featureType,
+                    true,
+                    false,
+                    processor,
+                    fieldFactory.style()
+            );
+        });
     }
 }

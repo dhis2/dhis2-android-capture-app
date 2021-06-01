@@ -17,42 +17,42 @@ import io.reactivex.processors.FlowableProcessor;
 public abstract class DisplayViewModel extends FieldViewModel {
 
     public static DisplayViewModel create(String id, String label, String value, String description, FlowableProcessor<RowAction> processor) {
-        return new AutoValue_DisplayViewModel(id, label, false, value, null, null, false, null, null, null, description, ObjectStyle.builder().build(), null, DataEntryViewHolderTypes.DISPLAY, processor, false);
+        return new AutoValue_DisplayViewModel(id, label, false, value, null, null, false, null, null, null, description, ObjectStyle.builder().build(), null, DataEntryViewHolderTypes.DISPLAY, processor, null,false);
     }
 
     @Override
     public FieldViewModel setMandatory() {
-        return new AutoValue_DisplayViewModel(uid(), label(), true, value(), null, null, false, null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.DISPLAY, processor(), activated());
+        return new AutoValue_DisplayViewModel(uid(), label(), true, value(), null, null, false, null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.DISPLAY, processor(), style(),activated());
     }
 
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
-        return new AutoValue_DisplayViewModel(uid(), label(), mandatory(), value(), null, null, false, null, warning, error(), description(), objectStyle(), null, DataEntryViewHolderTypes.DISPLAY, processor(), activated());
+        return new AutoValue_DisplayViewModel(uid(), label(), mandatory(), value(), null, null, false, null, warning, error(), description(), objectStyle(), null, DataEntryViewHolderTypes.DISPLAY, processor(), style(),activated());
     }
 
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
-        return new AutoValue_DisplayViewModel(uid(), label(), mandatory(), value(), null, null, false, null, warning(), error, description(), objectStyle(), null, DataEntryViewHolderTypes.DISPLAY, processor(), activated());
+        return new AutoValue_DisplayViewModel(uid(), label(), mandatory(), value(), null, null, false, null, warning(), error, description(), objectStyle(), null, DataEntryViewHolderTypes.DISPLAY, processor(), style(),activated());
     }
 
     @NonNull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_DisplayViewModel(uid(), label(), mandatory(), data, null, null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.DISPLAY, processor(), activated());
+        return new AutoValue_DisplayViewModel(uid(), label(), mandatory(), data, null, null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.DISPLAY, processor(), style(),activated());
     }
 
     @NonNull
     @Override
     public FieldViewModel withEditMode(boolean isEditable) {
-        return new AutoValue_DisplayViewModel(uid(), label(), mandatory(), value(), null, null, isEditable, null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.DISPLAY, processor(), activated());
+        return new AutoValue_DisplayViewModel(uid(), label(), mandatory(), value(), null, null, isEditable, null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.DISPLAY, processor(), style(),activated());
     }
 
     @NonNull
     @Override
     public FieldViewModel withFocus(boolean isFocused) {
-        return new AutoValue_DisplayViewModel(uid(), label(), mandatory(), value(), null, null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.DISPLAY, processor(), isFocused);
+        return new AutoValue_DisplayViewModel(uid(), label(), mandatory(), value(), null, null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.DISPLAY, processor(), style(),isFocused);
     }
 
     @Override

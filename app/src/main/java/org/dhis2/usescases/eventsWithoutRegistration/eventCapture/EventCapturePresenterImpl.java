@@ -23,6 +23,7 @@ import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.RuleUtilsProviderResult;
 import org.dhis2.utils.RulesUtilsProvider;
+import org.dhis2.utils.RulesUtilsProviderConfigurationError;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -65,7 +66,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private EventCaptureContract.View view;
     private ObservableField<String> currentSection;
     private FlowableProcessor<Boolean> showCalculationProcessor;
-    private List<FormSectionViewModel> sectionList;
     private Map<String, FieldUiModel> emptyMandatoryFields;
     //Rules data
     private boolean canComplete;
@@ -81,9 +81,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private int calculationLoop = 0;
     private final int MAX_LOOP_CALCULATIONS = 5;
     private PreferenceProvider preferences;
-    private GetNextVisibleSection getNextVisibleSection;
     private Pair<Boolean, Boolean> showErrors;
     private FlowableProcessor<RowAction> onFieldActionProcessor;
+    private List<RulesUtilsProviderConfigurationError> configurationError;
+    private boolean showConfigurationError = true;
 
 
     public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
@@ -104,10 +105,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.errors = new HashMap<>();
         this.emptyMandatoryFields = new HashMap<>();
         this.canComplete = true;
-        this.sectionList = new ArrayList<>();
         this.compositeDisposable = new CompositeDisposable();
         this.preferences = preferences;
-        this.getNextVisibleSection = getNextVisibleSection;
         this.showErrors = new Pair<>(false, false);
         this.fieldMapper = fieldMapper;
         this.onFieldActionProcessor = onFieldActionProcessor;
@@ -180,18 +179,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         );
 
         compositeDisposable.add(
-                eventCaptureRepository.eventSections()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                data -> {
-                                    this.sectionList = data;
-                                },
-                                Timber::e
-                        )
-        );
-
-        compositeDisposable.add(
                 Flowable.zip(
                         sectionAdjustProcessor.onBackpressureBuffer(),
                         formAdjustProcessor.onBackpressureBuffer(),
@@ -244,6 +231,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                         view.updatePercentage(
                                                 fieldMapper.completedFieldsPercentage()
                                         );
+
+                                        if(!configurationError.isEmpty() && showConfigurationError){
+                                            view.displayConfigurationErrors(configurationError);
+                                        }
                                     }
                                 },
                                 Timber::e
@@ -378,10 +369,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         }
 
         errors = ruleResults.errorMap();
+        configurationError = ruleResults.getConfigurationErrors();
         canComplete = ruleResults.getCanComplete();
         completeMessage = ruleResults.getMessageOnComplete();
 
-        //Set/remove for HIDEOPTION/HIDEOPTIONGROUP/SHOWOPTIONGROUP
         ArrayList<FieldUiModel> fieldList = new ArrayList<>(fieldViewModels.values());
         return fieldList;
     }
@@ -618,5 +609,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .subscribe(() -> {
                         }, Timber::d)
         );
+    }
+
+    @Override
+    public void disableConfErrorMessage() {
+        showConfigurationError = false;
     }
 }

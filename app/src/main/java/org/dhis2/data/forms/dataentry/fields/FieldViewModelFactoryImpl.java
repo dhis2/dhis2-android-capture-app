@@ -3,7 +3,6 @@ package org.dhis2.data.forms.dataentry.fields;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
-
 import org.dhis2.data.forms.dataentry.fields.age.AgeViewModel;
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
@@ -20,6 +19,9 @@ import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetMode
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.style.BasicFormUiModelStyle;
+import org.dhis2.form.ui.style.FormUiColorFactory;
+import org.dhis2.form.ui.style.FormUiModelStyle;
 import org.dhis2.utils.DhisTextUtils;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -59,10 +61,13 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             ValueTypeRenderingType.VERTICAL_RADIOBUTTONS
     );
     private final boolean searchMode;
+    private FormUiColorFactory colorFactory;
 
-    public FieldViewModelFactoryImpl(Map<ValueType, String> valueTypeHintMap, boolean searchMode) {
+    public FieldViewModelFactoryImpl(Map<ValueType, String> valueTypeHintMap, boolean searchMode,
+                                     FormUiColorFactory colorFactory) {
         this.valueTypeHintMap = valueTypeHintMap;
         this.searchMode = searchMode;
+        this.colorFactory = colorFactory;
     }
 
     @Nullable
@@ -94,11 +99,13 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     @NonNull
     @Override
     public FieldUiModel create(@NonNull String id, @NonNull String label, @NonNull ValueType type,
-                                 @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value,
-                                 @Nullable String section, @Nullable Boolean allowFutureDates, @NonNull Boolean editable, @Nullable ProgramStageSectionRenderingType renderingType,
-                                 @Nullable String description, @Nullable ValueTypeDeviceRendering fieldRendering, @Nullable Integer optionCount, ObjectStyle objectStyle,
-                                 @Nullable String fieldMask, @Nullable LegendValue legendValue, @NonNull FlowableProcessor<RowAction> processor, List<Option> options) {
+                               @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value,
+                               @Nullable String section, @Nullable Boolean allowFutureDates, @NonNull Boolean editable, @Nullable ProgramStageSectionRenderingType renderingType,
+                               @Nullable String description, @Nullable ValueTypeDeviceRendering fieldRendering, @Nullable Integer optionCount, ObjectStyle objectStyle,
+                               @Nullable String fieldMask, @Nullable LegendValue legendValue, @NonNull FlowableProcessor<RowAction> processor, List<Option> options) {
         isNull(type, "type must be supplied");
+        FormUiModelStyle style = new BasicFormUiModelStyle(colorFactory);
+
         if (searchMode)
             mandatory = false;
         if (DhisTextUtils.Companion.isNotEmpty(optionSet)) {
@@ -117,7 +124,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
         switch (type) {
             case AGE:
-                return AgeViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, !searchMode, searchMode, processor);
+                FieldUiModel ageViewModel = AgeViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, !searchMode, searchMode, processor, style);
+                return ageViewModel;
             case TEXT:
             case EMAIL:
             case LETTER:
@@ -143,7 +151,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case DATETIME:
                 return DateTimeViewModel.create(id, label, mandatory, type, value, section, allowFutureDates, editable, description, objectStyle, !searchMode, searchMode, processor);
             case COORDINATE:
-                return CoordinateViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, FeatureType.POINT, !searchMode, searchMode, processor);
+                return CoordinateViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, FeatureType.POINT, !searchMode, searchMode, processor, style);
             case BOOLEAN:
             case TRUE_ONLY:
                 return RadioButtonViewModel.fromRawValue(id, label, type, mandatory, value, section, editable, description, objectStyle,
@@ -178,7 +186,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     @NonNull
     @Override
     public FieldUiModel createSection(String sectionUid, String sectionName, String description,
-                                        boolean isOpen, int totalFields, int completedFields, String rendering) {
+                                      boolean isOpen, int totalFields, int completedFields, String rendering) {
         return SectionViewModel.create(
                 sectionUid,
                 sectionName,
@@ -208,5 +216,10 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     @Override
     public FlowableProcessor<RowAction> fieldProcessor() {
         return fieldProcessor;
+    }
+
+    @Override
+    public BasicFormUiModelStyle style(){
+        return new BasicFormUiModelStyle(colorFactory);
     }
 }

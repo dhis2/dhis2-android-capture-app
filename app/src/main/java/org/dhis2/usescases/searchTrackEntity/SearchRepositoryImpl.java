@@ -132,7 +132,11 @@ public class SearchRepositoryImpl implements SearchRepository {
                             true
                     );
                 })
-                .toList().toObservable();
+                .toList().map(list ->
+                        CollectionsKt.filter(list, item ->
+                                !(item instanceof PictureViewModel) &&
+                                        !(item instanceof CoordinateViewModel))
+                ).toObservable();
     }
 
     private Observable<List<FieldUiModel>> programTrackedEntityAttributes(String programUid, Map<String, String> currentSearchValues) {
@@ -424,7 +428,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         EventCollectionRepository scheduledEvents = d2.eventModule().events().byEnrollmentUid().in(UidsHelper.getUidsList(enrollments))
                 .byStatus().eq(EventStatus.SCHEDULE)
-                .byDueDate().before(new Date());
+                .byDueDate().beforeOrEqual(new Date());
 
         EventCollectionRepository overdueEvents = d2.eventModule().events().byEnrollmentUid().in(UidsHelper.getUidsList(enrollments)).byStatus().eq(EventStatus.OVERDUE);
 

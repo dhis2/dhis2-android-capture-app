@@ -59,7 +59,13 @@ class EventFieldMapper(
                 ) { mandatoryCounter++ }
             }
             if (showErrors.second) {
-                repeat(errors.filter { it.key == section.uid() }.size) { errorCounter++ }
+                repeat(
+                    errors.filter { error ->
+                        fields.firstOrNull { field ->
+                            field.uid == error.key && field.programStageSection == section.uid()
+                        } != null
+                    }.size
+                ) { errorCounter++ }
             }
             finalFieldList[finalFieldList.indexOf(section)] =
                 section.withErrorsAndWarnings(
