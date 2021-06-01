@@ -61,7 +61,7 @@ class EventCaptureFormPresenter(
 
     private fun populateList(items: List<FieldUiModel>? = null) {
         view.showFields(formRepository.composeList(items).toMutableList())
-        checkFinishing(true)
+        checkFinishing(items?.all { it.error == null } == true)
         activityPresenter.hideProgress()
         if (items != null) {
             selectedSection ?: items

@@ -128,8 +128,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void performSaveClick() {
         if (activity.getCurrentFocus() instanceof EditText) {
-            presenter.setFinishing();
             activity.getCurrentFocus().clearFocus();
+            presenter.setFinishing();
         } else {
             presenter.onActionButtonClick();
         }
