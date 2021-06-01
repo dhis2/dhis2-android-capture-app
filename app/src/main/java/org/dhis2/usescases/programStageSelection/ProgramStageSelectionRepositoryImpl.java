@@ -12,14 +12,13 @@ import org.hisp.dhis.android.core.program.ProgramStageCollectionRepository;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
-import org.hisp.dhis.rules.RuleExpressionEvaluator;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEnrollment;
 import org.hisp.dhis.rules.models.TriggerEnvironment;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 
@@ -93,7 +92,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                                 ))).toFlowable();
     }
 
-   @NonNull
+    @NonNull
     private String getOrgUnitCode(String orgUnitUid) {
         String ouCode = d2.organisationUnitModule().organisationUnits().byUid().eq(orgUnitUid).one().blockingGet().code();
         return ouCode == null ? "" : ouCode;
@@ -113,8 +112,10 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
 
                     return repository.get().toFlowable().flatMapIterable(stages -> stages)
                             .filter(programStage ->
-                                    !currentProgramStagesUids.contains(programStage.uid()) ||
-                                            programStage.repeatable())
+                                    programStage.access().data().write() == true && (
+                                            !currentProgramStagesUids.contains(programStage.uid()) ||
+                                                    programStage.repeatable())
+                            )
                             .toList();
 
                 }).toFlowable();

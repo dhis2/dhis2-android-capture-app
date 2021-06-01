@@ -16,6 +16,7 @@ import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.DataEntryDiff
+import org.hisp.dhis.android.core.common.FeatureType
 
 class DataEntryAdapter(private val searchStyle: Boolean) :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),
@@ -28,6 +29,8 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
     var onShowCustomCalendar: ((uid: String, label: String?, date: Date) -> Unit)? = null
     var onShowYearMonthDayPicker: ((uid: String, year: Int, month: Int, day: Int) -> Unit)? = null
     var onItemAction: ((action: RowAction) -> Unit)? = null
+    var onLocationRequest: ((coordinateFieldUid: String) -> Unit)? = null
+    var onMapRequest: ((fieldUid: String, type: FeatureType, initValue: String?) -> Unit)? = null
 
     private val sectionHandler = SectionHandler()
     var sectionPositions: MutableMap<String, Int> = LinkedHashMap()
@@ -153,6 +156,22 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
     override fun onAction(action: RowAction) {
         onItemAction?.let {
             it(action)
+        }
+    }
+
+    override fun onCurrentLocationRequest(coordinateFieldUid: String) {
+        onLocationRequest?.let {
+            it(coordinateFieldUid)
+        }
+    }
+
+    override fun onMapRequest(
+        coordinateFieldUid: String,
+        featureType: FeatureType,
+        initialCoordinates: String?
+    ) {
+        onMapRequest?.let {
+            it(coordinateFieldUid, featureType, initialCoordinates)
         }
     }
 }

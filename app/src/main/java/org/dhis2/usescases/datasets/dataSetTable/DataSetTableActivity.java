@@ -135,8 +135,10 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
         binding.navigationView.setOnNavigationItemSelectedListener(item -> {
             int pagePosition = viewPagerAdapter.getNavigationPagePosition(item.getItemId());
-            binding.tabLayout.setVisibility(pagePosition == 0 ? View.GONE : View.VISIBLE);
-            binding.viewPager.setCurrentItem(pagePosition);
+            binding.viewPager.postDelayed(() -> {
+                binding.tabLayout.setVisibility(pagePosition == 0 ? View.GONE : View.VISIBLE);
+                binding.viewPager.setCurrentItem(pagePosition);
+            }, 100);
             return true;
         });
     }

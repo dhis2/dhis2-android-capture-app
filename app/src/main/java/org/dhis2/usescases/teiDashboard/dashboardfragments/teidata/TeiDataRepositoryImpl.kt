@@ -114,10 +114,11 @@ class TeiDataRepositoryImpl(
                     val isSelected = programStage.uid() == selectedStage
 
                     val canAddEventToEnrollment = enrollmentUid?.let {
-                        d2.eventModule().eventService().blockingCanAddEventToEnrollment(
-                            it,
-                            programStage.uid()
-                        )
+                        programStage.access()?.data()?.write() == true &&
+                            d2.eventModule().eventService().blockingCanAddEventToEnrollment(
+                                it,
+                                programStage.uid()
+                            )
                     } ?: false
 
                     eventViewModels.add(

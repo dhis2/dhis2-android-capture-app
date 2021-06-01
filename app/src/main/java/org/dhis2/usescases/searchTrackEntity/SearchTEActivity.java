@@ -49,6 +49,7 @@ import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.forms.dataentry.FormView;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.data.location.LocationProvider;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.model.FieldUiModel;
@@ -116,6 +117,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     FieldViewModelFactory fieldViewModelFactory;
     @Inject
     FormRepository formRepository;
+    @Inject
+    LocationProvider locationProvider;
 
     private String initialProgram;
     private String tEType;
@@ -136,7 +139,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private SearchTeiLiveAdapter liveAdapter;
     private RelationshipLiveAdapter relationshipLiveAdapter;
     private TeiMapManager teiMapManager;
-    private boolean initSearchNeeded = true;
+    public boolean initSearchNeeded = true;
     private ObjectAnimator animation = null;
     private String updateTei;
     private String updateEvent;
@@ -183,6 +186,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         formView = new FormView.Builder()
                 .persistence(formRepository)
+                .locationProvider(locationProvider)
                 .onItemChangeListener(action -> {
                     fieldViewModelFactory.fieldProcessor().onNext(action);
                     presenter.populateList(null);

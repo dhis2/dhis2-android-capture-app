@@ -117,6 +117,15 @@ public class EventInitialPresenter {
                 eventInitialRepository.accessDataWrite(programId).blockingFirst()
         );
 
+        compositeDisposable.add(
+                eventInitialRepository.getGeometryModel(programId, null)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                view::setGeometryModel,
+                                Timber::d
+                        ));
+
         if (eventId != null) {
             compositeDisposable
                     .add(
@@ -365,7 +374,7 @@ public class EventInitialPresenter {
 
     @NonNull
     private List<FieldUiModel> applyEffects(@NonNull List<FieldUiModel> viewModels,
-                                              @NonNull Result<RuleEffect> calcResult) {
+                                            @NonNull Result<RuleEffect> calcResult) {
         if (calcResult.error() != null) {
             Timber.e(calcResult.error());
             return viewModels;

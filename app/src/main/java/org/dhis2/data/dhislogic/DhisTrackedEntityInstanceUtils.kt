@@ -19,7 +19,7 @@ class DhisTrackedEntityInstanceUtils @Inject constructor(val d2: D2) {
             .blockingIsEmpty() ||
             !programEventsRepository
                 .byStatus().eq(EventStatus.SCHEDULE)
-                .byDueDate().before(Date())
+                .byDueDate().beforeOrEqual(Date())
                 .blockingIsEmpty()
     }
 }
