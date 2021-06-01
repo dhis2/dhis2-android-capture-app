@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.style.BasicFormUiModelStyle;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
@@ -63,4 +64,6 @@ public interface FieldViewModelFactory {
 
     @NonNull
     FlowableProcessor<RowAction> fieldProcessor();
+
+    BasicFormUiModelStyle style();
 }

@@ -447,7 +447,8 @@ class EnrollmentRepository(
             featureType,
             true,
             false,
-            onRowActionProccesor
+            onRowActionProccesor,
+            fieldFactory.style()
         )
     }
 
@@ -469,7 +470,8 @@ class EnrollmentRepository(
             featureType,
             true,
             false,
-            onRowActionProccesor
+            onRowActionProccesor,
+            fieldFactory.style()
         )
     }
 

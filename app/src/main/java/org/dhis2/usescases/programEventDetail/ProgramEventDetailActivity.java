@@ -30,6 +30,7 @@ import org.dhis2.usescases.programEventDetail.eventList.EventListFragment;
 import org.dhis2.usescases.programEventDetail.eventMap.EventMapFragment;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
@@ -218,8 +219,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public void startNewEvent() {
         analyticsHelper().setEvent(AnalyticsConstants.CREATE_EVENT, AnalyticsConstants.DATA_CREATION, AnalyticsConstants.CREATE_EVENT);
         binding.addEventButton.setEnabled(false);
-        Bundle bundle = new Bundle();
-        bundle.putString(PROGRAM_UID, programUid);
+        Bundle bundle = EventInitialActivity.getBundle(programUid, null, EventCreationType.ADDNEW.name(),
+                null, null, null, presenter.getStageUid(), null,
+                0, null);
         startActivity(EventInitialActivity.class, bundle, false, false, null);
     }
 

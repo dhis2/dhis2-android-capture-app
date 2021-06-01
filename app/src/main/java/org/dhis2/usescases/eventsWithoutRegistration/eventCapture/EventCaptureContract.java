@@ -1,6 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.form.model.FieldUiModel;

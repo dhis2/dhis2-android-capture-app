@@ -1,4 +1,4 @@
-package org.dhis2.data.forms.dataentry.fields.coordinate;
+package org.dhis2.data.forms.dataentry.tablefields.coordinate;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -20,15 +20,16 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.DoubleExtensionsKt;
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.databinding.FormCoordinatesAccentBinding;
+import org.dhis2.databinding.DatasetFormCoordinatesAccentBinding;
+import org.dhis2.databinding.DatasetFormCoordinatesBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
+import org.dhis2.form.data.GeometryController;
+import org.dhis2.form.data.GeometryParserImpl;
 import org.dhis2.uicomponents.map.geometry.LngLatValidatorKt;
 import org.dhis2.uicomponents.map.views.MapSelectorActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -45,7 +46,6 @@ import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Type;
 import java.util.List;
 
 import kotlin.Unit;
@@ -73,7 +73,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private FeatureType featureType;
     private Geometry currentGeometry;
     private TextView labelText;
-    private CoordinateViewModel viewModel;
+    private org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel viewModel;
 
     public CoordinatesView(Context context) {
         super(context);
@@ -109,9 +109,9 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     private void setLayout() {
         if (isBgTransparent)
-            binding = DataBindingUtil.inflate(inflater, R.layout.form_coordinates, this, true);
+            binding = DataBindingUtil.inflate(inflater, R.layout.dataset_form_coordinates, this, true);
         else
-            binding = DataBindingUtil.inflate(inflater, R.layout.form_coordinates_accent, this, true);
+            binding = DataBindingUtil.inflate(inflater, R.layout.dataset_form_coordinates_accent, this, true);
 
         polygonInputLayout = findViewById(R.id.polygonInputLayuout);
         polygon = findViewById(R.id.polygonEditText);
@@ -231,16 +231,16 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     public void setLabel(String label) {
         this.label = label;
         if (binding instanceof FormCoordinatesBinding)
-            ((FormCoordinatesBinding) binding).setLabel(label);
+            ((DatasetFormCoordinatesBinding) binding).setLabel(label);
         else
-            ((FormCoordinatesAccentBinding) binding).setLabel(label);
+            ((DatasetFormCoordinatesAccentBinding) binding).setLabel(label);
     }
 
     public void setDescription(String description) {
         if (binding instanceof FormCoordinatesBinding)
-            ((FormCoordinatesBinding) binding).setDescription(description);
+            ((DatasetFormCoordinatesBinding) binding).setDescription(description);
         else
-            ((FormCoordinatesAccentBinding) binding).setDescription(description);
+            ((DatasetFormCoordinatesAccentBinding) binding).setDescription(description);
 
         ImageView descriptionIcon = findViewById(R.id.descriptionLabel);
         descriptionIcon.setOnClickListener(v ->
@@ -402,20 +402,10 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             if (data.getExtras() != null) {
                 FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA));
                 String dataExtra = data.getStringExtra(MapSelectorActivity.DATA_EXTRA);
-                Geometry geometry;
-                if (locationType == FeatureType.POINT) {
-                    Type type = new TypeToken<List<Double>>() {
-                    }.getType();
-                    geometry = GeometryHelper.createPointGeometry(new Gson().fromJson(dataExtra, type));
-                } else if (locationType == FeatureType.POLYGON) {
-                    Type type = new TypeToken<List<List<List<Double>>>>() {
-                    }.getType();
-                    geometry = GeometryHelper.createPolygonGeometry(new Gson().fromJson(dataExtra, type));
-                } else {
-                    Type type = new TypeToken<List<List<List<List<Double>>>>>() {
-                    }.getType();
-                    geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
-                }
+                Geometry geometry = new GeometryController(new GeometryParserImpl()).generateLocationFromCoordinates(
+                        locationType,
+                        dataExtra
+                );
                 updateLocation(geometry);
             }
         }
@@ -519,7 +509,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         return latitude.isEnabled() && longitude.isEnabled();
     }
 
-    public void setViewModel(CoordinateViewModel viewModel) {
+    public void setViewModel(org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel viewModel) {
         this.viewModel = viewModel;
 
         if (binding == null) {
@@ -551,8 +541,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         ((ActivityResultObservable) getContext()).subscribe(this);
     }
 
-    public CoordinateViewModel getViewModel() {
+    public org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel getViewModel() {
         return viewModel;
     }
 }
-
