@@ -13,8 +13,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import java.io.File
 import javax.inject.Inject
 import org.dhis2.App
@@ -22,8 +20,11 @@ import org.dhis2.Bindings.isKeyboardOpened
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.FormView
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
+import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.FormRepository
+import org.dhis2.form.data.GeometryController
+import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.uicomponents.map.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
@@ -39,12 +40,12 @@ import org.dhis2.utils.Constants.TEI_UID
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.FileResourcesUtil
 import org.dhis2.utils.ImageUtils
+import org.dhis2.utils.RulesUtilsProviderConfigurationError
 import org.dhis2.utils.customviews.AlertBottomDialog
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
+import org.dhis2.utils.toMessage
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
-import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
-import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
@@ -59,6 +60,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     @Inject
     lateinit var formRepository: FormRepository
+
+    @Inject
+    lateinit var locationProvider: LocationProvider
 
     lateinit var binding: EnrollmentActivityBinding
     lateinit var mode: EnrollmentMode
@@ -120,6 +124,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         formView = FormView.Builder()
             .persistence(formRepository)
+            .locationProvider(locationProvider)
             .onItemChangeListener { presenter.updateFields() }
             .build()
 
@@ -296,22 +301,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     private fun handleGeometry(featureType: FeatureType, dataExtra: String, requestCode: Int) {
-        val geometry: Geometry? =
-            when (featureType) {
-                FeatureType.POINT -> {
-                    val type = object : TypeToken<List<Double>>() {}.type
-                    GeometryHelper.createPointGeometry(Gson().fromJson(dataExtra, type))
-                }
-                FeatureType.POLYGON -> {
-                    val type = object : TypeToken<List<List<List<Double>>>>() {}.type
-                    GeometryHelper.createPolygonGeometry(Gson().fromJson(dataExtra, type))
-                }
-                FeatureType.MULTI_POLYGON -> {
-                    val type = object : TypeToken<List<List<List<List<Double>>>>>() {}.type
-                    GeometryHelper.createMultiPolygonGeometry(Gson().fromJson(dataExtra, type))
-                }
-                else -> null
-            }
+        val geometry = GeometryController(GeometryParserImpl()).generateLocationFromCoordinates(
+            featureType,
+            dataExtra
+        )
 
         if (geometry != null) {
             when (requestCode) {
@@ -455,5 +448,21 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             .setMessage(R.string.enrollment_date_edition_warning)
             .setPositiveButton(R.string.button_ok, null)
         dialog.show()
+    }
+
+    override fun displayConfigurationErrors(
+        configurationError: List<RulesUtilsProviderConfigurationError>
+    ) {
+        MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
+            .setTitle(R.string.warning_error_on_complete_title)
+            .setMessage(configurationError.toMessage(this))
+            .setPositiveButton(
+                R.string.action_close
+            ) { _, _ -> }
+            .setNegativeButton(
+                getString(R.string.action_do_not_show_again)
+            ) { _, _ -> presenter.disableConfErrorMessage() }
+            .setCancelable(false)
+            .show()
     }
 }

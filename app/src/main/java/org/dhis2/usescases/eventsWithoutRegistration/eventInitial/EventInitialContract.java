@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -67,6 +68,8 @@ public class EventInitialContract {
 
         EventCreationType eventcreateionType();
 
+        void setGeometryModel(CoordinateViewModel geometryModel);
 
+        void setNewGeometry(String value);
     }
 }

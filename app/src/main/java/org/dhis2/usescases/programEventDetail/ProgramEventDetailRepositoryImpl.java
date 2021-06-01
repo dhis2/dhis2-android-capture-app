@@ -29,6 +29,7 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventFilter;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -197,6 +198,11 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 .withEventDataFilters()
                 .byProgram().eq(programUid)
                 .get();
+    }
+
+    @Override
+    public Single<ProgramStage> programStage(){
+        return d2.programModule().programStages().byProgramUid().eq(programUid).one().get();
     }
 
 }

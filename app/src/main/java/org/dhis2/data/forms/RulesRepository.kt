@@ -178,18 +178,18 @@ class RulesRepository(private val d2: D2) {
                 .withTrackedEntityDataValues()
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .get().map { list ->
-                    var currentEventIndex = -1
-                    var index = 0
-                    do {
-                        if (list[index].uid() == eventToEvaluate.uid()) {
-                            currentEventIndex = index
-                        } else {
-                            index++
-                        }
-                    } while (currentEventIndex == -1)
+                    val currentEventIndex = list.indexOfFirst { it.uid() == eventToEvaluate.uid() }
 
-                    var newEvents = list.subList(0, currentEventIndex)
-                    var previousEvents = list.subList(currentEventIndex + 1, list.size)
+                    var newEvents = if (currentEventIndex != -1) {
+                        list.subList(0, currentEventIndex)
+                    } else {
+                        emptyList<Event>()
+                    }
+                    var previousEvents = if (currentEventIndex != -1) {
+                        list.subList(currentEventIndex + 1, list.size)
+                    } else {
+                        list
+                    }
 
                     if (newEvents.size > 10) {
                         newEvents = newEvents.subList(0, 10)

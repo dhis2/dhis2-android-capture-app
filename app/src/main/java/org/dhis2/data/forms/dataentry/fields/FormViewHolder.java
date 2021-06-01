@@ -8,6 +8,7 @@ import org.dhis2.BR;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.RecyclerViewUiEvents;
@@ -41,6 +42,16 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
             }
 
             @Override
+            public void mapRequest(@NotNull String coordinateFieldUid, @NotNull String featureType, @Nullable String initialCoordinates) {
+                callback.onMapRequest(coordinateFieldUid, FeatureType.valueOfFeatureType(featureType), initialCoordinates);
+            }
+
+            @Override
+            public void currentLocation(@NotNull String coordinateFieldUid) {
+                callback.onCurrentLocationRequest(coordinateFieldUid);
+            }
+
+            @Override
             public void onNext() {
                 callback.onNext(getLayoutPosition());
             }
@@ -62,6 +73,10 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
         void recyclerViewEvent(@NotNull RecyclerViewUiEvents uiEvent);
 
         void onNext(int layoutPosition);
+
+        void onMapRequest(@NotNull String coordinateFieldUid, @NotNull FeatureType featureType, @Nullable String initialCoordinates);
+
+        void onCurrentLocationRequest(@NotNull String coordinateFieldUid);
 
         void onAction(RowAction action);
     }

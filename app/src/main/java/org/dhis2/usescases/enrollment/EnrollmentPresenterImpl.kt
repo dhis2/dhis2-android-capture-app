@@ -21,6 +21,7 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.Result
+import org.dhis2.utils.RulesUtilsProviderConfigurationError
 import org.dhis2.utils.RulesUtilsProviderImpl
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.DELETE_AND_BACK
@@ -63,6 +64,8 @@ class EnrollmentPresenterImpl(
     private val formRepository: FormRepository
 ) {
 
+    private var configurationErrors: List<RulesUtilsProviderConfigurationError> = listOf()
+    private var showConfigurationError = true
     private var finishing: Boolean = false
     private val disposable = CompositeDisposable()
     private val fieldsFlowable: FlowableProcessor<Boolean> = PublishProcessor.create()
@@ -158,6 +161,9 @@ class EnrollmentPresenterImpl(
                     populateList(it)
                     view.setSaveButtonVisible(true)
                     view.hideProgress()
+                    if (configurationErrors.isNotEmpty() && showConfigurationError) {
+                        view.displayConfigurationErrors(configurationErrors)
+                    }
                 }) {
                     Timber.tag(TAG).e(it)
                 }
@@ -430,6 +436,7 @@ class EnrollmentPresenterImpl(
         ) { options ->
             enrollmentFormRepository.getOptionsFromGroups(options)
         }.apply {
+            this@EnrollmentPresenterImpl.configurationErrors = configurationErrors
             errorFields = errorMap().toMutableMap()
         }
 
@@ -523,5 +530,9 @@ class EnrollmentPresenterImpl(
 
     fun setFinishing() {
         finishing = true
+    }
+
+    fun disableConfErrorMessage() {
+        showConfigurationError = false
     }
 }

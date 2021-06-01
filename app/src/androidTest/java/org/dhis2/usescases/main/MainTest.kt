@@ -69,7 +69,7 @@ class MainTest : BaseTest() {
         }
 
         filterRobotCommon {
-            openDateFilter()
+            openFilterAtPosition(0)
             clickOnFromToDateOption()
             selectDate(2020,6,15)
             acceptDateSelected()
