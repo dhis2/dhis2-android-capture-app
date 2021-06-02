@@ -175,8 +175,12 @@ class MapLayerDialog(
 
     private fun initListeners() {
         binding.acceptButton.setOnClickListener {
+            layerVisibility.forEach { (sourceId, visible) ->
+                mapManager.mapLayerManager.handleLayer(sourceId, visible)
+            }
+
             mapManager.carouselAdapter?.updateLayers(
-                layerVisibility, mapManager.mapLayerManager.mapLayers
+                layerVisibility.keys.toList(), mapManager.mapLayerManager.mapLayers
             )
             dismiss()
         }
@@ -202,7 +206,6 @@ class MapLayerDialog(
                     )
                 )
                 setOnCheckedChangeListener { _, isChecked ->
-                    mapManager.mapLayerManager.handleLayer(source, isChecked)
                     layerVisibility[source] = isChecked
                 }
             }

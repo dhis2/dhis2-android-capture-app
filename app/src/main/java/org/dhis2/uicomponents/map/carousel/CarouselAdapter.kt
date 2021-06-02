@@ -170,13 +170,12 @@ class CarouselAdapter private constructor(
         }
     }
 
-    fun updateLayers(sourceIds: HashMap<String, Boolean>, mapLayers: HashMap<String, MapLayer>) {
+    fun updateLayers(sourceIds: List<String>, mapLayers: HashMap<String, MapLayer>) {
         val teisToShow = mutableListOf<CarouselItemModel>()
         val relationshipsToShow = mutableListOf<CarouselItemModel>()
         val teiEventToShow = mutableListOf<CarouselItemModel>()
         val eventToShow = mutableListOf<CarouselItemModel>()
-        sourceIds.forEach {
-            val sourceId = it.key
+        sourceIds.forEach { sourceId ->
 
             when (val currentLayer = mapLayers[sourceId]) {
                 is TeiMapLayer -> {
@@ -251,6 +250,11 @@ class CarouselAdapter private constructor(
     fun addItems(data: List<CarouselItemModel>) {
         items.addAll(data)
         notifyDataSetChanged()
+    }
+
+    fun setAllItems(data: List<CarouselItemModel>) {
+        allItems.clear()
+        allItems.addAll(data)
     }
 
     fun setItems(data: List<CarouselItemModel>, searchInitial: Boolean = false) {
