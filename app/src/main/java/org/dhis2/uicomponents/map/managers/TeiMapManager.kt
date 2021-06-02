@@ -1,6 +1,7 @@
 package org.dhis2.uicomponents.map.managers
 
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.PointF
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
@@ -16,7 +17,6 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.BitmapUtils
-import java.util.ArrayList
 import java.util.HashMap
 import org.dhis2.Bindings.dp
 import org.dhis2.R
@@ -68,6 +68,10 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
 
     override fun loadDataForStyle() {
         style?.apply {
+            style?.addImage(
+                MapLayerManager.TEI_ICON_ID,
+                getTintedDrawable(TEIS_SOURCE_ID)
+            )
             mapStyle?.teiSymbolIcon?.let {
                 addImage(
                     RelationshipMapManager.RELATIONSHIP_ICON,
@@ -81,21 +85,13 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
             mapStyle?.enrollmentSymbolIcon?.let {
                 addImage(
                     MapLayerManager.ENROLLMENT_ICON_ID,
-                    TeiMarkers.getMarker(
-                        mapView.context,
-                        it,
-                        mapStyle!!.enrollmentColor
-                    )
+                    getTintedDrawable(ENROLLMENT_SOURCE_ID)
                 )
             }
             mapStyle?.stagesStyle?.keys?.forEach { key ->
                 addImage(
                     "${MapLayerManager.STAGE_ICON_ID}_$key",
-                    TeiMarkers.getMarker(
-                        mapView.context,
-                        mapStyle!!.stagesStyle[key]!!.stageIcon,
-                        mapStyle!!.stagesStyle[key]!!.stageColor
-                    )
+                    getTintedDrawable(key)
                 )
             }
         }
@@ -158,7 +154,6 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
             .addStartLayer(LayerType.TEI_LAYER, teiFeatureType, TEIS_SOURCE_ID)
             .addLayer(LayerType.ENROLLMENT_LAYER, enrollmentFeatureType, ENROLLMENT_SOURCE_ID)
             .addLayer(LayerType.HEATMAP_LAYER)
-            .addLayer(LayerType.SATELLITE_LAYER)
     }
 
     override fun setSource() {
@@ -192,7 +187,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                 .asBitmap()
                 .load(feature.getStringProperty(TEI_IMAGE))
                 .transform(CircleCrop())
-                .into(object : CustomTarget<Bitmap>(23.dp, 23.dp) {
+                .into(object : CustomTarget<Bitmap>(30.dp, 30.dp) {
                     override fun onResourceReady(
                         resource: Bitmap,
                         transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
@@ -235,17 +230,30 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                 getTintedDrawable(it.key)
             )
         }
+        teiFeatureCollections?.entries?.filter {
+            it.key != TEIS_SOURCE_ID && it.key != ENROLLMENT_SOURCE_ID &&
+                !eventsFeatureCollection?.containsKey(it.key)!!
+        }?.forEach {
+            style?.addImage(
+                "${RelationshipMapManager.RELATIONSHIP_ICON}_${it.key}",
+                getTintedDrawable(it.key)
+            )
+        }
     }
 
     private fun getTintedDrawable(sourceId: String): Drawable {
+        val (drawable, color) = mapLayerManager.getNextAvailableDrawable(sourceId) ?: Pair(
+            R.drawable.map_marker,
+            Color.parseColor("#E71409")
+        )
+
         val initialDrawable = AppCompatResources.getDrawable(
             mapView.context,
-            R.drawable.map_marker
+            drawable
         )?.mutate()
         val wrappedDrawable = DrawableCompat.wrap(initialDrawable!!)
-        mapLayerManager.getNextAvailableColor(sourceId)?.let { color ->
-            DrawableCompat.setTint(wrappedDrawable, color)
-        }
+        DrawableCompat.setTint(wrappedDrawable, color)
+
         return wrappedDrawable
     }
 
@@ -255,6 +263,8 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         propertyValue: String
     ): Feature? {
         return teiFeatureCollections?.get(source)?.features()?.firstOrNull {
+            it.getStringProperty(propertyName) == propertyValue
+        } ?: fieldFeatureCollections[source]?.features()?.firstOrNull {
             it.getStringProperty(propertyName) == propertyValue
         }
     }
@@ -282,6 +292,20 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                 break@mainLoop
             }
         }
+
+        mainLoop@ for (source in fieldFeatureCollections.keys) {
+            sourceLoop@ for (propertyLabel in mainProperties) {
+                val feature = findFeature(source, propertyLabel, propertyValue)
+                if (feature != null) {
+                    featureToReturn = feature
+                    break@sourceLoop
+                }
+            }
+            if (featureToReturn != null) {
+                break@mainLoop
+            }
+        }
+
         return featureToReturn
     }
 
@@ -289,7 +313,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         source: String,
         propertyName: String,
         propertyValue: String
-    ): List<Feature>? {
+    ): List<Feature> {
         return mutableListOf<Feature>().apply {
             teiFeatureCollections?.filterKeys { it != ENROLLMENT_SOURCE_ID }
                 ?.map { (key, collection) ->
@@ -297,7 +321,21 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                         mapLayerManager.getLayer(key)?.visible == true &&
                             it.getStringProperty(propertyName) == propertyValue
                     }?.map {
-                        mapLayerManager.getLayer(TEIS_SOURCE_ID)?.setSelectedItem(it)
+                        mapLayerManager.getLayer(key)?.setSelectedItem(it)
+                        it
+                    }?.let { addAll(it) }
+                }
+
+            teiFeatureCollections?.filterKeys {
+                it == ENROLLMENT_SOURCE_ID && mapLayerManager.getLayer(
+                    ENROLLMENT_SOURCE_ID
+                )?.visible == true
+            }
+                ?.map { (key, collection) ->
+                    collection.features()?.filter {
+                        it.getStringProperty(propertyName) == propertyValue
+                    }?.map {
+                        mapLayerManager.getLayer(ENROLLMENT_SOURCE_ID)?.setSelectedItem(it)
                         it
                     }?.let { addAll(it) }
                 }
@@ -319,62 +357,38 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
     }
 
     override fun findFeatures(propertyValue: String): List<Feature>? {
-        return findFeatures("", TEI_UID, propertyValue)
+        val mainProperties = arrayListOf(
+            TEI_UID,
+            RELATIONSHIP_UID,
+            MapEventToFeatureCollection.EVENT
+        )
+
+        return mainProperties.map { property ->
+            findFeatures("", property, propertyValue)
+        }.flatten().distinct()
     }
 
-    fun getSourcesAndLayersForSearch(): Pair<List<String>, List<Array<String>>> {
-        val layers: MutableList<Array<String>> =
-            ArrayList()
-        val sources: MutableList<String> =
-            ArrayList()
-        layers.add(
-            arrayOf(
-                "TEI_POINT_LAYER_ID",
-                "TEI_POLYGON_LAYER_ID"
-            )
-        )
-        sources.add(TEIS_SOURCE_ID)
-        layers.add(
-            arrayOf(
-                "ENROLLMENT_POINT_LAYER_ID",
-                "ENROLLMENT_POLYGON_LAYER_ID"
-            )
-        )
-        sources.add(ENROLLMENT_SOURCE_ID)
-        teiFeatureCollections?.keys?.forEach { sourceId ->
-            layers.add(arrayOf("RELATIONSHIP_LINE_LAYER_ID_$sourceId"))
-            sources.add(sourceId)
-        }
-        eventsFeatureCollection?.keys?.forEach { eventSource ->
-            layers.add(
-                arrayOf(
-                    "POINT_LAYER_$eventSource",
-                    "POLYGON_LAYER$eventSource"
-                )
-            )
-            sources.add(eventSource)
-        }
-        fieldFeatureCollections.keys.forEach { deSource ->
-            layers.add(
-                arrayOf(
-                    "DE_POINT_LAYER_ID_$deSource"
-                )
-            )
-            sources.add(deSource)
-        }
-
-        return Pair(sources, layers)
+    fun getSourcesAndLayersForSearch(): Map<String, Array<String>> {
+        return mapLayerManager.mapLayers
+            .filter { (sourceId, mapLayer) -> mapLayer.visible }
+            .map { (sourceId, mapLayer) ->
+                sourceId to mapLayer.layerIdsToSearch()
+            }.toMap()
     }
 
     override fun getLayerName(source: String): String {
         return if (fieldFeatureCollections.containsKey(source)) {
             fieldFeatureCollections[source]?.features()?.get(0)?.let {
                 if (it.hasProperty(MapCoordinateFieldToFeatureCollection.STAGE)) {
-                    "${it.getStringProperty(
+                    "${
+                    it.getStringProperty(
                         MapCoordinateFieldToFeatureCollection.STAGE
-                    )} - ${it.getStringProperty(
+                    )
+                    } - ${
+                    it.getStringProperty(
                         MapCoordinateFieldToFeatureCollection.FIELD_NAME
-                    )}"
+                    )
+                    }"
                 } else {
                     it.getStringProperty(MapCoordinateFieldToFeatureCollection.FIELD_NAME)
                 }
@@ -388,13 +402,18 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         val pointf: PointF = map?.projection?.toScreenLocation(point)!!
         val rectF = RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10)
 
-        val (sources, layers) = getSourcesAndLayersForSearch()
+        val sourcesAndLayers = getSourcesAndLayersForSearch()
 
         layer?.let {
             return selectFeatureForLayer(rectF, TEIS_SOURCE_ID, it)
         }
 
-        return selectedFeature(rectF, sources, layers, 0)
+        return selectedFeature(
+            rectF,
+            sourcesAndLayers.keys.toList(),
+            sourcesAndLayers.values.toList(),
+            0
+        )
     }
 
     private fun selectedFeature(
@@ -421,7 +440,9 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                 mapLayerManager.getLayer(source, true)?.setSelectedItem(selectedFeature)
                 selectedFeature
             }
-            count < sources.size - 1 -> { selectedFeature(rectF, sources, layers, count + 1) }
+            count < sources.size - 1 -> {
+                selectedFeature(rectF, sources, layers, count + 1)
+            }
             else -> selectedFeature
         }
     }

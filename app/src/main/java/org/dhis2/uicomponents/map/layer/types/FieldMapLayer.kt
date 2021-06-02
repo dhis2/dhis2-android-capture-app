@@ -11,10 +11,10 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.uicomponents.map.geometry.TEI_UID
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection.Companion.FIELD_NAME
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.layer.MapLayer
+import org.dhis2.uicomponents.map.layer.withInitialVisibility
+import org.dhis2.uicomponents.map.layer.withTEIMarkerProperties
 import org.dhis2.uicomponents.map.managers.EventMapManager
-import org.dhis2.uicomponents.map.managers.TeiMapManager
 
 class FieldMapLayer(
     var style: Style,
@@ -31,8 +31,8 @@ class FieldMapLayer(
     init {
         style.addLayer(pointLayer)
         style.addSource(GeoJsonSource(SELECTED_POINT_SOURCE_ID))
-        style.addLayer(selectedPointLayer)
         style.addLayer(teiPointLayer)
+        style.addLayer(selectedPointLayer)
     }
 
     private val pointLayer: Layer
@@ -40,14 +40,7 @@ class FieldMapLayer(
             ?: SymbolLayer(POINT_LAYER_ID, sourceId)
                 .withProperties(
                     PropertyFactory.iconImage("${EventMapManager.DE_ICON_ID}_$sourceId"),
-                    PropertyFactory.iconAllowOverlap(true)
-                )
-
-    private val selectedPointLayer: Layer
-        get() = style.getLayer(SELECTED_POINT_LAYER_ID)
-            ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_POINT_SOURCE_ID)
-                .withProperties(
-                    PropertyFactory.iconImage("${EventMapManager.DE_ICON_ID}_$sourceId"),
+                    PropertyFactory.iconAllowOverlap(true),
                     PropertyFactory.iconAllowOverlap(true),
                     PropertyFactory.textField(Expression.get(FIELD_NAME)),
                     PropertyFactory.textAllowOverlap(false),
@@ -58,15 +51,17 @@ class FieldMapLayer(
                     PropertyFactory.textSize(10f)
                 )
 
+    private val selectedPointLayer: Layer
+        get() = style.getLayer(SELECTED_POINT_LAYER_ID)
+            ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_POINT_SOURCE_ID)
+                .withTEIMarkerProperties()
+                .withInitialVisibility(Property.NONE)
+
     private val teiPointLayer: Layer
         get() = style.getLayer(TEI_POINT_LAYER_ID)
             ?: SymbolLayer(TEI_POINT_LAYER_ID, sourceId)
-                .withProperties(
-                    PropertyFactory.iconImage(Expression.get(MapTeisToFeatureCollection.TEI_UID)),
-                    PropertyFactory.iconOffset(arrayOf(0f, -12f)),
-                    PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.textAllowOverlap(true)
-                )
+                .withTEIMarkerProperties()
+                .withInitialVisibility(Property.NONE)
 
     private fun setVisibility(visibility: String) {
         pointLayer.setProperties(PropertyFactory.visibility(visibility))
@@ -80,19 +75,14 @@ class FieldMapLayer(
     }
 
     override fun hideLayer() {
-        deselectCurrentPoint()
         setVisibility(Property.NONE)
     }
 
     override fun setSelectedItem(feature: Feature?) {
-        feature?.let {
-            selectPoint(feature)
-        } ?: deselectCurrentPoint()
+        feature?.let { selectPoint(feature) } ?: deselectCurrentPoint()
     }
 
     private fun selectPoint(feature: Feature) {
-        deselectCurrentPoint()
-
         style.getSourceAs<GeoJsonSource>(SELECTED_POINT_SOURCE_ID)?.apply {
             setGeoJson(feature)
         }
@@ -104,13 +94,11 @@ class FieldMapLayer(
     }
 
     private fun deselectCurrentPoint() {
-        selectedPointLayer.setProperties(
-            PropertyFactory.visibility(Property.NONE)
-        )
+        selectedPointLayer.setProperties(PropertyFactory.visibility(Property.NONE))
     }
 
     override fun findFeatureWithUid(featureUidProperty: String): Feature? {
-        return style.getSourceAs<GeoJsonSource>(TeiMapManager.TEIS_SOURCE_ID)
+        return style.getSourceAs<GeoJsonSource>(sourceId)
             ?.querySourceFeatures(Expression.eq(Expression.get(TEI_UID), featureUidProperty))
             ?.firstOrNull()
             .also { setSelectedItem(it) }
@@ -118,5 +106,11 @@ class FieldMapLayer(
 
     override fun getId(): String {
         return POINT_LAYER_ID
+    }
+
+    override fun layerIdsToSearch(): Array<String> {
+        return arrayOf(
+            TEI_POINT_LAYER_ID
+        )
     }
 }
