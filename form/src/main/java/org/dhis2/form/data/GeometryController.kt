@@ -2,6 +2,8 @@ package org.dhis2.form.data
 
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
+import org.dhis2.form.ui.RecyclerViewUiEvents
+import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
@@ -37,6 +39,18 @@ class GeometryController(private val geometryParser: GeometryParser) {
         mapRequest: (fieldUid: String, featureType: String, initCoordinate: String?) -> Unit
     ): FieldUiModel.Callback {
         return object : FieldUiModel.Callback {
+            override fun onNext() {
+                TODO("Not yet implemented")
+            }
+
+            override fun intent(intent: FormIntent) {
+                TODO("Not yet implemented")
+            }
+
+            override fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents) {
+                TODO("Not yet implemented")
+            }
+
             override fun onItemAction(action: RowAction) {
                 onItemAction(action)
             }

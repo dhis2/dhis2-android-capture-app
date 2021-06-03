@@ -11,6 +11,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.RecyclerViewUiEvents;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
@@ -159,7 +160,7 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
     }
 
     public void onDescriptionClick() {
-        callback.showDialog(label(), description());
+        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.ShowDescriptionLabelDialog(label(), description()));
     }
 
     @Override

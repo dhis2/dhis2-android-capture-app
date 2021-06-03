@@ -30,7 +30,7 @@ class BasicFormUiModelStyleTest {
             FormUiColorType.WARNING to 3,
             FormUiColorType.ERROR to 4
         )
-        whenever(colorFactory.getBasicColors()) doReturn (mapOfColors)
+        whenever(colorFactory.getBasicColors()) doReturn mapOfColors
 
         val result = basicFormUiModelStyle.getColors()
 

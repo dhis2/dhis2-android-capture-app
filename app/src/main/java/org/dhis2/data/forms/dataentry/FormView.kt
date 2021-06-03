@@ -21,6 +21,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
+import java.util.Calendar
 import org.dhis2.Bindings.truncate
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.age.AgeDialogDelegate
@@ -37,6 +38,8 @@ import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FormViewModel
+import org.dhis2.form.ui.RecyclerViewUiEvents
+import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
@@ -77,7 +80,7 @@ class FormView private constructor(
         binding = DataBindingUtil.inflate(inflater, R.layout.view_form, container, false)
         binding.lifecycleOwner = this
         dataEntryHeaderHelper = DataEntryHeaderHelper(binding.headerContainer, binding.recyclerView)
-        ageDialogDelegate = AgeDialogDelegate(viewModel)
+        ageDialogDelegate = AgeDialogDelegate()
         binding.recyclerView.layoutManager =
             object : LinearLayoutManager(contextWrapper, VERTICAL, false) {
                 override fun onInterceptFocusSearch(focused: View, direction: Int): View {
@@ -97,17 +100,6 @@ class FormView private constructor(
         super.onViewCreated(view, savedInstanceState)
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
         adapter = DataEntryAdapter(needToForceUpdate)
-        adapter.didItemShowDialog = { title, message ->
-            CustomDialog(
-                requireContext(),
-                title,
-                message ?: requireContext().getString(R.string.empty_description),
-                requireContext().getString(R.string.action_close),
-                null,
-                Constants.DESCRIPTION_DIALOG,
-                null
-            ).show()
-        }
         adapter.onNextClicked = { position ->
             val viewHolder = binding.recyclerView.findViewHolderForLayoutPosition(position + 1)
             if (viewHolder == null) {
@@ -163,54 +155,13 @@ class FormView private constructor(
         }
 
         binding.recyclerView.adapter = adapter
-        adapter.onShowCustomCalendar = { uid, label, date ->
-            DatePickerUtils.getDatePickerDialog(
-                requireContext(),
-                label,
-                date,
-                true,
-                object : OnDatePickerClickListener {
-                    override fun onNegativeClick() {
-                        ageDialogDelegate.handleClearInput(uid)
-                    }
 
-                    override fun onPositiveClick(datePicker: DatePicker) {
-                        ageDialogDelegate.handleDateInput(
-                            uid,
-                            datePicker.year,
-                            datePicker.month,
-                            datePicker.dayOfMonth
-                        )
-                    }
-                }
-            ).show()
+        adapter.onIntent = { intent ->
+            intentHandler(intent)
         }
 
-        adapter.onShowYearMonthDayPicker = { uid, year, month, day ->
-            alertDialogView =
-                LayoutInflater.from(requireContext()).inflate(R.layout.dialog_age, null)
-            val yearPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_year)
-            val monthPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_month)
-            val dayPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_days)
-            yearPicker.setText(year.toString())
-            monthPicker.setText(month.toString())
-            dayPicker.setText(day.toString())
-
-            AlertDialog.Builder(requireContext(), R.style.CustomDialog)
-                .setView(alertDialogView)
-                .setPositiveButton(R.string.action_accept) { _, _ ->
-                    ageDialogDelegate.handleYearMonthDayInput(
-                        uid,
-                        negativeOrZero(yearPicker.text.toString()),
-                        negativeOrZero(monthPicker.text.toString()),
-                        negativeOrZero(dayPicker.text.toString())
-                    )
-                }
-                .setNegativeButton(R.string.clear) { _, _ ->
-                    ageDialogDelegate.handleClearInput(uid)
-                }
-                .create()
-                .show()
+        adapter.onRecyclerViewUiEvents = { uiEvent ->
+            uiEventHandler(uiEvent)
         }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -252,6 +203,18 @@ class FormView private constructor(
         )
     }
 
+    private fun uiEventHandler(uiEvent: RecyclerViewUiEvents) {
+        when (uiEvent) {
+            is RecyclerViewUiEvents.OpenCustomAgeCalendar -> showCustomAgeCalendar(uiEvent)
+            is RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar -> showYearMonthDayAgeCalendar(
+                uiEvent
+            )
+            is RecyclerViewUiEvents.ShowDescriptionLabelDialog -> showDescriptionLabelDialog(
+                uiEvent
+            )
+        }
+    }
+
     fun render(items: List<FieldUiModel>) {
         val layoutManager: LinearLayoutManager =
             binding.recyclerView.layoutManager as LinearLayoutManager
@@ -268,10 +231,7 @@ class FormView private constructor(
         adapter.swap(
             items,
             Runnable {
-                when (needToForceUpdate) {
-                    true -> adapter.notifyDataSetChanged()
-                    else -> dataEntryHeaderHelper.onItemsUpdatedCallback()
-                }
+                dataEntryHeaderHelper.onItemsUpdatedCallback()
             }
         )
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
@@ -307,6 +267,81 @@ class FormView private constructor(
         else -> false
     }
 
+    private fun intentHandler(intent: FormIntent) {
+        viewModel.submitIntent(intent)
+    }
+
+    private fun showCustomAgeCalendar(intent: RecyclerViewUiEvents.OpenCustomAgeCalendar) {
+        val date = Calendar.getInstance().time
+        DatePickerUtils.getDatePickerDialog(
+            requireContext(),
+            intent.label,
+            date,
+            true,
+            object : OnDatePickerClickListener {
+                override fun onNegativeClick() {
+                    val clearIntent = FormIntent.ClearDateFromAgeCalendar(intent.uid)
+                    intentHandler(clearIntent)
+                }
+
+                override fun onPositiveClick(datePicker: DatePicker) {
+                    val dateIntent = ageDialogDelegate.handleDateInput(
+                        intent.uid,
+                        datePicker.year,
+                        datePicker.month,
+                        datePicker.dayOfMonth
+                    )
+                    intentHandler(dateIntent)
+                }
+            }
+        ).show()
+    }
+
+    private fun showYearMonthDayAgeCalendar(
+        intent: RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar
+    ) {
+        alertDialogView =
+            LayoutInflater.from(requireContext()).inflate(R.layout.dialog_age, null)
+        val yearPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_year)
+        val monthPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_month)
+        val dayPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_days)
+        yearPicker.setText(intent.year.toString())
+        monthPicker.setText(intent.month.toString())
+        dayPicker.setText(intent.day.toString())
+
+        AlertDialog.Builder(requireContext(), R.style.CustomDialog)
+            .setView(alertDialogView)
+            .setPositiveButton(R.string.action_accept) { _, _ ->
+                val dateIntent = ageDialogDelegate.handleYearMonthDayInput(
+                    intent.uid,
+                    negativeOrZero(yearPicker.text.toString()),
+                    negativeOrZero(monthPicker.text.toString()),
+                    negativeOrZero(dayPicker.text.toString())
+                )
+                intentHandler(dateIntent)
+            }
+            .setNegativeButton(R.string.clear) { _, _ ->
+                val clearIntent = FormIntent.ClearDateFromAgeCalendar(intent.uid)
+                intentHandler(clearIntent)
+            }
+            .create()
+            .show()
+    }
+
+    private fun showDescriptionLabelDialog(
+        intent: RecyclerViewUiEvents.ShowDescriptionLabelDialog
+    ) {
+        CustomDialog(
+            requireContext(),
+            intent.title,
+            intent.message ?: requireContext().getString(R.string.empty_description),
+            requireContext().getString(R.string.action_close),
+            null,
+            Constants.DESCRIPTION_DIALOG,
+            null
+        ).show()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK &&
             requestCode == Constants.RQ_MAP_LOCATION_VIEW && data?.extras != null
@@ -335,7 +370,7 @@ class FormView private constructor(
         }
     }
 
-    class Builder() {
+    class Builder {
         private var persistentRepository: FormRepository? = null
         private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
         private var locationProvider: LocationProvider? = null
