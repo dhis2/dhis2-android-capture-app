@@ -30,6 +30,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public class EventCaptureFormFragment extends FragmentGlobalAbstract implements EventCaptureFormView {
 
@@ -90,6 +91,14 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                 .onItemChangeListener(action -> {
                     activity.getPresenter().setValueChanged(action.getId());
                     activity.getPresenter().nextCalculation(true);
+                    return Unit.INSTANCE;
+                })
+                .onLoadingListener(loading -> {
+                    if(loading){
+                        activity.showProgress();
+                    }else{
+                        activity.hideProgress();
+                    }
                     return Unit.INSTANCE;
                 })
                 .build();

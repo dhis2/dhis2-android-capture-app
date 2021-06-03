@@ -126,6 +126,13 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             .persistence(formRepository)
             .locationProvider(locationProvider)
             .onItemChangeListener { presenter.updateFields() }
+            .onLoadingListener { loading ->
+                if (loading) {
+                    showProgress()
+                } else {
+                    hideProgress()
+                }
+            }
             .build()
 
         val fragmentTransaction = supportFragmentManager.beginTransaction()

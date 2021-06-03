@@ -57,6 +57,7 @@ class FormView private constructor(
     formRepository: FormRepository,
     private val onItemChangeListener: ((action: RowAction) -> Unit)?,
     private val locationProvider: LocationProvider?,
+    private val onLoadingListener: ((loading: Boolean) -> Unit)?,
     private val needToForceUpdate: Boolean = false
 ) : Fragment() {
 
@@ -201,6 +202,21 @@ class FormView private constructor(
                 render(items)
             }
         )
+
+        viewModel.loading.observe(
+            viewLifecycleOwner,
+            Observer { loading ->
+                if (onLoadingListener != null) {
+                    onLoadingListener.invoke(loading)
+                } else {
+                    if (loading) {
+                        binding.progress.show()
+                    } else {
+                        binding.progress.hide()
+                    }
+                }
+            }
+        )
     }
 
     private fun uiEventHandler(uiEvent: RecyclerViewUiEvents) {
@@ -231,7 +247,11 @@ class FormView private constructor(
         adapter.swap(
             items,
             Runnable {
-                dataEntryHeaderHelper.onItemsUpdatedCallback()
+                when (needToForceUpdate) {
+                    true -> adapter.notifyDataSetChanged()
+                    else -> dataEntryHeaderHelper.onItemsUpdatedCallback()
+                }
+                viewModel.onItemsRendered()
             }
         )
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
@@ -375,6 +395,7 @@ class FormView private constructor(
         private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
         private var locationProvider: LocationProvider? = null
         private var needToForceUpdate: Boolean = false
+        private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
 
         /**
          * If you want to persist the items and it's changes in any sources, please provide an
@@ -408,12 +429,19 @@ class FormView private constructor(
         fun needToForceUpdate(needToForceUpdate: Boolean) =
             apply { this.needToForceUpdate = needToForceUpdate }
 
+        /**
+         * If set,
+         * */
+        fun onLoadingListener(callback: (loading: Boolean) -> Unit) =
+            apply { this.onLoadingListener = callback }
+
         fun build(): FormView {
             return FormView(
                 formRepository = persistentRepository ?: FormRepositoryNonPersistenceImpl(),
                 locationProvider = locationProvider,
                 onItemChangeListener = onItemChangeListener,
-                needToForceUpdate = needToForceUpdate
+                needToForceUpdate = needToForceUpdate,
+                onLoadingListener = onLoadingListener
             )
         }
     }

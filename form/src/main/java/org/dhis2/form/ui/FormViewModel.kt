@@ -30,6 +30,7 @@ class FormViewModel(
     private val geometryController: GeometryController = GeometryController(GeometryParserImpl())
 ) : ViewModel() {
 
+    val loading = MutableLiveData<Boolean>()
     private val _items = MutableLiveData<List<FieldUiModel>>()
     val items: LiveData<List<FieldUiModel>> = _items
 
@@ -57,6 +58,9 @@ class FormViewModel(
 
     private fun createRowActionStore(it: FormIntent): Pair<RowAction, StoreResult> {
         val rowAction = rowActionFromIntent(it)
+        if (rowAction.type == ActionType.ON_SAVE) {
+            loading.postValue(true)
+        }
         val result = repository.processUserAction(rowAction)
         return Pair(rowAction, result)
     }
@@ -92,6 +96,9 @@ class FormViewModel(
 
     @Deprecated("Use for legacy only. Do not use this for refactor views")
     fun onItemAction(action: RowAction) {
+        if (action.type == ActionType.ON_SAVE) {
+            loading.value = true
+        }
         viewModelScope.launch {
             submitRowAction(action).collect {
                 when (it.valueStoreResult) {
@@ -108,6 +115,10 @@ class FormViewModel(
     private fun submitRowAction(action: RowAction): Flow<StoreResult> = flow {
         emit(repository.processUserAction(action))
     }.flowOn(dispatcher)
+
+    fun onItemsRendered() {
+        loading.value = false
+    }
 
     fun setCoordinateFieldValue(fieldUid: String?, featureType: String?, coordinates: String?) {
         if (fieldUid != null && featureType != null) {
