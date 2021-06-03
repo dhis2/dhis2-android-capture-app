@@ -70,6 +70,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -516,7 +517,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             otherProgramSelected = !newProgramSelected.equals(selectedProgram);
         }
         selectedProgram = newProgramSelected;
-        currentProgram.onNext(newProgramSelected != null ? newProgramSelected.uid() : "");
         view.clearList(newProgramSelected == null ? null : newProgramSelected.uid());
         view.clearData();
         view.setFabIcon(true);
@@ -526,6 +526,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             preferences.removeValue(Preference.CURRENT_ORG_UNIT);
             queryData.clear();
         }
+
+        currentProgram.onNext(newProgramSelected != null ? newProgramSelected.uid() : "");
     }
 
     private boolean isPreviousAndCurrentProgramTheSame(Program programSelected, String previousProgramUid, String currentProgramUid) {
@@ -1023,6 +1025,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void populateList(List<FieldUiModel> list) {
+        view.setFabIcon(!list.isEmpty());
         view.setFormData(formRepository.composeList(list));
     }
 
