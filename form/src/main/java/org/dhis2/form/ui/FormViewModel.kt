@@ -59,7 +59,7 @@ class FormViewModel(
     private fun createRowActionStore(it: FormIntent): Pair<RowAction, StoreResult> {
         val rowAction = rowActionFromIntent(it)
         if (rowAction.type == ActionType.ON_SAVE) {
-            loading.value = true
+            loading.postValue(true)
         }
         val result = repository.processUserAction(rowAction)
         return Pair(rowAction, result)
