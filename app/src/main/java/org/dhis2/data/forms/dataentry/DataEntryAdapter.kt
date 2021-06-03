@@ -1,35 +1,52 @@
 package org.dhis2.data.forms.dataentry
 
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
 import java.util.ArrayList
-import java.util.Date
 import java.util.LinkedHashMap
+import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder.FieldItemCallback
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.DataEntryDiff
+import org.dhis2.form.ui.RecyclerViewUiEvents
+import org.dhis2.form.ui.intent.FormIntent
+import org.hisp.dhis.android.core.common.FeatureType
 
-class DataEntryAdapter :
+class DataEntryAdapter(private val searchStyle: Boolean) :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),
     FieldItemCallback {
 
-    var didItemShowDialog: ((title: String, message: String?) -> Unit)? = null
+    private val refactoredViews = intArrayOf(R.layout.form_age_custom)
+
     var onNextClicked: ((position: Int) -> Unit)? = null
-    var onShowCustomCalendar: ((uid: String, label: String?, date: Date) -> Unit)? = null
-    var onShowYearMonthDayPicker: ((uid: String, year: Int, month: Int, day: Int) -> Unit)? = null
     var onItemAction: ((action: RowAction) -> Unit)? = null
+    var onIntent: ((intent: FormIntent) -> Unit)? = null
+    var onRecyclerViewUiEvents: ((uiEvent: RecyclerViewUiEvents) -> Unit)? = null
+    var onLocationRequest: ((coordinateFieldUid: String) -> Unit)? = null
+    var onMapRequest: ((fieldUid: String, type: FeatureType, initValue: String?) -> Unit)? = null
 
     private val sectionHandler = SectionHandler()
     var sectionPositions: MutableMap<String, Int> = LinkedHashMap()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FormViewHolder {
-        val layoutInflater = LayoutInflater.from(parent.context)
+        val layoutInflater =
+            if (refactoredViews.contains(viewType) && searchStyle) {
+                LayoutInflater.from(
+                    ContextThemeWrapper(
+                        parent.context,
+                        R.style.searchFormInputText
+                    )
+                )
+            } else {
+                LayoutInflater.from(parent.context)
+            }
         val binding =
             DataBindingUtil.inflate<ViewDataBinding>(layoutInflater, viewType, parent, false)
         return FormViewHolder(binding)
@@ -39,7 +56,6 @@ class DataEntryAdapter :
         if (getItem(position) is SectionViewModel) {
             updateSectionData(position, false)
         }
-
         holder.bind(getItem(position), this)
     }
 
@@ -113,21 +129,15 @@ class DataEntryAdapter :
         }
     }
 
-    override fun showYearMonthDayPicker(uid: String, year: Int, month: Int, day: Int) {
-        onShowYearMonthDayPicker?.let {
-            it(uid, year, month, day)
+    override fun intent(intent: FormIntent) {
+        onIntent?.let {
+            it(intent)
         }
     }
 
-    override fun onShowDialog(title: String, message: String?) {
-        didItemShowDialog?.let { action ->
-            action(title, message)
-        }
-    }
-
-    override fun showCustomCalendar(uid: String, label: String?, date: Date) {
-        onShowCustomCalendar?.let {
-            it(uid, label, date)
+    override fun recyclerViewEvent(uiEvent: RecyclerViewUiEvents) {
+        onRecyclerViewUiEvents?.let {
+            it(uiEvent)
         }
     }
 
@@ -140,6 +150,22 @@ class DataEntryAdapter :
     override fun onAction(action: RowAction) {
         onItemAction?.let {
             it(action)
+        }
+    }
+
+    override fun onCurrentLocationRequest(coordinateFieldUid: String) {
+        onLocationRequest?.let {
+            it(coordinateFieldUid)
+        }
+    }
+
+    override fun onMapRequest(
+        coordinateFieldUid: String,
+        featureType: FeatureType,
+        initialCoordinates: String?
+    ) {
+        onMapRequest?.let {
+            it(coordinateFieldUid, featureType, initialCoordinates)
         }
     }
 }

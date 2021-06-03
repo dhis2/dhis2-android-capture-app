@@ -1,12 +1,18 @@
 package org.dhis2.data.forms.dataentry
 
+import android.Manifest
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.DatePicker
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -15,28 +21,42 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
+import java.util.Calendar
+import org.dhis2.Bindings.truncate
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.age.AgeDialogDelegate
 import org.dhis2.data.forms.dataentry.fields.age.negativeOrZero
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
+import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryNonPersistenceImpl
+import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FormViewModel
+import org.dhis2.form.ui.RecyclerViewUiEvents
+import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.DATA_EXTRA
+import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.FIELD_UID
+import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
+import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.create
+import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
 import org.dhis2.utils.Constants
 import org.dhis2.utils.DatePickerUtils
 import org.dhis2.utils.DatePickerUtils.OnDatePickerClickListener
 import org.dhis2.utils.customviews.CustomDialog
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
+import org.hisp.dhis.android.core.common.FeatureType
 import timber.log.Timber
 
 class FormView private constructor(
     formRepository: FormRepository,
     private val onItemChangeListener: ((action: RowAction) -> Unit)?,
+    private val locationProvider: LocationProvider?,
     private val onLoadingListener: ((loading: Boolean) -> Unit)?,
     private val needToForceUpdate: Boolean = false
 ) : Fragment() {
@@ -57,12 +77,13 @@ class FormView private constructor(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val contextWrapper = ContextThemeWrapper(context, R.style.searchFormInputText)
         binding = DataBindingUtil.inflate(inflater, R.layout.view_form, container, false)
         binding.lifecycleOwner = this
         dataEntryHeaderHelper = DataEntryHeaderHelper(binding.headerContainer, binding.recyclerView)
-        ageDialogDelegate = AgeDialogDelegate(viewModel)
+        ageDialogDelegate = AgeDialogDelegate()
         binding.recyclerView.layoutManager =
-            object : LinearLayoutManager(context, VERTICAL, false) {
+            object : LinearLayoutManager(contextWrapper, VERTICAL, false) {
                 override fun onInterceptFocusSearch(focused: View, direction: Int): View {
                     return focused
                 }
@@ -79,18 +100,7 @@ class FormView private constructor(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
-        adapter = DataEntryAdapter()
-        adapter.didItemShowDialog = { title, message ->
-            CustomDialog(
-                requireContext(),
-                title,
-                message ?: requireContext().getString(R.string.empty_description),
-                requireContext().getString(R.string.action_close),
-                null,
-                Constants.DESCRIPTION_DIALOG,
-                null
-            ).show()
-        }
+        adapter = DataEntryAdapter(needToForceUpdate)
         adapter.onNextClicked = { position ->
             val viewHolder = binding.recyclerView.findViewHolderForLayoutPosition(position + 1)
             if (viewHolder == null) {
@@ -106,55 +116,53 @@ class FormView private constructor(
             viewModel.onItemAction(action)
         }
 
-        binding.recyclerView.adapter = adapter
-        adapter.onShowCustomCalendar = { uid, label, date ->
-            DatePickerUtils.getDatePickerDialog(
-                requireContext(),
-                label,
-                date,
-                true,
-                object : OnDatePickerClickListener {
-                    override fun onNegativeClick() {
-                        ageDialogDelegate.handleClearInput(uid)
-                    }
-
-                    override fun onPositiveClick(datePicker: DatePicker) {
-                        ageDialogDelegate.handleDateInput(
-                            uid,
-                            datePicker.year,
-                            datePicker.month,
-                            datePicker.dayOfMonth
+        adapter.onLocationRequest = { fieldUid ->
+            locationProvider?.getLastKnownLocation(
+                { location ->
+                    val geometry = GeometryHelper.createPointGeometry(
+                        location.longitude.truncate(),
+                        location.latitude.truncate()
+                    )
+                    viewModel.onItemAction(
+                        RowAction(
+                            id = fieldUid,
+                            value = geometry.coordinates(),
+                            type = ActionType.ON_SAVE,
+                            extraData = FeatureType.POINT.name
                         )
-                    }
+                    )
+                },
+                {
+                    this@FormView.requestPermissions(
+                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                        EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST
+                    )
+                },
+                {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.enable_location_message),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-            ).show()
+            )
         }
 
-        adapter.onShowYearMonthDayPicker = { uid, year, month, day ->
-            alertDialogView =
-                LayoutInflater.from(requireContext()).inflate(R.layout.dialog_age, null)
-            val yearPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_year)
-            val monthPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_month)
-            val dayPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_days)
-            yearPicker.setText(year.toString())
-            monthPicker.setText(month.toString())
-            dayPicker.setText(day.toString())
+        adapter.onMapRequest = { fieldUid, featureType, initialData ->
+            startActivityForResult(
+                create(requireContext(), fieldUid, featureType, initialData),
+                Constants.RQ_MAP_LOCATION_VIEW
+            )
+        }
 
-            AlertDialog.Builder(requireContext(), R.style.CustomDialog)
-                .setView(alertDialogView)
-                .setPositiveButton(R.string.action_accept) { _, _ ->
-                    ageDialogDelegate.handleYearMonthDayInput(
-                        uid,
-                        negativeOrZero(yearPicker.text.toString()),
-                        negativeOrZero(monthPicker.text.toString()),
-                        negativeOrZero(dayPicker.text.toString())
-                    )
-                }
-                .setNegativeButton(R.string.clear) { _, _ ->
-                    ageDialogDelegate.handleClearInput(uid)
-                }
-                .create()
-                .show()
+        binding.recyclerView.adapter = adapter
+
+        adapter.onIntent = { intent ->
+            intentHandler(intent)
+        }
+
+        adapter.onRecyclerViewUiEvents = { uiEvent ->
+            uiEventHandler(uiEvent)
         }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -209,6 +217,18 @@ class FormView private constructor(
                 }
             }
         )
+    }
+
+    private fun uiEventHandler(uiEvent: RecyclerViewUiEvents) {
+        when (uiEvent) {
+            is RecyclerViewUiEvents.OpenCustomAgeCalendar -> showCustomAgeCalendar(uiEvent)
+            is RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar -> showYearMonthDayAgeCalendar(
+                uiEvent
+            )
+            is RecyclerViewUiEvents.ShowDescriptionLabelDialog -> showDescriptionLabelDialog(
+                uiEvent
+            )
+        }
     }
 
     fun render(items: List<FieldUiModel>) {
@@ -267,9 +287,113 @@ class FormView private constructor(
         else -> false
     }
 
-    class Builder() {
+    private fun intentHandler(intent: FormIntent) {
+        viewModel.submitIntent(intent)
+    }
+
+    private fun showCustomAgeCalendar(intent: RecyclerViewUiEvents.OpenCustomAgeCalendar) {
+        val date = Calendar.getInstance().time
+        DatePickerUtils.getDatePickerDialog(
+            requireContext(),
+            intent.label,
+            date,
+            true,
+            object : OnDatePickerClickListener {
+                override fun onNegativeClick() {
+                    val clearIntent = FormIntent.ClearDateFromAgeCalendar(intent.uid)
+                    intentHandler(clearIntent)
+                }
+
+                override fun onPositiveClick(datePicker: DatePicker) {
+                    val dateIntent = ageDialogDelegate.handleDateInput(
+                        intent.uid,
+                        datePicker.year,
+                        datePicker.month,
+                        datePicker.dayOfMonth
+                    )
+                    intentHandler(dateIntent)
+                }
+            }
+        ).show()
+    }
+
+    private fun showYearMonthDayAgeCalendar(
+        intent: RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar
+    ) {
+        alertDialogView =
+            LayoutInflater.from(requireContext()).inflate(R.layout.dialog_age, null)
+        val yearPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_year)
+        val monthPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_month)
+        val dayPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_days)
+        yearPicker.setText(intent.year.toString())
+        monthPicker.setText(intent.month.toString())
+        dayPicker.setText(intent.day.toString())
+
+        AlertDialog.Builder(requireContext(), R.style.CustomDialog)
+            .setView(alertDialogView)
+            .setPositiveButton(R.string.action_accept) { _, _ ->
+                val dateIntent = ageDialogDelegate.handleYearMonthDayInput(
+                    intent.uid,
+                    negativeOrZero(yearPicker.text.toString()),
+                    negativeOrZero(monthPicker.text.toString()),
+                    negativeOrZero(dayPicker.text.toString())
+                )
+                intentHandler(dateIntent)
+            }
+            .setNegativeButton(R.string.clear) { _, _ ->
+                val clearIntent = FormIntent.ClearDateFromAgeCalendar(intent.uid)
+                intentHandler(clearIntent)
+            }
+            .create()
+            .show()
+    }
+
+    private fun showDescriptionLabelDialog(
+        intent: RecyclerViewUiEvents.ShowDescriptionLabelDialog
+    ) {
+        CustomDialog(
+            requireContext(),
+            intent.title,
+            intent.message ?: requireContext().getString(R.string.empty_description),
+            requireContext().getString(R.string.action_close),
+            null,
+            Constants.DESCRIPTION_DIALOG,
+            null
+        ).show()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK &&
+            requestCode == Constants.RQ_MAP_LOCATION_VIEW && data?.extras != null
+        ) {
+            data.apply {
+                viewModel.setCoordinateFieldValue(
+                    getStringExtra(FIELD_UID),
+                    getStringExtra(LOCATION_TYPE_EXTRA),
+                    getStringExtra(DATA_EXTRA)
+                )
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String?>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED
+        ) {
+            viewModel.getFocusedItemUid()?.let {
+                adapter.onLocationRequest?.invoke(it)
+            }
+        }
+    }
+
+    class Builder {
         private var persistentRepository: FormRepository? = null
         private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
+        private var locationProvider: LocationProvider? = null
         private var needToForceUpdate: Boolean = false
         private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
 
@@ -294,6 +418,12 @@ class FormView private constructor(
             apply { this.onItemChangeListener = callback }
 
         /**
+         *
+         */
+        fun locationProvider(locationProvider: LocationProvider) =
+            apply { this.locationProvider = locationProvider }
+
+        /**
          * If it's set to true, any change on the list will make update all of it's items.
          */
         fun needToForceUpdate(needToForceUpdate: Boolean) =
@@ -308,6 +438,7 @@ class FormView private constructor(
         fun build(): FormView {
             return FormView(
                 formRepository = persistentRepository ?: FormRepositoryNonPersistenceImpl(),
+                locationProvider = locationProvider,
                 onItemChangeListener = onItemChangeListener,
                 needToForceUpdate = needToForceUpdate,
                 onLoadingListener = onLoadingListener

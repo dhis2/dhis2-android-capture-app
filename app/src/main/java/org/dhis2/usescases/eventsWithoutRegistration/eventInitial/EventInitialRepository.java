@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.FormSectionViewModel;
+import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.model.RowAction;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -23,6 +25,8 @@ import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.processors.FlowableProcessor;
 
 public interface EventInitialRepository {
 
@@ -94,4 +98,6 @@ public interface EventInitialRepository {
     Flowable<List<FieldUiModel>> list();
 
     Flowable<Result<RuleEffect>> calculate();
+
+    Single<CoordinateViewModel> getGeometryModel(String programUid, FlowableProcessor<RowAction> processor);
 }

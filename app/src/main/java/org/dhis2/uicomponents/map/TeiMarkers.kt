@@ -31,7 +31,7 @@ object TeiMarkers {
         canvas.drawBitmap(
             bitmap,
             canvas.width / 2f - bitmap.width / 2f,
-            1.dp.toFloat(),
+            2.dp.toFloat(),
             null
         )
         return markerBitmap

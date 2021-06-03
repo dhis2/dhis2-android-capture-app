@@ -230,7 +230,7 @@ class EnrollmentRepository(
 
         val fieldViewModel = fieldFactory.create(
             attribute.uid(),
-            attribute.displayName() ?: "",
+            attribute.displayFormName() ?: "",
             valueType!!,
             mandatory,
             optionSet,
@@ -447,7 +447,8 @@ class EnrollmentRepository(
             featureType,
             true,
             false,
-            onRowActionProccesor
+            onRowActionProccesor,
+            fieldFactory.style()
         )
     }
 
@@ -469,7 +470,8 @@ class EnrollmentRepository(
             featureType,
             true,
             false,
-            onRowActionProccesor
+            onRowActionProccesor,
+            fieldFactory.style()
         )
     }
 

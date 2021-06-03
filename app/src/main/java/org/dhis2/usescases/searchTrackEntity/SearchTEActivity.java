@@ -4,7 +4,6 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -49,6 +48,7 @@ import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.data.forms.dataentry.FormView;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.data.location.LocationProvider;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.model.FieldUiModel;
@@ -116,6 +116,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     FieldViewModelFactory fieldViewModelFactory;
     @Inject
     FormRepository formRepository;
+    @Inject
+    LocationProvider locationProvider;
 
     private String initialProgram;
     private String tEType;
@@ -136,7 +138,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private SearchTeiLiveAdapter liveAdapter;
     private RelationshipLiveAdapter relationshipLiveAdapter;
     private TeiMapManager teiMapManager;
-    private boolean initSearchNeeded = true;
+    public boolean initSearchNeeded = true;
     private ObjectAnimator animation = null;
     private String updateTei;
     private String updateEvent;
@@ -153,7 +155,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
 
-        ((App) getApplicationContext()).userComponent().plus(new SearchTEModule(this, tEType, initialProgram)).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new SearchTEModule(this, tEType, initialProgram, getContext())).inject(this);
 
         super.onCreate(savedInstanceState);
 
@@ -183,6 +185,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         formView = new FormView.Builder()
                 .persistence(formRepository)
+                .locationProvider(locationProvider)
                 .onItemChangeListener(action -> {
                     fieldViewModelFactory.fieldProcessor().onNext(action);
                     presenter.populateList(null);
@@ -963,7 +966,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private void updateCarousel(List<CarouselItemModel> allItems) {
         if (binding.mapCarousel.getAdapter() != null) {
-            ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateAllData(allItems, teiMapManager.mapLayerManager);
+            ((CarouselAdapter) binding.mapCarousel.getAdapter()).setAllItems(allItems);
+            List<String> sources = new ArrayList<String>(teiMapManager.mapLayerManager.getMapLayers().keySet());
+            ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateLayers(sources, teiMapManager.mapLayerManager.getMapLayers());
         }
     }
 

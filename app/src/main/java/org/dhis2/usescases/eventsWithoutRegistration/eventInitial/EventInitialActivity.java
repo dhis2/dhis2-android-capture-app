@@ -1,9 +1,11 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.SparseBooleanArray;
@@ -16,20 +18,28 @@ import android.widget.PopupMenu;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
 
+import com.google.gson.Gson;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import org.dhis2.App;
+import org.dhis2.Bindings.DoubleExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
+import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
+import org.dhis2.data.location.LocationProvider;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
+import org.dhis2.form.data.GeometryController;
+import org.dhis2.form.data.GeometryParserImpl;
 import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.uicomponents.map.views.MapSelectorActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
@@ -47,6 +57,7 @@ import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.dhis2.utils.customviews.PeriodDialog;
 import org.dhis2.utils.resources.ResourceManager;
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -61,6 +72,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -82,6 +94,7 @@ import kotlin.Unit;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
 import static org.dhis2.utils.Constants.EVENT_PERIOD_TYPE;
@@ -89,13 +102,15 @@ import static org.dhis2.utils.Constants.ONE_TIME;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PERMANENT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.utils.Constants.RQ_MAP_LOCATION_VIEW;
 import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
-public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener {
+public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View,
+        DatePickerDialog.OnDateSetListener {
 
     @Inject
     EventInitialPresenter presenter;
@@ -105,6 +120,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Inject
     DhisPeriodUtils periodUtils;
+
+    @Inject
+    LocationProvider locationProvider;
 
     private Event eventModel;
 
@@ -140,6 +158,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private CompositeDisposable disposable = new CompositeDisposable();
     private Geometry newGeometry;
+    private CoordinateViewModel currentGeometryModel;
+    private GeometryController geometryController = new GeometryController(new GeometryParserImpl());
 
     public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
                                    String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,
@@ -179,7 +199,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         ((App) getApplicationContext()).userComponent().plus(
                 new EventInitialModule(this,
                         eventUid,
-                        programStageUid)
+                        programStageUid,
+                        getContext())
         ).inject(this);
         setScreenName(this.getLocalClassName());
         super.onCreate(savedInstanceState);
@@ -428,7 +449,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
                 binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
             binding.orgUnit.setEnabled(false);
-            binding.geometry.setEditable(false);
             binding.temp.setEnabled(false);
             binding.actionButton.setText(getString(R.string.check_event));
             binding.executePendingBindings();
@@ -460,10 +480,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (event.eventDate() != null) {
             selectedDate = event.eventDate();
             binding.date.setText(DateUtils.uiDateFormat().format(selectedDate));
-        }
-
-        if (event.geometry() != null && event.geometry().type() != FeatureType.NONE) {
-            binding.geometry.updateLocation(event.geometry());
         }
 
         eventModel = event;
@@ -499,19 +515,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         this.programStage = programStage;
         binding.setProgramStage(programStage);
 
-        binding.geometry.setIsBgTransparent(true);
-        binding.geometry.setEditable(true);
-        binding.geometry.setFeatureType(programStage.featureType());
-        binding.geometry.setCurrentLocationListener(geometry -> {
-            this.newGeometry = geometry;
-            presenter.setChangingCoordinates(true);
-        });
-
         if (periodType == null)
             periodType = programStage.periodType();
 
         if (eventCreationType == EventCreationType.SCHEDULE)
-            binding.dateLayout.setHint(getString(R.string.due_date));
+            binding.dateLayout.setHint(programStage.dueDateLabel() != null ? programStage.dueDateLabel() : getString(R.string.due_date));
         else if (programStage.executionDateLabel() != null)
             binding.dateLayout.setHint(programStage.executionDateLabel());
         else
@@ -819,8 +827,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
                 binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
             binding.actionButton.setText(getString(R.string.check_event));
-            if (binding.geometry.getViewModel() != null)
-                binding.geometry.setEditable(false);
             binding.executePendingBindings();
         }
     }
@@ -944,5 +950,87 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void showEventWasDeleted() {
         showToast(getString(R.string.event_was_deleted));
         finish();
+    }
+
+    @Override
+    public void setGeometryModel(CoordinateViewModel geometryModel) {
+        setGeometryCallback(geometryModel);
+        binding.geometry.setItem(geometryModel);
+    }
+
+    private void setGeometryCallback(CoordinateViewModel geometryModel) {
+        currentGeometryModel = geometryModel;
+        geometryModel.setCallback(geometryController.getCoordinatesCallback(
+                action -> {
+                    presenter.setChangingCoordinates(true);
+                    setNewGeometry(action.getValue());
+                    setGeometryModel((CoordinateViewModel) geometryModel.withValue(action.getValue()));
+                    return Unit.INSTANCE;
+                },
+                fieldUid -> {
+                    requestLocation();
+                    return Unit.INSTANCE;
+                },
+                (fieldUid, featureType, initialCoordinates) -> {
+                    startActivityForResult(
+                            MapSelectorActivity.Companion.create(EventInitialActivity.this,
+                                    FeatureType.valueOfFeatureType(featureType),
+                                    initialCoordinates),
+                            RQ_MAP_LOCATION_VIEW);
+                    return Unit.INSTANCE;
+                }
+        ));
+    }
+
+    @Override
+    public void setNewGeometry(String value) {
+        if (value != null) {
+            this.newGeometry = Geometry.builder()
+                    .coordinates(value)
+                    .type(programStage.featureType())
+                    .build();
+        } else {
+            this.newGeometry = null;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode == RESULT_OK && requestCode == RQ_MAP_LOCATION_VIEW && data != null && data.getExtras() != null) {
+            FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA));
+            String dataExtra = data.getStringExtra(MapSelectorActivity.DATA_EXTRA);
+            Geometry geometry = geometryController.generateLocationFromCoordinates(locationType, dataExtra);
+            currentGeometryModel.onCurrentLocationClick(geometry);
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull @NotNull int[] grantResults) {
+        if (requestCode == ACCESS_LOCATION_PERMISSION_REQUEST && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            requestLocation();
+        }
+    }
+
+    private void requestLocation() {
+        locationProvider.getLastKnownLocation(
+                location -> {
+                    double longitude = DoubleExtensionsKt.truncate(location.getLongitude());
+                    double latitude = DoubleExtensionsKt.truncate(location.getLatitude());
+                    Geometry geometry = GeometryHelper.createPointGeometry(longitude, latitude);
+                    currentGeometryModel.onCurrentLocationClick(geometry);
+                    return Unit.INSTANCE;
+                },
+                () -> {
+                    ActivityCompat.requestPermissions((ActivityGlobalAbstract) getContext(),
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            ACCESS_LOCATION_PERMISSION_REQUEST);
+                    return Unit.INSTANCE;
+                },
+                () -> {
+                    displayMessage(getString(R.string.enable_location_message));
+                    return Unit.INSTANCE;
+                });
     }
 }

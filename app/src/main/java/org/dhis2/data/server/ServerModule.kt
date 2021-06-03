@@ -34,8 +34,8 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun configurationRepository(d2: D2?): UserManager {
-        return UserManagerImpl(d2!!)
+    fun configurationRepository(d2: D2?, repository: ServerSettingsRepository): UserManager {
+        return UserManagerImpl(d2!!, repository)
     }
 
     @Provides
@@ -71,6 +71,12 @@ class ServerModule {
             context.getString(R.string.week_period_span_default_label),
             context.getString(R.string.biweek_period_span_default_label)
         )
+    }
+
+    @Provides
+    @PerServer
+    fun providesRepository(d2: D2, systemStyleMapper: SystemStyleMapper): ServerSettingsRepository {
+        return ServerSettingsRepository(d2, systemStyleMapper)
     }
 
     companion object {

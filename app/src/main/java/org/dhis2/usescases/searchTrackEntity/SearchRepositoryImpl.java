@@ -132,7 +132,11 @@ public class SearchRepositoryImpl implements SearchRepository {
                             true
                     );
                 })
-                .toList().toObservable();
+                .toList().map(list ->
+                        CollectionsKt.filter(list, item ->
+                                !(item instanceof PictureViewModel) &&
+                                        !(item instanceof CoordinateViewModel))
+                ).toObservable();
     }
 
     private Observable<List<FieldUiModel>> programTrackedEntityAttributes(String programUid, Map<String, String> currentSearchValues) {
@@ -194,13 +198,11 @@ public class SearchRepositoryImpl implements SearchRepository {
             dataSource = trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst().getDataSource()
                     .mapByPage(this::filterDeleted)
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
                     .map(tei -> transform(tei, searchParametersModel.getSelectedProgram(), false, FilterManager.getInstance().getSortingItem()));
         } else {
             dataSource = trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly().getDataSource()
                     .mapByPage(this::filterDeleted)
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
                     .map(tei -> transform(tei, searchParametersModel.getSelectedProgram(), true, FilterManager.getInstance().getSortingItem()));
         }
 
@@ -228,7 +230,6 @@ public class SearchRepositoryImpl implements SearchRepository {
             return trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst().get().toFlowable()
                     .map(this::filterDeleted)
                     .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
-                    .map(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
                     .flatMapIterable(list -> list)
                     .map(tei -> transform(tei, searchParametersModel.getSelectedProgram(), false, FilterManager.getInstance().getSortingItem()))
                     .toList().toFlowable();
@@ -236,7 +237,6 @@ public class SearchRepositoryImpl implements SearchRepository {
             return trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly().get().toFlowable()
                     .map(this::filterDeleted)
                     .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
-                    .map(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list, d2, FilterManager.getInstance().getPeriodFilters(), searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
                     .flatMapIterable(list -> list)
                     .map(tei -> transform(tei, searchParametersModel.getSelectedProgram(), true, FilterManager.getInstance().getSortingItem()))
                     .toList().toFlowable();
@@ -428,7 +428,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         EventCollectionRepository scheduledEvents = d2.eventModule().events().byEnrollmentUid().in(UidsHelper.getUidsList(enrollments))
                 .byStatus().eq(EventStatus.SCHEDULE)
-                .byDueDate().before(new Date());
+                .byDueDate().beforeOrEqual(new Date());
 
         EventCollectionRepository overdueEvents = d2.eventModule().events().byEnrollmentUid().in(UidsHelper.getUidsList(enrollments)).byStatus().eq(EventStatus.OVERDUE);
 
@@ -680,21 +680,6 @@ public class SearchRepositoryImpl implements SearchRepository {
             if (tei.deleted() != null && tei.deleted())
                 iterator.remove();
         }
-        return teis;
-    }
-
-    private List<TrackedEntityInstance> filterByPeriod(List<TrackedEntityInstance> teis, List<DatePeriod> periods) {
-        Iterator<TrackedEntityInstance> iterator = teis.iterator();
-        if (!periods.isEmpty())
-            while (iterator.hasNext()) {
-                TrackedEntityInstance tei = iterator.next();
-                boolean hasEventsByEventDate = !d2.eventModule().events().byTrackedEntityInstanceUids(Collections.singletonList(tei.uid())).byEventDate().inDatePeriods(periods).blockingIsEmpty();
-                boolean hasEventsByDueDate = !d2.eventModule().events().byTrackedEntityInstanceUids(Collections.singletonList(tei.uid())).byDueDate().inDatePeriods(periods).blockingIsEmpty();
-                if (!hasEventsByDueDate && !hasEventsByEventDate)
-                    iterator.remove();
-
-            }
-
         return teis;
     }
 

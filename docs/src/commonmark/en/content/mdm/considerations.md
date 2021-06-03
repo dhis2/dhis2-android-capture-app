@@ -2,7 +2,7 @@
 
 In this document the terms MDM and EMM will be used interchangeably. This is not entirely accurate, but is done to help simplify the document. An MDM per se does not consider the deployment of applications while a EMM involves many more options that are not in the scope of this document. Therefore it can be said that this document covers somewhere in between these two concepts.
 
-![MDM/EMM differences](resources/images/image7.png)
+![MDM/EMM differences](resources/images/mdm-image7.png)
 
 ## Why an MDM for DHIS2? {# mdm_considerations_why }
 
@@ -22,18 +22,18 @@ This section explains really briefly how an MDM/EMM works and how it might impac
 
 In an implementation without an MDM the devices communicate uniquely and directly with the DHIS2 server as shown in the image below.
 
-![Standard communication process between DHIS 2 Android APP and DHIS 2 server](resources/images/image9.png)
+![Standard communication process between DHIS 2 Android APP and DHIS 2 server](resources/images/mdm-image9.png)
 
 Adding an MDM will impact the infrastructure as a new server will be added. This server can be either on premises (when the solution supports it) or on the cloud. Although it is not recommended in really specific cases (small deployments or budget constraints) the server used for hosting DHIS2 could also be used so that only one server would be needed.
 
 Adding an MDM also requires adding the position of MDM manager, meaning that a person needs to be assigned to set up and manage this MDM. This manager implements the specific configuration on the MDM server and might need to configure the mobile devices.
 
-![MDM is added to the infrastructure](resources/images/image12.png)
+![MDM is added to the infrastructure](resources/images/mdm-image12.png)
 
 The configuration implemented in the MDM server is retrieved by the devices, this implies applying specific policies to the devices that might restrict the way the device can be used. It can also allow remote tracking or wiping of the device if needed.
 
-![Devices now communicate with two different servers: DHIS 2 and MDM](resources/images/image6.png)
+![Devices now communicate with two different servers: DHIS 2 and MDM](resources/images/mdm-image6.png)
 
 The image below presents these steps combined in a single chart.
 
-![Communications in a DHIS 2 implementation with MDM](resources/images/image5.png)
+![Communications in a DHIS 2 implementation with MDM](resources/images/mdm-image5.png)

@@ -8,6 +8,8 @@ import org.dhis2.databinding.ItemCarouselEventBinding
 import org.dhis2.databinding.ItemCarouselProgramEventBinding
 import org.dhis2.databinding.ItemCarouselRelationshipBinding
 import org.dhis2.databinding.ItemCarouselTeiBinding
+import org.dhis2.uicomponents.map.extensions.FeatureSource
+import org.dhis2.uicomponents.map.extensions.source
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
@@ -16,6 +18,7 @@ import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.layer.MapLayerManager
 import org.dhis2.uicomponents.map.layer.types.EnrollmentMapLayer
 import org.dhis2.uicomponents.map.layer.types.EventMapLayer
+import org.dhis2.uicomponents.map.layer.types.FieldMapLayer
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiEventMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
@@ -149,12 +152,90 @@ class CarouselAdapter private constructor(
             is EventMapLayer ->
                 updateItems(allItems.filterIsInstance<ProgramEventViewModel>(), visible)
             is EnrollmentMapLayer -> {
-                if (visible) {
-                    updateItems(allItems.filterIsInstance<SearchTeiModel>(), visible)
-                }
+                updateItems(
+                    allItems.filterIsInstance<SearchTeiModel>().filter {
+                        it.selectedEnrollment?.geometry() != null
+                    },
+                    visible
+                )
             }
+            is FieldMapLayer ->
+                updateItems(
+                    allItems.filterIsInstance<SearchTeiModel>().filter {
+                        mapLayer.findFeatureWithUid(it.uid()) != null
+                    },
+                    visible
+                )
             else -> Unit
         }
+    }
+
+    fun updateLayers(sourceIds: List<String>, mapLayers: HashMap<String, MapLayer>) {
+        val teisToShow = mutableListOf<CarouselItemModel>()
+        val relationshipsToShow = mutableListOf<CarouselItemModel>()
+        val teiEventToShow = mutableListOf<CarouselItemModel>()
+        val eventToShow = mutableListOf<CarouselItemModel>()
+        sourceIds.forEach { sourceId ->
+
+            when (val currentLayer = mapLayers[sourceId]) {
+                is TeiMapLayer -> {
+                    if (currentLayer.visible) {
+                        teisToShow.addAll(allItems.filterIsInstance<SearchTeiModel>())
+                    }
+                }
+                is EnrollmentMapLayer -> {
+                    if (currentLayer.visible) {
+                        teisToShow.addAll(
+                            allItems.filterIsInstance<SearchTeiModel>().filter {
+                                it.selectedEnrollment?.geometry() != null
+                            }
+                        )
+                    }
+                }
+                is FieldMapLayer -> {
+                    if (currentLayer.visible) {
+                        teisToShow.addAll(
+                            allItems.filterIsInstance<SearchTeiModel>().filter {
+                                currentLayer.findFeatureWithUid(it.uid()) != null
+                            }
+                        )
+                    }
+                }
+                is RelationshipMapLayer -> {
+                    if (currentLayer.visible) {
+                        relationshipsToShow.addAll(
+                            allItems.filterIsInstance<RelationshipUiComponentModel>()
+                                .filter { it.displayName == sourceId }
+                        )
+                    }
+                }
+                is TeiEventMapLayer -> {
+                    if (currentLayer.visible) {
+                        teiEventToShow.addAll(
+                            allItems.filterIsInstance<EventUiComponentModel>()
+                                .filter { it.programStage?.displayName() == sourceId }
+                        )
+                    }
+                }
+                is EventMapLayer -> {
+                    if (currentLayer.visible) {
+                        eventToShow.addAll(
+                            allItems.filterIsInstance<ProgramEventViewModel>()
+                        )
+                    }
+                }
+            }
+        }
+
+        this.items.apply {
+            clear()
+            addAll(teisToShow.distinct())
+            addAll(relationshipsToShow)
+            addAll(teiEventToShow)
+            addAll(eventToShow)
+        }
+
+        notifyDataSetChanged()
     }
 
     private fun updateItems(data: List<CarouselItemModel>, visible: Boolean) {
@@ -171,9 +252,20 @@ class CarouselAdapter private constructor(
         notifyDataSetChanged()
     }
 
-    fun setItems(data: List<CarouselItemModel>) {
+    fun setAllItems(data: List<CarouselItemModel>) {
+        allItems.clear()
+        allItems.addAll(data)
+    }
+
+    fun setItems(data: List<CarouselItemModel>, searchInitial: Boolean = false) {
+        allItems.clear()
         items.clear()
-        items.addAll(data)
+        allItems.addAll(data)
+        if (searchInitial) {
+            items.addAll(data.filterIsInstance<SearchTeiModel>())
+        } else {
+            items.addAll(data)
+        }
         notifyDataSetChanged()
     }
 
@@ -202,26 +294,37 @@ class CarouselAdapter private constructor(
     }
 
     fun indexOfFeature(feature: Feature): Int {
-        val item = items.firstOrNull {
-            when (it) {
-                is SearchTeiModel ->
-                    it.tei.uid() == feature.getStringProperty(
-                        MapTeisToFeatureCollection.TEI_UID
-                    )
-                is RelationshipUiComponentModel ->
-                    it.relationshipUid == feature.getStringProperty(
-                        MapRelationshipsToFeatureCollection.RELATIONSHIP_UID
-                    )
-                is EventUiComponentModel ->
-                    it.eventUid == feature.getStringProperty(
-                        MapTeiEventsToFeatureCollection.EVENT_UID
-                    )
-                is ProgramEventViewModel ->
-                    it.uid() == feature.getStringProperty(
-                        MapEventToFeatureCollection.EVENT
-                    )
-                else -> false
-            }
+        val item = when (feature.source()) {
+            FeatureSource.TEI, FeatureSource.ENROLLMENT, FeatureSource.FIELD ->
+                items.filterIsInstance<SearchTeiModel>()
+                    .firstOrNull {
+                        it.tei.uid() == feature.getStringProperty(
+                            MapTeisToFeatureCollection.TEI_UID
+                        )
+                    }
+            FeatureSource.RELATIONSHIP ->
+                items.filterIsInstance<RelationshipUiComponentModel>()
+                    .firstOrNull {
+                        it.relationshipUid == feature.getStringProperty(
+                            MapRelationshipsToFeatureCollection.RELATIONSHIP_UID
+                        )
+                    }
+            FeatureSource.TRACKER_EVENT ->
+                items.filterIsInstance<EventUiComponentModel>()
+                    .firstOrNull {
+                        it.eventUid == feature.getStringProperty(
+                            MapTeiEventsToFeatureCollection.EVENT_UID
+                        )
+                    }
+            FeatureSource.EVENT ->
+                items.filterIsInstance<ProgramEventViewModel>()
+                    .firstOrNull {
+                        it.uid() == feature.getStringProperty(
+                            MapEventToFeatureCollection.EVENT
+                        )
+                    }
+
+            null -> null
         }
 
         return item?.let {

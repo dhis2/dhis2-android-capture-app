@@ -38,6 +38,8 @@
     <string name="data_sync_warning_program">ОГОҲЛАНТИРИШ: Маълумотларнинг аксарият қисми синхронлаштирилди. Лекин, баъзи зиддиятлар келиб чиқди. Конфигурацияни синхронланг ва қайтадан уриниб кўринг. Агар огоҳлантириш давом этса, уларнинг синхронлаш ҳолатини текширинг: @ сифатида белгиланган дастурлар, TEIни ва ҳодиса/тадбирларни.</string>
     <string name="data_sync_error">ХАТОЛИК: Баъзи маълумотлар синхронланмади. Уларнинг синхронлаш ҳолатини текширинг: Дастурларнинг @ хатолик деб белгиланганларини, TEI ва ҳодиса/тадбирларда $\" деб белгиланган.</string>
     <string name="data_sync_error_program">ХАТОЛИК: Баъзи маълумотлар синхронланмади. Уларнинг синхронлаш ҳолатини текширинг: TEI ва ҳодиса/тадбирларда $\" деб белгиланган.</string>
+    <string name="server_sync_error">Бу ерда хатолик юз берди ва сервер жавоб бермади. Ўз администраторингиз билан алоқа боғланг.</string>
+
     <string name="search_result_text">1 %s натижалар топилди</string>
     <string name="add_new">Янгисини қўшиш</string>
     <string name="add">Қўшиш</string>
@@ -495,6 +497,8 @@
     <string name="org_unit_selection_warning">Камида битта ташкилий бўлим танланиши керак</string>
     <string name="send_user_name_title">аълумотларни юборинг</string>
     <string name="send_user_name_mesage">DHIS2 да фойдаланувчи идентификаторлари билан боғлиқ хатоликлар журналларини улашиш орқали ушбу дастурни яхшилашга ёрдам бериш.</string>
+    <string name="analytics_crash_name_message">Ушбу илова сизнинг фойдаланувчи идентификаторингиз билан боғлик  хатоликлар журналини юбориб туради, иш жараёни ва фойдаланувчи билан муносабатни яхшилаш мақсадида, ҳамда кузатилмайдиган статистикани ҳам юбориб туради.</string>
+    <string name="send_user_privacy_policy">Қўшимча маълумотга эга бўлиш учун бизнинг махфийлик сиёсатимиз билан танишиб чиқинг.</string>
     <string name="check_mandatory_field">Майдонларни белгилаш</string>
     <string name="error_no_network_during_sync">Конфигурацияни синхронлаштириш пайтида сизнинг интернет алоқангизда узилиш юз берди. Илтимос, кейинроқ қайта уриниб кўринг</string>
     <string name="action_agree">Розиман</string>
@@ -507,6 +511,8 @@
     <string name="relationship_not_found_message">Сиз кириб кўрмоқчи бўлган ёзув мавжуд эмас. Буни қидирмоқчимисиз?</string>
     <string name="sync_by_sms">СМС орқали синхронлаш</string>
     <string name="state_warning">Огоҳлантириш</string>
+    <string name="state_uploading">Юкланмоқда</string>
+    <string name="sent_by_sms">СМС орқали юборилган</string>
     <string name="no_conflicts_message">Ушбу дастур учун ҳеч қандай низолар мавжуд эмас</string>
     <string name="network_unavailable_sms">Интернетга уланиш узилган, лекин телефон хизматлари мавжудга ўхшайди - сиз СМС дан фойдаланишингиз мумкин.</string>
     <string name="network_unavailable">Интернетга уланиш узилган.</string>
@@ -749,6 +755,8 @@
     <string name="customactivityoncrash_error_activity_error_details_copy">Буферга нусха олиш</string>
     <string name="customactivityoncrash_error_activity_error_details_copied">Буферга нусха олинди</string>
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Хатто ҳақида маълумот</string>
+    <string name="metada_first_sync_error">Серверингиз билан синхронизацияда хатоликни аниқладик. Иложи бўлса, хатолик ҳақида администраторингизга хабар беринг.</string>
+    <string name="error_init_session">Сизнинг фойдаланувчингиз билан сеанс ташкиллаштира олмадик</string>
     <string name="enrollment_date_edition_warning">Режалаштирила олинмайдиган ҳодиса/тадбир режалари мавжуд</string>
     <string name="jira_issue_sent">Муаммо юборилди</string>
     <string name="jira_issue_sent_error">Муаммони юборишда ххатолик юз берди</string>
@@ -765,4 +773,24 @@
     <string name="navigation_notes">Изоҳлар</string>
     <string name="navigation_data_entry">Маълумот киритиш</string>
     <string name="navigation_tei_data">Тафсилотлари</string>
+    <string name="show_table_value">Қиймат сифатида кўриш</string>
+    <string name="filter_period_six_months">Жорий 6 ой</string>
+    <string name="filter_period_last_six_months">Охирги 6 ой</string>
+    <string name="filter_period_quarters_last_year">Охирги йилдаги чораклар</string>
+    <string name="filter_period_this_biweek">Жорий жуфт ҳафта</string>
+    <string name="filter_period_last_biweek">Охирги жуфт ҳафта</string>
+    <string name="camera_permission_denied">Камерада фойдаланишга рухсат берилмаган. Ушбу функциядан фойдаланиш учун уни ёқишингиз керак.</string>
+    <string name="enrolled_in">Қайд этилган:</string>
+    <string name="section_charts_indicators">Диаграммалар ва индикаторлар</string>
+    <string name="take_photo">Суратга олиш</string>
+    <string name="from_gallery">Галереядан танлаш</string>
+    <string name="break_glass_dialog_title">Ушбу дастур ҳимояланган</string>
+    <string name="break_glass_dialog_description">Ушбу дастурда қайд этишни текшириш учун сабаб кўрсатишингиз керак. Барча ҳаракатлар ёзиб борилади.</string>
+    <string name="break_glass_reason">Қайд этишни текшириш учун сабаб</string>
+    <string name="break_glass_hint">Сабабини шу ерда ёзиб қолдиринг</string>
+    <string name="authenticating">Аутентификация қилинмоқда</string>
+    <string name="login_error_no_dhis_instance">Кўрсатиб ўтилган URL манзил DHIS шаблонида эмас</string>
+    <string name="openid_session_expired">Сессия муддати тугаган</string>
+    <string name="openid_session_expired_message">Сизнинг жорий сессиянгиз муддати тугаган. Хавфсизлик нуқтаи назаридан, сиз қайтадан аккаунт маълумотларини тақдим этишингиз лозим.</string>
+    <string name="unsupported_field_description">Ушбу сатр мобил назорат учун мавжуд эмас</string>
     </resources>

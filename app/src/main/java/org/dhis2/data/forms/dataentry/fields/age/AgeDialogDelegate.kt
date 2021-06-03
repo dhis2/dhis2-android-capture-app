@@ -1,20 +1,17 @@
 package org.dhis2.data.forms.dataentry.fields.age
 
 import java.util.Calendar
-import java.util.Date
-import org.dhis2.form.model.ActionType
-import org.dhis2.form.model.RowAction
-import org.dhis2.form.ui.FormViewModel
+import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.utils.DateUtils
 
-class AgeDialogDelegate(val viewModel: FormViewModel) {
+class AgeDialogDelegate {
 
     fun handleDateInput(
         uid: String,
         year: Int,
         month: Int,
         day: Int
-    ) {
+    ): FormIntent {
         val currentCalendar = Calendar.getInstance()
         val ageDate = with(currentCalendar) {
             set(Calendar.YEAR, year)
@@ -26,10 +23,18 @@ class AgeDialogDelegate(val viewModel: FormViewModel) {
             set(Calendar.MILLISECOND, 0)
             return@with time
         }
-        createAndPushRowActionWithValue(uid, ageDate)
+        val date = if (ageDate == null) null else DateUtils.oldUiDateFormat()
+            .format(ageDate)
+
+        return FormIntent.SelectDateFromAgeCalendar(uid, date)
     }
 
-    fun handleYearMonthDayInput(uid: String, year: Int, month: Int, day: Int) {
+    fun handleYearMonthDayInput(
+        uid: String,
+        year: Int,
+        month: Int,
+        day: Int
+    ): FormIntent {
         val currentCalendar = Calendar.getInstance()
         val ageDate = with(currentCalendar) {
             add(Calendar.YEAR, year)
@@ -41,35 +46,9 @@ class AgeDialogDelegate(val viewModel: FormViewModel) {
             set(Calendar.MILLISECOND, 0)
             return@with time
         }
-        createAndPushRowActionWithValue(uid, ageDate)
-    }
+        val date = if (ageDate == null) null else DateUtils.oldUiDateFormat()
+            .format(ageDate)
 
-    private fun createAndPushRowActionWithValue(uid: String, ageDate: Date?) {
-        val action = RowAction(
-            uid,
-            if (ageDate == null) null else DateUtils.oldUiDateFormat()
-                .format(ageDate),
-            false,
-            null,
-            null,
-            null,
-            null,
-            ActionType.ON_SAVE
-        )
-        viewModel.onItemAction(action)
-    }
-
-    fun handleClearInput(uid: String) {
-        val action = RowAction(
-            uid,
-            null,
-            false,
-            null,
-            null,
-            null,
-            null,
-            ActionType.ON_SAVE
-        )
-        viewModel.onItemAction(action)
+        return FormIntent.SelectDateFromAgeCalendar(uid, date)
     }
 }
