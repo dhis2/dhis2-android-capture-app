@@ -1,10 +1,10 @@
 package org.dhis2.data.dhislogic
 
+import java.time.Instant
+import java.util.Date
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.junit.Assert
 import org.junit.Test
-import java.time.Instant
-import java.util.Date
 
 class OrganisationUnitExtensionsTest {
 
@@ -12,9 +12,9 @@ class OrganisationUnitExtensionsTest {
     fun `Should return true if date is null`() {
         Assert.assertTrue(
             orgUnit(null, null).inDateRange(null) &&
-                    orgUnit(Date(), Date()).inDateRange(null) &&
-                    orgUnit(Date(), null).inDateRange(null) &&
-                    orgUnit(null, Date()).inDateRange(null)
+                orgUnit(Date(), Date()).inDateRange(null) &&
+                orgUnit(Date(), null).inDateRange(null) &&
+                orgUnit(null, Date()).inDateRange(null)
         )
     }
 
