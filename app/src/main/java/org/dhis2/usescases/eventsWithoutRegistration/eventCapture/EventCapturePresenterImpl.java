@@ -7,7 +7,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.databinding.ObservableField;
 
 import org.dhis2.R;
-import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
@@ -62,7 +61,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private final SchedulerProvider schedulerProvider;
     private final ValueStore valueStore;
     private final EventFieldMapper fieldMapper;
-    private CompositeDisposable compositeDisposable;
+    public CompositeDisposable compositeDisposable;
     private EventCaptureContract.View view;
     private ObservableField<String> currentSection;
     private FlowableProcessor<Boolean> showCalculationProcessor;
@@ -387,7 +386,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void attempFinish() {
+    public void attemptFinish() {
 
         qualityCheck();
 
@@ -614,5 +613,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void disableConfErrorMessage() {
         showConfigurationError = false;
+    }
+
+    public CompositeDisposable getDisposable() {
+        return compositeDisposable;
     }
 }

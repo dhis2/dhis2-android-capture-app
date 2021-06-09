@@ -84,7 +84,7 @@ class EventCaptureFormPresenter(
     }
 
     fun onActionButtonClick() {
-        activityPresenter.attempFinish()
+        activityPresenter.attemptFinish()
     }
 
     fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =
