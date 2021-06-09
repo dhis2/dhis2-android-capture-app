@@ -124,7 +124,9 @@ class SyncPresenterTest {
             UUID.randomUUID(),
             state,
             Data.Builder().apply { putString(METADATA_MESSAGE, message) }.build(),
-            arrayListOf(Constants.META_NOW), 0
+            arrayListOf(Constants.META_NOW),
+            Data.EMPTY
+            ,0
         )
     }
 
@@ -133,7 +135,9 @@ class SyncPresenterTest {
             UUID.randomUUID(),
             state,
             Data.Builder().build(),
-            arrayListOf(Constants.DATA_NOW), 0
+            arrayListOf(Constants.DATA_NOW),
+            Data.EMPTY,
+            0
         )
     }
 }
