@@ -1,4 +1,4 @@
-package org.dhis2.data.dispatcher
+package org.dhis2.form.model.coroutine
 
 import kotlinx.coroutines.Dispatchers
 import org.dhis2.form.model.DispatcherProvider

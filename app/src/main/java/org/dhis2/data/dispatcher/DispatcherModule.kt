@@ -3,14 +3,15 @@ package org.dhis2.data.dispatcher
 import dagger.Module
 import dagger.Provides
 import org.dhis2.form.model.DispatcherProvider
+import org.dhis2.form.model.coroutine.FormDispatcher
 import javax.inject.Singleton
 
 @Module
-class DispatcherModule {
+open class DispatcherModule {
 
     @Provides
     @Singleton
-    fun provideDispatcherModule(): DispatcherProvider{
+    open fun provideDispatcherModule(): DispatcherProvider{
         return FormDispatcher()
     }
 }

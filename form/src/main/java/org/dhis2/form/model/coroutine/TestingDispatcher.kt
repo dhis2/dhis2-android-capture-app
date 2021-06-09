@@ -1,4 +1,4 @@
-package org.dhis2.common.coroutine
+package org.dhis2.form.model.coroutine
 
 import androidx.test.espresso.idling.concurrent.IdlingThreadPoolExecutor
 import kotlinx.coroutines.CoroutineDispatcher
