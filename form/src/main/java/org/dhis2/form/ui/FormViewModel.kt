@@ -26,7 +26,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 
 class FormViewModel(
     private val repository: FormRepository,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val dispatcher: CoroutineDispatcher,
     private val geometryController: GeometryController = GeometryController(GeometryParserImpl())
 ) : ViewModel() {
 
