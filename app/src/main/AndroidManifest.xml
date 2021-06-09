@@ -154,7 +154,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="*" />
+                <data android:scheme="com.googleusercontent.apps.1019417002544-mqa7flk4mjohrgsbg9bta9bvluoj85o0" />
             </intent-filter>
         </activity>
     </application>
