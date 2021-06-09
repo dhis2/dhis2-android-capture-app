@@ -37,7 +37,6 @@ import org.hisp.dhis.android.core.settings.FilterSetting
 import org.hisp.dhis.android.core.settings.HomeFilter
 import org.hisp.dhis.android.core.settings.ProgramFilter
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
-import java.util.Arrays
 
 class FilterRepository @Inject constructor(
     private val d2: D2,
