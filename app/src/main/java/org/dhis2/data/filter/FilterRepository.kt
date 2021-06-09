@@ -37,6 +37,7 @@ import org.hisp.dhis.android.core.settings.FilterSetting
 import org.hisp.dhis.android.core.settings.HomeFilter
 import org.hisp.dhis.android.core.settings.ProgramFilter
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
+import java.util.Arrays
 
 class FilterRepository @Inject constructor(
     private val d2: D2,
@@ -125,16 +126,15 @@ class FilterRepository @Inject constructor(
         repository: TrackedEntityInstanceQueryCollectionRepository,
         datePeriod: DatePeriod
     ): TrackedEntityInstanceQueryCollectionRepository {
-        return repository.byEventStartDate().eq(datePeriod.startDate())
-            .byEventEndDate().eq(datePeriod.endDate())
+        return repository.byEventDate().inDatePeriod(datePeriod)
+            .byEventStatus().`in`(EventStatus.values().toMutableList())
     }
 
     fun applyEnrollmentDateFilter(
         repository: TrackedEntityInstanceQueryCollectionRepository,
         datePeriod: DatePeriod
     ): TrackedEntityInstanceQueryCollectionRepository {
-        return repository.byProgramStartDate().eq(datePeriod.startDate())
-            .byProgramEndDate().eq(datePeriod.endDate())
+        return repository.byProgramDate().inDatePeriod(datePeriod)
     }
 
     fun applyAssignToMe(
