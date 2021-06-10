@@ -31,9 +31,12 @@ import org.dhis2.utils.filters.sorting.SortingItem
 import org.dhis2.utils.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.Program
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.Mockito.validateMockitoUsage
+
 
 class SearchTEPresenterTest {
 
@@ -369,14 +372,19 @@ class SearchTEPresenterTest {
     @Test
     fun `Should populate same list when onItemAction is triggered in FormView`() {
         presenter.populateList(null)
-
-        verify(view, times(1))
+        verify(view, times(1)).setFormData(any())
+        verify(view, times(0)).setFabIcon(any())
     }
 
     @Test
     fun `Should populate list for enrollment `() {
         presenter.populateList(listOf())
+        verify(view, times(1)).setFormData(any())
+        verify(view, times(1)).setFabIcon(any())
+    }
 
-        verify(view, times(2))
+    @After
+    fun validate() {
+        validateMockitoUsage()
     }
 }
