@@ -37,7 +37,6 @@ import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.validateMockitoUsage
 
-
 class SearchTEPresenterTest {
 
     lateinit var presenter: SearchTEContractsModule.Presenter
