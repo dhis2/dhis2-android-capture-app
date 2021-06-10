@@ -7,6 +7,8 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputEditText
 import org.dhis2.Bindings.closeKeyboard
+import org.dhis2.Bindings.parseToDouble
+import org.dhis2.Bindings.truncate
 import org.dhis2.R
 import org.dhis2.uicomponents.map.geometry.isLatitudeValid
 import org.dhis2.uicomponents.map.geometry.isLongitudeValid
@@ -15,31 +17,60 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 
-@BindingAdapter("latitude_validator")
-fun EditText.setLatitudeValidator(viewModel: CoordinateViewModel?) {
+@BindingAdapter(value = ["latitude_validator", "error_input"])
+fun EditText.setLatitudeValidator(viewModel: CoordinateViewModel?, errorTextView: TextView?) {
     setOnFocusChangeListener { _, hasFocus ->
-        viewModel?.onLatOrLogFocusChanged(
+        onLatOrLonChangeFocus(
+            viewModel,
+            errorTextView,
             hasFocus,
             text.toString(),
             context.getString(R.string.coordinates_error),
-            { lat -> isLatitudeValid(lat) }
-        ) { latitudeValue ->
-            setText(latitudeValue)
-        }
+            { coordinate -> isLatitudeValid(coordinate) },
+            { coordinateValue -> setText(coordinateValue) }
+        )
     }
 }
 
-@BindingAdapter("longitude_validator")
-fun EditText.setLongitudeValidator(viewModel: CoordinateViewModel?) {
+@BindingAdapter(value = ["longitude_validator", "error_input"])
+fun EditText.setLongitudeValidator(viewModel: CoordinateViewModel?, errorTextView: TextView?) {
     setOnFocusChangeListener { _, hasFocus ->
-        viewModel?.onLatOrLogFocusChanged(
+        onLatOrLonChangeFocus(
+            viewModel,
+            errorTextView,
             hasFocus,
             text.toString(),
             context.getString(R.string.coordinates_error),
-            { lon -> isLongitudeValid(lon) }
-        ) { longitudeValue ->
-            setText(longitudeValue)
+            { coordinate -> isLongitudeValid(coordinate) },
+            { coordinateValue -> setText(coordinateValue) }
+        )
+    }
+}
+
+private fun onLatOrLonChangeFocus(
+    viewModel: CoordinateViewModel?,
+    errorTextView: TextView?,
+    hasFocus: Boolean,
+    coordinateValue: String,
+    errorMessage: String,
+    coordinateValidator: (Double) -> Boolean,
+    valueCallback: (String) -> Unit
+) {
+    if (!hasFocus) {
+        if (coordinateValue.isNotEmpty()) {
+            val coordinateString: Double =
+                java.lang.Double.valueOf(coordinateValue.parseToDouble())
+            val coordinate = coordinateString.truncate()
+            val error = if (!coordinateValidator(coordinate)) {
+                errorMessage
+            } else {
+                null
+            }
+            errorTextView?.setErrorMessage(error, null)
+            valueCallback(coordinate.toString())
         }
+    } else {
+        viewModel?.onItemClick()
     }
 }
 
