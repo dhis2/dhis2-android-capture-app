@@ -125,7 +125,8 @@ class SyncPresenterTest {
             state,
             Data.Builder().apply { putString(METADATA_MESSAGE, message) }.build(),
             arrayListOf(Constants.META_NOW),
-            Data.EMPTY, 0
+            Data.EMPTY,
+            0
         )
     }
 
