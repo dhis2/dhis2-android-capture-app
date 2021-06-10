@@ -4,15 +4,15 @@ import dagger.Module
 import dagger.Provides
 import org.dhis2.data.dispatcher.DispatcherModule
 import org.dhis2.form.model.DispatcherProvider
-import org.dhis2.form.model.coroutine.TestingDispatcher
+import org.dhis2.form.model.coroutine.EspressoTestingDispatcher
 import javax.inject.Singleton
 
 @Module
-class DispatcherTestingModule(): DispatcherModule() {
+class DispatcherTestingModule: DispatcherModule() {
 
     @Provides
     @Singleton
     override fun provideDispatcherModule(): DispatcherProvider {
-        return TestingDispatcher()
+        return EspressoTestingDispatcher()
     }
 }

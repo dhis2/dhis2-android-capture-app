@@ -40,7 +40,7 @@ class FormViewModel(
     private val pendingIntents = _pendingIntents
 
     init {
-        viewModelScope.launch{
+        viewModelScope.launch {
             _pendingIntents
                 .map { intent -> createRowActionStore(intent) }
                 .flowOn(dispatcher.io())
