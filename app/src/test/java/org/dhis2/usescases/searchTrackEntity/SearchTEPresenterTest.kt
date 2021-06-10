@@ -365,4 +365,18 @@ class SearchTEPresenterTest {
 
         verify(disableHomeFiltersFromSettingsApp).execute(list)
     }
+
+    @Test
+    fun `Should populate same list when onItemAction is triggered in FormView`() {
+        presenter.populateList(null)
+
+        verify(view, times(1))
+    }
+
+    @Test
+    fun `Should populate list for enrollment `() {
+        presenter.populateList(listOf())
+
+        verify(view, times(2))
+    }
 }
