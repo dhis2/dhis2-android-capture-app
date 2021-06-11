@@ -123,7 +123,8 @@
                     app:geometry_latitude_value="@{item.currentGeometry()}"
                     app:input_style="@{item}"
                     app:input_text_color="@{item.backgroundTransparent}"
-                    app:latitude_validator="@{item}" />
+                    app:latitude_validator="@{item}"
+                    app:error_input="@{errorMessage}"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -154,7 +155,8 @@
                     app:geometry_longitude_value="@{item.currentGeometry()}"
                     app:input_style="@{item}"
                     app:input_text_color="@{item.backgroundTransparent}"
-                    app:longitude_validator="@{item}" />
+                    app:longitude_validator="@{item}"
+                    app:error_input="@{errorMessage}"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 

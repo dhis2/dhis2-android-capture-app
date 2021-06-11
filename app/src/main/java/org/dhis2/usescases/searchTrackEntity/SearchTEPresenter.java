@@ -1025,7 +1025,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void populateList(List<FieldUiModel> list) {
-        view.setFabIcon(!list.isEmpty());
+        if (list != null){
+            view.setFabIcon(!list.isEmpty());
+        }
         view.setFormData(formRepository.composeList(list));
     }
 
