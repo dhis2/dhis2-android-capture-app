@@ -330,7 +330,8 @@ class GetFeedback(
             false,
             mutableListOf(),
             mutableListOf(),
-            null
+            null,
+            true
         ).blockingGet()
     }
 }
