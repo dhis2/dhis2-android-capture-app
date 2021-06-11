@@ -47,7 +47,7 @@ public abstract class CoordinateViewModel extends FieldViewModel {
 
     @Override
     public FieldViewModel setMandatory() {
-        return new AutoValue_CoordinateViewModel(uid(), label(), true, value(), programStageSection(), null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.COORDINATES, processor(), style(),activated(), featureType(), isBackgroundTransparent(), isSearchMode());
+        return new AutoValue_CoordinateViewModel(uid(), label(), true, value(), programStageSection(), null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.COORDINATES, processor(), style(), activated(), featureType(), isBackgroundTransparent(), isSearchMode());
     }
 
     @NonNull
@@ -101,34 +101,19 @@ public abstract class CoordinateViewModel extends FieldViewModel {
 
     public abstract boolean isSearchMode();
 
-    public ObservableField<String> observeWarningMessage() {
-        return observableWarningMessage;
-    }
-
-    public ObservableField<String> observeErrorMessage() {
-        return observableErrorMessage;
-    }
-
-    public void onLatOrLogFocusChanged(boolean hasFocus,
-                                       String coordinateValue,
-                                       String errorMessage,
-                                       Function1<Double, Boolean> coordinateValidator,
-                                       Function1<String, Unit> callback){
-        if (!hasFocus) {
-            if (!coordinateValue.isEmpty()) {
-                Double coordinateString = Double.valueOf(StringExtensionsKt.parseToDouble(coordinateValue));
-                Double coordinate = DoubleExtensionsKt.truncate(coordinateString);
-                String error;
-                if (!coordinateValidator.invoke(coordinate)) {
-                    error = errorMessage;
-                } else {
-                    error = null;
-                }
-                callback.invoke(coordinate.toString());
-                observableErrorMessage.set(error);
-            }
+    public String observeWarningMessage() {
+        if (warning() != null) {
+            return warning();
         } else {
-            onItemClick();
+            return observableWarningMessage.get();
+        }
+    }
+
+    public String observeErrorMessage() {
+        if (error() != null) {
+            return error();
+        } else {
+            return observableErrorMessage.get();
         }
     }
 
@@ -146,7 +131,7 @@ public abstract class CoordinateViewModel extends FieldViewModel {
                     .coordinates(value())
                     .type(featureType())
                     .build();
-            if(featureType() == FeatureType.POINT) {
+            if (featureType() == FeatureType.POINT) {
                 try {
                     latitudeValue.set(GeometryHelper.getPoint(geometry).get(1).toString());
                     longitudeValue.set(GeometryHelper.getPoint(geometry).get(0).toString());
