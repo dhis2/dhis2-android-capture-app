@@ -5,6 +5,7 @@ plugins {
 }
 
 def libraries = rootProject.ext.libraries
+def versions = rootProject.ext.versions
 
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
@@ -51,21 +52,23 @@ android {
 }
 
 dependencies {
-
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.3.0'
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
-    implementation 'androidx.test.espresso:espresso-idling-resource:3.3.0'
-    implementation 'androidx.test.espresso.idling:idling-concurrent:3.3.0'
 
+    debugImplementation project(':core')
     releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
-    debugImplementation project(':core')
 
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    implementation "com.google.android.material:material:${libraries.material}"
+    implementation "androidx.core:core-ktx:${libraries.corektx}"
+    implementation "androidx.appcompat:appcompat:${libraries.appcompat}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${libraries.lifecycleviewmodel}"
+    implementation 'androidx.test.espresso:espresso-idling-resource:3.3.0'
+    implementation 'androidx.test.espresso.idling:idling-concurrent:3.3.0'
+
+    //region Test
     testImplementation "junit:junit:${libraries.junit}"
     testImplementation 'org.mockito:mockito-core:3.4.6'
     testImplementation 'org.mockito:mockito-inline:2.13.0'
@@ -76,4 +79,5 @@ dependencies {
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.72'
 
+    //endregion
 }

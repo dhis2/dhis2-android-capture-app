@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
-import androidx.room.util.StringUtil;
 
 import org.dhis2.BR;
 import org.dhis2.Bindings.StringExtensionsKt;
@@ -21,11 +20,8 @@ import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdap
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
 
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-
-import timber.log.Timber;
 
 /**
  * QUADRAM. Created by frodriguez on 1/15/2018.
@@ -64,9 +60,9 @@ public class DateTableView extends FieldLayout implements View.OnClickListener {
         super.init(context);
     }
 
-    public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale){
+    public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale) {
         binding = DataBindingUtil.inflate(inflater, R.layout.custom_cell_view, this, true);
-        ((CustomCellViewBinding)binding).setTableScale(tableScale);
+        ((CustomCellViewBinding) binding).setTableScale(tableScale);
         editText = findViewById(R.id.inputEditText);
         selectedCalendar = Calendar.getInstance();
         editText.setFocusable(false); //Makes editText not editable
@@ -81,7 +77,7 @@ public class DateTableView extends FieldLayout implements View.OnClickListener {
         binding.executePendingBindings();
     }
 
-    public void setMandatory(){
+    public void setMandatory() {
         ImageView mandatory = binding.getRoot().findViewById(R.id.ic_mandatory);
         mandatory.setVisibility(View.VISIBLE);
     }

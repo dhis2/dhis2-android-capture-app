@@ -104,12 +104,16 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val enrollmentUid = intent.getStringExtra(ENROLLMENT_UID_EXTRA) ?: ""
+        val programUid = intent.getStringExtra(PROGRAM_UID_EXTRA) ?: ""
+        val enrollmentMode = intent.getStringExtra(MODE_EXTRA)?.let { EnrollmentMode.valueOf(it) }
+            ?: EnrollmentMode.NEW
         (applicationContext as App).userComponent()!!.plus(
             EnrollmentModule(
                 this,
-                intent.getStringExtra(ENROLLMENT_UID_EXTRA),
-                intent.getStringExtra(PROGRAM_UID_EXTRA),
-                EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA)),
+                enrollmentUid,
+                programUid,
+                enrollmentMode,
                 context
             )
         ).inject(this)
@@ -124,7 +128,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding = DataBindingUtil.setContentView(this, R.layout.enrollment_activity)
         binding.view = this
 
-        mode = EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
+        mode = enrollmentMode
 
         formView = FormView.Builder()
             .persistence(formRepository)
@@ -165,12 +169,14 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 RQ_INCIDENT_GEOMETRY, RQ_ENROLLMENT_GEOMETRY -> {
-                    handleGeometry(
-                        FeatureType.valueOfFeatureType(
-                            data!!.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA)
-                        ),
-                        data.getStringExtra(MapSelectorActivity.DATA_EXTRA), requestCode
-                    )
+                    if (data?.hasExtra(MapSelectorActivity.DATA_EXTRA) == true) {
+                        handleGeometry(
+                            FeatureType.valueOfFeatureType(
+                                data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA)
+                            ),
+                            data.getStringExtra(MapSelectorActivity.DATA_EXTRA)!!, requestCode
+                        )
+                    }
                 }
                 GALLERY_REQUEST -> {
                     try {
