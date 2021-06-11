@@ -17,6 +17,7 @@ import org.dhis2.data.appinspector.AppInspector;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerServer;
 import org.dhis2.data.dagger.PerUser;
+import org.dhis2.data.dispatcher.DispatcherModule;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceModule;
 import org.dhis2.data.schedulers.SchedulerModule;
@@ -152,6 +153,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .analyticsModule(new AnalyticsModule())
                 .preferenceModule(new PreferenceModule())
                 .workManagerController(new WorkManagerModule())
+                .coroutineDispatchers(new DispatcherModule())
                 .crashReportModule(new CrashReportModule());
     }
 

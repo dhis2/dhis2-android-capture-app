@@ -4,8 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
@@ -17,6 +15,7 @@ import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.ActionType
+import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
@@ -26,7 +25,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 
 class FormViewModel(
     private val repository: FormRepository,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val dispatcher: DispatcherProvider,
     private val geometryController: GeometryController = GeometryController(GeometryParserImpl())
 ) : ViewModel() {
 
@@ -44,7 +43,7 @@ class FormViewModel(
         viewModelScope.launch {
             _pendingIntents
                 .map { intent -> createRowActionStore(intent) }
-                .flowOn(dispatcher)
+                .flowOn(dispatcher.io())
                 .collect { result ->
                     when (result.second.valueStoreResult) {
                         ValueStoreResult.VALUE_CHANGED -> {
@@ -114,7 +113,7 @@ class FormViewModel(
     @Deprecated("Use for legacy only. Do not use this for refactor views")
     private fun submitRowAction(action: RowAction): Flow<StoreResult> = flow {
         emit(repository.processUserAction(action))
-    }.flowOn(dispatcher)
+    }.flowOn(dispatcher.io())
 
     fun onItemsRendered() {
         loading.value = false
