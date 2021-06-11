@@ -35,8 +35,10 @@ import org.dhis2.form.Injector
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryNonPersistenceImpl
 import org.dhis2.form.model.ActionType
+import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
+import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.form.ui.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
@@ -57,11 +59,13 @@ class FormView private constructor(
     formRepository: FormRepository,
     private val onItemChangeListener: ((action: RowAction) -> Unit)?,
     private val locationProvider: LocationProvider?,
-    private val needToForceUpdate: Boolean = false
+    private val onLoadingListener: ((loading: Boolean) -> Unit)?,
+    private val needToForceUpdate: Boolean = false,
+    dispatchers: DispatcherProvider
 ) : Fragment() {
 
     private val viewModel: FormViewModel by viewModels {
-        Injector.provideFormViewModelFactory(formRepository)
+        Injector.provideFormViewModelFactory(formRepository, dispatchers)
     }
 
     private lateinit var binding: ViewFormBinding
@@ -201,6 +205,21 @@ class FormView private constructor(
                 render(items)
             }
         )
+
+        viewModel.loading.observe(
+            viewLifecycleOwner,
+            Observer { loading ->
+                if (onLoadingListener != null) {
+                    onLoadingListener.invoke(loading)
+                } else {
+                    if (loading) {
+                        binding.progress.show()
+                    } else {
+                        binding.progress.hide()
+                    }
+                }
+            }
+        )
     }
 
     private fun uiEventHandler(uiEvent: RecyclerViewUiEvents) {
@@ -231,7 +250,11 @@ class FormView private constructor(
         adapter.swap(
             items,
             Runnable {
-                dataEntryHeaderHelper.onItemsUpdatedCallback()
+                when (needToForceUpdate) {
+                    true -> adapter.notifyDataSetChanged()
+                    else -> dataEntryHeaderHelper.onItemsUpdatedCallback()
+                }
+                viewModel.onItemsRendered()
             }
         )
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
@@ -375,6 +398,8 @@ class FormView private constructor(
         private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
         private var locationProvider: LocationProvider? = null
         private var needToForceUpdate: Boolean = false
+        private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
+        private var dispatchers: DispatcherProvider? = null
 
         /**
          * If you want to persist the items and it's changes in any sources, please provide an
@@ -408,12 +433,26 @@ class FormView private constructor(
         fun needToForceUpdate(needToForceUpdate: Boolean) =
             apply { this.needToForceUpdate = needToForceUpdate }
 
+        /**
+         * If set,
+         * */
+        fun onLoadingListener(callback: (loading: Boolean) -> Unit) =
+            apply { this.onLoadingListener = callback }
+
+        /**
+         * By default it uses Coroutine dispatcher IO, Computation, and Main but, you could also set
+         * a custom one for testing for eg.
+         */
+        fun dispatcher(dispatcher: DispatcherProvider) = apply { this.dispatchers = dispatcher }
+
         fun build(): FormView {
             return FormView(
                 formRepository = persistentRepository ?: FormRepositoryNonPersistenceImpl(),
                 locationProvider = locationProvider,
                 onItemChangeListener = onItemChangeListener,
-                needToForceUpdate = needToForceUpdate
+                needToForceUpdate = needToForceUpdate,
+                onLoadingListener = onLoadingListener,
+                dispatchers = dispatchers ?: FormDispatcher()
             )
         }
     }

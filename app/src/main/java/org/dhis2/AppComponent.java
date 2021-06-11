@@ -1,5 +1,6 @@
 package org.dhis2;
 
+import org.dhis2.data.dispatcher.DispatcherModule;
 import org.dhis2.data.forms.dataentry.validation.ValidatorModule;
 import org.dhis2.data.location.LocationModule;
 import org.dhis2.data.location.LocationProvider;
@@ -10,6 +11,7 @@ import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.ServerModule;
 import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.data.service.workManager.WorkManagerModule;
+import org.dhis2.form.model.DispatcherProvider;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.splash.SplashComponent;
@@ -45,7 +47,8 @@ import dagger.Component;
         ValidatorModule.class,
         CrashReportModule.class,
         LocationModule.class,
-        FilterModule.class
+        FilterModule.class,
+        DispatcherModule.class
 })
 public interface AppComponent {
 
@@ -63,6 +66,8 @@ public interface AppComponent {
 
         Builder crashReportModule(CrashReportModule crashReportModule);
 
+        Builder coroutineDispatchers(DispatcherModule dispatcherModule);
+
         AppComponent build();
     }
 
@@ -75,6 +80,8 @@ public interface AppComponent {
     WorkManagerController workManagerController();
 
     MatomoAnalyticsController matomoController();
+
+    DispatcherProvider dispatcherProvider();
 
     LocationProvider locationProvider();
 

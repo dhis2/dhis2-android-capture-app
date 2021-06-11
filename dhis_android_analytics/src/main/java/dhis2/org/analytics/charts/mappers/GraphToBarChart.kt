@@ -31,6 +31,7 @@ class GraphToBarChart {
                 granularity = DEFAULT_GRANULARITY
                 axisMinimum = X_AXIS_DEFAULT_MIN
                 axisMaximum = graph.numberOfStepsToLastDate() + 1f
+                labelRotationAngle = 15f
             }
 
             axisLeft.apply {

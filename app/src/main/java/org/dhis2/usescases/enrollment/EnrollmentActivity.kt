@@ -25,6 +25,7 @@ import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
+import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.uicomponents.map.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
@@ -63,6 +64,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     @Inject
     lateinit var locationProvider: LocationProvider
+
+    @Inject
+    lateinit var dispatchers: DispatcherProvider
 
     lateinit var binding: EnrollmentActivityBinding
     lateinit var mode: EnrollmentMode
@@ -129,7 +133,15 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         formView = FormView.Builder()
             .persistence(formRepository)
             .locationProvider(locationProvider)
+            .dispatcher(dispatchers)
             .onItemChangeListener { presenter.updateFields() }
+            .onLoadingListener { loading ->
+                if (loading) {
+                    showProgress()
+                } else {
+                    hideProgress()
+                }
+            }
             .build()
 
         val fragmentTransaction = supportFragmentManager.beginTransaction()
