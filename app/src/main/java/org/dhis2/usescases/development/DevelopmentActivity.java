@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -52,6 +53,7 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         loadBreakTheGlass();
         loadProgramRuleCheck();
         loadFabItems();
+        loadFeatureConfig();
     }
 
     private void loadProgramRuleCheck() {
@@ -234,6 +236,12 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         binding.dialFabLayout.addDialItems(items, integer -> {
             Toast.makeText(this, String.format("item %s clicked", integer.toString()), Toast.LENGTH_LONG).show();
             return Unit.INSTANCE;
+        });
+    }
+
+    private void loadFeatureConfig() {
+        binding.featureConfigButton.setOnClickListener(view -> {
+           //TODO go to FeatureConfigActivity
         });
     }
 }
