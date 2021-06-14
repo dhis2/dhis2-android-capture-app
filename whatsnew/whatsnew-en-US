@@ -1,10 +1,7 @@
-This new version includes the following features:
-- User experience and user interface improvements.
-- Indicator form event programs and data sets.
-- Local analytics at TEI level.
-- Display attributes and data elements on maps.
-- Navigate to selected location on maps.
-- Working lists.
-- Stability improvements.
-
-You can find all details in Jira and Github (github.com/dhis2/dhis2-android-capture-app).
+This is a patch version that fixes:
+- ANDROAPP-3983 Cannot use QR to read and populate the search form
+- ANDROAPP-3927 Impossible to add TEI when the program has zero search fields
+- ANDROAPP-3917 With translated DEs, Horizontal/Vertical Options not keeping values selected
+- ANDROAPP-4054 App crashes when searching by Age
+....
+You can find all the details on Jira and Github.
