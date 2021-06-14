@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="org.dhis2.usescases.featureconfig.FeatureConfigViewModel" />
+
+        <variable
+            name="feature"
+            type="org.dhis2.usescases.featureconfig.Feature" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@{feature.name}"
+            tools:text="Feature 1" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/enable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="@{feature.enable ? true : false}"
+            android:onClick="@{v -> viewModel.didUserTapOnItem(feature)}" />
+
+    </LinearLayout>
+</layout>
