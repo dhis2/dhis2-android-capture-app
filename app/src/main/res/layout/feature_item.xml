@@ -9,8 +9,8 @@
             type="org.dhis2.usescases.featureconfig.FeatureConfigViewModel" />
 
         <variable
-            name="feature"
-            type="org.dhis2.usescases.featureconfig.Feature" />
+            name="featureState"
+            type="org.dhis2.usescases.featureconfig.FeatureState" />
     </data>
 
     <LinearLayout
@@ -23,15 +23,15 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@{feature.name}"
+            android:text="@{featureState.feature.description}"
             tools:text="Feature 1" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/enable"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="@{feature.enable ? true : false}"
-            android:onClick="@{v -> viewModel.didUserTapOnItem(feature)}" />
+            android:checked="@{featureState.enable ? true : false}"
+            android:onClick="@{v -> viewModel.didUserTapOnItem(featureState)}" />
 
     </LinearLayout>
 </layout>

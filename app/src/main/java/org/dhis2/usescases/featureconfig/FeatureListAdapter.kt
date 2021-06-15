@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.databinding.FeatureItemBinding
 
 class FeatureListAdapter(private val viewModel: FeatureConfigViewModel) :
-    ListAdapter<Feature, FeatureListAdapter.ViewHolder>(ItemDiffCallback()) {
+    ListAdapter<FeatureState, FeatureListAdapter.ViewHolder>(ItemDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -23,19 +23,19 @@ class FeatureListAdapter(private val viewModel: FeatureConfigViewModel) :
 
     inner class ViewHolder(val binding: FeatureItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: FeatureConfigViewModel, feature: Feature) {
-            binding.feature = feature
+        fun bind(viewModel: FeatureConfigViewModel, featureState: FeatureState) {
+            binding.featureState = featureState
             binding.viewModel = viewModel
         }
     }
 }
 
-class ItemDiffCallback : DiffUtil.ItemCallback<Feature>() {
-    override fun areItemsTheSame(oldItem: Feature, newItem: Feature): Boolean {
+class ItemDiffCallback : DiffUtil.ItemCallback<FeatureState>() {
+    override fun areItemsTheSame(oldItem: FeatureState, newItem: FeatureState): Boolean {
         return oldItem == newItem
     }
 
-    override fun areContentsTheSame(oldItem: Feature, newItem: Feature): Boolean {
+    override fun areContentsTheSame(oldItem: FeatureState, newItem: FeatureState): Boolean {
         return oldItem == newItem
     }
 }
