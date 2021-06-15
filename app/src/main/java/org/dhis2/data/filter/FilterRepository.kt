@@ -45,6 +45,13 @@ class FilterRepository @Inject constructor(
 
     private val observableSortingInject = ObservableField<SortingItem>()
     private val observableOpenFilter = ObservableField<Filters>()
+    private var orgUnitsCount: Int = -1
+
+    init {
+        orgUnitsCount =
+            d2.organisationUnitModule()
+                .organisationUnits().byRootOrganisationUnit(true).blockingCount()
+    }
 
     fun trackedEntityInstanceQueryByProgram(
         programUid: String
@@ -273,9 +280,6 @@ class FilterRepository @Inject constructor(
     }
 
     fun globalTrackedEntityFilters(): List<FilterItem> {
-        val orgUnitsCount =
-            d2.organisationUnitModule()
-                .organisationUnits().byRootOrganisationUnit(true).blockingCount()
         val defaultFilters = createDefaultTrackedEntityFilters()
 
         if (webAppIsNotConfigured()) {
@@ -337,9 +341,6 @@ class FilterRepository @Inject constructor(
     }
 
     fun dataSetFilters(dataSetUid: String): List<FilterItem> {
-        val orgUnitsCount =
-            d2.organisationUnitModule()
-                .organisationUnits().byRootOrganisationUnit(true).blockingCount()
         val defaultFilters = createDefaultDatasetFilters(dataSetUid)
 
         if (webAppIsNotConfigured()) {
@@ -404,9 +405,6 @@ class FilterRepository @Inject constructor(
     }
 
     fun homeFilters(): List<FilterItem> {
-        val orgUnitsCount =
-            d2.organisationUnitModule()
-                .organisationUnits().byRootOrganisationUnit(true).blockingCount()
         val defaultFilters = createDefaultHomeFilters()
 
         if (webAppIsNotConfigured()) {
@@ -468,9 +466,6 @@ class FilterRepository @Inject constructor(
     }
 
     private fun getTrackerFilters(program: Program, showWorkingLists: Boolean): List<FilterItem> {
-        val orgUnitsCount =
-            d2.organisationUnitModule()
-                .organisationUnits().byRootOrganisationUnit(true).blockingCount()
         val defaultFilters = createGetDefaultTrackerFilter(program)
 
         if (webAppIsNotConfigured()) {
@@ -598,9 +593,6 @@ class FilterRepository @Inject constructor(
     }
 
     private fun getEventFilters(program: Program): List<FilterItem> {
-        val orgUnitsCount =
-            d2.organisationUnitModule()
-                .organisationUnits().byRootOrganisationUnit(true).blockingCount()
         val defaultFilters = createDefaultGetEventFilters(program)
 
         if (webAppIsNotConfigured()) {
