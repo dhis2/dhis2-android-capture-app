@@ -9,15 +9,15 @@ class FeatureConfigViewModel(
 ) : ViewModel() {
 
 
-    private val _featuresList = MutableLiveData<List<Feature>>()
-    val featuresList: LiveData<List<Feature>> = _featuresList
+    private val _featuresList = MutableLiveData<List<FeatureState>>()
+    val featuresList: LiveData<List<FeatureState>> = _featuresList
 
     init {
         _featuresList.value = repository.featuresList
     }
 
-    fun didUserTapOnItem(feature: Feature) {
-        repository.updateItem(feature)
+    fun didUserTapOnItem(featureState: FeatureState) {
+        repository.updateItem(featureState)
         _featuresList.value = repository.featuresList
     }
 }
