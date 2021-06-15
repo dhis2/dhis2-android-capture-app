@@ -24,7 +24,7 @@ class FeatureConfigView : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        (applicationContext as App).userComponent()?.plus(FeatureConfigModule())?.inject()
+        (applicationContext as App).userComponent()?.plus(FeatureConfigModule())?.inject(this)
 
         val binding = DataBindingUtil.setContentView<FeatureConfigViewBinding>(
             this, R.layout.feature_config_view

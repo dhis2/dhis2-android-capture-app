@@ -7,10 +7,9 @@ import org.dhis2.data.prefs.PreferenceModule
 @PerActivity
 @Subcomponent(
     modules = [
-        FeatureConfigModule::class,
-        PreferenceModule::class
+        FeatureConfigModule::class
     ]
 )
 interface FeatureConfigComponent {
-    fun inject()
+    fun inject(view: FeatureConfigView)
 }

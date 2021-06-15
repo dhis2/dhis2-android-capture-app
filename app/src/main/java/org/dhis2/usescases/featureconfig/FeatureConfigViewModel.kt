@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import javax.inject.Inject
 
-class FeatureConfigViewModel @Inject constructor(
+class FeatureConfigViewModel constructor(
     private val repository: FeatureConfigRepository
 ) : ViewModel() {
 
