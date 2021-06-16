@@ -99,7 +99,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*region LIFECYCLE*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         (applicationContext as App).userComponent()!!.plus(
             EnrollmentModule(
                 this,
@@ -109,6 +108,22 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 context
             )
         ).inject(this)
+
+        formView = FormView.Builder()
+            .persistence(formRepository)
+            .locationProvider(locationProvider)
+            .onItemChangeListener { presenter.updateFields() }
+            .onLoadingListener { loading ->
+                if (loading) {
+                    showProgress()
+                } else {
+                    hideProgress()
+                }
+            }
+            .factory(supportFragmentManager)
+            .build()
+
+        super.onCreate(savedInstanceState)
 
         if (presenter.getEnrollment() == null ||
             presenter.getEnrollment()?.trackedEntityInstance() == null
@@ -122,18 +137,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         mode = EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
 
-        formView = FormView.Builder()
-            .persistence(formRepository)
-            .locationProvider(locationProvider)
-            .onItemChangeListener { presenter.updateFields() }
-            .onLoadingListener { loading ->
-                if (loading) {
-                    showProgress()
-                } else {
-                    hideProgress()
-                }
-            }
-            .build()
 
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.formViewContainer, formView)
