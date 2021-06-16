@@ -1,14 +1,16 @@
-package org.dhis2.usescases.featureconfig
+package org.dhis2.usescases.featureconfig.ui
 
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.databinding.FeatureConfigViewBinding
-import javax.inject.Inject
+import org.dhis2.usescases.featureconfig.data.FeatureConfigRepository
+import org.dhis2.usescases.featureconfig.di.FeatureConfigModule
 
 class FeatureConfigView : AppCompatActivity() {
 
@@ -36,8 +38,11 @@ class FeatureConfigView : AppCompatActivity() {
             adapter = FeatureListAdapter(viewModel)
         }
 
-        viewModel.featuresList.observe(this, Observer {
-            (binding.recyclerview.adapter as FeatureListAdapter).submitList(it)
-        })
+        viewModel.featuresList.observe(
+            this,
+            Observer {
+                (binding.recyclerview.adapter as FeatureListAdapter).submitList(it)
+            }
+        )
     }
 }

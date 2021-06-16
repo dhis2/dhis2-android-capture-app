@@ -1,9 +1,10 @@
-package org.dhis2.usescases.featureconfig
+package org.dhis2.usescases.featureconfig.ui
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import javax.inject.Inject
+import org.dhis2.usescases.featureconfig.data.FeatureConfigRepository
+import org.dhis2.usescases.featureconfig.model.FeatureState
 
 class FeatureConfigViewModel constructor(
     private val repository: FeatureConfigRepository

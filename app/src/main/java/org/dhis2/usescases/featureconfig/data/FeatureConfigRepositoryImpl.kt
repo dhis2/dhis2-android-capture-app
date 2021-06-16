@@ -1,7 +1,9 @@
-package org.dhis2.usescases.featureconfig
+package org.dhis2.usescases.featureconfig.data
 
-import org.dhis2.data.prefs.PreferenceProvider
 import javax.inject.Inject
+import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.usescases.featureconfig.model.Feature
+import org.dhis2.usescases.featureconfig.model.FeatureState
 
 class FeatureConfigRepositoryImpl @Inject constructor(val preferences: PreferenceProvider) :
     FeatureConfigRepository {

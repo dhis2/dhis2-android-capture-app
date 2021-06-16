@@ -1,4 +1,6 @@
-package org.dhis2.usescases.featureconfig
+package org.dhis2.usescases.featureconfig.data
+
+import org.dhis2.usescases.featureconfig.model.FeatureState
 
 interface FeatureConfigRepository {
 
