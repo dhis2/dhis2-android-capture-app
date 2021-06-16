@@ -51,7 +51,7 @@ class FilterRepository @Inject constructor(
     init {
         orgUnitsCount =
             d2.organisationUnitModule()
-                .organisationUnits().byRootOrganisationUnit(true).blockingCount()
+                .organisationUnits().blockingCount()
     }
 
     fun trackedEntityInstanceQueryByProgram(
