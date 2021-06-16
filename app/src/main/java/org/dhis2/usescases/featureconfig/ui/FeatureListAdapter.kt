@@ -1,4 +1,4 @@
-package org.dhis2.usescases.featureconfig
+package org.dhis2.usescases.featureconfig.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.databinding.FeatureItemBinding
+import org.dhis2.usescases.featureconfig.model.FeatureState
 
 class FeatureListAdapter(private val viewModel: FeatureConfigViewModel) :
     ListAdapter<FeatureState, FeatureListAdapter.ViewHolder>(ItemDiffCallback()) {

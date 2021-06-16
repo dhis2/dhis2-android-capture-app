@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="org.dhis2.usescases.featureconfig.FeatureConfigViewModel" />
+            type="org.dhis2.usescases.featureconfig.ui.FeatureConfigViewModel" />
     </data>
 
     <LinearLayout

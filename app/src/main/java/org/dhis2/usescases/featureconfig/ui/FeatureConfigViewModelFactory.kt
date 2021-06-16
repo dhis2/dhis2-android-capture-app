@@ -1,7 +1,8 @@
-package org.dhis2.usescases.featureconfig
+package org.dhis2.usescases.featureconfig.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import org.dhis2.usescases.featureconfig.data.FeatureConfigRepository
 
 @Suppress("UNCHECKED_CAST")
 class FeatureConfigViewModelFactory(val repository: FeatureConfigRepository) :
