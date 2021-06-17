@@ -1,7 +1,7 @@
 package dhis2.org.analytics.charts.data
 
-import java.util.Date
 import org.hisp.dhis.android.core.period.PeriodType
+import java.util.Date
 
 data class Graph(
     val title: String,
@@ -10,7 +10,8 @@ data class Graph(
     val periodToDisplay: String,
     val eventPeriodType: PeriodType,
     val periodStep: Long,
-    val chartType: ChartType? = ChartType.LINE_CHART
+    val chartType: ChartType? = ChartType.LINE_CHART,
+    val categories: List<String> = emptyList()
 ) {
     fun numberOfStepsToDate(date: Date): Float {
         return if (baseSeries().isEmpty() || baseSeries().first().coordinates.isEmpty()) {
