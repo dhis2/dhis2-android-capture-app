@@ -6,7 +6,13 @@ import org.hisp.dhis.android.core.D2
 interface Charts {
     fun hasCharts(): Boolean
 
-    fun getCharts(enrollmentUid: String): List<Graph>
+    fun geEnrollmentCharts(enrollmentUid: String): List<Graph>
+
+    fun getProgramVisualizations(programUid: String): List<Graph>
+
+    fun getHomeVisualizations(): List<Graph>
+
+    fun getDataSetVisualizations(): List<Graph>
 
     interface Provider {
         fun get(dependencies: Dependencies): Charts
