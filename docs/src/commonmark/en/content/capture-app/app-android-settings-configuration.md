@@ -213,7 +213,10 @@ To create a **WHO Nutrition Analytics** item:
 
 - Select a program, a program stage, and WHO nutrition as visualization type.
 - Choose a WHO visualization type that can be Height for Age (HFA), Weight for Age (WFA) or Weight for Height (WFH).
-- Fill the form; the **Short name** is the only optional field.
+- Select the trackedentityattribute that represents the gender. You have then to specify the option for Male 'Male title' and the option for Female 'Female title'. Normally they will be option codes.
+- Choose the dataelement/programindicator that will be displayed in the Horizontal (x) axis
+- Choose the dataelement/programindicator that will be displayed in the Vertical (y) axis
+
 
 ![](resources/images/capture-app-analytics-who-item.png)
 
