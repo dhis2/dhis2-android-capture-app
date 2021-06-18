@@ -13,13 +13,15 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
+import org.dhis2.commons.di.dagger.PerActivity;
+import org.dhis2.commons.featureconfig.di.FeatureConfigComponent;
+import org.dhis2.commons.featureconfig.di.FeatureConfigModule;
+import org.dhis2.commons.prefs.Preference;
+import org.dhis2.commons.prefs.PreferenceModule;
 import org.dhis2.data.appinspector.AppInspector;
-import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.data.dagger.PerServer;
-import org.dhis2.data.dagger.PerUser;
+import org.dhis2.commons.di.dagger.PerServer;
+import org.dhis2.commons.di.dagger.PerUser;
 import org.dhis2.data.dispatcher.DispatcherModule;
-import org.dhis2.data.prefs.Preference;
-import org.dhis2.data.prefs.PreferenceModule;
 import org.dhis2.data.schedulers.SchedulerModule;
 import org.dhis2.data.schedulers.SchedulersProviderImpl;
 import org.dhis2.data.server.ServerComponent;
@@ -311,5 +313,10 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     public AppInspector getAppInspector() {
         return appInspector;
+    }
+
+    @Override
+    public FeatureConfigComponent provideFeatureConfigComponent() {
+        return userComponent.plus(new FeatureConfigModule());
     }
 }

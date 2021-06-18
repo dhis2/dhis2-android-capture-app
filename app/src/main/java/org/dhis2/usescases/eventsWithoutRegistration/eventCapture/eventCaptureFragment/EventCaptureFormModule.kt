@@ -3,7 +3,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureF
 import dagger.Module
 import dagger.Provides
 import io.reactivex.processors.FlowableProcessor
-import org.dhis2.data.dagger.PerFragment
+import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.RowAction

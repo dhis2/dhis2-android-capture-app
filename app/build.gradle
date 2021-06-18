@@ -211,6 +211,7 @@ dependencies {
     implementation project(':tableview')
     implementation project(":dhis_android_analytics")
     implementation project(":form")
+    implementation project(":commons")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
@@ -221,8 +222,6 @@ dependencies {
     implementation "androidx.legacy:legacy-support-v4:${libraries.legacysupport}"
     implementation "androidx.multidex:multidex:${libraries.multidex}"
     implementation "androidx.constraintlayout:constraintlayout:${libraries.constraintlayout}"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:${libraries.lifecycle}"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${libraries.lifecycle}"
     implementation "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycle}"
     implementation "androidx.work:work-runtime:${libraries.work}"
     implementation "androidx.work:work-rxjava2:${libraries.work}"

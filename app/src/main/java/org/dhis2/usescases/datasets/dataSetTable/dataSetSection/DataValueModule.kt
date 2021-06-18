@@ -2,12 +2,12 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
 import dagger.Module
 import dagger.Provides
-import org.dhis2.data.dagger.PerFragment
+import org.dhis2.commons.di.dagger.PerFragment
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.DataEntryStore
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
-import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2

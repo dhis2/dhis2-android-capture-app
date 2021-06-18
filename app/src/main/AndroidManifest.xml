@@ -158,7 +158,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".usescases.featureconfig.ui.FeatureConfigView" />
+        <activity android:name="org.dhis2.commons.featureconfig.ui.FeatureConfigView" />
 
     </application>
 

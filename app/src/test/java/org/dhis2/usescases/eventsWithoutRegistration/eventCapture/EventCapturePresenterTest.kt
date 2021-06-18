@@ -16,11 +16,11 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import java.util.Date
 import junit.framework.Assert.assertTrue
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
-import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.RowAction

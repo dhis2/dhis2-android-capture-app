@@ -65,10 +65,6 @@ public class Constants {
     public static final int RQ_MANDATORY_EVENTS = 2001;
     public static final String OPTION_SET_DIALOG_THRESHOLD = "optionSetDialogThredshold";
     public static final String USER_TEST_ANDROID = "android";
-    public static final String SECURE_SERVER_URL = "SEURE_SERVER_URL";
-    public static final String SECURE_USER_NAME = "SECURE_USER_NAME";
-    public static final String SECURE_PASS = "SECURE_PASS";
-    public static final String SECURE_CREDENTIALS = "SECURE_CREDENTIALS";
     public static final String USER = "USER";
     public static final String USER_ASKED_CRASHLYTICS = "USER_ACCEPT_CRASHLYTICS";
     public static final String ENROLLMENT_STATUS = "ENROLLMENT_STATUS";
