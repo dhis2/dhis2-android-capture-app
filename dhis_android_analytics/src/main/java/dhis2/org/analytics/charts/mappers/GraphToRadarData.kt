@@ -16,7 +16,7 @@ class GraphToRadarData {
                 val radarEntry = serie.coordinates.map { point: GraphPoint ->
                     RadarEntry(point.fieldValue)
                 }
-                val dataSet = RadarDataSet(radarEntry, serie.fieldName)
+                val dataSet = RadarDataSet(radarEntry, serie.fieldName).withGlobalStyle()
                 val colorIndex = index % colors.size
                 dataSet.color = colors[colorIndex]
                 addDataSet(dataSet)

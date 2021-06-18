@@ -100,7 +100,7 @@ fun List<Graph>.nutritionTestingData(d2: D2): List<Graph> {
 
 fun List<Graph>.radarTestingData(d2: D2): List<Graph> {
     return toMutableList().apply {
-        val monthlyPeriodStep = PeriodStepProviderImpl(d2).periodStep(PeriodType.Monthly)
+        val monthlyPeriodStep = PeriodStepProviderImpl(d2).periodStep(PeriodType.Daily)
         val serieA = SerieData(
             "Test A",
             listOf(
@@ -130,7 +130,7 @@ fun List<Graph>.radarTestingData(d2: D2): List<Graph> {
                 false,
                 radarSeries,
                 "",
-                PeriodType.Monthly,
+                PeriodType.Daily,
                 monthlyPeriodStep,
                 ChartType.RADAR,
                 listOf("HP", "ATK", "DEF", "S.ATK", "S.DEF", "SPD")

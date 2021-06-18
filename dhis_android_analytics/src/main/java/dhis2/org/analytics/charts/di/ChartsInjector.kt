@@ -13,14 +13,15 @@ import dhis2.org.analytics.charts.mappers.AnalyticTeiSettingsToSettingsAnalytics
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
 import dhis2.org.analytics.charts.mappers.DataElementToGraph
 import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
+import dhis2.org.analytics.charts.mappers.VisualizationToGraph
 import dhis2.org.analytics.charts.providers.ChartCoordinatesProvider
 import dhis2.org.analytics.charts.providers.ChartCoordinatesProviderImpl
 import dhis2.org.analytics.charts.providers.NutritionDataProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProviderImpl
 import dhis2.org.analytics.charts.providers.RuleEngineNutritionDataProviderImpl
-import javax.inject.Singleton
 import org.hisp.dhis.android.core.D2
+import javax.inject.Singleton
 
 @Singleton
 @Component(
@@ -37,11 +38,26 @@ class ChartsModule {
     @Provides
     internal fun provideChartRepository(
         d2: D2,
+        visualizationToGraph: VisualizationToGraph,
         analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph,
         dataElementToGraph: DataElementToGraph,
         indicatorToGraph: ProgramIndicatorToGraph
     ): ChartsRepository =
-        ChartsRepositoryImpl(d2, analyticsTeiSettingsToGraph, dataElementToGraph, indicatorToGraph)
+        ChartsRepositoryImpl(
+            d2,
+            visualizationToGraph,
+            analyticsTeiSettingsToGraph,
+            dataElementToGraph,
+            indicatorToGraph
+        )
+
+    @Provides
+    internal fun provideVisualizationToGraph(
+        periodStepProvider: PeriodStepProvider,
+        chartCoordinatesProvider: ChartCoordinatesProvider
+    ): VisualizationToGraph {
+        return VisualizationToGraph(periodStepProvider, chartCoordinatesProvider)
+    }
 
     @Provides
     internal fun provideAnalyticsSettingsToGraph(

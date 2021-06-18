@@ -13,6 +13,7 @@ class GraphToRadarChart {
         val radarData = GraphToRadarData().map(graph)
         return RadarChart(context).apply {
             description.isEnabled = false
+            isHighlightPerTapEnabled = false
 
             xAxis.apply {
                 position = XAxis.XAxisPosition.BOTTOM
@@ -23,8 +24,6 @@ class GraphToRadarChart {
             }
 
             legend.withGlobalStyle()
-           /* extraBottomOffset = 10f
-            extraTopOffset = 10f*/
 
             data = radarData
 

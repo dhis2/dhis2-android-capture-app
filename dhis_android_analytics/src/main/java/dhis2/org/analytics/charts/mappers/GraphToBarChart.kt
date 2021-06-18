@@ -16,10 +16,12 @@ class GraphToBarChart {
         return BarChart(context).apply {
             description.isEnabled = false
             isDragEnabled = true
-            setScaleEnabled(true)
-            setPinchZoom(true)
+            isScaleXEnabled = true
+            isScaleYEnabled = false
+            setPinchZoom(false)
 
             xAxis.apply {
+                setCenterAxisLabels(true)
                 enableGridDashedLine(
                     DEFAULT_GRID_LINE_LENGTH,
                     DEFAULT_GRID_SPACE_LENGTH,
@@ -58,6 +60,7 @@ class GraphToBarChart {
 
             legend.withGlobalStyle()
             extraBottomOffset = 10f
+
             data = barData
 
             layoutParams =

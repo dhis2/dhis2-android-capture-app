@@ -15,12 +15,12 @@ data class Graph(
 ) {
     fun numberOfStepsToDate(date: Date): Float {
         return if (baseSeries().isEmpty() || baseSeries().first().coordinates.isEmpty()) {
-            return 0f
+            0f
         } else {
-            (
-                (date.time - baseSeries().first().coordinates.first().eventDate.time) /
-                    periodStep
-                ).toFloat()
+            val initialDate = baseSeries().first().coordinates.first().eventDate.time
+            val dateDiff = date.time - initialDate
+            val stepsFromInitialDate = (dateDiff / periodStep).toFloat()
+            stepsFromInitialDate
         }
     }
 
@@ -38,7 +38,7 @@ data class Graph(
         } else {
             Date(
                 baseSeries().first().coordinates.first().eventDate.time +
-                    numberOfSteps * periodStep
+                        numberOfSteps * periodStep
             )
         }
     }

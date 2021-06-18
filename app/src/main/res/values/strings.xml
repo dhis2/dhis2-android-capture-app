@@ -847,4 +847,5 @@
     <string name="conf_error_value_option_set">Value for field %s does not belong to the option set in %s</string>
     <string name="action_do_not_show_again">Do not show again</string>
     <string name="feature_configuration">Feature Configuration</string>
+    <string name="show_radar_graph">Show as Radar</string>
 </resources>
