@@ -13,11 +13,11 @@ Please note that in this version of the web app, only users with 'ALL' authority
 
 ## General settings { #capture_app_andoid_settings_webapp_general }
 
-Includes configurations such as the analytics reporting ID and URL, the number of reserved values to download per TEI, and encrypt the device database.
+Includes configurations such as the Matomo URL and project ID, the number of reserved values to download per TEI, and encrypt the device database.
 
 ![](resources/images/capture-app-general-settings.png)
 
-**Matomo configuration:** If you already have a Matomo instance, add an analytics reporting URL and ID.
+**Matomo configuration:** If you already have a Matomo instance, add the Matomo URL and the project ID.
 
 **Mobile configuration:** This section allows admin users to edit the SMS gateway ad result sender phone number.
 
@@ -133,7 +133,7 @@ This section checks the amount of data and metadata a user would sync to his/her
 
 ## Appearance { #capture_app_andoid_settings_webapp_appearance }
 
-These settings give control over the appearance of the data entry form.
+These settings give control over the appearance of the data entry and list forms.
 
 - Filter: it defines the filters that can be enabled in the different app menus.
 - Completion spinner: it turns on/off the completion spinner that shows the progress in the data entry form.
@@ -197,17 +197,19 @@ To add a specific setting:
 
 ## Analytics { #capture_app_andoid_settings_webapp_analytics }
 
-Analytics settings define the analytics elements (charts, tables, visualization elements) that must be displayed to the user.
+Analytics settings define the TEI analytics items (charts, tables) that will be displayed to the user. The scope of the analysis is the TEI, so the visualizations will be displayed in the TEI dashboard of the android app.
+
+Any item defined in the settings app will overwrite the default behaviour of the android app, only showing the items defined in the settings app. The purpose of this section is to define visualizations to show evolution of dataelements and program indicators over time. Based on that, it will only take into cosideration dataelements that belongs to a repeatable program stage, or programindicators which formula contains at least one dataelement that belongs to a repeatable program stage.
 
 To create a **TEI Analytics** item:
 
 - Click on *Add TEI Analytics*. A dialog box will pop up with a small form.
-- Choose a program and program stage, and fill the form. The **Short name** is the only optional field.
-- If an item visualization other than WHO Nutrition has been chosen, the next fields to select are the period type (monthly, weekly, daily), an element type (Program Indicator, Data Element, Attribute), and an element that will be based on the element type previously selected. Remember that these elements are related to the program and program stage chosen at the beginning.
+- Choose a program and a repeatable program stage, and fill the form. The **Short name** is the only optional field.
+- If an item visualization other than WHO Nutrition has been chosen, the next fields to select are the period type (monthly, weekly, daily), an element type (Program Indicator, Data Element), and an element that will be based on the element type previously selected. Remember that these elements are related to the program and repeatable program stage chosen at the beginning.
 
 ![](resources/images/capture-app-analytics-item.png)
 
-To create a **WHO Analytics** item:
+To create a **WHO Nutrition Analytics** item:
 
 - Select a program, a program stage, and WHO nutrition as visualization type.
 - Choose a WHO visualization type that can be Height for Age (HFA), Weight for Age (WFA) or Weight for Height (WFH).
