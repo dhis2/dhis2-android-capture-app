@@ -8,9 +8,8 @@ import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import org.dhis2.common.rules.RetryRule
-import org.dhis2.data.prefs.Preference.Companion.PIN
-import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
+import org.dhis2.commons.prefs.Preference.Companion.PIN
+import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.ScanActivity

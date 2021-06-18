@@ -2,7 +2,7 @@ package org.dhis2.data.user;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.data.dagger.PerUser;
+import org.dhis2.commons.di.dagger.PerUser;
 import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.service.ReservedValuesWorkerComponent;
 import org.dhis2.data.service.ReservedValuesWorkerModule;
@@ -32,8 +32,8 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureCo
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialModule;
-import org.dhis2.usescases.featureconfig.di.FeatureConfigComponent;
-import org.dhis2.usescases.featureconfig.di.FeatureConfigModule;
+import org.dhis2.commons.featureconfig.di.FeatureConfigComponent;
+import org.dhis2.commons.featureconfig.di.FeatureConfigModule;
 import org.dhis2.usescases.main.MainComponent;
 import org.dhis2.usescases.main.MainModule;
 import org.dhis2.usescases.main.program.ProgramComponent;

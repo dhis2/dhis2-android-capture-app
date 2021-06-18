@@ -10,12 +10,12 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
+import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_CAT_COMBO
+import org.dhis2.commons.prefs.Preference.Companion.PIN
+import org.dhis2.commons.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
+import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.filter.FilterRepository
-import org.dhis2.data.prefs.Preference.Companion.DEFAULT_CAT_COMBO
-import org.dhis2.data.prefs.Preference.Companion.PIN
-import org.dhis2.data.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
-import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
-import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
