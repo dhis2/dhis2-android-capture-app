@@ -12,8 +12,8 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.prefs.Preference;
-import org.dhis2.data.prefs.PreferenceProvider;
+import org.dhis2.commons.prefs.Preference;
+import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 
 import java.util.Calendar;
