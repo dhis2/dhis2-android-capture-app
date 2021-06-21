@@ -18,6 +18,7 @@ class GroupAnalyticsFragment : Fragment() {
 
     private lateinit var binding: AnalyticsGroupBinding
     private val groupViewModel: GroupAnalyticsViewModel by viewModels()
+    var disableToolbarElevation: (()-> Unit)? = null
 
     companion object {
         fun newInstance(): GroupAnalyticsFragment {
@@ -37,11 +38,11 @@ class GroupAnalyticsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         groupViewModel.chipItems.observe(viewLifecycleOwner, Observer {
             if (it.isEmpty() || it.size < MIN_SIZE_TO_SHOW) {
                 binding.analyticChipGroup.visibility = View.GONE
             } else {
+                disableToolbarElevation?.invoke()
                 addChips(it)
             }
         })
