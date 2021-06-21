@@ -2,7 +2,7 @@ package org.dhis2.usescases.events
 
 import dagger.Module
 import dagger.Provides
-import org.dhis2.data.dagger.PerActivity
+import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.data.dhislogic.DhisEventUtils
 import org.hisp.dhis.android.core.D2
 

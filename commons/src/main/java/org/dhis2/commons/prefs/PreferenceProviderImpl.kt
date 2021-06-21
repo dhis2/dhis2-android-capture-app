@@ -1,4 +1,4 @@
-package org.dhis2.data.prefs
+package org.dhis2.commons.prefs
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -6,16 +6,11 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import de.adorsys.android.securestoragelibrary.SecurePreferences
 import de.adorsys.android.securestoragelibrary.SecureStorageException
-import org.dhis2.utils.Constants
-import org.dhis2.utils.Constants.SECURE_CREDENTIALS
-import org.dhis2.utils.Constants.SECURE_PASS
-import org.dhis2.utils.Constants.SECURE_SERVER_URL
-import org.dhis2.utils.Constants.SECURE_USER_NAME
 
-open class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
+open class PreferenceProviderImpl(private val context: Context) : PreferenceProvider {
 
     private val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+        context.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
 
     override fun sharedPreferences(): SharedPreferences {
         return sharedPreferences
@@ -137,17 +132,17 @@ open class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
     }
 
     override fun saveJiraCredentials(jiraAuth: String): String {
-        SecurePreferences.setValue(context, Constants.JIRA_AUTH, jiraAuth)
+        SecurePreferences.setValue(context, JIRA_AUTH, jiraAuth)
         return String.format("Basic %s", jiraAuth)
     }
 
     override fun saveJiraUser(jiraUser: String) {
-        SecurePreferences.setValue(context, Constants.JIRA_USER, jiraUser)
+        SecurePreferences.setValue(context, JIRA_USER, jiraUser)
     }
 
     override fun closeJiraSession() {
-        SecurePreferences.removeValue(context, Constants.JIRA_AUTH)
-        SecurePreferences.removeValue(context, Constants.JIRA_USER)
+        SecurePreferences.removeValue(context, JIRA_AUTH)
+        SecurePreferences.removeValue(context, JIRA_USER)
     }
 
     override fun clear() {

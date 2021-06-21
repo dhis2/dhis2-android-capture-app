@@ -21,7 +21,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
 
-import com.google.gson.Gson;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import org.dhis2.App;
@@ -31,8 +30,8 @@ import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.location.LocationProvider;
-import org.dhis2.data.prefs.Preference;
-import org.dhis2.data.prefs.PreferenceProvider;
+import org.dhis2.commons.prefs.Preference;
+import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;

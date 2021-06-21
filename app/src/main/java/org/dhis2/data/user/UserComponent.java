@@ -2,7 +2,9 @@ package org.dhis2.data.user;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.data.dagger.PerUser;
+import org.dhis2.commons.di.dagger.PerUser;
+import org.dhis2.commons.featureconfig.di.FeatureConfigActivityComponent;
+import org.dhis2.commons.featureconfig.di.FeatureConfigActivityModule;
 import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.service.ReservedValuesWorkerComponent;
 import org.dhis2.data.service.ReservedValuesWorkerModule;
@@ -183,4 +185,7 @@ public interface UserComponent {
 
     @NonNull
     ScanComponent plus(ScanModule scanModule);
+
+    @NonNull
+    FeatureConfigActivityComponent plus(FeatureConfigActivityModule featureModule);
 }
