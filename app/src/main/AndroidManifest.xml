@@ -157,9 +157,6 @@
                 <data android:scheme="*" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".usescases.featureconfig.ui.FeatureConfigView" />
-
     </application>
 
 </manifest>

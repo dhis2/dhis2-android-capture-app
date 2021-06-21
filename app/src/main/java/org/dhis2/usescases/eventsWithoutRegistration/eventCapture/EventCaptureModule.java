@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
@@ -18,7 +18,7 @@ import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.dhis2.data.prefs.PreferenceProvider;
+import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.form.data.FormRepositoryPersistenceImpl;
 import org.dhis2.form.model.RowAction;

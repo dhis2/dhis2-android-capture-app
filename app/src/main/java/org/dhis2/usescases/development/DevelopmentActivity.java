@@ -16,7 +16,7 @@ import com.google.gson.reflect.TypeToken;
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.DevelopmentActivityBinding;
-import org.dhis2.usescases.featureconfig.ui.FeatureConfigView;
+import org.dhis2.commons.featureconfig.ui.FeatureConfigView;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;

@@ -17,7 +17,7 @@ import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
 import org.dhis2.R
-import org.dhis2.data.prefs.Preference
+import org.dhis2.commons.prefs.Preference
 import org.dhis2.databinding.ActivityMainBinding
 import org.dhis2.usescases.about.AboutFragment
 import org.dhis2.usescases.development.DevelopmentActivity

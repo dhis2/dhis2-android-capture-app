@@ -8,7 +8,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.schedulers.TestScheduler
 import java.util.concurrent.TimeUnit
-import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.utils.Constants.PROGRAM_THEME
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController

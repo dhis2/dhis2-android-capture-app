@@ -6,8 +6,8 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import junit.framework.Assert.assertFalse
-import org.dhis2.data.prefs.Preference
-import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.commons.prefs.Preference
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.hisp.dhis.android.core.D2
 import org.junit.Before
 import org.junit.Test
