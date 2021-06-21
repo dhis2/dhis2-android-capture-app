@@ -1,6 +1,7 @@
 package dhis2.org.analytics.charts
 
 import dhis2.org.analytics.charts.data.Graph
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.hisp.dhis.android.core.D2
 
 interface Charts {
@@ -20,5 +21,6 @@ interface Charts {
 
     interface Dependencies {
         fun getD2(): D2
+        fun getFeatureConfigRepository(): FeatureConfigRepository
     }
 }

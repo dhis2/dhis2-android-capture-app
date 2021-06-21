@@ -7,25 +7,20 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import org.dhis2.commons.R
 import org.dhis2.commons.databinding.FeatureConfigViewBinding
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.featureconfig.di.FeatureConfigComponentProvider
 import javax.inject.Inject
 
 class FeatureConfigView : AppCompatActivity() {
 
     @Inject
-    lateinit var repository: FeatureConfigRepository
+    lateinit var viewModelFactory: FeatureConfigViewModelFactory
 
-    private val viewModel: FeatureConfigViewModel by viewModels {
-        FeatureConfigViewModelFactory(
-            repository
-        )
-    }
+    private val viewModel: FeatureConfigViewModel by viewModels { viewModelFactory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        (applicationContext as FeatureConfigComponentProvider).provideFeatureConfigComponent()
+        (applicationContext as FeatureConfigComponentProvider).provideFeatureConfigActivityComponent()
             ?.inject(this)
 
         val binding = DataBindingUtil.setContentView<FeatureConfigViewBinding>(

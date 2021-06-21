@@ -157,9 +157,6 @@
                 <data android:scheme="*" />
             </intent-filter>
         </activity>
-
-        <activity android:name="org.dhis2.commons.featureconfig.ui.FeatureConfigView" />
-
     </application>
 
 </manifest>
