@@ -10,7 +10,7 @@ import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.customviews.TableFieldDialog;
-import org.dhis2.utils.customviews.YesNoView;
+import org.dhis2.data.forms.dataentry.fields.radiobutton.YesNoView;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
 import io.reactivex.processors.FlowableProcessor;

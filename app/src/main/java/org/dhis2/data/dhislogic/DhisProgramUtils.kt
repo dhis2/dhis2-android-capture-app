@@ -13,8 +13,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceCollectionR
 
 class DhisProgramUtils @Inject constructor(val d2: D2) {
 
-    private var captureOrgUnits: List<String> = ArrayList()
-
     fun getProgramState(program: Program): State {
         return when (program.programType()) {
             ProgramType.WITH_REGISTRATION -> getTrackerProgramState(program)
@@ -30,26 +28,10 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     }
 
     fun getProgramsInCaptureOrgUnits(): Flowable<List<Program>> {
-        return getCaptureOrgUnits()
-            .flatMap { captureOrgUnits ->
-                this.captureOrgUnits = captureOrgUnits
-                d2.programModule().programs()
-                    .withTrackedEntityType()
-                    .byOrganisationUnitList(captureOrgUnits)
-                    .get().toFlowable()
-            }
-    }
-
-    private fun getCaptureOrgUnits(): Flowable<List<String>> {
-        return if (captureOrgUnits.isNotEmpty()) {
-            Flowable.just(captureOrgUnits)
-        } else {
-            d2.organisationUnitModule()
-                .organisationUnits()
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .uids
-                .toFlowable()
-        }
+        return d2.programModule().programs()
+            .withTrackedEntityType()
+            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+            .get().toFlowable()
     }
 
     private fun getTrackerProgramState(program: Program): State {

@@ -5,13 +5,13 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import org.dhis2.Bindings.toDateSpan
 import org.dhis2.Bindings.toUiText
 import org.dhis2.R
-import org.junit.Ignore
 import org.junit.Test
 
 class DateExtensionsTest {
@@ -29,11 +29,12 @@ class DateExtensionsTest {
 
     @Test
     fun `Should return date format when date is after today`() {
+        val currentDate = currentCalendar().time
         val date: Date? = currentCalendar().apply {
             add(Calendar.DAY_OF_MONTH, 1)
         }.time
-        assert(date.toDateSpan(context) == dateFormat.format(date))
-        assert(date.toUiText(context) == dateFormat.format(date))
+        assert(date.toDateSpan(context, currentDate) == dateFormat.format(date))
+        assert(date.toUiText(context, currentDate) == dateFormat.format(date))
     }
 
     @Test
@@ -45,31 +46,34 @@ class DateExtensionsTest {
 
     @Test
     fun `Should return "5 minutes ago" when date is 5 minutes ago from current date`() {
+        val currentDate = currentCalendar().time
         val date: Date? = currentCalendar().apply {
             add(Calendar.MINUTE, -5)
         }.time
         whenever(context.getString(R.string.interval_minute_ago)) doReturn "%d min. ago"
-        assert(date.toDateSpan(context) == "5 min. ago")
+        assert(date.toDateSpan(context, currentDate) == "5 min. ago")
     }
 
     @Test
     fun `Should return "3 hours ago" when date is 3 hours ago from current date`() {
+        val currentDate = currentCalendar().time
         val date: Date? = currentCalendar().apply {
             add(Calendar.HOUR, -3)
         }.time
         whenever(context.getString(R.string.interval_hour_ago)) doReturn "%d hours ago"
-        assert(date.toDateSpan(context) == "3 hours ago")
+        assert(date.toDateSpan(context, currentDate) == "3 hours ago")
     }
 
     @Test
     fun `Should return "yesterday" when date is more than 24h from current date`() {
+        val currentDate = currentCalendar().time
         val date: Date? = currentCalendar().apply {
             add(Calendar.DAY_OF_MONTH, -1)
         }.time
         whenever(context.getString(R.string.interval_yesterday)) doReturn "Yesterday"
         whenever(context.getString(R.string.filter_period_yesterday)) doReturn "Yesterday"
-        assert(date.toDateSpan(context) == "Yesterday")
-        assert(date.toUiText(context) == "Yesterday")
+        assert(date.toDateSpan(context, currentDate) == "Yesterday")
+        assert(date.toUiText(context, currentDate) == "Yesterday")
     }
 
     @Test
@@ -82,31 +86,33 @@ class DateExtensionsTest {
 
     @Test
     fun `Should return "today" when date is less than 24h from current date`() {
+        val currentDate = currentCalendar().time
         val date: Date? = currentCalendar().apply {
             add(Calendar.HOUR, -20)
         }.time
         whenever(context.getString(R.string.filter_period_today)) doReturn "Today"
-        assert(date.toUiText(context) == "Today")
+        assert(date.toUiText(context, currentDate) == "Today")
     }
 
     @Test
-    @Ignore("When the year has changed, is creating different behavior than expected by the test")
     fun `Should return dd MMM format when date is same year of current date`() {
+        val currentDate = currentCalendar().time
         val date: Date? = currentCalendar().apply {
             add(Calendar.MONTH, -2)
         }.time
-        assert(date.toUiText(context) == uiFormat.format(date))
+        assert(date.toUiText(context, currentDate) == uiFormat.format(date))
     }
 
     @Test
     fun `Should return date format format when date is more than one year from current date`() {
+        val currentDate = currentCalendar().time
         val date: Date? = currentCalendar().apply {
             add(Calendar.YEAR, -2)
         }.time
-        assert(date.toUiText(context) == dateFormat.format(date))
+        assert(date.toUiText(context, currentDate) == dateFormat.format(date))
     }
 
     private fun currentCalendar() = Calendar.getInstance().apply {
-        time = Date()
+        time = Date.from(Instant.parse("2020-03-02T00:00:00.00Z"))
     }
 }

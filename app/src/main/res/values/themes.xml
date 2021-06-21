@@ -30,6 +30,18 @@
         <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Action</item>
     </style>
 
+    <style name="DhisBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="materialThemeOverlay">@style/DhisBottomNavigationViewOverlay</item>
+        <item name="currentItemSelectorSize">40dp</item>
+        <item name="currentItemSelectorColor">?colorPrimary</item>
+        <item name="currentItemSelectorDrawable">@drawable/navigation_item_selector</item>
+    </style>
+
+    <style name="DhisBottomNavigationViewOverlay" parent="">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorOnSurface">@color/colorPrimaryLight</item>
+    </style>
+
     <style name="SplashTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>

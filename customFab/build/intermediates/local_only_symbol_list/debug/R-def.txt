@@ -1,0 +1,32 @@
+R_DEF: Internal format may change without notice
+local
+attr? rfab_color_normal
+attr? rfab_color_pressed
+attr? rfab_drawable
+attr? rfab_identification_code
+attr? rfab_shadow_color
+attr? rfab_shadow_dx
+attr? rfab_shadow_dy
+attr? rfab_shadow_radius
+attr? rfab_size
+attr? rfal_frame_alpha
+attr? rfal_frame_color
+color rfab__color_background_normal
+color rfab__color_background_pressed
+color rfab__color_frame
+color rfab__color_shadow
+color rfab__color_text_label_item
+drawable rfab__drawable_rfab_default
+drawable rfab__shape_corners_background_label_shadow_normal
+drawable rfab__shape_corners_background_label_shadow_pressed
+drawable rfab__shape_corners_background_label_shadow_selector
+id mini
+id normal
+id rfab__content_label_list_icon_iv
+id rfab__content_label_list_label_tv
+id rfab__content_label_list_root_view
+id rfab__id_content_label_list_item_position
+layout rfab__content_label_list_item
+string rfab_rfal__float_convert_color_alpha
+styleable RapidFloatingActionButton rfab_size rfab_drawable rfab_color_normal rfab_color_pressed rfab_shadow_radius rfab_shadow_color rfab_shadow_dx rfab_shadow_dy rfab_identification_code
+styleable RapidFloatingActionLayout rfal_frame_color rfal_frame_alpha

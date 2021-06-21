@@ -8,24 +8,40 @@
         <import type="android.view.View" />
 
         <variable
-            name="currentFilter"
-            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.Filters&gt;" />
-
-        <variable
             name="filterType"
             type="org.dhis2.utils.filters.Filters" />
+
+        <variable
+            name="filterItem"
+            type="org.dhis2.utils.filters.OrgUnitFilter" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/filter_alpha"
+        android:visibility="gone"
+        app:clipAllCorners="@{8}"
+        app:expand_view="@{filterItem.openFilter == filterItem.type}"
+        app:request_layout="@{filterItem}"
+        tools:visibility="visible">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:background="@drawable/inner_shadow_top_straight"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:background="@drawable/inner_shadow_bottom_straight"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/orgUnitSearchLayout"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:elevation="1dp"
-            android:visibility="@{currentFilter == filterType ? View.VISIBLE : View.GONE}"
             app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
@@ -50,23 +66,24 @@
                 <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:focusableInTouchMode="true">
 
                     <org.dhis2.utils.customviews.TextInputAutoCompleteTextView
                         android:id="@+id/orgUnitSearchEditText"
-                        android:theme="@style/loginInputText"
-                        android:background="@android:color/transparent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
                         android:ellipsize="end"
                         android:hint="@string/search_optionset"
                         android:imeOptions="actionDone"
                         android:maxLines="1"
-                        android:singleLine="true"
-                        android:paddingTop="8dp"
                         android:paddingStart="5dp"
+                        android:paddingTop="8dp"
                         android:paddingEnd="5dp"
+                        android:singleLine="true"
                         android:textSize="16sp"
+                        android:theme="@style/loginInputText"
                         app:layout_constraintStart_toStartOf="parent"
                         tools:text="Org" />
 
@@ -75,14 +92,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:alpha="0.3"
-                        android:paddingTop="8dp"
-                        android:paddingStart="5dp"
-                        android:paddingEnd="5dp"
-                        tools:text="OrgUnit Test"
                         android:ellipsize="end"
                         android:maxLines="1"
+                        android:paddingStart="5dp"
+                        android:paddingTop="8dp"
+                        android:paddingEnd="5dp"
                         android:textSize="16sp"
-                        app:layout_constraintStart_toStartOf="parent" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        tools:text="OrgUnit Test" />
                 </RelativeLayout>
 
                 <ProgressBar
@@ -95,6 +112,7 @@
 
                 <ImageView
                     android:id="@+id/addButton"
+                    style="@style/ActionIconUnwrap"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
@@ -115,25 +133,14 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/ouRecycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/filter_alpha"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:visibility="@{currentFilter == filterType ? View.VISIBLE : View.GONE}"
-            app:layout_constraintTop_toBottomOf="@id/orgUnitSearchLayout">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/ouRecycler"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:listitem="@layout/item_selected_ou_filter" />
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@id/orgUnitSearchLayout"
+            tools:listitem="@layout/item_selected_ou_filter" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

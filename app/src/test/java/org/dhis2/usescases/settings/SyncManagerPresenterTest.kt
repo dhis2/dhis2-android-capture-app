@@ -10,6 +10,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
@@ -20,6 +21,7 @@ import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel
 import org.dhis2.usescases.settings.models.SyncParametersViewModel
 import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.settings.LimitScope
 import org.junit.Before
@@ -35,9 +37,12 @@ class SyncManagerPresenterTest {
     private val preferencesProvider: PreferenceProvider = mock()
     private val workManagerController: WorkManagerController = mock()
     private val settingsRepository: SettingsRepository = mock()
+    private val userManager: UserManager =
+        Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val view: SyncManagerContracts.View = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
     private val errorMapper: ErrorModelMapper = mock()
+    private val matomoAnalyticsController: MatomoAnalyticsController = mock()
 
     @Before
     fun setUp() {
@@ -48,16 +53,20 @@ class SyncManagerPresenterTest {
             preferencesProvider,
             workManagerController,
             settingsRepository,
+            userManager,
             view,
             analyticsHelper,
-            errorMapper
+            errorMapper,
+            matomoAnalyticsController
         )
     }
 
     @Test
     fun `Should init settings values`() {
         presenter.init()
-        whenever(settingsRepository.metaSync()) doReturn Single.just(mockedMetaViewModel())
+        whenever(
+            settingsRepository.metaSync(userManager)
+        ) doReturn Single.just(mockedMetaViewModel())
         whenever(settingsRepository.dataSync()) doReturn Single.just(mockedDataViewModel())
         whenever(settingsRepository.syncParameters()) doReturn Single.just(mockedParamsViewModel())
         whenever(settingsRepository.reservedValues()) doReturn Single.just(
@@ -126,7 +135,7 @@ class SyncManagerPresenterTest {
 
     @Test
     fun `Should return metadata period setting`() {
-        whenever(settingsRepository.metaSync()) doReturn Single.just(
+        whenever(settingsRepository.metaSync(userManager)) doReturn Single.just(
             MetadataSettingsViewModel(
                 100,
                 "last date",
@@ -162,8 +171,8 @@ class SyncManagerPresenterTest {
 
     @Test
     fun `Should save event max count`() {
-        presenter.saveEventMaxCount(any())
-        verify(settingsRepository, times(1)).saveEventsToDownload(any())
+        presenter.saveEventMaxCount(200)
+        verify(settingsRepository, times(1)).saveEventsToDownload(200)
     }
 
     @Test
@@ -174,8 +183,8 @@ class SyncManagerPresenterTest {
 
     @Test
     fun `Should save reserved values to download`() {
-        presenter.saveReservedValues(any())
-        verify(settingsRepository, times(1)).saveReservedValuesToDownload(any())
+        presenter.saveReservedValues(50)
+        verify(settingsRepository, times(1)).saveReservedValuesToDownload(50)
     }
 
     @Test

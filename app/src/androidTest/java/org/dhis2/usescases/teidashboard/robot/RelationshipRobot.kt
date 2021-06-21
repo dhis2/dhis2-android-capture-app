@@ -6,12 +6,15 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withTagValue
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
+import org.dhis2.utils.dialFloatingActionButton.FAB_ID
 import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.equalTo
 
 fun relationshipRobot(relationshipRobot: RelationshipRobot.() -> Unit) {
     RelationshipRobot().apply {
@@ -21,14 +24,13 @@ fun relationshipRobot(relationshipRobot: RelationshipRobot.() -> Unit) {
 
 class RelationshipRobot : BaseRobot() {
     fun clickOnFabAdd() {
-        onView(withId(R.id.rfab)).perform(click())
+        onView(withId(FAB_ID)).perform(click())
     }
 
     fun clickOnRelationshipType() {
         onView(
-            allOf(
-                withId(R.id.rfab__content_label_list_root_view),
-                hasDescendant(withText(relationshipType))
+            withTagValue(
+                equalTo(relationshipType)
             )
         ).perform(click())
     }

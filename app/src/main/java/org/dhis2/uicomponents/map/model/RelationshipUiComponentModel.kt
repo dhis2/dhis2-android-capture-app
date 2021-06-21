@@ -1,5 +1,6 @@
 package org.dhis2.uicomponents.map.model
 
+import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 
 data class RelationshipUiComponentModel(
@@ -13,6 +14,9 @@ data class RelationshipUiComponentModel(
     val canBeDeleted: Boolean? = true
 ) : CarouselItemModel {
     override fun uid(): String = relationshipUid
+    fun shouldShowNavigationButton(): Boolean {
+        return to.geometry?.type() == FeatureType.POINT
+    }
 }
 
 data class TeiMap(

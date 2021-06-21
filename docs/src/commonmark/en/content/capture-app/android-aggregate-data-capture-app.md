@@ -1,10 +1,6 @@
-# Android aggregate data capture app
+# Android aggregate data capture app { #capture_app_aggregate }
 
-<!--DHIS2-SECTION-ID:android_aggregate-->
-
-## Overview
-
-<!--DHIS2-SECTION-ID:android_overview-->
+## Overview { #capture_app_aggregate_overview  }
 
 The Data Capture for DHIS2 app allows you to enter data into a DHIS2
 server with an Android device. The app downloads instances of forms
@@ -12,17 +8,14 @@ which are required to enter data from the server, and stores them on the
 device. This means that you can enter data offline and then upload it to
 the DHIS2 server when you have network coverage.
 
-## Installation
-
-<!--DHIS2-SECTION-ID:android_installation-->
+## Installation { #capture_app_aggregate_installation }
 
 You can easily install the Data Capture for DHIS2 app by logging into
 the Google play store and searching for "[Data Capture for
 DHIS2](https://play.google.com/store/apps/details?id=org.dhis2.mobile)"
 
-## Logging in
+## Logging in { #capture_app_aggregate_logging_in }
 
-<!--DHIS2-SECTION-ID:android_logging_in-->
 
 After you install and launch the Data Capture app on your device, when
 you launch it for the first time, you will be required to enter the
@@ -34,9 +27,7 @@ authenticate with the server.
 
 ![](resources/images/android/dc/android_dc_login.png)
 
-## Entering and saving data
-
-<!--DHIS2-SECTION-ID:android_entering_data-->
+## Entering and saving data { #capture_app_aggregate_entering_saving_data }
 
 Once you login, you will need to select the organisation unit, dataset
 and time period for which you wish to enter data. Once you have selected

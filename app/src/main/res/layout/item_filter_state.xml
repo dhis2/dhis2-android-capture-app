@@ -8,20 +8,8 @@
         <import type="android.view.View" />
 
         <variable
-            name="currentFilter"
-            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.Filters&gt;" />
-
-        <variable
-            name="filterCount"
-            type="androidx.databinding.ObservableField&lt;java.lang.Integer&gt;" />
-
-        <variable
-            name="filterType"
-            type="org.dhis2.utils.filters.Filters" />
-
-        <variable
-            name="currentSortItem"
-            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.sorting.SortingItem&gt;" />
+            name="filterItem"
+            type="org.dhis2.utils.filters.SyncStateFilter" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -32,8 +20,8 @@
         <include
             android:id="@+id/filterLayout"
             layout="@layout/item_header_filter"
-            app:filterCount="@{filterCount}"
-            app:currentSortItem="@{currentSortItem}"
+            app:filterCount="@{filterItem.observeCount()}"
+            app:filterItem="@{filterItem}"
             app:layout_constraintTop_toBottomOf="parent" />
 
         <include
@@ -41,8 +29,8 @@
             layout="@layout/filter_state"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:currentFilter="@{currentFilter}"
-            app:filterType="@{filterType}"
+            app:filterType="@{filterItem.type}"
+            app:filterItem="@{filterItem}"
             app:layout_constraintTop_toBottomOf="@id/filterLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

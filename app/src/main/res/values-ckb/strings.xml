@@ -1,0 +1,27 @@
+<resources>
+    <!-- Input hints -->
+    <string name="search">طةران</string>
+    <string name="update">نويَ كردنةوة</string>
+    <string name="date">داتا</string>
+    <string name="new_event">رووداوي نوي</string>
+    <!--Event Detail-->
+    <string name="event_date">بيركاري داتا</string>
+    <string name="cancel">لابردن</string>
+    <string name="delete">سرينةوة</string>
+    <string name="total">كؤي طشتي</string>
+    <string name="done_task">ماڵةوة</string>
+    <string name="wipe_data_no">لابردن</string>
+    <string name="SYNC_MANAGER">ريكخستن</string>
+    <!-- SEARCH OPTION SET -->
+    <string name="search_optionset">طةران</string>
+    <string name="date_dialog_clear">باك</string>
+    <string name="period">ماوة</string>
+    <string name="next">داهاتوو</string>
+    <string name="SAVE">خةزن كردن</string>
+    <string name="button_ok">تةواو</string>
+    <string name="about">دةربارةي</string>
+    <string name="save">خةزن كردن</string>
+    <string name="menu_home">ماڵةوة</string>
+    <string name="action_close">داخستن</string>
+    <string name="filters_title_period">ماوة</string>
+    </resources>

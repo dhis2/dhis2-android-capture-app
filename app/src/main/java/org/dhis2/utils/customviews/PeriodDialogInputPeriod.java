@@ -97,7 +97,8 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
                     },
                     withInputPeriod,
                     organisationUnit,
-                    inputPeriod);
+                    inputPeriod,
+                    periodUtils);
             binding.recyclerDate.setAdapter(periodAdapter);
 
         }

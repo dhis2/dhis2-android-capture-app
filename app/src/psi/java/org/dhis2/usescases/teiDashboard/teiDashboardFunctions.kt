@@ -13,11 +13,11 @@ import java.lang.IllegalStateException
 
 private const val OVERVIEW_POS = 0
 private const val INDICATORS_POS = 1
-private const val RELATIONSHIPS_POS = 2
+ const val RELATIONSHIPS_POS = 2
 private const val FEEDBACK_POS = 3
 private const val NOTES_POS = 4
 private const val INDICATORS_LANDSCAPE_POS = 0
-private const val RELATIONSHIPS_LANDSCAPE_POS = 1
+ const val RELATIONSHIPS_LANDSCAPE_POS = 1
 private const val FEEDBACK_LANDSCAPE_POS = 2
 private const val NOTES_LANDSCAPE_POS = 3
 

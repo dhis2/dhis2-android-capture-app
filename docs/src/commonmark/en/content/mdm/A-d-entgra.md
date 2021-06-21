@@ -1,4 +1,4 @@
-# Annex D - MDM PoC: Entgra.io
+# Annex D - MDM PoC: Entgra.io { #mdm_entgra }
 
 This annex presents the outcome of the tested MDM: [https://entgra.io/emm](https://entgra.io/emm)
 
@@ -14,12 +14,12 @@ This solution allows remote control of the device and so, the manager can see th
 
 Console
 
-![Entgra MDM console](resources/images/image11.png)
+![Entgra MDM console](resources/images/mdm-image11.png)
 
 
 Phone
 
-![Entgra MDM running on Android](resources/images/image2.png){ width=25% }
+![Entgra MDM running on Android](resources/images/mdm-image2.png){ width=25% }
 
 ## Issues
 

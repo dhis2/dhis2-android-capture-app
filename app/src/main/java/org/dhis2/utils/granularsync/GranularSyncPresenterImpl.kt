@@ -34,6 +34,7 @@ import androidx.work.WorkInfo
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.BiFunction
 import io.reactivex.observers.DisposableCompletableObserver
 import io.reactivex.schedulers.Schedulers
 import java.util.Collections
@@ -60,6 +61,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase
 import org.hisp.dhis.android.core.sms.domain.repository.SmsRepository
@@ -98,39 +100,24 @@ class GranularSyncPresenterImpl(
         )
 
         disposable.add(
-            getState()
-                .subscribeOn(schedulerProvider.io())
+            Single.zip(
+                getState(),
+                getConflicts(conflictType),
+                BiFunction { state: State, conflicts: MutableList<TrackerImportConflict> ->
+                    Pair(state, conflicts)
+                }
+            ).subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { view.setState(it) },
+                    { stateAndConflicts ->
+                        view.setState(
+                            stateAndConflicts.first,
+                            stateAndConflicts.second
+                        )
+                    },
                     { view.closeDialog() }
                 )
         )
-
-        if (conflictType == TEI || conflictType == EVENT) {
-            disposable.add(
-                Single.just(conflictType)
-                    .flatMap {
-                        if (it == TEI) {
-                            d2
-                                .importModule()
-                                .trackerImportConflicts()
-                                .byTrackedEntityInstanceUid().eq(recordUid).get()
-                        } else {
-                            d2
-                                .importModule()
-                                .trackerImportConflicts()
-                                .byEventUid().eq(recordUid).get()
-                        }
-                    }
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe(
-                        { if (it.isNotEmpty()) view.prepareConflictAdapter(it) },
-                        { view.closeDialog() }
-                    )
-            )
-        }
     }
 
     override fun isSMSEnabled(isTrackerSync: Boolean): Boolean {
@@ -249,7 +236,12 @@ class GranularSyncPresenterImpl(
         disposable.add(
             smsSender.send().doOnNext { state ->
                 if (!isLastSendingStateTheSame(state.sent, state.total)) {
-                    reportState(SmsSendingService.State.SENDING, state.sent, state.total)
+                    reportState(
+                        if (state.sent == 0) SmsSendingService.State.STARTED
+                        else SmsSendingService.State.SENDING,
+                        state.sent,
+                        state.total
+                    )
                 }
             }.ignoreElements().doOnComplete {
                 reportState(
@@ -377,6 +369,20 @@ class GranularSyncPresenterImpl(
                     .map { dataSetInstance ->
                         getStateFromCanditates(dataSetInstance.map { it.state() }.toMutableList())
                     }
+        }
+    }
+
+    fun getConflicts(
+        conflictType: SyncStatusDialog.ConflictType
+    ): Single<MutableList<TrackerImportConflict>> {
+        return when (conflictType) {
+            TEI ->
+                d2.importModule().trackerImportConflicts()
+                    .byTrackedEntityInstanceUid().eq(recordUid).get()
+            EVENT ->
+                d2.importModule().trackerImportConflicts()
+                    .byEventUid().eq(recordUid).get()
+            else -> Single.just(mutableListOf())
         }
     }
 

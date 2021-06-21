@@ -10,7 +10,6 @@ import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Observable
-import junit.framework.Assert.assertTrue
 import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.data.fingerprint.FingerPrintResult
 import org.dhis2.data.fingerprint.Type
@@ -29,7 +28,9 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.LOGIN
 import org.dhis2.utils.analytics.SERVER_QR_SCANNER
+import org.dhis2.utils.reporting.CrashReportController
 import org.hisp.dhis.android.core.user.User
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -46,11 +47,19 @@ class LoginPresenterTest {
     private val userManager: UserManager =
         Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val analyticsHelper: AnalyticsHelper = mock()
+    private val crashReportController: CrashReportController = mock()
 
     @Before
     fun setup() {
         loginPresenter =
-            LoginPresenter(view, preferenceProvider, schedulers, goldfinger, analyticsHelper)
+            LoginPresenter(
+                view,
+                preferenceProvider,
+                schedulers,
+                goldfinger,
+                analyticsHelper,
+                crashReportController
+            )
     }
 
     @Test

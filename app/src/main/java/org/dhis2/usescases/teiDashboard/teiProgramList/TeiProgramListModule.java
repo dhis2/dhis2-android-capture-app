@@ -39,8 +39,9 @@ public class TeiProgramListModule {
     TeiProgramListContract.Presenter providesPresenter(TeiProgramListContract.Interactor interactor,
                                                        PreferenceProvider preferenceProvider,
                                                        AnalyticsHelper analyticsHelper,
-                                                       DhisEnrollmentUtils dhisEnrollmentUtils) {
-        return new TeiProgramListPresenter(view, interactor, teiUid, preferenceProvider, analyticsHelper, dhisEnrollmentUtils);
+                                                       D2 d2) {
+        return new TeiProgramListPresenter(view, interactor, teiUid, preferenceProvider, analyticsHelper,
+                d2.enrollmentModule().enrollmentService());
     }
 
     @Provides

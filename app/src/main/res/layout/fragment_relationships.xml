@@ -8,9 +8,11 @@
     </data>
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
+        android:id="@+id/dialFabLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:fab_extra_bottom_margin="@{16}">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/relationship_recycler"
@@ -37,61 +39,37 @@
             android:layout_height="0dp"
             android:background="@drawable/ic_front_backdrop_bg"
             android:visibility="gone"
-            tools:visibility="visible"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:mapbox_uiAttributionGravity="top|start"
+            app:mapbox_uiLogoGravity="top|start"
+            tools:visibility="visible" />
 
-        <com.google.android.material.button.MaterialButton
+        <ImageView
             android:id="@+id/mapLayerButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="10dp"
-            android:padding="5dp"
-            android:text="@string/map_layers"
-            android:textAllCaps="true"
-            android:textColor="?colorAccent"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:visibility="gone"
-            tools:visibility="visible"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/mapView" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/mapView"
+            app:srcCompat="@drawable/ic_map_layers_ripple" />
 
         <org.dhis2.uicomponents.map.views.CarouselView
             android:id="@+id/map_carousel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="20dp"
             android:clipToPadding="false"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:visibility="gone"
-            tools:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@id/mapView"
             app:layout_constraintStart_toStartOf="@id/mapView"
-            tools:listitem="@layout/item_carousel_tei" />
+            tools:listitem="@layout/item_carousel_tei"
+            tools:visibility="visible" />
 
-        <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout
-            android:id="@+id/rfabLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp">
-
-            <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton
-                android:id="@+id/rfab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                app:rfab_color_normal="?colorPrimary"
-                app:rfab_color_pressed="?colorPrimaryDark"
-                tools:rfab_shadow_color="#999999"
-                tools:rfab_shadow_dx="0dp"
-                tools:rfab_shadow_dy="9dp"
-                tools:rfab_shadow_radius="7dp" />
-        </com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout>
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout>
 </layout>

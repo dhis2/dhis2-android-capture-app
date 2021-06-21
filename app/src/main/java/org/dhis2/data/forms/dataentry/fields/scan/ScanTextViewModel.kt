@@ -1,7 +1,12 @@
 package org.dhis2.data.forms.dataentry.fields.scan
 
 import com.google.auto.value.AutoValue
+import io.reactivex.processors.FlowableProcessor
+import org.dhis2.R
+import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.form.model.ActionType
+import org.dhis2.form.model.RowAction
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
 
@@ -13,6 +18,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
     abstract val hint: String?
 
     companion object {
+
         @JvmStatic
         fun create(
             id: String,
@@ -25,7 +31,10 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description: String?,
             objectStyle: ObjectStyle?,
             fieldRendering: ValueTypeDeviceRendering?,
-            hint: String?
+            hint: String?,
+            isBackgroundTransparent: Boolean,
+            isSearchMode: Boolean,
+            processor: FlowableProcessor<RowAction>
         ): FieldViewModel =
             AutoValue_ScanTextViewModel(
                 id,
@@ -41,8 +50,14 @@ abstract class ScanTextViewModel : FieldViewModel() {
                 description,
                 objectStyle,
                 null,
+                DataEntryViewHolderTypes.SCAN_CODE,
+                processor,
+                null,
+                false,
                 fieldRendering,
-                hint
+                hint,
+                isBackgroundTransparent,
+                isSearchMode
             )
     }
 
@@ -61,8 +76,14 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
+            DataEntryViewHolderTypes.SCAN_CODE,
+            processor(),
+            style(),
+            activated(),
             fieldRendering,
-            hint
+            hint,
+            isBackgroundTransparent(),
+            isSearchMode()
         )
 
     override fun withError(error: String): FieldViewModel =
@@ -80,8 +101,14 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
+            DataEntryViewHolderTypes.SCAN_CODE,
+            processor(),
+            style(),
+            activated(),
             fieldRendering,
-            hint
+            hint,
+            isBackgroundTransparent(),
+            isSearchMode()
         )
 
     override fun withWarning(warning: String): FieldViewModel =
@@ -99,8 +126,14 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
+            DataEntryViewHolderTypes.SCAN_CODE,
+            processor(),
+            style(),
+            activated(),
             fieldRendering,
-            hint
+            hint,
+            isBackgroundTransparent(),
+            isSearchMode()
         )
 
     override fun withValue(data: String?): FieldViewModel =
@@ -111,15 +144,21 @@ abstract class ScanTextViewModel : FieldViewModel() {
             data,
             programStageSection(),
             allowFutureDate(),
-            false,
+            editable(),
             optionSet(),
             warning(),
             error(),
             description(),
             objectStyle(),
             null,
+            DataEntryViewHolderTypes.SCAN_CODE,
+            processor(),
+            style(),
+            activated(),
             fieldRendering,
-            hint
+            hint,
+            isBackgroundTransparent(),
+            isSearchMode()
         )
 
     override fun withEditMode(isEditable: Boolean): FieldViewModel =
@@ -137,7 +176,55 @@ abstract class ScanTextViewModel : FieldViewModel() {
             description(),
             objectStyle(),
             null,
+            DataEntryViewHolderTypes.SCAN_CODE,
+            processor(),
+            style(),
+            activated(),
             fieldRendering,
-            hint
+            hint,
+            isBackgroundTransparent(),
+            isSearchMode()
         )
+
+    override fun withFocus(isFocused: Boolean): FieldViewModel =
+        AutoValue_ScanTextViewModel(
+            uid(),
+            label(),
+            mandatory(),
+            value(),
+            programStageSection(),
+            allowFutureDate(),
+            editable(),
+            optionSet(),
+            warning(),
+            error(),
+            description(),
+            objectStyle(),
+            fieldMask(),
+            DataEntryViewHolderTypes.SCAN_CODE,
+            processor(),
+            style(),
+            isFocused,
+            fieldRendering,
+            hint,
+            isBackgroundTransparent(),
+            isSearchMode()
+        )
+
+    override val layoutId: Int
+        get() = R.layout.form_scan
+
+    abstract fun isBackgroundTransparent(): Boolean
+
+    abstract fun isSearchMode(): Boolean
+
+    fun onScanSelected(value: String?) {
+        processor()?.onNext(
+            RowAction(
+                id = uid(),
+                value = value,
+                type = ActionType.ON_SAVE
+            )
+        )
+    }
 }

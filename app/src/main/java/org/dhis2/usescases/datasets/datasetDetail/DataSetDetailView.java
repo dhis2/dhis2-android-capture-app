@@ -30,6 +30,7 @@ package org.dhis2.usescases.datasets.datasetDetail;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -52,8 +53,6 @@ interface DataSetDetailView extends AbstractActivityContracts.View {
 
     void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
 
-    void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos);
-
     void setWritePermission(Boolean canWrite);
 
     void startNewDataSet();
@@ -63,4 +62,8 @@ interface DataSetDetailView extends AbstractActivityContracts.View {
     void showSyncDialog(DataSetDetailModel dataSet);
 
     void showCatOptComboDialog(String catComboUid);
+
+    void setFilters(List<FilterItem> filterItems);
+
+    void hideFilters();
 }

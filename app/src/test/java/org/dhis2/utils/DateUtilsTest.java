@@ -5,7 +5,6 @@ import org.dhis2.R;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -311,7 +310,7 @@ public class DateUtilsTest {
 
     @Test
     public void getNextPeriodFinancialApril() throws ParseException {
-        Date testDate = StringExtensionsKt.toDate( "2018-09-13");
+        Date testDate = StringExtensionsKt.toDate("2018-09-13");
         String expectedPrevDate = "2017-04-01";
         String expectedCurrentDate = "2018-04-01";
         String expectedNextDate = "2019-04-01";
@@ -435,13 +434,11 @@ public class DateUtilsTest {
         assertEquals(dates3[1], lastDayOfWeek);
 
         String currentDayString = "2018-12-05";
-        String nextDayString = "2018-12-06";
         Date currentDay = DateUtils.oldUiDateFormat().parse(currentDayString);
-        Date nextDay = DateUtils.oldUiDateFormat().parse(nextDayString);
 
         Date[] dates4 = dateUtils.getDateFromDateAndPeriod(dateToTest, Period.DAILY);
         assertEquals(dates4[0], currentDay);
-        assertEquals(dates4[1], nextDay);
+        assertEquals(dates4[1], currentDay);
     }
 
     @Test
@@ -508,30 +505,6 @@ public class DateUtilsTest {
         String dateFormatted = DateUtils.uiDateFormat().format(dateToFormat);
 
         assertEquals(dateFormatted, dateUtils.formatDate(dateToFormat));
-    }
-
-
-    @Test
-    public void testGetPeriodUIString() throws ParseException {
-        Date testDate = DateUtils.oldUiDateFormat().parse("2019-01-11");
-
-        assertEquals("11/1/2019", DateUtils.getInstance().getPeriodUIString(null, testDate, Locale.ENGLISH));
-        assertEquals("11/1/2019", DateUtils.getInstance().getPeriodUIString(PeriodType.Daily, testDate, Locale.ENGLISH));
-        assertEquals("Week 2 2019-01-07 to  2019-01-13", DateUtils.getInstance().getPeriodUIString(PeriodType.Weekly, testDate, Locale.ENGLISH));
-        assertEquals("Week 2 2019-01-09 to  2019-01-15", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklyWednesday, testDate, Locale.ENGLISH));
-        assertEquals("Week 2 2019-01-10 to  2019-01-16", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklyThursday, testDate, Locale.ENGLISH));
-        assertEquals("Week 1 2019-01-05 to  2019-01-11", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklySaturday, testDate, Locale.ENGLISH));
-        assertEquals("Week 2 2019-01-06 to  2019-01-12", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklySunday, testDate, Locale.ENGLISH));
-        assertEquals("2 2019 - 3 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.BiWeekly, testDate, Locale.ENGLISH));
-        assertEquals("Jan 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.Monthly, testDate, Locale.ENGLISH));
-        assertEquals("Jan 2019 - Feb 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.BiMonthly, testDate, Locale.ENGLISH));
-        assertEquals("Jan 2019 - Mar 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.Quarterly, testDate, Locale.ENGLISH));
-        assertEquals("Jan 2019 - Jun 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.SixMonthly, testDate, Locale.ENGLISH));
-        assertEquals("Oct 2018 - Mar 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.SixMonthlyApril, testDate, Locale.ENGLISH));
-        assertEquals("2019", DateUtils.getInstance().getPeriodUIString(PeriodType.Yearly, testDate, Locale.ENGLISH));
-        assertEquals("Apr 2018 - Mar 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.FinancialApril, testDate, Locale.ENGLISH));
-        assertEquals("Jul 2018 - Jun 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.FinancialJuly, testDate, Locale.ENGLISH));
-        assertEquals("Oct 2018 - Sep 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.FinancialOct, testDate, Locale.ENGLISH));
     }
 
     private Date toDate(String date) throws ParseException {
@@ -649,59 +622,5 @@ public class DateUtilsTest {
 
         assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.COMPLETED, 1, null, 0));
 
-    }
-
-    @Test
-    @Ignore("When the year has changed, is creating different behavior than expected by the test")
-    public void shouldSubtractYearsToDateWithPositiveInteger() throws ParseException{
-        int years = 5;
-
-        Date currentDate = DateUtils.oldUiDateFormat().parse("2020-07-15");
-        Date beforeDate = DateUtils.yearsBeforeNow(years);
-
-        Calendar now = Calendar.getInstance();
-        now.setTime(currentDate);
-        Calendar before = Calendar.getInstance();
-        before.setTime(beforeDate);
-
-        int result = now.get(Calendar.YEAR) - before.get(Calendar.YEAR);
-
-        assertEquals(result, years);
-    }
-
-    @Test
-    @Ignore("When the year has changed, is creating different behavior than expected by the test")
-    public void shouldSubtractYearsToDateWithNegativeInteger() throws ParseException{
-        int years = -5;
-
-        Date currentDate = DateUtils.oldUiDateFormat().parse("2020-07-15");
-        Date beforeDate = DateUtils.yearsBeforeNow(years);
-
-        Calendar now = Calendar.getInstance();
-        now.setTime(currentDate);
-        Calendar before = Calendar.getInstance();
-        before.setTime(beforeDate);
-
-        int result = now.get(Calendar.YEAR) - before.get(Calendar.YEAR);
-
-        assertEquals(result, -(years));
-    }
-
-    @Test
-    @Ignore("When the year has changed, is creating different behavior than expected by the test")
-    public void shouldAddYearsToDate() throws ParseException{
-        int years = 1;
-
-        Date currentDate = DateUtils.oldUiDateFormat().parse("2020-07-15");
-        Date beforeDate = DateUtils.yearsAfterNow(years);
-
-        Calendar now = Calendar.getInstance();
-        now.setTime(currentDate);
-        Calendar after = Calendar.getInstance();
-        after.setTime(beforeDate);
-
-        int result = after.get(Calendar.YEAR) - now.get(Calendar.YEAR);
-
-        assertEquals(result, years);
     }
 }
