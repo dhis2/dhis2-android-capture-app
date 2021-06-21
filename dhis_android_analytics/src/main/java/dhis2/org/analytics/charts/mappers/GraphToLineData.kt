@@ -11,7 +11,7 @@ class GraphToLineData {
     private val serieColors = SerieColors.getColors()
     fun map(graph: Graph): LineData {
         return LineData(
-            graph.series.mapIndexed {index:Int , serie: SerieData ->
+            graph.series.mapIndexed { index: Int, serie: SerieData ->
                 LineDataSet(
                     coordinateToEntryMapper.map(graph, serie.coordinates),
                     serie.fieldName

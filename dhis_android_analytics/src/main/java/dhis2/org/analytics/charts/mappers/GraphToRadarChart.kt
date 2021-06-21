@@ -6,7 +6,6 @@ import com.github.mikephil.charting.charts.RadarChart
 import com.github.mikephil.charting.components.XAxis
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.CategoryFormatter
-import dhis2.org.analytics.charts.formatters.DateLabelFormatter
 
 class GraphToRadarChart {
     fun map(context: Context, graph: Graph): RadarChart {

@@ -1,7 +1,7 @@
 package dhis2.org.analytics.charts.data
 
-import org.hisp.dhis.android.core.period.PeriodType
 import java.util.Date
+import org.hisp.dhis.android.core.period.PeriodType
 
 data class Graph(
     val title: String,
@@ -38,7 +38,7 @@ data class Graph(
         } else {
             Date(
                 baseSeries().first().coordinates.first().eventDate.time +
-                        numberOfSteps * periodStep
+                    numberOfSteps * periodStep
             )
         }
     }

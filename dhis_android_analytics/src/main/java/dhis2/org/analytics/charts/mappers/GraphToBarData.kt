@@ -18,7 +18,7 @@ class GraphToBarData {
             graph.series
         }
         return BarData(
-            series.mapIndexed {index: Int, serie: SerieData ->
+            series.mapIndexed { index: Int, serie: SerieData ->
                 BarDataSet(
                     coordinateToBarEntryMapper.map(graph, serie.coordinates),
                     serie.fieldName

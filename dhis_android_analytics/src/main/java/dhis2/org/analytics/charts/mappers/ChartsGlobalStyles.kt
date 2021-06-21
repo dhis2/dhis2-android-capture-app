@@ -3,7 +3,6 @@ package dhis2.org.analytics.charts.mappers
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.data.RadarData
 import com.github.mikephil.charting.data.RadarDataSet
 
 const val default_value_text_size = 10f
@@ -24,7 +23,7 @@ fun BarData.withGlobalStyle(): BarData {
     }
 }
 
-fun RadarDataSet.withGlobalStyle():RadarDataSet {
+fun RadarDataSet.withGlobalStyle(): RadarDataSet {
     return this.apply {
         lineWidth = 2.5f
         valueTextSize = default_value_text_size
