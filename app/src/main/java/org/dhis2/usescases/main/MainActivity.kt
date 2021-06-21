@@ -234,7 +234,7 @@ class MainActivity :
     override fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest) {
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
             DateUtils.getInstance()
-                .showFromToSelector(this) { FilterManager.getInstance().addPeriod(it) }
+                .fromCalendarSelector(this) { FilterManager.getInstance().addPeriod(it) }
         } else {
             DateUtils.getInstance()
                 .showPeriodDialog(

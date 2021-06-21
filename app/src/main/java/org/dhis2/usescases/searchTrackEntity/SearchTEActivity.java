@@ -871,7 +871,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void showPeriodRequest(Pair<FilterManager.PeriodRequest, Filters> periodRequest) {
         if (periodRequest.getFirst() == FilterManager.PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().showFromToSelector(this, datePeriod -> {
+            DateUtils.getInstance().fromCalendarSelector(this, datePeriod -> {
                 if (periodRequest.getSecond() == Filters.PERIOD) {
                     FilterManager.getInstance().addPeriod(datePeriod);
                 } else {

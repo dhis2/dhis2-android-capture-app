@@ -600,7 +600,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().showFromToSelector(
+            DateUtils.getInstance().fromCalendarSelector(
                     activity,
                     FilterManager.getInstance()::addPeriod);
         } else {

@@ -1,17 +1,13 @@
 package org.dhis2.usescases.searchTrackEntity;
 
-import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.view.LayoutInflater;
 import android.widget.DatePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import com.mapbox.geojson.BoundingBox;
@@ -25,7 +21,6 @@ import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
@@ -42,6 +37,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModelExtensionsKt
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelKt;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.ObjectStyleUtils;
@@ -70,7 +66,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -651,121 +646,56 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
     }
 
-    private void showNativeCalendar(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
-        Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
+    private void showEnrollmentDatePicker(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
+        showCalendar(selectedOrgUnit, programUid, uid);
+    }
 
-        DatePickerDialog dateDialog = new DatePickerDialog(view.getContext(), (
-                (datePicker, year1, month1, day1) -> {
-                    Calendar selectedCalendar = Calendar.getInstance();
-                    selectedCalendar.set(Calendar.YEAR, year1);
-                    selectedCalendar.set(Calendar.MONTH, month1);
-                    selectedCalendar.set(Calendar.DAY_OF_MONTH, day1);
-                    selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
-                    selectedCalendar.set(Calendar.MINUTE, 0);
-                    selectedCalendar.set(Calendar.SECOND, 0);
-                    selectedCalendar.set(Calendar.MILLISECOND, 0);
-                    selectedEnrollmentDate = selectedCalendar.getTime();
-
-                    enrollInOrgUnit(selectedOrgUnit.uid(), programUid, uid, selectedEnrollmentDate);
-
-                }),
-                year,
-                month,
-                day);
+    private void showCalendar(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
+        Date minDate = null;
+        Date maxDate = null;
 
         if (selectedOrgUnit.openingDate() != null)
-            dateDialog.getDatePicker().setMinDate(selectedOrgUnit.openingDate().getTime());
+            minDate = selectedOrgUnit.openingDate();
 
         if (selectedOrgUnit.closedDate() == null && !selectedProgram.selectEnrollmentDatesInFuture()) {
-            dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+            maxDate = new Date(System.currentTimeMillis());
         } else if (selectedOrgUnit.closedDate() != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
             if (selectedOrgUnit.closedDate().before(new Date(System.currentTimeMillis()))) {
-                dateDialog.getDatePicker().setMaxDate(selectedOrgUnit.closedDate().getTime());
+                maxDate = selectedOrgUnit.closedDate();
             } else {
-                dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+                maxDate = new Date(System.currentTimeMillis());
             }
         } else if (selectedOrgUnit.closedDate() != null && selectedProgram.selectEnrollmentDatesInFuture()) {
-            dateDialog.getDatePicker().setMaxDate(selectedOrgUnit.closedDate().getTime());
+            maxDate = selectedOrgUnit.closedDate();
         }
 
-        dateDialog.setTitle(selectedProgram.enrollmentDateLabel());
-        dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
-            dialog.dismiss();
-        });
+        DatePickerUtils.getDatePickerDialog(
+                view.getContext(),
+                selectedProgram.enrollmentDateLabel(),
+                null,
+                minDate,
+                maxDate,
+                true,
+                new DatePickerUtils.OnDatePickerClickListener() {
+                    @Override
+                    public void onNegativeClick() { }
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            dateDialog.setButton(DialogInterface.BUTTON_NEUTRAL, view.getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
-                dateDialog.dismiss();
-                showCustomCalendar(selectedOrgUnit, programUid, uid);
-            });
-        }
+                    @Override
+                    public void onPositiveClick(DatePicker datePicker) {
+                        Calendar selectedCalendar = Calendar.getInstance();
+                        selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
+                        selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
+                        selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
+                        selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
+                        selectedCalendar.set(Calendar.MINUTE, 0);
+                        selectedCalendar.set(Calendar.SECOND, 0);
+                        selectedCalendar.set(Calendar.MILLISECOND, 0);
+                        selectedEnrollmentDate = selectedCalendar.getTime();
 
-        dateDialog.show();
-    }
-
-    private void showCustomCalendar(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
-
-        if (dialogDisplayed == null || !dialogDisplayed.isShowing()) {
-            LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
-            WidgetDatepickerBinding binding = WidgetDatepickerBinding.inflate(layoutInflater);
-            final DatePicker datePicker = binding.widgetDatepicker;
-
-            Calendar c = Calendar.getInstance();
-            datePicker.updateDate(
-                    c.get(Calendar.YEAR),
-                    c.get(Calendar.MONTH),
-                    c.get(Calendar.DAY_OF_MONTH));
-
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext(), R.style.DatePickerTheme)
-                    .setTitle(selectedProgram.enrollmentDateLabel());
-
-            if (selectedOrgUnit.openingDate() != null)
-                datePicker.setMinDate(selectedOrgUnit.openingDate().getTime());
-
-            if (selectedOrgUnit.closedDate() == null && !selectedProgram.selectEnrollmentDatesInFuture()) {
-                datePicker.setMaxDate(System.currentTimeMillis());
-            } else if (selectedOrgUnit.closedDate() != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
-                if (selectedOrgUnit.closedDate().before(new Date(System.currentTimeMillis()))) {
-                    datePicker.setMaxDate(selectedOrgUnit.closedDate().getTime());
-                } else {
-                    datePicker.setMaxDate(System.currentTimeMillis());
+                        enrollInOrgUnit(selectedOrgUnit.uid(), programUid, uid, selectedEnrollmentDate);
+                    }
                 }
-            } else if (selectedOrgUnit.closedDate() != null && selectedProgram.selectEnrollmentDatesInFuture()) {
-                datePicker.setMaxDate(selectedOrgUnit.closedDate().getTime());
-            }
-
-            alertDialog.setView(binding.getRoot());
-            dialogDisplayed = alertDialog.create();
-
-            binding.changeCalendarButton.setOnClickListener(changeButton -> {
-                showNativeCalendar(selectedOrgUnit, programUid, uid);
-                dialogDisplayed.dismiss();
-            });
-            binding.clearButton.setOnClickListener(clearButton -> dialogDisplayed.dismiss());
-            binding.acceptButton.setOnClickListener(acceptButton -> {
-                Calendar selectedCalendar = Calendar.getInstance();
-                selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
-                selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
-                selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-                selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
-                selectedCalendar.set(Calendar.MINUTE, 0);
-                selectedCalendar.set(Calendar.SECOND, 0);
-                selectedCalendar.set(Calendar.MILLISECOND, 0);
-                selectedEnrollmentDate = selectedCalendar.getTime();
-
-                enrollInOrgUnit(selectedOrgUnit.uid(), programUid, uid, selectedEnrollmentDate);
-                dialogDisplayed.dismiss();
-            });
-            dialogDisplayed.show();
-        }
-    }
-
-
-    private void showEnrollmentDatePicker(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
-        showCustomCalendar(selectedOrgUnit, programUid, uid);
+        ).show();
     }
 
     private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid, Date enrollmentDate) {

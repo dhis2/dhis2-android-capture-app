@@ -1,20 +1,17 @@
 package org.dhis2.utils;
 
+import android.widget.DatePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.apache.commons.text.WordUtils;
-import org.dhis2.data.forms.section.viewmodels.date.DatePickerDialogFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.customviews.RxDateDialog;
 import org.dhis2.utils.filters.FilterManager;
-import org.hisp.dhis.android.core.D2Manager;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.PeriodType;
-import org.hisp.dhis.android.core.period.internal.PeriodHelper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -797,68 +794,91 @@ public class DateUtils {
         return datePeriods;
     }
 
-    public void showFromToSelector(ActivityGlobalAbstract activity, OnFromToSelector fromToListener) {
-        DatePickerDialogFragment fromCalendar = DatePickerDialogFragment.create(true);
+    public void fromCalendarSelector(ActivityGlobalAbstract activity, OnFromToSelector fromToListener) {
+        Date startDate = null;
         if (!FilterManager.getInstance().getPeriodFilters().isEmpty())
-            fromCalendar.setInitialDate(FilterManager.getInstance().getPeriodFilters().get(0).startDate());
-        fromCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
-            @Override
-            public void onDateSet(@NonNull Date fromDate) {
-                DatePickerDialogFragment toCalendar = DatePickerDialogFragment.create(true);
-                if (!FilterManager.getInstance().getPeriodFilters().isEmpty())
-                    toCalendar.setInitialDate(FilterManager.getInstance().getPeriodFilters().get(0).endDate());
-                toCalendar.setOpeningClosingDates(fromDate, null);
-                toCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
+            startDate = FilterManager.getInstance().getPeriodFilters().get(0).startDate();
+        DatePickerUtils.getDatePickerDialog(
+                activity.getContext(),
+                null,
+                startDate,
+                true,
+                new DatePickerUtils.OnDatePickerClickListener() {
                     @Override
-                    public void onDateSet(@NonNull Date toDate) {
-                        List<DatePeriod> list = new ArrayList<>();
-                        list.add(DatePeriod.builder().startDate(fromDate).endDate(toDate).build());
-                        fromToListener.onFromToSelected(list);
-                    }
+                    public void onNegativeClick() { }
 
                     @Override
-                    public void onClearDate() {
-
+                    public void onPositiveClick(DatePicker datePicker) {
+                        toCalendarSelector(datePicker, activity, fromToListener);
                     }
-                });
-                toCalendar.show(activity.getSupportFragmentManager(), "TO");
+                }
+        ).show();
+    }
 
-            }
+    private void toCalendarSelector(DatePicker datePicker, ActivityGlobalAbstract activity, OnFromToSelector fromToListener) {
+        Calendar fromDate = Calendar.getInstance();
+        fromDate.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
 
-            @Override
-            public void onClearDate() {
+        Date endDate = null;
+        if (!FilterManager.getInstance().getPeriodFilters().isEmpty())
+            endDate = FilterManager.getInstance().getPeriodFilters().get(0).endDate();
+        DatePickerUtils.getDatePickerDialog(
+                activity.getContext(),
+                null,
+                endDate,
+                fromDate.getTime(),
+                null,
+                true,
+                new DatePickerUtils.OnDatePickerClickListener() {
+                    @Override
+                    public void onNegativeClick() { }
 
-            }
-        });
-
-        fromCalendar.show(activity.getSupportFragmentManager(), "FROM");
+                    @Override
+                    public void onPositiveClick(DatePicker datePicker) {
+                        Calendar toDate = Calendar.getInstance();
+                        toDate.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                        List<DatePeriod> dates = new ArrayList<>();
+                        dates.add(DatePeriod.builder().startDate(fromDate.getTime()).endDate(toDate.getTime()).build());
+                        fromToListener.onFromToSelected(dates);
+                    }
+                }
+        ).show();
     }
 
     public void showPeriodDialog(ActivityGlobalAbstract activity, OnFromToSelector fromToListener, boolean fromOtherPeriod) {
-        DatePickerDialogFragment fromCalendar = DatePickerDialogFragment.create(true, "Daily", fromOtherPeriod);
+        Date startDate = null;
         if (!FilterManager.getInstance().getPeriodFilters().isEmpty())
-            fromCalendar.setInitialDate(FilterManager.getInstance().getPeriodFilters().get(0).startDate());
-        fromCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
-            @Override
-            public void onDateSet(@NonNull Date date) {
-                List<Date> dates = new ArrayList<>();
-                dates.add(date);
-                fromToListener.onFromToSelected(getDatePeriodListFor(dates, Period.DAILY));
-            }
+            startDate = FilterManager.getInstance().getPeriodFilters().get(0).startDate();
+        DatePickerUtils.getDatePickerDialog(
+                activity.getContext(),
+                "Daily",
+                startDate,
+                null,
+                null,
+                true,
+                fromOtherPeriod,
+                new DatePickerUtils.OnDatePickerClickListener() {
+                    @Override
+                    public void onNegativeClick() {
+                        Disposable disposable = new RxDateDialog(activity, Period.WEEKLY)
+                                .createForFilter().show()
+                                .subscribe(
+                                        selectedDates -> fromToListener.onFromToSelected(getDatePeriodListFor(selectedDates.val1(),
+                                                selectedDates.val0())),
+                                        Timber::e
+                                );
+                    }
 
-            @Override
-            public void onClearDate() {
-                Disposable disposable = new RxDateDialog(activity, Period.WEEKLY)
-                        .createForFilter().show()
-                        .subscribe(
-                                selectedDates -> fromToListener.onFromToSelected(getDatePeriodListFor(selectedDates.val1(),
-                                        selectedDates.val0())),
-                                Timber::e
-                        );
-            }
-        });
-        fromCalendar.show(activity.getSupportFragmentManager(), "DAILY");
-
+                    @Override
+                    public void onPositiveClick(DatePicker datePicker) {
+                        Calendar chosenDate = Calendar.getInstance();
+                        chosenDate.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                        List<Date> dates = new ArrayList<>();
+                        dates.add(chosenDate.getTime());
+                        fromToListener.onFromToSelected(getDatePeriodListFor(dates, Period.DAILY));
+                    }
+                }
+        ).show();
     }
 
     public interface OnFromToSelector {

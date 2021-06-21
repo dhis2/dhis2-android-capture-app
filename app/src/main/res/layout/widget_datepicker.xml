@@ -17,16 +17,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:calendarViewShown="false"
-                android:datePickerMode="spinner"
-                android:visibility="visible"/>
+                android:datePickerMode="spinner"/>
 
             <DatePicker
                 android:theme="@style/DatePickerTheme"
                 android:id="@+id/widget_datepicker_calendar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:calendarViewShown="false"
-                android:visibility="gone" />
+                android:calendarViewShown="false"/>
 
         </FrameLayout>
 

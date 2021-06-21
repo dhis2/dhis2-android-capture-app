@@ -45,6 +45,7 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
@@ -76,6 +77,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -622,96 +624,49 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showDateDialog(DatePickerDialog.OnDateSetListener listener) {
-        showCustomCalendar(listener);
+        showCalendar(listener);
     }
 
-    private void showNativeCalendar(DatePickerDialog.OnDateSetListener listener) {
-        Calendar calendar = Calendar.getInstance();
-
-        if (selectedDate != null)
-            calendar.setTime(selectedDate);
-
-        if (eventCreationType == EventCreationType.SCHEDULE)
-            calendar.add(Calendar.DAY_OF_YEAR, eventScheduleInterval);
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, listener,
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH));
-
-        if (program.expiryPeriodType() != null) {
-            Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
-            datePickerDialog.getDatePicker().setMinDate(minDate.getTime());
+    private void showCalendar(DatePickerDialog.OnDateSetListener listener) {
+        Integer scheduleInterval = null;
+        Date minDate = null;
+        Date maxDate = null;
+        if (eventCreationType == EventCreationType.SCHEDULE) {
+            scheduleInterval = eventScheduleInterval;
         }
 
+        if (program.expiryPeriodType() != null) {
+            minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
+        }
         switch (eventCreationType) {
             case ADDNEW:
             case DEFAULT:
-                datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
+                maxDate = new Date(System.currentTimeMillis() - 1000);
                 break;
             case REFERAL:
             case SCHEDULE:
                 break;
         }
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            datePickerDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
-                datePickerDialog.dismiss();
-                showCustomCalendar(listener);
-            });
-        }
+        DatePickerUtils.getDatePickerDialog(
+                getContext(),
+                null,
+                selectedDate,
+                minDate,
+                maxDate,
+                scheduleInterval,
+                new DatePickerUtils.OnDatePickerClickListener () {
+                    @Override
+                    public void onNegativeClick() { }
 
-        datePickerDialog.show();
+                    @Override
+                    public void onPositiveClick(DatePicker datePicker) {
+                        onDateSet(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                    }
+                }
+        ).show();
     }
-
-    private void showCustomCalendar(DatePickerDialog.OnDateSetListener listener) {
-        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        WidgetDatepickerBinding widgetBinding = WidgetDatepickerBinding.inflate(layoutInflater);
-        final DatePicker datePicker = widgetBinding.widgetDatepicker;
-
-        Calendar calendar = Calendar.getInstance();
-
-        if (selectedDate != null)
-            calendar.setTime(selectedDate);
-
-        if (eventCreationType == EventCreationType.SCHEDULE)
-            calendar.add(Calendar.DAY_OF_YEAR, eventScheduleInterval);
-
-        datePicker.updateDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-
-        if (program.expiryPeriodType() != null) {
-            Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
-            datePicker.setMinDate(minDate.getTime());
-        }
-
-        switch (eventCreationType) {
-            case ADDNEW:
-            case DEFAULT:
-                datePicker.setMaxDate(System.currentTimeMillis() - 1000);
-                break;
-            case REFERAL:
-            case SCHEDULE:
-                break;
-        }
-
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme);
-
-        alertDialog.setView(widgetBinding.getRoot());
-        Dialog dialog = alertDialog.create();
-
-        widgetBinding.changeCalendarButton.setOnClickListener(calendarButton -> {
-            showNativeCalendar(listener);
-            dialog.dismiss();
-        });
-        widgetBinding.clearButton.setOnClickListener(clearButton -> dialog.dismiss());
-        widgetBinding.acceptButton.setOnClickListener(acceptButton -> {
-            listener.onDateSet(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-            dialog.dismiss();
-        });
-
-        dialog.show();
-    }
-
+    
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
         Calendar c = Calendar.getInstance();
