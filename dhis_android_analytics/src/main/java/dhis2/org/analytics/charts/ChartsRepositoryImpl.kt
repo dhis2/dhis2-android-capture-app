@@ -6,6 +6,7 @@ import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
 import dhis2.org.analytics.charts.mappers.DataElementToGraph
 import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
 import dhis2.org.analytics.charts.mappers.VisualizationToGraph
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -17,7 +18,8 @@ class ChartsRepositoryImpl(
     private val visualizationToGraph: VisualizationToGraph,
     private val analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph,
     private val dataElementToGraph: DataElementToGraph,
-    private val programIndicatorToGraph: ProgramIndicatorToGraph
+    private val programIndicatorToGraph: ProgramIndicatorToGraph,
+    private val featureConfig: FeatureConfigRepository
 ) : ChartsRepository {
 
     override fun getAnalyticsForEnrollment(enrollmentUid: String): List<Graph> {
@@ -87,7 +89,7 @@ class ChartsRepositoryImpl(
             )
         }.flatten()
             .filter { it.series.isNotEmpty() }
-            .radarTestingData(d2)
+            .radarTestingData(d2, featureConfig)
     }
 
     private fun getRepeatableProgramStages(program: String?) =

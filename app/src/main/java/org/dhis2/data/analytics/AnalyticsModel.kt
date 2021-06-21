@@ -65,9 +65,14 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             ChartType.LINE_CHART -> listOf(R.id.showRadarGraph, R.id.showLineGraph)
             ChartType.BAR_CHART -> listOf(R.id.showRadarGraph, R.id.showBarGraph)
             ChartType.TABLE -> {
-                if(originalChartType == ChartType.RADAR){
-                    listOf(R.id.showTableGraph)
-                }else{
+                if (originalChartType == ChartType.RADAR) {
+                    listOf(
+                        R.id.showTableGraph,
+                        R.id.showLineGraph,
+                        R.id.showBarGraph,
+                        R.id.showTableValue
+                    )
+                } else {
                     listOf(R.id.showRadarGraph, R.id.showTableGraph)
                 }
             }

@@ -28,7 +28,10 @@ class GraphToTable {
             graph.series
         }
 
-        val headers = series.map { it.coordinates }.flatten().distinctBy { it.eventDate }.sortedBy { it.eventDate }
+        val headers = series.map { it.coordinates }
+            .flatten()
+            .distinctBy { it.eventDate }
+            .sortedBy { it.eventDate }
         val rows = series.map { it.fieldName }
         val cells = series.map { serie ->
             mutableListOf<String>().apply {

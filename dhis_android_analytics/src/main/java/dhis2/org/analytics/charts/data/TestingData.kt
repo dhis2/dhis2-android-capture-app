@@ -3,6 +3,8 @@ package dhis2.org.analytics.charts.data
 import dhis2.org.analytics.charts.providers.PeriodStepProviderImpl
 import dhis2.org.analytics.charts.providers.RuleEngineNutritionDataProviderImpl
 import java.util.GregorianCalendar
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.featureconfig.model.Feature
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.period.PeriodType
 
@@ -98,43 +100,47 @@ fun List<Graph>.nutritionTestingData(d2: D2): List<Graph> {
     }
 }
 
-fun List<Graph>.radarTestingData(d2: D2): List<Graph> {
-    return toMutableList().apply {
-        val monthlyPeriodStep = PeriodStepProviderImpl(d2).periodStep(PeriodType.Daily)
-        val serieA = SerieData(
-            "Test A",
-            listOf(
-                GraphPoint(GregorianCalendar(2020, 0, 1).time, -1f, 3f),
-                GraphPoint(GregorianCalendar(2020, 10, 1).time, -1f, 7f),
-                GraphPoint(GregorianCalendar(2021, 8, 1).time, -1f, 9f),
-                GraphPoint(GregorianCalendar(2022, 6, 1).time, -1f, 12f),
-                GraphPoint(GregorianCalendar(2023, 4, 1).time, -1f, 14f),
-                GraphPoint(GregorianCalendar(2024, 7, 1).time, -1f, 17f)
+fun List<Graph>.radarTestingData(d2: D2, featureConfig: FeatureConfigRepository): List<Graph> {
+    return if (!featureConfig.isFeatureEnable(Feature.ANDROAPP_2557)) {
+        return emptyList()
+    } else {
+        toMutableList().apply {
+            val monthlyPeriodStep = PeriodStepProviderImpl(d2).periodStep(PeriodType.Daily)
+            val serieA = SerieData(
+                "Test A",
+                listOf(
+                    GraphPoint(GregorianCalendar(2020, 0, 1).time, -1f, 3f),
+                    GraphPoint(GregorianCalendar(2020, 10, 1).time, -1f, 7f),
+                    GraphPoint(GregorianCalendar(2021, 8, 1).time, -1f, 9f),
+                    GraphPoint(GregorianCalendar(2022, 6, 1).time, -1f, 12f),
+                    GraphPoint(GregorianCalendar(2023, 4, 1).time, -1f, 14f),
+                    GraphPoint(GregorianCalendar(2024, 7, 1).time, -1f, 17f)
+                )
             )
-        )
-        val serieB = SerieData(
-            "Test B",
-            listOf(
-                GraphPoint(GregorianCalendar(2020, 0, 1).time, 0f, 13f),
-                GraphPoint(GregorianCalendar(2020, 10, 1).time, 10f, 9f),
-                GraphPoint(GregorianCalendar(2021, 8, 1).time, 20f, 20f),
-                GraphPoint(GregorianCalendar(2022, 6, 1).time, 30f, 1f),
-                GraphPoint(GregorianCalendar(2023, 4, 1).time, 40f, 4f),
-                GraphPoint(GregorianCalendar(2024, 7, 1).time, 55f, 8f)
+            val serieB = SerieData(
+                "Test B",
+                listOf(
+                    GraphPoint(GregorianCalendar(2020, 0, 1).time, 0f, 13f),
+                    GraphPoint(GregorianCalendar(2020, 10, 1).time, 10f, 9f),
+                    GraphPoint(GregorianCalendar(2021, 8, 1).time, 20f, 20f),
+                    GraphPoint(GregorianCalendar(2022, 6, 1).time, 30f, 1f),
+                    GraphPoint(GregorianCalendar(2023, 4, 1).time, 40f, 4f),
+                    GraphPoint(GregorianCalendar(2024, 7, 1).time, 55f, 8f)
+                )
             )
-        )
-        val radarSeries = listOf(serieA, serieB)
-        add(
-            Graph(
-                "Radar test",
-                false,
-                radarSeries,
-                "",
-                PeriodType.Daily,
-                monthlyPeriodStep,
-                ChartType.RADAR,
-                listOf("HP", "ATK", "DEF", "S.ATK", "S.DEF", "SPD")
+            val radarSeries = listOf(serieA, serieB)
+            add(
+                Graph(
+                    "Radar test",
+                    false,
+                    radarSeries,
+                    "",
+                    PeriodType.Daily,
+                    monthlyPeriodStep,
+                    ChartType.RADAR,
+                    listOf("HP", "ATK", "DEF", "S.ATK", "S.DEF", "SPD")
+                )
             )
-        )
+        }
     }
 }
