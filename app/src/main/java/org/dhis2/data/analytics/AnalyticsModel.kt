@@ -45,9 +45,8 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             menu = R.menu.chart_menu,
             anchor = view,
             onMenuInflated = { popupMenu ->
-                val idToHide = idToHide()
-                if (idToHide != -1) {
-                    popupMenu.menu.findItem(idToHide).isVisible = false
+                idsToHide().forEach {
+                    popupMenu.menu.findItem(it).isVisible = false
                 }
             },
             onMenuItemClicked = { itemId ->
@@ -58,14 +57,21 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             .show()
     }
 
-    private fun idToHide(): Int {
+    private fun idsToHide(): List<Int> {
         return when (observableChartType.get()) {
             ChartType.NUTRITION,
-            ChartType.LINE_CHART -> R.id.showLineGraph
-            ChartType.BAR_CHART -> R.id.showBarGraph
-            ChartType.TABLE -> R.id.showTableGraph
-            ChartType.SINGLE_VALUE -> R.id.showTableValue
-            else -> -1
+            ChartType.LINE_CHART -> mutableListOf(R.id.showLineGraph)
+            ChartType.BAR_CHART -> mutableListOf(R.id.showBarGraph)
+            ChartType.TABLE -> mutableListOf(R.id.showTableGraph)
+            ChartType.SINGLE_VALUE -> mutableListOf(R.id.showTableValue)
+            ChartType.PIE_CHART -> mutableListOf(R.id.showPieChart)
+            else -> mutableListOf()
+        }.also {
+            if (graph.chartType == ChartType.PIE_CHART) {
+                it.addAll(listOf(R.id.showLineGraph, R.id.showBarGraph, R.id.showTableValue))
+            } else {
+                it.add(R.id.showPieChart)
+            }
         }
     }
 
@@ -74,6 +80,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             R.id.showBarGraph -> ChartType.BAR_CHART
             R.id.showTableGraph -> ChartType.TABLE
             R.id.showTableValue -> ChartType.SINGLE_VALUE
+            R.id.showPieChart -> ChartType.PIE_CHART
             else ->
                 if (graph.chartType != ChartType.NUTRITION) {
                     ChartType.LINE_CHART

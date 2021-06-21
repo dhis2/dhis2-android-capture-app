@@ -13,6 +13,7 @@ import dhis2.org.analytics.charts.mappers.AnalyticTeiSettingsToSettingsAnalytics
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
 import dhis2.org.analytics.charts.mappers.DataElementToGraph
 import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
+import dhis2.org.analytics.charts.mappers.VisualizationToGraph
 import dhis2.org.analytics.charts.providers.ChartCoordinatesProvider
 import dhis2.org.analytics.charts.providers.ChartCoordinatesProviderImpl
 import dhis2.org.analytics.charts.providers.NutritionDataProvider
@@ -37,11 +38,21 @@ class ChartsModule {
     @Provides
     internal fun provideChartRepository(
         d2: D2,
+        visualizationToGraph: VisualizationToGraph,
         analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph,
         dataElementToGraph: DataElementToGraph,
         indicatorToGraph: ProgramIndicatorToGraph
     ): ChartsRepository =
-        ChartsRepositoryImpl(d2, analyticsTeiSettingsToGraph, dataElementToGraph, indicatorToGraph)
+        ChartsRepositoryImpl(
+            d2,
+            visualizationToGraph,
+            analyticsTeiSettingsToGraph,
+            dataElementToGraph,
+            indicatorToGraph
+        )
+
+    @Provides
+    internal fun provideVisualizationToGraph() = VisualizationToGraph()
 
     @Provides
     internal fun provideAnalyticsSettingsToGraph(

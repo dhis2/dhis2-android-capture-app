@@ -3,8 +3,8 @@ package dhis2.org.analytics.charts.data
 import android.graphics.Color
 
 class SerieColors {
-    companion object{
-        fun getColors():List<Int> = listOf(
+    companion object {
+        fun getColors(): List<Int> = listOf(
             Color.parseColor("#E71409"),
             Color.parseColor("#49B044"),
             Color.parseColor("#994BA5"),

@@ -16,4 +16,9 @@
         android:id="@+id/showTableValue"
         android:icon="@drawable/ic_single_value"
         android:title="@string/show_table_value"/>
+
+    <item
+        android:id="@+id/showPieChart"
+        android:icon="@drawable/ic_pie_chart"
+        android:title="@string/show_pie_value"/>
 </menu>

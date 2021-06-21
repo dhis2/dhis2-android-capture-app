@@ -10,7 +10,8 @@ enum class ChartType(@DrawableRes val iconResource: Int) {
     TABLE(R.drawable.ic_table_chart),
     SINGLE_VALUE(R.drawable.ic_single_value),
     NUTRITION(R.drawable.ic_line_chart),
-    RADAR(R.drawable.ic_radar_chart)
+    RADAR(R.drawable.ic_line_chart),
+    PIE_CHART(R.drawable.ic_pie_chart)
 }
 
 enum class NutritionChartType {
