@@ -29,7 +29,6 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
     var onItemAction: ((action: RowAction) -> Unit)? = null
     var onIntent: ((intent: FormIntent) -> Unit)? = null
     var onRecyclerViewUiEvents: ((uiEvent: RecyclerViewUiEvents) -> Unit)? = null
-    var onLocationRequest: ((coordinateFieldUid: String) -> Unit)? = null
     var onMapRequest: ((fieldUid: String, type: FeatureType, initValue: String?) -> Unit)? = null
 
     private val sectionHandler = SectionHandler()
@@ -150,12 +149,6 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
     override fun onAction(action: RowAction) {
         onItemAction?.let {
             it(action)
-        }
-    }
-
-    override fun onCurrentLocationRequest(coordinateFieldUid: String) {
-        onLocationRequest?.let {
-            it(coordinateFieldUid)
         }
     }
 

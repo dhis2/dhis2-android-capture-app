@@ -21,7 +21,6 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
-import java.util.Calendar
 import org.dhis2.Bindings.truncate
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.age.AgeDialogDelegate
@@ -34,7 +33,6 @@ import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryNonPersistenceImpl
-import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
@@ -54,6 +52,7 @@ import org.dhis2.utils.customviews.CustomDialog
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import timber.log.Timber
+import java.util.Calendar
 
 class FormView private constructor(
     formRepository: FormRepository,
@@ -117,38 +116,6 @@ class FormView private constructor(
 
         adapter.onItemAction = { action ->
             viewModel.onItemAction(action)
-        }
-
-        adapter.onLocationRequest = { fieldUid ->
-            locationProvider?.getLastKnownLocation(
-                { location ->
-                    val geometry = GeometryHelper.createPointGeometry(
-                        location.longitude.truncate(),
-                        location.latitude.truncate()
-                    )
-                    viewModel.onItemAction(
-                        RowAction(
-                            id = fieldUid,
-                            value = geometry.coordinates(),
-                            type = ActionType.ON_SAVE,
-                            extraData = FeatureType.POINT.name
-                        )
-                    )
-                },
-                {
-                    this@FormView.requestPermissions(
-                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                        EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST
-                    )
-                },
-                {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.enable_location_message),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            )
         }
 
         adapter.onMapRequest = { fieldUid, featureType, initialData ->
@@ -231,6 +198,7 @@ class FormView private constructor(
             is RecyclerViewUiEvents.ShowDescriptionLabelDialog -> showDescriptionLabelDialog(
                 uiEvent
             )
+            is RecyclerViewUiEvents.RequestLocation -> requestLocation(uiEvent)
         }
     }
 
@@ -365,6 +333,37 @@ class FormView private constructor(
         ).show()
     }
 
+    private fun requestLocation(event: RecyclerViewUiEvents.RequestLocation) {
+        locationProvider?.getLastKnownLocation(
+            { location ->
+                val geometry = GeometryHelper.createPointGeometry(
+                    location.longitude.truncate(),
+                    location.latitude.truncate()
+                )
+                val intent = FormIntent.SelectLocationFromCoordinates(
+                    event.uid,
+                    geometry.coordinates(),
+                    FeatureType.POINT.name
+                )
+
+                intentHandler(intent)
+            },
+            {
+                this@FormView.requestPermissions(
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST
+                )
+            },
+            {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.enable_location_message),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        )
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK &&
             requestCode == Constants.RQ_MAP_LOCATION_VIEW && data?.extras != null
@@ -388,7 +387,7 @@ class FormView private constructor(
             grantResults[0] == PackageManager.PERMISSION_GRANTED
         ) {
             viewModel.getFocusedItemUid()?.let {
-                adapter.onLocationRequest?.invoke(it)
+                requestLocation(RecyclerViewUiEvents.RequestLocation(it))
             }
         }
     }

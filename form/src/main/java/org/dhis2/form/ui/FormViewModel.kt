@@ -71,18 +71,27 @@ class FormViewModel(
                 intent.date
             )
             is FormIntent.ClearDateFromAgeCalendar -> createRowAction(intent.uid, null)
+            is FormIntent.SelectLocationFromCoordinates -> createRowAction(
+                intent.uid,
+                intent.coordinates,
+                intent.extraData
+            )
         }
     }
 
-    private fun createRowAction(uid: String, date: String?): RowAction {
+    private fun createRowAction(
+        uid: String,
+        value: String?,
+        extraData: String? = null
+    ): RowAction {
         return RowAction(
             uid,
-            date,
+            value,
             false,
             null,
             null,
             null,
-            null,
+            extraData,
             ActionType.ON_SAVE
         )
     }
