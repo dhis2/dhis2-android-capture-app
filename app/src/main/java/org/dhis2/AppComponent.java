@@ -1,5 +1,6 @@
 package org.dhis2;
 
+import org.dhis2.commons.featureconfig.di.FeatureConfigModule;
 import org.dhis2.data.dispatcher.DispatcherModule;
 import org.dhis2.data.forms.dataentry.validation.ValidatorModule;
 import org.dhis2.data.location.LocationModule;
@@ -48,7 +49,8 @@ import dagger.Component;
         CrashReportModule.class,
         LocationModule.class,
         FilterModule.class,
-        DispatcherModule.class
+        DispatcherModule.class,
+        FeatureConfigModule.class
 })
 public interface AppComponent {
 
@@ -67,6 +69,8 @@ public interface AppComponent {
         Builder crashReportModule(CrashReportModule crashReportModule);
 
         Builder coroutineDispatchers(DispatcherModule dispatcherModule);
+
+        Builder featureConfigModule(FeatureConfigModule featureConfigModule);
 
         AppComponent build();
     }

@@ -19,6 +19,7 @@ import dhis2.org.analytics.charts.providers.NutritionDataProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProviderImpl
 import dhis2.org.analytics.charts.providers.RuleEngineNutritionDataProviderImpl
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import javax.inject.Singleton
 import org.hisp.dhis.android.core.D2
 
@@ -39,7 +40,8 @@ class ChartsModule {
         d2: D2,
         analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph,
         dataElementToGraph: DataElementToGraph,
-        indicatorToGraph: ProgramIndicatorToGraph
+        indicatorToGraph: ProgramIndicatorToGraph,
+        featureConfigRepository: FeatureConfigRepository
     ): ChartsRepository =
         ChartsRepositoryImpl(d2, analyticsTeiSettingsToGraph, dataElementToGraph, indicatorToGraph)
 
