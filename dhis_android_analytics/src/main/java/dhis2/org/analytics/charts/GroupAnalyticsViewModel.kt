@@ -20,13 +20,13 @@ class GroupAnalyticsViewModel : ViewModel() {
         val analytics = listOf(
             AnalyticGroup("1", "Group 1"),
             AnalyticGroup("2", "Group 4"),
-            AnalyticGroup("2", "Group 6"),
-            AnalyticGroup("2", "Group 7"),
-            AnalyticGroup("2", "Group 9"),
-            AnalyticGroup("2", "Group 12"),
-            AnalyticGroup("2", "Group 222"),
-            AnalyticGroup("2", "Group 2333"),
-            AnalyticGroup("3", "Group 3444")
+            AnalyticGroup("3", "Group 6"),
+            AnalyticGroup("5", "Group 7"),
+            AnalyticGroup("6", "Group 9"),
+            AnalyticGroup("11", "Group 12"),
+            AnalyticGroup("22", "Group 222"),
+            AnalyticGroup("23", "Group 2333"),
+            AnalyticGroup("34", "Group 3444")
         )
         _chipItems.value = analytics
     }

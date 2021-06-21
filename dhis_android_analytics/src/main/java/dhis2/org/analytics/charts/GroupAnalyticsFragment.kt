@@ -49,9 +49,11 @@ class GroupAnalyticsFragment : Fragment() {
     }
 
     private fun addChips(list: List<AnalyticGroup>) {
+        var idChip = 0
         list.forEach {
             val chip: Chip = layoutInflater.inflate(R.layout.analytics_item, null) as Chip
             chip.apply {
+                id = idChip
                 text = it.name
                 isSelected = false
                 tag = it.uid
@@ -59,6 +61,7 @@ class GroupAnalyticsFragment : Fragment() {
                     Log.d("checkedChip","${buttonView.tag} $isChecked")
                 }
             }.also { binding.analyticChipGroup.addView(it) }
+            idChip++
         }
     }
 }
