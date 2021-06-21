@@ -32,6 +32,8 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureCo
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialModule;
+import org.dhis2.usescases.featureconfig.di.FeatureConfigComponent;
+import org.dhis2.usescases.featureconfig.di.FeatureConfigModule;
 import org.dhis2.usescases.main.MainComponent;
 import org.dhis2.usescases.main.MainModule;
 import org.dhis2.usescases.main.program.ProgramComponent;
@@ -183,4 +185,7 @@ public interface UserComponent {
 
     @NonNull
     ScanComponent plus(ScanModule scanModule);
+
+    @NonNull
+    FeatureConfigComponent plus(FeatureConfigModule featureConfigModule);
 }
