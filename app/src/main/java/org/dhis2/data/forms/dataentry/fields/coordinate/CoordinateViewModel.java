@@ -6,7 +6,6 @@ import androidx.databinding.ObservableField;
 
 import com.google.auto.value.AutoValue;
 
-import org.dhis2.Bindings.DoubleExtensionsKt;
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
@@ -23,8 +22,6 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import io.reactivex.processors.FlowableProcessor;
-import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -211,7 +208,7 @@ public abstract class CoordinateViewModel extends FieldViewModel {
                         ActionType.ON_FOCUS
                 )
         );
-        callback.currentLocation(uid());
+        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.RequestLocation(uid()));
     }
 
     public void requestMapLocation() {

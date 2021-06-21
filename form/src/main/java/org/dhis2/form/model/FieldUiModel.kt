@@ -61,7 +61,6 @@ interface FieldUiModel {
         fun intent(intent: FormIntent)
         fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents)
         fun onItemAction(action: RowAction)
-        fun currentLocation(coordinateFieldUid: String)
         fun mapRequest(
             coordinateFieldUid: String,
             featureType: String,

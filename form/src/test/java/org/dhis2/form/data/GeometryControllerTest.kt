@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.RowAction
+import org.dhis2.form.ui.RecyclerViewUiEvents
 import org.hisp.dhis.android.core.common.FeatureType
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -58,7 +59,7 @@ class GeometryControllerTest {
 
         coordinateCallback.onItemAction(RowAction(id = "fieldUid", type = ActionType.ON_SAVE))
         assertTrue(currentCallback == 0)
-        coordinateCallback.currentLocation("fieldUid")
+        coordinateCallback.recyclerViewUiEvents(RecyclerViewUiEvents.RequestLocation("fieldUid"))
         assertTrue(currentCallback == 1)
         coordinateCallback.mapRequest("fieldUid", FeatureType.POINT.name, null)
         assertTrue(currentCallback == 2)
