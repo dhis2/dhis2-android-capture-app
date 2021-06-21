@@ -11,8 +11,8 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Single
 import java.util.UUID
-import org.dhis2.data.prefs.Preference
-import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.commons.prefs.Preference
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager

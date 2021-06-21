@@ -3,7 +3,7 @@ package org.dhis2.usescases.jira
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import okhttp3.OkHttpClient
-import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.resources.ResourceManager
 import retrofit2.Retrofit

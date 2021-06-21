@@ -7,7 +7,7 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.Bindings.valueTypeHintMap
 import org.dhis2.R
-import org.dhis2.data.dagger.PerActivity
+import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.RulesRepository
 import org.dhis2.data.forms.dataentry.DataEntryStore

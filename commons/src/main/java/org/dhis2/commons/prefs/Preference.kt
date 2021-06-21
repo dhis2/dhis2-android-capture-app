@@ -1,4 +1,4 @@
-package org.dhis2.data.prefs
+package org.dhis2.commons.prefs
 
 class Preference {
     companion object {

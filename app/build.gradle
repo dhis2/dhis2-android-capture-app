@@ -211,6 +211,7 @@ dependencies {
     implementation project(':tableview')
     implementation project(":dhis_android_analytics")
     implementation project(":form")
+    implementation project(":commons")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"

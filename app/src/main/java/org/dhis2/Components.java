@@ -3,13 +3,13 @@ package org.dhis2;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.dhis2.commons.featureconfig.di.FeatureConfigComponentProvider;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.user.UserComponent;
-
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginContracts;
 
-public interface Components {
+public interface Components extends FeatureConfigComponentProvider {
 
     @NonNull
     AppComponent appComponent();
@@ -26,7 +26,6 @@ public interface Components {
     LoginComponent loginComponent();
 
     void releaseLoginComponent();
-
 
 
     ////////////////////////////////////////////////////////////////////

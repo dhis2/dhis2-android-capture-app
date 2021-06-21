@@ -1,6 +1,6 @@
 package org.dhis2.common.preferences
 
-import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.commons.prefs.PreferenceProvider
 
 class PreferencesRobot(private val preferences: PreferenceProvider) {
 

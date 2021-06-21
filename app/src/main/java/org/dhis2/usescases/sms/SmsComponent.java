@@ -1,6 +1,6 @@
 package org.dhis2.usescases.sms;
 
-import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.commons.di.dagger.PerActivity;
 
 import dagger.Subcomponent;
 
