@@ -59,9 +59,17 @@ class GeometryControllerTest {
 
         coordinateCallback.onItemAction(RowAction(id = "fieldUid", type = ActionType.ON_SAVE))
         assertTrue(currentCallback == 0)
-        coordinateCallback.recyclerViewUiEvents(RecyclerViewUiEvents.RequestLocation("fieldUid"))
+        coordinateCallback.recyclerViewUiEvents(
+            RecyclerViewUiEvents.RequestCurrentLocation("fieldUid")
+        )
         assertTrue(currentCallback == 1)
-        coordinateCallback.mapRequest("fieldUid", FeatureType.POINT.name, null)
+        coordinateCallback.recyclerViewUiEvents(
+            RecyclerViewUiEvents.RequestLocationByMap(
+                "fieldUid",
+                FeatureType.POINT,
+                null
+            )
+        )
         assertTrue(currentCallback == 2)
     }
 }
