@@ -12,7 +12,6 @@ import org.dhis2.usescases.teiDashboard.dashboardsfragments.enrollment.Enrollmen
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.enrollment.GetEnrollmentInfo
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.GetSystemInfo
 import timber.log.Timber
-import java.util.Date
 
 sealed class FeedbackContentState {
     object Loading : FeedbackContentState()

@@ -13,8 +13,6 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.Visualizat
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment
 import org.dhis2.utils.isLandscape
-import org.dhis2.usescases.teiDashboard.MOBILE_DASHBOARD_PORTRAIT_SIZE
-import org.dhis2.usescases.teiDashboard.createPortraitTabFragment
 
 class DashboardPagerAdapter(
     fa: FragmentActivity,

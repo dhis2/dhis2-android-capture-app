@@ -19,12 +19,9 @@ import org.dhis2.core.types.Tree
 import org.dhis2.core.ui.tree.TreeAdapter
 import org.dhis2.databinding.FragmentFeedbackContentBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.enrollment.EnrollmentInfo
-import org.dhis2.utils.customviews.TextInputAutoCompleteTextView
 import java.net.URL
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
@@ -34,15 +31,15 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
     @Inject
     lateinit var presenter: FeedbackContentPresenter
     private lateinit var binding: FragmentFeedbackContentBinding
-    private lateinit var activity: TeiDashboardMobileActivity
+    private lateinit var activity: FeedbackActivity
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        activity = context as TeiDashboardMobileActivity
+        activity = context as FeedbackActivity
 
-        if (((context.applicationContext) as App).dashboardComponent() != null) {
-            ((context.applicationContext) as App).dashboardComponent()!!
+        if (((context.applicationContext) as App).userComponent() != null) {
+            ((context.applicationContext) as App).userComponent()!!
                 .plus(
                     FeedbackModule(
                         activity.programUid,
@@ -82,7 +79,7 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
 
         adapter = TreeAdapter(listOf(FeedbackItemBinder(), FeedbackHelpItemBinder()),
             { node: Tree<*> ->
-                presenter.expand(node )
+                presenter.expand(node)
             })
 
         binding.feedbackRecyclerView.adapter = adapter
@@ -250,7 +247,7 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
                 //  builder.setSpan( ImageSpan(activity, R.drawable.ic_error), builder.length - 1, builder.length, 0)
             }
 
-            val snackbar = Snackbar.make(view!!, builder, Snackbar.LENGTH_INDEFINITE)
+            val snackbar = Snackbar.make(requireView(), builder, Snackbar.LENGTH_INDEFINITE)
             snackbar.setAction(
                 R.string.customactivityoncrash_error_activity_error_details_copy
             ) {

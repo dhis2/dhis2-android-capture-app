@@ -6,6 +6,8 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.utils.Constants
 
 sealed class FeedbackState {
     object Loading : FeedbackState()
@@ -14,10 +16,20 @@ sealed class FeedbackState {
     object UnexpectedError : FeedbackState()
 }
 
-class FeedbackPresenter(private val feedbackProgramRepository: FeedbackProgramRepository) :
+class FeedbackPresenter(
+    private val feedbackProgramRepository: FeedbackProgramRepository,
+    private val preferenceProvider: PreferenceProvider
+) :
     CoroutineScope by MainScope() {
 
     private var view: FeedbackView? = null
+
+    fun getProgramTheme(appTheme: Int): Int {
+        return preferenceProvider.getInt(
+            Constants.PROGRAM_THEME,
+            preferenceProvider.getInt(Constants.THEME, appTheme)
+        )
+    }
 
     fun attach(view: FeedbackView, uid: String) {
         this.view = view

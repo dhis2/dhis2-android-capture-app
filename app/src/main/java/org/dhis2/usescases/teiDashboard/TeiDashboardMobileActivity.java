@@ -53,10 +53,8 @@ import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM;
 import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM_ENROLLMENT;
 import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT;
 import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT_PROGRAM;
-import static org.dhis2.usescases.teiDashboard.TeiDashboardFunctionsKt.RELATIONSHIPS_LANDSCAPE_POS;
-import static org.dhis2.usescases.teiDashboard.TeiDashboardFunctionsKt.RELATIONSHIPS_POS;
-import static org.dhis2.usescases.teiDashboard.TeiDashboardFunctionsKt.getLandscapeTabTitle;
-import static org.dhis2.usescases.teiDashboard.TeiDashboardFunctionsKt.getPortraitTabTitle;
+import static org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter.RELATIONSHIPS_LANDSCAPE_POSITION;
+import static org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter.RELATIONSHIPS_PORTRAIT_POSITION;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.Constants.TEI_UID;
@@ -231,7 +229,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                                 binding.filterCounter.setVisibility(View.VISIBLE);
                                 binding.searchFilterGeneral.setVisibility(View.VISIBLE);
                             }
-                            if (position == RELATIONSHIPS_POS) {
+                            if (position == RELATIONSHIPS_PORTRAIT_POSITION) {
                                 binding.relationshipMapIcon.setVisibility(View.VISIBLE);
                             } else {
                                 binding.relationshipMapIcon.setVisibility(View.GONE);
@@ -252,7 +250,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                         @Override
                         public void onPageSelected(int position) {
                             switch (position) {
-                                case RELATIONSHIPS_LANDSCAPE_POS:
+                                case RELATIONSHIPS_LANDSCAPE_POSITION:
                                     binding.relationshipMapIcon.setVisibility(View.VISIBLE);
                                     break;
                                 default:
@@ -547,6 +545,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 case R.id.deactivate:
                     presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.CANCELLED);
                     break;
+                default :
+                    TeiDashboardMenuKt.customClick(item.getItemId(), this, programUid, enrollmentUid,  teiUid);
             }
             return true;
 
