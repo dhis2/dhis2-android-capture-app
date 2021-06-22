@@ -23,4 +23,10 @@ sealed class FormIntent : MviIntent {
         val featureType: String,
         val coordinates: String?
     ) : FormIntent()
+
+    data class SaveCurrentLocation(
+        val uid: String,
+        val value: String?,
+        val featureType: String
+    ) : FormIntent()
 }

@@ -4,10 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -81,6 +79,11 @@ class FormViewModel(
                 intent.featureType,
                 intent.coordinates
             )
+            is FormIntent.SaveCurrentLocation -> createRowAction(
+                uid = intent.uid,
+                value = intent.value,
+                extraData = intent.featureType
+            )
         }
     }
 
@@ -100,28 +103,6 @@ class FormViewModel(
             _pendingIntents.emit(intent)
         }
     }
-
-    @Deprecated("Use for legacy only. Do not use this for refactor views")
-    fun onItemAction(action: RowAction) {
-        if (action.type == ActionType.ON_SAVE) {
-            loading.value = true
-        }
-        viewModelScope.launch {
-            submitRowAction(action).collect {
-                when (it.valueStoreResult) {
-                    ValueStoreResult.VALUE_CHANGED -> {
-                        _savedValue.value = action
-                    }
-                    else -> _items.value = repository.composeList()
-                }
-            }
-        }
-    }
-
-    @Deprecated("Use for legacy only. Do not use this for refactor views")
-    private fun submitRowAction(action: RowAction): Flow<StoreResult> = flow {
-        emit(repository.processUserAction(action))
-    }.flowOn(dispatcher.io())
 
     fun onItemsRendered() {
         loading.value = false

@@ -60,6 +60,5 @@ interface FieldUiModel {
         fun onNext()
         fun intent(intent: FormIntent)
         fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents)
-        fun onItemAction(action: RowAction)
     }
 }

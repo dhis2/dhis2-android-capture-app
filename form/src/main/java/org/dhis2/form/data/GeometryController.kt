@@ -1,7 +1,6 @@
 package org.dhis2.form.data
 
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
@@ -34,7 +33,7 @@ class GeometryController(private val geometryParser: GeometryParser) {
     }
 
     fun getCoordinatesCallback(
-        onItemAction: (action: RowAction) -> Unit,
+        updateCoordinates: (value: String?) -> Unit,
         currentLocation: (fieldUid: String) -> Unit,
         mapRequest: (fieldUid: String, featureType: String, initCoordinate: String?) -> Unit
     ): FieldUiModel.Callback {
@@ -44,7 +43,11 @@ class GeometryController(private val geometryParser: GeometryParser) {
             }
 
             override fun intent(intent: FormIntent) {
-                TODO("Not yet implemented")
+                when (intent) {
+                    is FormIntent.SaveCurrentLocation -> updateCoordinates(intent.value)
+                    else -> {
+                    }
+                }
             }
 
             override fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents) {
@@ -58,10 +61,6 @@ class GeometryController(private val geometryParser: GeometryParser) {
                     else -> {
                     }
                 }
-            }
-
-            override fun onItemAction(action: RowAction) {
-                onItemAction(action)
             }
         }
     }
