@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import dhis2.org.analytics.charts.GroupAnalyticsFragment
 import java.lang.IllegalStateException
 import org.dhis2.R
 import org.dhis2.usescases.notes.NotesFragment
@@ -66,8 +65,7 @@ class DashboardPagerAdapter(
                 }
                 relationshipFragment!!
             }
-            NOTES_PORTRAIT_POSITION -> GroupAnalyticsFragment.newInstance()
-            //NotesFragment.newTrackerInstance(currentProgram!!, teiUid)
+            NOTES_PORTRAIT_POSITION -> NotesFragment.newTrackerInstance(currentProgram!!, teiUid)
             else -> throw IllegalStateException("Fragment not supported")
         }
     }
