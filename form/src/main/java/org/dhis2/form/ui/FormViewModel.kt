@@ -76,6 +76,11 @@ class FormViewModel(
                 intent.coordinates,
                 intent.extraData
             )
+            is FormIntent.SelectLocationFromMap -> setCoordinateFieldValue(
+                intent.uid,
+                intent.featureType,
+                intent.coordinates
+            )
         }
     }
 
@@ -83,18 +88,12 @@ class FormViewModel(
         uid: String,
         value: String?,
         extraData: String? = null
-    ): RowAction {
-        return RowAction(
-            uid,
-            value,
-            false,
-            null,
-            null,
-            null,
-            extraData,
-            ActionType.ON_SAVE
-        )
-    }
+    ) = RowAction(
+        id = uid,
+        value = value,
+        extraData = extraData,
+        type = ActionType.ON_SAVE
+    )
 
     fun submitIntent(intent: FormIntent) {
         viewModelScope.launch {
@@ -128,23 +127,22 @@ class FormViewModel(
         loading.value = false
     }
 
-    fun setCoordinateFieldValue(fieldUid: String?, featureType: String?, coordinates: String?) {
-        if (fieldUid != null && featureType != null) {
-            val geometryCoordinates = coordinates?.let {
-                geometryController.generateLocationFromCoordinates(
-                    FeatureType.valueOf(featureType),
-                    coordinates
-                )?.coordinates()
-            }
-            onItemAction(
-                RowAction(
-                    id = fieldUid,
-                    value = geometryCoordinates,
-                    type = ActionType.ON_SAVE,
-                    extraData = featureType
-                )
-            )
+    private fun setCoordinateFieldValue(
+        fieldUid: String,
+        featureType: String,
+        coordinates: String?
+    ): RowAction {
+        val geometryCoordinates = coordinates?.let {
+            geometryController.generateLocationFromCoordinates(
+                FeatureType.valueOf(featureType),
+                coordinates
+            )?.coordinates()
         }
+        return createRowAction(
+            uid = fieldUid,
+            value = geometryCoordinates,
+            extraData = featureType
+        )
     }
 
     fun getFocusedItemUid(): String? {

@@ -208,7 +208,7 @@ public abstract class CoordinateViewModel extends FieldViewModel {
                         ActionType.ON_FOCUS
                 )
         );
-        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.RequestLocation(uid()));
+        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.RequestCurrentLocation(uid()));
     }
 
     public void requestMapLocation() {
@@ -224,6 +224,10 @@ public abstract class CoordinateViewModel extends FieldViewModel {
                         ActionType.ON_FOCUS
                 )
         );
-        callback.mapRequest(uid(), featureType().name(), value());
+        FeatureType featureType = featureType();
+        if (featureType == null) {
+            featureType = FeatureType.NONE;
+        }
+        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.RequestLocationByMap(uid(), featureType, value()));
     }
 }

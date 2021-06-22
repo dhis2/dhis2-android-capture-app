@@ -48,20 +48,20 @@ class GeometryController(private val geometryParser: GeometryParser) {
             }
 
             override fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents) {
-                val uid = (uiEvent as RecyclerViewUiEvents.RequestLocation).uid
-                currentLocation(uid)
+                when (uiEvent) {
+                    is RecyclerViewUiEvents.RequestCurrentLocation -> currentLocation(uiEvent.uid)
+                    is RecyclerViewUiEvents.RequestLocationByMap -> mapRequest(
+                        uiEvent.uid,
+                        uiEvent.featureType.name,
+                        uiEvent.value
+                    )
+                    else -> {
+                    }
+                }
             }
 
             override fun onItemAction(action: RowAction) {
                 onItemAction(action)
-            }
-
-            override fun mapRequest(
-                coordinateFieldUid: String,
-                featureType: String,
-                initialCoordinates: String?
-            ) {
-                mapRequest(coordinateFieldUid, featureType, initialCoordinates)
             }
         }
     }

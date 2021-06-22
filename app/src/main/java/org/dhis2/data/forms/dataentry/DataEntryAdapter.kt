@@ -6,8 +6,6 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
-import java.util.ArrayList
-import java.util.LinkedHashMap
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder.FieldItemCallback
@@ -17,7 +15,8 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.DataEntryDiff
 import org.dhis2.form.ui.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
-import org.hisp.dhis.android.core.common.FeatureType
+import java.util.ArrayList
+import java.util.LinkedHashMap
 
 class DataEntryAdapter(private val searchStyle: Boolean) :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),
@@ -29,7 +28,6 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
     var onItemAction: ((action: RowAction) -> Unit)? = null
     var onIntent: ((intent: FormIntent) -> Unit)? = null
     var onRecyclerViewUiEvents: ((uiEvent: RecyclerViewUiEvents) -> Unit)? = null
-    var onMapRequest: ((fieldUid: String, type: FeatureType, initValue: String?) -> Unit)? = null
 
     private val sectionHandler = SectionHandler()
     var sectionPositions: MutableMap<String, Int> = LinkedHashMap()
@@ -149,16 +147,6 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
     override fun onAction(action: RowAction) {
         onItemAction?.let {
             it(action)
-        }
-    }
-
-    override fun onMapRequest(
-        coordinateFieldUid: String,
-        featureType: FeatureType,
-        initialCoordinates: String?
-    ) {
-        onMapRequest?.let {
-            it(coordinateFieldUid, featureType, initialCoordinates)
         }
     }
 }

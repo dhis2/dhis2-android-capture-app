@@ -40,10 +40,10 @@ import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.form.ui.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.uicomponents.map.views.MapSelectorActivity
 import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
-import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.create
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
 import org.dhis2.utils.Constants
 import org.dhis2.utils.DatePickerUtils
@@ -116,13 +116,6 @@ class FormView private constructor(
 
         adapter.onItemAction = { action ->
             viewModel.onItemAction(action)
-        }
-
-        adapter.onMapRequest = { fieldUid, featureType, initialData ->
-            startActivityForResult(
-                create(requireContext(), fieldUid, featureType, initialData),
-                Constants.RQ_MAP_LOCATION_VIEW
-            )
         }
 
         binding.recyclerView.adapter = adapter
@@ -198,7 +191,8 @@ class FormView private constructor(
             is RecyclerViewUiEvents.ShowDescriptionLabelDialog -> showDescriptionLabelDialog(
                 uiEvent
             )
-            is RecyclerViewUiEvents.RequestLocation -> requestLocation(uiEvent)
+            is RecyclerViewUiEvents.RequestCurrentLocation -> requestCurrentLocation(uiEvent)
+            is RecyclerViewUiEvents.RequestLocationByMap -> requestLocationByMap(uiEvent)
         }
     }
 
@@ -333,7 +327,7 @@ class FormView private constructor(
         ).show()
     }
 
-    private fun requestLocation(event: RecyclerViewUiEvents.RequestLocation) {
+    private fun requestCurrentLocation(event: RecyclerViewUiEvents.RequestCurrentLocation) {
         locationProvider?.getLastKnownLocation(
             { location ->
                 val geometry = GeometryHelper.createPointGeometry(
@@ -364,16 +358,27 @@ class FormView private constructor(
         )
     }
 
+    private fun requestLocationByMap(event: RecyclerViewUiEvents.RequestLocationByMap) {
+        startActivityForResult(
+            MapSelectorActivity.create(requireContext(), event.uid, event.featureType, event.value),
+            Constants.RQ_MAP_LOCATION_VIEW
+        )
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK &&
             requestCode == Constants.RQ_MAP_LOCATION_VIEW && data?.extras != null
         ) {
-            data.apply {
-                viewModel.setCoordinateFieldValue(
-                    getStringExtra(FIELD_UID),
-                    getStringExtra(LOCATION_TYPE_EXTRA),
-                    getStringExtra(DATA_EXTRA)
+            val uid = data.getStringExtra(FIELD_UID)
+            val featureType = data.getStringExtra(LOCATION_TYPE_EXTRA)
+            val coordinates = data.getStringExtra(DATA_EXTRA)
+            if (uid != null && featureType != null) {
+                val intent = FormIntent.SelectLocationFromMap(
+                    uid,
+                    featureType,
+                    coordinates
                 )
+                intentHandler(intent)
             }
         }
     }
@@ -387,7 +392,7 @@ class FormView private constructor(
             grantResults[0] == PackageManager.PERMISSION_GRANTED
         ) {
             viewModel.getFocusedItemUid()?.let {
-                requestLocation(RecyclerViewUiEvents.RequestLocation(it))
+                requestCurrentLocation(RecyclerViewUiEvents.RequestCurrentLocation(it))
             }
         }
     }
