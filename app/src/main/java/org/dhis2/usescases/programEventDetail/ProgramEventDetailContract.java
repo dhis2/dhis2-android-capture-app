@@ -26,8 +26,6 @@ public class ProgramEventDetailContract {
 
         void updateFilters(int totalFilters);
 
-        void setTextTypeDataElementsFilter(List<DataElement> textTypeDataElementsFilter);
-
         void openOrgUnitTreeSelector();
 
         void showPeriodRequest(FilterManager.PeriodRequest periodRequest);

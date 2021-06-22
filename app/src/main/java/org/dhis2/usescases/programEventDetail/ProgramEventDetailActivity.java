@@ -249,18 +249,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos) {
-        if (!categoryOptionCombos.val0().isDefault()) {
-            filtersAdapter.addCatOptCombFilter(categoryOptionCombos);
-        }
-    }
-
-    @Override
-    public void setTextTypeDataElementsFilter(List<DataElement> textTypeDataElementsFilter) {
-        filtersAdapter.addTextValueFilter(textTypeDataElementsFilter);
-    }
-
-    @Override
     public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
             DateUtils.getInstance().showFromToSelector(this, FilterManager.getInstance()::addPeriod);
