@@ -11,7 +11,9 @@ class FeatureConfigActivityModule {
 
     @Provides
     @PerActivity
-    fun provideViewModelFactory(featureConfigRepository: FeatureConfigRepository): FeatureConfigViewModelFactory {
+    fun provideViewModelFactory(
+        featureConfigRepository: FeatureConfigRepository
+    ): FeatureConfigViewModelFactory {
         return FeatureConfigViewModelFactory(featureConfigRepository)
     }
 }

@@ -7,6 +7,8 @@ import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
 import dhis2.org.analytics.charts.mappers.DataElementToGraph
 import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
 import dhis2.org.analytics.charts.mappers.VisualizationToGraph
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.featureconfig.model.Feature
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.analytics.aggregated.mock.DimensionalResponseSamples
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -19,7 +21,8 @@ class ChartsRepositoryImpl(
     private val visualizationToGraph: VisualizationToGraph,
     private val analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph,
     private val dataElementToGraph: DataElementToGraph,
-    private val programIndicatorToGraph: ProgramIndicatorToGraph
+    private val programIndicatorToGraph: ProgramIndicatorToGraph,
+    private val featureConfig: FeatureConfigRepository
 ) : ChartsRepository {
 
     override fun getAnalyticsForEnrollment(enrollmentUid: String): List<Graph> {
@@ -35,7 +38,9 @@ class ChartsRepositoryImpl(
     }
 
     override fun getAnalyticsForProgram(programUid: String): List<Graph> {
-        return visualizationToGraph.map(listOf(DimensionalResponseSamples.sample1), ChartType.PIE_CHART)
+        return visualizationToGraph.map(
+            listOf(DimensionalResponseSamples.sample1), ChartType.PIE_CHART
+        )
     }
 
     private fun getSettingsAnalytics(enrollment: Enrollment): List<Graph> {
@@ -87,13 +92,15 @@ class ChartsRepositoryImpl(
                     )
                 }
             ).union(
-                //TODO: Add feature tool
-                getAnalyticsForProgram(enrollment.program()!!)
+                if (featureConfig.isFeatureEnable(Feature.ANDROAPP_4049)) {
+                    getAnalyticsForProgram(enrollment.program()!!)
+                } else {
+                    emptyList()
+                }
             )
         }.flatten()
             .filter { it.series.isNotEmpty() }
-            //TODO: Add feature tool
-            .pieChartTestingData(d2)
+            .pieChartTestingData(d2, featureConfig)
     }
 
     private fun getRepeatableProgramStages(program: String?) =

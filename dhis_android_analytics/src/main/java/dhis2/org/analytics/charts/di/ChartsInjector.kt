@@ -50,7 +50,8 @@ class ChartsModule {
             visualizationToGraph,
             analyticsTeiSettingsToGraph,
             dataElementToGraph,
-            indicatorToGraph
+            indicatorToGraph,
+            featureConfigRepository
         )
 
     @Provides
