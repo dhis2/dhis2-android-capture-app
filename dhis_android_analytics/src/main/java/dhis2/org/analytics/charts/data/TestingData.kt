@@ -102,7 +102,7 @@ fun List<Graph>.nutritionTestingData(d2: D2): List<Graph> {
 
 fun List<Graph>.radarTestingData(d2: D2, featureConfig: FeatureConfigRepository): List<Graph> {
     return if (!featureConfig.isFeatureEnable(Feature.ANDROAPP_2557)) {
-        return emptyList()
+        return this
     } else {
         toMutableList().apply {
             val monthlyPeriodStep = PeriodStepProviderImpl(d2).periodStep(PeriodType.Daily)
