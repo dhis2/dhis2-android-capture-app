@@ -23,7 +23,6 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
 
     private val refactoredViews = intArrayOf(R.layout.form_age_custom)
 
-    var onNextClicked: ((position: Int) -> Unit)? = null
     var onIntent: ((intent: FormIntent) -> Unit)? = null
     var onRecyclerViewUiEvents: ((uiEvent: RecyclerViewUiEvents) -> Unit)? = null
 
@@ -133,12 +132,6 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
     override fun recyclerViewEvent(uiEvent: RecyclerViewUiEvents) {
         onRecyclerViewUiEvents?.let {
             it(uiEvent)
-        }
-    }
-
-    override fun onNext(layoutPosition: Int) {
-        onNextClicked?.let {
-            it(layoutPosition)
         }
     }
 }

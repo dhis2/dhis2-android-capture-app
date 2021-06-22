@@ -38,9 +38,6 @@ class GeometryController(private val geometryParser: GeometryParser) {
         mapRequest: (fieldUid: String, featureType: String, initCoordinate: String?) -> Unit
     ): FieldUiModel.Callback {
         return object : FieldUiModel.Callback {
-            override fun onNext() {
-                TODO("Not yet implemented")
-            }
 
             override fun intent(intent: FormIntent) {
                 when (intent) {

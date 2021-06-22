@@ -57,7 +57,6 @@ interface FieldUiModel {
     fun setFieldMandatory(): FieldUiModel
 
     interface Callback {
-        fun onNext()
         fun intent(intent: FormIntent)
         fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents)
     }

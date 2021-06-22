@@ -3,6 +3,13 @@ package org.dhis2.form.ui.intent
 import org.dhis2.form.mvi.MviIntent
 
 sealed class FormIntent : MviIntent {
+
+    data class OnNext(
+        val uid: String,
+        val value: String?,
+        val position: Int? = null
+    ) : FormIntent()
+
     data class SelectDateFromAgeCalendar(
         val uid: String,
         val date: String?
