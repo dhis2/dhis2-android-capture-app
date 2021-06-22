@@ -133,7 +133,6 @@ class ProgramEventDetailPresenterTest {
         verify(view).setFeatureType(FeatureType.POINT)
         verify(view).setWritePermission(true)
         verify(view).setProgram(program)
-        verify(view).setTextTypeDataElementsFilter(emptyList<DataElement>())
     }
 
     @Test
