@@ -6,17 +6,16 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
+import java.util.ArrayList
+import java.util.LinkedHashMap
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder.FieldItemCallback
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.DataEntryDiff
 import org.dhis2.form.ui.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
-import java.util.ArrayList
-import java.util.LinkedHashMap
 
 class DataEntryAdapter(private val searchStyle: Boolean) :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),
@@ -25,7 +24,6 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
     private val refactoredViews = intArrayOf(R.layout.form_age_custom)
 
     var onNextClicked: ((position: Int) -> Unit)? = null
-    var onItemAction: ((action: RowAction) -> Unit)? = null
     var onIntent: ((intent: FormIntent) -> Unit)? = null
     var onRecyclerViewUiEvents: ((uiEvent: RecyclerViewUiEvents) -> Unit)? = null
 
@@ -141,12 +139,6 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
     override fun onNext(layoutPosition: Int) {
         onNextClicked?.let {
             it(layoutPosition)
-        }
-    }
-
-    override fun onAction(action: RowAction) {
-        onItemAction?.let {
-            it(action)
         }
     }
 }

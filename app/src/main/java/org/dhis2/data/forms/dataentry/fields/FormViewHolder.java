@@ -44,11 +44,6 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
             public void onNext() {
                 callback.onNext(getLayoutPosition());
             }
-
-            @Override
-            public void onItemAction(@NotNull RowAction action) {
-                callback.onAction(action);
-            }
         };
         uiModel.setCallback(itemCallback);
 
@@ -62,7 +57,5 @@ public class FormViewHolder extends RecyclerView.ViewHolder {
         void recyclerViewEvent(@NotNull RecyclerViewUiEvents uiEvent);
 
         void onNext(int layoutPosition);
-
-        void onAction(RowAction action);
     }
 }
