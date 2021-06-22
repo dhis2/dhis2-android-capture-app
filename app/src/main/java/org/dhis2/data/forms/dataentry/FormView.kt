@@ -103,20 +103,13 @@ class FormView private constructor(
         super.onViewCreated(view, savedInstanceState)
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
         adapter = DataEntryAdapter(needToForceUpdate)
-        adapter.onNextClicked = { position ->
-            val viewHolder = binding.recyclerView.findViewHolderForLayoutPosition(position + 1)
-            if (viewHolder == null) {
-                try {
-                    binding.recyclerView.smoothScrollToPosition(position + 1)
-                } catch (e: Exception) {
-                    Timber.e(e)
-                }
-            }
-        }
 
         binding.recyclerView.adapter = adapter
 
         adapter.onIntent = { intent ->
+            if (intent is FormIntent.OnNext) {
+                scrollToPosition(intent.position!!)
+            }
             intentHandler(intent)
         }
 
@@ -176,6 +169,17 @@ class FormView private constructor(
                 }
             }
         )
+    }
+
+    private fun scrollToPosition(position: Int) {
+        val viewHolder = binding.recyclerView.findViewHolderForLayoutPosition(position + 1)
+        if (viewHolder == null) {
+            try {
+                binding.recyclerView.smoothScrollToPosition(position + 1)
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
+        }
     }
 
     private fun uiEventHandler(uiEvent: RecyclerViewUiEvents) {

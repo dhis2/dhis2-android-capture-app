@@ -84,18 +84,24 @@ class FormViewModel(
                 value = intent.value,
                 extraData = intent.featureType
             )
+            is FormIntent.OnNext -> createRowAction(
+                uid = intent.uid,
+                value = intent.value,
+                actionType = ActionType.ON_NEXT
+            )
         }
     }
 
     private fun createRowAction(
         uid: String,
         value: String?,
-        extraData: String? = null
+        extraData: String? = null,
+        actionType: ActionType = ActionType.ON_SAVE
     ) = RowAction(
         id = uid,
         value = value,
         extraData = extraData,
-        type = ActionType.ON_SAVE
+        type = actionType
     )
 
     fun submitIntent(intent: FormIntent) {
