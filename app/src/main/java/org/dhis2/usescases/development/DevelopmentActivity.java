@@ -16,6 +16,7 @@ import com.google.gson.reflect.TypeToken;
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.DevelopmentActivityBinding;
+import org.dhis2.commons.featureconfig.ui.FeatureConfigView;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
@@ -52,6 +53,7 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         loadBreakTheGlass();
         loadProgramRuleCheck();
         loadFabItems();
+        loadFeatureConfig();
     }
 
     private void loadProgramRuleCheck() {
@@ -234,6 +236,12 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         binding.dialFabLayout.addDialItems(items, integer -> {
             Toast.makeText(this, String.format("item %s clicked", integer.toString()), Toast.LENGTH_LONG).show();
             return Unit.INSTANCE;
+        });
+    }
+
+    private void loadFeatureConfig() {
+        binding.featureConfigButton.setOnClickListener(view -> {
+            startActivity(FeatureConfigView.class, null, true, true, null);
         });
     }
 }

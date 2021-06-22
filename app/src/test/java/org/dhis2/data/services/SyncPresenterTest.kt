@@ -10,7 +10,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Observable
 import junit.framework.Assert.assertTrue
-import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.service.SyncPresenterImpl
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.utils.analytics.AnalyticsHelper
