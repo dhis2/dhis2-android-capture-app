@@ -42,7 +42,7 @@ android {
     compileSdkVersion versions.sdk
     buildToolsVersion versions.tools
     defaultConfig {
-        applicationId "com.dhis2"
+        applicationId "com.msf.dhis2"
         minSdkVersion versions.minSdk
         targetSdkVersion versions.sdk
         versionCode versions.vCode
@@ -129,21 +129,21 @@ android {
 
     productFlavors {
         dhis {
-            applicationId "com.dhis2"
+            applicationId "com.msf.dhis2"
             dimension "default"
             versionCode versions.vCode
             versionName versions.vName
         }
 
         dhisNoSMS {
-            applicationId "com.dhis2"
+            applicationId "com.msf.dhis2"
             dimension "default"
             versionCode versions.vCode
             versionName versions.vName
         }
 
         dhisUITesting {
-            applicationId "com.dhis2"
+            applicationId "com.msf.dhis2"
             dimension "default"
             versionCode versions.vCode
             versionName versions.vName
