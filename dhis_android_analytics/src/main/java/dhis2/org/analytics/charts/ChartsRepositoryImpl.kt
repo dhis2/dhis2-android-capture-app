@@ -92,7 +92,7 @@ class ChartsRepositoryImpl(
                     )
                 }
             ).union(
-                if (featureConfig.isFeatureEnable(Feature.ANDROAPP_4049)) {
+                if (featureConfig.isFeatureEnable(Feature.ANDROAPP_2557)) {
                     getAnalyticsForProgram(enrollment.program()!!)
                 } else {
                     emptyList()

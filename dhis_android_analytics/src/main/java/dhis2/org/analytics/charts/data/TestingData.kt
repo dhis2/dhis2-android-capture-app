@@ -142,7 +142,7 @@ fun List<Graph>.radarTestingData(d2: D2): List<Graph> {
 }
 
 fun List<Graph>.pieChartTestingData(d2: D2, featureConfig: FeatureConfigRepository): List<Graph> {
-    if (!featureConfig.isFeatureEnable(Feature.ANDROAPP_4049)) {
+    if (!featureConfig.isFeatureEnable(Feature.ANDROAPP_2557)) {
         return this
     } else {
         val dailyPeriodStep = PeriodStepProviderImpl(d2).periodStep(PeriodType.Daily)
