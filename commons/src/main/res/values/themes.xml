@@ -2,7 +2,6 @@
 <resources>
 
     <!--region BASE THEMES -->
-
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         parent
         <!-- Customize your theme here. -->
@@ -96,7 +95,6 @@
         <item name="period_button">@drawable/period_button_green</item>
         <item name="period_time_button">@drawable/period_time_button_green</item>
         <item name="toast_bg">@drawable/toast_bg_green</item>
-
     </style>
 
     <style name="OrangeTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -116,7 +114,6 @@
         <item name="period_button">@drawable/period_button_orange</item>
         <item name="period_time_button">@drawable/period_time_button_orange</item>
         <item name="toast_bg">@drawable/toast_bg_orange</item>
-
     </style>
 
     <!--endregion--><!--region PALETTES-->
