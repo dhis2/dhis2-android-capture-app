@@ -123,7 +123,10 @@ public class EventInitialPresenter {
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::setGeometryModel,
-                                Timber::d
+                                throwable -> {
+                                    Timber.d(throwable);
+                                    view.displayFeatureTypeError();
+                                }
                         ));
 
         if (eventId != null) {
