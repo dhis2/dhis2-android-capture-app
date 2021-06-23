@@ -24,6 +24,7 @@ import com.google.android.material.textfield.TextInputEditText
 import java.util.Calendar
 import org.dhis2.Bindings.truncate
 import org.dhis2.R
+import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.data.forms.dataentry.fields.age.AgeDialogDelegate
 import org.dhis2.data.forms.dataentry.fields.age.negativeOrZero
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
@@ -50,7 +51,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPr
 import org.dhis2.utils.Constants
 import org.dhis2.utils.DatePickerUtils
 import org.dhis2.utils.DatePickerUtils.OnDatePickerClickListener
-import org.dhis2.commons.dialogs.CustomDialog
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import timber.log.Timber
