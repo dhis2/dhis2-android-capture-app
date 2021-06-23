@@ -32,7 +32,7 @@ import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.EXTRA_DATA
 import org.dhis2.utils.Constants.RQ_QR_SCANNER
 import org.dhis2.utils.Preconditions.Companion.equals
-import org.dhis2.utils.customviews.CustomDialog
+import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.utils.customviews.FieldLayout
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 

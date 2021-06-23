@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews;
+package org.dhis2.commons.dialogs;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -10,16 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 
-import org.dhis2.R;
-import org.dhis2.databinding.CustomDialogBinding;
-import org.dhis2.utils.DialogClickListener;
-
-/**
- * QUADRAM. Created by frodriguez on 5/4/2018.
- */
+import org.dhis2.commons.R;
+import org.dhis2.commons.databinding.CustomDialogBinding;
 
 public class CustomDialog extends AlertDialog implements View.OnClickListener {
 
+    public static final int DESCRIPTION_DIALOG = 111;
     private Context context;
     private AlertDialog dialog;
     private String title;
@@ -83,21 +79,17 @@ public class CustomDialog extends AlertDialog implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.negative:
-                if (listener != null) {
-                    listener.onNegative();
-                }
-                dismiss();
-                break;
-            case R.id.possitive:
-                if (listener != null) {
-                    listener.onPositive();
-                }
-                dismiss();
-                break;
-            default:
-                break;
+        int id = view.getId();
+        if (id == R.id.negative) {
+            if (listener != null) {
+                listener.onNegative();
+            }
+            dismiss();
+        } else if (id == R.id.possitive) {
+            if (listener != null) {
+                listener.onPositive();
+            }
+            dismiss();
         }
     }
 }
