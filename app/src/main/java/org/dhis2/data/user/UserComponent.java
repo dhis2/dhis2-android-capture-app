@@ -66,8 +66,6 @@ import org.dhis2.usescases.sync.SyncComponent;
 import org.dhis2.usescases.sync.SyncModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
-import org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback.FeedbackComponent;
-import org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback.FeedbackModule;
 import org.dhis2.usescases.teiDashboard.nfcdata.NfcDataWriteComponent;
 import org.dhis2.usescases.teiDashboard.nfcdata.NfcDataWriteModule;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListComponent;
@@ -79,7 +77,7 @@ import dagger.Subcomponent;
 
 @PerUser
 @Subcomponent(modules = UserModule.class)
-public interface UserComponent {
+public interface UserComponent extends UserComponentFlavor{
 
     FilterPresenter filterPresenter();
 
@@ -96,9 +94,6 @@ public interface UserComponent {
 
     @NonNull
     TeiDashboardComponent plus(@NonNull TeiDashboardModule dashboardModule);
-
-    @NonNull
-    FeedbackComponent plus(@NonNull FeedbackModule feedbackModule);
 
     @NonNull
     QrComponent plus(@NonNull QrModule qrModule);
