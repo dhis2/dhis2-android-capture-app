@@ -413,8 +413,4 @@
     <color name="dhis_color">#2C98F0</color>
 
     <color name="unselected_tab_badge_color">#B3FFFFFF</color>
-
-    <color name="openid_login_icon">@color/white</color>
-    <color name="openid_login_text">@color/white</color>
-    <color name="openid_login_bg">?colorPrimary</color>
 </resources>
