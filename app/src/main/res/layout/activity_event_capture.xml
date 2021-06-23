@@ -58,17 +58,6 @@
                 tools:initialPercentage="0.1"
                 tools:initialSecondaryPercentage="0.2" />
 
-            <ImageView
-                android:id="@+id/indicators"
-                style="@style/ActionIcon"
-                android:onClick="showIndicators"
-                app:layout_constraintBottom_toBottomOf="@+id/completion"
-                app:layout_constraintEnd_toStartOf="@id/completion"
-                app:layout_constraintTop_toTopOf="@+id/completion"
-                app:srcCompat="@drawable/ic_indicators"
-                tools:ignore="ContentDescription"
-                android:tint="@android:color/white"/>
-
             <TextView
                 android:id="@+id/programStageName"
                 style="@style/TextPrimary"
@@ -94,7 +83,6 @@
                 android:maxLines="1"
                 android:textColor="?colorAccent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/indicators"
                 app:layout_constraintStart_toEndOf="@id/buttonBack"
                 app:layout_constraintTop_toBottomOf="@+id/programStageName"
                 tools:text="2018-01-07|Org Unit|Cat Option" />
