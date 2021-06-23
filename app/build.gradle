@@ -103,7 +103,7 @@ android {
             def acraUserDebug = bitriseAcraUserDebug != null ? bitriseAcraUserDebug : "empty"
             def acraPassDebug = bitriseAcraPassDebug != null ? bitriseAcraPassDebug : "empty"
 
-            resValue "string", "content_provider", "com.dhis2.debug.provider"
+            resValue "string", "content_provider", "com.msf.dhis2.debug.provider"
             buildConfigField "String", "ACRA_USER", "\"$acraUserDebug\""
             buildConfigField "String", "ACRA_PASSWORD", "\"$acraPassDebug\""
             buildConfigField "int", "MATOMO_ID", "2"
@@ -121,7 +121,7 @@ android {
             buildConfigField "String", "ACRA_USER", "\"$acraUserProd\""
             buildConfigField "String", "ACRA_PASSWORD", "\"$acraPassProd\""
             buildConfigField "int", "MATOMO_ID", "1"
-            resValue "string", "content_provider", "com.dhis2.provider"
+            resValue "string", "content_provider", "com.msf.dhis2.provider"
         }
     }
 
