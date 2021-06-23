@@ -8,6 +8,9 @@ interface Charts {
     fun hasCharts(): Boolean
 
     fun getCharts(enrollmentUid: String): List<Graph>
+    fun getProgramVisualizations(groupUid: String?, programUid: String): List<Graph>
+    fun getHomeVisualizations(groupUid: String?): List<Graph>
+    fun getDataSetVisualizations(groupUid: String?, dataSetUid: String): List<Graph>
 
     interface Provider {
         fun get(dependencies: Dependencies): Charts

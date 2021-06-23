@@ -2,7 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 
 import io.reactivex.Flowable
 import io.reactivex.functions.BiFunction
-import org.dhis2.data.analytics.AnalyticsModel
+import dhis2.org.analytics.charts.ui.AnalyticsModel
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2

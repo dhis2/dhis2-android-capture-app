@@ -8,7 +8,8 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import javax.inject.Inject
 import org.dhis2.R
-import org.dhis2.data.analytics.AnalyticsModel
+import dhis2.org.analytics.charts.ui.AnalyticsAdapter
+import dhis2.org.analytics.charts.ui.AnalyticsModel
 import org.dhis2.databinding.FragmentIndicatorsBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 
@@ -20,7 +21,7 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
     lateinit var presenter: IndicatorsPresenter
 
     private lateinit var binding: FragmentIndicatorsBinding
-    private val adapter: AnalyticsAdapter by lazy { AnalyticsAdapter(requireContext()) }
+    private val adapter: AnalyticsAdapter by lazy { AnalyticsAdapter() }
     private val indicatorInjector by lazy { IndicatorInjector(this) }
     override fun onAttach(context: Context) {
         super.onAttach(context)

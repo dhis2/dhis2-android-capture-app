@@ -3,8 +3,8 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Flowable
 import io.reactivex.functions.Function3
-import org.dhis2.data.analytics.AnalyticsModel
-import org.dhis2.data.analytics.ChartModel
+import dhis2.org.analytics.charts.ui.AnalyticsModel
+import dhis2.org.analytics.charts.ui.ChartModel
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.resources.ResourceManager

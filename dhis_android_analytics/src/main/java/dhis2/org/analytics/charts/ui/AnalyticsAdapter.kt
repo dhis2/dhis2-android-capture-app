@@ -1,20 +1,15 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
+package dhis2.org.analytics.charts.ui
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.data.analytics.AnalyticsModel
-import org.dhis2.data.analytics.ChartModel
-import org.dhis2.data.analytics.IndicatorModel
-import org.dhis2.data.analytics.SectionTitle
-import org.dhis2.databinding.ItemChartBinding
-import org.dhis2.databinding.ItemIndicatorBinding
-import org.dhis2.databinding.ItemSectionTittleBinding
+import dhis2.org.databinding.ItemChartBinding
+import dhis2.org.databinding.ItemIndicatorBinding
+import dhis2.org.databinding.ItemSectionTittleBinding
 
-class AnalyticsAdapter(val context: Context) : ListAdapter<AnalyticsModel, RecyclerView.ViewHolder>(
+class AnalyticsAdapter : ListAdapter<AnalyticsModel, RecyclerView.ViewHolder>(
     object : DiffUtil.ItemCallback<AnalyticsModel>() {
 
         override fun areItemsTheSame(oldItem: AnalyticsModel, newItem: AnalyticsModel): Boolean {

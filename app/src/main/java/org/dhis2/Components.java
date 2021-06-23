@@ -9,7 +9,11 @@ import org.dhis2.data.user.UserComponent;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginContracts;
 
-public interface Components extends FeatureConfigComponentProvider {
+import dhis2.org.analytics.charts.di.AnalyticsComponentProvider;
+import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentComponent;
+import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule;
+
+public interface Components extends FeatureConfigComponentProvider, AnalyticsComponentProvider {
 
     @NonNull
     AppComponent appComponent();
@@ -51,5 +55,4 @@ public interface Components extends FeatureConfigComponentProvider {
     UserComponent userComponent();
 
     void releaseUserComponent();
-
 }

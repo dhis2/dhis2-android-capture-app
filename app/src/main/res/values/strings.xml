@@ -787,10 +787,6 @@
     <string name="navigation_notes">Notes</string>
     <string name="navigation_data_entry">Data entry</string>
     <string name="navigation_tei_data">Details</string>
-    <string name="show_bar_graph">View as Bar</string>
-    <string name="show_line_graph">View as Line</string>
-    <string name="show_table_graph">View as Table</string>
-    <string name="show_table_value">View as Value</string>
     <string name="working_list_default_label">Working list %s</string>
     <string name="filter_period_last_n_days">Last %d days</string>
     <string name="filter_period_this_year">This year</string>
