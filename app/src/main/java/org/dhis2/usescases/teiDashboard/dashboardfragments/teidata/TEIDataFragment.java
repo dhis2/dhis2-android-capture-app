@@ -281,17 +281,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            if (requestCode == REQ_EVENT) {
-                if (data != null) {
-                    String lastModifiedEventUid = data.getStringExtra(Constants.EVENT_UID);
-                    if (!OrientationUtilsKt.isLandscape())
-                        getSharedPreferences().edit().putString(PREF_COMPLETED_EVENT, lastModifiedEventUid).apply();
-                    else {
-                        if (lastModifiedEventUid != null)
-                            presenter.displayGenerateEvent(lastModifiedEventUid);
-                    }
-                }
-            }
             if (requestCode == REQ_DETAILS) {
                 activity.getPresenter().init();
             }
