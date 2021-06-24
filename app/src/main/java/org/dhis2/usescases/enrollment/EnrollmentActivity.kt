@@ -215,7 +215,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 presenter.getEnrollment()!!.trackedEntityInstance(),
                 null,
                 presenter.getEnrollment()!!.organisationUnit(),
-                null,
+                presenter.getEventStage(eventUid),
                 presenter.getEnrollment()!!.uid(),
                 0,
                 presenter.getEnrollment()!!.status()
