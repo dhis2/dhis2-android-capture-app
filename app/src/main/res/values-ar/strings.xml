@@ -6,7 +6,6 @@
     <!-- Warnings and error messages -->
     <string name="error">خطأ</string>
     <plurals name="error_message">
-        <item quantity="zero">أخطاء</item>
         <item quantity="one">خطأ</item>
         <item quantity="two">خطأين</item>
         <item quantity="few">أخطاء</item>
@@ -222,7 +221,6 @@
     <string name="settings_sms_module_switch">تمكين إرسال SMS</string>
     <string name="settings_sms_response_wait_switch">انتظر لرد ونتيجة SMS</string>
     <plurals name="settings_specific_programs">
-        <item quantity="zero">يوجد %s برامج ذات إعدادات محددة</item>
         <item quantity="one">يوجد %s برنامج مع إعدادات محددة</item>
         <item quantity="two">يوجد %s برامج ذات إعدادات محددة</item>
         <item quantity="few">يوجد %s برامج ذات إعدادات محددة</item>
