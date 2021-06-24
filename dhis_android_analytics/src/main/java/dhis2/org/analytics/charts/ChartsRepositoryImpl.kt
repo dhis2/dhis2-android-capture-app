@@ -1,6 +1,7 @@
 package dhis2.org.analytics.charts
 
 import dhis2.org.analytics.charts.data.Graph
+import dhis2.org.analytics.charts.data.nutritionTestingData
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
 import dhis2.org.analytics.charts.mappers.DataElementToGraph
 import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
@@ -27,6 +28,10 @@ class ChartsRepositoryImpl(
         } else {
             getDefaultAnalytics(enrollment)
         }
+    }
+
+    override fun getProgramVisualization(groupUid: String?, programUid: String): List<Graph> {
+        return emptyList<Graph>().nutritionTestingData(d2)
     }
 
     private fun getSettingsAnalytics(enrollment: Enrollment): List<Graph> {

@@ -360,16 +360,16 @@
                         android:layout_margin="5dp"
                         app:progressColor="@{@color/colorPrimary}" />
                 </RelativeLayout>
-
-                <org.dhis2.utils.customviews.DhisBottomNavigationBar
-                    android:id="@+id/navigationBar"
-                    style="@style/DhisBottomNavigationView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:elevation="12dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:menu="@menu/navigation_search_menu" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <org.dhis2.utils.customviews.DhisBottomNavigationBar
+                android:id="@+id/navigationBar"
+                style="@style/DhisBottomNavigationView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:elevation="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:menu="@menu/navigation_search_menu" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/clearFilterSearchButton"

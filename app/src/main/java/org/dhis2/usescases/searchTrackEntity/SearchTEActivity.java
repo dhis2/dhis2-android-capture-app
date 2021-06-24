@@ -217,21 +217,23 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_list_view:
+                    binding.mainLayout.setVisibility(View.VISIBLE);
+                    binding.mainComponent.setVisibility(GONE);
                     showMap(false);
                     break;
                 case R.id.navigation_map_view:
                     if (backDropActive) {
                         closeFilters();
                     }
+                    binding.mainLayout.setVisibility(View.VISIBLE);
+                    binding.mainComponent.setVisibility(GONE);
                     showMap(true);
                 case R.id.navigation_analytics:
                     if (backDropActive) {
                         closeFilters();
                     }
                     binding.mainComponent.setVisibility(View.VISIBLE);
-                    binding.scrollView.setVisibility(GONE);
-                    binding.mapView.setVisibility(GONE);
-                    binding.mapCarousel.setVisibility(GONE);
+                    binding.mainLayout.setVisibility(GONE);
                     showAnalytics();
                     break;
             }

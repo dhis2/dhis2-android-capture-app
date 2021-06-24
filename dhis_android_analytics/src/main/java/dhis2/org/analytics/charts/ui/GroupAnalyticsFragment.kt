@@ -15,6 +15,8 @@ import dhis2.org.analytics.charts.di.AnalyticsComponentProvider
 import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule
 import dhis2.org.databinding.AnalyticsGroupBinding
 import dhis2.org.databinding.AnalyticsItemBinding
+import kotlinx.android.synthetic.main.analytics_group.visualization_container
+import org.dhis2.commons.bindings.clipWithRoundedCorners
 import javax.inject.Inject
 
 const val ARG_MODE = "ARG_MODE"
@@ -85,6 +87,7 @@ class GroupAnalyticsFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.analytics_group, container, false)
         binding.lifecycleOwner = this
         binding.analyticsRecycler.adapter = adapter
+        binding.visualizationContainer.clipWithRoundedCorners()
         return binding.root
     }
 
@@ -99,7 +102,9 @@ class GroupAnalyticsFragment : Fragment() {
             }
         })
         groupViewModel.analytics.observe(viewLifecycleOwner, { analytics ->
-            adapter.submitList(analytics)
+            adapter.submitList(analytics){
+                binding.progress.visibility = View.GONE
+            }
         })
     }
 
@@ -110,10 +115,11 @@ class GroupAnalyticsFragment : Fragment() {
                 AnalyticsItemBinding.inflate(layoutInflater,binding.analyticChipGroup,false).apply {
                     chip.id = idChip
                     chip.text = analyticGroup.name
-                    chip.isSelected = index == 0
+                    chip.isChecked = index == 0
                     chip.tag = analyticGroup.uid
                     chip.setOnCheckedChangeListener { buttonView, isChecked ->
                         if (isChecked) {
+                            binding.progress.visibility = View.VISIBLE
                             groupViewModel.fetchAnalytics(buttonView.tag as String)
                         }
                     }

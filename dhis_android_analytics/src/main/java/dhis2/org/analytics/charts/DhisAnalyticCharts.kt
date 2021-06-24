@@ -16,7 +16,7 @@ class DhisAnalyticCharts @Inject constructor(
     }
 
     override fun getProgramVisualizations(groupUid: String?, programUid: String): List<Graph> {
-        return emptyList()
+        return chartsRepository.getProgramVisualization(groupUid, programUid)
     }
 
     override fun getHomeVisualizations(groupUid: String?): List<Graph> {
