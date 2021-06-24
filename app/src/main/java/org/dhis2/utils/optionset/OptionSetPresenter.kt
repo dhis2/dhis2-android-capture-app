@@ -3,15 +3,13 @@ package org.dhis2.utils.optionset
 import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
 import io.reactivex.disposables.CompositeDisposable
+import java.util.concurrent.TimeUnit
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
+import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel as TableSpinnerViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.helpers.UidsHelper
-import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.option.Option
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
-import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel as TableSpinnerViewModel
 
 class OptionSetPresenter(
     val view: OptionSetView,
@@ -52,7 +50,8 @@ class OptionSetPresenter(
                     var optionRepository = d2.optionModule().options()
                         .byOptionSetUid().eq(optionSetUid)
 
-                    val(finalOptionsToHide, finalOptionsToShow) = optionSetOptionHandler.handleOptions()
+                    val(finalOptionsToHide, finalOptionsToShow) =
+                        optionSetOptionHandler.handleOptions()
 
                     if (finalOptionsToShow.isNotEmpty()) {
                         optionRepository = optionRepository.byUid().`in`(finalOptionsToShow)
