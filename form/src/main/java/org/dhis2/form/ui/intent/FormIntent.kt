@@ -1,6 +1,7 @@
 package org.dhis2.form.ui.intent
 
 import org.dhis2.form.mvi.MviIntent
+import org.hisp.dhis.android.core.common.ValueType
 
 sealed class FormIntent : MviIntent {
 
@@ -9,6 +10,12 @@ sealed class FormIntent : MviIntent {
         val value: String?,
         val position: Int? = null
     ) : FormIntent()
+
+    data class OnSave(
+        val uid: String,
+        val value: String?,
+        val valueType: ValueType?
+    ) :FormIntent()
 
     data class SelectDateFromAgeCalendar(
         val uid: String,

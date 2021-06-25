@@ -11,6 +11,9 @@ class FormViewModelFactory(
     private val dispatcher: DispatcherProvider
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return FormViewModel(repository, dispatcher) as T
+        return FormViewModel(
+            repository = repository,
+            dispatcher = dispatcher
+        ) as T
     }
 }
