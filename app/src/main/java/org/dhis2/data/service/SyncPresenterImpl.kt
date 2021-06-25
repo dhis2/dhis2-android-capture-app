@@ -188,12 +188,34 @@ class SyncPresenterImpl(
             .blockingDownloadAllReservedValues(maxNumberOfValuesToReserve)
     }
 
-    override fun checkSyncStatus(): Boolean {
+    override fun checkSyncStatus(): SyncResult {
         val eventsOk =
             d2.eventModule().events().byState().notIn(State.SYNCED).blockingGet().isEmpty()
         val teiOk = d2.trackedEntityModule().trackedEntityInstances().byState()
             .notIn(State.SYNCED, State.RELATIONSHIP).blockingGet().isEmpty()
-        return eventsOk && teiOk
+
+        if (eventsOk && teiOk) {
+            return SyncResult.SYNC
+        }
+
+        val anyEventsToPostOrToUpdate = d2.eventModule()
+            .events()
+            .byState()
+            .`in`(State.TO_POST, State.TO_UPDATE)
+            .blockingGet()
+            .isNotEmpty()
+        val anyTeiToPostOrToUpdate = d2.trackedEntityModule()
+            .trackedEntityInstances()
+            .byState()
+            .`in`(State.TO_POST, State.TO_UPDATE)
+            .blockingGet()
+            .isNotEmpty()
+
+        if (anyEventsToPostOrToUpdate || anyTeiToPostOrToUpdate) {
+            return SyncResult.INCOMPLETE
+        }
+
+        return SyncResult.ERROR
     }
 
     override fun syncGranularEvent(eventUid: String): Observable<D2Progress> {

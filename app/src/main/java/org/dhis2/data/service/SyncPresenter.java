@@ -20,7 +20,7 @@ interface SyncPresenter {
 
     void syncReservedValues();
 
-    boolean checkSyncStatus();
+    SyncResult checkSyncStatus();
 
     Observable<D2Progress> syncGranularEvent(String eventUid);
 
