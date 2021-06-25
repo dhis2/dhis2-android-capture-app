@@ -45,6 +45,22 @@ class GraphToTable {
                 }
             }
         }
+        /*val cells = series.map { serie ->
+            mutableListOf<String>().apply {
+                columnHeaders.forEach { itemHeader ->
+                    add(
+                        serie.coordinates.firstOrNull {
+                            when (graph.chartType) {
+                                ChartType.PIE_CHART -> it.legend == itemHeader
+                                else ->
+                                    DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate) == itemHeader
+                            }
+                        }?.fieldValue?.toString()
+                            ?: ""
+                    )
+                }
+            }
+        }*/
         tableAdapter.setAllItems(
             listOf(headers.map { DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate) }),
             rows,

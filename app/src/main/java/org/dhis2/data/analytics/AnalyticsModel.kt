@@ -62,23 +62,42 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
     private fun idsToHide(originalChartType: ChartType): List<Int> {
         return when (observableChartType.get()) {
             ChartType.NUTRITION,
-            ChartType.LINE_CHART -> listOf(R.id.showRadarGraph, R.id.showLineGraph)
-            ChartType.BAR_CHART -> listOf(R.id.showRadarGraph, R.id.showBarGraph)
+            ChartType.LINE_CHART -> listOf(R.id.showRadarGraph,
+                R.id.showPieChart,
+                R.id.showLineGraph)
+            ChartType.BAR_CHART -> listOf(R.id.showRadarGraph,
+                R.id.showPieChart,
+                R.id.showBarGraph)
             ChartType.TABLE -> {
                 if (originalChartType == ChartType.RADAR) {
                     listOf(
+                        R.id.showPieChart,
+                        R.id.showTableGraph,
+                        R.id.showLineGraph,
+                        R.id.showBarGraph,
+                        R.id.showTableValue
+                    )
+                }else if(originalChartType == ChartType.PIE_CHART){
+                    listOf(
+                        R.id.showRadarGraph,
                         R.id.showTableGraph,
                         R.id.showLineGraph,
                         R.id.showBarGraph,
                         R.id.showTableValue
                     )
                 } else {
-                    listOf(R.id.showRadarGraph, R.id.showTableGraph)
+                    listOf(R.id.showRadarGraph,
+                        R.id.showPieChart,
+                        R.id.showTableGraph)
                 }
             }
-            ChartType.SINGLE_VALUE -> listOf(R.id.showRadarGraph, R.id.showTableValue)
-            ChartType.RADAR -> listOf(
+            ChartType.SINGLE_VALUE -> listOf(R.id.showRadarGraph,
+                R.id.showPieChart,
+                R.id.showTableValue)
+            ChartType.RADAR,
+            ChartType.PIE_CHART -> listOf(
                 R.id.showRadarGraph,
+                R.id.showPieChart,
                 R.id.showLineGraph,
                 R.id.showBarGraph,
                 R.id.showTableValue
@@ -93,6 +112,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             R.id.showTableGraph -> ChartType.TABLE
             R.id.showTableValue -> ChartType.SINGLE_VALUE
             R.id.showRadarGraph -> ChartType.RADAR
+            R.id.showPieChart -> ChartType.PIE_CHART
             else ->
                 if (graph.chartType != ChartType.NUTRITION) {
                     ChartType.LINE_CHART

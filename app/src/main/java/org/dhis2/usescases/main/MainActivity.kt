@@ -10,6 +10,7 @@ import android.view.View
 import android.view.View.GONE
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableInt
 import androidx.drawerlayout.widget.DrawerLayout
@@ -65,6 +66,7 @@ class MainActivity :
     private var fragId: Int = 0
     private var prefs: SharedPreferences? = null
     private var backDropActive = false
+    private var elevation = 0f
 
     //region LIFECYCLE
 
@@ -126,6 +128,8 @@ class MainActivity :
                 false
             }
         }
+
+        elevation = ViewCompat.getElevation(binding.toolbar)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -351,5 +355,13 @@ class MainActivity :
         if (backDropActive && activeFragment !is ProgramFragment) {
             showHideFilter()
         }
+    }
+
+    fun hideTabsAndDisableSwipe() {
+        ViewCompat.setElevation(binding.toolbar, 0f)
+    }
+
+    fun showTabsAndEnableSwipe() {
+        ViewCompat.setElevation(binding.toolbar, elevation)
     }
 }

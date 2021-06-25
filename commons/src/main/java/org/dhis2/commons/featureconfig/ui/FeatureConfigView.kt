@@ -5,10 +5,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import javax.inject.Inject
 import org.dhis2.commons.R
 import org.dhis2.commons.databinding.FeatureConfigViewBinding
 import org.dhis2.commons.featureconfig.di.FeatureConfigComponentProvider
-import javax.inject.Inject
 
 class FeatureConfigView : AppCompatActivity() {
 
@@ -20,7 +20,8 @@ class FeatureConfigView : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        (applicationContext as FeatureConfigComponentProvider).provideFeatureConfigActivityComponent()
+        (applicationContext as FeatureConfigComponentProvider)
+            .provideFeatureConfigActivityComponent()
             ?.inject(this)
 
         val binding = DataBindingUtil.setContentView<FeatureConfigViewBinding>(

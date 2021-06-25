@@ -144,3 +144,78 @@ fun List<Graph>.radarTestingData(d2: D2, featureConfig: FeatureConfigRepository)
         }
     }
 }
+
+fun List<Graph>.pieChartTestingData(d2: D2, featureConfig: FeatureConfigRepository): List<Graph> {
+    if (!featureConfig.isFeatureEnable(Feature.ANDROAPP_2557)) {
+        return this
+    } else {
+        val dailyPeriodStep = PeriodStepProviderImpl(d2).periodStep(PeriodType.Daily)
+        return toMutableList().apply {
+            val caseDetectionData = listOf(
+                SerieData(
+                    "Case detection",
+                    listOf(
+                        GraphPoint(GregorianCalendar(2020, 0, 1).time, null, 14f, "PROACTIVE"),
+                        GraphPoint(GregorianCalendar(2020, 10, 1).time, null, 50f, "REACTIVE"),
+                        GraphPoint(GregorianCalendar(2021, 8, 1).time, null, 60f, "PASSIVE")
+                    )
+                )
+            )
+            val malariaTestData = listOf(
+                SerieData(
+                    "Malaria test",
+                    listOf(
+                        GraphPoint(GregorianCalendar(2020, 0, 1).time, null, 40f, "PCR"),
+                        GraphPoint(GregorianCalendar(2020, 10, 1).time, null, 15f, "RDT"),
+                        GraphPoint(GregorianCalendar(2021, 8, 1).time, null, 60f, "MICROSCOPY"),
+                        GraphPoint(GregorianCalendar(2021, 8, 1).time, null, 6f, "OTHER")
+                    )
+                )
+            )
+            val genderData = listOf(
+                SerieData(
+                    "Gender",
+                    listOf(
+                        GraphPoint(GregorianCalendar(2020, 0, 1).time, null, 59f, "Female"),
+                        GraphPoint(GregorianCalendar(2020, 10, 1).time, null, 41f, "Male")
+                    )
+                )
+            )
+
+            add(
+                Graph(
+                    "Daily - Case detection",
+                    false,
+                    caseDetectionData,
+                    "",
+                    PeriodType.Daily,
+                    dailyPeriodStep,
+                    ChartType.PIE_CHART
+                )
+            )
+
+            add(
+                Graph(
+                    "Daily - Malaria test",
+                    false,
+                    malariaTestData,
+                    "",
+                    PeriodType.Daily,
+                    dailyPeriodStep,
+                    ChartType.PIE_CHART
+                )
+            )
+            add(
+                Graph(
+                    "Daily - Gender",
+                    false,
+                    genderData,
+                    "",
+                    PeriodType.Daily,
+                    dailyPeriodStep,
+                    ChartType.PIE_CHART
+                )
+            )
+        }
+    }
+}

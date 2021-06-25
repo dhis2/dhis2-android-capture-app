@@ -791,6 +791,7 @@
     <string name="show_line_graph">View as Line</string>
     <string name="show_table_graph">View as Table</string>
     <string name="show_table_value">View as Value</string>
+    <string name="show_pie_value">View as Pie</string>
     <string name="working_list_default_label">Working list %s</string>
     <string name="filter_period_last_n_days">Last %d days</string>
     <string name="filter_period_this_year">This year</string>
