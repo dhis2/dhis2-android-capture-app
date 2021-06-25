@@ -3,12 +3,9 @@ package dhis2.org.analytics.charts.mappers
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.DimensionalVisualization
 import dhis2.org.analytics.charts.data.Graph
-import dhis2.org.analytics.charts.data.SerieData
 import dhis2.org.analytics.charts.providers.ChartCoordinatesProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProvider
-import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.analytics.aggregated.Dimension
-import org.hisp.dhis.android.core.analytics.aggregated.DimensionalResponse
 import org.hisp.dhis.android.core.period.PeriodType
 
 class VisualizationToGraph(
@@ -19,9 +16,9 @@ class VisualizationToGraph(
 
     fun map(visualizations: List<DimensionalVisualization>): List<Graph> {
         return visualizations.map { visualization: DimensionalVisualization ->
-            val series = when (charType) {
+            val series = when (visualization.chartType) {
                 ChartType.PIE_CHART -> dimensionalResponseToPieData.map(
-                    dimensionalResponse,
+                    visualization.dimensionResponse,
                     Dimension.Data
                 )
                 else -> emptyList()

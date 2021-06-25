@@ -5,8 +5,8 @@ import android.view.View
 import dhis2.org.analytics.charts.mappers.GraphToBarChart
 import dhis2.org.analytics.charts.mappers.GraphToLineChart
 import dhis2.org.analytics.charts.mappers.GraphToNutritionChart
-import dhis2.org.analytics.charts.mappers.GraphToRadarChart
 import dhis2.org.analytics.charts.mappers.GraphToPieChart
+import dhis2.org.analytics.charts.mappers.GraphToRadarChart
 import dhis2.org.analytics.charts.mappers.GraphToTable
 import dhis2.org.analytics.charts.mappers.GraphToValue
 

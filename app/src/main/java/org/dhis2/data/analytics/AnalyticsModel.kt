@@ -62,12 +62,16 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
     private fun idsToHide(originalChartType: ChartType): List<Int> {
         return when (observableChartType.get()) {
             ChartType.NUTRITION,
-            ChartType.LINE_CHART -> listOf(R.id.showRadarGraph,
+            ChartType.LINE_CHART -> listOf(
+                R.id.showRadarGraph,
                 R.id.showPieChart,
-                R.id.showLineGraph)
-            ChartType.BAR_CHART -> listOf(R.id.showRadarGraph,
+                R.id.showLineGraph
+            )
+            ChartType.BAR_CHART -> listOf(
+                R.id.showRadarGraph,
                 R.id.showPieChart,
-                R.id.showBarGraph)
+                R.id.showBarGraph
+            )
             ChartType.TABLE -> {
                 if (originalChartType == ChartType.RADAR) {
                     listOf(
@@ -77,7 +81,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
                         R.id.showBarGraph,
                         R.id.showTableValue
                     )
-                }else if(originalChartType == ChartType.PIE_CHART){
+                } else if (originalChartType == ChartType.PIE_CHART) {
                     listOf(
                         R.id.showRadarGraph,
                         R.id.showTableGraph,
@@ -86,14 +90,18 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
                         R.id.showTableValue
                     )
                 } else {
-                    listOf(R.id.showRadarGraph,
+                    listOf(
+                        R.id.showRadarGraph,
                         R.id.showPieChart,
-                        R.id.showTableGraph)
+                        R.id.showTableGraph
+                    )
                 }
             }
-            ChartType.SINGLE_VALUE -> listOf(R.id.showRadarGraph,
+            ChartType.SINGLE_VALUE -> listOf(
+                R.id.showRadarGraph,
                 R.id.showPieChart,
-                R.id.showTableValue)
+                R.id.showTableValue
+            )
             ChartType.RADAR,
             ChartType.PIE_CHART -> listOf(
                 R.id.showRadarGraph,

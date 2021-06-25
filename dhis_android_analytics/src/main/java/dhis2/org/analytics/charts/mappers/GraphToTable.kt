@@ -35,34 +35,29 @@ class GraphToTable {
         val rows = series.map { it.fieldName }
         val cells = series.map { serie ->
             mutableListOf<String>().apply {
-                headers.map { it.eventDate }.forEach { eventDate ->
-                    add(
-                        serie.coordinates.firstOrNull {
-                            it.eventDate == eventDate
-                        }?.fieldValue?.toString()
-                            ?: ""
-                    )
-                }
-            }
-        }
-        /*val cells = series.map { serie ->
-            mutableListOf<String>().apply {
-                columnHeaders.forEach { itemHeader ->
+                headers.forEach { point ->
                     add(
                         serie.coordinates.firstOrNull {
                             when (graph.chartType) {
-                                ChartType.PIE_CHART -> it.legend == itemHeader
-                                else ->
-                                    DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate) == itemHeader
+                                ChartType.PIE_CHART -> it.legend == point.legend
+                                else -> it.eventDate == point.eventDate
                             }
                         }?.fieldValue?.toString()
                             ?: ""
                     )
                 }
             }
-        }*/
+        }
+
         tableAdapter.setAllItems(
-            listOf(headers.map { DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate) }),
+            listOf(
+                headers.map {
+                    when (graph.chartType) {
+                        ChartType.PIE_CHART -> it.legend
+                        else -> DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate)
+                    }
+                }
+            ),
             rows,
             cells,
             false
