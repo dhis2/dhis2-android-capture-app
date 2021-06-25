@@ -22,6 +22,7 @@ import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.form.data.FormRepositoryPersistenceImpl;
 import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.FieldErrorMessageProvider;
 import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.dhis2.utils.resources.ResourceManager;
@@ -135,7 +136,8 @@ public class EventCaptureModule {
                         eventUid,
                         DataEntryStore.EntryMode.DE,
                         new DhisEnrollmentUtils(d2)
-                )
+                ),
+                new FieldErrorMessageProvider(activityContext)
         );
     }
 }

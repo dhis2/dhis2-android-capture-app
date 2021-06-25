@@ -19,6 +19,7 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.intent.FormIntent
+import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.FeatureType
 
 class FormViewModel(
@@ -89,6 +90,20 @@ class FormViewModel(
                 value = intent.value,
                 actionType = ActionType.ON_NEXT
             )
+            is FormIntent.OnSave -> {
+                val error =
+                    when (val result = intent.valueType?.validator?.validate(intent.value!!)) {
+                        is Result.Failure -> result.failure
+                        else -> null
+                    }
+
+                createRowAction(
+                    uid = intent.uid,
+                    value = intent.value,
+                    error = error,
+                    actionType = ActionType.ON_SAVE
+                )
+            }
         }
     }
 
@@ -96,11 +111,13 @@ class FormViewModel(
         uid: String,
         value: String?,
         extraData: String? = null,
+        error: Throwable? = null,
         actionType: ActionType = ActionType.ON_SAVE
     ) = RowAction(
         id = uid,
         value = value,
         extraData = extraData,
+        error = error,
         type = actionType
     )
 

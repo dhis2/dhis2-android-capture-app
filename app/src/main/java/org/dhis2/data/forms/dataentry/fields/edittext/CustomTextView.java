@@ -542,10 +542,9 @@ public class CustomTextView extends FieldLayout {
         if (!isEmpty(getEditText().getText())) {
             checkAutocompleteRendering();
             String value = ValidationUtils.validate(viewModel.valueType(), getEditText().getText().toString());
-            String error = (String) inputLayout.getError();
-            viewModel.onTextFilled(value, error);
+            viewModel.onTextFilled(value);
         } else {
-            viewModel.onTextFilled(null, null);
+            viewModel.onTextFilled(null);
         }
     }
 
