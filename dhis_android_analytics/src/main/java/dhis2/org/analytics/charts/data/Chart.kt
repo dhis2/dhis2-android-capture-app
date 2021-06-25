@@ -6,6 +6,7 @@ import dhis2.org.analytics.charts.mappers.GraphToBarChart
 import dhis2.org.analytics.charts.mappers.GraphToLineChart
 import dhis2.org.analytics.charts.mappers.GraphToNutritionChart
 import dhis2.org.analytics.charts.mappers.GraphToPieChart
+import dhis2.org.analytics.charts.mappers.GraphToRadarChart
 import dhis2.org.analytics.charts.mappers.GraphToTable
 import dhis2.org.analytics.charts.mappers.GraphToValue
 
@@ -20,6 +21,7 @@ class Chart private constructor(
     private val graphToBarChartMapper: GraphToBarChart by lazy { GraphToBarChart() }
     private val graphToTableMapper: GraphToTable by lazy { GraphToTable() }
     private val graphToValueMapper: GraphToValue by lazy { GraphToValue() }
+    private val graphToRadarMapper: GraphToRadarChart by lazy { GraphToRadarChart() }
     private val graphToPieChartMapper: GraphToPieChart by lazy { GraphToPieChart() }
 
     fun getChartView(context: Context): View {
@@ -29,6 +31,7 @@ class Chart private constructor(
             ChartType.BAR_CHART -> graphToBarChartMapper.map(context, graphData)
             ChartType.TABLE -> graphToTableMapper.map(context, graphData)
             ChartType.SINGLE_VALUE -> graphToValueMapper.map(context, graphData)
+            ChartType.RADAR -> graphToRadarMapper.map(context, graphData)
             ChartType.PIE_CHART -> graphToPieChartMapper.map(context, graphData)
             else -> graphToLineChartMapper.map(context, graphData)
         }

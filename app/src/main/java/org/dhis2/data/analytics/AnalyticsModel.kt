@@ -45,8 +45,10 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             menu = R.menu.chart_menu,
             anchor = view,
             onMenuInflated = { popupMenu ->
-                idsToHide().forEach {
-                    popupMenu.menu.findItem(it).isVisible = false
+                idsToHide(graph.chartType ?: ChartType.LINE_CHART).forEach { idToHide ->
+                    if (idToHide != -1) {
+                        popupMenu.menu.findItem(idToHide).isVisible = false
+                    }
                 }
             },
             onMenuItemClicked = { itemId ->
@@ -57,21 +59,58 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             .show()
     }
 
-    private fun idsToHide(): List<Int> {
+    private fun idsToHide(originalChartType: ChartType): List<Int> {
         return when (observableChartType.get()) {
             ChartType.NUTRITION,
-            ChartType.LINE_CHART -> mutableListOf(R.id.showLineGraph)
-            ChartType.BAR_CHART -> mutableListOf(R.id.showBarGraph)
-            ChartType.TABLE -> mutableListOf(R.id.showTableGraph)
-            ChartType.SINGLE_VALUE -> mutableListOf(R.id.showTableValue)
-            ChartType.PIE_CHART -> mutableListOf(R.id.showPieChart)
-            else -> mutableListOf()
-        }.also {
-            if (graph.chartType == ChartType.PIE_CHART) {
-                it.addAll(listOf(R.id.showLineGraph, R.id.showBarGraph, R.id.showTableValue))
-            } else {
-                it.add(R.id.showPieChart)
+            ChartType.LINE_CHART -> listOf(
+                R.id.showRadarGraph,
+                R.id.showPieChart,
+                R.id.showLineGraph
+            )
+            ChartType.BAR_CHART -> listOf(
+                R.id.showRadarGraph,
+                R.id.showPieChart,
+                R.id.showBarGraph
+            )
+            ChartType.TABLE -> {
+                if (originalChartType == ChartType.RADAR) {
+                    listOf(
+                        R.id.showPieChart,
+                        R.id.showTableGraph,
+                        R.id.showLineGraph,
+                        R.id.showBarGraph,
+                        R.id.showTableValue
+                    )
+                } else if (originalChartType == ChartType.PIE_CHART) {
+                    listOf(
+                        R.id.showRadarGraph,
+                        R.id.showTableGraph,
+                        R.id.showLineGraph,
+                        R.id.showBarGraph,
+                        R.id.showTableValue
+                    )
+                } else {
+                    listOf(
+                        R.id.showRadarGraph,
+                        R.id.showPieChart,
+                        R.id.showTableGraph
+                    )
+                }
             }
+            ChartType.SINGLE_VALUE -> listOf(
+                R.id.showRadarGraph,
+                R.id.showPieChart,
+                R.id.showTableValue
+            )
+            ChartType.RADAR,
+            ChartType.PIE_CHART -> listOf(
+                R.id.showRadarGraph,
+                R.id.showPieChart,
+                R.id.showLineGraph,
+                R.id.showBarGraph,
+                R.id.showTableValue
+            )
+            else -> emptyList()
         }
     }
 
@@ -80,6 +119,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             R.id.showBarGraph -> ChartType.BAR_CHART
             R.id.showTableGraph -> ChartType.TABLE
             R.id.showTableValue -> ChartType.SINGLE_VALUE
+            R.id.showRadarGraph -> ChartType.RADAR
             R.id.showPieChart -> ChartType.PIE_CHART
             else ->
                 if (graph.chartType != ChartType.NUTRITION) {

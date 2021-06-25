@@ -1,16 +1,14 @@
 package dhis2.org.analytics.charts
 
-import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.pieChartTestingData
+import dhis2.org.analytics.charts.data.radarTestingData
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
 import dhis2.org.analytics.charts.mappers.DataElementToGraph
 import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
 import dhis2.org.analytics.charts.mappers.VisualizationToGraph
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.model.Feature
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.analytics.aggregated.mock.DimensionalResponseSamples
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.period.PeriodType
@@ -38,9 +36,7 @@ class ChartsRepositoryImpl(
     }
 
     override fun getAnalyticsForProgram(programUid: String): List<Graph> {
-        return visualizationToGraph.map(
-            listOf(DimensionalResponseSamples.sample1), ChartType.PIE_CHART
-        )
+        return visualizationToGraph.map(emptyList())
     }
 
     private fun getSettingsAnalytics(enrollment: Enrollment): List<Graph> {
@@ -91,15 +87,10 @@ class ChartsRepositoryImpl(
                         period
                     )
                 }
-            ).union(
-                if (featureConfig.isFeatureEnable(Feature.ANDROAPP_2557)) {
-                    getAnalyticsForProgram(enrollment.program()!!)
-                } else {
-                    emptyList()
-                }
             )
         }.flatten()
             .filter { it.series.isNotEmpty() }
+            .radarTestingData(d2, featureConfig)
             .pieChartTestingData(d2, featureConfig)
     }
 

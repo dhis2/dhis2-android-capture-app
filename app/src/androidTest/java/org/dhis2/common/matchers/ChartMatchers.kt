@@ -31,6 +31,7 @@ class ChartMatchers {
                         ChartType.SINGLE_VALUE -> view.findViewById<View>(R.id.singleValueTitle) != null
                         ChartType.NUTRITION -> view is LineChart
                         ChartType.RADAR -> view is RadarChart
+                        ChartType.RADAR -> view is RadarChart
                         ChartType.PIE_CHART -> view is PieChart
                     }
                 }

@@ -8,6 +8,11 @@
         android:id="@+id/showLineGraph"
         android:icon="@drawable/ic_line_chart"
         android:title="@string/show_line_graph"/>
+
+    <item android:id="@+id/showRadarGraph"
+        android:icon="@drawable/ic_radar_chart"
+        android:title="@string/show_radar_graph"/>
+
     <item
         android:id="@+id/showTableGraph"
         android:icon="@drawable/ic_table_chart"

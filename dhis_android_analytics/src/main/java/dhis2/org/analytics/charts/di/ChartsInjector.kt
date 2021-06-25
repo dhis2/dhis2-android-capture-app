@@ -55,7 +55,12 @@ class ChartsModule {
         )
 
     @Provides
-    internal fun provideVisualizationToGraph() = VisualizationToGraph()
+    internal fun provideVisualizationToGraph(
+        periodStepProvider: PeriodStepProvider,
+        chartCoordinatesProvider: ChartCoordinatesProvider
+    ): VisualizationToGraph {
+        return VisualizationToGraph(periodStepProvider, chartCoordinatesProvider)
+    }
 
     @Provides
     internal fun provideAnalyticsSettingsToGraph(
