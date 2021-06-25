@@ -10,7 +10,6 @@ enum class Filters(@LayoutRes val layoutId: Int) {
     CAT_OPT_COMB(R.layout.item_filter_cat_opt_comb),
     EVENT_STATUS(R.layout.item_filter_status),
     ASSIGNED_TO_ME(R.layout.item_filter_assigned),
-    TEXT_VALUE(R.layout.item_filter_value),
     ENROLLMENT_DATE(R.layout.item_filter_period),
     ENROLLMENT_STATUS(R.layout.item_filter_enrollment_status),
     WORKING_LIST(R.layout.item_filter_working_list),
