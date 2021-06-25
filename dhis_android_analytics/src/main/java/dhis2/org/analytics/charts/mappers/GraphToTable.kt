@@ -29,13 +29,23 @@ class GraphToTable {
         }
 
         val headers = series.map { it.coordinates }.flatten().sortedBy { it.eventDate }
+        val columnHeaders = headers.map {
+            when (graph.chartType) {
+                ChartType.PIE_CHART -> it.legend
+                else -> DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate)
+            }
+        }
         val rows = series.map { it.fieldName }
         val cells = series.map { serie ->
             mutableListOf<String>().apply {
-                headers.map { it.eventDate }.forEach { eventDate ->
+                columnHeaders.forEach { itemHeader ->
                     add(
                         serie.coordinates.firstOrNull {
-                            it.eventDate == eventDate
+                            when (graph.chartType) {
+                                ChartType.PIE_CHART -> it.legend == itemHeader
+                                else ->
+                                    DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate) == itemHeader
+                            }
                         }?.fieldValue?.toString()
                             ?: ""
                     )
@@ -43,7 +53,7 @@ class GraphToTable {
             }
         }
         tableAdapter.setAllItems(
-            listOf(headers.map { DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate) }),
+            listOf(columnHeaders),
             rows,
             cells,
             false

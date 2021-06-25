@@ -67,7 +67,8 @@ data class SerieData(
 data class GraphPoint(
     val eventDate: Date,
     val position: Float? = -1f,
-    val fieldValue: Float
+    val fieldValue: Float,
+    val legend: String? = null
 )
 
 fun Graph.toChartBuilder(): Chart.ChartBuilder {

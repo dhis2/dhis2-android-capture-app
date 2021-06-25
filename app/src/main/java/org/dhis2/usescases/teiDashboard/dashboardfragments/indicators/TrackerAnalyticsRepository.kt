@@ -51,7 +51,7 @@ class TrackerAnalyticsRepository(
             },
             getRulesIndicators(),
             Flowable.just(
-                charts?.getCharts(enrollmentUid)?.map { ChartModel(it) }
+                charts?.geEnrollmentCharts(enrollmentUid)?.map { ChartModel(it) }
             ),
             Function3 { indicators, ruleIndicators, charts ->
                 arrangeSections(indicators, ruleIndicators, charts)
