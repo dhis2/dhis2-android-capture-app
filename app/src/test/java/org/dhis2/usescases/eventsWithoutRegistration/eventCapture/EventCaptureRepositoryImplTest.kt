@@ -179,6 +179,13 @@ class EventCaptureRepositoryImplTest {
         val stageName = "stageName"
 
         whenever(
+            d2.programModule().programStages().uid(any()).blockingGet()
+        ) doReturn  ProgramStage.builder()
+            .uid(testEventStageUid)
+            .displayName(stageName)
+            .build()
+
+        whenever(
             d2.programModule().programStages().uid(testEventStageUid).get()
         ) doReturn Single.just(
             ProgramStage.builder()

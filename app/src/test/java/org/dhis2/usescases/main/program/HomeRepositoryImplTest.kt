@@ -180,7 +180,7 @@ class HomeRepositoryImplTest {
             dhisProgramUtils.getProgramState(any<Program>())
         ) doReturnConsecutively arrayListOf(State.SYNCED, State.TO_POST)
         whenever(
-            filterPresenter.filteredEventProgram(any())
+            filterPresenter.filteredEventProgram(any(), any())
         ) doReturn mock()
         whenever(
             filterPresenter.filteredEventProgram(any()).blockingCount()

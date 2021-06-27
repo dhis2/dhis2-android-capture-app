@@ -11,6 +11,7 @@ import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.filter.FilterPresenter;
+import org.dhis2.data.filter.TextFilter;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
 import org.dhis2.uicomponents.map.managers.EventMapManager;
@@ -25,11 +26,14 @@ import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventFilter;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -64,9 +68,9 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @NonNull
     @Override
-    public LiveData<PagedList<EventViewModel>> filteredProgramEvents() {
+    public LiveData<PagedList<EventViewModel>> filteredProgramEvents( TextFilter textFilter) {
         DataSource<Event, EventViewModel> dataSource = filterPresenter
-                .filteredEventProgram(program().blockingFirst())
+                .filteredEventProgram(program().blockingFirst(),textFilter)
                 .getDataSource()
                 .map(mapper::eventToEventViewModel);
 
@@ -82,7 +86,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     @Override
     public Flowable<ProgramEventMapData> filteredEventsForMap() {
-        return filterPresenter.filteredEventProgram(program().blockingFirst())
+        return filterPresenter.filteredEventProgram(program().blockingFirst(), null)
                 .get()
                 .map(listEvents -> {
                     kotlin.Pair<FeatureCollection, BoundingBox> eventFeatureCollection =
@@ -203,6 +207,35 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @Override
     public Single<ProgramStage> programStage(){
         return d2.programModule().programStages().byProgramUid().eq(programUid).one().get();
+    }
+
+
+    @NonNull
+    @Override
+    public Observable<List<DataElement>> textTypeDataElements() {
+        List<String> programStageUIds =
+                d2.programModule().programs().uid(programUid).get()
+                        .flatMap(program -> d2.programModule().programStages().byProgramUid()
+                                .eq(program.uid()).get())
+                        .toObservable().flatMap(programStages ->
+                        Observable.fromIterable(programStages)
+                                .map(item -> item.uid())
+                                .toList().toObservable()).blockingFirst();
+
+        List<String> programStagesDataElementsUIds =
+                d2.programModule().programStageDataElements().byProgramStage().in(programStageUIds).get()
+                        .toObservable().flatMap(programStageDataElements ->
+                        Observable.fromIterable(programStageDataElements)
+                                .map(item -> item.dataElement().uid())
+                                .toList().toObservable()).blockingFirst();
+
+
+        return d2.dataElementModule().dataElements()
+                .byValueType().eq(ValueType.TEXT)
+                .byUid().in(programStagesDataElementsUIds)
+                .byOptionSetUid().isNull()
+                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                .get().toObservable();
     }
 
 }

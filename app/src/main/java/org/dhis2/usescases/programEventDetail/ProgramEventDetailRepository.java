@@ -4,9 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
+import org.dhis2.data.filter.TextFilter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.event.EventFilter;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
@@ -20,7 +22,7 @@ import io.reactivex.Single;
 public interface ProgramEventDetailRepository {
 
     @NonNull
-    LiveData<PagedList<EventViewModel>> filteredProgramEvents();
+    LiveData<PagedList<EventViewModel>> filteredProgramEvents( TextFilter textFilter);
 
     @NonNull
     Flowable<ProgramEventMapData> filteredEventsForMap();
@@ -41,4 +43,6 @@ public interface ProgramEventDetailRepository {
     Single<List<EventFilter>> workingLists();
 
     Single<ProgramStage> programStage();
+
+    Observable<List<DataElement>> textTypeDataElements();
 }

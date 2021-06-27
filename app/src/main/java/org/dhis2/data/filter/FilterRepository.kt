@@ -1,8 +1,6 @@
 package org.dhis2.data.filter
 
 import androidx.databinding.ObservableField
-import java.util.Calendar
-import javax.inject.Inject
 import org.dhis2.utils.filters.AssignedFilter
 import org.dhis2.utils.filters.CatOptionComboFilter
 import org.dhis2.utils.filters.EnrollmentDateFilter
@@ -37,6 +35,11 @@ import org.hisp.dhis.android.core.settings.FilterSetting
 import org.hisp.dhis.android.core.settings.HomeFilter
 import org.hisp.dhis.android.core.settings.ProgramFilter
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
+import timber.log.Timber
+import java.util.Calendar
+import javax.inject.Inject
+
+data class TextFilter(val dataElement: String, val text: String)
 
 class FilterRepository @Inject constructor(
     private val d2: D2,
@@ -177,6 +180,32 @@ class FilterRepository @Inject constructor(
             .eq(false)
             .byProgram()
             .eq(programUid)
+    }
+
+    fun eventsByProgramAndTextFilter(
+        programUid: String,
+        textFilter: TextFilter?
+    ): EventQueryCollectionRepository {
+
+        if (textFilter != null && textFilter.dataElement.isNotBlank() && textFilter.text.isNotBlank()) {
+            val uidsByTextFilter =
+                getEventUIdsFilteredByValue(textFilter.dataElement, textFilter.text)
+
+            return d2.eventModule()
+                .eventQuery()
+                .byIncludeDeleted()
+                .eq(false)
+                .byProgram()
+                .eq(programUid)
+                .byUid().`in`(if (uidsByTextFilter.isNotEmpty()) uidsByTextFilter else listOf(textFilter.text))
+        } else {
+            return d2.eventModule()
+                .eventQuery()
+                .byIncludeDeleted()
+                .eq(false)
+                .byProgram()
+                .eq(programUid)
+        }
     }
 
     fun applyOrgUnitFilter(
@@ -698,5 +727,28 @@ class FilterRepository @Inject constructor(
 
     fun collapseAllFilters() {
         observableOpenFilter.set(Filters.NON)
+    }
+
+    private fun getEventUIdsFilteredByValue(dataElement: String, value: String): List<String> {
+        val uids: MutableList<String> = ArrayList()
+        val eventByTextValueQuery = "SELECT Event.uid FROM Event " +
+            "LEFT OUTER JOIN TrackedEntityDataValue AS Value ON Value.event = Event.uid " +
+            "WHERE Value.dataElement = '" + dataElement + "' AND Value.value like '%" +
+            value + "%'"
+        try {
+
+            d2.databaseAdapter().rawQuery(eventByTextValueQuery).use { idsCursor ->
+                if (idsCursor != null) {
+                    idsCursor.moveToFirst()
+                    for (i in 0 until idsCursor.count) {
+                        uids.add(idsCursor.getString(0))
+                        idsCursor.moveToNext()
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+        return uids
     }
 }

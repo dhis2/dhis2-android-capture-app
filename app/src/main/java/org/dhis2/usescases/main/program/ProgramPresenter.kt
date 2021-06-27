@@ -25,8 +25,6 @@ class ProgramPresenter internal constructor(
     var disposable: CompositeDisposable = CompositeDisposable()
 
     fun init() {
-        FilterManager.getInstance().clearTextValues()
-
         val applyFiler = PublishProcessor.create<FilterManager>()
 
         disposable.add(

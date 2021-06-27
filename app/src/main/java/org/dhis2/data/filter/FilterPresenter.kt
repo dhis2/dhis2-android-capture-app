@@ -31,7 +31,16 @@ class FilterPresenter @Inject constructor(
         return dataSetFilterSearchHelper.getFilteredDataSetSearchRepository()
     }
 
-    fun filteredEventProgram(program: Program): EventQueryCollectionRepository {
+    fun filteredEventProgram(
+        program: Program,
+        textFilter: TextFilter?
+    ): EventQueryCollectionRepository {
+       return eventProgramFilterSearchHelper.getFilteredEventRepository(program, textFilter)
+    }
+
+    fun filteredEventProgram(
+        program: Program
+    ): EventQueryCollectionRepository {
         return eventProgramFilterSearchHelper.getFilteredEventRepository(program)
     }
 

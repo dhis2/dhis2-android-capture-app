@@ -1,16 +1,29 @@
 package org.dhis2.data.filter
 
-import javax.inject.Inject
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.event.search.EventQueryCollectionRepository
 import org.hisp.dhis.android.core.program.Program
+import javax.inject.Inject
 
 class EventProgramFilterSearchHelper @Inject constructor(
     private val filterRepository: FilterRepository,
     val filterManager: FilterManager
 ) : FilterHelperActions<EventQueryCollectionRepository> {
+
+    fun getFilteredEventRepository(
+        program: Program,
+        textFilter: TextFilter?
+    ): EventQueryCollectionRepository {
+        return applyFiltersTo(
+            if(textFilter != null){
+                filterRepository.eventsByProgramAndTextFilter(program.uid(),textFilter)
+            } else {
+                filterRepository.eventsByProgram(program.uid())
+            }
+        )
+    }
 
     fun getFilteredEventRepository(
         program: Program

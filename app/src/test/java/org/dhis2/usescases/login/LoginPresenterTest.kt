@@ -2,6 +2,7 @@ package org.dhis2.usescases.login
 
 import co.infinum.goldfinger.Goldfinger
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.atMost
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
@@ -119,7 +120,7 @@ class LoginPresenterTest {
         loginPresenter.init(userManager)
 
         verify(view).setUrl(protocol)
-        verify(view).getDefaultServerProtocol()
+        verify(view,atMost(2)).getDefaultServerProtocol()
         verifyNoMoreInteractions(view)
     }
 

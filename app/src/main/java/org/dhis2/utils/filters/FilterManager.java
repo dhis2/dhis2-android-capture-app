@@ -80,7 +80,6 @@ public class FilterManager implements Serializable {
     private ObservableField<Integer> catOptCombFiltersApplied;
     private ObservableField<Integer> eventStatusFiltersApplied;
     private ObservableField<Integer> enrollmentStatusFiltersApplied;
-    private ObservableField<Integer> textValueFiltersApplied;
     private ObservableField<Integer> assignedToMeApplied;
 
     private List<String> stateValues = new ArrayList<>();
@@ -146,7 +145,6 @@ public class FilterManager implements Serializable {
         eventStatusFiltersApplied = new ObservableField<>(0);
         enrollmentStatusFiltersApplied = new ObservableField<>(0);
         assignedToMeApplied = new ObservableField<>(0);
-        textValueFiltersApplied = new ObservableField<>(0);
 
         filterProcessor = PublishProcessor.create();
         ouTreeProcessor = PublishProcessor.create();
@@ -313,8 +311,6 @@ public class FilterManager implements Serializable {
                 return eventStatusFiltersApplied;
             case ENROLLMENT_STATUS:
                 return enrollmentStatusFiltersApplied;
-            case TEXT_VALUE:
-                return textValueFiltersApplied;
             case ASSIGNED_TO_ME:
                 return assignedToMeApplied;
             default:
@@ -326,7 +322,11 @@ public class FilterManager implements Serializable {
         return ouTreeProcessor;
     }
 
-    public FlowableProcessor<FilterManager> asFlowable() {
+    public FlowableProcessor<FilterManager> asFlowableProcessor() {
+        return filterProcessor;
+    }
+
+    public Flowable<FilterManager> asFlowable() {
         return filterProcessor;
     }
 
@@ -525,11 +525,6 @@ public class FilterManager implements Serializable {
         filterProcessor.onNext(this);
     }
 
-    public void clearTextValues() {
-        textValueFiltersApplied.set(0);
-        publishData();
-    }
-
     public void clearAllFilters() {
         eventStatusFilters.clear();
         observableEventStatus.set(eventStatusFilters);
@@ -556,7 +551,6 @@ public class FilterManager implements Serializable {
         ouFiltersApplied.set(ouFilters.size());
         periodFiltersApplied.set(0);
         assignedToMeApplied.set(0);
-        textValueFiltersApplied.set(0);
 
         this.currentWorkingList = null;
         setWorkingListScope(new EmptyWorkingList());
