@@ -7,4 +7,19 @@
     <string name="program_type_configuration_error_message">Có lỗi cấu hình loại chương trình trong chương trình hiện tại. Vui lòng xem lại chương trình trong máy chủ và thực hiện cấu hình đồng bộ</string>
     <string name="unexpected_error_message">Một lỗi không mong muốn đã xảy ra. Xem lại cấu hình của bạn hoặc liên hệ với quản trị viên của bạn</string>
     <string name="feedback_show_only_failed">Chỉ hiển thị không thành công</string>
+    <string name="feedback_url">"Xem phản hồi đầy đủ tại:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"Bvà chỉ báo"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"Bằng kỹ thuật làa"</string>
+    <string name="feedback_tab_hnqis_all">"Tất cả"</string>
+    <string name="feedback_tab_hnqis_critical">"Bạo kích"</string>
+    <string name="feedback_tab_hnqis_non_critical">"Không quan trọng"</string>
+    <string name="feedback_malformed_error">"**Lỗi**: Phản hồi không đúng định dạng cho Phần tử dữ liệu %s"</string>
+    <string name="feedback_error">"lỗi"</string>
+    <string name="feedback_warning">"Cảnh báo"</string>
+    <string name="feedback_order_with_spaces">"Để phản hồi với khoảng trống trong phần tử dữ liệu %s"</string>
+    <string name="feedback_order_invalid">"Để phản hồi không hợp lệ trong phần tử dữ liệu %s"</string>
+    <string name="feedback_order_duplicate">"Để phản hồi trùng lặp trong các yếu tố dữ liệu %s"</string>
+    <string name="feedback_order_gap">"Chương trình sân khấu %s chứa khoảng trống để phản hồi"</string>
+    <string name="feedback_share_conducted">"Đánh giá được thực hiện vào"</string>
+    <string name="feedback_share_assessment_type">"Loại đánh giá"</string>
 </resources>

@@ -1,8 +1,17 @@
 package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 
 data class FeedbackOrder(val value: String) : Comparable<FeedbackOrder> {
-    private val orderItems: List<Int> = value.split(".").map { it.toInt() }
-    val level: Int = orderItems.size - 1
+    private val orderItems: List<Int>
+    val level: Int
+    val warnings: List<String>
+    val lastNumber: Int
+
+    init {
+        warnings = validate(value)
+        orderItems = value.trim().split(".").map { it.toInt() }
+        level = orderItems.size - 1
+        lastNumber = orderItems.last()
+    }
 
     val parent =
         if (orderItems.size == 1)
@@ -13,6 +22,14 @@ data class FeedbackOrder(val value: String) : Comparable<FeedbackOrder> {
 
     fun isDescendantOf(feedbackOrder: FeedbackOrder): Boolean {
         return this.value.startsWith(feedbackOrder.value) && this != feedbackOrder
+    }
+
+    private fun validate(value: String): List<String> {
+        return if (value.contains(" ")) {
+            listOf(FeedbackOrderWithSpaces)
+        } else {
+            listOf()
+        }
     }
 
     override fun compareTo(other: FeedbackOrder): Int {
@@ -44,8 +61,26 @@ data class FeedbackOrder(val value: String) : Comparable<FeedbackOrder> {
 
         return result
     }
+}
 
+const val FeedbackOrderWithSpaces = "feedback_order_with_spaces"
+const val FeedbackOrderInvalid = "feedback_order_invalid"
+const val FeedbackOrderDuplicate = "feedback_order_duplicate"
+const val FeedbackOrderGap = "feedback_order_gap"
 
+sealed class Validation {
+    data class DataElementWarning(
+        val dataElement: String,
+        val message: String
+    ) : Validation()
+    data class DataElementError(
+        val dataElement: String,
+        val message: String
+    ) : Validation()
+    data class ProgramStageWarning(
+        val programStage: String,
+        val message: String
+    ) : Validation()
 }
 
 data class Value(
@@ -57,7 +92,19 @@ data class Value(
     val feedbackHelp: String? = null,
     val success: Boolean,
     val critical: Boolean,
-    val eventUid: String
+    val eventUid: String,
+    val isNumeric: Boolean
 )
 
-data class Event(val uid: String, val name: String, val values: List<Value> = listOf())
+data class DataElement(val uid: String, val feedbackOrder: FeedbackOrder?)
+
+data class Event(
+    val uid: String,
+    val name: String,
+    val programStageUid: String,
+    val values: List<Value> = listOf()
+)
+
+data class MultilingualFeedback(val text: String, val locale: String)
+
+data class ResponseWithValidations<T>(val data: T, val validations: List<Validation>)

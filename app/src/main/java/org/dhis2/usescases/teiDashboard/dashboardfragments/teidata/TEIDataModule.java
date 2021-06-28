@@ -3,8 +3,9 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata;
 import androidx.annotation.NonNull;
 
 import org.dhis2.data.dagger.PerFragment;
-import org.dhis2.data.dhislogic.DhisEventUtils;
+import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.filter.FilterPresenter;
+import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
@@ -14,6 +15,7 @@ import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
+import org.dhis2.utils.filters.ProgramType;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -47,7 +49,8 @@ public class TEIDataModule {
                                                  SchedulerProvider schedulerProvider,
                                                  AnalyticsHelper analyticsHelper,
                                                  PreferenceProvider preferenceProvider,
-                                                 FilterManager filterManager) {
+                                                 FilterManager filterManager,
+                                                 FilterRepository filterRepository) {
         return new TEIDataPresenterImpl(view,
                 d2,
                 dashboardRepository,
@@ -59,29 +62,24 @@ public class TEIDataModule {
                 schedulerProvider,
                 preferenceProvider,
                 analyticsHelper,
-                filterManager);
+                filterManager,
+                filterRepository);
 
     }
 
     @Provides
     @PerFragment
-    TeiDataRepository providesRepository(D2 d2, DhisEventUtils dhisEventUtils) {
+    TeiDataRepository providesRepository(D2 d2, DhisPeriodUtils periodUtils) {
         return new TeiDataRepositoryImpl(d2,
                 programUid,
                 teiUid,
                 enrollmentUid,
-                dhisEventUtils);
+                periodUtils);
     }
 
     @Provides
     @PerFragment
-    RuleEngineRepository ruleEngineRepository(@NonNull FormRepository formRepository, D2 d2) {
-        return new EnrollmentRuleEngineRepository(formRepository, enrollmentUid, d2);
-    }
-
-    @Provides
-    @PerFragment
-    FiltersAdapter provideFiltersAdapter(FilterPresenter filterPresenter) {
-        return new FiltersAdapter(FiltersAdapter.ProgramType.DASHBOARD, filterPresenter);
+    FiltersAdapter provideNewFiltersAdapter() {
+        return new FiltersAdapter();
     }
 }

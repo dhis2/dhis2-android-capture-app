@@ -7,4 +7,19 @@
     <string name="program_type_configuration_error_message">Ada kesalahan konfigurasi jenis program dalam program saat ini. Harap tinjau program di server dan untuk menjalankan konfigurasi sinkronisasi</string>
     <string name="unexpected_error_message">erjadi sebuah kesalahan yang tidak diharapkan. Tinjau konfigurasi atau kontak Anda dengan administrator Anda</string>
     <string name="feedback_show_only_failed">Pertunjukan hanya gagal</string>
+    <string name="feedback_url">"Lihat masukan lengkapnya di:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"Dengan indikator"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"Berdasarkan bidang teknis"</string>
+    <string name="feedback_tab_hnqis_all">"Semua"</string>
+    <string name="feedback_tab_hnqis_critical">"Kritis"</string>
+    <string name="feedback_tab_hnqis_non_critical">"Tidak Kritis"</string>
+    <string name="feedback_malformed_error">"**Error**: Masukan salah format untuk elemen data %s"</string>
+    <string name="feedback_error">"Kesalahan"</string>
+    <string name="feedback_warning">"Peringatan"</string>
+    <string name="feedback_order_with_spaces">"Umpan balik agar dengan spasi di elemen data %s"</string>
+    <string name="feedback_order_invalid">"Agar umpan balik tidak valid di elemen data %s"</string>
+    <string name="feedback_order_duplicate">"Umpan balik urutan duplikat di elemen data %s"</string>
+    <string name="feedback_order_gap">"Program tahap %s berisi agar umpan balik celah"</string>
+    <string name="feedback_share_conducted">"Penilaian dilakukan pada""</string>
+    <string name="feedback_share_assessment_type">"Jenis penilaian"</string>
 </resources>

@@ -2,7 +2,6 @@ package org.dhis2.utils;
 
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
-import android.view.View;
 
 import androidx.core.widget.NestedScrollView;
 
@@ -89,9 +88,6 @@ public class HelpManager {
             case PROGRAM_EVENT_LIST:
                 help = programEventListTutorial(activity, stepCondition);
                 break;
-            case EVENT_SUMMARY:
-                help = eventSummaryTutorial(activity);
-                break;
             case EVENT_INITIAL:
                 help = eventInitialTutorial(activity, stepCondition);
                 break;
@@ -121,19 +117,6 @@ public class HelpManager {
             steps.add(tuto1);
 
         }
-        return steps;
-    }
-
-    private List<FancyShowCaseView> eventSummaryTutorial(ActivityGlobalAbstract activity) {
-        ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-        FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(activity)
-                .title(activity.getString(R.string.tuto_event_summary))
-                .enableAutoTextPosition()
-                .focusOn(activity.findViewById(R.id.action_button))
-                .closeOnTouch(true)
-                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                .build();
-        steps.add(tuto1);
         return steps;
     }
 
@@ -179,7 +162,7 @@ public class HelpManager {
                 .closeOnTouch(true)
                 .build();
         FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(activity)
-                .focusOn(activity.findViewById(R.id.clear_button))
+                .focusOn(activity.findViewById(R.id.clearFilterSearchButton))
                 .title(activity.getString(R.string.tuto_search_4_v2))
                 .enableAutoTextPosition()
                 .closeOnTouch(true)
@@ -224,7 +207,7 @@ public class HelpManager {
         FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(activity)
                 .title(activity.getString(R.string.tuto_dashboard_5))
                 .enableAutoTextPosition()
-                .focusOn(activity.findViewById(R.id.fab))
+                .focusShape(FocusShape.ROUNDED_RECTANGLE)
                 .closeOnTouch(true)
                 .build();
         FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(activity)
@@ -238,7 +221,7 @@ public class HelpManager {
         FancyShowCaseView tuto7 = new FancyShowCaseView.Builder(activity)
                 .title(activity.getString(R.string.tuto_dashboard_7))
                 .enableAutoTextPosition()
-                .focusOn(activity.findViewById(R.id.tab_layout))
+                .focusOn(activity.findViewById(R.id.navigationBar))
                 .focusShape(FocusShape.ROUNDED_RECTANGLE)
                 .closeOnTouch(true)
                 .build();

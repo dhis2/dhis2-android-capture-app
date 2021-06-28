@@ -7,9 +7,6 @@ import androidx.lifecycle.ViewModel
 import org.dhis2.data.tuples.Trio
 import org.dhis2.utils.TestingCredential
 
-/**
- * QUADRAM. Created by ppajuelo on 20/03/2019.
- */
 class LoginViewModel : ViewModel() {
 
     val serverUrl = MutableLiveData<String>()

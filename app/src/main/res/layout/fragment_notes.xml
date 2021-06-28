@@ -8,6 +8,8 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/notesContainer"
+        android:background="@color/form_field_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -102,7 +104,8 @@
             android:id="@+id/addNoteButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="20dp"
             android:tint="@color/white"
             app:backgroundTint="?attr/colorPrimary"
             app:elevation="7dp"

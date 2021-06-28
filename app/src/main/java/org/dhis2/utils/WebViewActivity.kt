@@ -3,6 +3,9 @@ package org.dhis2.utils
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.databinding.DataBindingUtil
 import org.dhis2.R
 import org.dhis2.databinding.ActivityWebviewBinding
@@ -23,6 +26,21 @@ class WebViewActivity : ActivityGlobalAbstract() {
         val url = intent?.extras?.getString(WEB_VIEW_URL)
 
         url?.let {
+            // Avoid the WebView to automatically redirect to a browser
+            binding.webView.webViewClient = object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(
+                    view: WebView?,
+                    request: WebResourceRequest
+                ): Boolean {
+                    return super.shouldOverrideUrlLoading(view, request)
+                }
+
+                // Compatibility with APIs below 24
+                override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                    return super.shouldOverrideUrlLoading(view, url)
+                }
+            }
+
             binding.webView.settings.javaScriptEnabled = true
             binding.webView.loadUrl(it)
         }

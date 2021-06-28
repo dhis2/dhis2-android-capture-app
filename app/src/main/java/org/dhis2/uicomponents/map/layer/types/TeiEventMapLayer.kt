@@ -1,7 +1,6 @@
 package org.dhis2.uicomponents.map.layer.types
 
 import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.layers.FillLayer
@@ -13,9 +12,10 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.layer.MapLayerManager
-import org.dhis2.uicomponents.map.layer.TYPE
-import org.dhis2.uicomponents.map.layer.TYPE_POINT
-import org.dhis2.uicomponents.map.layer.TYPE_POLYGON
+import org.dhis2.uicomponents.map.layer.isPoint
+import org.dhis2.uicomponents.map.layer.isPolygon
+import org.dhis2.uicomponents.map.layer.withInitialVisibility
+import org.dhis2.uicomponents.map.layer.withTEIMarkerProperties
 import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
 
@@ -29,10 +29,10 @@ class TeiEventMapLayer(
     private val POINT_LAYER_ID = "POINT_LAYER_$sourceId"
     private val SELECTED_POINT_LAYER_ID = "SELECTED_POINT_LAYER_$sourceId"
     private val POLYGON_LAYER_ID = "POLYGON_LAYER_$sourceId"
-    private val SELECTED_POLYGON_LAYER_ID = "SELECTED_POLYGON_LAYER_$sourceId"
 
     private val SELECTED_POINT_SOURCE_ID = "SELECTED_POINT_SOURCE_ID_$sourceId"
-    private val SELECTED_POLYGON_SOURCE_ID = "SELECTED_POLYGON_SOURCE_ID_$sourceId"
+
+    private var TEI_POINT_LAYER_ID = "EVENT_TEI_POINT_LAYER_ID_$sourceId"
 
     override var visible = false
 
@@ -40,17 +40,16 @@ class TeiEventMapLayer(
         when (featureType) {
             FeatureType.POINT -> {
                 style.addLayer(pointLayer)
-                style.addSource(GeoJsonSource(SELECTED_POINT_SOURCE_ID))
-                style.addLayer(selectedPointLayer)
             }
             FeatureType.POLYGON -> {
                 style.addLayer(polygonLayer)
                 style.addLayer(polygonBorderLayer)
-                style.addSource(GeoJsonSource(SELECTED_POLYGON_SOURCE_ID))
-                style.addLayer(selectedPolygonLayer)
             }
             else -> Unit
         }
+        style.addSource(GeoJsonSource(SELECTED_POINT_SOURCE_ID))
+        style.addLayer(teiPointLayer)
+        style.addLayer(selectedPointLayer)
     }
 
     private val pointLayer: Layer
@@ -59,29 +58,22 @@ class TeiEventMapLayer(
                 .withProperties(
                     PropertyFactory.iconImage("${MapLayerManager.STAGE_ICON_ID}_$sourceId"),
                     PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.visibility(Property.NONE),
-                    PropertyFactory.iconOffset(arrayOf(0f, -25f))
-                ).withFilter(
-                    Expression.eq(
-                        Expression.literal(TYPE),
-                        Expression.literal(TYPE_POINT)
-                    )
-                )
+                    PropertyFactory.textAllowOverlap(true)
+                ).withFilter(isPoint())
+
+    private val teiPointLayer: Layer
+        get() = style.getLayer(TEI_POINT_LAYER_ID)
+            ?: SymbolLayer(TEI_POINT_LAYER_ID, sourceId)
+                .withTEIMarkerProperties()
+                .withInitialVisibility(Property.NONE)
+                .withFilter(isPoint())
 
     private val selectedPointLayer: Layer
         get() = style.getLayer(SELECTED_POINT_LAYER_ID)
             ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_POINT_SOURCE_ID)
-                .withProperties(
-                    PropertyFactory.iconImage("${MapLayerManager.STAGE_ICON_ID}_$sourceId"),
-                    PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.iconSize(1.5f),
-                    PropertyFactory.iconOffset(arrayOf(0f, -25f))
-                ).withFilter(
-                    Expression.eq(
-                        Expression.literal(TYPE),
-                        Expression.literal(TYPE_POINT)
-                    )
-                )
+                .withTEIMarkerProperties()
+                .withInitialVisibility(Property.NONE)
+                .withFilter(isPoint())
 
     private val polygonLayer: Layer
         get() = style.getLayer(POLYGON_LAYER_ID)
@@ -89,12 +81,7 @@ class TeiEventMapLayer(
                 .withProperties(
                     PropertyFactory.fillColor(ColorUtils.withAlpha(eventColor ?: -1)),
                     PropertyFactory.visibility(Property.NONE)
-                ).withFilter(
-                    Expression.eq(
-                        Expression.literal(TYPE),
-                        Expression.literal(TYPE_POLYGON)
-                    )
-                )
+                ).withFilter(isPolygon())
 
     private val polygonBorderLayer: Layer
         get() = style.getLayer(POLYGON_LAYER_ID)
@@ -102,39 +89,22 @@ class TeiEventMapLayer(
                 .withProperties(
                     PropertyFactory.lineColor(eventColor ?: -1),
                     PropertyFactory.visibility(Property.NONE)
-                ).withFilter(
-                    Expression.eq(
-                        Expression.literal(TYPE),
-                        Expression.literal(TYPE_POLYGON)
-                    )
-                )
-
-    private val selectedPolygonLayer: Layer
-        get() = style.getLayer(SELECTED_POLYGON_LAYER_ID)
-            ?: LineLayer(SELECTED_POLYGON_LAYER_ID, SELECTED_POLYGON_SOURCE_ID)
-                .withProperties(
-                    PropertyFactory.lineColor(ColorUtils.withAlpha(eventColor ?: -1)),
-                    PropertyFactory.lineWidth(SELECTED_LINE_WIDTH)
-                ).withFilter(
-                    Expression.eq(
-                        Expression.literal(TYPE),
-                        Expression.literal(TYPE_POLYGON)
-                    )
-                )
+                ).withFilter(isPolygon())
 
     private fun setVisibility(visibility: String) {
         when (featureType) {
             FeatureType.POINT -> {
                 pointLayer.setProperties(PropertyFactory.visibility(visibility))
-                selectedPointLayer.setProperties(PropertyFactory.visibility(visibility))
             }
             FeatureType.POLYGON -> {
                 polygonLayer.setProperties(PropertyFactory.visibility(visibility))
                 polygonBorderLayer.setProperties(PropertyFactory.visibility(visibility))
-                selectedPolygonLayer.setProperties(PropertyFactory.visibility(visibility))
             }
             else -> Unit
         }
+        teiPointLayer.setProperties(PropertyFactory.visibility(visibility))
+        selectedPointLayer.setProperties(PropertyFactory.visibility(visibility))
+
         visible = visibility == Property.VISIBLE
     }
 
@@ -147,59 +117,44 @@ class TeiEventMapLayer(
     }
 
     override fun setSelectedItem(feature: Feature?) {
-        feature?.let {
-            if (featureType == FeatureType.POINT) {
-                selectPoint(feature)
-            } else {
-                selectPolygon(feature)
-            }
-        } ?: deselectCurrentPoint()
+        feature?.let { selectPoint(it) } ?: deselectCurrentPoint()
     }
 
     private fun selectPoint(feature: Feature) {
-        deselectCurrentPoint()
-
         style.getSourceAs<GeoJsonSource>(SELECTED_POINT_SOURCE_ID)?.apply {
-            setGeoJson(
-                FeatureCollection.fromFeatures(
-                    arrayListOf(Feature.fromGeometry(feature.geometry()))
-                )
-            )
+            setGeoJson(feature)
         }
 
-        selectedPointLayer.setProperties(PropertyFactory.visibility(Property.VISIBLE))
-    }
-
-    private fun selectPolygon(feature: Feature) {
-        deselectCurrentPoint()
-
-        style.getSourceAs<GeoJsonSource>(SELECTED_POLYGON_SOURCE_ID)?.apply {
-            setGeoJson(
-                FeatureCollection.fromFeatures(
-                    arrayListOf(Feature.fromGeometry(feature.geometry()))
-                )
-            )
-        }
-
-        selectedPolygonLayer.setProperties(PropertyFactory.visibility(Property.VISIBLE))
+        selectedPointLayer.setProperties(
+            PropertyFactory.iconSize(1.5f),
+            PropertyFactory.visibility(Property.VISIBLE)
+        )
     }
 
     private fun deselectCurrentPoint() {
-        if (featureType == FeatureType.POINT) {
-            selectedPointLayer.setProperties(PropertyFactory.visibility(Property.NONE))
-        } else {
-            selectedPolygonLayer.setProperties(PropertyFactory.visibility(Property.NONE))
-        }
+        selectedPointLayer.setProperties(PropertyFactory.visibility(Property.NONE))
     }
 
     override fun findFeatureWithUid(featureUidProperty: String): Feature? {
         return style.getSourceAs<GeoJsonSource>(sourceId)
             ?.querySourceFeatures(Expression.eq(Expression.get("eventUid"), featureUidProperty))
             ?.firstOrNull()
+            ?.also {
+                setSelectedItem(it)
+            }
     }
 
-    companion object {
-        private const val LINE_WIDTH = 2f
-        private const val SELECTED_LINE_WIDTH = 4f
+    override fun getId(): String {
+        return if (featureType == FeatureType.POINT) {
+            POINT_LAYER_ID
+        } else {
+            POLYGON_LAYER_ID
+        }
+    }
+
+    override fun layerIdsToSearch(): Array<String> {
+        return arrayOf(
+            TEI_POINT_LAYER_ID
+        )
     }
 }

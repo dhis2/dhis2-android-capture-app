@@ -8,16 +8,20 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
+import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import org.dhis2.data.forms.dataentry.DataEntryRepository
-import org.dhis2.data.forms.dataentry.StoreResult
+import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.ValueStore
-import org.dhis2.data.forms.dataentry.ValueStoreImpl
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.form.data.FormRepository
+import org.dhis2.form.model.ActionType
+import org.dhis2.form.model.RowAction
+import org.dhis2.form.model.StoreResult
+import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -41,10 +45,10 @@ import org.mockito.Mockito
 
 class EnrollmentPresenterImplTest {
 
-    private val formRepository: EnrollmentFormRepository = mock()
+    private val enrollmentFormRepository: EnrollmentFormRepository = mock()
     private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program> = mock()
     private val teiRepository: TrackedEntityInstanceObjectRepository = mock()
-    private val dataEntryRepository: DataEntryRepository = mock()
+    private val dataEntryRepository: EnrollmentRepository = mock()
     lateinit var presenter: EnrollmentPresenterImpl
     private val enrollmentView: EnrollmentView = mock()
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
@@ -52,6 +56,10 @@ class EnrollmentPresenterImplTest {
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val valueStore: ValueStore = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
+    private val onRowActionProcessor: FlowableProcessor<RowAction> = PublishProcessor.create()
+    private val sectionProcessor: FlowableProcessor<String> = mock()
+    private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+    private val formRepository: FormRepository = mock()
 
     @Before
     fun setUp() {
@@ -63,30 +71,15 @@ class EnrollmentPresenterImplTest {
             teiRepository,
             programRepository,
             schedulers,
-            formRepository,
+            enrollmentFormRepository,
             valueStore,
             analyticsHelper,
-            "This field is mandatory"
+            "This field is mandatory",
+            onRowActionProcessor,
+            sectionProcessor,
+            matomoAnalyticsController,
+            formRepository
         )
-    }
-
-    @Test
-    fun `Should delete option value if selected in group to hide`() {
-        whenever(formRepository.getOptionsFromGroups(arrayListOf("optionGroupToHide"))) doReturn
-            arrayListOf("option1", "option2")
-        presenter.setOptionGroupToHide("optionGroupToHide", true, "field")
-        verify(valueStore)
-            .deleteOptionValueIfSelectedInGroup(
-                "field",
-                "optionGroupToHide",
-                true
-            )
-    }
-
-    @Test
-    fun `Should delete option value if selected not in group to hide`() {
-        presenter.setOptionGroupToHide("optionGroupToHide", false, "field")
-        verify(valueStore).deleteOptionValueIfSelectedInGroup("field", "optionGroupToHide", false)
     }
 
     @Test
@@ -161,31 +154,22 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Should show dialog if an unique field has a coincidence in a unique attribute`() {
-        val fields = arrayListOf(
-            dummyEditTextViewModel("uid1", "field", value = "value")
-        )
-        mockTrackedEntityAttributes()
-        mockTrackedEntityAttributeValues()
+        val action = RowAction("fieldUid", "123", false, null, null, null, null, ActionType.ON_SAVE)
 
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("uid1").blockingGet().unique()
-        ) doReturn true
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid1")
-                .byValue().eq("value")
-                .blockingGet()
-        ) doReturn listOf(
-            TrackedEntityAttributeValue.builder().value("1").build(),
-            TrackedEntityAttributeValue.builder().value("1").build()
+        whenever(formRepository.processUserAction(action)) doReturn StoreResult(
+            "fieldUid",
+            ValueStoreResult.VALUE_NOT_UNIQUE
         )
         whenever(enrollmentView.context) doReturn mock()
 
-        presenter.setFieldsToShow("testSection", fields)
+        presenter.listenToActions()
+        onRowActionProcessor.onNext(
+            action
+        )
         val checkUnique = presenter.dataIntegrityCheck()
 
         Assert.assertFalse(checkUnique)
-        verify(enrollmentView).showInfoDialog(null, null)
+        verify(enrollmentView, times(2)).showInfoDialog(null, null)
     }
 
     @Test
@@ -271,7 +255,7 @@ class EnrollmentPresenterImplTest {
         whenever(valueStore.save("uid", "fileValue")) doReturn Flowable.just(
             StoreResult(
                 "uid",
-                ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+                ValueStoreResult.VALUE_CHANGED
             )
         )
         presenter.saveFile("uid", "fileValue")
@@ -310,7 +294,7 @@ class EnrollmentPresenterImplTest {
     @Test
     fun `Should show a profile picture image`() {
         val path = "route/image"
-        whenever(formRepository.getProfilePicture()) doReturn path
+        whenever(enrollmentFormRepository.getProfilePicture()) doReturn path
         presenter.onTeiImageHeaderClick()
         verify(enrollmentView).displayTeiPicture(path)
     }
@@ -318,7 +302,7 @@ class EnrollmentPresenterImplTest {
     @Test
     fun `Should not show a profile picture image`() {
         val path = ""
-        whenever(formRepository.getProfilePicture()) doReturn path
+        whenever(enrollmentFormRepository.getProfilePicture()) doReturn path
         presenter.onTeiImageHeaderClick()
         verify(enrollmentView, never()).displayTeiPicture(path)
     }
@@ -351,51 +335,6 @@ class EnrollmentPresenterImplTest {
             .build()
     }
 
-    fun getEmptyAndErrorFields(showMandatory: Boolean, showError: Boolean): List<FieldViewModel> {
-        val list = mutableListOf<FieldViewModel>()
-        if (showMandatory) {
-            list.add(
-                EditTextViewModel.create(
-                    "field1",
-                    "field1",
-                    true,
-                    null,
-                    "hint",
-                    1,
-                    ValueType.TEXT,
-                    null,
-                    true,
-                    null,
-                    null,
-                    ObjectStyle.builder().build(),
-                    null,
-                    null
-                )
-            )
-        }
-        if (showError) {
-            list.add(
-                EditTextViewModel.create(
-                    "field1",
-                    "field2",
-                    false,
-                    null,
-                    "hint",
-                    1,
-                    ValueType.TEXT,
-                    null,
-                    true,
-                    null,
-                    null,
-                    ObjectStyle.builder().build(),
-                    null,
-                    null
-                ).withError("error")
-            )
-        }
-        return list
-    }
-
     private fun dummyEditTextViewModel(
         uid: String,
         label: String,
@@ -415,6 +354,11 @@ class EnrollmentPresenterImplTest {
             null,
             null,
             ObjectStyle.builder().build(),
+            null,
+            "any",
+            false,
+            false,
+            null,
             null,
             null
         )

@@ -23,7 +23,7 @@
     <color name="colorPrimaryDarkOrange">#CF4500</color>
     <color name="colorPrimaryLightOrange">#FFA77B</color>
 
-    <color name="colorGreyDefault">#4d4d4d</color>
+    <color name="colorGreyDefault">#4d4d4d</color>x
     <color name="colorGreyDefaultPressed">#383838</color>
 
     <!--region BACKEND COLOR-->
@@ -410,5 +410,11 @@
     <color name="avatar_sec_color">#B0BEC5</color>
     <!--endregion-->
 
+    <color name="dhis_color">#2C98F0</color>
+
     <color name="unselected_tab_badge_color">#B3FFFFFF</color>
+
+    <color name="openid_login_icon">@color/white</color>
+    <color name="openid_login_text">@color/white</color>
+    <color name="openid_login_bg">?colorPrimary</color>
 </resources>

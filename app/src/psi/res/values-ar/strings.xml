@@ -7,4 +7,19 @@
     <string name="program_type_configuration_error_message">يوجد خطأ في تكوين نوع البرنامج في البرنامج الحالي. يرجى مراجعة البرنامج في الخادم وتنفيذ تكوين المزامنة</string>
     <string name="unexpected_error_message">لقد حدث خطأ غير متوقع. راجع التكوين الخاص بك أو اتصل بالمسؤول</string>
     <string name="feedback_show_only_failed">إظهار فشل فقط</string>
+    <string name="feedback_url">"شاهد الملاحظات الكاملة على:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"حسب المؤشر"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"حسب المنطقة الفنية"</string>
+    <string name="feedback_tab_hnqis_all">"حسب المجال التقني"</string>
+    <string name="feedback_tab_hnqis_critical">"حرج"</string>
+    <string name="feedback_tab_hnqis_non_critical">"غير مهم"</string>
+    <string name="feedback_malformed_error">"**خطأ**: ملاحظات مشوهة لعنصر البيانات %s"</string>
+    <string name="feedback_error">"خطأ"</string>
+    <string name="feedback_warning">"تحذير"</string>
+    <string name="feedback_order_with_spaces">"ردود الفعل النظام مع مسافات في عنصر البيانات %s"</string>
+    <string name="feedback_order_invalid">"ترتيب ردود الفعل غير صالحة في العنصر البيانات %s"</string>
+    <string name="feedback_order_duplicate">"مكررة ردود الفعل النظام في عناصر البيانات %s"</string>
+    <string name="feedback_order_gap">"برنامج مرحلةS% يحتوي ثغرات أجل ردود الفعل"</string>
+    <string name="feedback_share_conducted">"تم إجراء التقييم على"</string>
+    <string name="feedback_share_assessment_type">"نوع التقييم"</string>
 </resources>

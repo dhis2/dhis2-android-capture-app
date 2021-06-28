@@ -7,4 +7,19 @@
     <string name="program_type_configuration_error_message">កំហុស​ដែល​មិន​រំពឹង​ទុក​បាន​កើត​ឡើង​។ ពិនិត្យមើលការកំណត់រចនាសម្ព័ន្ធឡើងវិញឬទំនាក់ទំនងជាមួយអ្នកគ្រប់គ្រងរបស់អ្នក</string>
     <string name="unexpected_error_message">ຂໍ້ຜິດພາດທີ່ບໍ່ຄາດຄິດໄດ້ເກີດຂື້ນ. ກວດສອບການຕັ້ງຄ່າຫລືຕິດຕໍ່ກັບຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</string>
     <string name="feedback_show_only_failed">ສະແດງບໍ່ພຽງແຕ່ລົ້ມເຫລວ</string>
+    <string name="feedback_url">"ເບິ່ງ ຄຳ ຕິຊົມຢ່າງເຕັມທີ່:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"ໂດຍຕົວຊີ້ວັດ"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"ໂດຍພື້ນທີ່ດ້ານເຕັກນິກ"</string>
+    <string name="feedback_tab_hnqis_all">"ທັງ ໝົດ"</string>
+    <string name="feedback_tab_hnqis_critical">"ທີ່ ສຳ ຄັນ"</string>
+    <string name="feedback_tab_hnqis_non_critical">"ບໍ່ ສຳ ຄັນ"</string>
+    <string name="feedback_malformed_error">"**ຂໍ້ຜິດພາດ**: ຂໍ້ຄິດເຫັນທີ່ບໍ່ຖືກຕ້ອງ ສຳ ລັບອົງປະກອບຂໍ້ມູນ %s"</string>
+    <string name="feedback_error">"ບັກ"</string>
+    <string name="feedback_warning">"ຄໍາເຕືອນ"</string>
+    <string name="feedback_order_with_spaces">"ຄໍາສັ່ງຕໍານິຕິຊົມທີ່ມີຊ່ອງຫວ່າງໃນອົງປະກອບຂໍ້ມູນ %s"</string>
+    <string name="feedback_order_invalid">"ຄໍາສັ່ງຕໍານິຕິຊົມບໍ່ຖືກຕ້ອງໃນອົງປະກອບຂໍ້ມູນ %s"</string>
+    <string name="feedback_order_duplicate">"ຊ້ໍາກັນຕໍານິຕິຊົມສັ່ງຊື້ອົງປະກອບຂໍ້ມູນ %s"</string>
+    <string name="feedback_order_gap">"ໂຄງການຂັ້ນຕອນຂອງການ %s ມີຊ່ອງຫວ່າງເພື່ອຕໍານິຕິຊົມ"</string>
+    <string name="feedback_share_conducted">"ການປະເມີນຜົນປະຕິບັດ"</string>
+    <string name="feedback_share_assessment_type">"ປະເພດການປະເມີນຜົນ"</string>
 </resources>

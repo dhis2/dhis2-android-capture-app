@@ -1,10 +1,12 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
 import io.reactivex.Single
+import java.util.Locale
 import org.dhis2.Bindings.applyFilters
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.dhislogic.DhisEventUtils
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.getProgramStageName
+import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
 import org.dhis2.utils.DateUtils
@@ -21,6 +23,7 @@ import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
+import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
@@ -29,7 +32,7 @@ class TeiDataRepositoryImpl(
     private val programUid: String?,
     private val teiUid: String,
     private val enrollmentUid: String?,
-    private val dhisEventUtils: DhisEventUtils
+    private val periodUtils: DhisPeriodUtils
 ) : TeiDataRepository {
 
     override fun getTEIEnrollmentEvents(
@@ -112,6 +115,14 @@ class TeiDataRepositoryImpl(
 
                     val isSelected = programStage.uid() == selectedStage
 
+                    val canAddEventToEnrollment = enrollmentUid?.let {
+                        programStage.access()?.data()?.write() == true &&
+                            d2.eventModule().eventService().blockingCanAddEventToEnrollment(
+                                it,
+                                programStage.uid()
+                            )
+                    } ?: false
+
                     eventViewModels.add(
                         EventViewModel(
                             EventViewModelType.STAGE,
@@ -120,15 +131,12 @@ class TeiDataRepositoryImpl(
                             eventList.size,
                             if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
                             isSelected,
-                            dhisEventUtils.checkAddEventInEnrollment(
-                                enrollmentUid,
-                                programStage,
-                                isSelected
-                            ),
+                            canAddEventToEnrollment,
                             orgUnitName = "",
                             catComboName = "",
                             dataElementValues = emptyList(),
-                            groupedByStage = true
+                            groupedByStage = true,
+                            displayDate = null
                         )
                     )
                     if (selectedStage != null && selectedStage == programStage.uid()) {
@@ -158,7 +166,11 @@ class TeiDataRepositoryImpl(
                                     ),
                                     groupedByStage = true,
                                     showTopShadow = showTopShadow,
-                                    showBottomShadow = showBottomShadow
+                                    showBottomShadow = showBottomShadow,
+                                    displayDate = periodUtils.getPeriodUIString(
+                                        programStage.periodType() ?: PeriodType.Daily,
+                                        event.eventDate() ?: event.dueDate()!!, Locale.getDefault()
+                                    )
                                 )
                             )
                         }
@@ -204,8 +216,12 @@ class TeiDataRepositoryImpl(
                                 .uid(event.organisationUnit()).blockingGet().displayName()
                                 ?: "",
                             catComboName = getCatComboName(event.attributeOptionCombo()),
-                            dataElementValues = getEventValues(event.uid(), editedProgramStage.uid()),
-                            groupedByStage = false
+                            dataElementValues = getEventValues(event.uid(), programStage.uid()),
+                            groupedByStage = false,
+                            displayDate = periodUtils.getPeriodUIString(
+                                programStage.periodType() ?: PeriodType.Daily,
+                                event.eventDate() ?: event.dueDate()!!, Locale.getDefault()
+                            )
                         )
                     )
                 }

@@ -1,6 +1,11 @@
 package org.dhis2.usescases.login
 
 import android.Manifest
+import android.app.Activity
+import android.app.Instrumentation
+import android.content.Intent
+import androidx.test.espresso.intent.Intents.intending
+import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.common.rules.RetryRule
@@ -8,6 +13,9 @@ import org.dhis2.data.prefs.Preference.Companion.PIN
 import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.main.MainActivity
+import org.dhis2.usescases.qrScanner.ScanActivity
+import org.dhis2.utils.Constants.EXTRA_DATA
+import org.hamcrest.CoreMatchers.allOf
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.API_ME_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.API_SYSTEM_INFO_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
@@ -135,11 +143,40 @@ class LoginTest : BaseTest() {
     @Test
     fun shouldGenerateLoginThroughQR() {
         enableIntents()
+        mockOnActivityForResult()
         startLoginActivity()
 
         loginRobot {
             clickQRButton()
             checkQRScanIsOpened()
+            checkURL(MOCK_SERVER_URL)
+        }
+    }
+
+    private fun mockOnActivityForResult() {
+        val intent = Intent().apply {
+            putExtra(EXTRA_DATA, MOCK_SERVER_URL)
+        }
+        val result = Instrumentation.ActivityResult(Activity.RESULT_OK, intent)
+        intending(allOf(IntentMatchers.hasComponent(ScanActivity::class.java.name))).respondWith(
+            result
+        )
+    }
+
+    @Test
+    fun shouldDisplayShareDataDialogAndOpenPrivacyPolicy() {
+        enableIntents()
+        startLoginActivity()
+
+        loginRobot {
+            clearServerField()
+            typeServer(MOCK_SERVER_URL)
+            typeUsername(USERNAME)
+            typePassword(PASSWORD)
+            clickLoginButton()
+            checkShareDataDialogIsDisplayed()
+            clickOnPrivacyPolicy()
+            checkPrivacyViewIsOpened()
         }
     }
 

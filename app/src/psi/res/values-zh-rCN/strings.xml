@@ -7,4 +7,19 @@
     <string name="program_type_configuration_error_message">當前程序中存在程序類型配置錯誤。 請檢查服務器中的程序並執行同步配置</string>
     <string name="unexpected_error_message">發生意外的錯誤。 查看您的配置或與管理員聯繫</string>
     <string name="feedback_show_only_failed">只顯示失敗</string>
+    <string name="feedback_url">"查看完整的反饋意見："</string>
+    <string name="feedback_tab_rdqa_by_indicator">"按指標"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"按技術領域"</string>
+    <string name="feedback_tab_hnqis_all">"所有"</string>
+    <string name="feedback_tab_hnqis_critical">"危急"</string>
+    <string name="feedback_tab_hnqis_non_critical">"不重要"</string>
+    <string name="feedback_malformed_error">"**錯誤**：數據元素的反饋格式錯誤 %s"</string>
+    <string name="feedback_error">"错误"</string>
+    <string name="feedback_warning">"警告"</string>
+    <string name="feedback_order_with_spaces">"为了反馈与数据元素的空间 %s"</string>
+    <string name="feedback_order_invalid">"在数据元素无效反馈顺序 %s"</string>
+    <string name="feedback_order_duplicate">"在数据部分的反馈顺序重复 %s"</string>
+    <string name="feedback_order_gap">"计划阶段％s包含反馈顺序差距"</string>
+    <string name="feedback_share_conducted">"進行評估"</string>
+    <string name="feedback_share_assessment_type">"評估類型"</string>
 </resources>

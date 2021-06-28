@@ -7,6 +7,8 @@ import java.util.Date
 import junit.framework.Assert.assertTrue
 import org.dhis2.Bindings.toRuleAttributeValue
 import org.dhis2.Bindings.toRuleDataValue
+import org.dhis2.Bindings.toRuleEngineObject
+import org.dhis2.data.forms.RuleActionUnsupported
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
@@ -15,6 +17,7 @@ import org.hisp.dhis.android.core.dataelement.DataElementCollectionRepository
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.option.OptionCollectionRepository
+import org.hisp.dhis.android.core.program.ProgramRuleAction
 import org.hisp.dhis.android.core.program.ProgramRuleVariableCollectionRepository
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
@@ -321,6 +324,17 @@ class RuleExtensionsTest {
 
         assertTrue(rules.size == 1)
         assertTrue(rules[0].value() == "optionCode")
+    }
+
+    @Test
+    fun `Should parse program rule action to unsupported rule action`() {
+        val ruleAction = ProgramRuleAction.builder()
+            .uid("uid")
+            .content("")
+            .data("")
+            .build()
+        val ruleEngineAction = ruleAction.toRuleEngineObject()
+        assertTrue(ruleEngineAction is RuleActionUnsupported)
     }
 
     private fun getTrackedEntityDataValues(): List<TrackedEntityDataValue> {

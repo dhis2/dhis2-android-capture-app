@@ -80,16 +80,11 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Observable<List<CategoryOption>> catCombo(String categoryUid) {
-        return d2.categoryModule().categories().withCategoryOptions().uid(categoryUid).get()
-                .map(Category::categoryOptions)
-                .map(list -> {
-                    Iterator<CategoryOption> iterator = list.iterator();
-                    while (iterator.hasNext())
-                        if (!iterator.next().access().data().write())
-                            iterator.remove();
-
-                    return list;
-                }).toObservable();
+        return d2.categoryModule()
+                .categoryOptions()
+                .byCategoryUid(categoryUid)
+                .withOrganisationUnits()
+                .get().toObservable();
     }
 
     @NonNull

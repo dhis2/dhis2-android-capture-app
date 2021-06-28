@@ -7,6 +7,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.work.WorkInfo
 import javax.inject.Inject
+import org.dhis2.App
 import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.drawableFrom
 import org.dhis2.Bindings.userComponent
@@ -30,7 +31,8 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
     lateinit var animations: SyncAnimations
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        userComponent()?.plus(SyncModule(this))?.inject(this) ?: finish()
+        val serverComponent = (applicationContext as App).serverComponent()
+        userComponent()?.plus(SyncModule(this, serverComponent))?.inject(this) ?: finish()
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_synchronization)
         binding.presenter = presenter
@@ -77,7 +79,7 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
             getString(R.string.go_back),
             object : OnDialogClickListener {
                 override fun onPositiveClick() {
-                    share(message!!)
+                    message?.let { share(it) }
                 }
 
                 override fun onNegativeClick() {

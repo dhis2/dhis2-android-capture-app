@@ -39,12 +39,11 @@
 
     </data>
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
+        android:id="@+id/dialFabLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+        app:fab_visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE || isGrouping}"
+        app:fab_extra_bottom_margin="@{16}"
         android:layout_height="match_parent">
 
         <LinearLayout
@@ -84,7 +83,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:listitem="@layout/item_filter" />
+                tools:listitem="@layout/item_header_filter" />
 
         </LinearLayout>
 
@@ -117,21 +116,5 @@
             android:visibility="gone"
             android:textSize="@dimen/primaryTextSize" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <com.dekoservidoni.omfm.OneMoreFabMenu
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE || isGrouping ? View.GONE : View.VISIBLE}"
-            app:close_on_click="true"
-            app:color_main_button="?colorPrimary"
-            app:color_secondary_buttons="?colorPrimaryDark"
-            app:content_options="@menu/schedule_content_options"
-            app:expanded_background_color="@android:color/transparent"
-            app:size_main_button="@integer/omfm_fab_size_normal"
-            app:size_secondary_buttons="@integer/omfm_fab_size_mini" />
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout>
 </layout>

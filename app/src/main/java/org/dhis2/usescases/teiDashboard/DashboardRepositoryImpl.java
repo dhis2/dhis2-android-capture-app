@@ -15,7 +15,6 @@ import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
-import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
@@ -154,7 +153,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         TrackedEntityType teType = d2.trackedEntityModule().trackedEntityTypes().uid(uid).blockingGet();
         return resources.getObjectStyleDrawableResource(
                 teType.style() != null ? teType.style().icon() : null,
-                R.drawable.ic_person
+                R.drawable.ic_navigation_relationships
         );
     }
 
@@ -191,27 +190,23 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<CategoryCombo> catComboForProgram(String programUid) {
-        return Observable.defer(() -> Observable.just(d2.categoryModule().categoryCombos().withCategories()
-                .withCategoryOptionCombos()
-                .uid(d2.programModule().programs().uid(programUid).blockingGet().categoryComboUid()).blockingGet()))
-                .map(categoryCombo -> {
-                    List<Category> fullCategories = new ArrayList<>();
-                    List<CategoryOptionCombo> fullOptionCombos = new ArrayList<>();
-                    for (Category category : categoryCombo.categories()) {
-                        fullCategories.add(
-                                d2.categoryModule().categories().withCategoryOptions().uid(category.uid()).blockingGet());
-                    }
+        return d2.programModule().programs().uid(programUid).get()
+                .map(program -> program.categoryComboUid())
+                .flatMap(catComboUid -> d2.categoryModule().categoryCombos().uid(catComboUid).get())
+                .toObservable();
+    }
 
-                    List<CategoryOptionCombo> catOptionCombos = d2.categoryModule().categoryOptionCombos()
-                            .byCategoryComboUid().eq(categoryCombo.uid()).blockingGet();
-
-                    for (CategoryOptionCombo categoryOptionCombo : catOptionCombos) {
-                        fullOptionCombos.add(d2.categoryModule().categoryOptionCombos().withCategoryOptions()
-                                .uid(categoryOptionCombo.uid()).blockingGet());
-                    }
-                    return categoryCombo.toBuilder().categories(fullCategories).categoryOptionCombos(fullOptionCombos)
-                            .build();
-                });
+    @Override
+    public boolean isStageFromProgram(String stageUid) {
+        List<ProgramStage> programStages = getProgramStages(programUid).blockingFirst();
+        boolean stageIsInProgram = false;
+        for (ProgramStage stage : programStages) {
+            if (stage.uid().equals(stageUid)) {
+                stageIsInProgram = true;
+                break;
+            }
+        }
+        return stageIsInProgram;
     }
 
     @Override

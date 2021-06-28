@@ -7,4 +7,19 @@
     <string name="program_type_configuration_error_message">Det finns ett konfigurationsfel för programtyp i det aktuella programmet. Kontrollera programmet på servern och utför synkroniseringskonfiguration</string>
     <string name="unexpected_error_message">Ett oväntat fel har uppstått. Granska din konfiguration eller kontakta din administratör</string>
     <string name="feedback_show_only_failed">Visningen misslyckades bara</string>
+    <string name="feedback_url">"Se fullständig feedback på:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"Efter indikator"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"Efter tekniskt område"</string>
+    <string name="feedback_tab_hnqis_all">"Allt"</string>
+    <string name="feedback_tab_hnqis_critical">"Kritisk"</string>
+    <string name="feedback_tab_hnqis_non_critical">"Inte kritiskt"</string>
+    <string name="feedback_malformed_error">"**Fel**: Felaktig feedback för dataelementet %s"</string>
+    <string name="feedback_error">"Fel"</string>
+    <string name="feedback_warning">"Varning"</string>
+    <string name="feedback_order_with_spaces">"Återkopplings ordning med utrymmen i dataelementet %s"</string>
+    <string name="feedback_order_invalid">"Ogiltigt återkopplings ordning i dataelementet %s"</string>
+    <string name="feedback_order_duplicate">"Återkopplings ordning två exemplar på dataelementen %s"</string>
+    <string name="feedback_order_gap">"Programsteget %s innehåller återkopplingsorder luckor"</string>
+    <string name="feedback_share_conducted">"Bedömning utförd på"</string>
+    <string name="feedback_share_assessment_type">"Bedömningstyp"</string>
 </resources>

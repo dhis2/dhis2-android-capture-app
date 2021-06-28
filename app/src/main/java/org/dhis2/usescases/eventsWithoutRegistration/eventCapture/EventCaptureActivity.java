@@ -4,53 +4,50 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 
-import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
 
 import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.indicators.EventIndicatorsDialogFragment;
+import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.ColorUtils;
+import org.dhis2.utils.AppMenuHelper;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.ImageUtils;
+import org.dhis2.utils.RuleUtilsProviderResultKt;
+import org.dhis2.utils.RulesUtilsProviderConfigurationError;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog;
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
 
 import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import kotlin.Unit;
 import androidx.fragment.app.FragmentManager;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
@@ -60,9 +57,6 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
-/**
- * QUADRAM. Created by ppajuelo on 19/11/2018.
- */
 public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.View {
 
     private static final int RQ_GO_BACK = 1202;
@@ -76,16 +70,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     private EventMode eventMode;
     public EventCaptureComponent eventCaptureComponent;
 
-    private String programUid;
     private String eventUid;
-
-    public String getProgramUid() {
-        return programUid;
-    }
-
-    public String getEventUid() {
-        return eventUid;
-    }
 
     public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid, @NonNull EventMode eventMode) {
         Bundle bundle = new Bundle();
@@ -97,55 +82,54 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        programUid = getIntent().getStringExtra(Constants.PROGRAM_UID);
         eventUid = getIntent().getStringExtra(Constants.EVENT_UID);
 
         eventCaptureComponent = (ExtensionsKt.app(this)).userComponent().plus(
                 new EventCaptureModule(
-                        this, eventUid, programUid));
+                        this,
+                        eventUid,
+                        getContext()));
+
         eventCaptureComponent.inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture);
         binding.setPresenter(presenter);
         eventMode = (EventMode) getIntent().getSerializableExtra(Constants.EVENT_MODE);
+        setUpViewPagerAdapter();
+        setUpNavigationBar();
+        presenter.initNoteCounter();
+        presenter.init();
+    }
 
-        binding.eventTabLayout.setupWithViewPager(binding.eventViewPager);
-        binding.eventTabLayout.setTabMode(TabLayout.MODE_FIXED);
+    private void setUpViewPagerAdapter() {
+        binding.eventViewPager.setUserInputEnabled(false);
         binding.eventViewPager.setAdapter(new EventCapturePagerAdapter(
-                getSupportFragmentManager(),
-                getContext(),
+                this,
                 getIntent().getStringExtra(PROGRAM_UID),
                 getIntent().getStringExtra(Constants.EVENT_UID)
         ));
+        ViewExtensionsKt.clipWithRoundedCorners(binding.eventViewPager, ExtensionsKt.getDp(16));
+    }
 
-        binding.eventTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getPosition() ==  binding.eventTabLayout.getTabCount() - 1) {
-                    BadgeDrawable badge = tab.getOrCreateBadge();
-                    if (badge.hasNumber() && badge.getNumber() > 0) {
-                        badge.setBackgroundColor(Color.WHITE);
-                    }
-                }
+    private void setUpNavigationBar() {
+        binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.navigation_details:
+                    goToInitialScreen();
+                    break;
+                case R.id.navigation_data_entry:
+                    binding.eventViewPager.setCurrentItem(0);
+                    break;
+                case R.id.navigation_analytics:
+                    binding.eventViewPager.setCurrentItem(1);
+                    break;
+                case R.id.navigation_notes:
+                default:
+                    binding.eventViewPager.setCurrentItem(2);
+                    break;
             }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                if (tab.getPosition() == binding.eventTabLayout.getTabCount() - 1) {
-                    BadgeDrawable badge = tab.getOrCreateBadge();
-                    if (badge.hasNumber() && badge.getNumber() > 0) {
-                        badge.setBackgroundColor(ContextCompat.getColor(EventCaptureActivity.this, R.color.unselected_tab_badge_color));
-                    }
-                }
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                /**/
-            }
+            return true;
         });
-        presenter.initNoteCounter();
-        presenter.init();
     }
 
     @Override
@@ -164,15 +148,23 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void goBack() {
         hideKeyboard();
-        attemptFinish();
+        finishEditMode();
     }
 
     @Override
     public void onBackPressed() {
         if (!ExtensionsKt.isKeyboardOpened(this)) {
-            attemptFinish();
+            finishEditMode();
         } else {
             hideKeyboard();
+        }
+    }
+
+    private void finishEditMode() {
+        if (binding.navigationBar.isHidden()) {
+            showNavigationBar();
+        } else {
+            attemptFinish();
         }
     }
 
@@ -209,38 +201,42 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             case Constants.GALLERY_REQUEST:
                 if (resultCode == RESULT_OK) {
                     Uri imageUri = data.getData();
-                    presenter.saveImage(uuid, FileResourcesUtil.getFileFromGallery(this, imageUri).getPath());
-                    presenter.nextCalculation(true);
+                    try {
+                        presenter.saveImage(uuid, FileResourcesUtil.getFileFromGallery(this, imageUri).getPath());
+                        presenter.nextCalculation(true);
+                    } catch(Exception e) {
+                        crashReportController.logException(e);
+                        Toast.makeText(this, getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                    }
                 }
                 break;
             case Constants.CAMERA_REQUEST:
                 if (resultCode == RESULT_OK) {
                     File imageFile = new File(FileResourceDirectoryHelper.getFileResourceDirectory(this), "tempFile.png");
                     File file = new ImageUtils().rotateImage(this, imageFile);
-                    if (file.exists()) {
-                        presenter.saveImage(uuid, file.getPath());
-                    } else
-                        presenter.saveImage(uuid, null);
-                    presenter.nextCalculation(true);
-                }
-                break;
-            case Constants.RQ_QR_SCANNER:
-                if (resultCode == RESULT_OK) {
-                    scanTextView.updateScanResult(data.getStringExtra(Constants.EXTRA_DATA));
+                    try {
+                        presenter.saveImage(uuid, file.exists() ? file.getPath() : null);
+                        presenter.nextCalculation(true);
+                    } catch (Exception e) {
+                        crashReportController.logException(e);
+                        Toast.makeText(this, getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                    }
                 }
                 break;
         }
     }
 
     @Override
-    public void updatePercentage(float primaryValue, float secondaryValue) {
+    public void updatePercentage(float primaryValue) {
         binding.completion.setCompletionPercentage(primaryValue);
-        binding.completion.setSecondaryPercentage(secondaryValue);
+        if (!presenter.getCompletionPercentageVisibility()) {
+            binding.completion.setVisibility(View.GONE);
+        }
     }
 
     @Override
-    public void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldViewModel> emptyMandatoryFields) {
-        if (binding.eventTabLayout.getSelectedTabPosition() == 0) {
+    public void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldUiModel> emptyMandatoryFields) {
+        if (binding.navigationBar.getSelectedItemId() == R.id.navigation_data_entry) {
             FormBottomDialog.getInstance()
                     .setAccessDataWrite(presenter.canWrite())
                     .setIsEnrollmentOpen(presenter.isEnrollmentOpen())
@@ -434,73 +430,28 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showMoreOptions(View view) {
-        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
-        try {
-            Field[] fields = popupMenu.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                if ("mPopup".equals(field.getName())) {
-                    field.setAccessible(true);
-                    Object menuPopupHelper = field.get(popupMenu);
-                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
-                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
-                    setForceIcons.invoke(menuPopupHelper, true);
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-        popupMenu.getMenuInflater().inflate(R.menu.event_menu, popupMenu.getMenu());
+        new AppMenuHelper.Builder().menu(this, R.menu.event_menu).anchor(view)
+                .onMenuInflated(popupMenu -> {
 
-        if(binding.indicators.getVisibility() == View.GONE){
-            popupMenu.getMenu().removeItem(R.id.menu_indicators);
-        }
-
-        popupMenu.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.showHelp:
-                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
-                    showTutorial(false);
-                    break;
-                case R.id.menu_delete:
-                    confirmDeleteEvent();
-                    break;
-                case R.id.menu_overview:
-                    goToInitialScreen();
-                    break;
-                case R.id.menu_indicators:
-                    showIndicators();
-                    break;
-                default:
-                    break;
-            }
-            return false;
-        });
-        popupMenu.getMenu().getItem(1).setVisible(presenter.canWrite() && presenter.isEnrollmentOpen());
-        popupMenu.show();
-    }
-
-    public void showIndicators(View view) {
-        showIndicators();
-    }
-
-    public void showIndicators() {
-        FragmentManager fm = getSupportFragmentManager();
-
-        EventIndicatorsDialogFragment eventIndicatorsDialogFragment =
-                EventIndicatorsDialogFragment.Companion.create();
-
-        eventIndicatorsDialogFragment.show(fm);
-    }
-
-    @Override
-    public void showIndicatorsIcon() {
-        binding.indicators.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideIndicatorsIcon() {
-        binding.indicators.setVisibility(View.GONE);
+                    popupMenu.getMenu().getItem(0).setVisible(presenter.canWrite() && presenter.isEnrollmentOpen());
+                    return Unit.INSTANCE;
+                })
+                .onMenuItemClicked(itemId -> {
+                    switch (itemId) {
+                        case R.id.showHelp:
+                            analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
+                            showTutorial(false);
+                            break;
+                        case R.id.menu_delete:
+                            confirmDeleteEvent();
+                            break;
+                        default:
+                            break;
+                    }
+                    return false;
+                })
+                .build()
+                .show();
     }
 
     @Override
@@ -553,16 +504,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void updateNoteBadge(int numberOfNotes) {
-        BadgeDrawable badge = binding.eventTabLayout.getTabAt(binding.eventTabLayout.getTabCount() - 1).getOrCreateBadge();
-        badge.setVisible(numberOfNotes > 0);
-        if (NOTES_TAB_POSITION == binding.eventViewPager.getCurrentItem()) {
-            badge.setBackgroundColor(Color.WHITE);
-        } else {
-            badge.setBackgroundColor(ContextCompat.getColor(this, R.color.unselected_tab_badge_color));
-        }
-        badge.setBadgeTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
-        badge.setNumber(numberOfNotes);
-        badge.setMaxCharacterCount(3);
+        binding.navigationBar.updateBadge(R.id.navigation_notes, numberOfNotes);
     }
 
     @Override
@@ -577,7 +519,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void showProgress(){
+    public void showProgress() {
         runOnUiThread(() -> {
             binding.toolbarProgress.setVisibility(View.VISIBLE);
             binding.toolbarProgress.show();
@@ -586,11 +528,35 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void hideProgress(){
+    public void hideProgress() {
         runOnUiThread(() -> {
             binding.toolbarProgress.hide();
             binding.toolbarProgress.setVisibility(View.GONE);
         });
 
+    }
+
+    @Override
+    public void showNavigationBar() {
+        binding.navigationBar.show();
+    }
+
+    @Override
+    public void hideNavigationBar() {
+        binding.navigationBar.hide();
+    }
+
+    @Override
+    public void displayConfigurationErrors(List<RulesUtilsProviderConfigurationError> configurationError) {
+        new MaterialAlertDialogBuilder(this,R.style.DhisMaterialDialog)
+                .setTitle(R.string.warning_on_complete_title)
+                .setMessage(RuleUtilsProviderResultKt.toMessage(configurationError,this))
+                .setPositiveButton(R.string.action_close, (dialogInterface, i) -> {
+                })
+                .setNegativeButton(R.string.action_do_not_show_again, (dialogInterface, i) -> {
+                    presenter.disableConfErrorMessage();
+                })
+                .setCancelable(false)
+                .show();
     }
 }

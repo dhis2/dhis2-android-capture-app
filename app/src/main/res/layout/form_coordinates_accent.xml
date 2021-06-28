@@ -8,12 +8,8 @@
         <import type="android.view.View" />
 
         <variable
-            name="label"
-            type="java.lang.String" />
-
-        <variable
-            name="description"
-            type="java.lang.String" />
+            name="item"
+            type="org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,11 +24,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginBottom="5dp"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@drawable/sierra_leone"
             tools:visibility="visible" />
 
@@ -41,22 +37,25 @@
             style="@style/FieldLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{label}"
+            android:text="@{item.getFormattedLabel()}"
             android:textColor="?colorAccent"
+            app:field_edition_alpha="@{item.editable()}"
             app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/renderImage"
             tools:text="Form Name" />
 
         <ImageView
             android:id="@+id/descriptionLabel"
+            style="@style/ActionIconUnwrap"
             android:layout_width="12dp"
             android:layout_height="0dp"
             android:layout_marginEnd="16dp"
-            android:visibility="@{(description!=null)?View.VISIBLE : View.GONE}"
+            android:onClick="@{v -> item.onDescriptionClick()}"
+            android:visibility="@{item.description()!=null?View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@+id/label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/label"
@@ -67,10 +66,10 @@
         <LinearLayout
             android:id="@+id/fieldLayout"
             android:layout_width="match_parent"
-            app:layout_constraintTop_toBottomOf="@id/label"
-            android:layout_marginHorizontal="12dp"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical">
+            android:layout_marginHorizontal="12dp"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@id/label">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/polygonInputLayuout"
@@ -80,16 +79,19 @@
                 android:hint="@string/polygon"
                 android:textColorHint="@drawable/edit_text_hint_accent"
                 android:theme="@style/loginInputTextAccent"
-                android:visibility="gone">
+                android:visibility="@{item.isPoint()? View.GONE : View.VISIBLE}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/polygonEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:focusable="false"
                     android:imeOptions="actionNext"
-                    android:textSize="@dimen/form_edit_text_size"
+                    android:longClickable="false"
                     android:textColor="?colorAccent"
-                    />
+                    android:textSize="@dimen/form_edit_text_size"
+                    app:geometry_polygon_value="@{item.currentGeometry()}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -100,17 +102,21 @@
                 android:layout_weight="1"
                 android:hint="@string/latitude"
                 android:textColorHint="@drawable/edit_text_hint_accent"
-                android:theme="@style/loginInputTextAccent">
+                android:theme="@style/loginInputTextAccent"
+                android:visibility="@{item.isPoint() ? View.VISIBLE : View.GONE}"
+                app:field_edition_alpha="@{item.editable()}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/latitude"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:enabled="@{item.editable()}"
                     android:imeOptions="actionNext"
                     android:inputType="numberDecimal|numberSigned"
-                    android:textSize="@dimen/form_edit_text_size"
                     android:textColor="?colorAccent"
-                    />
+                    android:textSize="@dimen/form_edit_text_size"
+                    app:geometry_latitude_value="@{item.currentGeometry()}"
+                    app:input_text_color="@{item.backgroundTransparent}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -121,17 +127,21 @@
                 android:layout_weight="1"
                 android:hint="@string/longitude"
                 android:textColorHint="@drawable/edit_text_hint_accent"
-                android:theme="@style/loginInputTextAccent">
+                android:theme="@style/loginInputTextAccent"
+                android:visibility="@{item.isPoint() ? View.VISIBLE : View.GONE}"
+                app:field_edition_alpha="@{item.editable()}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/longitude"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:enabled="@{item.editable()}"
                     android:imeOptions="actionDone"
                     android:inputType="numberDecimal|numberSigned"
-                    android:textSize="@dimen/form_edit_text_size"
                     android:textColor="?colorAccent"
-                    />
+                    android:textSize="@dimen/form_edit_text_size"
+                    app:geometry_longitude_value="@{item.currentGeometry()}"
+                    app:input_text_color="@{item.backgroundTransparent}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -140,9 +150,12 @@
                 style="@style/ActionIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:enabled="@{item.editable()}"
                 android:padding="8dp"
-                app:srcCompat="@drawable/ic_my_location"
                 android:tint="?colorAccent"
+                android:visibility="@{item.isPoint() ? View.VISIBLE : View.GONE}"
+                app:field_edition_alpha="@{item.editable()}"
+                app:srcCompat="@drawable/ic_my_location"
                 tools:ignore="ContentDescription" />
 
             <ImageButton
@@ -150,8 +163,10 @@
                 style="@style/ActionIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:enabled="@{item.editable()}"
                 android:padding="8dp"
                 android:tint="?colorAccent"
+                app:field_edition_alpha="@{item.editable()}"
                 app:srcCompat="@drawable/ic_map"
                 tools:ignore="ContentDescription" />
 
@@ -160,7 +175,11 @@
                 style="@style/ActionIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:enabled="@{item.editable()}"
+                android:onClick="@{()->item.onClearValueClick()}"
                 android:padding="8dp"
+                android:visibility="@{item.allowClearValue()? View.VISIBLE : View.GONE}"
+                app:field_edition_alpha="@{item.editable()}"
                 app:srcCompat="@drawable/ic_clear"
                 tools:ignore="ContentDescription" />
         </LinearLayout>
@@ -169,12 +188,14 @@
             android:id="@+id/errorMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
             android:padding="4dp"
             android:textSize="@dimen/textSize_12"
             android:visibility="gone"
-            android:layout_marginStart="12dp"
+            app:error_message="@{item.observeErrorMessage()}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/fieldLayout"
+            app:warning_message="@{item.observeWarningMessage()}"
             tools:text="This is a error warning"
             tools:textAppearance="@style/error_appearance"
             tools:visibility="visible" />

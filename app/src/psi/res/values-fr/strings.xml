@@ -7,4 +7,19 @@
     <string name="program_type_configuration_error_message">Il y a une erreur de configuration du type de programme dans le programme actuel. Veuillez examiner le programme sur le serveur et exécuter la configuration de synchronisation</string>
     <string name="unexpected_error_message">"Une erreur imprévue s'est produite. Vérifiez votre configuration ou contactez votre administrateur"</string>
     <string name="feedback_show_only_failed">Afficher seulement échoué</string>
+    <string name="feedback_url">"Voir les commentaires complets sur:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"Par indicateur"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"Par domaine technique"</string>
+    <string name="feedback_tab_hnqis_all">"Toute"</string>
+    <string name="feedback_tab_hnqis_critical">"Critique"</string>
+    <string name="feedback_tab_hnqis_non_critical">"Pas critique"</string>
+    <string name="feedback_malformed_error">"**Erreur**: json de retour incorrect pour l'élément de données %s"</string>
+    <string name="feedback_error">"Erreur"</string>
+    <string name="feedback_warning">"Attention"</string>
+    <string name="feedback_order_with_spaces">"Ordre du retour d'information avec des espaces dans l'élément de données %s"</string>
+    <string name="feedback_order_invalid">"Ordre du retour d'information non valide dans l'élément de données %s"</string>
+    <string name="feedback_order_duplicate">"Doublon dans l'ordre du retour d'information pour les éléments de données %s"</string>
+    <string name="feedback_order_gap">"Étape du programme %s contient des trous dans l'ordre du retour d'information"</string>
+    <string name="feedback_share_conducted">"Évaluation effectuée le"</string>
+    <string name="feedback_share_assessment_type">"Type d'évaluation"</string>
 </resources>
