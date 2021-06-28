@@ -2,8 +2,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -17,7 +15,6 @@ import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
 
@@ -26,15 +23,16 @@ import com.jakewharton.rxbinding2.view.RxView;
 import org.dhis2.App;
 import org.dhis2.Bindings.DoubleExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.customdialogs.CalendarPicker;
+import org.dhis2.commons.customdialogs.OnDatePickerListener;
+import org.dhis2.commons.prefs.Preference;
+import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.location.LocationProvider;
-import org.dhis2.commons.prefs.Preference;
-import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
-import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.form.data.GeometryController;
 import org.dhis2.form.data.GeometryParserImpl;
 import org.dhis2.form.model.FieldUiModel;
@@ -44,7 +42,6 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
@@ -76,7 +73,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -627,7 +623,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void showCalendar(DatePickerDialog.OnDateSetListener listener) {
-        Integer scheduleInterval = null;
+        int scheduleInterval = 0;
         Date minDate = null;
         Date maxDate = null;
         if (eventCreationType == EventCreationType.SCHEDULE) {
@@ -647,7 +643,26 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 break;
         }
 
-        DatePickerUtils.getDatePickerDialog(
+        CalendarPicker dialog = new CalendarPicker(getContext());
+        dialog.setInitialDate(selectedDate);
+        dialog.setMinDate(minDate);
+        dialog.setMaxDate(maxDate);
+        dialog.setScheduleInterval(scheduleInterval);
+        dialog.setListener(
+                new OnDatePickerListener() {
+                    @Override
+                    public void onNegativeClick() { }
+
+                    @Override
+                    public void onPositiveClick(DatePicker datePicker) {
+                        onDateSet(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                    }
+                }
+        );
+        dialog.show();
+
+
+        /*DatePickerUtils.getDatePickerDialog(
                 getContext(),
                 null,
                 selectedDate,
@@ -663,7 +678,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         onDateSet(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
                     }
                 }
-        ).show();
+        ).show();*/
     }
     
     @Override

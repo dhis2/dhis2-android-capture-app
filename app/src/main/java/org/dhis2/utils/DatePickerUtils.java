@@ -19,12 +19,17 @@ import org.dhis2.databinding.WidgetDatepickerBinding;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * @deprecated  replaced by {@link #CalendarPicker() from the commons module}
+ */
+@Deprecated
 public class DatePickerUtils {
 
     static PreferenceProvider preferences;
 
     private static boolean showDatePicker;
 
+    @Deprecated
     public static Dialog getDatePickerDialog(@NonNull Context context,
                                              @NonNull OnDatePickerClickListener buttonListener) {
 
@@ -33,6 +38,7 @@ public class DatePickerUtils {
         return buildDialog(context, c, null, null, null, true, false, buttonListener);
     }
 
+    @Deprecated
     public static Dialog getDatePickerDialog(@NonNull Context context,
                                              @Nullable String title,
                                              @Nullable Date currentDate,
@@ -47,6 +53,7 @@ public class DatePickerUtils {
         return buildDialog(context, c, title, null, null, allowFutureDates, false, buttonListener);
     }
 
+    @Deprecated
     public static Dialog getDatePickerDialog(@NonNull Context context,
                                              @Nullable String title,
                                              @Nullable Date currentDate,
@@ -66,6 +73,7 @@ public class DatePickerUtils {
         return buildDialog(context, c, title, minDate, maxDate, true, false, buttonListener);
     }
 
+    @Deprecated
     public static Dialog getDatePickerDialog(@NonNull Context context,
                                              @Nullable String title,
                                              @Nullable Date currentDate,
@@ -83,6 +91,7 @@ public class DatePickerUtils {
         return buildDialog(context, c, title, minDate, maxDate, allowFutureDates, false, buttonListener);
     }
 
+    @Deprecated
     public static Dialog getDatePickerDialog(@NonNull Context context,
                                              @Nullable String title,
                                              @Nullable Date currentDate,
@@ -187,6 +196,7 @@ public class DatePickerUtils {
     }
 
 
+    @Deprecated
     public interface OnDatePickerClickListener {
         void onNegativeClick();
 
