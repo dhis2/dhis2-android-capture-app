@@ -396,17 +396,20 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
         } else {
             String errorMessage;
+            int textColor;
             if (dataSettings.getSyncResult() != null &&
                     dataSettings.getSyncResult().equals(SyncResult.INCOMPLETE)) {
                 errorMessage = getString(R.string.sync_incomplete_error_text);
+                textColor = ContextCompat.getColor(context, R.color.text_black_4d4d4d);
             } else {
                 errorMessage = getString(R.string.sync_error_text);
+                textColor = ContextCompat.getColor(context, R.color.red_060);
             }
             String dataText = dataSyncSetting()
                     .concat("\n")
                     .concat(errorMessage);
             binding.syncDataLayout.message.setText(dataText);
-            binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.red_060));
+            binding.syncDataLayout.message.setTextColor(textColor);
         }
 
         if (dataSettings.getDataHasErrors()) {
