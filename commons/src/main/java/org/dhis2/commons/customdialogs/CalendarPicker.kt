@@ -23,7 +23,7 @@ class CalendarPicker(
     @Inject
     lateinit var presenter: CalendarPickerPresenter
 
-    private lateinit var listener: OnDatePickerListener
+    private var listener: OnDatePickerListener? = null
 
     private val binding: CalendarPickerViewBinding =
         CalendarPickerViewBinding.inflate(LayoutInflater.from(context))
@@ -44,7 +44,7 @@ class CalendarPicker(
             .provideCalendarPickerComponent()?.inject(this)
     }
 
-    fun setInitialDate(date: Date) {
+    fun setInitialDate(date: Date?) {
         initialDate = date
     }
 
@@ -94,12 +94,12 @@ class CalendarPicker(
         }
 
         binding.clearBtn.setOnClickListener {
-            listener.onNegativeClick()
+            listener?.onNegativeClick()
             dialog.dismiss()
         }
 
         binding.acceptBtn.setOnClickListener {
-            listener.onPositiveClick(
+            listener?.onPositiveClick(
                 if (datePicker.visibility == View.VISIBLE)
                     datePicker
                 else

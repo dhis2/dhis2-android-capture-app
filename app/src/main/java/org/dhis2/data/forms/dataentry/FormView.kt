@@ -24,6 +24,8 @@ import com.google.android.material.textfield.TextInputEditText
 import java.util.Calendar
 import org.dhis2.Bindings.truncate
 import org.dhis2.R
+import org.dhis2.commons.customdialogs.CalendarPicker
+import org.dhis2.commons.customdialogs.OnDatePickerListener
 import org.dhis2.data.forms.dataentry.fields.age.AgeDialogDelegate
 import org.dhis2.data.forms.dataentry.fields.age.negativeOrZero
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
@@ -48,8 +50,6 @@ import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.LOCATION_T
 import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.create
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
 import org.dhis2.utils.Constants
-import org.dhis2.utils.DatePickerUtils
-import org.dhis2.utils.DatePickerUtils.OnDatePickerClickListener
 import org.dhis2.utils.customviews.CustomDialog
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -296,12 +296,13 @@ class FormView private constructor(
 
     private fun showCustomAgeCalendar(intent: RecyclerViewUiEvents.OpenCustomAgeCalendar) {
         val date = Calendar.getInstance().time
-        DatePickerUtils.getDatePickerDialog(
-            requireContext(),
-            intent.label,
-            date,
-            true,
-            object : OnDatePickerClickListener {
+
+        val dialog = CalendarPicker(requireContext())
+        dialog.apply {
+            setTitle(intent.label)
+            setInitialDate(date)
+            isFutureDatesAllowed(true)
+            setListener(object : OnDatePickerListener {
                 override fun onNegativeClick() {
                     val clearIntent = FormIntent.ClearDateFromAgeCalendar(intent.uid)
                     intentHandler(clearIntent)
@@ -316,8 +317,9 @@ class FormView private constructor(
                     )
                     intentHandler(dateIntent)
                 }
-            }
-        ).show()
+            })
+        }
+        dialog.show()
     }
 
     private fun showYearMonthDayAgeCalendar(

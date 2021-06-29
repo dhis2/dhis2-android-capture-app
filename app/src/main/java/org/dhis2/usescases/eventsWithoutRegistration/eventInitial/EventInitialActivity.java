@@ -660,25 +660,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 }
         );
         dialog.show();
-
-
-        /*DatePickerUtils.getDatePickerDialog(
-                getContext(),
-                null,
-                selectedDate,
-                minDate,
-                maxDate,
-                scheduleInterval,
-                new DatePickerUtils.OnDatePickerClickListener () {
-                    @Override
-                    public void onNegativeClick() { }
-
-                    @Override
-                    public void onPositiveClick(DatePicker datePicker) {
-                        onDateSet(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-                    }
-                }
-        ).show();*/
     }
     
     @Override

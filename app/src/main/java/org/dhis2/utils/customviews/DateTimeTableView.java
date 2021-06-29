@@ -13,11 +13,13 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 
 import org.dhis2.R;
+import org.dhis2.commons.customdialogs.CalendarPicker;
+import org.dhis2.commons.customdialogs.OnDatePickerListener;
 import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
-import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.ParseException;
 import java.util.Calendar;
@@ -25,9 +27,6 @@ import java.util.Date;
 
 import timber.log.Timber;
 
-/**
- * QUADRAM. Created by frodriguez on 1/15/2018.
- */
 
 public class DateTimeTableView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
 
@@ -38,7 +37,6 @@ public class DateTimeTableView extends FieldLayout implements View.OnClickListen
     private OnDateSelected listener;
     private boolean allowFutureDates;
     private Date date;
-    DatePickerDialog dateDialog;
 
     public DateTimeTableView(Context context) {
         super(context);
@@ -138,23 +136,26 @@ public class DateTimeTableView extends FieldLayout implements View.OnClickListen
     }
 
     private void showCustomCalendar(View view) {
+        CalendarPicker dialog = new CalendarPicker(view.getContext());
+        dialog.setTitle(label);
+        dialog.setInitialDate(date);
+        dialog.isFutureDatesAllowed(allowFutureDates);
+        dialog.setListener(new OnDatePickerListener() {
+            @Override
+            public void onNegativeClick() {
+                textView.setText(null);
+                listener.onDateSelected(null);
+            }
 
-        DatePickerUtils.getDatePickerDialog(getContext(), label, date, allowFutureDates,
-                new DatePickerUtils.OnDatePickerClickListener() {
-                    @Override
-                    public void onNegativeClick() {
-                        textView.setText(null);
-                        listener.onDateSelected(null);
-                    }
-
-                    @Override
-                    public void onPositiveClick(DatePicker datePicker) {
-                        selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
-                        selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
-                        selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-                        showTimePicker(view);
-                    }
-                }).show();
+            @Override
+            public void onPositiveClick(@NotNull DatePicker datePicker) {
+                selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
+                selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
+                selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
+                showTimePicker(view);
+            }
+        });
+        dialog.show();
     }
 
     private void showTimePicker(View view) {

@@ -38,9 +38,6 @@ import timber.log.Timber;
 
 import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
 
-/**
- * QUADRAM. Created by frodriguez on 1/15/2018.
- */
 
 public class TimeView extends FieldLayout implements View.OnClickListener {
 

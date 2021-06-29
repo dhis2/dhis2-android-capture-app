@@ -14,6 +14,8 @@ import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.R;
+import org.dhis2.commons.customdialogs.CalendarPicker;
+import org.dhis2.commons.customdialogs.OnDatePickerListener;
 import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.commons.prefs.Preference;
@@ -37,7 +39,6 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModelExtensionsKt
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelKt;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.ObjectStyleUtils;
@@ -58,6 +59,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -669,33 +671,31 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             maxDate = selectedOrgUnit.closedDate();
         }
 
-        DatePickerUtils.getDatePickerDialog(
-                view.getContext(),
-                selectedProgram.enrollmentDateLabel(),
-                null,
-                minDate,
-                maxDate,
-                true,
-                new DatePickerUtils.OnDatePickerClickListener() {
-                    @Override
-                    public void onNegativeClick() { }
+        CalendarPicker dialog = new CalendarPicker(view.getContext());
+        dialog.setTitle(selectedProgram.enrollmentDateLabel());
+        dialog.setMinDate(minDate);
+        dialog.setMaxDate(maxDate);
+        dialog.isFutureDatesAllowed(true);
+        dialog.setListener(new OnDatePickerListener() {
+            @Override
+            public void onNegativeClick() { }
 
-                    @Override
-                    public void onPositiveClick(DatePicker datePicker) {
-                        Calendar selectedCalendar = Calendar.getInstance();
-                        selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
-                        selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
-                        selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-                        selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
-                        selectedCalendar.set(Calendar.MINUTE, 0);
-                        selectedCalendar.set(Calendar.SECOND, 0);
-                        selectedCalendar.set(Calendar.MILLISECOND, 0);
-                        selectedEnrollmentDate = selectedCalendar.getTime();
+            @Override
+            public void onPositiveClick(@NotNull DatePicker datePicker) {
+                Calendar selectedCalendar = Calendar.getInstance();
+                selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
+                selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
+                selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
+                selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
+                selectedCalendar.set(Calendar.MINUTE, 0);
+                selectedCalendar.set(Calendar.SECOND, 0);
+                selectedCalendar.set(Calendar.MILLISECOND, 0);
+                selectedEnrollmentDate = selectedCalendar.getTime();
 
-                        enrollInOrgUnit(selectedOrgUnit.uid(), programUid, uid, selectedEnrollmentDate);
-                    }
-                }
-        ).show();
+                enrollInOrgUnit(selectedOrgUnit.uid(), programUid, uid, selectedEnrollmentDate);
+            }
+        });
+        dialog.show();
     }
 
     private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid, Date enrollmentDate) {
