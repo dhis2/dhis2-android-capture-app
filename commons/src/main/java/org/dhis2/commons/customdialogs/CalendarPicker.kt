@@ -9,7 +9,6 @@ import android.view.View
 import android.widget.DatePicker
 import android.widget.LinearLayout
 import androidx.databinding.BindingAdapter
-import org.dhis2.commons.customdialogs.di.CalendarPickerComponent
 import org.dhis2.commons.customdialogs.di.CalendarPickerComponentProvider
 import org.dhis2.commons.databinding.CalendarPickerViewBinding
 import java.util.Calendar
