@@ -33,7 +33,7 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
 
     private val animations = DhisBottomNavigationBarAnimations(this)
     private var hidden = false
-    private val currentItemIndicator: View by lazy { initCurrentItemIndicator() }
+    private var currentItemIndicator: View
 
     private var currentItemIndicatorColor: Int
     private val itemIndicatorSize: Float
@@ -42,6 +42,7 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
     private var initialPage: Int
 
     init {
+        currentItemIndicator = initCurrentItemIndicator()
         labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
         this.clipWithRoundedCorners()
         context.obtainStyledAttributes(attrs, R.styleable.DhisBottomNavigationBar).apply {
