@@ -46,7 +46,7 @@ interface SyncPresenter {
 
     boolean checkSyncEventStatus(String uid);
 
-    boolean checkSyncTEIStatus(String uid);
+    SyncResult checkSyncTEIStatus(String uid);
 
     boolean checkSyncDataValueStatus(String orgUnit, String attributeOptionCombo, String period);
 

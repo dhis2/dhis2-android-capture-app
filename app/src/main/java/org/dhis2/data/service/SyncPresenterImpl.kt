@@ -235,22 +235,32 @@ class SyncPresenterImpl(
     override fun blockSyncGranularTei(teiUid: String): ListenableWorker.Result {
         Completable.fromObservable(syncGranularTEI(teiUid))
             .blockingAwait()
-        if (!checkSyncTEIStatus(teiUid)) {
-            val trackerImportConflicts = messageTrackerImportConflict(teiUid)
-            val mergeDateConflicts = ArrayList<String>()
-            trackerImportConflicts?.forEach {
-                val calendar = Calendar.getInstance()
-                calendar.timeInMillis = it.created()?.time ?: 0
-                val date = DateUtils.databaseDateFormat().format(calendar.time)
-                mergeDateConflicts.add(date + "/" + it.displayDescription())
+        when (checkSyncTEIStatus(teiUid)) {
+            SyncResult.SYNC -> {
+                return ListenableWorker.Result.success()
             }
+            SyncResult.ERROR -> {
+                val trackerImportConflicts = messageTrackerImportConflict(teiUid)
+                val mergeDateConflicts = ArrayList<String>()
+                trackerImportConflicts?.forEach {
+                    val calendar = Calendar.getInstance()
+                    calendar.timeInMillis = it.created()?.time ?: 0
+                    val date = DateUtils.databaseDateFormat().format(calendar.time)
+                    mergeDateConflicts.add(date + "/" + it.displayDescription())
+                }
 
-            val data = Data.Builder()
-                .putStringArray("conflict", mergeDateConflicts.toTypedArray())
-                .build()
-            return ListenableWorker.Result.failure(data)
+                val data = Data.Builder()
+                    .putStringArray("conflict", mergeDateConflicts.toTypedArray())
+                    .build()
+                return ListenableWorker.Result.failure(data)
+            }
+            SyncResult.INCOMPLETE -> {
+                val data = Data.Builder()
+                    .putStringArray("incomplete", arrayOf("INCOMPLETE"))
+                    .build()
+                return ListenableWorker.Result.failure(data)
+            }
         }
-        return ListenableWorker.Result.success()
     }
 
     override fun blockSyncGranularEvent(eventUid: String): ListenableWorker.Result {
@@ -366,11 +376,26 @@ class SyncPresenterImpl(
             .blockingGet().isEmpty()
     }
 
-    override fun checkSyncTEIStatus(uid: String): Boolean {
-        return d2.trackedEntityModule().trackedEntityInstances()
+    override fun checkSyncTEIStatus(uid: String): SyncResult {
+        val teiOk = d2.trackedEntityModule().trackedEntityInstances()
             .byUid().eq(uid)
             .byState().notIn(State.SYNCED, State.RELATIONSHIP)
             .blockingGet().isEmpty()
+
+        if (teiOk) {
+            return SyncResult.SYNC
+        }
+
+        val anyTeiToPostOrToUpdate = d2.trackedEntityModule().trackedEntityInstances()
+            .byUid().eq(uid)
+            .byState().`in`(State.TO_POST, State.TO_UPDATE)
+            .blockingGet().isNotEmpty()
+
+        if (anyTeiToPostOrToUpdate) {
+            return SyncResult.INCOMPLETE
+        }
+
+        return SyncResult.ERROR
     }
 
     override fun checkSyncDataValueStatus(
