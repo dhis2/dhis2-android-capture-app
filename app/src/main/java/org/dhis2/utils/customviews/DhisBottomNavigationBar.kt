@@ -42,7 +42,6 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
     private var initialPage: Int
 
     init {
-        currentItemIndicator = initCurrentItemIndicator()
         labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
         this.clipWithRoundedCorners()
         context.obtainStyledAttributes(attrs, R.styleable.DhisBottomNavigationBar).apply {
@@ -70,6 +69,7 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
             }
         }
         setIconsColor(currentItemIndicatorColor)
+        currentItemIndicator = initCurrentItemIndicator()
     }
 
     fun hide() {
