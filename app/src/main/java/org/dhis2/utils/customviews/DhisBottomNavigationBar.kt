@@ -33,13 +33,12 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
 
     private val animations = DhisBottomNavigationBarAnimations(this)
     private var hidden = false
-    private var currentItemIndicator: View
-
     private var currentItemIndicatorColor: Int
     private val itemIndicatorSize: Float
     private val itemIndicatorDrawable: Drawable?
     private var currentItemId: Int = -1
     private var initialPage: Int
+    private val currentItemIndicator: View by lazy { initCurrentItemIndicator() }
 
     init {
         labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
@@ -69,7 +68,6 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
             }
         }
         setIconsColor(currentItemIndicatorColor)
-        currentItemIndicator = initCurrentItemIndicator()
     }
 
     fun hide() {
