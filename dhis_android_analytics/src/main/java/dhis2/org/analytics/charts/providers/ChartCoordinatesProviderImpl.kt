@@ -95,6 +95,27 @@ class ChartCoordinatesProviderImpl(val d2: D2) : ChartCoordinatesProvider {
         }
     }
 
+    override fun pieChartCoordinates(
+        stageUid: String,
+        teiUid: String,
+        dataElementUid: String
+    ): List<GraphPoint> {
+        val eventList = d2.analyticsModule().eventLineList()
+            .byProgramStage().eq(stageUid)
+            .byTrackedEntityInstance().eq(teiUid)
+            .withDataElement(dataElementUid)
+            .blockingEvaluate()
+            .sortedBy { it.date }
+            .filter { it.values.first().value != null }
+        return eventList.groupBy { it.values.first().value }.mapNotNull {
+            GraphPoint(
+                eventDate = formattedDate(it.value.first().date),
+                fieldValue = it.value.size.toFloat(),
+                legend = it.key
+            )
+        }
+    }
+
     private fun formattedDate(date: Date): Date {
         return try {
             val formattedDateString = SimpleDateFormat("yyyy-MM-dd").format(date)

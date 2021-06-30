@@ -60,6 +60,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -80,11 +83,13 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
+    implementation "androidx.fragment:fragment-ktx:${libraries.fragmentktx}"
     implementation "androidx.cardview:cardview:${libraries.cardview}"
     implementation "androidx.constraintlayout:constraintlayout:${libraries.constraintlayout}"
     implementation "androidx.core:core-ktx:${libraries.corektx}"
     implementation "androidx.appcompat:appcompat:${libraries.appcompat}"
-
+    implementation "com.google.android.material:material:${libraries.material}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${libraries.lifecycleviewmodel}"
     //Graphs
     api 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 

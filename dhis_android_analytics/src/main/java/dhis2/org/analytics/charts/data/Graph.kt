@@ -10,16 +10,17 @@ data class Graph(
     val periodToDisplay: String,
     val eventPeriodType: PeriodType,
     val periodStep: Long,
-    val chartType: ChartType? = ChartType.LINE_CHART
+    val chartType: ChartType? = ChartType.LINE_CHART,
+    val categories: List<String> = emptyList()
 ) {
     fun numberOfStepsToDate(date: Date): Float {
         return if (baseSeries().isEmpty() || baseSeries().first().coordinates.isEmpty()) {
-            return 0f
+            0f
         } else {
-            (
-                (date.time - baseSeries().first().coordinates.first().eventDate.time) /
-                    periodStep
-                ).toFloat()
+            val initialDate = baseSeries().first().coordinates.first().eventDate.time
+            val dateDiff = date.time - initialDate
+            val stepsFromInitialDate = (dateDiff / periodStep).toFloat()
+            stepsFromInitialDate
         }
     }
 
@@ -67,7 +68,8 @@ data class SerieData(
 data class GraphPoint(
     val eventDate: Date,
     val position: Float? = -1f,
-    val fieldValue: Float
+    val fieldValue: Float,
+    val legend: String? = null
 )
 
 fun Graph.toChartBuilder(): Chart.ChartBuilder {
