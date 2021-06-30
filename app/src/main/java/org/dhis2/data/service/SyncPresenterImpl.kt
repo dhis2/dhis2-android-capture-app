@@ -200,16 +200,12 @@ class SyncPresenterImpl(
 
         val anyEventsToPostOrToUpdate = d2.eventModule()
             .events()
-            .byState()
-            .`in`(State.TO_POST, State.TO_UPDATE)
-            .blockingGet()
-            .isNotEmpty()
+            .byState().`in`(State.TO_POST, State.TO_UPDATE)
+            .blockingGet().isNotEmpty()
         val anyTeiToPostOrToUpdate = d2.trackedEntityModule()
             .trackedEntityInstances()
-            .byState()
-            .`in`(State.TO_POST, State.TO_UPDATE)
-            .blockingGet()
-            .isNotEmpty()
+            .byState().`in`(State.TO_POST, State.TO_UPDATE)
+            .blockingGet().isNotEmpty()
 
         if (anyEventsToPostOrToUpdate || anyTeiToPostOrToUpdate) {
             return SyncResult.INCOMPLETE
@@ -235,9 +231,9 @@ class SyncPresenterImpl(
     override fun blockSyncGranularTei(teiUid: String): ListenableWorker.Result {
         Completable.fromObservable(syncGranularTEI(teiUid))
             .blockingAwait()
-        when (checkSyncTEIStatus(teiUid)) {
+        return when (checkSyncTEIStatus(teiUid)) {
             SyncResult.SYNC -> {
-                return ListenableWorker.Result.success()
+                ListenableWorker.Result.success()
             }
             SyncResult.ERROR -> {
                 val trackerImportConflicts = messageTrackerImportConflict(teiUid)
@@ -252,13 +248,13 @@ class SyncPresenterImpl(
                 val data = Data.Builder()
                     .putStringArray("conflict", mergeDateConflicts.toTypedArray())
                     .build()
-                return ListenableWorker.Result.failure(data)
+                ListenableWorker.Result.failure(data)
             }
             SyncResult.INCOMPLETE -> {
                 val data = Data.Builder()
                     .putStringArray("incomplete", arrayOf("INCOMPLETE"))
                     .build()
-                return ListenableWorker.Result.failure(data)
+                ListenableWorker.Result.failure(data)
             }
         }
     }
@@ -266,10 +262,15 @@ class SyncPresenterImpl(
     override fun blockSyncGranularEvent(eventUid: String): ListenableWorker.Result {
         Completable.fromObservable(syncGranularEvent(eventUid))
             .blockingAwait()
-        return if (!checkSyncEventStatus(eventUid)) {
-            ListenableWorker.Result.failure()
-        } else {
-            ListenableWorker.Result.success()
+        return when (checkSyncEventStatus(eventUid)) {
+            SyncResult.SYNC -> ListenableWorker.Result.success()
+            SyncResult.ERROR -> ListenableWorker.Result.failure()
+            SyncResult.INCOMPLETE -> {
+                val data = Data.Builder()
+                    .putStringArray("incomplete", arrayOf("INCOMPLETE"))
+                    .build()
+                ListenableWorker.Result.failure(data)
+            }
         }
     }
 
@@ -369,11 +370,27 @@ class SyncPresenterImpl(
             .upload()
     }
 
-    override fun checkSyncEventStatus(uid: String): Boolean {
-        return d2.eventModule().events()
+    override fun checkSyncEventStatus(uid: String): SyncResult {
+        val eventsOk = d2.eventModule().events()
             .byUid().eq(uid)
             .byState().notIn(State.SYNCED)
             .blockingGet().isEmpty()
+
+        if (eventsOk) {
+            return SyncResult.SYNC
+        }
+
+        val anyEventsToPostOrToUpdate = d2.eventModule()
+            .events()
+            .byUid().eq(uid)
+            .byState().`in`(State.TO_POST, State.TO_UPDATE)
+            .blockingGet().isNotEmpty()
+
+        if (anyEventsToPostOrToUpdate) {
+            return SyncResult.INCOMPLETE
+        }
+
+        return SyncResult.ERROR
     }
 
     override fun checkSyncTEIStatus(uid: String): SyncResult {

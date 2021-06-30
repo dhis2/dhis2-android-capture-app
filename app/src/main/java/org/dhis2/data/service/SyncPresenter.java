@@ -44,7 +44,7 @@ interface SyncPresenter {
 
     Observable<D2Progress> syncGranularDataSetComplete(String dataSetUid);
 
-    boolean checkSyncEventStatus(String uid);
+    SyncResult checkSyncEventStatus(String uid);
 
     SyncResult checkSyncTEIStatus(String uid);
 

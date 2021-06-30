@@ -54,16 +54,11 @@ public class SyncGranularRxWorker extends RxWorker {
                 })
                         .onErrorReturn(error -> Result.failure());
             case TEI:
-                return Single.fromObservable(presenter.syncGranularTEI(uid)).map(d2Progress -> checkSyncStatusResult(uid))
+                return Single.fromObservable(presenter.syncGranularTEI(uid)).map(d2Progress -> checkTEISyncStatusResult(uid))
                         .onErrorReturn(error -> Result.failure());
             case EVENT:
                 return Single.fromObservable(presenter.syncGranularEvent(uid))
-                        .map(d2Progress -> {
-                            if (!presenter.checkSyncEventStatus(uid))
-                                return Result.failure();
-
-                            return Result.success();
-                        })
+                        .map(d2Progress -> checkEventSyncStatusResult(uid))
                         .doOnError(Timber::e)
                         .onErrorReturn(error -> Result.failure());
             case DATA_SET:
@@ -91,7 +86,23 @@ public class SyncGranularRxWorker extends RxWorker {
 
     }
 
-    private Result checkSyncStatusResult(String uid) {
+    private Result checkEventSyncStatusResult(String uid) {
+        switch (presenter.checkSyncEventStatus(uid)) {
+            case ERROR:
+                return Result.failure();
+            case INCOMPLETE:
+                Data data;
+                data = new Data.Builder().putStringArray(
+                        "conflict",
+                        new String[]{"INCOMPLETE"}
+                ).build();
+                return Result.failure(data);
+            default:
+                return Result.success();
+        }
+    }
+
+    private Result checkTEISyncStatusResult(String uid) {
         Data data;
         switch (presenter.checkSyncTEIStatus(uid)) {
             case ERROR:
