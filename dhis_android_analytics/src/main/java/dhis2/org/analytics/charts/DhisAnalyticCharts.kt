@@ -27,7 +27,6 @@ class DhisAnalyticCharts @Inject constructor(
         return emptyList()
     }
 
-
     companion object Provider : Charts.Provider {
         override fun get(dependencies: Charts.Dependencies): Charts {
             return DaggerChartsComponent.builder().dependencies(dependencies).build().charts()

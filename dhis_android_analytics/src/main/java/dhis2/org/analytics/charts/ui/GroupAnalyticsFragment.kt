@@ -8,16 +8,14 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.google.android.material.chip.Chip
 import dhis2.org.R
 import dhis2.org.analytics.charts.data.AnalyticGroup
 import dhis2.org.analytics.charts.di.AnalyticsComponentProvider
 import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule
 import dhis2.org.databinding.AnalyticsGroupBinding
 import dhis2.org.databinding.AnalyticsItemBinding
-import kotlinx.android.synthetic.main.analytics_group.visualization_container
-import org.dhis2.commons.bindings.clipWithRoundedCorners
 import javax.inject.Inject
+import org.dhis2.commons.bindings.clipWithRoundedCorners
 
 const val ARG_MODE = "ARG_MODE"
 const val ARG_UID = "ARG_UID"
@@ -93,26 +91,35 @@ class GroupAnalyticsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        groupViewModel.chipItems.observe(viewLifecycleOwner, {
-            if (it.isEmpty() || it.size < MIN_SIZE_TO_SHOW) {
-                binding.analyticChipGroup.visibility = View.GONE
-            } else {
-                disableToolbarElevation?.invoke()
-                addChips(it)
+        groupViewModel.chipItems.observe(
+            viewLifecycleOwner,
+            {
+                if (it.isEmpty() || it.size < MIN_SIZE_TO_SHOW) {
+                    binding.analyticChipGroup.visibility = View.GONE
+                } else {
+                    disableToolbarElevation?.invoke()
+                    addChips(it)
+                }
             }
-        })
-        groupViewModel.analytics.observe(viewLifecycleOwner, { analytics ->
-            adapter.submitList(analytics){
-                binding.progress.visibility = View.GONE
+        )
+        groupViewModel.analytics.observe(
+            viewLifecycleOwner,
+            { analytics ->
+                adapter.submitList(analytics) {
+                    binding.progress.visibility = View.GONE
+                }
             }
-        })
+        )
     }
 
     private fun addChips(list: List<AnalyticGroup>) {
         var idChip = 0
         list.forEachIndexed { index, analyticGroup ->
             binding.analyticChipGroup.addView(
-                AnalyticsItemBinding.inflate(layoutInflater,binding.analyticChipGroup,false).apply {
+                AnalyticsItemBinding.inflate(
+                    layoutInflater,
+                    binding.analyticChipGroup, false
+                ).apply {
                     chip.id = idChip
                     chip.text = analyticGroup.name
                     chip.isChecked = index == 0
