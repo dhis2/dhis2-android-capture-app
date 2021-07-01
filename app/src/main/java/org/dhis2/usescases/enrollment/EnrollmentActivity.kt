@@ -144,8 +144,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding = DataBindingUtil.setContentView(this, R.layout.enrollment_activity)
         binding.view = this
 
-        mode = intent.getStringExtra(MODE_EXTRA)
-            ?.let { EnrollmentMode.valueOf(it) } ?: EnrollmentMode.CHECK
+        mode = enrollmentMode
 
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.formViewContainer, formView)
