@@ -45,14 +45,14 @@ import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationAc
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.DialogClickListener;
+import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.customviews.CatOptionPopUp;
-import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.dhis2.utils.customviews.PeriodDialog;
 import org.dhis2.utils.resources.ResourceManager;

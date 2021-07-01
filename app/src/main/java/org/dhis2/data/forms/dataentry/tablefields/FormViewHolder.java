@@ -10,7 +10,7 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
 import org.dhis2.R;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.commons.dialogs.CustomDialog;
 
 import androidx.databinding.ViewDataBinding;
 
