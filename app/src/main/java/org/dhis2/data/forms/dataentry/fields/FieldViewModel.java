@@ -11,6 +11,7 @@ import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.intent.FormIntent;
 import org.dhis2.form.ui.style.FormUiModelStyle;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.jetbrains.annotations.NotNull;
@@ -134,7 +135,7 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     @Override
     @Nullable
-    public FormUiModelStyle getStyle(){
+    public FormUiModelStyle getStyle() {
         return style();
     }
 
@@ -188,20 +189,11 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     @Override
     public void onNext() {
-        callback.onNext();
-        if (processor() != null) {
-            RowAction action = new RowAction(
-                    uid(),
-                    value(),
-                    false,
-                    null,
-                    null,
-                    null,
-                    null,
-                    ActionType.ON_NEXT
-            );
-            Objects.requireNonNull(processor()).onNext(action);
-        }
+        callback.intent(new FormIntent.OnNext(
+                uid(),
+                value(),
+                null
+        ));
     }
 
     public void onTextChange(String value) {
