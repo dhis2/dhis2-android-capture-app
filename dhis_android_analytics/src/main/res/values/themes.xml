@@ -15,9 +15,6 @@
     <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Action</item>
 </style>
 
-<style name="DhisBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
-    <item name="materialThemeOverlay">@style/DhisBottomNavigationViewOverlay</item>
-</style>
 
 <style name="DhisBottomNavigationViewOverlay" parent="">
     <item name="colorPrimary">@color/colorPrimary</item>
