@@ -6,7 +6,6 @@ import org.dhis2.data.location.LocationProvider
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
-import org.dhis2.form.model.coroutine.FormDispatcher
 
 class FormViewFragmentFactory(
     val formRepository: FormRepository,
