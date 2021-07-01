@@ -33,7 +33,7 @@ import org.dhis2.R;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.AppMenuHelper;
+import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.customviews.AlertBottomDialog;
 import org.dhis2.utils.validationrules.ValidationResultViolationsAdapter;
@@ -50,7 +50,6 @@ import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import kotlin.Unit;
-import timber.log.Timber;
 
 import static org.dhis2.utils.Constants.NO_SECTION;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;

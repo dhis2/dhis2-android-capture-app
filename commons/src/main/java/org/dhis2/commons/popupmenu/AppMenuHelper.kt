@@ -1,4 +1,4 @@
-package org.dhis2.utils
+package org.dhis2.commons.popupmenu
 
 import android.content.Context
 import android.view.ContextThemeWrapper
@@ -6,15 +6,15 @@ import android.view.Gravity
 import android.view.View
 import android.widget.PopupMenu
 import androidx.annotation.MenuRes
-import org.dhis2.R
-import timber.log.Timber
+import org.dhis2.commons.R
 
 class AppMenuHelper private constructor(
     private val context: Context,
     private val menu: Int,
     private val anchor: View,
     private val onMenuInflated: (PopupMenu) -> Unit,
-    private val onMenuItemClicked: (Int) -> Boolean
+    private val onMenuItemClicked: (Int) -> Boolean,
+    private val onException: ((Exception) -> Unit)? = {}
 ) {
 
     fun show() {
@@ -37,7 +37,7 @@ class AppMenuHelper private constructor(
                 }
             }
         } catch (e: Exception) {
-            Timber.e(e)
+            onException?.invoke(e)
         }
         popupMenu.menuInflater.inflate(menu, popupMenu.menu)
         onMenuInflated(popupMenu)

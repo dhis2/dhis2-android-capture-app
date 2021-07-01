@@ -6,7 +6,6 @@ import androidx.databinding.ObservableField;
 
 import com.google.auto.value.AutoValue;
 
-import org.dhis2.Bindings.DoubleExtensionsKt;
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
@@ -14,6 +13,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.RecyclerViewUiEvents;
+import org.dhis2.form.ui.intent.FormIntent;
 import org.dhis2.form.ui.style.FormUiModelStyle;
 import org.dhis2.uicomponents.map.geometry.LngLatValidatorKt;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
@@ -23,8 +23,6 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import io.reactivex.processors.FlowableProcessor;
-import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -87,15 +85,10 @@ public abstract class CoordinateViewModel extends FieldViewModel {
 
     public void onCurrentLocationClick(Geometry geometry) {
         if (callback == null) return;
-        callback.onItemAction(new RowAction(
+        callback.intent(new FormIntent.SaveCurrentLocation(
                 uid(),
                 geometry == null ? null : geometry.coordinates(),
-                false,
-                null,
-                null,
-                featureType().name(),
-                null,
-                ActionType.ON_SAVE
+                getFeatureType().name()
         ));
     }
 
@@ -199,34 +192,20 @@ public abstract class CoordinateViewModel extends FieldViewModel {
     }
 
     public void requestCurrentLocation() {
-        callback.onItemAction(
-                new RowAction(
-                        uid(),
-                        value(),
-                        false,
-                        null,
-                        null,
-                        null,
-                        null,
-                        ActionType.ON_FOCUS
-                )
-        );
-        callback.currentLocation(uid());
+        onItemClick();
+        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.RequestCurrentLocation(uid()));
     }
 
     public void requestMapLocation() {
-        callback.onItemAction(
-                new RowAction(
-                        uid(),
-                        value(),
-                        false,
-                        null,
-                        null,
-                        null,
-                        null,
-                        ActionType.ON_FOCUS
-                )
-        );
-        callback.mapRequest(uid(), featureType().name(), value());
+        onItemClick();
+        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.RequestLocationByMap(uid(), getFeatureType(), value()));
+    }
+
+    private FeatureType getFeatureType() {
+        FeatureType featureType = featureType();
+        if (featureType == null) {
+            featureType = FeatureType.NONE;
+        }
+        return featureType;
     }
 }

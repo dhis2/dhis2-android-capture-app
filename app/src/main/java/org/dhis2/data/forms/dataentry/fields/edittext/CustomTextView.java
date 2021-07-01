@@ -42,7 +42,7 @@ import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.Preconditions;
 import org.dhis2.utils.ValidationUtils;
 import org.dhis2.utils.Validator;
-import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.dhis2.utils.customviews.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.common.ObjectStyle;
