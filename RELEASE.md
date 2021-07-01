@@ -1,4 +1,4 @@
-Android Capture App for DHIS 2 (v2.4.1) - Patch version
+Android Capture App for DHIS 2 (v2.4.2) - Patch version
 <table>
 <tr> 
 <td> 
@@ -13,37 +13,18 @@ It includes no functional improvements neither changes in the User Interface. It
 <td colspan="2" bgcolor="white">
 
 ## Bugs fixed
-* [ANDROAPP-4054](https://jira.dhis2.org/browse/ANDROAPP-4054) App crashes when searching by Age
-* [ANDROAPP-4053](https://jira.dhis2.org/browse/ANDROAPP-4053) Static text from actions 'show warning' and 'show error' not shown for coordinate value type 
-* [ANDROAPP-4007](https://jira.dhis2.org/browse/ANDROAPP-4007) Vertical checkboxes render as horizontal
-* [ANDROAPP-4005](https://jira.dhis2.org/browse/ANDROAPP-4005) Android app does not render TEA form names even when present
-* [ANDROAPP-3983](https://jira.dhis2.org/browse/ANDROAPP-3983) Cannot use QR to read and populate the search form
-* [ANDROAPP-3928](https://jira.dhis2.org/browse/ANDROAPP-3928) Date Data Element with Show Error Removes value, doesn't show error
-* [ANDROAPP-3927](https://jira.dhis2.org/browse/ANDROAPP-3927) Impossible to add TEI when the program has zero search fields
-* [ANDROAPP-3917](https://jira.dhis2.org/browse/ANDROAPP-3917) With translated DEs, Horizontal/Vertical Options not keeping values selected
-* [ANDROAPP-3914](https://jira.dhis2.org/browse/ANDROAPP-3914) Map TEI view doesn't use the proper layer on the first load or after applying
-* [ANDROAPP-3912](https://jira.dhis2.org/browse/ANDROAPP-3912) Event Scheduled to happen "Today" are not showing-up on Mobile
-* [ANDROAPP-3910](https://jira.dhis2.org/browse/ANDROAPP-3910) Picture doesn't appear when adding on event form
-* [ANDROAPP-3903](https://jira.dhis2.org/browse/ANDROAPP-3903) Crash PerformResumeActivity
-* [ANDROAPP-3902](https://jira.dhis2.org/browse/ANDROAPP-3902) Warning on Complete does not evaluate expression
-* [ANDROAPP-3896](https://jira.dhis2.org/browse/ANDROAPP-3896) Kujaku library exception
-* [ANDROAPP-3895](https://jira.dhis2.org/browse/ANDROAPP-3895) IllegalArgumentException onMeasure
-* [ANDROAPP-3894](https://jira.dhis2.org/browse/ANDROAPP-3894) CI Fix browserstack device status
-* [ANDROAPP-3877](https://jira.dhis2.org/browse/ANDROAPP-3877) Crash when exiting an unfinisehd enrollment (delete and go back)
-* [ANDROAPP-3858](https://jira.dhis2.org/browse/ANDROAPP-3858) In map view, bottom card panel disappears sometimes
-* [ANDROAPP-3857](https://jira.dhis2.org/browse/ANDROAPP-3857) User does not receive a prompt if they submit an invalid co-ordinate
-* [ANDROAPP-3842](https://jira.dhis2.org/browse/ANDROAPP-3842) Crash when switching between details and tables on data set instances
-* [ANDROAPP-3801](https://jira.dhis2.org/browse/ANDROAPP-3801) Program Rules not preventing data reaching the database
-* [ANDROAPP-3787](https://jira.dhis2.org/browse/ANDROAPP-3787) The basemaps are not completely covering the back of the bottom navigation bar
-* [ANDROAPP-3719](https://jira.dhis2.org/browse/ANDROAPP-3719) Review 100% spinner when not supported value types.
-* [ANDROAPP-3620](https://jira.dhis2.org/browse/ANDROAPP-3620) Description of due date always shows 'Due Date' instead of custom text
-* [ANDROAPP-3567](https://jira.dhis2.org/browse/ANDROAPP-3567) Bug Changing the theme or the flag requires user to log out
-* [ANDROAPP-3339](https://jira.dhis2.org/browse/ANDROAPP-3339) Improve the non supported value types feedback
-* [ANDROAPP-2701](https://jira.dhis2.org/browse/ANDROAPP-2701) In relationships, the fav button has double buttons.
-* [ANDROAPP-2667](https://jira.dhis2.org/browse/ANDROAPP-2667) Right-Left TEI Dashboard "+" button
-* This patch release updates the [Android SDK](https://github.com/dhis2/dhis2-android-sdk) to version 1.4.
+* [ANDROAPP-4093](https://jira.dhis2.org/browse/ANDROAPP-4093) Sync error message in dashboard and home
+* [ANDROAPP-4089](https://jira.dhis2.org/browse/ANDROAPP-4089) Sync error message update
+* [ANDROAPP-4088](https://jira.dhis2.org/browse/ANDROAPP-4088) Date filter not returning correct number of records
+* [ANDROAPP-4086](https://jira.dhis2.org/browse/ANDROAPP-4086) Sync filter not returning correct records in tracker
+* [ANDROAPP-4085](https://jira.dhis2.org/browse/ANDROAPP-4085) Option group rule actions not working for option set with more than 15 options
+* [ANDROAPP-4084](https://jira.dhis2.org/browse/ANDROAPP-4084) Tracker Events sync fix
+* [ANDROAPP-4076](https://jira.dhis2.org/browse/ANDROAPP-4076) Polygon field appears when the feature type is point for auto-generated events
+* [ANDROAPP-4070](https://jira.dhis2.org/browse/ANDROAPP-4070) Autovalue null in form repository
+* [ANDROAPP-4069](https://jira.dhis2.org/browse/ANDROAPP-4069) FormView RuntimeException
+* This patch release updates the [Android SDK](https://github.com/dhis2/dhis2-android-sdk) to version 1.4.2.
     
-You can find in Jira details on the [bugs fixed](https://jira.dhis2.org/issues/?filter=12067) in this version. 
+You can find in Jira details on the [bugs fixed](https://jira.dhis2.org/issues/?filter=12074) in this version. 
 
 Remember to check the [documentation](https://www.dhis2.org/android-documentation) for detailed 
 information of the features included in the App and how to configure DHIS2 to use it. 

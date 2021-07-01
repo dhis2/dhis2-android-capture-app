@@ -294,4 +294,7 @@ class EnrollmentFormRepositoryImpl(
     }
 
     override fun getProfilePicture() = tei.profilePicturePath(d2, programUid)
+
+    override fun getProgramStageUidFromEvent(eventUi: String) =
+        d2.eventModule().events().uid(eventUi).blockingGet().programStage()
 }

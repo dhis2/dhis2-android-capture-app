@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -53,7 +54,7 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import timber.log.Timber
 
-class FormView private constructor(
+class FormView constructor(
     formRepository: FormRepository,
     private val onItemChangeListener: ((action: RowAction) -> Unit)?,
     private val locationProvider: LocationProvider?,
@@ -391,6 +392,7 @@ class FormView private constructor(
     }
 
     class Builder {
+        private var fragmentManager: FragmentManager? = null
         private var persistentRepository: FormRepository? = null
         private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
         private var locationProvider: LocationProvider? = null
@@ -435,14 +437,29 @@ class FormView private constructor(
         fun onLoadingListener(callback: (loading: Boolean) -> Unit) =
             apply { this.onLoadingListener = callback }
 
+        /**
+         * Set a FragmentManager for instantiating the form view
+         * */
+        fun factory(manager: FragmentManager) =
+            apply { fragmentManager = manager }
+
         fun build(): FormView {
-            return FormView(
-                formRepository = persistentRepository ?: FormRepositoryNonPersistenceImpl(),
-                locationProvider = locationProvider,
-                onItemChangeListener = onItemChangeListener,
-                needToForceUpdate = needToForceUpdate,
-                onLoadingListener = onLoadingListener
-            )
+            if (fragmentManager == null) {
+                throw Exception("You need to call factory method and pass a FragmentManager")
+            }
+            fragmentManager!!.fragmentFactory =
+                FormViewFragmentFactory(
+                    persistentRepository ?: FormRepositoryNonPersistenceImpl(),
+                    locationProvider,
+                    onItemChangeListener,
+                    needToForceUpdate,
+                    onLoadingListener
+                )
+
+            return fragmentManager!!.fragmentFactory.instantiate(
+                this.javaClass.classLoader!!,
+                FormView::class.java.name
+            ) as FormView
         }
     }
 }
