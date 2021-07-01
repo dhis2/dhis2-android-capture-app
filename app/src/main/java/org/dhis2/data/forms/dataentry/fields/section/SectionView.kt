@@ -9,8 +9,8 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.Observable
 import org.dhis2.Bindings.dp
 import org.dhis2.R
+import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.databinding.SectionViewBinding
-import org.dhis2.utils.customviews.CustomDialog
 import org.dhis2.utils.customviews.FieldLayout
 
 class SectionView @JvmOverloads constructor(

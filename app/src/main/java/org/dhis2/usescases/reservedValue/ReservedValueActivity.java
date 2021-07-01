@@ -8,8 +8,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.ActivityReservedValueBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.customviews.CustomDialog;
-import org.hisp.dhis.android.core.trackedentity.ReservedValueSummary;
+import org.dhis2.commons.dialogs.CustomDialog;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

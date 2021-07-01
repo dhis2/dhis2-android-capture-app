@@ -77,13 +77,6 @@ import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
 
 public class Bindings {
 
-    @BindingAdapter("scrollingTextView")
-    public static void setScrollingTextView(TextView textView, boolean canScroll) {
-        if (canScroll) {
-            textView.setMovementMethod(new ScrollingMovementMethod());
-        }
-    }
-
     @BindingAdapter("date")
     public static void parseDate(TextView textView, Date date) {
         if (date != null) {
@@ -126,15 +119,6 @@ public class Bindings {
                 }
             });
         }
-    }
-
-    @BindingAdapter("progressColor")
-    public static void setProgressColor(ProgressBar progressBar, int color) {
-        TypedValue typedValue = new TypedValue();
-        TypedArray a = progressBar.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
-        int color2 = a.getColor(0, 0);
-        a.recycle();
-        progressBar.getIndeterminateDrawable().setColorFilter(color2, PorterDuff.Mode.SRC_IN);
     }
 
     @BindingAdapter("enrolmentIcon")
@@ -707,11 +691,6 @@ public class Bindings {
         view.setTag(drawableResource);
     }
 
-    @BindingAdapter("iconResource")
-    public static void setIconResource(ImageView imageView, @DrawableRes int iconResource) {
-        imageView.setImageResource(iconResource);
-    }
-
     @BindingAdapter("textStyle")
     public static void setTextStyle(TextView textView, int style) {
         switch (style) {
@@ -722,15 +701,6 @@ public class Bindings {
                 textView.setTypeface(null, Typeface.NORMAL);
                 break;
 
-        }
-    }
-
-    @BindingAdapter("marginTop")
-    public static void setMarginTop(View view, int marginInDp) {
-        if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-            p.setMargins(p.leftMargin, ExtensionsKt.getDp(marginInDp), p.rightMargin, p.bottomMargin);
-            view.requestLayout();
         }
     }
 

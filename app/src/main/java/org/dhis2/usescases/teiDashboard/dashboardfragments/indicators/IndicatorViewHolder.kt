@@ -2,10 +2,10 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.R
+import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.data.analytics.IndicatorModel
 import org.dhis2.databinding.ItemIndicatorBinding
 import org.dhis2.utils.Constants
-import org.dhis2.utils.customviews.CustomDialog
 import org.hisp.dhis.android.core.program.ProgramIndicator
 
 class IndicatorViewHolder(

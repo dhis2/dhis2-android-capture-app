@@ -1,8 +1,4 @@
-package org.dhis2.utils;
-
-/**
- * QUADRAM. Created by frodriguez on 5/4/2018.
- */
+package org.dhis2.commons.dialogs;
 
 public interface DialogClickListener {
     void onPositive();

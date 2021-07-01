@@ -4,10 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -71,21 +69,40 @@ class FormViewModel(
                 intent.date
             )
             is FormIntent.ClearDateFromAgeCalendar -> createRowAction(intent.uid, null)
+            is FormIntent.SelectLocationFromCoordinates -> createRowAction(
+                intent.uid,
+                intent.coordinates,
+                intent.extraData
+            )
+            is FormIntent.SelectLocationFromMap -> setCoordinateFieldValue(
+                intent.uid,
+                intent.featureType,
+                intent.coordinates
+            )
+            is FormIntent.SaveCurrentLocation -> createRowAction(
+                uid = intent.uid,
+                value = intent.value,
+                extraData = intent.featureType
+            )
+            is FormIntent.OnNext -> createRowAction(
+                uid = intent.uid,
+                value = intent.value,
+                actionType = ActionType.ON_NEXT
+            )
         }
     }
 
-    private fun createRowAction(uid: String, date: String?): RowAction {
-        return RowAction(
-            uid,
-            date,
-            false,
-            null,
-            null,
-            null,
-            null,
-            ActionType.ON_SAVE
-        )
-    }
+    private fun createRowAction(
+        uid: String,
+        value: String?,
+        extraData: String? = null,
+        actionType: ActionType = ActionType.ON_SAVE
+    ) = RowAction(
+        id = uid,
+        value = value,
+        extraData = extraData,
+        type = actionType
+    )
 
     fun submitIntent(intent: FormIntent) {
         viewModelScope.launch {
@@ -93,49 +110,26 @@ class FormViewModel(
         }
     }
 
-    @Deprecated("Use for legacy only. Do not use this for refactor views")
-    fun onItemAction(action: RowAction) {
-        if (action.type == ActionType.ON_SAVE) {
-            loading.value = true
-        }
-        viewModelScope.launch {
-            submitRowAction(action).collect {
-                when (it.valueStoreResult) {
-                    ValueStoreResult.VALUE_CHANGED -> {
-                        _savedValue.value = action
-                    }
-                    else -> _items.value = repository.composeList()
-                }
-            }
-        }
-    }
-
-    @Deprecated("Use for legacy only. Do not use this for refactor views")
-    private fun submitRowAction(action: RowAction): Flow<StoreResult> = flow {
-        emit(repository.processUserAction(action))
-    }.flowOn(dispatcher.io())
-
     fun onItemsRendered() {
         loading.value = false
     }
 
-    fun setCoordinateFieldValue(fieldUid: String?, featureType: String?, coordinates: String?) {
-        if (fieldUid != null && featureType != null) {
-            val geometryCoordinates = coordinates?.let {
-                geometryController.generateLocationFromCoordinates(
-                    FeatureType.valueOf(featureType),
-                    coordinates
-                )?.coordinates()
-            }
-            onItemAction(
-                RowAction(
-                    id = fieldUid,
-                    value = geometryCoordinates,
-                    type = ActionType.ON_SAVE,
-                    extraData = featureType
-                )
-            )
+    private fun setCoordinateFieldValue(
+        fieldUid: String,
+        featureType: String,
+        coordinates: String?
+    ): RowAction {
+        val geometryCoordinates = coordinates?.let {
+            geometryController.generateLocationFromCoordinates(
+                FeatureType.valueOf(featureType),
+                coordinates
+            )?.coordinates()
         }
+        return createRowAction(
+            uid = fieldUid,
+            value = geometryCoordinates,
+            extraData = featureType
+        )
     }
 
     fun getFocusedItemUid(): String? {
