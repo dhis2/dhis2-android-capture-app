@@ -12,7 +12,7 @@ import androidx.databinding.DataBindingUtil;
 
 import org.dhis2.R;
 import org.dhis2.databinding.TableFieldDialogBinding;
-import org.dhis2.utils.DialogClickListener;
+import org.dhis2.commons.dialogs.DialogClickListener;
 
 public class TableFieldDialog extends AlertDialog implements View.OnClickListener {
 
