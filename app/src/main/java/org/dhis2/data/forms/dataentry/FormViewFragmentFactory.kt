@@ -4,14 +4,17 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import org.dhis2.data.location.LocationProvider
 import org.dhis2.form.data.FormRepository
+import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
+import org.dhis2.form.model.coroutine.FormDispatcher
 
 class FormViewFragmentFactory(
     val formRepository: FormRepository,
     val locationProvider: LocationProvider?,
     val onItemChangeListener: ((action: RowAction) -> Unit)?,
     private val needToForceUpdate: Boolean = false,
-    val onLoadingListener: ((loading: Boolean) -> Unit)?
+    val onLoadingListener: ((loading: Boolean) -> Unit)?,
+    val dispatchers: DispatcherProvider
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         return when (className) {
@@ -20,7 +23,8 @@ class FormViewFragmentFactory(
                 onItemChangeListener,
                 locationProvider,
                 onLoadingListener,
-                needToForceUpdate
+                needToForceUpdate,
+                dispatchers
             )
             else -> super.instantiate(classLoader, className)
         }
