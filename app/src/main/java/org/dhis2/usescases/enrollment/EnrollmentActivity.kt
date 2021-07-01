@@ -13,8 +13,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import java.io.File
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.isKeyboardOpened
 import org.dhis2.R
@@ -48,6 +46,8 @@ import org.dhis2.utils.toMessage
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import java.io.File
+import javax.inject.Inject
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
@@ -103,7 +103,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*region LIFECYCLE*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         val enrollmentUid = intent.getStringExtra(ENROLLMENT_UID_EXTRA) ?: ""
         val programUid = intent.getStringExtra(PROGRAM_UID_EXTRA) ?: ""
         val enrollmentMode = intent.getStringExtra(MODE_EXTRA)?.let { EnrollmentMode.valueOf(it) }
@@ -145,7 +144,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding = DataBindingUtil.setContentView(this, R.layout.enrollment_activity)
         binding.view = this
 
-        mode = EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
+        mode = intent.getStringExtra(MODE_EXTRA)
+            ?.let { EnrollmentMode.valueOf(it) } ?: EnrollmentMode.CHECK
 
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.formViewContainer, formView)

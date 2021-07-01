@@ -4,11 +4,6 @@ import androidx.recyclerview.widget.RecyclerView
 import dhis2.org.R
 import dhis2.org.databinding.ItemIndicatorBinding
 import org.dhis2.commons.dialogs.CustomDialog
-import org.dhis2.R
-import org.dhis2.commons.dialogs.CustomDialog
-import org.dhis2.data.analytics.IndicatorModel
-import org.dhis2.databinding.ItemIndicatorBinding
-import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.program.ProgramIndicator
 
 class IndicatorViewHolder(

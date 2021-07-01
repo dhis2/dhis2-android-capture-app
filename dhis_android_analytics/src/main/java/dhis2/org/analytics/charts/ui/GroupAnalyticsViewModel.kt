@@ -42,7 +42,7 @@ class GroupAnalyticsViewModel(
     fun fetchAnalytics(groupUid: String?) {
         _analytics.value = when (mode) {
             AnalyticMode.ENROLLMENT -> uid?.let {
-                charts.getCharts(uid)
+                charts.geEnrollmentCharts(uid)
                     .map { ChartModel(it) }
             } ?: emptyList()
             AnalyticMode.PROGRAM -> uid?.let {

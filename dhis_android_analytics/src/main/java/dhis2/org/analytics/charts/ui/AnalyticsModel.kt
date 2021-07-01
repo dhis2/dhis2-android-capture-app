@@ -4,9 +4,9 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.view.View
 import androidx.databinding.ObservableField
+import dhis2.org.R
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
-import org.dhis2.R
 import org.dhis2.commons.popupmenu.AppMenuHelper
 import org.hisp.dhis.android.core.program.ProgramIndicator
 
