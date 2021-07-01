@@ -138,6 +138,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         filterManager.setUnsupportedFilters(Filters.ENROLLMENT_DATE, Filters.ENROLLMENT_STATUS);
         binding.setTotalFilters(filterManager.getTotalFilters());
         binding.navigationBar.setVisibility(programUid != null ? View.VISIBLE : View.GONE);
+        binding.navigationBar.relationshipVisibility(teiUid);
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             int pagePosition = adapter.getNavigationPagePosition(item.getItemId());
             if (pagePosition != -1) {
@@ -240,7 +241,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                             } else {
                                 binding.relationshipMapIcon.setVisibility(View.GONE);
                             }
-                            binding.navigationBar.selectItemAt(position);
+                            if (binding.navigationBar.isRelationshipsVisible()) {
+                                binding.navigationBar.selectItemAt(position);
+                            } else {
+                                if (position >= NOTES_POS)
+                                    binding.navigationBar.selectItemAt(position - 1);
+                            }
                         }
                     }
             );
