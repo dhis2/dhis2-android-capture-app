@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews
+package org.dhis2.utils.customviews.navigationbar
 
 import android.content.Context
 import android.content.res.ColorStateList
@@ -19,19 +19,24 @@ import androidx.core.view.forEachIndexed
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.LabelVisibilityMode.LABEL_VISIBILITY_UNLABELED
+import org.dhis2.App
 import org.dhis2.Bindings.clipWithRoundedCorners
 import org.dhis2.Bindings.dp
 import org.dhis2.R
+import javax.inject.Inject
 
 const val itemIndicatorTag = "ITEM_INDICATOR"
 
-class DhisBottomNavigationBar @JvmOverloads constructor(
+class NavigationBottomBar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : BottomNavigationView(context, attrs, defStyleAttr) {
+): BottomNavigationView(context, attrs, defStyleAttr) {
 
-    private val animations = DhisBottomNavigationBarAnimations(this)
+    @Inject
+    lateinit var repositoryBottom: NavigationBottomBarRepository
+
+    private val animations = NavigationBottomBarAnimations(this)
     private var hidden = false
     private val currentItemIndicator: View by lazy { initCurrentItemIndicator() }
 
@@ -42,6 +47,9 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
     private var initialPage: Int
 
     init {
+        ((context.applicationContext) as App)
+            .serverComponent
+            .plus(NavigationBottomBarModule()).inject(this)
         labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
         this.clipWithRoundedCorners()
         context.obtainStyledAttributes(attrs, R.styleable.DhisBottomNavigationBar).apply {
@@ -125,7 +133,7 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
                 selectedItemView.width / 2f +
                 intrinsicHorizontalMargin() -
                 itemIndicatorSize / 2f
-            y = (this@DhisBottomNavigationBar.height - itemIndicatorSize) / 2f
+            y = (this@NavigationBottomBar.height - itemIndicatorSize) / 2f
         }
 
         if (indicatorHasPosition() && !isItemIndicatorAdded()) {
@@ -197,6 +205,17 @@ class DhisBottomNavigationBar @JvmOverloads constructor(
             DrawableCompat.setTint(DrawableCompat.wrap(it), currentItemIndicatorColor)
         }
     }
+
+    fun relationshipVisibility(teiUid: String) {
+        val count = repositoryBottom.getRelationshipTypeCount(teiUid)
+        if (count == 0) {
+            val item = menu.findItem(R.id.navigation_relationships)
+            item.isVisible = false
+        }
+    }
+
+    fun isRelationshipsVisible() = menu.findItem(R.id.navigation_relationships).isVisible
+
 
     override fun onVisibilityChanged(changedView: View, visibility: Int) {
         super.onVisibilityChanged(changedView, visibility)
