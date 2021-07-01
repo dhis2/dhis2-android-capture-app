@@ -171,7 +171,7 @@ class TrackerAnalyticsRepositoryTest {
         ) doReturn Flowable.just(Result.success(mockedEffects()))
 
         whenever(
-            charts.getCharts(any())
+            charts.geEnrollmentCharts(any())
         ) doReturn mockedCharts()
 
         val testObserver = repository.fetchData().test()
@@ -271,7 +271,7 @@ class TrackerAnalyticsRepositoryTest {
         ) doReturn Flowable.just(Result.success(emptyList()))
 
         whenever(
-            charts.getCharts(any())
+            charts.geEnrollmentCharts(any())
         ) doReturn emptyList()
 
         val testObserver = repository.fetchData().test()
@@ -369,7 +369,7 @@ class TrackerAnalyticsRepositoryTest {
         ) doReturn Flowable.just(Result.success(emptyList()))
 
         whenever(
-            charts.getCharts(any())
+            charts.geEnrollmentCharts(any())
         ) doReturn mockedCharts()
 
         val testObserver = repository.fetchData().test()

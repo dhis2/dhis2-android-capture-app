@@ -960,10 +960,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private void setGeometryCallback(CoordinateViewModel geometryModel) {
         currentGeometryModel = geometryModel;
         geometryModel.setCallback(geometryController.getCoordinatesCallback(
-                action -> {
+                value -> {
                     presenter.setChangingCoordinates(true);
-                    setNewGeometry(action.getValue());
-                    setGeometryModel((CoordinateViewModel) geometryModel.withValue(action.getValue()));
+                    setNewGeometry(value);
+                    setGeometryModel((CoordinateViewModel) geometryModel.withValue(value));
                     return Unit.INSTANCE;
                 },
                 fieldUid -> {
@@ -991,6 +991,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         } else {
             this.newGeometry = null;
         }
+    }
+
+    @Override
+    public void displayFeatureTypeError() {
+        displayMessage(getString(R.string.coordinate_feature_type_error));
     }
 
     @Override

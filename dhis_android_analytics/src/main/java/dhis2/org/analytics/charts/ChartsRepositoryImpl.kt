@@ -2,9 +2,13 @@ package dhis2.org.analytics.charts
 
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.nutritionTestingData
+import dhis2.org.analytics.charts.data.pieChartTestingData
+import dhis2.org.analytics.charts.data.radarTestingData
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
 import dhis2.org.analytics.charts.mappers.DataElementToGraph
 import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
+import dhis2.org.analytics.charts.mappers.VisualizationToGraph
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -13,9 +17,11 @@ import org.hisp.dhis.android.core.program.ProgramIndicator
 
 class ChartsRepositoryImpl(
     private val d2: D2,
+    private val visualizationToGraph: VisualizationToGraph,
     private val analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph,
     private val dataElementToGraph: DataElementToGraph,
-    private val programIndicatorToGraph: ProgramIndicatorToGraph
+    private val programIndicatorToGraph: ProgramIndicatorToGraph,
+    private val featureConfig: FeatureConfigRepository
 ) : ChartsRepository {
 
     override fun getAnalyticsForEnrollment(enrollmentUid: String): List<Graph> {
@@ -85,7 +91,8 @@ class ChartsRepositoryImpl(
             )
         }.flatten()
             .filter { it.series.isNotEmpty() }
-//            .nutritionTestingData(d2) TODO: REMOVE BEFORE MERGING
+            .radarTestingData(d2, featureConfig)
+            .pieChartTestingData(d2, featureConfig)
     }
 
     private fun getRepeatableProgramStages(program: String?) =

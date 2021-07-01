@@ -21,6 +21,7 @@ import com.google.android.material.textfield.TextInputLayout
 import org.dhis2.BR
 import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.R
+import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.databinding.ScanTextViewAccentBinding
 import org.dhis2.databinding.ScanTextViewBinding
 import org.dhis2.usescases.qrScanner.ScanActivity
@@ -32,7 +33,6 @@ import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.EXTRA_DATA
 import org.dhis2.utils.Constants.RQ_QR_SCANNER
 import org.dhis2.utils.Preconditions.Companion.equals
-import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.utils.customviews.FieldLayout
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 

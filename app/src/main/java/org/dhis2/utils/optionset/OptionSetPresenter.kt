@@ -8,8 +8,6 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel as TableSpinnerViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.helpers.UidsHelper
-import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.option.Option
 import timber.log.Timber
 
@@ -19,34 +17,27 @@ class OptionSetPresenter(
     val schedulerProvider: SchedulerProvider
 ) {
 
+    private lateinit var optionSetOptionHandler: OptionSetOptionsHandler
     var disposable: CompositeDisposable = CompositeDisposable()
-    private var optionsToHide: List<String>? = null
-    private var optionGroupsToHide: List<String>? = null
-    private var optionGroupsToShow: List<String>? = null
     private lateinit var optionSetUid: String
 
     fun init(optionSet: SpinnerViewModel) {
         this.optionSetUid = optionSet.optionSet()
-        optionsToHide =
-            if (optionSet.optionsToHide != null) optionSet.optionsToHide else ArrayList()
-        optionGroupsToHide =
-            if (optionSet.optionGroupsToHide != null) optionSet.optionGroupsToHide else ArrayList()
-        optionGroupsToShow =
-            if (optionSet.optionGroupsToShow != null) optionSet.optionGroupsToShow else ArrayList()
+        this.optionSetOptionHandler = OptionSetOptionsHandler(
+            optionSet.optionsToHide,
+            optionSet.optionGroupsToShow,
+            optionSet.optionGroupsToHide
+        )
         getOptions()
     }
 
     fun init(optionSetTable: TableSpinnerViewModel) {
         this.optionSetUid = optionSetTable.optionSet()
-        optionsToHide =
-            if (optionSetTable.optionsToHide != null) optionSetTable.optionsToHide else ArrayList()
-        optionGroupsToHide =
-            if (optionSetTable.optionGroupsToHide != null) {
-                optionSetTable.optionGroupsToHide
-            } else {
-                ArrayList()
-            }
-
+        this.optionSetOptionHandler = OptionSetOptionsHandler(
+            optionSetTable.optionsToHide,
+            null,
+            optionSetTable.optionGroupsToHide
+        )
         getOptions()
     }
 
@@ -59,38 +50,8 @@ class OptionSetPresenter(
                     var optionRepository = d2.optionModule().options()
                         .byOptionSetUid().eq(optionSetUid)
 
-                    val finalOptionsToHide = ArrayList<String>()
-                    val finalOptionsToShow = ArrayList<String>()
-
-                    if (!optionsToHide.isNullOrEmpty()) {
-                        finalOptionsToHide.addAll(optionsToHide!!)
-                    }
-
-                    if (!optionGroupsToShow.isNullOrEmpty()) {
-                        for (groupUid in optionGroupsToShow!!) {
-                            finalOptionsToShow.addAll(
-                                UidsHelper.getUidsList<ObjectWithUid>(
-                                    d2
-                                        .optionModule()
-                                        .optionGroups()
-                                        .withOptions().uid(groupUid).blockingGet().options()!!
-                                )
-                            )
-                        }
-                    }
-
-                    if (!optionGroupsToHide.isNullOrEmpty()) {
-                        for (groupUid in optionGroupsToHide!!) {
-                            finalOptionsToHide.addAll(
-                                UidsHelper.getUidsList<ObjectWithUid>(
-                                    d2
-                                        .optionModule()
-                                        .optionGroups()
-                                        .withOptions().uid(groupUid).blockingGet().options()!!
-                                )
-                            )
-                        }
-                    }
+                    val(finalOptionsToHide, finalOptionsToShow) =
+                        optionSetOptionHandler.handleOptions()
 
                     if (finalOptionsToShow.isNotEmpty()) {
                         optionRepository = optionRepository.byUid().`in`(finalOptionsToShow)

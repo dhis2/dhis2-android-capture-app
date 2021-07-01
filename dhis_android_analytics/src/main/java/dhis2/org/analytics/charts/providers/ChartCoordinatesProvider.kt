@@ -23,4 +23,10 @@ interface ChartCoordinatesProvider {
         ageOrHeightCountainerUid: String,
         ageOrHeightIsDataElement: Boolean
     ): List<GraphPoint>
+
+    fun pieChartCoordinates(
+        stageUid: String,
+        teiUid: String,
+        dataElementUid: String
+    ): List<GraphPoint>
 }

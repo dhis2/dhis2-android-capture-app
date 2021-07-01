@@ -11,7 +11,7 @@ class DhisAnalyticCharts @Inject constructor(
         return true
     }
 
-    override fun getCharts(enrollmentUid: String): List<Graph> {
+    override fun geEnrollmentCharts(enrollmentUid: String): List<Graph> {
         return chartsRepository.getAnalyticsForEnrollment(enrollmentUid)
     }
 
