@@ -65,6 +65,30 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         setRetainInstance(true);
     }
 
+    @Override
+    public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        formView = new FormView.Builder()
+                .persistence(formRepository)
+                .locationProvider(locationProvider)
+                .dispatcher(coroutineDispatcher)
+                .onItemChangeListener(action -> {
+                    activity.getPresenter().setValueChanged(action.getId());
+                    activity.getPresenter().nextCalculation(true);
+                    return Unit.INSTANCE;
+                })
+                .onLoadingListener(loading -> {
+                    if(loading){
+                        activity.showProgress();
+                    } else{
+                        activity.hideProgress();
+                    }
+                    return Unit.INSTANCE;
+                })
+                .factory(activity.getSupportFragmentManager())
+                .build();
+        super.onCreate(savedInstanceState);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -83,25 +107,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        formView = new FormView.Builder()
-                .persistence(formRepository)
-                .locationProvider(locationProvider)
-                .dispatcher(coroutineDispatcher)
-                .onItemChangeListener(action -> {
-                    activity.getPresenter().setValueChanged(action.getId());
-                    activity.getPresenter().nextCalculation(true);
-                    return Unit.INSTANCE;
-                })
-                .onLoadingListener(loading -> {
-                    if(loading){
-                        activity.showProgress();
-                    }else{
-                        activity.hideProgress();
-                    }
-                    return Unit.INSTANCE;
-                })
-                .build();
-
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.replace(R.id.formViewContainer, formView).commit();
         formView.setScrollCallback(isSectionVisible -> {
