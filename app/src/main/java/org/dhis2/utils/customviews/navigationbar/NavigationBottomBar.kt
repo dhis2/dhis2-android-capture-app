@@ -38,13 +38,12 @@ class NavigationBottomBar @JvmOverloads constructor(
 
     private val animations = NavigationBottomBarAnimations(this)
     private var hidden = false
-    private val currentItemIndicator: View by lazy { initCurrentItemIndicator() }
-
     private var currentItemIndicatorColor: Int
     private val itemIndicatorSize: Float
     private val itemIndicatorDrawable: Drawable?
     private var currentItemId: Int = -1
     private var initialPage: Int
+    private val currentItemIndicator: View by lazy { initCurrentItemIndicator() }
 
     init {
         ((context.applicationContext) as App)
