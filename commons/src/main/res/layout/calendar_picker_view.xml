@@ -23,6 +23,7 @@
 
             <DatePicker
                 android:id="@+id/datePickerCalendar"
+                android:theme="@style/DatePickerTheme"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:calendarViewShown="false"/>
@@ -38,8 +39,10 @@
 
             <ImageButton
                 android:id="@+id/changeCalendarBtn"
+                style="@style/ActionIcon"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_calendar_v2"/>
 
 
             <TextView
@@ -47,8 +50,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:text="Change Calendar"
-                android:textColor="#4d4d4d"
+                android:text="@string/change_calendar_view"
+                android:textColor="@color/text_black_4d4d4d"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -61,21 +64,21 @@
 
             <Button
                 android:id="@+id/clearBtn"
-                style="?android:attr/buttonBarButtonStyle"
+                style="@style/TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Clear"
-                android:textColor="#333333"
+                android:text="@string/clear"
+                android:textColor="@color/text_black_333"
                 android:textSize="12sp" />
 
 
             <Button
                 android:id="@+id/acceptBtn"
-                style="?android:attr/buttonBarButtonStyle"
+                style="@style/TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Accept"
-                android:textColor="#333333"
+                android:text="@string/action_accept"
+                android:textColor="@color/text_black_333"
                 android:textSize="12sp" />
         </LinearLayout>
 

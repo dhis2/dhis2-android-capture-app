@@ -3,7 +3,7 @@ package org.dhis2;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.dhis2.commons.customdialogs.di.CalendarPickerComponentProvider;
+import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponentProvider;
 import org.dhis2.commons.featureconfig.di.FeatureConfigComponentProvider;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.user.UserComponent;

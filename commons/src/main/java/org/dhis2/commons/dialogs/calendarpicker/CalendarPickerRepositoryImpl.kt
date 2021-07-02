@@ -1,12 +1,11 @@
-package org.dhis2.commons.customdialogs
+package org.dhis2.commons.dialogs.calendarpicker
 
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
-import javax.inject.Inject
 
-class CalendarPickerPresenterImpl(
+class CalendarPickerRepositoryImpl(
     private val preferences: PreferenceProvider
-): CalendarPickerPresenter {
+): CalendarPickerRepository {
 
     override fun isDatePickerStyle(): Boolean {
         return if (preferences.contains(Preference.DATE_PICKER)) {

@@ -1,4 +1,4 @@
-package org.dhis2.commons.customdialogs.di
+package org.dhis2.commons.dialogs.calendarpicker.di
 
 interface CalendarPickerComponentProvider {
 

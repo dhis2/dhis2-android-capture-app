@@ -1,4 +1,4 @@
-package org.dhis2.commons.customdialogs
+package org.dhis2.commons.dialogs.calendarpicker
 
 import android.widget.DatePicker
 

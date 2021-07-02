@@ -14,8 +14,8 @@ import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.R;
-import org.dhis2.commons.customdialogs.CalendarPicker;
-import org.dhis2.commons.customdialogs.OnDatePickerListener;
+import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
+import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
 import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.commons.prefs.Preference;

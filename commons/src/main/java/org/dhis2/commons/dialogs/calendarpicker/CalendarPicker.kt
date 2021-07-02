@@ -1,4 +1,4 @@
-package org.dhis2.commons.customdialogs
+package org.dhis2.commons.dialogs.calendarpicker
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -9,7 +9,8 @@ import android.view.View
 import android.widget.DatePicker
 import android.widget.LinearLayout
 import androidx.databinding.BindingAdapter
-import org.dhis2.commons.customdialogs.di.CalendarPickerComponentProvider
+import org.dhis2.commons.R
+import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponentProvider
 import org.dhis2.commons.databinding.CalendarPickerViewBinding
 import java.util.Calendar
 import java.util.Date
@@ -20,7 +21,7 @@ class CalendarPicker(
 ) : Dialog(context) {
 
     @Inject
-    lateinit var presenter: CalendarPickerPresenter
+    lateinit var repository: CalendarPickerRepository
 
     private var listener: OnDatePickerListener? = null
 
@@ -77,10 +78,10 @@ class CalendarPicker(
 
     override fun show() {
         if (listener == null) {
-            throw IllegalArgumentException("Listener must set up")
+            throw IllegalArgumentException("Listener must be set up")
         }
         setCalendar()
-        datePickerVisibility(presenter.isDatePickerStyle())
+        datePickerVisibility(repository.isDatePickerStyle())
         setFuturesDates()
         setMinDates()
         setMaxDates()
@@ -88,8 +89,8 @@ class CalendarPicker(
         val dialog = dialogBuilder().create()
 
         binding.changeCalendarBtn.setOnClickListener {
-            presenter.setPickerStyle(presenter.isDatePickerStyle())
-            datePickerVisibility(presenter.isDatePickerStyle())
+            repository.setPickerStyle(repository.isDatePickerStyle())
+            datePickerVisibility(repository.isDatePickerStyle())
         }
 
         binding.clearBtn.setOnClickListener {
@@ -110,12 +111,10 @@ class CalendarPicker(
     }
 
     private fun dialogBuilder(): AlertDialog.Builder {
-        // val builder = AlertDialog.Builder(context, R.style.DatePickerTheme)
-        val builder = AlertDialog.Builder(context)
+        val builder = AlertDialog.Builder(context, R.style.DatePickerTheme)
         title?.let { builder.setTitle(it) }
         if (isFromOtherPeriods) {
-            binding.clearBtn.text = "Next"
-            //binding.clearButton.text = context.getString(R.string.next)
+            binding.clearBtn.text = context.getString(R.string.next)
         }
         builder.setView(binding.root)
 

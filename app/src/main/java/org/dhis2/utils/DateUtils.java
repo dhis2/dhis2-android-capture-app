@@ -5,8 +5,8 @@ import android.widget.DatePicker;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.dhis2.commons.customdialogs.CalendarPicker;
-import org.dhis2.commons.customdialogs.OnDatePickerListener;
+import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
+import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.customviews.RxDateDialog;
 import org.dhis2.utils.filters.FilterManager;

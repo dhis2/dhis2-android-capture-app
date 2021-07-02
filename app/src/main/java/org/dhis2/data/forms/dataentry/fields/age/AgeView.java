@@ -20,8 +20,8 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.commons.customdialogs.CalendarPicker;
-import org.dhis2.commons.customdialogs.OnDatePickerListener;
+import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
+import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
 import org.dhis2.databinding.AgeCustomViewAccentBinding;
 import org.dhis2.databinding.AgeCustomViewBinding;
 import org.dhis2.utils.ColorUtils;
