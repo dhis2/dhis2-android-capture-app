@@ -43,14 +43,14 @@ import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationAc
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.DialogClickListener;
+import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.customviews.CatOptionPopUp;
-import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.dhis2.utils.customviews.PeriodDialog;
 import org.dhis2.utils.resources.ResourceManager;
@@ -911,10 +911,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private void setGeometryCallback(CoordinateViewModel geometryModel) {
         currentGeometryModel = geometryModel;
         geometryModel.setCallback(geometryController.getCoordinatesCallback(
-                action -> {
+                value -> {
                     presenter.setChangingCoordinates(true);
-                    setNewGeometry(action.getValue());
-                    setGeometryModel((CoordinateViewModel) geometryModel.withValue(action.getValue()));
+                    setNewGeometry(value);
+                    setGeometryModel((CoordinateViewModel) geometryModel.withValue(value));
                     return Unit.INSTANCE;
                 },
                 fieldUid -> {
@@ -942,6 +942,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         } else {
             this.newGeometry = null;
         }
+    }
+
+    @Override
+    public void displayFeatureTypeError() {
+        displayMessage(getString(R.string.coordinate_feature_type_error));
     }
 
     @Override
