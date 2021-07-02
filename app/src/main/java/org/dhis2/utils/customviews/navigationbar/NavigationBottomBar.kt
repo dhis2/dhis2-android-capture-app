@@ -19,11 +19,11 @@ import androidx.core.view.forEachIndexed
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.LabelVisibilityMode.LABEL_VISIBILITY_UNLABELED
+import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.clipWithRoundedCorners
 import org.dhis2.Bindings.dp
 import org.dhis2.R
-import javax.inject.Inject
 
 const val itemIndicatorTag = "ITEM_INDICATOR"
 
@@ -31,10 +31,10 @@ class NavigationBottomBar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-): BottomNavigationView(context, attrs, defStyleAttr) {
+) : BottomNavigationView(context, attrs, defStyleAttr) {
 
     @Inject
-    lateinit var repositoryBottom: NavigationBottomBarRepository
+    lateinit var repository: NavigationBottomBarRepository
 
     private val animations = NavigationBottomBarAnimations(this)
     private var hidden = false
@@ -207,7 +207,7 @@ class NavigationBottomBar @JvmOverloads constructor(
     }
 
     fun relationshipVisibility(teiUid: String) {
-        val count = repositoryBottom.getRelationshipTypeCount(teiUid)
+        val count = repository.getRelationshipTypeCount(teiUid)
         if (count == 0) {
             val item = menu.findItem(R.id.navigation_relationships)
             item.isVisible = false
@@ -215,7 +215,6 @@ class NavigationBottomBar @JvmOverloads constructor(
     }
 
     fun isRelationshipsVisible() = menu.findItem(R.id.navigation_relationships).isVisible
-
 
     override fun onVisibilityChanged(changedView: View, visibility: Int) {
         super.onVisibilityChanged(changedView, visibility)
