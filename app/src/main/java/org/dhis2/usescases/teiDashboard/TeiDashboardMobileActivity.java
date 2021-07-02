@@ -272,7 +272,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                                 default:
                                     break;
                             }
-                            binding.navigationBar.selectItemAt(position);
+                            if (binding.navigationBar.isRelationshipsVisible()) {
+                                binding.navigationBar.selectItemAt(position);
+                            } else {
+                                if (position >= NOTES_LANDSCAPE_POS)
+                                    binding.navigationBar.selectItemAt(position - 1);
+                            }
                         }
                     }
             );
