@@ -354,7 +354,6 @@
                         android:gravity="center_horizontal"
                         android:textSize="18sp"
                         tools:text="You need to enter at least N attributes to do a search" />
-
                 </RelativeLayout>
 
                 <RelativeLayout

@@ -103,7 +103,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*region LIFECYCLE*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         val enrollmentUid = intent.getStringExtra(ENROLLMENT_UID_EXTRA) ?: ""
         val programUid = intent.getStringExtra(PROGRAM_UID_EXTRA) ?: ""
         val enrollmentMode = intent.getStringExtra(MODE_EXTRA)?.let { EnrollmentMode.valueOf(it) }
