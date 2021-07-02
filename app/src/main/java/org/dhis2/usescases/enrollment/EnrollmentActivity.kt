@@ -132,8 +132,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             .factory(supportFragmentManager)
             .build()
 
-        super.onCreate(savedInstanceState)
-
         if (presenter.getEnrollment() == null ||
             presenter.getEnrollment()?.trackedEntityInstance() == null
         ) {
