@@ -48,7 +48,7 @@ allprojects {
             credentials {
                 // This should always be `mapbox` (not your username).
                 username = 'mapbox'
-                password = mapboxDownloadsToken
+                password =  "'" +mapboxDownloadsToken+ "'"
             }
         }
     }
