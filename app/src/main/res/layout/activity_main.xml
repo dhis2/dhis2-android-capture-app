@@ -157,7 +157,7 @@
                     app:layout_constraintVertical_bias="0.0"
                     tools:layout="@layout/fragment_program" />
 
-                <org.dhis2.utils.customviews.DhisBottomNavigationBar
+                <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
                     android:id="@+id/navigationBar"
                     style="@style/DhisBottomNavigationView"
                     android:layout_width="match_parent"

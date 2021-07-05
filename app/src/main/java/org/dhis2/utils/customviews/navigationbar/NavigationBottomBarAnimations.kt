@@ -1,9 +1,9 @@
-package org.dhis2.utils.customviews
+package org.dhis2.utils.customviews.navigationbar
 
 import android.view.ViewPropertyAnimator
 import android.view.animation.AnticipateOvershootInterpolator
 
-class DhisBottomNavigationBarAnimations(val view: DhisBottomNavigationBar) {
+class NavigationBottomBarAnimations(val view: NavigationBottomBar) {
 
     private val hideAnimationDuration = 700L
     private val selectionInDuration = 200L
