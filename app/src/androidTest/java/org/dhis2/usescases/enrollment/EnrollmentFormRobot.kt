@@ -37,7 +37,7 @@ class EnrollmentFormRobot : BaseRobot() {
     }
 
     fun changePickerDate() {
-        onView(withId(equalTo(R.id.widget_datepicker))).perform(PickerActions.setDate(2020, 1, 1))
+        onView(withId(equalTo(R.id.datePicker))).perform(PickerActions.setDate(2020, 1, 1))
     }
 
     fun clickOnAcceptEnrollmentDate() {

@@ -69,7 +69,7 @@ class SearchTeiRobot : BaseRobot() {
     }
 
     fun selectSpecificDate(year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        onView(withId(R.id.widget_datepicker)).perform(PickerActions.setDate(year, monthOfYear, dayOfMonth))
+        onView(withId(R.id.datePicker)).perform(PickerActions.setDate(year, monthOfYear, dayOfMonth))
     }
 
     fun acceptDate() {
