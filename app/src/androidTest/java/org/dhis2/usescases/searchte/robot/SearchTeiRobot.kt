@@ -1,5 +1,6 @@
 package org.dhis2.usescases.searchte.robot
 
+import android.widget.DatePicker
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -12,11 +13,11 @@ import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.hasSibling
 import androidx.test.espresso.matcher.ViewMatchers.withChild
+import androidx.test.espresso.matcher.ViewMatchers.withClassName
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.allElementsHave
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.viewactions.clickChildViewWithId
@@ -24,8 +25,10 @@ import org.dhis2.common.viewactions.openSpinnerPopup
 import org.dhis2.common.viewactions.typeChildViewWithId
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
+import org.hamcrest.Matchers
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
+
 
 fun searchTeiRobot(searchTeiRobot: SearchTeiRobot.() -> Unit) {
     SearchTeiRobot().apply {
@@ -73,7 +76,7 @@ class SearchTeiRobot : BaseRobot() {
     }
 
     fun acceptDate() {
-        onView(withId(R.id.acceptButton)).perform(click())
+        onView(withId(R.id.acceptBtn)).perform(click())
     }
 
     fun clickOnFab() {

@@ -23,6 +23,7 @@ class FilterTest: BaseTest() {
     fun checkFromToDateFilter() {
         setupCredentials()
         startActivity()
+        setDatePicker()
 
         homeRobot {
             openFilters()

@@ -62,6 +62,7 @@ class MainTest : BaseTest() {
     @Test
     fun checkDateFilterSetInitialDateWhenOpenedAgain(){
         setupCredentials()
+        setDatePicker()
         startActivity()
 
         homeRobot {

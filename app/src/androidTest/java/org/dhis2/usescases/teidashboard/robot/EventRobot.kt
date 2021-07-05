@@ -75,7 +75,7 @@ class EventRobot : BaseRobot() {
     }
 
     fun acceptUpdateEventDate() {
-        onView(withId(R.id.acceptButton)).perform(click())
+        onView(withId(R.id.acceptBtn)).perform(click())
     }
 
     fun clickOnUpdate() {

@@ -297,6 +297,7 @@ class TeiDashboardTest : BaseTest() {
         val visitANCEvent = "ANC Visit (2-4+)"
         val firstANCVisitEvent = "ANC 1st visit"
 
+        setDatePicker()
         prepareTeiToEnrollToOtherProgramAndLaunchActivity(rule)
 
         teiDashboardRobot {

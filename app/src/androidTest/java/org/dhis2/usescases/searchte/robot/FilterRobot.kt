@@ -97,7 +97,7 @@ class FilterRobot : BaseRobot() {
 
     fun chooseDate(year: Int, monthOfYear: Int, dayOfMonth: Int) {
         onView(withId(R.id.datePicker)).perform(PickerActions.setDate(year, monthOfYear, dayOfMonth))
-        onView(withId(R.id.acceptButton)).perform(click())
+        onView(withId(R.id.acceptBtn)).perform(click())
     }
 
     fun checkTEIsAreOpen() {
