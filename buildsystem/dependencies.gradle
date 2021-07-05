@@ -53,7 +53,7 @@ ext {
             autovalueparcel           : "0.2.7",
 
             //Mapbox
-            mapboxsdk                 : "9.2.0",
+            mapboxsdk                 : "9.6.1",
             mapboxmarkerview          : "0.3.0",
             mapboxannotation          : "0.8.0",
 
