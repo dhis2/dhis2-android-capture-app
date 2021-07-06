@@ -319,11 +319,10 @@ class SearchTETest : BaseTest() {
                 mapIdlingResource = MapIdlingResource(rule)
                 IdlingRegistry.getInstance().register(mapIdlingResource)
                 map = mapIdlingResource!!.map
+                checkCarouselTEICardInfo(firstName)
             } catch (ex: IdlingResourceTimeoutException) {
                 throw RuntimeException("Could not start test")
             }
-            checkCarouselTEICardInfo(firstName)
-            IdlingRegistry.getInstance().unregister(mapIdlingResource)
         }
     }
 
