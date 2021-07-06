@@ -72,7 +72,7 @@ class FiltersRobot : BaseRobot() {
     }
 
     fun acceptDateSelected(){
-        onView(withId(R.id.acceptButton)).perform(click())
+        onView(withId(R.id.acceptBtn)).perform(click())
     }
 
     fun checkDate(year: Int, monthOfYear: Int, dayOfMonth: Int) {
