@@ -1,8 +1,10 @@
 package org.dhis2.usescases.searchte
 
 import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.IdlingResourceTimeoutException
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import com.mapbox.mapboxsdk.maps.MapboxMap
 import org.dhis2.R
 import org.dhis2.common.idlingresources.MapIdlingResource
 import org.dhis2.usescases.BaseTest
@@ -16,6 +18,7 @@ import org.dhis2.usescases.searchte.robot.filterRobot
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.After
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,6 +32,7 @@ class SearchTETest : BaseTest() {
     val rule = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
     private var mapIdlingResource: MapIdlingResource? = null
+    private var map: MapboxMap? = null
 
     @Test
     fun shouldSuccessfullySearchByName() {
@@ -311,7 +315,15 @@ class SearchTETest : BaseTest() {
 
         searchTeiRobot {
             clickOnShowMap()
+            try {
+                mapIdlingResource = MapIdlingResource(rule)
+                IdlingRegistry.getInstance().register(mapIdlingResource)
+                map = mapIdlingResource!!.map
+            } catch (ex: IdlingResourceTimeoutException) {
+                throw RuntimeException("Could not start test")
+            }
             checkCarouselTEICardInfo(firstName)
+            IdlingRegistry.getInstance().unregister(mapIdlingResource)
         }
     }
 
