@@ -41,7 +41,7 @@ class EnrollmentFormRobot : BaseRobot() {
     }
 
     fun clickOnAcceptEnrollmentDate() {
-        onView(withId(R.id.acceptButton)).perform(ViewActions.click())
+        onView(withId(R.id.acceptBtn)).perform(ViewActions.click())
     }
 
     fun checkDateWarningIsDisplayed() {
