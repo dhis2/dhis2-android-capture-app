@@ -106,7 +106,6 @@ class SettingsTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldSuccessfullyDeleteLocalData() {
         startActivity()
 
@@ -121,6 +120,7 @@ class SettingsTest : BaseTest() {
             clickOnAcceptDialog()
             checkSnackBarIsShown()
         }
+        cleanLocalDatabase()
     }
 
     @Test
@@ -146,6 +146,7 @@ class SettingsTest : BaseTest() {
             checkUsernameFieldIsClear()
             checkPasswordFieldIsClear()
         }
+        cleanLocalDatabase()
     }
 
    @Test
