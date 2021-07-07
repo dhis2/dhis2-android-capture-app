@@ -12,7 +12,7 @@ class GraphToPieData {
         return PieData(
             PieDataSet(
                 coordinateToPieEntryMapper.map(graph.series.last().coordinates),
-                graph.series.last().fieldName
+                null
             ).also {
                 it.colors = SerieColors.getColors()
                 it.xValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
