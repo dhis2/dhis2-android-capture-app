@@ -2,8 +2,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -17,7 +15,6 @@ import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
 
@@ -26,15 +23,16 @@ import com.jakewharton.rxbinding2.view.RxView;
 import org.dhis2.App;
 import org.dhis2.Bindings.DoubleExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
+import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
+import org.dhis2.commons.prefs.Preference;
+import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.location.LocationProvider;
-import org.dhis2.commons.prefs.Preference;
-import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
-import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.form.data.GeometryController;
 import org.dhis2.form.data.GeometryParserImpl;
 import org.dhis2.form.model.FieldUiModel;
@@ -621,96 +619,49 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showDateDialog(DatePickerDialog.OnDateSetListener listener) {
-        showCustomCalendar(listener);
+        showCalendar(listener);
     }
 
-    private void showNativeCalendar(DatePickerDialog.OnDateSetListener listener) {
-        Calendar calendar = Calendar.getInstance();
-
-        if (selectedDate != null)
-            calendar.setTime(selectedDate);
-
-        if (eventCreationType == EventCreationType.SCHEDULE)
-            calendar.add(Calendar.DAY_OF_YEAR, eventScheduleInterval);
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, listener,
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH));
-
-        if (program.expiryPeriodType() != null) {
-            Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
-            datePickerDialog.getDatePicker().setMinDate(minDate.getTime());
+    private void showCalendar(DatePickerDialog.OnDateSetListener listener) {
+        int scheduleInterval = 0;
+        Date minDate = null;
+        Date maxDate = null;
+        if (eventCreationType == EventCreationType.SCHEDULE) {
+            scheduleInterval = eventScheduleInterval;
         }
 
+        if (program.expiryPeriodType() != null) {
+            minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
+        }
         switch (eventCreationType) {
             case ADDNEW:
             case DEFAULT:
-                datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
+                maxDate = new Date(System.currentTimeMillis() - 1000);
                 break;
             case REFERAL:
             case SCHEDULE:
                 break;
         }
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            datePickerDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
-                datePickerDialog.dismiss();
-                showCustomCalendar(listener);
-            });
-        }
+        CalendarPicker dialog = new CalendarPicker(getContext());
+        dialog.setInitialDate(selectedDate);
+        dialog.setMinDate(minDate);
+        dialog.setMaxDate(maxDate);
+        dialog.setScheduleInterval(scheduleInterval);
+        dialog.setListener(
+                new OnDatePickerListener() {
+                    @Override
+                    public void onNegativeClick() { }
 
-        datePickerDialog.show();
-    }
-
-    private void showCustomCalendar(DatePickerDialog.OnDateSetListener listener) {
-        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        WidgetDatepickerBinding widgetBinding = WidgetDatepickerBinding.inflate(layoutInflater);
-        final DatePicker datePicker = widgetBinding.widgetDatepicker;
-
-        Calendar calendar = Calendar.getInstance();
-
-        if (selectedDate != null)
-            calendar.setTime(selectedDate);
-
-        if (eventCreationType == EventCreationType.SCHEDULE)
-            calendar.add(Calendar.DAY_OF_YEAR, eventScheduleInterval);
-
-        datePicker.updateDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-
-        if (program.expiryPeriodType() != null) {
-            Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
-            datePicker.setMinDate(minDate.getTime());
-        }
-
-        switch (eventCreationType) {
-            case ADDNEW:
-            case DEFAULT:
-                datePicker.setMaxDate(System.currentTimeMillis() - 1000);
-                break;
-            case REFERAL:
-            case SCHEDULE:
-                break;
-        }
-
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme);
-
-        alertDialog.setView(widgetBinding.getRoot());
-        Dialog dialog = alertDialog.create();
-
-        widgetBinding.changeCalendarButton.setOnClickListener(calendarButton -> {
-            showNativeCalendar(listener);
-            dialog.dismiss();
-        });
-        widgetBinding.clearButton.setOnClickListener(clearButton -> dialog.dismiss());
-        widgetBinding.acceptButton.setOnClickListener(acceptButton -> {
-            listener.onDateSet(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-            dialog.dismiss();
-        });
-
+                    @Override
+                    public void onPositiveClick(DatePicker datePicker) {
+                        onDateSet(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                    }
+                }
+        );
         dialog.show();
     }
-
+    
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
         Calendar c = Calendar.getInstance();

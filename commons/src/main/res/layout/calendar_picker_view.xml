@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -13,35 +14,36 @@
             android:background="@android:color/white">
 
             <DatePicker
-                android:id="@+id/widget_datepicker"
+                android:id="@+id/datePicker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:calendarViewShown="false"
-                android:datePickerMode="spinner"
-                android:visibility="visible"/>
+                android:datePickerMode="spinner"/>
+
 
             <DatePicker
+                android:id="@+id/datePickerCalendar"
                 android:theme="@style/DatePickerTheme"
-                android:id="@+id/widget_datepicker_calendar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:calendarViewShown="false"
-                android:visibility="gone" />
+                android:calendarViewShown="false"/>
 
         </FrameLayout>
 
         <LinearLayout
-            app:versionVisibility="@{true}"
+            app:versionCustomVisibility="@{true}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
+
             <ImageButton
-                android:id="@+id/changeCalendarButton"
+                android:id="@+id/changeCalendarBtn"
                 style="@style/ActionIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_calendar_v2" />
+                app:srcCompat="@drawable/ic_calendar_v2"/>
+
 
             <TextView
                 android:layout_width="0dp"
@@ -59,8 +61,9 @@
             android:gravity="end"
             android:orientation="horizontal">
 
+
             <Button
-                android:id="@+id/clearButton"
+                android:id="@+id/clearBtn"
                 style="@style/TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -68,8 +71,9 @@
                 android:textColor="@color/text_black_333"
                 android:textSize="12sp" />
 
+
             <Button
-                android:id="@+id/acceptButton"
+                android:id="@+id/acceptBtn"
                 style="@style/TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
