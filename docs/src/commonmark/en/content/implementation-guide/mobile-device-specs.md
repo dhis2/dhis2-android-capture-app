@@ -28,7 +28,7 @@ In general terms when having to choose different versions of Android aim for the
 <tr>
 <td><b>OS</b></td>
 <td colspan="2"> 
-Minimum Supported: Android 4.4 (to be deprecated end 2021) <br />
+Minimum Supported: Android 4.4 (to be deprecated Apr 2022) <br />
 Minimum Recommended for new devices: <b>Android 7.X</b> <br />
 Recommended for new devices: <b>Android 8.X</b> or superior
 </td>
