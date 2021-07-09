@@ -1,19 +1,16 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.view.LayoutInflater;
+
 import android.widget.DatePicker;
 
-import androidx.appcompat.app.AlertDialog;
-
 import org.dhis2.R;
-import org.dhis2.databinding.WidgetDatepickerBinding;
+import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
+import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
 import org.dhis2.usescases.main.program.ProgramViewModel;
 import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -54,148 +51,64 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         getPrograms();
     }
 
-    private void showNativeCalendar(String programUid, String uid, OrgUnitDialog orgUnitDialog) {
-
-        Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-
-        DatePickerDialog dateDialog = new DatePickerDialog(view.getContext(), (
-                (datePicker, year1, month1, day1) -> {
-                    Calendar selectedCalendar = Calendar.getInstance();
-                    selectedCalendar.set(Calendar.YEAR, year1);
-                    selectedCalendar.set(Calendar.MONTH, month1);
-                    selectedCalendar.set(Calendar.DAY_OF_MONTH, day1);
-                    selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
-                    selectedCalendar.set(Calendar.MINUTE, 0);
-                    selectedCalendar.set(Calendar.SECOND, 0);
-                    selectedCalendar.set(Calendar.MILLISECOND, 0);
-                    selectedEnrollmentDate = selectedCalendar.getTime();
-
-                    compositeDisposable.add(getOrgUnits(programUid)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    allOrgUnits -> {
-                                        ArrayList<OrganisationUnit> orgUnits = new ArrayList<>();
-                                        for (OrganisationUnit orgUnit : allOrgUnits) {
-                                            boolean afterOpening = false;
-                                            boolean beforeClosing = false;
-                                            if (orgUnit.openingDate() == null || !selectedEnrollmentDate.before(orgUnit.openingDate()))
-                                                afterOpening = true;
-                                            if (orgUnit.closedDate() == null || !selectedEnrollmentDate.after(orgUnit.closedDate()))
-                                                beforeClosing = true;
-                                            if (afterOpening && beforeClosing)
-                                                orgUnits.add(orgUnit);
-                                        }
-                                        if (orgUnits.size() > 1) {
-                                            orgUnitDialog.setOrgUnits(orgUnits);
-                                            if (!orgUnitDialog.isAdded())
-                                                orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
-                                        } else
-                                            enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
-                                    },
-                                    Timber::d
-                            )
-                    );
-
-
-                }),
-                year,
-                month,
-                day);
-        Program selectedProgram = getProgramFromUid(programUid);
-        if (selectedProgram != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
-            dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
-        }
-        if (selectedProgram != null) {
-            dateDialog.setTitle(selectedProgram.enrollmentDateLabel());
-        }
-        dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
-            dialog.dismiss();
-        });
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            dateDialog.setButton(DialogInterface.BUTTON_NEUTRAL, view.getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
-                dateDialog.dismiss();
-                showCustomCalendar(programUid, uid, orgUnitDialog);
-            });
-        }
-
-        dateDialog.show();
-    }
-
     private void showCustomCalendar(String programUid, String uid, OrgUnitDialog orgUnitDialog) {
-        LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
-//        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
-        WidgetDatepickerBinding binding = WidgetDatepickerBinding.inflate(layoutInflater);
-        final DatePicker datePicker = binding.widgetDatepicker;
-
-        Calendar c = Calendar.getInstance();
-        datePicker.updateDate(
-                c.get(Calendar.YEAR),
-                c.get(Calendar.MONTH),
-                c.get(Calendar.DAY_OF_MONTH));
-
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext(), R.style.DatePickerTheme);
+        CalendarPicker dialog = new CalendarPicker(view.getContext());
 
         Program selectedProgram = getProgramFromUid(programUid);
         if (selectedProgram != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
-            datePicker.setMaxDate(System.currentTimeMillis());
+            dialog.setMaxDate(new Date(System.currentTimeMillis()));
         }
 
         if (selectedProgram != null) {
-            alertDialog.setTitle(selectedProgram.enrollmentDateLabel());
+            dialog.setTitle(selectedProgram.enrollmentDateLabel());
         }
 
-        alertDialog.setView(binding.getRoot());
-        Dialog dialog = alertDialog.create();
+        dialog.setListener(new OnDatePickerListener() {
+            @Override
+            public void onNegativeClick() {
+                dialog.dismiss();
+            }
 
-        binding.changeCalendarButton.setOnClickListener(changeButton -> {
-            showNativeCalendar(programUid, uid, orgUnitDialog);
-            dialog.dismiss();
-        });
+            @Override
+            public void onPositiveClick(@NotNull DatePicker datePicker) {
+                Calendar selectedCalendar = Calendar.getInstance();
+                selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
+                selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
+                selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
+                selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
+                selectedCalendar.set(Calendar.MINUTE, 0);
+                selectedCalendar.set(Calendar.SECOND, 0);
+                selectedCalendar.set(Calendar.MILLISECOND, 0);
+                selectedEnrollmentDate = selectedCalendar.getTime();
 
-        binding.clearButton.setOnClickListener(clearButton -> dialog.dismiss());
-        binding.acceptButton.setOnClickListener(acceptButton -> {
-            Calendar selectedCalendar = Calendar.getInstance();
-            selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
-            selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
-            selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-            selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
-            selectedCalendar.set(Calendar.MINUTE, 0);
-            selectedCalendar.set(Calendar.SECOND, 0);
-            selectedCalendar.set(Calendar.MILLISECOND, 0);
-            selectedEnrollmentDate = selectedCalendar.getTime();
-
-            compositeDisposable.add(getOrgUnits(programUid)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            allOrgUnits -> {
-                                ArrayList<OrganisationUnit> orgUnits = new ArrayList<>();
-                                for (OrganisationUnit orgUnit : allOrgUnits) {
-                                    boolean afterOpening = false;
-                                    boolean beforeClosing = false;
-                                    if (orgUnit.openingDate() == null || !selectedEnrollmentDate.before(orgUnit.openingDate()))
-                                        afterOpening = true;
-                                    if (orgUnit.closedDate() == null || !selectedEnrollmentDate.after(orgUnit.closedDate()))
-                                        beforeClosing = true;
-                                    if (afterOpening && beforeClosing)
-                                        orgUnits.add(orgUnit);
-                                }
-                                if (orgUnits.size() > 1) {
-                                    orgUnitDialog.setOrgUnits(orgUnits);
-                                    if (!orgUnitDialog.isAdded())
-                                        orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
-                                } else if (!orgUnits.isEmpty())
-                                    enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
-                                else
-                                    view.displayMessage(view.getContext().getString(R.string.no_org_units));
-                            },
-                            Timber::d
-                    ));
+                compositeDisposable.add(getOrgUnits(programUid)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                allOrgUnits -> {
+                                    ArrayList<OrganisationUnit> orgUnits = new ArrayList<>();
+                                    for (OrganisationUnit orgUnit : allOrgUnits) {
+                                        boolean afterOpening = false;
+                                        boolean beforeClosing = false;
+                                        if (orgUnit.openingDate() == null || !selectedEnrollmentDate.before(orgUnit.openingDate()))
+                                            afterOpening = true;
+                                        if (orgUnit.closedDate() == null || !selectedEnrollmentDate.after(orgUnit.closedDate()))
+                                            beforeClosing = true;
+                                        if (afterOpening && beforeClosing)
+                                            orgUnits.add(orgUnit);
+                                    }
+                                    if (orgUnits.size() > 1) {
+                                        orgUnitDialog.setOrgUnits(orgUnits);
+                                        if (!orgUnitDialog.isAdded())
+                                            orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
+                                    } else if (!orgUnits.isEmpty())
+                                        enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
+                                    else
+                                        view.displayMessage(view.getContext().getString(R.string.no_org_units));
+                                },
+                                Timber::d
+                        ));
+            }
         });
 
         dialog.show();

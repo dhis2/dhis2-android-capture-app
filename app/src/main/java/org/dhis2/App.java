@@ -13,6 +13,8 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
+import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponent;
+import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerModule;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.di.dagger.PerServer;
 import org.dhis2.commons.di.dagger.PerUser;
@@ -320,5 +322,10 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     @Override
     public FeatureConfigActivityComponent provideFeatureConfigActivityComponent() {
         return userComponent.plus(new FeatureConfigActivityModule());
+    }
+
+    @Override
+    public CalendarPickerComponent provideCalendarPickerComponent() {
+        return userComponent.plus(new CalendarPickerModule());
     }
 }

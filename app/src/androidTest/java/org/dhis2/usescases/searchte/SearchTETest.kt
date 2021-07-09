@@ -111,6 +111,7 @@ class SearchTETest : BaseTest() {
         val lastNamePosition = 1
         val filterCount = "3"
 
+        setDatePicker()
         prepareTestAdultWomanProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
@@ -154,6 +155,8 @@ class SearchTETest : BaseTest() {
         val orgUnit = "Ngelehun CHC"
         val registerTeiDetails = createRegisterTEI()
         val overdueDate = createOverdueDate()
+
+        setDatePicker()
         prepareTestAdultWomanProgrammeIntentAndLaunchActivity(rule)
 
         teiFlowRobot {
@@ -204,6 +207,7 @@ class SearchTETest : BaseTest() {
         val totalFilterCount = "2"
         val filterCount = "1"
 
+        setDatePicker()
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         filterRobot {
@@ -230,6 +234,7 @@ class SearchTETest : BaseTest() {
         val totalCount = "2"
         val filterCount = "1"
 
+        setDatePicker()
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         filterRobot {
