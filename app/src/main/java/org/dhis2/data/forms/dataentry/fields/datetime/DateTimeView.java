@@ -132,6 +132,8 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         } else if (warning != null) {
             inputLayout.setErrorTextAppearance(R.style.warning_appearance);
             inputLayout.setError(warning);
+        }else{
+            inputLayout.setError(null);
         }
     }
 
