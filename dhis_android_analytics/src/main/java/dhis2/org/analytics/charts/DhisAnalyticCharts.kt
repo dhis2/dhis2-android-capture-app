@@ -2,6 +2,7 @@ package dhis2.org.analytics.charts
 
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.di.DaggerChartsComponent
+import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 import javax.inject.Inject
 
 class DhisAnalyticCharts @Inject constructor(
@@ -9,6 +10,10 @@ class DhisAnalyticCharts @Inject constructor(
 ) : Charts {
     override fun hasCharts(): Boolean {
         return true
+    }
+
+    override fun getVisualizationGroups(uid: String?): List<AnalyticsDhisVisualizationsGroup> {
+        return chartsRepository.getVisualizationGroups(uid)
     }
 
     override fun geEnrollmentCharts(enrollmentUid: String): List<Graph> {
