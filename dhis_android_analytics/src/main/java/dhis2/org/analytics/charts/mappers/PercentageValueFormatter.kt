@@ -7,6 +7,6 @@ import com.github.mikephil.charting.formatter.PercentFormatter
 class PercentageValueFormatter(val pieChart: PieChart) : PercentFormatter(pieChart) {
 
     override fun getPieLabel(value: Float, pieEntry: PieEntry?): String {
-        return super.getPieLabel(value, pieEntry).plus(" (${pieEntry?.y?.toInt()})")
+        return "${pieEntry?.y?.toInt()}".plus(" (${super.getPieLabel(value, pieEntry)})")
     }
 }
