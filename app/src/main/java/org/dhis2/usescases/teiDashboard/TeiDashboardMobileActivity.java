@@ -138,13 +138,18 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         filterManager.setUnsupportedFilters(Filters.ENROLLMENT_DATE, Filters.ENROLLMENT_STATUS);
         binding.setTotalFilters(filterManager.getTotalFilters());
         binding.navigationBar.setVisibility(programUid != null ? View.VISIBLE : View.GONE);
+        binding.navigationBar.relationshipVisibility(teiUid);
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             int pagePosition = adapter.getNavigationPagePosition(item.getItemId());
+            boolean isRelationshipVisible = true;
+            if (!binding.navigationBar.isRelationshipsVisible()) {
+                isRelationshipVisible = false;
+            }
             if (pagePosition != -1) {
                 if (OrientationUtilsKt.isLandscape()) {
-                    binding.teiTablePager.setCurrentItem(pagePosition);
+                    binding.teiTablePager.setCurrentItem(pagePosition, isRelationshipVisible);
                 } else {
-                    binding.teiPager.setCurrentItem(pagePosition);
+                    binding.teiPager.setCurrentItem(pagePosition, isRelationshipVisible);
                 }
             }
             return true;
@@ -240,7 +245,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                             } else {
                                 binding.relationshipMapIcon.setVisibility(View.GONE);
                             }
-                            binding.navigationBar.selectItemAt(position);
+                            if (binding.navigationBar.isRelationshipsVisible()) {
+                                binding.navigationBar.selectItemAt(position);
+                            } else {
+                                if (position >= NOTES_POS)
+                                    binding.navigationBar.selectItemAt(position - 1);
+                            }
                         }
                     }
             );
@@ -266,7 +276,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                                 default:
                                     break;
                             }
-                            binding.navigationBar.selectItemAt(position);
+                            if (binding.navigationBar.isRelationshipsVisible()) {
+                                binding.navigationBar.selectItemAt(position);
+                            } else {
+                                if (position >= NOTES_LANDSCAPE_POS)
+                                    binding.navigationBar.selectItemAt(position - 1);
+                            }
                         }
                     }
             );
