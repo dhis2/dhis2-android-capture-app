@@ -1,19 +1,13 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.DatePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -23,13 +17,11 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
-import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.FileResourcesUtil;
@@ -41,7 +33,6 @@ import org.dhis2.utils.customviews.FormBottomDialog;
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
 
 import java.io.File;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -317,58 +308,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         showSnackBar(R.string.fix_error);
     }
 
-    private void reschedule() {
-
-    }
-
-    private void showNativeCalendar() {
-        Calendar calendar = DateUtils.getInstance().getCalendar();
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
-            Calendar chosenDate = Calendar.getInstance();
-            chosenDate.set(year, month, dayOfMonth);
-            presenter.rescheduleEvent(chosenDate.getTime());
-        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            datePickerDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
-                datePickerDialog.dismiss();
-                showCustomCalendar();
-            });
-        }
-
-        datePickerDialog.show();
-    }
-
-    private void showCustomCalendar() {
-        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        WidgetDatepickerBinding widgetBinding = WidgetDatepickerBinding.inflate(layoutInflater);
-        final DatePicker datePicker = widgetBinding.widgetDatepicker;
-
-        Calendar c = DateUtils.getInstance().getCalendar();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-
-        datePicker.updateDate(year, month, day);
-
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme);
-
-        alertDialog.setView(widgetBinding.getRoot());
-        Dialog dialog = alertDialog.create();
-
-        widgetBinding.changeCalendarButton.setOnClickListener(calendarButton -> {
-            showNativeCalendar();
-            dialog.dismiss();
-        });
-        widgetBinding.clearButton.setOnClickListener(clearButton -> dialog.dismiss());
-        widgetBinding.acceptButton.setOnClickListener(acceptButton -> {
-            Calendar chosenDate = Calendar.getInstance();
-            chosenDate.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-            presenter.rescheduleEvent(chosenDate.getTime());
-            dialog.dismiss();
-        });
-        dialog.show();
-    }
+    private void reschedule() { }
 
     @Override
     public void showSnackBar(int messageId) {

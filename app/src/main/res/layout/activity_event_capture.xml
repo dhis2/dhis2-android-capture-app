@@ -129,7 +129,7 @@
             app:layout_constraintBottom_toTopOf="@id/navigationBar"
             app:layout_constraintTop_toBottomOf="@id/activityToolbar" />
 
-        <org.dhis2.utils.customviews.DhisBottomNavigationBar
+        <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
             android:id="@+id/navigationBar"
             style="@style/DhisBottomNavigationView"
             android:layout_width="match_parent"

@@ -43,5 +43,7 @@ class Preference {
 
         const val FLAG = "FLAG"
         const val THEME = "THEME"
+
+        const val DATE_PICKER = "DATE_PICKER"
     }
 }

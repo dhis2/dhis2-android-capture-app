@@ -17,6 +17,7 @@ import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
 import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
+import org.dhis2.commons.prefs.Preference
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton
 import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.arch.api.internal.ServerURLWrapper
@@ -96,6 +97,10 @@ open class BaseTest {
             setData(KEYSTORE_USERNAME, USERNAME)
             setData(KEYSTORE_PASSWORD, PASSWORD)
         }
+    }
+
+    fun setDatePicker() {
+        preferencesRobot.saveValue(Preference.DATE_PICKER, true)
     }
 
     fun turnOnConnectivityAfterLogin(){
