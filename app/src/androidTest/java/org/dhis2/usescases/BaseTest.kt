@@ -6,6 +6,8 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
 import com.jakewharton.espresso.OkHttp3IdlingResource
+import org.dhis2.AppTest
+import org.dhis2.AppTest.Companion.DB_TO_IMPORT
 import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.common.keystore.KeyStoreRobot.Companion.KEYSTORE_PASSWORD
@@ -129,6 +131,10 @@ open class BaseTest {
 
     private fun stopMockServer() {
         mockWebServerRobot.shutdown()
+    }
+
+    fun cleanLocalDatabase() {
+        (context.applicationContext as AppTest).deleteDatabase(DB_TO_IMPORT)
     }
 
     companion object {
