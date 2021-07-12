@@ -43,6 +43,7 @@ class FilterTest: BaseTest() {
             checkItemsInProgram(6, "Contraceptives Voucher Program", "5")
             checkItemsInProgram(27, "Mortality < 5 years", "4")
         }
+        cleanLocalDatabase()
     }
 
     @Test
@@ -66,6 +67,7 @@ class FilterTest: BaseTest() {
             checkItemsInProgram(43, "XX TEST EVENT FULL", "2")
             checkItemsInProgram(45, "XX TEST TRACKER PROGRAM", "4")
         }
+        cleanLocalDatabase()
     }
 
     @Test
@@ -89,6 +91,7 @@ class FilterTest: BaseTest() {
             checkItemsInProgram(43, "XX TEST EVENT FULL", "2")
             checkItemsInProgram(45, "XX TEST TRACKER PROGRAM", "4")
         }
+        cleanLocalDatabase()
     }
 
     @Test
@@ -118,6 +121,7 @@ class FilterTest: BaseTest() {
             checkItemsInProgram(0,"Antenatal care visit", "1")
             checkItemsInProgram(4,"Child Programme", "0")
         }
+        cleanLocalDatabase()
     }
 
     @Test
@@ -154,6 +158,7 @@ class FilterTest: BaseTest() {
             checkItemsInProgram(37,"TB program", "0")
             checkItemsInProgram(41, "XX TEST EVENT FULL", "1")
         }
+        cleanLocalDatabase()
     }
 
 
