@@ -73,6 +73,7 @@ class SyncFlowTest : BaseTest() {
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.SUCCEEDED)))
             checkSyncWasSuccessfully()
         }
+        cleanLocalDatabase()
     }
 
     @Test
@@ -108,6 +109,7 @@ class SyncFlowTest : BaseTest() {
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.FAILED)))
             checkSyncFailed()
         }
+        cleanLocalDatabase()
     }
 
     @Test
@@ -130,6 +132,7 @@ class SyncFlowTest : BaseTest() {
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.SUCCEEDED)))
             checkSyncWasSuccessfully()
         }
+        cleanLocalDatabase()
     }
 
     @Test
@@ -152,7 +155,7 @@ class SyncFlowTest : BaseTest() {
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.FAILED)))
             checkSyncFailed()
         }
-
+        cleanLocalDatabase()
     }
 
     @Test
@@ -177,6 +180,7 @@ class SyncFlowTest : BaseTest() {
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.SUCCEEDED)))
             checkSyncWasSuccessfully() //sync failed
         }
+        cleanLocalDatabase()
     }
 
     @Test
@@ -201,6 +205,7 @@ class SyncFlowTest : BaseTest() {
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.FAILED)))
             checkSyncFailed()
         }
+        cleanLocalDatabase()
     }
 
     private fun mockedGranularWorkInfo(state: WorkInfo.State): WorkInfo {
