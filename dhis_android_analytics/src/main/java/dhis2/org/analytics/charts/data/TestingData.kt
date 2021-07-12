@@ -169,7 +169,7 @@ fun List<Graph>.pieChartTestingData(d2: D2, featureConfig: FeatureConfigReposito
                         GraphPoint(GregorianCalendar(2020, 0, 1).time, null, 40f, "PCR"),
                         GraphPoint(GregorianCalendar(2020, 10, 1).time, null, 15f, "RDT"),
                         GraphPoint(GregorianCalendar(2021, 8, 1).time, null, 60f, "MICROSCOPY"),
-                        GraphPoint(GregorianCalendar(2021, 8, 1).time, null, 6f, "OTHER")
+                        GraphPoint(GregorianCalendar(2021, 8, 2).time, null, 6f, "OTHER")
                     )
                 )
             )

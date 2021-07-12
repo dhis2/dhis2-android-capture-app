@@ -141,11 +141,15 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.navigationBar.relationshipVisibility(teiUid);
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             int pagePosition = adapter.getNavigationPagePosition(item.getItemId());
+            boolean isRelationshipVisible = true;
+            if (!binding.navigationBar.isRelationshipsVisible()) {
+                isRelationshipVisible = false;
+            }
             if (pagePosition != -1) {
                 if (OrientationUtilsKt.isLandscape()) {
-                    binding.teiTablePager.setCurrentItem(pagePosition);
+                    binding.teiTablePager.setCurrentItem(pagePosition, isRelationshipVisible);
                 } else {
-                    binding.teiPager.setCurrentItem(pagePosition);
+                    binding.teiPager.setCurrentItem(pagePosition, isRelationshipVisible);
                 }
             }
             return true;

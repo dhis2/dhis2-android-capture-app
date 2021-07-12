@@ -139,7 +139,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Override
     public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().showFromToSelector(this, datePeriods -> filterManager.addPeriod(datePeriods));
+            DateUtils.getInstance().fromCalendarSelector(this, datePeriods -> filterManager.addPeriod(datePeriods));
         } else {
             DateUtils.getInstance().showPeriodDialog(
                     this,

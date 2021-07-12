@@ -2,6 +2,8 @@ package org.dhis2.data.user;
 
 import androidx.annotation.NonNull;
 
+import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponent;
+import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerModule;
 import org.dhis2.commons.di.dagger.PerUser;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityComponent;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityModule;
@@ -190,6 +192,9 @@ public interface UserComponent {
 
     @NonNull
     FeatureConfigActivityComponent plus(FeatureConfigActivityModule featureModule);
+
+    @NonNull
+    CalendarPickerComponent plus(CalendarPickerModule calendarPickerModule);
 
     @NonNull
     AnalyticsFragmentComponent plus(AnalyticsFragmentModule analyticsFragmentModule);
