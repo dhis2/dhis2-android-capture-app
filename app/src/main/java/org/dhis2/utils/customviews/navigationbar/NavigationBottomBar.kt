@@ -72,7 +72,7 @@ class NavigationBottomBar @JvmOverloads constructor(
         post {
             menu.forEachIndexed { index, item ->
 
-                if(item.itemId == R.id.navigation_analytics){
+                if (item.itemId == R.id.navigation_analytics) {
                     item.isVisible = featureConfig.isFeatureEnable(Feature.ANDROAPP_2557)
                 }
 

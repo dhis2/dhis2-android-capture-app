@@ -2,8 +2,8 @@ package dhis2.org.analytics.charts
 
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.di.DaggerChartsComponent
-import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 import javax.inject.Inject
+import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 
 class DhisAnalyticCharts @Inject constructor(
     private val chartsRepository: ChartsRepository
