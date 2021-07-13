@@ -230,6 +230,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.mainLayout.setVisibility(View.VISIBLE);
                     binding.mainComponent.setVisibility(GONE);
                     showMap(true);
+                    break;
                 case R.id.navigation_analytics:
                     if (backDropActive) {
                         closeFilters();
@@ -822,6 +823,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 !backDropActive || general
         );
         setCarouselVisibility(backDropActive);
+        if(backDropActive) {
+            binding.navigationBar.hide();
+        }else{
+            binding.navigationBar.show();
+        }
 
         initSet.applyTo(binding.backdropLayout);
     }
