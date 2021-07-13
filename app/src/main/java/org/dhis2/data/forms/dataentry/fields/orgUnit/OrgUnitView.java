@@ -23,7 +23,7 @@ import org.dhis2.databinding.CustomTextViewAccentBinding;
 import org.dhis2.databinding.CustomTextViewBinding;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.dhis2.utils.customviews.TextInputAutoCompleteTextView;
 import org.dhis2.utils.customviews.orgUnitCascade.OrgUnitCascadeDialog;

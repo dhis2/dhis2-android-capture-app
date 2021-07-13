@@ -354,7 +354,6 @@
                         android:gravity="center_horizontal"
                         android:textSize="18sp"
                         tools:text="You need to enter at least N attributes to do a search" />
-
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -374,7 +373,7 @@
                         app:progressColor="@{@color/colorPrimary}" />
                 </RelativeLayout>
 
-                <org.dhis2.utils.customviews.DhisBottomNavigationBar
+                <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
                     android:id="@+id/navigationBar"
                     style="@style/DhisBottomNavigationView"
                     android:layout_width="match_parent"

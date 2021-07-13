@@ -103,7 +103,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*region LIFECYCLE*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         val enrollmentUid = intent.getStringExtra(ENROLLMENT_UID_EXTRA) ?: ""
         val programUid = intent.getStringExtra(PROGRAM_UID_EXTRA) ?: ""
         val enrollmentMode = intent.getStringExtra(MODE_EXTRA)?.let { EnrollmentMode.valueOf(it) }
@@ -118,18 +117,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             )
         ).inject(this)
 
-        if (presenter.getEnrollment() == null ||
-            presenter.getEnrollment()?.trackedEntityInstance() == null
-        ) {
-            finish()
-        }
-
-        forRelationship = intent.getBooleanExtra(FOR_RELATIONSHIP, false)
-        binding = DataBindingUtil.setContentView(this, R.layout.enrollment_activity)
-        binding.view = this
-
-        mode = enrollmentMode
-
         formView = FormView.Builder()
             .persistence(formRepository)
             .locationProvider(locationProvider)
@@ -142,7 +129,22 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                     hideProgress()
                 }
             }
+            .factory(supportFragmentManager)
             .build()
+
+        super.onCreate(savedInstanceState)
+
+        if (presenter.getEnrollment() == null ||
+            presenter.getEnrollment()?.trackedEntityInstance() == null
+        ) {
+            finish()
+        }
+
+        forRelationship = intent.getBooleanExtra(FOR_RELATIONSHIP, false)
+        binding = DataBindingUtil.setContentView(this, R.layout.enrollment_activity)
+        binding.view = this
+
+        mode = enrollmentMode
 
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.formViewContainer, formView)
@@ -226,7 +228,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 presenter.getEnrollment()!!.trackedEntityInstance(),
                 null,
                 presenter.getEnrollment()!!.organisationUnit(),
-                null,
+                presenter.getEventStage(eventUid),
                 presenter.getEnrollment()!!.uid(),
                 0,
                 presenter.getEnrollment()!!.status()

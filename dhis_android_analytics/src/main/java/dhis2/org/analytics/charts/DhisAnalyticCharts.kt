@@ -11,8 +11,20 @@ class DhisAnalyticCharts @Inject constructor(
         return true
     }
 
-    override fun getCharts(enrollmentUid: String): List<Graph> {
+    override fun geEnrollmentCharts(enrollmentUid: String): List<Graph> {
         return chartsRepository.getAnalyticsForEnrollment(enrollmentUid)
+    }
+
+    override fun getProgramVisualizations(programUid: String): List<Graph> {
+        return chartsRepository.getAnalyticsForProgram(programUid)
+    }
+
+    override fun getHomeVisualizations(): List<Graph> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getDataSetVisualizations(): List<Graph> {
+        TODO("Not yet implemented")
     }
 
     companion object Provider : Charts.Provider {

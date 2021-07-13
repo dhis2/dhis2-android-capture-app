@@ -12,6 +12,8 @@ import org.dhis2.utils.category.CategoryDialogComponent;
 import org.dhis2.utils.category.CategoryDialogModule;
 import org.dhis2.utils.customviews.CategoryComboDialogComponent;
 import org.dhis2.utils.customviews.CategoryComboDialogModule;
+import org.dhis2.utils.customviews.navigationbar.NavigationBottomBarComponent;
+import org.dhis2.utils.customviews.navigationbar.NavigationBottomBarModule;
 import org.dhis2.utils.granularsync.GranularSyncComponent;
 import org.dhis2.utils.granularsync.GranularSyncModule;
 
@@ -45,4 +47,7 @@ public interface ServerComponent extends Charts.Dependencies {
 
     @NonNull
     DhisPeriodUtils dhisPeriodUtils();
+
+    @NonNull
+    NavigationBottomBarComponent plus(NavigationBottomBarModule navigationBottomBarModule);
 }

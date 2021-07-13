@@ -8,6 +8,11 @@
         android:id="@+id/showLineGraph"
         android:icon="@drawable/ic_line_chart"
         android:title="@string/show_line_graph"/>
+
+    <item android:id="@+id/showRadarGraph"
+        android:icon="@drawable/ic_radar_chart"
+        android:title="@string/show_radar_graph"/>
+
     <item
         android:id="@+id/showTableGraph"
         android:icon="@drawable/ic_table_chart"
@@ -16,4 +21,9 @@
         android:id="@+id/showTableValue"
         android:icon="@drawable/ic_single_value"
         android:title="@string/show_table_value"/>
+
+    <item
+        android:id="@+id/showPieChart"
+        android:icon="@drawable/ic_pie_chart"
+        android:title="@string/show_pie_value"/>
 </menu>

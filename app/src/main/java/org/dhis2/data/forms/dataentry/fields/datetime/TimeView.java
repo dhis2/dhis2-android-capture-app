@@ -25,7 +25,7 @@ import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdap
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.FieldLayout;
 
 import java.text.ParseException;
@@ -38,9 +38,6 @@ import timber.log.Timber;
 
 import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
 
-/**
- * QUADRAM. Created by frodriguez on 1/15/2018.
- */
 
 public class TimeView extends FieldLayout implements View.OnClickListener {
 

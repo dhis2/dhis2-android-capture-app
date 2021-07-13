@@ -39,7 +39,7 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.ActivityResultObservable;
 import org.dhis2.utils.ActivityResultObserver;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
@@ -52,8 +52,6 @@ import kotlin.Pair;
 
 import static android.app.Activity.RESULT_OK;
 import static android.text.TextUtils.isEmpty;
-import static org.dhis2.utils.Constants.CAMERA_REQUEST;
-import static org.dhis2.utils.Constants.GALLERY_REQUEST;
 
 public class PictureView extends FieldLayout implements View.OnClickListener, ActivityResultObserver {
 

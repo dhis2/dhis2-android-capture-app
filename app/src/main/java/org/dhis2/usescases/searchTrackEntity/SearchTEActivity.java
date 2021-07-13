@@ -160,6 +160,19 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         ((App) getApplicationContext()).userComponent().plus(new SearchTEModule(this, tEType, initialProgram, getContext())).inject(this);
 
+        formView = new FormView.Builder()
+                .persistence(formRepository)
+                .locationProvider(locationProvider)
+                .dispatcher(dispatchers)
+                .onItemChangeListener(action -> {
+                    fieldViewModelFactory.fieldProcessor().onNext(action);
+                    presenter.populateList(null);
+                    return Unit.INSTANCE;
+                })
+                .needToForceUpdate(true)
+                .factory(getSupportFragmentManager())
+                .build();
+
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
@@ -186,17 +199,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.scrollView.setAdapter(liveAdapter);
         }
 
-        formView = new FormView.Builder()
-                .persistence(formRepository)
-                .locationProvider(locationProvider)
-                .dispatcher(dispatchers)
-                .onItemChangeListener(action -> {
-                    fieldViewModelFactory.fieldProcessor().onNext(action);
-                    presenter.populateList(null);
-                    return Unit.INSTANCE;
-                })
-                .needToForceUpdate(true)
-                .build();
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.formViewContainer, formView).commit();
@@ -871,7 +873,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void showPeriodRequest(Pair<FilterManager.PeriodRequest, Filters> periodRequest) {
         if (periodRequest.getFirst() == FilterManager.PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().showFromToSelector(this, datePeriod -> {
+            DateUtils.getInstance().fromCalendarSelector(this, datePeriod -> {
                 if (periodRequest.getSecond() == Filters.PERIOD) {
                     FilterManager.getInstance().addPeriod(datePeriod);
                 } else {
