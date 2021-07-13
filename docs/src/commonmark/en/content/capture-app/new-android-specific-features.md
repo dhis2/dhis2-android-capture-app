@@ -19,7 +19,7 @@ There are two ways to access the application:
     >
     > You are able to make an *offline* login only if using the same user as the last online session.
  
-![](resources/images/capture-app-image62.png){ width=25%}
+![](resources/images/capture-app-image62.PNG){ width=25%}
 ![](resources/images/capture-app-image63.jpg){ width=25%}
 
 > **Warning**
@@ -34,7 +34,7 @@ There are two ways to access the application:
 
 The users will be able to restore their own password if they have the setting enabled: Enabled User Account Recovery.
 
-![](resources/images/image64.PNG){ width=25%}
+![](resources/images/capture-app-image64.PNG){ width=25%}
 
 ## Blocking session (PIN) { #capture_app_generic_PIN }
 
@@ -272,7 +272,7 @@ For TEIs, the first data element/attribute with this value type and marked as di
 
 Open the TEI profile image by clicking on it.
 
-![](resources/images/image138.png){ width=25%}
+![](resources/images/capture-app-image138.png){ width=25%}
 
 ## Display events and TEIs in maps { #capture_app_generic_display_events }
 

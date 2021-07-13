@@ -130,7 +130,7 @@ On the map view of the program, a carousel of cards is displayed, one for each e
 
 Each card displays Tracked Entity Attributes (for Tracker Programs) and Data Elements (for Event programs) configured as 'Display in list'.
 
-![](resources/images/image147.png){ width=25%}
+![](resources/images/capture-app-image147.png){ width=25%}
 
 #### Map Relationships { #capture_app_programs_map_relationships }
 
@@ -212,8 +212,8 @@ All tracker programs will take the user to the search screen. The search fields 
 
 At first, the user is obligated to do a search. if there are no coincidences, the search button will change to an ‘Add’ button for the user to create a new enrollment.
 
-![](resources/images/capture-app-image78.png){ width=25%}
-![](resources/images/capture-app-image79.png){ width=25%}
+![](resources/images/capture-app-image78.PNG){ width=25%}
+![](resources/images/capture-app-image79.PNG){ width=25%}
 
 ### Search screen for all Tracked Entity Type { #capture_app_programs_search_screen }
 
