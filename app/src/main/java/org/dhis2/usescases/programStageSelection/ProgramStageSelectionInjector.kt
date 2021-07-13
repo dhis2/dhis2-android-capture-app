@@ -3,7 +3,7 @@ package org.dhis2.usescases.programStageSelection
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
-import org.dhis2.data.dagger.PerActivity
+import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.data.forms.RulesRepository
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.RulesUtilsProvider
