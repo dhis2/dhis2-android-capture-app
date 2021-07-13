@@ -46,7 +46,7 @@ import org.dhis2.usescases.notes.noteDetail.NoteDetailComponent;
 import org.dhis2.usescases.notes.noteDetail.NoteDetailModule;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailComponent;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailModule;
-import org.dhis2.usescases.programStageSelection.ProgramStageSelectionComponent;
+import org.dhis2.usescases.programStageSelection.ProgramStageSelectionInjector;
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionModule;
 import org.dhis2.usescases.qrCodes.QrComponent;
 import org.dhis2.usescases.qrCodes.QrModule;
@@ -118,7 +118,7 @@ public interface UserComponent {
     SyncManagerComponent plus(SyncManagerModule syncManagerModule);
 
     @NonNull
-    ProgramStageSelectionComponent plus(ProgramStageSelectionModule programStageSelectionModule);
+    ProgramStageSelectionInjector plus(ProgramStageSelectionModule programStageSelectionModule);
 
     @NonNull
     QrReaderComponent plus(QrReaderModule qrReaderModule);
