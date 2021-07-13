@@ -76,7 +76,8 @@ class NavigationBottomBar @JvmOverloads constructor(
             menu.forEachIndexed { index, item ->
 
                 if (item.itemId == R.id.navigation_analytics) {
-                    item.isVisible = forceShowAnalytics || featureConfig.isFeatureEnable(Feature.ANDROAPP_2557)
+                    item.isVisible = forceShowAnalytics ||
+                        featureConfig.isFeatureEnable(Feature.ANDROAPP_2557)
                 }
 
                 if (index == initialPage) {
