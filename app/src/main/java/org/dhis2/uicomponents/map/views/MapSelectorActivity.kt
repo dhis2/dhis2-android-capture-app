@@ -88,6 +88,7 @@ class MapSelectorActivity :
         mapView = binding.mapView
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync { mapboxMap ->
+            mapView.contentDescription = "LOADED"
             map = mapboxMap
             mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
                 this.style = style
