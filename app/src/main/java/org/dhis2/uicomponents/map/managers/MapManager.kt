@@ -42,6 +42,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     ) {
         if (style == null) {
             mapView.getMapAsync { mapLoaded ->
+                mapView.contentDescription = "LOADED"
                 this.map = mapLoaded
                 setUi()
                 map?.setStyle(Style.MAPBOX_STREETS) { styleLoaded ->
