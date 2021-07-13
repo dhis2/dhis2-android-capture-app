@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
+package dhis2.org.analytics.charts.ui
 
 import android.view.Gravity
 import androidx.databinding.Observable
@@ -6,8 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import dhis2.org.analytics.charts.data.toChartBuilder
-import org.dhis2.data.analytics.ChartModel
-import org.dhis2.databinding.ItemChartBinding
+import dhis2.org.databinding.ItemChartBinding
 
 class ChartViewHolder(
     val binding: ItemChartBinding

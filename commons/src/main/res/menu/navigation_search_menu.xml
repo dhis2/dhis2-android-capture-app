@@ -22,7 +22,6 @@
     <item
         android:id="@+id/navigation_analytics"
         android:enabled="true"
-        android:visible="false"
         android:icon="@drawable/ic_navigation_analytics"
         android:title="@string/navigation_analytics"/>
 </menu>

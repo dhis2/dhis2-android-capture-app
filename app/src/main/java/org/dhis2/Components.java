@@ -10,7 +10,9 @@ import org.dhis2.data.user.UserComponent;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginContracts;
 
-public interface Components extends FeatureConfigComponentProvider, CalendarPickerComponentProvider {
+import dhis2.org.analytics.charts.di.AnalyticsComponentProvider;
+
+public interface Components extends FeatureConfigComponentProvider, AnalyticsComponentProvider, CalendarPickerComponentProvider {
 
     @NonNull
     AppComponent appComponent();
@@ -52,5 +54,4 @@ public interface Components extends FeatureConfigComponentProvider, CalendarPick
     UserComponent userComponent();
 
     void releaseUserComponent();
-
 }

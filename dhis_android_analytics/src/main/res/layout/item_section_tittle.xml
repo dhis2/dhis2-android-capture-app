@@ -9,7 +9,7 @@
 
         <variable
             name="sectionModel"
-            type="org.dhis2.data.analytics.SectionTitle" />
+            type="dhis2.org.analytics.charts.ui.SectionTitle" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

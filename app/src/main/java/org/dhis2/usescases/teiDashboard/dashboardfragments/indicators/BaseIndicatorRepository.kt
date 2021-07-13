@@ -1,13 +1,13 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 
+import dhis2.org.analytics.charts.ui.AnalyticsModel
+import dhis2.org.analytics.charts.ui.IndicatorModel
+import dhis2.org.analytics.charts.ui.LOCATION_FEEDBACK_WIDGET
+import dhis2.org.analytics.charts.ui.LOCATION_INDICATOR_WIDGET
+import dhis2.org.analytics.charts.ui.SectionTitle
+import dhis2.org.analytics.charts.ui.SectionType
 import io.reactivex.Flowable
 import io.reactivex.Observable
-import org.dhis2.data.analytics.AnalyticsModel
-import org.dhis2.data.analytics.IndicatorModel
-import org.dhis2.data.analytics.LOCATION_FEEDBACK_WIDGET
-import org.dhis2.data.analytics.LOCATION_INDICATOR_WIDGET
-import org.dhis2.data.analytics.SectionTitle
-import org.dhis2.data.analytics.SectionType
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.tuples.Pair
 import org.dhis2.data.tuples.Trio

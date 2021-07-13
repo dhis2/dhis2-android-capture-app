@@ -3,9 +3,9 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import dhis2.org.analytics.charts.ui.SectionTitle
 import io.reactivex.Flowable
 import io.reactivex.Single
-import org.dhis2.data.analytics.SectionTitle
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.utils.Result
 import org.dhis2.utils.resources.ResourceManager

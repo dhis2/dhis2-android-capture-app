@@ -11,7 +11,7 @@
 
         <variable
             name="chartModel"
-            type="org.dhis2.data.analytics.ChartModel" />
+            type="dhis2.org.analytics.charts.ui.ChartModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -54,7 +54,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_more"
             app:tint="@color/text_black_333" />
-        <!--android:visibility="@{chartModel.graph.chartType == ChartType.NUTRITION ? View.GONE : View.VISIBLE}"-->
 
         <FrameLayout
             android:id="@+id/chart_container"

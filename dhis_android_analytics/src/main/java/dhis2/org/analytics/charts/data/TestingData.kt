@@ -7,6 +7,7 @@ import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.featureconfig.model.Feature
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.period.PeriodType
+import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 
 fun List<Graph>.nutritionTestingData(d2: D2): List<Graph> {
     val nutritionDataProvider = RuleEngineNutritionDataProviderImpl()
@@ -216,6 +217,26 @@ fun List<Graph>.pieChartTestingData(d2: D2, featureConfig: FeatureConfigReposito
                     ChartType.PIE_CHART
                 )
             )
+        }
+    }
+}
+
+fun List<AnalyticsDhisVisualizationsGroup>.visualizationGroupTestingData(
+    featureConfig: FeatureConfigRepository
+): List<AnalyticsDhisVisualizationsGroup> {
+    return if (!featureConfig.isFeatureEnable(Feature.ANDROAPP_2557_VG)) {
+        this
+    } else {
+        toMutableList().apply {
+            repeat(9) {
+                add(
+                    AnalyticsDhisVisualizationsGroup.builder()
+                        .name("Group $it")
+                        .id("$it")
+                        .visualizations(listOf())
+                        .build()
+                )
+            }
         }
     }
 }

@@ -9,7 +9,7 @@
 
         <variable
             name="indicatorModel"
-            type="org.dhis2.data.analytics.IndicatorModel" />
+            type="dhis2.org.analytics.charts.ui.IndicatorModel" />
     </data>
 
     <androidx.cardview.widget.CardView

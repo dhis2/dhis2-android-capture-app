@@ -91,6 +91,7 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
+import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 import kotlin.Unit;
@@ -218,13 +219,25 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_list_view:
+                    binding.mainLayout.setVisibility(View.VISIBLE);
+                    binding.mainComponent.setVisibility(GONE);
                     showMap(false);
                     break;
                 case R.id.navigation_map_view:
                     if (backDropActive) {
                         closeFilters();
                     }
+                    binding.mainLayout.setVisibility(View.VISIBLE);
+                    binding.mainComponent.setVisibility(GONE);
                     showMap(true);
+                    break;
+                case R.id.navigation_analytics:
+                    if (backDropActive) {
+                        closeFilters();
+                    }
+                    binding.mainComponent.setVisibility(View.VISIBLE);
+                    binding.mainLayout.setVisibility(GONE);
+                    showAnalytics();
                     break;
             }
             return true;
@@ -371,8 +384,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //-----------------------------------------------------------------------
     //region SearchForm
 
+    private void showAnalytics() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.mainComponent, GroupAnalyticsFragment.Companion.forProgram(initialProgram)).commit();
+    }
+
     private void showMap(boolean showMap) {
         if (binding.messageContainer.getVisibility() == GONE) {
+            binding.mainComponent.setVisibility(GONE);
             binding.scrollView.setVisibility(showMap ? GONE : View.VISIBLE);
             binding.mapView.setVisibility(showMap ? View.VISIBLE : GONE);
             binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : GONE);
@@ -804,6 +823,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 !backDropActive || general
         );
         setCarouselVisibility(backDropActive);
+        if(backDropActive) {
+            binding.navigationBar.hide();
+        }else{
+            binding.navigationBar.show();
+        }
 
         initSet.applyTo(binding.backdropLayout);
     }
