@@ -320,7 +320,7 @@ class SearchTETest : BaseTest() {
             clickOnShowMap()
             try {
                 val device = UiDevice.getInstance(getInstrumentation())
-                device.wait(Until.hasObject(By.desc(MAP_LOADED)), 5000)
+                device.wait(Until.hasObject(By.desc(MAP_LOADED)), 6000)
                 checkCarouselTEICardInfo(firstName)
             } catch (ex: IdlingResourceTimeoutException) {
                 throw RuntimeException("Could not start test")
