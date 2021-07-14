@@ -3,20 +3,22 @@ package org.dhis2.usescases.teiDashboard;
 import androidx.annotation.NonNull;
 
 import org.dhis2.commons.di.dagger.PerActivity;
+import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.data.forms.EnrollmentFormRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
-import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
+import dhis2.org.analytics.charts.Charts;
 
 /**
  * QUADRAM. Created by ppajuelo on 30/11/2017.
@@ -63,8 +65,8 @@ public class TeiDashboardModule {
 
     @Provides
     @PerActivity
-    DashboardRepository dashboardRepository(D2 d2, ResourceManager resources) {
-        return new DashboardRepositoryImpl(d2, teiUid, programUid, enrollmentUid, resources);
+    DashboardRepository dashboardRepository(D2 d2, Charts charts, ResourceManager resources) {
+        return new DashboardRepositoryImpl(d2, charts, teiUid, programUid, enrollmentUid, resources);
     }
 
     @Provides
@@ -87,5 +89,11 @@ public class TeiDashboardModule {
     RuleEngineRepository ruleEngineRepository(D2 d2, FormRepository formRepository) {
         String enrollmentUidToUse = enrollmentUid != null ? enrollmentUid : "";
         return new EnrollmentRuleEngineRepository(formRepository, enrollmentUidToUse, d2);
+    }
+
+    @Provides
+    @PerActivity
+    NavigationPageConfigurator pageConfigurator(DashboardRepository dashboardRepository) {
+        return new TeiDashboardPageConfigurator(dashboardRepository);
     }
 }

@@ -31,7 +31,7 @@
         <attr name="circleColor" format="color" />
     </declare-styleable>
 
-    <declare-styleable name="DhisBottomNavigationBar">
+    <declare-styleable name="NavigationBottomBar">
         <attr name="currentItemSelectorColor" format="color"/>
         <attr name="currentItemSelectorSize" format="dimension"/>
         <attr name="currentItemSelectorDrawable" format="reference"/>

@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.doReturnConsecutively
 import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import dhis2.org.analytics.charts.Charts
 import io.reactivex.Single
 import org.dhis2.Bindings.toDate
 import org.dhis2.utils.resources.ResourceManager
@@ -35,10 +36,18 @@ class DashboardRepositoryImplTest {
     private lateinit var repository: DashboardRepositoryImpl
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val resources: ResourceManager = mock()
+    private val charts: Charts = mock()
 
     @Before
     fun setUp() {
-        repository = DashboardRepositoryImpl(d2, "teiUid", "programUid", "enrollmentUid", resources)
+        repository = DashboardRepositoryImpl(
+            d2,
+            charts,
+            "teiUid",
+            "programUid",
+            "enrollmentUid",
+            resources
+        )
     }
 
     @Test
@@ -267,7 +276,7 @@ class DashboardRepositoryImplTest {
             d2.trackedEntityModule()
                 .trackedEntityAttributeValues().value(anyString(), anyString())
                 .blockingGet()
-        )doReturnConsecutively arrayListOf(
+        ) doReturnConsecutively arrayListOf(
             TrackedEntityAttributeValue.builder()
                 .trackedEntityAttribute("attr1")
                 .trackedEntityInstance(teiUid)
@@ -282,7 +291,7 @@ class DashboardRepositoryImplTest {
 
         whenever(
             d2.trackedEntityModule().trackedEntityAttributes().uid(anyString()).blockingGet()
-        )doReturnConsecutively arrayListOf(
+        ) doReturnConsecutively arrayListOf(
             TrackedEntityAttribute.builder()
                 .uid("attr1")
                 .valueType(ValueType.TEXT)
