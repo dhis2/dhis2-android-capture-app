@@ -22,6 +22,7 @@ import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import org.dhis2.Bindings.dp
 import org.dhis2.R
 import org.dhis2.uicomponents.map.camera.initCameraToViewAllElements
+import org.dhis2.uicomponents.map.camera.moveCameraToPosition
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.layer.MapLayerManager
 
@@ -95,6 +96,11 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
 
     fun pointToLatLn(point: Point): LatLng {
         return LatLng(point.latitude(), point.longitude())
+    }
+
+    fun centerCameraOnMyPosition() {
+        val location = map?.locationComponent?.lastKnownLocation
+        map?.moveCameraToPosition(LatLng(location))
     }
 
     fun isMapReady() = map != null && style?.isFullyLoaded ?: false
