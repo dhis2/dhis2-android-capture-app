@@ -58,6 +58,26 @@ fun MapboxMap.moveCameraToPosition(latLng: LatLng) {
     this.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
 }
 
+fun MapboxMap.moveCameraToDevicePosition(latLng: LatLng) {
+    this.easeCamera(
+        CameraUpdateFactory.newLatLng(
+            LatLng(
+                latLng.latitude,
+                latLng.longitude
+            )
+        )
+    )
+    val cameraPosition = CameraPosition.Builder()
+        .target(
+            LatLng(
+                latLng.latitude,
+                latLng.longitude
+            )
+        )
+        .build()
+    this.easeCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+}
+
 fun MapboxMap.centerCameraOnFeature(feature: Feature) {
     when (val geometry = feature.geometry()) {
         is Point -> {
