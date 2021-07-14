@@ -16,7 +16,7 @@ sealed class FormIntent : MviIntent {
         val value: String?,
         val valueType: ValueType?,
         val fieldMask: String?
-    ) :FormIntent()
+    ) : FormIntent()
 
     data class SelectDateFromAgeCalendar(
         val uid: String,

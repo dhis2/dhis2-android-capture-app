@@ -109,7 +109,11 @@ class FormViewModel(
         }
     }
 
-    private fun checkFieldError(valueType: ValueType?, fieldValue: String?, fieldMask: String?): Throwable? {
+    private fun checkFieldError(
+        valueType: ValueType?,
+        fieldValue: String?,
+        fieldMask: String?
+    ): Throwable? {
         return fieldValue?.let { value ->
             var error =
                 when (val result = valueType?.validator?.validate(value)) {
