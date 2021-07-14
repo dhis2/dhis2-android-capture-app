@@ -57,6 +57,18 @@
             app:layout_constraintTop_toTopOf="@id/mapView"
             app:srcCompat="@drawable/ic_map_layers_ripple" />
 
+        <ImageView
+            android:id="@+id/mapPositionButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mapLayerButton"
+            app:srcCompat="@drawable/ic_map_position_ripple" />
+
+
         <org.dhis2.uicomponents.map.views.CarouselView
             android:id="@+id/map_carousel"
             android:layout_width="match_parent"

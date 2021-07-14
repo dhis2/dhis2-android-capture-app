@@ -100,6 +100,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
             binding.relationshipRecycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
             binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
             binding.mapLayerButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
+            binding.mapPositionButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
             binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : View.GONE);
             binding.dialFabLayout.setFabVisible(!showMap);
         });
@@ -107,6 +108,10 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         binding.mapLayerButton.setOnClickListener(view -> {
             MapLayerDialog layerDialog = new MapLayerDialog(relationshipMapManager);
             layerDialog.show(getChildFragmentManager(), MapLayerDialog.class.getName());
+        });
+
+        binding.mapPositionButton.setOnClickListener(view -> {
+            relationshipMapManager.centerCameraOnMyPosition();
         });
 
         return binding.getRoot();
