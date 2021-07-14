@@ -1,11 +1,9 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
+package dhis2.org.analytics.charts.ui
 
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.R
+import dhis2.org.R
+import dhis2.org.databinding.ItemIndicatorBinding
 import org.dhis2.commons.dialogs.CustomDialog
-import org.dhis2.data.analytics.IndicatorModel
-import org.dhis2.databinding.ItemIndicatorBinding
-import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.program.ProgramIndicator
 
 class IndicatorViewHolder(
@@ -24,9 +22,9 @@ class IndicatorViewHolder(
             itemView.context,
             programIndicatorModel.displayName()!!,
             programIndicatorModel.displayDescription()!!,
-            itemView.getContext().getString(R.string.action_accept),
+            itemView.context.getString(R.string.action_accept),
             null,
-            Constants.DESCRIPTION_DIALOG,
+            CustomDialog.DESCRIPTION_DIALOG,
             null
         ).show()
     }

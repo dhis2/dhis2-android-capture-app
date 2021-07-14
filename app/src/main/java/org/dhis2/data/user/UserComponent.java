@@ -78,6 +78,8 @@ import org.dhis2.utils.optionset.OptionSetComponent;
 import org.dhis2.utils.optionset.OptionSetModule;
 
 import dagger.Subcomponent;
+import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentComponent;
+import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule;
 
 @PerUser
 @Subcomponent(modules = UserModule.class)
@@ -193,4 +195,7 @@ public interface UserComponent {
 
     @NonNull
     CalendarPickerComponent plus(CalendarPickerModule calendarPickerModule);
+
+    @NonNull
+    AnalyticsFragmentComponent plus(AnalyticsFragmentModule analyticsFragmentModule);
 }

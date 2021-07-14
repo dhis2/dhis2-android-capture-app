@@ -36,5 +36,6 @@
         <attr name="currentItemSelectorSize" format="dimension"/>
         <attr name="currentItemSelectorDrawable" format="reference"/>
         <attr name="initialPage" format="integer"/>
+        <attr name="forceShowAnalytics" format="boolean"/>
     </declare-styleable>
 </resources>

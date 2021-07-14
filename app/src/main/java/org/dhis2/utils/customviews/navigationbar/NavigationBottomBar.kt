@@ -24,6 +24,8 @@ import org.dhis2.App
 import org.dhis2.Bindings.clipWithRoundedCorners
 import org.dhis2.Bindings.dp
 import org.dhis2.R
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.featureconfig.model.Feature
 
 const val itemIndicatorTag = "ITEM_INDICATOR"
 
@@ -35,6 +37,8 @@ class NavigationBottomBar @JvmOverloads constructor(
 
     @Inject
     lateinit var repository: NavigationBottomBarRepository
+    @Inject
+    lateinit var featureConfig: FeatureConfigRepository
 
     private val animations = NavigationBottomBarAnimations(this)
     private var hidden = false
@@ -44,6 +48,7 @@ class NavigationBottomBar @JvmOverloads constructor(
     private var currentItemId: Int = -1
     private var initialPage: Int
     private val currentItemIndicator: View by lazy { initCurrentItemIndicator() }
+    private var forceShowAnalytics = false
 
     init {
         ((context.applicationContext) as App)
@@ -63,10 +68,18 @@ class NavigationBottomBar @JvmOverloads constructor(
             itemIndicatorDrawable =
                 getDrawable(R.styleable.DhisBottomNavigationBar_currentItemSelectorDrawable)
             initialPage = getInt(R.styleable.DhisBottomNavigationBar_initialPage, 0)
+            forceShowAnalytics =
+                getBoolean(R.styleable.DhisBottomNavigationBar_forceShowAnalytics, false)
             recycle()
         }
         post {
             menu.forEachIndexed { index, item ->
+
+                if (item.itemId == R.id.navigation_analytics) {
+                    item.isVisible = forceShowAnalytics ||
+                        featureConfig.isFeatureEnable(Feature.ANDROAPP_2557)
+                }
+
                 if (index == initialPage) {
                     animateItemIndicatorPosition(findViewById<View>(item.itemId))
                 }

@@ -180,6 +180,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/guideline75"
             app:layout_constraintStart_toStartOf="@id/guideline25"
+            app:forceShowAnalytics="true"
             app:menu="@menu/navigation_dashboard_landscape_menu" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,8 +1,7 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
+package dhis2.org.analytics.charts.ui
 
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.data.analytics.SectionTitle
-import org.dhis2.databinding.ItemSectionTittleBinding
+import dhis2.org.databinding.ItemSectionTittleBinding
 
 class SectionTitleViewHolder(
     val binding: ItemSectionTittleBinding
