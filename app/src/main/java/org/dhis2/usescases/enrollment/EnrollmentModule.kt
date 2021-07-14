@@ -21,8 +21,8 @@ import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryPersistenceImpl
 import org.dhis2.form.model.RowAction
-import org.dhis2.form.ui.FieldErrorMessageProvider
 import org.dhis2.form.ui.style.FormUiColorFactory
+import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2

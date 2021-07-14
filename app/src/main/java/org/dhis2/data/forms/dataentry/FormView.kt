@@ -22,6 +22,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
+import java.util.Calendar
 import org.dhis2.Bindings.truncate
 import org.dhis2.R
 import org.dhis2.commons.dialogs.CustomDialog
@@ -53,7 +54,6 @@ import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import timber.log.Timber
-import java.util.Calendar
 
 class FormView constructor(
     formRepository: FormRepository,

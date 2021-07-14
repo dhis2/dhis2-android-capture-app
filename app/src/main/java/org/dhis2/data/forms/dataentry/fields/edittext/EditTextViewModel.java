@@ -150,7 +150,12 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     }
 
     public void onTextFilled(String value) {
-        callback.intent(new FormIntent.OnSave(uid(), value, valueType()));
+        callback.intent(
+                new FormIntent.OnSave(uid(),
+                        value,
+                        valueType(),
+                        fieldMask())
+        );
     }
 
     public boolean isLongText() {

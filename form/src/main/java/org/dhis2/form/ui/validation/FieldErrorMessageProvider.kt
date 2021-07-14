@@ -1,7 +1,8 @@
-package org.dhis2.form.ui
+package org.dhis2.form.ui.validation
 
 import android.content.Context
 import org.dhis2.form.R
+import org.dhis2.form.ui.validation.failures.FieldMaskFailure
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.EmailFailure
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.IntegerFailure
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.IntegerNegativeFailure
@@ -30,7 +31,13 @@ class FieldErrorMessageProvider(private val context: Context) {
             is UrlFailure -> getUrlError(error)
             is IntegerFailure -> getIntegerError(error)
             is NumberFailure -> getNumberError(error)
+            is FieldMaskFailure -> getFieldMaskError(error)
             else -> R.string.invalid_field
+        }
+
+    private fun getFieldMaskError(error: FieldMaskFailure) =
+        when (error) {
+            FieldMaskFailure.WrongPatternException -> R.string.wrong_pattern
         }
 
     private fun getPhoneNumberError(error: PhoneNumberFailure) =
