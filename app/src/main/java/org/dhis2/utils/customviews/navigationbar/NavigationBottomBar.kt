@@ -19,8 +19,6 @@ import androidx.core.view.forEachIndexed
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.LabelVisibilityMode.LABEL_VISIBILITY_UNLABELED
-import javax.inject.Inject
-import org.dhis2.App
 import org.dhis2.Bindings.clipWithRoundedCorners
 import org.dhis2.Bindings.dp
 import org.dhis2.R
@@ -35,9 +33,6 @@ class NavigationBottomBar @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : BottomNavigationView(context, attrs, defStyleAttr) {
 
-    @Inject
-    lateinit var repository: NavigationBottomBarRepository
-    @Inject
     lateinit var featureConfig: FeatureConfigRepository
 
     private val animations = NavigationBottomBarAnimations(this)
@@ -51,25 +46,22 @@ class NavigationBottomBar @JvmOverloads constructor(
     private var forceShowAnalytics = false
 
     init {
-        ((context.applicationContext) as App)
-            .serverComponent
-            .plus(NavigationBottomBarModule()).inject(this)
         labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
         this.clipWithRoundedCorners()
-        context.obtainStyledAttributes(attrs, R.styleable.DhisBottomNavigationBar).apply {
+        context.obtainStyledAttributes(attrs, R.styleable.NavigationBottomBar).apply {
             currentItemIndicatorColor = getColor(
-                R.styleable.DhisBottomNavigationBar_currentItemSelectorColor,
+                R.styleable.NavigationBottomBar_currentItemSelectorColor,
                 ContextCompat.getColor(context, R.color.colorPrimary)
             )
             itemIndicatorSize = getDimension(
-                R.styleable.DhisBottomNavigationBar_currentItemSelectorSize,
+                R.styleable.NavigationBottomBar_currentItemSelectorSize,
                 40.dp.toFloat()
             )
             itemIndicatorDrawable =
-                getDrawable(R.styleable.DhisBottomNavigationBar_currentItemSelectorDrawable)
-            initialPage = getInt(R.styleable.DhisBottomNavigationBar_initialPage, 0)
+                getDrawable(R.styleable.NavigationBottomBar_currentItemSelectorDrawable)
+            initialPage = getInt(R.styleable.NavigationBottomBar_initialPage, 0)
             forceShowAnalytics =
-                getBoolean(R.styleable.DhisBottomNavigationBar_forceShowAnalytics, false)
+                getBoolean(R.styleable.NavigationBottomBar_forceShowAnalytics, false)
             recycle()
         }
         post {
@@ -81,7 +73,7 @@ class NavigationBottomBar @JvmOverloads constructor(
                 }
 
                 if (index == initialPage) {
-                    animateItemIndicatorPosition(findViewById<View>(item.itemId))
+                    animateItemIndicatorPosition(findViewById(item.itemId))
                 }
                 if (initialPage != 0) {
                     selectItemAt(initialPage)
@@ -218,15 +210,11 @@ class NavigationBottomBar @JvmOverloads constructor(
         }
     }
 
-    fun relationshipVisibility(teiUid: String) {
-        val count = repository.getRelationshipTypeCount(teiUid)
-        if (count == 0) {
-            val item = menu.findItem(R.id.navigation_relationships)
-            item.isVisible = false
+    fun pageConfiguration(navigationPageConfigurator: NavigationPageConfigurator) {
+        menu.forEach {
+            it.isVisible = navigationPageConfigurator.pageVisibility(it.itemId)
         }
     }
-
-    fun isRelationshipsVisible() = menu.findItem(R.id.navigation_relationships).isVisible
 
     override fun onVisibilityChanged(changedView: View, visibility: Int) {
         super.onVisibilityChanged(changedView, visibility)
