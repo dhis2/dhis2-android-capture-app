@@ -39,6 +39,17 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_map_layers_ripple" />
 
+        <ImageView
+            android:id="@+id/mapPositionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="9dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mapLayerButton"
+            app:srcCompat="@drawable/ic_map_position_ripple" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
