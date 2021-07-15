@@ -27,7 +27,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
+<!--
         <org.dhis2.data.forms.dataentry.fields.scan.ScanTextView
             android:id="@+id/scanTextView"
             android:layout_width="wrap_content"
@@ -35,6 +35,11 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:viewModel="@{item}" />
+            app:viewModel="@{item}" />-->
+
+        <include
+            layout="@layout/scan_text_view"
+
+            app:item="@{item}" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -8,28 +8,8 @@
         <import type="android.view.View" />
 
         <variable
-            name="label"
-            type="java.lang.String" />
-
-        <variable
-            name="description"
-            type="java.lang.String" />
-
-        <variable
-            name="optionSet"
-            type="java.lang.String" />
-
-        <variable
-            name="isBgTransparent"
-            type="java.lang.Boolean" />
-
-        <variable
-            name="initialValue"
-            type="java.lang.String" />
-
-        <variable
-            name="focus"
-            type="java.lang.Boolean" />
+            name="item"
+            type="org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel" />
 
     </data>
 
@@ -61,13 +41,14 @@
             style="@style/FieldLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{label}"
+            android:text="@{item.formattedLabel}"
             app:layout_constrainedWidth="true"
             app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/renderImage"
+            app:view_edition="@{item.editable}"
             tools:text="@string/lorem" />
 
         <ImageView
@@ -76,13 +57,16 @@
             android:layout_width="12dp"
             android:layout_height="0dp"
             android:layout_marginEnd="16dp"
-            android:visibility="visible"
+            android:onClick="@{v -> item.onDescriptionClick()}"
+            android:visibility="@{item.description() != null? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@+id/label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/label"
             app:layout_constraintTop_toTopOf="@+id/label"
             app:srcCompat="@drawable/ic_info_outline"
-            app:tint="?colorPrimary" />
+            app:tint="?colorPrimary"
+            app:view_edition="@{item.editable}" />
+
 
         <LinearLayout
             android:id="@+id/inputField"
@@ -97,8 +81,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="@string/scan_code"
-                android:theme="@style/loginInputText">
+                android:hint="@{item.hint}"
+                android:theme="@style/loginInputText"
+                app:error_message="@{item.error()}"
+                app:warning_message="@{item.warning()}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_editText"
@@ -106,26 +92,34 @@
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
                     android:singleLine="true"
+                    android:text="@{item.value()}"
                     android:textSize="@dimen/form_edit_text_size"
-                    app:requestFocus="@{focus}"
+                    app:requestFocus="@{item.activated()}"
+                    app:view_edition="@{item.editable}"
                     tools:text="111-111-111" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageView
                 android:id="@+id/descIcon"
+                style="@style/ActionIconUnwrap"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="@{()->item.scan()}"
                 android:padding="11dp"
+                app:action_icon="@{item}"
+                app:view_edition="@{item.editable}"
                 tools:srcCompat="@drawable/ic_form_barcode" />
 
             <ImageView
                 android:id="@+id/delete"
                 style="@style/ActionIcon"
-                android:visibility="gone"
                 app:srcCompat="@drawable/ic_close"
                 app:tint="@color/colorGreyDefault"
+                android:visibility="@{item.canShowDeleteButton ? View.VISIBLE : View.GONE}"
+                android:onClick="@{()->item.onClearValue()}"
                 tools:visibility="visible" />
+
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

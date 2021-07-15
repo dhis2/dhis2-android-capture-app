@@ -26,6 +26,10 @@
         <variable
             name="initialValue"
             type="java.lang.String" />
+
+        <variable
+            name="item"
+            type="org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
