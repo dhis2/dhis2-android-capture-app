@@ -11,6 +11,7 @@ import org.dhis2.utils.filters.EventStatusFilter
 import org.dhis2.utils.filters.FilterItem
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
+import org.dhis2.utils.filters.FollowUpFilter
 import org.dhis2.utils.filters.OrgUnitFilter
 import org.dhis2.utils.filters.PeriodFilter
 import org.dhis2.utils.filters.SyncStateFilter
@@ -513,6 +514,17 @@ class FilterRepository @Inject constructor(
             org.dhis2.utils.filters.ProgramType.TRACKER,
             observableSortingInject, observableOpenFilter,
             resources.filterResources.filterEventStatusLabel()
+        )
+        val teTypeName = d2.trackedEntityModule()
+            .trackedEntityTypes()
+            .uid(program.trackedEntityType()?.uid())
+            .blockingGet()
+            .displayName() ?: ""
+        defaultTrackerFilters[ProgramFilter.FOLLOW_UP] = FollowUpFilter(
+            org.dhis2.utils.filters.ProgramType.TRACKER,
+            observableSortingInject,
+            observableOpenFilter,
+            resources.filterResources.filterFollowUpLabel(teTypeName)
         )
 
         val stagesByProgramUidAndUserAssignment = d2.programModule()
