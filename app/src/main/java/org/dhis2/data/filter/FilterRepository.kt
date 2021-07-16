@@ -503,7 +503,7 @@ class FilterRepository @Inject constructor(
 
         if (filtersToShow.any { it.type == Filters.ASSIGNED_TO_ME }) {
             val index = filtersToShow.indexOfFirst { it.type == Filters.ASSIGNED_TO_ME }
-            filtersToShow[index - 1] = followUpFilter
+            filtersToShow.add(index, followUpFilter)
         } else {
             filtersToShow.add(followUpFilter)
         }
