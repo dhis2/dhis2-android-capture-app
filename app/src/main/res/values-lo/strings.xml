@@ -2,6 +2,7 @@
     <!--GENERAL-->
     <string name="app_name">ລະບົບ DHIS2</string>
     <string name="logo_text">ລະບົບຂໍ້ມູນຂ່າວສານດ້ານສຸຂະພາບຂັ້ນເມືອງ</string>
+    <string name="logo_number">2</string>
     <!-- Warnings and error messages -->
     <string name="error">ເກີດການຜິດພາດ</string>
     <string name="error_wrong_server_url">ຄວາມຜິດພາດຈາກການເຊື່ອມຕໍ່ຂອງເຄື່ອງຄອມພີວເຕີໜ່ວຍແມ່</string>
@@ -78,10 +79,15 @@
     <string name="event_accepted">ກໍລະນີທີ່ຖືກຮັບຮອງແລ້ວ</string>
     <string name="event_approved">ກໍລະນີທີ່ໄດ້ຢັ້ງຢືນແລ້ວ</string>
     <string name="event_inactive">ກໍລະນີທີ່ບໍ່ໄດ້ຖືກນໍາໃຊ້</string>
+    <string name="read_only">ອ່ານໄດ້ເທົ່ານັ້ນ</string>
     <string name="complete">ສຳເລັດແລ້ວ</string>
+    <string name="finish_and_complete">ສີ້ນສຸດ ແລະ ສໍາເລັດ</string>
     <string name="completed">ສໍາເລັດແລ້ວ</string>
     <string name="cancelled">ຍົກເລີກແລ້ວ</string>
     <string name="re_open">ເປີດຄືນໃໝ່</string>
+    <string name="activate">ເປິດໃຊ້ງານ</string>
+    <string name="active">ທີ່ຍັງນໍາໃຊ້ຢູ່</string>
+
     <!-- State -->
     <string name="state_synced">ໃຫ້ລະບົບທໍາງານຮ່ວມກັນ</string>
     <string name="state_to_update">ເພື່ອປັບປຸງ</string>
@@ -167,6 +173,10 @@
     <string name="SYNC_MANAGER">ຕັ້ງຄ່າ</string>
     <string name="last_data_sync_date">ການສົ່ງຂໍ້ມູນທີ່ຜ່ານມາມີ: %s</string>
     <string name="last_metadata_sync_date">ການສົ່ງຂໍ້ມູນທີ່ຜ່ານມາມີ: %s</string>
+    <!-- SEARCH TRACK ENTITY -->
+
+    <!--region SETTINCS-->
+    <string name="settingsSyncData">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
     <string name="settingsReset">ຕັ້ງຄ່າໂປຣແກຣມຄືນໃໝ່</string>
     <!--endregion-->
 
@@ -344,15 +354,21 @@
     <string name="event_event">ເຫດການ</string>
     <string name="event_indicators">ຕົວຊີ້ວັດ</string>
     <string name="event_notes">ບົດບັນທຶກ</string>
+    <string name="finish">ສີ້ນສຸດ</string>
     <string name="please_wait">ກະລຸນາລໍຖ້າ</string>
     <string name="skip">ຂ້າມ</string>
     <string name="reschedule">ກຳນົດເວລາໃໝ່</string>
     <string name="event_overdue">ກາຍເວລາທີ່ກໍານົດ</string>
     <string name="table">ຕາຕະລາງຂໍ້ມູນ</string>
     <string name="local_data_accept">​ການ​ຮັບ​ຮອງ</string>
+    <string name="action_continue">ຕໍ່ໄປ</string>
     <string name="login_server_info_title">ທີ່ຢູ່ຂອງເຄື່ອງຄອມພີວເຕີໜ່ວຍແມ່</string>
+    <string name="event_form_end_options_title">ທ່ານຕ້ອງເຮັດຫຍັງສໍາລັບເຫດການນີ້?</string>
     <string name="state_warning">ແຈ້ງເຕືອນ</string>
+    <string name="state_relationship">ຄວາມສໍາພັນ</string>
     <string name="action_close">ປິດ</string>
+    <string name="data_set_complete">ສຳເລັດແລ້ວ</string>
+    <string name="data_set_open">ເປີດ</string>
     <string name="unsupported_value_type">ປະເພດຄ່າບໍ່ຮອງຮັບ</string>
     <string name="data_every_day">ທຸກໆມື້</string>
     <string name="data_every_week">ເປັນອາທິດ</string>
@@ -363,6 +379,7 @@
 
     <string name="filters_title_period">ຊ່ວງເວລາ</string>
     <string name="filters_title_status">ສະຖານະ</string>
+    <string name="filters_title_state">ໃຫ້ລະບົບທໍາງານຮ່ວມກັນ</string>
     <string name="filter_period_today">ມື້ນີ້</string>
     <string name="filter_period_yesterday">ມື້ວານນີ</string>
     <string name="filter_period_this_week">ທິດນີ້</string>
@@ -370,4 +387,50 @@
     <string name="filter_period_this_month">ເດືອນນີ້</string>
     <string name="filter_period_last_month">ເດືອນຜ່ານມາ</string>
     <string name="filter_period_other">ອື່ນໆ</string>
+    <string name="filter_event_status_open">ເປີດ</string>
+    <string name="filter_event_status_schedule">ກຳນົດເວລາ</string>
+    <string name="filter_event_status_overdue">ກາຍເວລາທີ່ກໍານົດ</string>
+    <string name="filter_event_status_completed">ສໍາເລັດແລ້ວ</string>
+    <string name="filter_event_status_skipped">ຂ້າມໄປ</string>
+    <string name="go_back">ກັບຄືນ</string>
+    <string name="data_sets">ແບບຟອມ</string>
+    <string name="no_notes">ບໍ່ບົດບັນທຶກ</string>
+    <string name="interval_yesterday">ມື້ວານນີ</string>
+    <string name="choose_option">ເລືອກຄໍາຕອບ</string>
+    <string name="filter_sync_error">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
+    <string name="dataset_overview">ລາຍລະອຽດ</string>
+    <string name="dataset_comments">ຄຳເຫັນ</string>
+    <string name="name">ຊື່</string>
+    <string name="filters_title_event_status">ສະຖານະເຫດການ</string>
+    <string name="filters_title_enrollment_status">ສະຖານະການລົງທະບຽນ</string>
+    <string name="enrollment_date">ວັນທີ່ລົງທະບຽນ</string>
+    <string name="action_apply">ນຳໃຊ້</string>
+    <string name="enrollment_status_active">ເປີດ</string>
+    <string name="enrollment_status_completed">ສຳເລັດແລ້ວ</string>
+    <string name="enrollment_status_cancelled">ຍົກເລີກແລ້ວ</string>
+    <string name="no_data">ບໍ່ມີຂໍ້ມູນ</string>
+    <string name="event_data">ຂໍ້ມູນ</string>
+    <string name="are_you_sure">ທ່ານ​ແນ່​ໃຈ​ບໍ່?</string>
+    <string name="filters_title_date">ວັນທີ່</string>
+    <string name="filters_title_event_date">ວັນທີເດືອນປີທີກໍລະນີນັ້ນເກີດຂື້ນ</string>
+    <string name="dataset_data">ຂໍ້ມູນ</string>
+    <string name="customactivityoncrash_error_activity_restart_app">ກັບຄືນ</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">ປິດ</string>
+    <string name="section_charts">ແຜນວາດຂໍ້ມູນ</string>
+    <string name="navigation_programs">ສາຍງານ</string>
+    <string name="navigation_events">ເຫດການ</string>
+    <string name="navigation_relationships">ສາຍພົວພັນ</string>
+    <string name="navigation_notes">ບົດບັນທຶກ</string>
+    <string name="navigation_data_entry">ປ້ອນຂໍ້ມູນ</string>
+    <string name="navigation_tei_data">ລາຍລະອຽດ</string>
+    <string name="filter_period_this_year">ປີນີ້</string>
+    <string name="filter_period_this_quarter">ໄຕມານີ້</string>
+    <string name="filter_period_last_quarter">ໄຕມາດຜ່ານມາ</string>
+    <string name="filter_period_weeks_this_year">ອາທິດ ຂອງປີນີ້</string>
+    <string name="filter_period_months_this_year">​ເດືອນ​ໃນ​ປີ</string>
+    <string name="filter_period_quarters_this_year">​ໄຕຼມາດ​ໃນ​ປີ</string>
+    <string name="filter_period_months_last_year">​ເດືອນ​ໃນປີ​ຜ່ານ​ມາ</string>
+    <string name="filter_period_last_year">ປີກາຍ</string>
+    <string name="section_indicators">ຕົວຊີ້ວັດ</string>
+    <string name="invalid_integer">ຄ່າຕ້ອງເປັນຈຳນວນຖ້ວນ</string>
     </resources>
