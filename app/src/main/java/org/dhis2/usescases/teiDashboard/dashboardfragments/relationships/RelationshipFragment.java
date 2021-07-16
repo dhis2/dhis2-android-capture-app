@@ -111,7 +111,10 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         });
 
         binding.mapPositionButton.setOnClickListener(view -> {
-            relationshipMapManager.centerCameraOnMyPosition();
+            relationshipMapManager.centerCameraOnMyPosition((permissionManager) -> {
+                permissionManager.requestLocationPermissions(activity);
+                return Unit.INSTANCE;
+            });
         });
 
         return binding.getRoot();

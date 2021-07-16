@@ -79,7 +79,9 @@ class EventMapFragment :
             }
 
             mapPositionButton.setOnClickListener {
-                eventMapManager?.centerCameraOnMyPosition()
+                eventMapManager?.centerCameraOnMyPosition { permissionManager ->
+                    permissionManager?.requestLocationPermissions(requireActivity())
+                }
             }
         }
         return binding.root

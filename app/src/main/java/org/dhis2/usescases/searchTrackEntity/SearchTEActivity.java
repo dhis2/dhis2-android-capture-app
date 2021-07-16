@@ -241,7 +241,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         });
 
         binding.mapPositionButton.setOnClickListener(view -> {
-            teiMapManager.centerCameraOnMyPosition();
+            teiMapManager.centerCameraOnMyPosition((permissionManager) -> {
+                permissionManager.requestLocationPermissions(this);
+                return Unit.INSTANCE;
+            });
         });
 
         binding.executePendingBindings();

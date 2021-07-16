@@ -98,9 +98,18 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
         return LatLng(point.latitude(), point.longitude())
     }
 
-    fun centerCameraOnMyPosition() {
-        val location = map?.locationComponent?.lastKnownLocation
-        map?.moveCameraToDevicePosition(LatLng(location))
+    fun centerCameraOnMyPosition(onMissingPermission: (PermissionsManager?) -> Unit) {
+        val isLocationActivated =
+            map?.locationComponent?.let { it.isLocationComponentActivated } ?: false
+        if (isLocationActivated) {
+            val isLocationEnabled = map?.locationComponent?.isLocationComponentEnabled ?: false
+            if (isLocationEnabled) {
+                val location = map?.locationComponent?.lastKnownLocation
+                map?.moveCameraToDevicePosition(LatLng(location))
+            }
+        } else {
+            enableLocationComponentAndCenterCamera(onMissingPermission)
+        }
     }
 
     fun isMapReady() = map != null && style?.isFullyLoaded ?: false
@@ -190,6 +199,35 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
                     override fun onPermissionResult(granted: Boolean) {
                         if (granted) {
                             enableLocationComponent(style, onMissingPermission)
+                        }
+                    }
+                })
+                onMissingPermission(permissionsManager)
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun enableLocationComponentAndCenterCamera(
+        onMissingPermission: (PermissionsManager?) -> Unit
+    ) {
+        map?.locationComponent?.apply {
+            if (PermissionsManager.areLocationPermissionsGranted(mapView.context)) {
+                activateLocationComponent(
+                    LocationComponentActivationOptions.builder(
+                        mapView.context,
+                        style!!
+                    ).build()
+                )
+                isLocationComponentEnabled = true
+                centerCameraOnMyPosition(onMissingPermission)
+            } else {
+                permissionsManager = PermissionsManager(object : PermissionsListener {
+                    override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {}
+
+                    override fun onPermissionResult(granted: Boolean) {
+                        if (granted) {
+                            centerCameraOnMyPosition(onMissingPermission)
                         }
                     }
                 })
