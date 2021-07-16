@@ -325,12 +325,11 @@ data class FollowUpFilter(
     override val filterLabel: String
 ) : FilterItem(Filters.FOLLOW_UP, programType, sortingItem, openFilter, filterLabel) {
     fun activate(setActive: Boolean) {
-        // TODO add implementation in the FilterManager
+        FilterManager.getInstance().setFollowUp(setActive)
     }
 
     fun observeFollowUp(): ObservableField<Boolean> {
-        // TODO add implementation in the FilterManager
-        return ObservableField(true)
+        return FilterManager.getInstance().observeFollowUp()
     }
 
     override fun icon() = R.drawable.ic_follow_up_filter
