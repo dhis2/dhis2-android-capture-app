@@ -1,11 +1,13 @@
 package org.dhis2.commons.popupmenu
 
 import android.content.Context
+import android.os.Build
 import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.View
 import android.widget.PopupMenu
 import androidx.annotation.MenuRes
+import androidx.core.view.MenuCompat
 import org.dhis2.commons.R
 
 class AppMenuHelper private constructor(
@@ -40,6 +42,7 @@ class AppMenuHelper private constructor(
             onException?.invoke(e)
         }
         popupMenu.menuInflater.inflate(menu, popupMenu.menu)
+        MenuCompat.setGroupDividerEnabled(popupMenu.menu, true)
         onMenuInflated(popupMenu)
         popupMenu.setOnMenuItemClickListener { onMenuItemClicked(it.itemId) }
         popupMenu.show()

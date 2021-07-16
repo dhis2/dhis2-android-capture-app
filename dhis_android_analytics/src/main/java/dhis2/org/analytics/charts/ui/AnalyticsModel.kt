@@ -59,6 +59,32 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             .show()
     }
 
+    fun showPeriodFilters(view: View){
+        AppMenuHelper.Builder(
+            context = view.context,
+            menu = R.menu.chart_menu,
+            anchor = view,
+            onMenuItemClicked = { itemId ->
+
+                true
+            }
+        ).build()
+            .show()
+    }
+
+    fun showOrgUntFilters(view: View){
+        AppMenuHelper.Builder(
+            context = view.context,
+            menu = R.menu.chart_menu,
+            anchor = view,
+            onMenuItemClicked = { itemId ->
+
+                true
+            }
+        ).build()
+            .show()
+    }
+
     private fun idsToHide(originalChartType: ChartType): List<Int> {
         return when (observableChartType.get()) {
             ChartType.NUTRITION,

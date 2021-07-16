@@ -6,4 +6,11 @@
     <string name="show_table_graph">View as Table</string>
     <string name="show_table_value">View as Value</string>
     <string name="action_accept">Accept</string>
+    <string name="period">Period</string>
+    <string name="orgUnit">OrgUnit</string>
+    <string name="none">None</string>
+    <string name="daily">Daily</string>
+    <string name="weekly">Weekly</string>
+    <string name="monthly">Monthly</string>
+    <string name="yearly">Yearly</string>
 </resources>

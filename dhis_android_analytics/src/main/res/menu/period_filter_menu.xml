@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/visualization">
+        <item
+            android:id="@+id/back"
+            android:icon="@drawable/ic_bar_chart"
+            android:title="@string/period"/>
+    </group>
+    <group android:id="@+id/filters">
+        <item
+            android:id="@+id/none"
+            android:icon="@drawable/ic_pie_chart"
+            android:title="@string/none" />
+        <item
+            android:id="@+id/daily"
+            android:icon="@drawable/ic_pie_chart"
+            android:title="@string/daily" />
+        <item
+            android:id="@+id/weekly"
+            android:icon="@drawable/ic_pie_chart"
+            android:title="@string/weekly" />
+        <item
+            android:id="@+id/monthly"
+            android:icon="@drawable/ic_pie_chart"
+            android:title="@string/monthly" />
+        <item
+            android:id="@+id/yearly"
+            android:icon="@drawable/ic_pie_chart"
+            android:title="@string/yearly" />
+    </group>
+</menu>
