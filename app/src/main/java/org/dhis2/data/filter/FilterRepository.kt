@@ -548,17 +548,6 @@ class FilterRepository @Inject constructor(
             observableSortingInject, observableOpenFilter,
             resources.filterResources.filterEventStatusLabel()
         )
-        val teTypeName = d2.trackedEntityModule()
-            .trackedEntityTypes()
-            .uid(program.trackedEntityType()?.uid())
-            .blockingGet()
-            .displayName() ?: ""
-        defaultTrackerFilters[ProgramFilter.FOLLOW_UP] = FollowUpFilter(
-            org.dhis2.utils.filters.ProgramType.TRACKER,
-            observableSortingInject,
-            observableOpenFilter,
-            resources.filterResources.filterFollowUpLabel(teTypeName)
-        )
 
         val stagesByProgramUidAndUserAssignment = d2.programModule()
             .programStages()
