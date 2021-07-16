@@ -186,6 +186,8 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         } else if (warning != null) {
             inputLayout.setErrorTextAppearance(R.style.warning_appearance);
             inputLayout.setError(warning);
+        }else{
+            inputLayout.setError(null);
         }
     }
 
