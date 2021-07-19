@@ -77,6 +77,12 @@ class EventMapFragment :
                         .show(childFragmentManager, MapLayerDialog::class.java.name)
                 }
             }
+
+            mapPositionButton.setOnClickListener {
+                eventMapManager?.centerCameraOnMyPosition { permissionManager ->
+                    permissionManager?.requestLocationPermissions(requireActivity())
+                }
+            }
         }
         return binding.root
     }

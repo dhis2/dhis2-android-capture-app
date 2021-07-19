@@ -253,6 +253,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     .show(getSupportFragmentManager(), MapLayerDialog.class.getName());
         });
 
+        binding.mapPositionButton.setOnClickListener(view -> {
+            teiMapManager.centerCameraOnMyPosition((permissionManager) -> {
+                permissionManager.requestLocationPermissions(this);
+                return Unit.INSTANCE;
+            });
+        });
+
         binding.executePendingBindings();
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             setFabVisibility(false, false);
@@ -410,6 +417,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             } else {
                 removeCarousel();
                 binding.mapLayerButton.setVisibility(View.GONE);
+                binding.mapPositionButton.setVisibility(View.VISIBLE);
                 presenter.getListData();
             }
 
@@ -960,7 +968,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 binding.messageContainer.setVisibility(GONE);
                 binding.mapView.setVisibility(View.VISIBLE);
                 binding.mapCarousel.setVisibility(View.VISIBLE);
-                binding.mapLayerButton.setVisibility(View.VISIBLE);
 
                 List<CarouselItemModel> allItems = new ArrayList<>();
                 allItems.addAll(trackerMapData.getTeiModels());
@@ -977,6 +984,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 );
                 updateCarousel(allItems);
                 binding.mapLayerButton.setVisibility(View.VISIBLE);
+                binding.mapPositionButton.setVisibility(View.VISIBLE);
                 animations.endMapLoading(binding.mapCarousel);
 
             } else {
@@ -985,6 +993,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 binding.mapView.setVisibility(View.GONE);
                 binding.mapCarousel.setVisibility(View.GONE);
                 binding.mapLayerButton.setVisibility(View.GONE);
+                binding.mapPositionButton.setVisibility(GONE);
             }
             if (!trackerMapData.getTeiModels().isEmpty() && !data.val1()) {
                 showHideFilter();
