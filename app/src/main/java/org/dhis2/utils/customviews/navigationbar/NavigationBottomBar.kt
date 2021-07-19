@@ -22,8 +22,6 @@ import com.google.android.material.bottomnavigation.LabelVisibilityMode.LABEL_VI
 import org.dhis2.Bindings.clipWithRoundedCorners
 import org.dhis2.Bindings.dp
 import org.dhis2.R
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.model.Feature
 
 const val itemIndicatorTag = "ITEM_INDICATOR"
 
@@ -32,9 +30,6 @@ class NavigationBottomBar @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : BottomNavigationView(context, attrs, defStyleAttr) {
-
-    lateinit var featureConfig: FeatureConfigRepository
-
     private val animations = NavigationBottomBarAnimations(this)
     private var hidden = false
     private var currentItemIndicatorColor: Int
@@ -66,12 +61,6 @@ class NavigationBottomBar @JvmOverloads constructor(
         }
         post {
             menu.forEachIndexed { index, item ->
-
-                if (item.itemId == R.id.navigation_analytics) {
-                    item.isVisible = forceShowAnalytics ||
-                        featureConfig.isFeatureEnable(Feature.ANDROAPP_2557)
-                }
-
                 if (index == initialPage) {
                     animateItemIndicatorPosition(findViewById(item.itemId))
                 }

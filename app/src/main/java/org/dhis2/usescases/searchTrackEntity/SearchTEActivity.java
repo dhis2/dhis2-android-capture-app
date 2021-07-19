@@ -74,6 +74,7 @@ import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.Filters;
@@ -122,6 +123,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     LocationProvider locationProvider;
     @Inject
     DispatcherProvider dispatchers;
+    @Inject
+    NavigationPageConfigurator pageConfigurator;
 
     private String initialProgram;
     private String tEType;
@@ -216,6 +219,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             return true;
         });
 
+        binding.navigationBar.pageConfiguration(pageConfigurator);
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_list_view:

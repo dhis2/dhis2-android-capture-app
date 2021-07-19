@@ -39,7 +39,7 @@ class ChartsRepositoryImpl(
     }
 
     override fun getVisualizationGroups(uid: String?): List<AnalyticsDhisVisualizationsGroup> {
-        return d2.settingModule().analyticsSetting().blockingGet()?.dhisVisualizations()
+        return d2.settingModule().analyticsSetting().visualizationsSettings().blockingGet()
             ?.let { visualizationsSetting ->
                 when {
                     uid == null -> {
