@@ -22,6 +22,8 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.commons.dialogs.CustomDialog;
+import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.databinding.FragmentTeiDataBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -35,12 +37,9 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.Eve
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.ObjectStyleUtils;
-import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.category.CategoryDialog;
-import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.dialFloatingActionButton.DialItem;
 import org.dhis2.utils.filters.FilterItem;
@@ -308,35 +307,36 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public Consumer<List<EventViewModel>> setEvents() {
-        return events -> {
-            if (events.isEmpty()) {
-                binding.emptyTeis.setVisibility(View.VISIBLE);
-                if (binding.dialFabLayout.isFabVisible()) {
-                    binding.emptyTeis.setText(R.string.empty_tei_add);
-                } else {
-                    binding.emptyTeis.setText(R.string.empty_tei_no_add);
-                }
-            } else {
-                binding.emptyTeis.setVisibility(View.GONE);
-                adapter.submitList(events);
+    public void setEvents(List<EventViewModel> events, boolean canAddEvents) {
 
-                for (EventViewModel eventViewModel : events) {
-                    if (eventViewModel.getType() == EventViewModelType.EVENT) {
-                        Event event = eventViewModel.getEvent();
-                        if (event.eventDate() != null) {
-                            if (event.eventDate().after(DateUtils.getInstance().getToday()))
-                                binding.teiRecycler.scrollToPosition(events.indexOf(event));
-                        }
-                        if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
-                            presenter.getCatComboOptions(event);
-                            catComboShowed.add(event);
-                        } else if (!hasCatComb && event.attributeOptionCombo() == null)
-                            presenter.setDefaultCatOptCombToEvent(event.uid());
+        binding.setCanAddEvents(canAddEvents);
+
+        if (events.isEmpty()) {
+            binding.emptyTeis.setVisibility(View.VISIBLE);
+            if (binding.dialFabLayout.isFabVisible()) {
+                binding.emptyTeis.setText(R.string.empty_tei_add);
+            } else {
+                binding.emptyTeis.setText(R.string.empty_tei_no_add);
+            }
+        } else {
+            binding.emptyTeis.setVisibility(View.GONE);
+            adapter.submitList(events);
+
+            for (EventViewModel eventViewModel : events) {
+                if (eventViewModel.getType() == EventViewModelType.EVENT) {
+                    Event event = eventViewModel.getEvent();
+                    if (event.eventDate() != null) {
+                        if (event.eventDate().after(DateUtils.getInstance().getToday()))
+                            binding.teiRecycler.scrollToPosition(events.indexOf(event));
                     }
+                    if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
+                        presenter.getCatComboOptions(event);
+                        catComboShowed.add(event);
+                    } else if (!hasCatComb && event.attributeOptionCombo() == null)
+                        presenter.setDefaultCatOptCombToEvent(event.uid());
                 }
             }
-        };
+        }
     }
 
     @Override
