@@ -24,7 +24,7 @@ const val DEFAULT = "default"
 
 class MainPresenter(
     private val view: MainView,
-    private val d2: D2,
+    private val repository: HomeRepository,
     private val schedulerProvider: SchedulerProvider,
     private val preferences: PreferenceProvider,
     private val workManagerController: WorkManagerController,
@@ -38,7 +38,7 @@ class MainPresenter(
     fun init() {
         preferences.removeValue(Preference.CURRENT_ORG_UNIT)
         disposable.add(
-            d2.userModule().user().get()
+            repository.user()
                 .map { username(it) }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -49,7 +49,7 @@ class MainPresenter(
         )
 
         disposable.add(
-            d2.categoryModule().categoryCombos().byIsDefault().eq(true).one().get()
+            repository.defaultCatCombo()
                 .subscribeOn(schedulerProvider.io())
                 .subscribe(
                     { categoryCombo ->
@@ -60,9 +60,7 @@ class MainPresenter(
         )
 
         disposable.add(
-            d2
-                .categoryModule()
-                .categoryOptionCombos().byCode().eq(DEFAULT).one().get()
+            repository.defaultCatOptCombo()
                 .subscribeOn(schedulerProvider.io())
                 .subscribe(
                     { categoryOptionCombo ->
@@ -116,7 +114,7 @@ class MainPresenter(
 
     fun logOut() {
         disposable.add(
-            d2.userModule().logOut()
+            repository.logOut()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -157,11 +155,7 @@ class MainPresenter(
     }
 
     fun hasProgramWithAssignment(): Boolean {
-        if (d2.userModule().isLogged.blockingGet()) {
-            return !d2.programModule().programStages().byEnableUserAssignment()
-                .isTrue.blockingIsEmpty()
-        }
-        return false
+        return repository.hasProgramWithAssignment()
     }
 
     fun onNavigateBackToHome() {
