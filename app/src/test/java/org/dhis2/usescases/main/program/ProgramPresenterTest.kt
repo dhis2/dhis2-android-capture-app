@@ -22,7 +22,7 @@ class ProgramPresenterTest {
     private lateinit var presenter: ProgramPresenter
 
     private val view: ProgramView = mock()
-    private val homeRepository: HomeRepository = mock()
+    private val programRepository: ProgramRepository = mock()
     private val schedulers: TestSchedulerProvider = TestSchedulerProvider(TestScheduler())
     private val preferences: PreferenceProvider = mock()
     private val filterManager: FilterManager = mock()
@@ -32,7 +32,7 @@ class ProgramPresenterTest {
     fun setUp() {
         presenter = ProgramPresenter(
             view,
-            homeRepository,
+            programRepository,
             schedulers,
             preferences,
             filterManager,
@@ -49,9 +49,9 @@ class ProgramPresenterTest {
         whenever(filterManager.asFlowable()) doReturn mock()
         whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
-        whenever(homeRepository.programModels()) doReturn programsFlowable
+        whenever(programRepository.programModels()) doReturn programsFlowable
         whenever(
-            homeRepository.aggregatesModels()
+            programRepository.aggregatesModels()
         ) doReturn Flowable.empty()
 
         presenter.init()
@@ -68,10 +68,10 @@ class ProgramPresenterTest {
         whenever(filterManager.asFlowable()) doReturn mock()
         whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
         whenever(
-            homeRepository.programModels()
+            programRepository.programModels()
         ) doReturn Flowable.error(Exception(""))
         whenever(
-            homeRepository.aggregatesModels()
+            programRepository.aggregatesModels()
         ) doReturn mock()
 
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)

@@ -14,7 +14,7 @@ import timber.log.Timber
 
 class ProgramPresenter internal constructor(
     private val view: ProgramView,
-    private val homeRepository: HomeRepository,
+    private val programRepository: ProgramRepository,
     private val schedulerProvider: SchedulerProvider,
     private val preferenceProvider: PreferenceProvider,
     private val filterManager: FilterManager,
@@ -29,11 +29,11 @@ class ProgramPresenter internal constructor(
         disposable.add(
             applyFiler
                 .switchMap {
-                    homeRepository.programModels().onErrorReturn {
+                    programRepository.programModels().onErrorReturn {
                         arrayListOf()
                     }
                         .mergeWith(
-                            homeRepository.aggregatesModels().onErrorReturn {
+                            programRepository.aggregatesModels().onErrorReturn {
                                 arrayListOf()
                             }
                         )

@@ -11,14 +11,14 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
 
-internal class HomeRepositoryImpl(
+internal class ProgramRepositoryImpl(
     private val d2: D2,
     private val filterPresenter: FilterPresenter,
     private val dhisProgramUtils: DhisProgramUtils,
     private val dhisTeiUtils: DhisTrackedEntityInstanceUtils,
     private val resourceManager: ResourceManager,
     private val schedulerProvider: SchedulerProvider
-) : HomeRepository {
+) : ProgramRepository {
 
     private val programViewModelMapper = ProgramViewModelMapper()
 
