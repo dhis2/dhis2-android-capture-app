@@ -28,10 +28,6 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 
-/**
- * QUADRAM. Created by ppajuelo on 30/11/2017.
- */
-
 public interface DashboardRepository {
 
     Observable<List<ProgramStage>> getProgramStages(String programStages);
@@ -92,4 +88,8 @@ public interface DashboardRepository {
     EnrollmentStatus getEnrollmentStatus(String enrollmentUid);
 
     Observable<StatusChangeResultCode> updateEnrollmentStatus(String enrollmentUid, EnrollmentStatus status);
+
+    boolean programHasRelationships();
+
+    boolean programHasAnalytics();
 }

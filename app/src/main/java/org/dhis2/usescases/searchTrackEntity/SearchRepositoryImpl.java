@@ -42,6 +42,7 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -52,7 +53,6 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
@@ -78,6 +78,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import dhis2.org.analytics.charts.Charts;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -95,9 +96,17 @@ public class SearchRepositoryImpl implements SearchRepository {
     private FilterPresenter filterPresenter;
     private FieldViewModelFactory fieldFactory;
     private DhisPeriodUtils periodUtils;
+    private String currentProgram = null;
+    private final Charts charts;
 
-    SearchRepositoryImpl(String teiType, D2 d2, FilterPresenter filterPresenter, ResourceManager resources, SearchSortingValueSetter sortingValueSetter, FieldViewModelFactory fieldFactory,
-                         DhisPeriodUtils periodUtils) {
+    SearchRepositoryImpl(String teiType,
+                         D2 d2,
+                         FilterPresenter filterPresenter,
+                         ResourceManager resources,
+                         SearchSortingValueSetter sortingValueSetter,
+                         FieldViewModelFactory fieldFactory,
+                         DhisPeriodUtils periodUtils,
+                         Charts charts) {
         this.teiType = teiType;
         this.d2 = d2;
         this.resources = resources;
@@ -105,6 +114,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.filterPresenter = filterPresenter;
         this.fieldFactory = fieldFactory;
         this.periodUtils = periodUtils;
+        this.charts = charts;
     }
 
     @Override
@@ -802,5 +812,83 @@ public class SearchRepositoryImpl implements SearchRepository {
     private boolean attrIsProfileImage(String attrUid) {
         return d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingExists() &&
                 d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingGet().valueType() == ValueType.IMAGE;
+    }
+
+    @Override
+    public void setCurrentProgram(String currentProgram) {
+        this.currentProgram = currentProgram;
+    }
+
+    private String currentProgram() {
+        return currentProgram;
+    }
+
+    @Override
+    public boolean programHasAnalytics() {
+        String programUid = currentProgram();
+        if (programUid != null) {
+            boolean hasCharts = charts != null && !charts.getProgramVisualizations(null, programUid).isEmpty();
+            return hasCharts;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean programHasCoordinates() {
+
+        String programUid = currentProgram();
+
+        boolean teTypeHasCoordinates = d2.trackedEntityModule().trackedEntityTypes()
+                .uid(teiType)
+                .blockingGet()
+                .featureType() != FeatureType.NONE;
+
+        boolean enrollmentHasCoordinates = programUid != null &&
+                d2.programModule().programs()
+                        .uid(programUid)
+                        .blockingGet()
+                        .featureType() != FeatureType.NONE;
+
+        List<TrackedEntityTypeAttribute> teAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
+                .byTrackedEntityTypeUid().eq(teiType)
+                .blockingGet();
+        List<String> teAttributeUids = new ArrayList<>();
+        for (TrackedEntityTypeAttribute teTypeAttr : teAttributes) {
+            teAttributeUids.add(teTypeAttr.trackedEntityAttribute().uid());
+        }
+
+        boolean teAttributeHasCoordinates = !d2.trackedEntityModule().trackedEntityAttributes()
+                .byUid().in(teAttributeUids)
+                .byValueType().eq(ValueType.COORDINATE)
+                .blockingIsEmpty();
+
+        boolean programAttributeHasCoordinates = false;
+        boolean eventHasCoordinates = false;
+        if (programUid != null) {
+            List<ProgramTrackedEntityAttribute> programAttributes = d2.programModule().programTrackedEntityAttributes()
+                    .byProgram().eq(programUid)
+                    .blockingGet();
+            List<String> programAttributeUids = new ArrayList<>();
+            for (ProgramTrackedEntityAttribute programAttr : programAttributes) {
+                programAttributeUids.add(programAttr.trackedEntityAttribute().uid());
+            }
+
+            programAttributeHasCoordinates = !d2.trackedEntityModule().trackedEntityAttributes()
+                    .byUid().in(programAttributeUids)
+                    .byValueType().eq(ValueType.COORDINATE)
+                    .blockingIsEmpty();
+
+            eventHasCoordinates = !d2.programModule().programStages()
+                    .byProgramUid().eq(programUid)
+                    .byFeatureType().notIn(FeatureType.NONE)
+                    .blockingIsEmpty();
+        }
+
+        return teTypeHasCoordinates ||
+                enrollmentHasCoordinates ||
+                teAttributeHasCoordinates ||
+                programAttributeHasCoordinates ||
+                eventHasCoordinates;
     }
 }

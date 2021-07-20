@@ -31,6 +31,7 @@ import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramIndicator;
+import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.relationship.RelationshipItem;
@@ -46,32 +47,37 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 import java.util.ArrayList;
 import java.util.List;
 
+import dhis2.org.analytics.charts.Charts;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import timber.log.Timber;
-
-/**
- * QUADRAM. Created by ppajuelo on 30/11/2017.
- */
 
 public class DashboardRepositoryImpl implements DashboardRepository {
 
     private final D2 d2;
     private final ResourceManager resources;
     private final String enrollmentUid;
+    @Nullable
+    private final Charts charts;
 
     private String teiUid;
 
     private String programUid;
 
 
-    public DashboardRepositoryImpl(D2 d2, String teiUid, String programUid, String enrollmentUid, ResourceManager resources) {
+    public DashboardRepositoryImpl(D2 d2,
+                                   @Nullable Charts charts,
+                                   String teiUid,
+                                   String programUid,
+                                   String enrollmentUid,
+                                   ResourceManager resources) {
         this.d2 = d2;
         this.teiUid = teiUid;
         this.programUid = programUid;
         this.enrollmentUid = enrollmentUid;
         this.resources = resources;
+        this.charts = charts;
     }
 
     @Override
@@ -559,5 +565,38 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 .byTrackedEntityInstance().eq(teiUid)
                 .byStatus().eq(EnrollmentStatus.ACTIVE)
                 .blockingIsEmpty();
+    }
+
+    @Override
+    public boolean programHasRelationships() {
+        if (programUid != null) {
+            String teiTypeUid = d2.programModule().programs()
+                    .uid(programUid)
+                    .blockingGet()
+                    .trackedEntityType()
+                    .uid();
+            return !relationshipsForTeiType(teiTypeUid).blockingFirst().isEmpty();
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean programHasAnalytics() {
+        if (programUid != null) {
+            List<String> enrollmentScopeRulesUids = d2.programModule().programRules()
+                    .byProgramUid().eq(programUid)
+                    .byProgramStageUid().isNull()
+                    .blockingGetUids();
+            boolean hasDisplayRuleActions = !d2.programModule().programRuleActions()
+                    .byProgramRuleUid().in(enrollmentScopeRulesUids)
+                    .byProgramRuleActionType().in(ProgramRuleActionType.DISPLAYKEYVALUEPAIR, ProgramRuleActionType.DISPLAYTEXT)
+                    .blockingIsEmpty();
+            boolean hasProgramIndicator = !d2.programModule().programIndicators().byProgramUid().eq(programUid).blockingIsEmpty();
+            boolean hasCharts = charts != null && !charts.geEnrollmentCharts(enrollmentUid).isEmpty();
+            return hasDisplayRuleActions || hasProgramIndicator || hasCharts;
+        } else {
+            return false;
+        }
     }
 }

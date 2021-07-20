@@ -53,4 +53,8 @@ public interface SearchRepository {
     EventViewModel getEventInfo(String enrollmentUid);
 
     Observable<D2Progress> downloadTei(String teiUid);
+
+    void setCurrentProgram(@Nullable String currentProgram);
+    boolean programHasAnalytics();
+    boolean programHasCoordinates();
 }

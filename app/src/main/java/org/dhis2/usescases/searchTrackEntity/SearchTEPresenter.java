@@ -16,10 +16,10 @@ import com.mapbox.geojson.FeatureCollection;
 import org.dhis2.R;
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
-import org.dhis2.data.dhislogic.DhisMapUtils;
-import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.data.dhislogic.DhisMapUtils;
+import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.tuples.Pair;
@@ -524,6 +524,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             queryData.clear();
         }
 
+        searchRepository.setCurrentProgram(newProgramSelected != null ? newProgramSelected.uid() : null);
         currentProgram.onNext(newProgramSelected != null ? newProgramSelected.uid() : "");
     }
 
@@ -538,6 +539,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         queryData.clear();
         view.setFabIcon(true);
         view.showClearSearch(false);
+        searchRepository.setCurrentProgram(selectedProgram != null ? selectedProgram.uid() : null);
         currentProgram.onNext(selectedProgram != null ? selectedProgram.uid() : "");
         queryProcessor.onNext(new HashMap<>());
     }
@@ -678,7 +680,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         dialog.isFutureDatesAllowed(true);
         dialog.setListener(new OnDatePickerListener() {
             @Override
-            public void onNegativeClick() { }
+            public void onNegativeClick() {
+            }
 
             @Override
             public void onPositiveClick(@NotNull DatePicker datePicker) {
@@ -850,7 +853,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void getListData(){
+    public void getListData() {
         listDataProcessor.onNext(new Unit());
     }
 
@@ -955,7 +958,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void populateList(List<FieldUiModel> list) {
-        if (list != null){
+        if (list != null) {
             view.setFabIcon(!list.isEmpty());
         }
         view.setFormData(formRepository.composeList(list));
@@ -973,10 +976,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         if (listResultIsOk) {
             view.setFiltersVisibility(hasToShowFilters);
-        } else if (!listResultIsOk && hasToShowFilters){
+        } else if (!listResultIsOk && hasToShowFilters) {
             boolean filtersActive = FilterManager.getInstance().getTotalFilters() != 0;
             view.setFiltersVisibility(filtersActive);
-        } else if (!listResultIsOk && !hasToShowFilters){
+        } else if (!listResultIsOk && !hasToShowFilters) {
             view.setFiltersVisibility(false);
         }
     }
@@ -1004,7 +1007,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void setOpeningFilterToNone(){
+    public void setOpeningFilterToNone() {
         filterRepository.collapseAllFilters();
     }
 }
