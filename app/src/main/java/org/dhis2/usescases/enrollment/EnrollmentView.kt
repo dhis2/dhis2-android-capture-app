@@ -30,4 +30,5 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun displayTeiPicture(picturePath: String)
     fun showDateEditionWarning()
     fun displayConfigurationErrors(configurationError: List<RulesUtilsProviderConfigurationError>)
+    fun displayUpdateErrorMessage()
 }

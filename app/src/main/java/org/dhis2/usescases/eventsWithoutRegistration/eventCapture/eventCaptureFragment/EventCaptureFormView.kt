@@ -6,4 +6,5 @@ interface EventCaptureFormView {
 
     fun showFields(fields: MutableList<FieldUiModel>)
     fun performSaveClick()
+    fun displayUpdateErrorMessage()
 }

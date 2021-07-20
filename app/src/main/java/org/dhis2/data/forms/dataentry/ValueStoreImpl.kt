@@ -385,13 +385,22 @@ class ValueStoreImpl(
                                 .build()
                         }
                     }
-                    saveEnrollmentGeometry(geometry)
-                    Flowable.just(
-                        StoreResult(
-                            "",
-                            ValueStoreResult.VALUE_CHANGED
+                    try {
+                        saveEnrollmentGeometry(geometry)
+                        Flowable.just(
+                            StoreResult(
+                                "",
+                                ValueStoreResult.VALUE_CHANGED
+                            )
                         )
-                    )
+                    } catch (e: Exception) {
+                        Flowable.just(
+                            StoreResult(
+                                "",
+                                ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                            )
+                        )
+                    }
                 }
                 else -> save(uid, value)
             }

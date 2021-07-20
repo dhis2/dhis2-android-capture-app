@@ -36,12 +36,14 @@ class EventCaptureFormPresenter(
                 .subscribe(
                     { result ->
                         result.valueStoreResult?.let {
-                            if (result.valueStoreResult == ValueStoreResult.VALUE_CHANGED
-                            ) {
-                                activityPresenter.setValueChanged(result.uid)
-                                activityPresenter.nextCalculation(true)
-                            } else {
-                                populateList()
+                            when (result.valueStoreResult) {
+                                ValueStoreResult.VALUE_CHANGED -> {
+                                    activityPresenter.setValueChanged(result.uid)
+                                    activityPresenter.nextCalculation(true)
+                                }
+                                ValueStoreResult.ERROR_UPDATING_VALUE ->
+                                    view.displayUpdateErrorMessage()
+                                else -> populateList()
                             }
                         } ?: activityPresenter.hideProgress()
                     },

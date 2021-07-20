@@ -853,4 +853,5 @@
     <string name="coordinate_feature_type_error">Can not set coordinate type</string>
     <string name="filter_follow_up_label">Followed up %s</string>
     <string name="wrong_date_format">%s can\'t be parsed as a date</string>
+    <string name="update_field_error">This field could not be updated. Please try again</string>
 </resources>
