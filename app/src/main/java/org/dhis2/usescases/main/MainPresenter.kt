@@ -16,7 +16,6 @@ import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
 import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.dhis2.utils.filters.FilterManager
-import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.user.User
 import timber.log.Timber
 

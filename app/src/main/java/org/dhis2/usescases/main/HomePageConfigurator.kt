@@ -17,7 +17,7 @@ class HomePageConfigurator(
     }
 
     override fun displayAnalytics(): Boolean {
-        return homeRepository.hasHomeAnalytics() ||
-                featureConfigRepository.isFeatureEnable(Feature.ANDROAPP_2557_VG)
+        return homeRepository.hasHomeAnalytics() &&
+            featureConfigRepository.isFeatureEnable(Feature.ANDROAPP_2557_VG)
     }
 }

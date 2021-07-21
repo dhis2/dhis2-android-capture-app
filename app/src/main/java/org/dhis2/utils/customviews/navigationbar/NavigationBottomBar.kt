@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -15,7 +16,6 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.core.view.forEach
-import androidx.core.view.forEachIndexed
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.LabelVisibilityMode.LABEL_VISIBILITY_UNLABELED
@@ -60,12 +60,18 @@ class NavigationBottomBar @JvmOverloads constructor(
             recycle()
         }
         post {
-            menu.forEachIndexed { index, item ->
-                if (index == initialPage) {
-                    animateItemIndicatorPosition(findViewById(item.itemId))
-                }
-                if (initialPage != 0) {
-                    selectItemAt(initialPage)
+            val visibleMenuItems = mutableListOf<MenuItem>()
+            menu.forEach {
+                it.takeIf { it.isVisible }?.let { visibleItem -> visibleMenuItems.add(visibleItem) }
+            }
+
+            if (visibleMenuItems.size < 2) {
+                hide()
+            } else {
+                visibleMenuItems.forEachIndexed { index, item ->
+                    if (index == initialPage) {
+                        selectItemAt(initialPage)
+                    }
                 }
             }
         }
@@ -200,8 +206,16 @@ class NavigationBottomBar @JvmOverloads constructor(
     }
 
     fun pageConfiguration(navigationPageConfigurator: NavigationPageConfigurator) {
+        val visibleMenuItems = mutableListOf<MenuItem>()
         menu.forEach {
             it.isVisible = navigationPageConfigurator.pageVisibility(it.itemId)
+            if (it.isVisible) {
+                visibleMenuItems.add(it)
+            }
+        }
+        when {
+            visibleMenuItems.size < 2 && !isHidden() -> hide()
+            visibleMenuItems.size > 1 && isHidden() -> show()
         }
     }
 
