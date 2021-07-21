@@ -36,19 +36,21 @@ fun setWarningOrError(textView: TextView, warning: String?, error: String?, isSe
     }
 }
 
-@BindingAdapter("setInitialValueDate")
-fun setInitialValueDate(editText: EditText, value: String?) {
+@BindingAdapter(value = ["setInitialValueDate", "parsingErrorText"], requireAll = true)
+fun EditText.setInitialValueDate(value: String?, errorTextView: TextView) {
     if (value.isNullOrEmpty()) {
-        editText.text = null
+        text = null
     } else {
         try {
             val initialDate = value.toDate()
             val dateFormat = DateUtils.uiDateFormat()
             val result = dateFormat.format(initialDate)
             Calendar.getInstance().time = initialDate
-            editText.setText(result)
+            setText(result)
+            errorTextView.visibility = View.GONE
         } catch (e: Exception) {
-            editText.error = editText.context.getString(R.string.wrong_date_format).format(value)
+            errorTextView.text = errorTextView.text.toString().format("123")
+            errorTextView.visibility = View.VISIBLE
         }
     }
 }
