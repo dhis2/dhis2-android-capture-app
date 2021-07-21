@@ -89,7 +89,6 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuMoreOptions()
             clickOnMenuReOpen()
             checkUnlockIconIsDisplay()
-            checkCanAddEvent()
             checkAllEventsCompleted(1)
         }
     }
@@ -174,9 +173,7 @@ class TeiDashboardTest : BaseTest() {
         teiDashboardRobot {
             clickOnMenuMoreOptions()
             clickOnTimelineEvents()
-            clickOnFab()
-            clickOnReferral()
-            checkCannotAddMoreEventToastIsShown()
+            checkCanNotAddEvent()
         }
     }
 
