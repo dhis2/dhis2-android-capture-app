@@ -442,8 +442,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 success -> {
                                     if (addNew)
                                         view.restartDataEntry();
-                                    else
+                                    else {
+                                        preferences.setValue(Preference.PREF_COMPLETED_EVENT, eventUid);
                                         view.finishDataEntry();
+                                    }
                                 },
                                 Timber::e
                         ));

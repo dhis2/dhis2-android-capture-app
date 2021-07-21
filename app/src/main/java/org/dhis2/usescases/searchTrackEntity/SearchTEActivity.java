@@ -74,6 +74,7 @@ import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.Filters;
@@ -91,6 +92,7 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
+import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 import kotlin.Unit;
@@ -121,6 +123,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     LocationProvider locationProvider;
     @Inject
     DispatcherProvider dispatchers;
+    @Inject
+    NavigationPageConfigurator pageConfigurator;
 
     private String initialProgram;
     private String tEType;
@@ -215,16 +219,29 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             return true;
         });
 
+        binding.navigationBar.pageConfiguration(pageConfigurator);
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_list_view:
+                    binding.mainLayout.setVisibility(View.VISIBLE);
+                    binding.mainComponent.setVisibility(GONE);
                     showMap(false);
                     break;
                 case R.id.navigation_map_view:
                     if (backDropActive) {
                         closeFilters();
                     }
+                    binding.mainLayout.setVisibility(View.VISIBLE);
+                    binding.mainComponent.setVisibility(GONE);
                     showMap(true);
+                    break;
+                case R.id.navigation_analytics:
+                    if (backDropActive) {
+                        closeFilters();
+                    }
+                    binding.mainComponent.setVisibility(View.VISIBLE);
+                    binding.mainLayout.setVisibility(GONE);
+                    showAnalytics();
                     break;
             }
             return true;
@@ -238,6 +255,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.mapLayerButton.setOnClickListener(view -> {
             new MapLayerDialog(teiMapManager)
                     .show(getSupportFragmentManager(), MapLayerDialog.class.getName());
+        });
+
+        binding.mapPositionButton.setOnClickListener(view -> {
+            teiMapManager.centerCameraOnMyPosition((permissionManager) -> {
+                permissionManager.requestLocationPermissions(this);
+                return Unit.INSTANCE;
+            });
         });
 
         binding.executePendingBindings();
@@ -309,6 +333,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         FilterManager.getInstance().clearWorkingList(false);
         FilterManager.getInstance().clearSorting();
         FilterManager.getInstance().clearAssignToMe();
+        FilterManager.getInstance().clearFollowUp();
 
         presenter.clearOtherFiltersIfWebAppIsConfig();
 
@@ -371,8 +396,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //-----------------------------------------------------------------------
     //region SearchForm
 
+    private void showAnalytics() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.mainComponent, GroupAnalyticsFragment.Companion.forProgram(initialProgram)).commit();
+    }
+
     private void showMap(boolean showMap) {
         if (binding.messageContainer.getVisibility() == GONE) {
+            binding.mainComponent.setVisibility(GONE);
             binding.scrollView.setVisibility(showMap ? GONE : View.VISIBLE);
             binding.mapView.setVisibility(showMap ? View.VISIBLE : GONE);
             binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : GONE);
@@ -391,6 +422,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             } else {
                 removeCarousel();
                 binding.mapLayerButton.setVisibility(View.GONE);
+                binding.mapPositionButton.setVisibility(View.VISIBLE);
                 presenter.getListData();
             }
 
@@ -804,6 +836,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 !backDropActive || general
         );
         setCarouselVisibility(backDropActive);
+        if(backDropActive) {
+            binding.navigationBar.hide();
+        }else{
+            binding.navigationBar.show();
+        }
 
         initSet.applyTo(binding.backdropLayout);
     }
@@ -936,7 +973,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 binding.messageContainer.setVisibility(GONE);
                 binding.mapView.setVisibility(View.VISIBLE);
                 binding.mapCarousel.setVisibility(View.VISIBLE);
-                binding.mapLayerButton.setVisibility(View.VISIBLE);
 
                 List<CarouselItemModel> allItems = new ArrayList<>();
                 allItems.addAll(trackerMapData.getTeiModels());
@@ -953,6 +989,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 );
                 updateCarousel(allItems);
                 binding.mapLayerButton.setVisibility(View.VISIBLE);
+                binding.mapPositionButton.setVisibility(View.VISIBLE);
                 animations.endMapLoading(binding.mapCarousel);
 
             } else {
@@ -961,6 +998,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 binding.mapView.setVisibility(View.GONE);
                 binding.mapCarousel.setVisibility(View.GONE);
                 binding.mapLayerButton.setVisibility(View.GONE);
+                binding.mapPositionButton.setVisibility(GONE);
             }
             if (!trackerMapData.getTeiModels().isEmpty() && !data.val1()) {
                 showHideFilter();

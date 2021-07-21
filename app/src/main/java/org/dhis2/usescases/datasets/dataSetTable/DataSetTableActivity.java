@@ -123,9 +123,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         dataSetTableComponent.inject(this);
         super.onCreate(savedInstanceState);
 
-        //Orientation
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_table);
         binding.setPresenter(presenter);
         ViewExtensionsKt.clipWithRoundedCorners(binding.container, ExtensionsKt.getDp(16));

@@ -129,12 +129,8 @@ class SearchTeiRobot : BaseRobot() {
             ))
     }
 
-    fun clickOnOptionMenu() {
-        onView(withId(R.id.moreOptions)).perform(click())
-    }
-
     fun clickOnShowMap() {
-        onView(withText(R.string.show_in_map)).perform(click())
+        onView(withId(R.id.navigation_map_view)).perform(click())
     }
 
     fun swipeCarouselToLeft() {

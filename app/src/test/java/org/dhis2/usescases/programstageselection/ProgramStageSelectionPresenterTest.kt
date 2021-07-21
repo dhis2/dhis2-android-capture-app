@@ -34,16 +34,12 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
-import java.lang.Exception
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.usescases.programStageSelection.ProgramStageSelectionContract
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionPresenter
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionRepository
+import org.dhis2.usescases.programStageSelection.ProgramStageSelectionView
 import org.dhis2.utils.Result
 import org.dhis2.utils.RulesUtilsProvider
-import org.hisp.dhis.android.core.common.Access
-import org.hisp.dhis.android.core.common.DataAccess
-import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.rules.models.RuleActionHideProgramStage
 import org.hisp.dhis.rules.models.RuleEffect
@@ -55,7 +51,7 @@ class ProgramStageSelectionPresenterTest {
 
     private lateinit var presenter: ProgramStageSelectionPresenter
 
-    private val view: ProgramStageSelectionContract.View = mock()
+    private val view: ProgramStageSelectionView = mock()
     private val repository: ProgramStageSelectionRepository = mock()
     private val rulesUtils: RulesUtilsProvider = mock()
     private val scheduler = TrampolineSchedulerProvider()
@@ -67,8 +63,6 @@ class ProgramStageSelectionPresenterTest {
 
     @Test
     fun `Should set programStages`() {
-        val programId = "programId"
-        val enrollmentUid = "programUid"
         val programStages = listOf(ProgramStage.builder().uid("programStage").build())
         val calcResult = Result.success(
             listOf(
@@ -80,10 +74,7 @@ class ProgramStageSelectionPresenterTest {
         )
 
         whenever(
-            repository.enrollmentProgramStages(
-                programId,
-                enrollmentUid
-            )
+            repository.enrollmentProgramStages()
         ) doReturn Flowable.just(programStages)
         whenever(repository.calculate()) doReturn Flowable.just(calcResult)
         whenever(
@@ -93,7 +84,7 @@ class ProgramStageSelectionPresenterTest {
             )
         ) doAnswer { null }
 
-        presenter.getProgramStages(programId, enrollmentUid)
+        presenter.programStages()
 
         verify(view).setData(programStages)
     }
@@ -135,24 +126,6 @@ class ProgramStageSelectionPresenterTest {
         Assert.assertEquals(
             presenter.applyEffects(programStages, calcResult),
             programStages
-        )
-    }
-
-    @Test
-    fun `Should set program stage when it is clicked`() {
-        val programStage = ProgramStage.builder()
-            .uid("programStage")
-            .repeatable(false)
-            .periodType(PeriodType.Monthly)
-            .access(Access.create(true, true, DataAccess.create(true, true)))
-            .build()
-
-        presenter.onProgramStageClick(programStage)
-
-        verify(view).setResult(
-            programStage.uid(),
-            programStage.repeatable()!!,
-            programStage.periodType()
         )
     }
 

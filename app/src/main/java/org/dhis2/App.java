@@ -55,6 +55,8 @@ import java.net.SocketException;
 import javax.inject.Singleton;
 
 import cat.ereza.customactivityoncrash.config.CaocConfig;
+import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentComponent;
+import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule;
 import io.reactivex.Scheduler;
 import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -327,5 +329,10 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     @Override
     public CalendarPickerComponent provideCalendarPickerComponent() {
         return userComponent.plus(new CalendarPickerModule());
+    }
+
+    @Override
+    public AnalyticsFragmentComponent provideAnalyticsFragmentComponent(AnalyticsFragmentModule module){
+        return userComponent.plus(module);
     }
 }
