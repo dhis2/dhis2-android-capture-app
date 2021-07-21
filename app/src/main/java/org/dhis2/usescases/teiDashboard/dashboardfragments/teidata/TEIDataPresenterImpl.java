@@ -514,7 +514,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private boolean canAddNewEvents() {
         return d2.enrollmentModule()
                 .enrollmentService()
-                .allowEventCreation(
+                .blockingGetAllowEventCreation(
                         enrollmentUid,
                         stagesToHide
                 );
