@@ -49,7 +49,7 @@ fun EditText.setInitialValueDate(value: String?, errorTextView: TextView) {
             setText(result)
             errorTextView.visibility = View.GONE
         } catch (e: Exception) {
-            errorTextView.text = errorTextView.text.toString().format("123")
+            errorTextView.text = errorTextView.text.toString().format(value)
             errorTextView.visibility = View.VISIBLE
         }
     }
