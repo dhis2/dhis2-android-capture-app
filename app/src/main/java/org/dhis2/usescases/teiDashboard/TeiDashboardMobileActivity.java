@@ -136,6 +136,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.navigationBar.setVisibility(programUid != null ? View.VISIBLE : View.GONE);
         binding.navigationBar.pageConfiguration(pageConfigurator);
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
+            if(adapter == null) return true;
             int pagePosition = adapter.getNavigationPagePosition(item.getItemId());
             if (pagePosition != -1) {
                 if (OrientationUtilsKt.isLandscape()) {
