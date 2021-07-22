@@ -60,11 +60,7 @@ class NavigationBottomBar @JvmOverloads constructor(
             recycle()
         }
         post {
-            val visibleMenuItems = mutableListOf<MenuItem>()
-            menu.forEach {
-                it.takeIf { it.isVisible }?.let { visibleItem -> visibleMenuItems.add(visibleItem) }
-            }
-
+            val visibleMenuItems = visibleItemCount()
             if (visibleMenuItems.size < 2) {
                 hide()
             } else {
@@ -86,9 +82,11 @@ class NavigationBottomBar @JvmOverloads constructor(
     }
 
     fun show() {
-        visibility = View.VISIBLE
-        animations.show {
-            hidden = false
+        if (visibleItemCount().size > 1) {
+            visibility = View.VISIBLE
+            animations.show {
+                hidden = false
+            }
         }
     }
 
@@ -226,5 +224,13 @@ class NavigationBottomBar @JvmOverloads constructor(
                 animateItemIndicatorPosition(findViewById(selectedItemId))
             }
         }
+    }
+
+    private fun visibleItemCount(): MutableList<MenuItem> {
+        val visibleMenuItems = mutableListOf<MenuItem>()
+        menu.forEach {
+            it.takeIf { it.isVisible }?.let { visibleItem -> visibleMenuItems.add(visibleItem) }
+        }
+        return visibleMenuItems
     }
 }

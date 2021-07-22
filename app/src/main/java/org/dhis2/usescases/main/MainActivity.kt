@@ -215,7 +215,7 @@ class MainActivity :
 
     override fun onBackPressed() {
         when {
-            mainNavigator.isHome() -> presenter.onNavigateBackToHome()
+            !mainNavigator.isHome() -> presenter.onNavigateBackToHome()
             isPinLayoutVisible -> isPinLayoutVisible = false
             else -> super.onBackPressed()
         }
@@ -223,7 +223,6 @@ class MainActivity :
 
     override fun goToHome() {
         mainNavigator.openPrograms()
-        binding.navigationBar.selectItemAt(1)
     }
 
     override fun changeFragment(id: Int) {
