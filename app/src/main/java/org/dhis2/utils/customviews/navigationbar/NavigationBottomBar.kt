@@ -39,7 +39,6 @@ class NavigationBottomBar @JvmOverloads constructor(
     private var initialPage: Int
     private val currentItemIndicator: View by lazy { initCurrentItemIndicator() }
     private var forceShowAnalytics = false
-    private var initFinished = false
 
     init {
         labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
@@ -60,7 +59,7 @@ class NavigationBottomBar @JvmOverloads constructor(
                 getBoolean(R.styleable.NavigationBottomBar_forceShowAnalytics, false)
             recycle()
         }
-        post {
+        /*post {
             val visibleMenuItems = visibleItemCount()
             if (visibleMenuItems.size < 2) {
                 hide()
@@ -71,7 +70,7 @@ class NavigationBottomBar @JvmOverloads constructor(
                     }
                 }
             }
-        }
+        }*/
         setIconsColor(currentItemIndicatorColor)
     }
 
@@ -98,12 +97,7 @@ class NavigationBottomBar @JvmOverloads constructor(
                 animateItemIndicatorPosition(itemView)
             }
             updateBadges()
-            if(initFinished) {
-                listener?.onNavigationItemSelected(item) ?: false
-            }else{
-                initFinished = true
-                initFinished
-            }
+            listener?.onNavigationItemSelected(item) ?: false
         }
     }
 
@@ -219,7 +213,14 @@ class NavigationBottomBar @JvmOverloads constructor(
         }
         when {
             visibleMenuItems.size < 2 && !isHidden() -> hide()
-            visibleMenuItems.size > 1 && isHidden() -> show()
+            visibleMenuItems.size > 1 && isHidden() -> {
+                visibleMenuItems.forEachIndexed { index, item ->
+                    if (index == initialPage) {
+                        selectItemAt(initialPage)
+                    }
+                }
+                show()
+            }
         }
     }
 
