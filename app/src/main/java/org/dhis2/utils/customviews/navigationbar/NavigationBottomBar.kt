@@ -39,6 +39,7 @@ class NavigationBottomBar @JvmOverloads constructor(
     private var initialPage: Int
     private val currentItemIndicator: View by lazy { initCurrentItemIndicator() }
     private var forceShowAnalytics = false
+    private var initFinished = false
 
     init {
         labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
@@ -97,7 +98,12 @@ class NavigationBottomBar @JvmOverloads constructor(
                 animateItemIndicatorPosition(itemView)
             }
             updateBadges()
-            listener?.onNavigationItemSelected(item) ?: false
+            if(initFinished) {
+                listener?.onNavigationItemSelected(item) ?: false
+            }else{
+                initFinished = true
+                initFinished
+            }
         }
     }
 
