@@ -19,7 +19,10 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.validation.validators.FieldMaskValidator
+import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.ValueType
 
 class FormViewModel(
     private val repository: FormRepository,
@@ -89,6 +92,42 @@ class FormViewModel(
                 value = intent.value,
                 actionType = ActionType.ON_NEXT
             )
+            is FormIntent.OnSave -> {
+                val error = checkFieldError(
+                    intent.valueType,
+                    intent.value,
+                    intent.fieldMask
+                )
+
+                createRowAction(
+                    uid = intent.uid,
+                    value = intent.value,
+                    error = error,
+                    actionType = ActionType.ON_SAVE
+                )
+            }
+        }
+    }
+
+    private fun checkFieldError(
+        valueType: ValueType?,
+        fieldValue: String?,
+        fieldMask: String?
+    ): Throwable? {
+        return fieldValue?.let { value ->
+            var error =
+                when (val result = valueType?.validator?.validate(value)) {
+                    is Result.Failure -> result.failure
+                    else -> null
+                }
+
+            fieldMask?.let { mask ->
+                error = when (val result = FieldMaskValidator(mask).validate(value)) {
+                    is Result.Failure -> result.failure
+                    else -> error
+                }
+            }
+            error
         }
     }
 
@@ -96,11 +135,13 @@ class FormViewModel(
         uid: String,
         value: String?,
         extraData: String? = null,
+        error: Throwable? = null,
         actionType: ActionType = ActionType.ON_SAVE
     ) = RowAction(
         id = uid,
         value = value,
         extraData = extraData,
+        error = error,
         type = actionType
     )
 
