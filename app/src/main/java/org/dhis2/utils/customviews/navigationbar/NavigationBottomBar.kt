@@ -59,18 +59,6 @@ class NavigationBottomBar @JvmOverloads constructor(
                 getBoolean(R.styleable.NavigationBottomBar_forceShowAnalytics, false)
             recycle()
         }
-        /*post {
-            val visibleMenuItems = visibleItemCount()
-            if (visibleMenuItems.size < 2) {
-                hide()
-            } else {
-                visibleMenuItems.forEachIndexed { index, item ->
-                    if (index == initialPage) {
-                        selectItemAt(initialPage)
-                    }
-                }
-            }
-        }*/
         setIconsColor(currentItemIndicatorColor)
     }
 
@@ -214,12 +202,17 @@ class NavigationBottomBar @JvmOverloads constructor(
         when {
             visibleMenuItems.size < 2 && !isHidden() -> hide()
             visibleMenuItems.size > 1 && isHidden() -> {
-                visibleMenuItems.forEachIndexed { index, item ->
-                    if (index == initialPage) {
-                        selectItemAt(initialPage)
-                    }
-                }
+                initSelection(visibleMenuItems)
                 show()
+            }
+            else -> initSelection(visibleMenuItems)
+        }
+    }
+
+    private fun initSelection(visibleMenuItems: MutableList<MenuItem>) {
+        visibleMenuItems.forEachIndexed { index, item ->
+            if (index == initialPage) {
+                selectItemAt(initialPage)
             }
         }
     }

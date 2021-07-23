@@ -36,10 +36,6 @@ import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
 
-/**
- * Created by ppajuelo on 18/10/2017.f
- */
-
 class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
     private lateinit var binding: FragmentProgramBinding
@@ -86,13 +82,9 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         }.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        presenter.init()
-    }
-
     override fun onResume() {
         super.onResume()
+        presenter.init()
         animation.initBackdropCorners(
             binding.drawerLayout.background.mutate() as GradientDrawable
         )
