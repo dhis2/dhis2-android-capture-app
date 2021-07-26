@@ -67,19 +67,29 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     public static final String TEI_A_UID = "TEI_A_UID";
     private Set<String> sources;
-    private TeiDashboardMobileActivity activity;
+    private MapButtonObservable mapButtonObservable;
+
+    public static Bundle withArguments(
+            String programUid, String teiUid, String enrollmentUid
+    ) {
+        Bundle bundle = new Bundle();
+        bundle.putString("ARG_PROGRAM_UID", programUid);
+        bundle.putString("ARG_TEI_UID", teiUid);
+        bundle.putString("ARG_ENROLLMENT_UID", enrollmentUid);
+        return bundle;
+    }
 
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
-        activity = (TeiDashboardMobileActivity) context;
-        if (((App) context.getApplicationContext()).dashboardComponent() != null)
-            ((App) context.getApplicationContext()).dashboardComponent()
+        mapButtonObservable = (MapButtonObservable)context;
+        if (((App) context.getApplicationContext()).userComponent() != null)
+            ((App) context.getApplicationContext()).userComponent()
                     .plus(new RelationshipModule(
                             this,
-                            activity.getProgramUid(),
-                            activity.getTeiUid(),
-                            activity.getEnrollmentUid(),
+                            getArguments().getString("ARG_PROGRAM_UID"),
+                            getArguments().getString("ARG_TEI_UID"),
+                            getArguments().getString("ARG_ENROLLMENT_UID"),
                             null,
                             null)
                     ).inject(this);
@@ -96,12 +106,11 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         relationshipMapManager.onCreate(savedInstanceState);
         relationshipMapManager.setOnMapClickListener(this);
         relationshipMapManager.init(() -> Unit.INSTANCE, (permissionManager) -> {
-            permissionManager.requestLocationPermissions(activity);
+            permissionManager.requestLocationPermissions(getActivity());
             return Unit.INSTANCE;
         });
 
-        TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) getContext();
-        activity.relationshipMap().observe(getViewLifecycleOwner(), showMap -> {
+        mapButtonObservable.relationshipMap().observe(getViewLifecycleOwner(), showMap -> {
             binding.relationshipRecycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
             binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
             binding.mapLayerButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
@@ -117,7 +126,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
         binding.mapPositionButton.setOnClickListener(view -> {
             relationshipMapManager.centerCameraOnMyPosition((permissionManager) -> {
-                permissionManager.requestLocationPermissions(activity);
+                permissionManager.requestLocationPermissions(getActivity());
                 return Unit.INSTANCE;
             });
         });
@@ -321,7 +330,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         carouselAdapter.addItems(relationships);
 
         animations.endMapLoading(binding.mapCarousel);
-        activity.onRelationshipMapLoaded();
+        mapButtonObservable.onRelationshipMapLoaded();
     }
 
     @Override
