@@ -3,11 +3,9 @@ package org.dhis2.usescases.teiDashboard;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel;
 import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
@@ -34,15 +32,12 @@ import org.hisp.dhis.android.core.program.ProgramIndicator;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
-import org.hisp.dhis.android.core.relationship.RelationshipItem;
-import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.systeminfo.SystemInfo;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -440,91 +435,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 return Single.error(new AuthorityException(null));
             }
         });
-    }
-
-    @Override
-    public Flowable<List<RelationshipViewModel>> listTeiRelationships() {
-        return Flowable.fromIterable(
-                d2.relationshipModule().relationships().getByItem(
-                        RelationshipItem.builder().trackedEntityInstance(
-                                RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teiUid).build()).build()
-                ))
-                .map(relationship -> {
-                    RelationshipType relationshipType =
-                            d2.relationshipModule().relationshipTypes().uid(relationship.relationshipType()).blockingGet();
-
-                    String relationshipTEIUid;
-                    RelationshipViewModel.RelationshipDirection direction;
-                    if (!teiUid.equals(relationship.from().trackedEntityInstance().trackedEntityInstance())) {
-                        relationshipTEIUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
-                        direction = RelationshipViewModel.RelationshipDirection.FROM;
-                    } else {
-                        relationshipTEIUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
-                        direction = RelationshipViewModel.RelationshipDirection.TO;
-                    }
-
-                    String fromTeiUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
-                    String toTeiUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
-
-                    TrackedEntityInstance fromTei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(fromTeiUid).blockingGet();
-                    TrackedEntityInstance toTei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(toTeiUid).blockingGet();
-
-
-                    return RelationshipViewModel.create(
-                            relationship,
-                            relationshipType,
-                            direction,
-                            relationshipTEIUid,
-                            getTrackedEntityAttributesForRelationship(fromTei),
-                            getTrackedEntityAttributesForRelationship(toTei),
-                            fromTei.geometry(),
-                            toTei.geometry(),
-                            ExtensionsKt.profilePicturePath(fromTei, d2, programUid),
-                            ExtensionsKt.profilePicturePath(toTei, d2, programUid),
-                            getTeiDefaultRes(fromTei),
-                            getTeiDefaultRes(toTei)
-                    );
-                })
-                .toList().toFlowable();
-    }
-
-    private List<TrackedEntityAttributeValue> getTrackedEntityAttributesForRelationship(TrackedEntityInstance tei) {
-
-        List<TrackedEntityAttributeValue> values;
-        List<String> attributeUids = new ArrayList<>();
-        List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes = d2.programModule().programTrackedEntityAttributes()
-                .byProgram().eq(programUid)
-                .byDisplayInList().isTrue()
-                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                .blockingGet();
-        for (ProgramTrackedEntityAttribute programAttribute : programTrackedEntityAttributes) {
-            attributeUids.add(programAttribute.trackedEntityAttribute().uid());
-        }
-        values = d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityInstance().eq(tei.uid())
-                .byTrackedEntityAttribute().in(attributeUids).blockingGet();
-
-        if (values.isEmpty()) {
-            attributeUids.clear();
-            List<TrackedEntityTypeAttribute> typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
-                    .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
-                    .byDisplayInList().isTrue()
-                    .blockingGet();
-
-            for (TrackedEntityTypeAttribute typeAttribute : typeAttributes) {
-                attributeUids.add(typeAttribute.trackedEntityAttribute().uid());
-            }
-            values = d2.trackedEntityModule().trackedEntityAttributeValues()
-                    .byTrackedEntityInstance().eq(tei.uid())
-                    .byTrackedEntityAttribute().in(attributeUids).blockingGet();
-        }
-
-        return values;
-    }
-
-    private int getTeiDefaultRes(TrackedEntityInstance tei) {
-        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).blockingGet();
-        return resources.getObjectStyleDrawableResource(teiType.style().icon(), R.drawable.photo_temp_gray);
     }
 
     @Override

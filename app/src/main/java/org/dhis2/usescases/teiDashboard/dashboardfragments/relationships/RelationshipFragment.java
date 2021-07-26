@@ -74,10 +74,15 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         super.onAttach(context);
         activity = (TeiDashboardMobileActivity) context;
         if (((App) context.getApplicationContext()).dashboardComponent() != null)
-            ((App) context.getApplicationContext())
-                    .dashboardComponent()
-                    .plus(new RelationshipModule(this, activity.getProgramUid(), activity.getTeiUid()))
-                    .inject(this);
+            ((App) context.getApplicationContext()).dashboardComponent()
+                    .plus(new RelationshipModule(
+                            this,
+                            activity.getProgramUid(),
+                            activity.getTeiUid(),
+                            activity.getEnrollmentUid(),
+                            null,
+                            null)
+                    ).inject(this);
     }
 
     @Nullable

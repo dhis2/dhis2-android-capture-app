@@ -9,7 +9,7 @@ import org.hisp.dhis.android.core.relationship.RelationshipType
 
 interface RelationshipView : AbstractActivityContracts.View {
 
-    fun setRelationships(relationships: MutableList<RelationshipViewModel>)
+    fun setRelationships(relationships: List<RelationshipViewModel>)
     fun goToAddRelationship(teiUid: String, teiTypeUidToAdd: String)
     fun showPermissionError()
     fun openDashboardFor(teiUid: String)

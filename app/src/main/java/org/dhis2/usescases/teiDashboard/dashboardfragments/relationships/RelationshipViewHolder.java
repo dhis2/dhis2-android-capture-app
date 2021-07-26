@@ -8,9 +8,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 
 import java.util.List;
 
-/**
- * QUADRAM. Created by ppajuelo on 05/12/2017.
- */
+import kotlin.Pair;
 
 public class RelationshipViewHolder extends RecyclerView.ViewHolder {
 
@@ -23,29 +21,29 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
 
     public void bind(RelationshipPresenter presenter, RelationshipViewModel relationships) {
 
-        Relationship relationship = relationships.relationship();
+        Relationship relationship = relationships.getRelationship();
 
-        boolean from = relationships.relationshipDirection() == RelationshipViewModel.RelationshipDirection.FROM;
+        boolean from = relationships.getDirection() == RelationshipDirection.FROM;
 
-        binding.teiRelationshipLink.setOnClickListener(view -> presenter.openDashboard(relationships.teiUid()));
+        binding.teiRelationshipLink.setOnClickListener(view -> presenter.openDashboard(relationships.getOwnerUid()));
 
         binding.setPresenter(presenter);
         binding.setRelationship(relationship);
-        String relationshipNameText = from ? relationships.relationshipType().toFromName() : relationships.relationshipType().fromToName();
-        binding.relationshipName.setText(relationshipNameText != null ? relationshipNameText : relationships.relationshipType().displayName());
+        String relationshipNameText = from ? relationships.getRelationshipType().toFromName() : relationships.getRelationshipType().fromToName();
+        binding.relationshipName.setText(relationshipNameText != null ? relationshipNameText : relationships.getRelationshipType().displayName());
 
-        if (from && relationships.fromAttributes() != null) {
-            setAttributes(relationships.fromAttributes());
-        } else if (!from && relationships.toAttributes() != null) {
-            setAttributes(relationships.toAttributes());
+        if (from && !relationships.getFromValues().isEmpty()) {
+            setAttributes(relationships.getFromValues());
+        } else if (!from && !relationships.getToValues().isEmpty()) {
+            setAttributes(relationships.getToValues());
         }
     }
 
-    private void setAttributes(List<TrackedEntityAttributeValue> trackedEntityAttributeValueModels) {
+    private void setAttributes(List<Pair<String,String>> trackedEntityAttributeValueModels) {
         if (trackedEntityAttributeValueModels.size() > 1)
-            binding.setTeiName(String.format("%s %s", trackedEntityAttributeValueModels.get(0).value(), trackedEntityAttributeValueModels.get(1).value()));
+            binding.setTeiName(String.format("%s %s", trackedEntityAttributeValueModels.get(0).getSecond(), trackedEntityAttributeValueModels.get(1).getSecond()));
         else if (!trackedEntityAttributeValueModels.isEmpty())
-            binding.setTeiName(trackedEntityAttributeValueModels.get(0).value());
+            binding.setTeiName(trackedEntityAttributeValueModels.get(0).getSecond());
         else
             binding.setTeiName("-");
         binding.executePendingBindings();
