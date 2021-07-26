@@ -15,6 +15,11 @@ enum class SectionType {
     SUBSECTION
 }
 
+enum class PeriodFilterType {
+    PERIOD
+}
+
+
 sealed class AnalyticsModel
 
 data class SectionTitle(
@@ -39,6 +44,12 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
         )
     }
 
+  /*  val observableChartPeriodFilter by lazy {
+        ObservableField {
+
+        }
+    } */
+
     fun showVisualizationOptions(view: View) {
         AppMenuHelper.Builder(
             context = view.context,
@@ -52,6 +63,12 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
                 }
             },
             onMenuItemClicked = { itemId ->
+                if (itemId == R.id.periodFilter){
+                    showPeriodFilters(view)
+                    true
+                } else if (itemId == R.id.orgFilter) {
+                    true
+                }
                 observableChartType.set(chartToLoad(itemId))
                 true
             }
@@ -62,10 +79,10 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
     fun showPeriodFilters(view: View){
         AppMenuHelper.Builder(
             context = view.context,
-            menu = R.menu.chart_menu,
+            menu = R.menu.period_filter_menu,
             anchor = view,
             onMenuItemClicked = { itemId ->
-
+                //Map itemID to Filter period enum
                 true
             }
         ).build()
