@@ -16,9 +16,13 @@ enum class SectionType {
 }
 
 enum class PeriodFilterType {
+    NONE,
     PERIOD
 }
 
+enum class OrgUnitFilterType {
+
+}
 
 sealed class AnalyticsModel
 
@@ -44,11 +48,9 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
         )
     }
 
-  /*  val observableChartPeriodFilter by lazy {
-        ObservableField {
-
-        }
-    } */
+    val observableChartPeriodFilter by lazy {
+        ObservableField { PeriodFilterType.NONE }
+    }
 
     fun showVisualizationOptions(view: View) {
         AppMenuHelper.Builder(

@@ -32,11 +32,11 @@
     <group android:id="@+id/filters">
         <item
             android:id="@+id/periodFilter"
-            android:icon="@drawable/ic_pie_chart"
+            android:icon="@drawable/ic_calendar_chart"
             android:title="@string/period" />
         <item
             android:id="@+id/orgFilter"
-            android:icon="@drawable/ic_pie_chart"
+            android:icon="@drawable/ic_orgunit_chart"
             android:title="@string/orgUnit" />
     </group>
 </menu>

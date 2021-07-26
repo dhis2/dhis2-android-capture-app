@@ -3,7 +3,7 @@
     <group android:id="@+id/visualization">
         <item
             android:id="@+id/back"
-            android:icon="@drawable/ic_bar_chart"
+            android:icon="@drawable/ic_arrowback_chart"
             android:title="@string/period"/>
     </group>
     <group android:id="@+id/filters">
