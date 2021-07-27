@@ -195,43 +195,22 @@
                         app:tint="?colorPrimary" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
-                    android:id="@+id/emptyData"
+                <FrameLayout
+                    android:id="@+id/fragmentContainer"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:gravity="center"
-                    android:padding="42dp"
-                    android:textSize="@dimen/primaryTextSize"
-                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/filterOpen" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:clipToPadding="false"
-                    android:paddingBottom="100dp"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/filterOpen"
-                    tools:listitem="@layout/item_dataset" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/addDatasetButton"
-                android:layout_width="wrap_content"
+            <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
+                android:id="@+id/navigationBar"
+                style="@style/DhisBottomNavigationView"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="16dp"
-                android:onClick="@{()->presenter.addDataSet()}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:backgroundTint="?colorPrimary"
-                app:srcCompat="@drawable/ic_add_accent" />
+                app:menu="@menu/navigation_dataset_list"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
             <RelativeLayout
                 android:id="@+id/progressLayout"
