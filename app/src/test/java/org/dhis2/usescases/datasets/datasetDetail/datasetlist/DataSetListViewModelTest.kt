@@ -88,7 +88,6 @@ class DataSetListViewModelTest {
         assert(viewModel.selectedSync.value?.peekContent() == dataSet)
     }
 
-
     @Test
     fun `Should updateData`() {
         viewModel.updateData()

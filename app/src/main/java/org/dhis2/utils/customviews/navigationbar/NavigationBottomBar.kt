@@ -115,9 +115,9 @@ class NavigationBottomBar @JvmOverloads constructor(
     private fun setCurrentItemIndicatorPosition(selectedItemView: View) {
         currentItemIndicator.apply {
             x = selectedItemView.x +
-                    selectedItemView.width / 2f +
-                    intrinsicHorizontalMargin() -
-                    itemIndicatorSize / 2f
+                selectedItemView.width / 2f +
+                intrinsicHorizontalMargin() -
+                itemIndicatorSize / 2f
             y = (this@NavigationBottomBar.height - itemIndicatorSize) / 2f
         }
 
@@ -129,7 +129,7 @@ class NavigationBottomBar @JvmOverloads constructor(
 
     private fun indicatorHasPosition(): Boolean {
         return currentItemIndicator.x != -itemIndicatorSize / 2f &&
-                currentItemIndicator.y != -itemIndicatorSize / 2f
+            currentItemIndicator.y != -itemIndicatorSize / 2f
     }
 
     private fun isItemIndicatorAdded(): Boolean {

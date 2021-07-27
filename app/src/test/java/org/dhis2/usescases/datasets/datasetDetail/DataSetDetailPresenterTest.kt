@@ -47,7 +47,6 @@ import org.dhis2.utils.filters.FilterManager.PeriodRequest
 import org.dhis2.utils.filters.Filters
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
-import org.hisp.dhis.android.core.common.State
 import org.junit.Before
 import org.junit.Test
 
