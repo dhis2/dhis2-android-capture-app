@@ -17,8 +17,10 @@ interface RelationshipView : AbstractActivityContracts.View {
     fun showRelationshipNotFoundError(teiTypeName: String)
     fun initFab(relationshipTypes: MutableList<Trio<RelationshipType, String, Int>>)
     fun setFeatureCollection(
-        currentTei: String,
+        currentTei: String?,
         relationshipsMapModels: List<RelationshipUiComponentModel>,
         map: Pair<Map<String?, FeatureCollection>, BoundingBox>
     )
+
+    fun openEventFor(eventUid: String, programUid:String)
 }

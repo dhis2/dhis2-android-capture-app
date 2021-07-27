@@ -1,6 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,6 +11,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFr
 import org.dhis2.usescases.notes.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VisualizationType;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
 
 import static org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragmentKt.VISUALIZATION_TYPE;
 
@@ -39,6 +39,16 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                 indicatorFragment.setArguments(arguments);
                 return indicatorFragment;
             case 2:
+                Fragment relationshipFragment = new RelationshipFragment();
+                relationshipFragment.setArguments(
+                        RelationshipFragment.withArguments(programUid,
+                                null,
+                                null,
+                                eventUid
+                        )
+                );
+                return relationshipFragment;
+            case 3:
                 return NotesFragment.newEventInstance(programUid, eventUid);
         }
     }

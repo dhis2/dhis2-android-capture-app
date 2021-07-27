@@ -18,7 +18,11 @@ data class RelationshipViewModel(
     val toImage: String?,
     val fromDefaultImageResource: Int,
     val toDefaultImageResource: Int
-)
+){
+    fun primaryInfo(){
+
+    }
+}
 
 enum class RelationshipDirection {
     FROM, TO

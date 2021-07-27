@@ -6,7 +6,6 @@ import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.R
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.relationship.RelationshipEntityType
@@ -14,9 +13,7 @@ import org.hisp.dhis.android.core.relationship.RelationshipItem
 import org.hisp.dhis.android.core.relationship.RelationshipItemEvent
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance
 import org.hisp.dhis.android.core.relationship.RelationshipType
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
-import java.util.ArrayList
 
 class RelationshipRepositoryImpl(
     private val d2: D2,
@@ -68,19 +65,28 @@ class RelationshipRepositoryImpl(
 
     private fun stageRelationshipTypes(): Single<List<Pair<RelationshipType, String>>> {
         //TODO: Limit links to TEI
-        val programStageUid = (config as EventRelationshipConfiguration).stageUid
+        val event = d2.eventModule().events().uid(
+            (config as EventRelationshipConfiguration).eventUid
+        ).blockingGet()
+        val programStageUid = event.programStage() ?: ""
+        val programUid = event.program() ?: ""
         return d2.relationshipModule().relationshipTypes()
             .withConstraints()
-            .byConstraint(RelationshipEntityType.PROGRAM_STAGE_INSTANCE, programStageUid)
+            .byConstraint(event.uid())
             .get().map { relationshipTypes ->
                 relationshipTypes.mapNotNull { relationshipType ->
                     val secondaryUid = when {
                         relationshipType.fromConstraint()?.programStage()
                             ?.uid() == programStageUid ->
-                            relationshipType.toConstraint()?.programStage()?.uid()
+                            relationshipType.toConstraint()?.trackedEntityType()?.uid()
+                        relationshipType.fromConstraint()?.program()?.uid() == programUid ->
+                            relationshipType.toConstraint()?.trackedEntityType()?.uid()
                         relationshipType.bidirectional() == true && relationshipType.toConstraint()
                             ?.programStage()?.uid() == programStageUid ->
-                            relationshipType.fromConstraint()?.programStage()?.uid()
+                            relationshipType.fromConstraint()?.trackedEntityType()?.uid()
+                        relationshipType.bidirectional() == true && relationshipType.toConstraint()
+                            ?.program()?.uid() == programUid ->
+                            relationshipType.fromConstraint()?.trackedEntityType()?.uid()
                         else -> null
                     }
                     secondaryUid?.let { Pair(relationshipType, secondaryUid) }
@@ -222,7 +228,7 @@ class RelationshipRepositoryImpl(
                         direction = RelationshipDirection.FROM
                         fromGeometry = tei.geometry()
                         fromValues = getTeiAttributesForRelationship(teiUid)
-                        fromProfilePic = tei.profilePicturePath(d2, null)
+                        fromProfilePic = tei.profilePicturePath(d2, programUid)
                         fromDefaultPicRes = getTeiDefaultRes(tei)
                         if (relationship.to()?.trackedEntityInstance() != null) {
                             relationshipOwnerType = RelationshipOwnerType.TEI
@@ -232,7 +238,7 @@ class RelationshipRepositoryImpl(
                                 .uid(relationshipOwnerUid).blockingGet()
                             toGeometry = toTei.geometry()
                             toValues = getTeiAttributesForRelationship(toTei.uid())
-                            toProfilePic = toTei.profilePicturePath(d2, null)
+                            toProfilePic = toTei.profilePicturePath(d2, programUid)
                             toDefaultPicRes = getTeiDefaultRes(toTei)
                         } else {
                             relationshipOwnerType = RelationshipOwnerType.EVENT
@@ -250,17 +256,18 @@ class RelationshipRepositoryImpl(
                         direction = RelationshipDirection.TO
                         toGeometry = tei.geometry()
                         toValues = getTeiAttributesForRelationship(teiUid)
-                        toProfilePic = tei.profilePicturePath(d2, null)
+                        toProfilePic = tei.profilePicturePath(d2, programUid)
                         toDefaultPicRes = getTeiDefaultRes(tei)
                         if (relationship.from()?.trackedEntityInstance() != null) {
                             relationshipOwnerType = RelationshipOwnerType.TEI
                             relationshipOwnerUid =
-                                relationship.to()?.trackedEntityInstance()?.trackedEntityInstance()
+                                relationship.from()?.trackedEntityInstance()
+                                    ?.trackedEntityInstance()
                             val fromTei = d2.trackedEntityModule().trackedEntityInstances()
                                 .uid(relationshipOwnerUid).blockingGet()
                             fromGeometry = fromTei.geometry()
                             fromValues = getTeiAttributesForRelationship(fromTei.uid())
-                            fromProfilePic = fromTei.profilePicturePath(d2, null)
+                            fromProfilePic = fromTei.profilePicturePath(d2, programUid)
                             fromDefaultPicRes = getTeiDefaultRes(fromTei)
                         } else {
                             relationshipOwnerType = RelationshipOwnerType.EVENT
@@ -296,39 +303,6 @@ class RelationshipRepositoryImpl(
                 )
             }
         }
-    }
-
-    private fun getTrackedEntityAttributesForRelationship(
-        tei: TrackedEntityInstance,
-        programUid: String?
-    ): List<TrackedEntityAttributeValue?>? {
-        var values: List<TrackedEntityAttributeValue?>
-        val attributeUids: MutableList<String> = ArrayList()
-        val programTrackedEntityAttributes = d2.programModule().programTrackedEntityAttributes()
-            .byProgram().eq(programUid)
-            .byDisplayInList().isTrue
-            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-            .blockingGet()
-        for (programAttribute in programTrackedEntityAttributes) {
-            attributeUids.add(programAttribute.trackedEntityAttribute()!!.uid())
-        }
-        values = d2.trackedEntityModule().trackedEntityAttributeValues()
-            .byTrackedEntityInstance().eq(tei.uid())
-            .byTrackedEntityAttribute().`in`(attributeUids).blockingGet()
-        if (values.isEmpty()) {
-            attributeUids.clear()
-            val typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
-                .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
-                .byDisplayInList().isTrue
-                .blockingGet()
-            for (typeAttribute in typeAttributes) {
-                attributeUids.add(typeAttribute.trackedEntityAttribute()!!.uid())
-            }
-            values = d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityInstance().eq(tei.uid())
-                .byTrackedEntityAttribute().`in`(attributeUids).blockingGet()
-        }
-        return values
     }
 
     private fun getTeiAttributesForRelationship(teiUid: String): List<Pair<String, String>> {
@@ -399,10 +373,15 @@ class RelationshipRepositoryImpl(
         )
     }
 
+    override fun getEventProgram(eventUid: String): String {
+        return d2.eventModule().events().uid(eventUid).blockingGet().program() ?: ""
+    }
+
     private fun getEventDefaultRes(event: Event): Int {
         val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
+        val program = d2.programModule().programs().uid(event.program()).blockingGet()
         return resources.getObjectStyleDrawableResource(
-            stage.style().icon(),
+            stage.style().icon() ?: program.style().icon(),
             R.drawable.photo_temp_gray
         )
     }
@@ -415,6 +394,5 @@ data class TrackerRelationshipConfiguration(
 ) : RelationshipConfiguration()
 
 data class EventRelationshipConfiguration(
-    val stageUid: String,
     val eventUid: String
 ) : RelationshipConfiguration()

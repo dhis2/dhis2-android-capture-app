@@ -24,7 +24,6 @@ public class RelationshipModule {
     private final String programUid;
     private final String teiUid;
     private final String enrollmentUid;
-    private final String stageUid;
     private final String eventUid;
     private final RelationshipView view;
 
@@ -32,12 +31,10 @@ public class RelationshipModule {
                               String programUid,
                               String teiUid,
                               String enrollmentUid,
-                              String stageUid,
                               String eventUid) {
         this.programUid = programUid;
         this.teiUid = teiUid;
         this.enrollmentUid = enrollmentUid;
-        this.stageUid = stageUid;
         this.eventUid = eventUid;
         this.view = view;
     }
@@ -49,7 +46,7 @@ public class RelationshipModule {
                                             SchedulerProvider schedulerProvider,
                                             AnalyticsHelper analyticsHelper,
                                             MapRelationshipsToFeatureCollection mapRelationshipsToFeatureCollection) {
-        return new RelationshipPresenter(view, d2, programUid, teiUid, relationshipRepository, schedulerProvider, analyticsHelper, new MapRelationshipToRelationshipMapModel(), mapRelationshipsToFeatureCollection);
+        return new RelationshipPresenter(view, d2, programUid, teiUid, eventUid, relationshipRepository, schedulerProvider, analyticsHelper, new MapRelationshipToRelationshipMapModel(), mapRelationshipsToFeatureCollection);
     }
 
     @Provides
@@ -59,7 +56,7 @@ public class RelationshipModule {
         if (teiUid != null) {
             config = new TrackerRelationshipConfiguration(enrollmentUid, teiUid);
         } else {
-            config = new EventRelationshipConfiguration(stageUid, eventUid);
+            config = new EventRelationshipConfiguration(eventUid);
         }
         return new RelationshipRepositoryImpl(d2, config, resourceManager);
     }

@@ -1,11 +1,25 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
+import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
+
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
+
+import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.databinding.ItemCarouselRelationshipBinding;
 import org.dhis2.databinding.ItemRelationshipBinding;
 import org.hisp.dhis.android.core.relationship.Relationship;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 
+import java.io.File;
 import java.util.List;
 
 import kotlin.Pair;
@@ -25,27 +39,47 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
 
         boolean from = relationships.getDirection() == RelationshipDirection.FROM;
 
-        binding.teiRelationshipLink.setOnClickListener(view -> presenter.openDashboard(relationships.getOwnerUid()));
+        binding.relationshipCard.setOnClickListener(view ->
+                presenter.onRelationshipClicked(relationships.getOwnerType(), relationships.getOwnerUid())
+        );
+        binding.clearButton.setOnClickListener(view -> presenter.deleteRelationship(relationship.uid()));
 
-        binding.setPresenter(presenter);
-        binding.setRelationship(relationship);
         String relationshipNameText = from ? relationships.getRelationshipType().toFromName() : relationships.getRelationshipType().fromToName();
-        binding.relationshipName.setText(relationshipNameText != null ? relationshipNameText : relationships.getRelationshipType().displayName());
+        binding.relationshipTypeName.setText(relationshipNameText != null ? relationshipNameText : relationships.getRelationshipType().displayName());
 
-        if (from && !relationships.getFromValues().isEmpty()) {
-            setAttributes(relationships.getFromValues());
-        } else if (!from && !relationships.getToValues().isEmpty()) {
-            setAttributes(relationships.getToValues());
+        binding.fromRelationshipName.setText(getPrimaryAttributes(relationships.getFromValues()));
+        binding.toRelationshipName.setText(getPrimaryAttributes(relationships.getToValues()));
+        setImage(relationships.getFromImage(), relationships.getFromDefaultImageResource(), binding.fromTeiImage);
+        setImage(relationships.getToImage(), relationships.getToDefaultImageResource(), binding.toTeiImage);
+
+    }
+
+    private String getPrimaryAttributes(List<Pair<String, String>> values){
+        if(values.size()>1) {
+            return String.format("%s %s", values.get(0).getSecond(), values.get(1).getSecond());
+        }else if(values.size() == 1){
+            return String.format("%s", values.get(0).getSecond());
+        }else{
+            return "-";
         }
     }
 
-    private void setAttributes(List<Pair<String,String>> trackedEntityAttributeValueModels) {
-        if (trackedEntityAttributeValueModels.size() > 1)
-            binding.setTeiName(String.format("%s %s", trackedEntityAttributeValueModels.get(0).getSecond(), trackedEntityAttributeValueModels.get(1).getSecond()));
-        else if (!trackedEntityAttributeValueModels.isEmpty())
-            binding.setTeiName(trackedEntityAttributeValueModels.get(0).getSecond());
-        else
-            binding.setTeiName("-");
-        binding.executePendingBindings();
+    private void setImage(String imagePath, int defaultImage, ImageView target) {
+        RequestBuilder<Drawable> glideRequest;
+        if(imagePath == null){
+            glideRequest = Glide.with(itemView.getContext()).load(defaultImage)
+                    .transform(new RoundedCorners(ExtensionsKt.getDp(6)));
+        }else{
+            glideRequest = Glide.with(itemView.getContext()).load(new File(imagePath))
+                    .transform(new CircleCrop());
+        }
+        glideRequest
+                .placeholder(defaultImage)
+                .error(defaultImage)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .apply(RequestOptions.skipMemoryCacheOf(true))
+                .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
+                .skipMemoryCache(true)
+                .into(target);
     }
 }

@@ -78,7 +78,8 @@ class DashboardPagerAdapter(
                         arguments = RelationshipFragment.withArguments(
                             currentProgram,
                             teiUid,
-                            enrollmentUid
+                            enrollmentUid,
+                            null
                         )
                     }
                 }

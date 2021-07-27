@@ -22,8 +22,9 @@ import timber.log.Timber
 class RelationshipPresenter internal constructor(
     private val view: RelationshipView,
     private val d2: D2,
-    private val programUid: String,
-    private val teiUid: String,
+    private val programUid: String?,
+    private val teiUid: String?,
+    private val eventUid: String?,
     private val relationshipRepository: RelationshipRepository,
     private val schedulerProvider: SchedulerProvider,
     private val analyticsHelper: AnalyticsHelper,
@@ -36,7 +37,7 @@ class RelationshipPresenter internal constructor(
         d2.trackedEntityModule().trackedEntityInstances()
             .withTrackedEntityAttributeValues()
             .uid(teiUid)
-            .blockingGet().trackedEntityType()
+            .blockingGet()?.trackedEntityType()
     var updateRelationships: FlowableProcessor<Boolean> = PublishProcessor.create()
 
     fun init() {
@@ -84,7 +85,11 @@ class RelationshipPresenter internal constructor(
                 .programs().uid(programUid).blockingGet()!!.access().data().write()!!
         ) {
             analyticsHelper.setEvent(NEW_RELATIONSHIP, CLICK, NEW_RELATIONSHIP)
-            view.goToAddRelationship(teiUid, teiTypeToAdd)
+            if (teiUid != null) {
+                view.goToAddRelationship(teiUid, teiTypeToAdd)
+            } else if (eventUid != null) {
+                view.goToAddRelationship(eventUid, teiTypeToAdd)
+            }
         } else {
             view.showPermissionError()
         }
@@ -103,6 +108,15 @@ class RelationshipPresenter internal constructor(
     }
 
     fun addRelationship(selectedTei: String, relationshipTypeUid: String) {
+        if(teiUid!=null){
+            addTeiToTeiRelationship(teiUid, selectedTei, relationshipTypeUid)
+        }else if(eventUid != null){
+            addEventToTeiRelationship(eventUid, selectedTei, relationshipTypeUid)
+        }
+
+    }
+
+    private fun addTeiToTeiRelationship(teiUid: String, selectedTei: String, relationshipTypeUid: String) {
         val relationshipType =
             d2.relationshipModule().relationshipTypes().withConstraints().uid(relationshipTypeUid)
                 .blockingGet()
@@ -122,6 +136,22 @@ class RelationshipPresenter internal constructor(
         try {
             val relationship =
                 RelationshipHelper.teiToTeiRelationship(fromTei, toTei, relationshipTypeUid)
+            d2.relationshipModule().relationships().blockingAdd(relationship)
+        } catch (e: D2Error) {
+            view.displayMessage(e.errorDescription())
+        } finally {
+            updateRelationships.onNext(true)
+        }
+    }
+
+    private fun addEventToTeiRelationship(
+        eventUid: String,
+        selectedTei: String,
+        relationshipTypeUid: String
+    ) {
+        try {
+            val relationship =
+                RelationshipHelper.eventToTeiRelationship(eventUid, selectedTei, relationshipTypeUid)
             d2.relationshipModule().relationships().blockingAdd(relationship)
         } catch (e: D2Error) {
             view.displayMessage(e.errorDescription())
@@ -153,11 +183,22 @@ class RelationshipPresenter internal constructor(
         }
     }
 
+    fun openEvent(eventUid: String, eventProgramUid:String){
+        view.openEventFor(eventUid, eventProgramUid)
+    }
+
     fun onDettach() {
         compositeDisposable.clear()
     }
 
     fun displayMessage(message: String) {
         view.displayMessage(message)
+    }
+
+    fun onRelationshipClicked(ownerType: RelationshipOwnerType, ownerUid: String) {
+        when(ownerType){
+            RelationshipOwnerType.EVENT -> openEvent(ownerUid, relationshipRepository.getEventProgram(ownerUid))
+            RelationshipOwnerType.TEI -> openDashboard(ownerUid)
+        }
     }
 }
