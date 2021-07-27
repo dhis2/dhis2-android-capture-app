@@ -26,7 +26,7 @@ There are two ways to access the application:
 > 
 > In DHIS2 versions up to 2.30 if a user attemps an on-line login and their account has been disabled as explained in the [DHIS 2 Manual - Disable User](https://docs.dhis2.org/master/en/user/html/dhis2_user_manual_en_full.html#disable_user) all the data will be wiped from the phone. Make sure that before disabling a user all the data has been synced or that you are using this feature to remotely wipe sensitive data in case of a device getting lost.
 >
-> Due to a change in the login API this feature is not available in 2.31 and above version.
+> Due to a change in the login API this feature is not available in 2.31 and above versions.
 
 
 ## Account Recovery { #capture_app_generic_recovery }
