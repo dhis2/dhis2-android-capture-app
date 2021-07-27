@@ -24,7 +24,7 @@ class MainNavigator(
         showBottomNavigation: Boolean
     ) -> Unit
 ) {
-    private enum class MainScreen(@StringRes val title: Int, @IdRes val navViewId: Int) {
+    enum class MainScreen(@StringRes val title: Int, @IdRes val navViewId: Int) {
         PROGRAMS(R.string.done_task, R.id.menu_home),
         VISUALIZATIONS(R.string.done_task, R.id.menu_home),
         QR(R.string.QR_SCANNER, R.id.qr_scan),
@@ -67,6 +67,17 @@ class MainNavigator(
         beginTransaction(
             ProgramFragment(), MainScreen.PROGRAMS, sharedView
         )
+    }
+
+    fun restoreScreen(screenToRestoreName: String) {
+        when (MainScreen.valueOf(screenToRestoreName)) {
+            MainScreen.PROGRAMS -> openPrograms()
+            MainScreen.VISUALIZATIONS -> openVisualizations()
+            MainScreen.QR -> openQR()
+            MainScreen.SETTINGS -> openSettings()
+            MainScreen.JIRA -> openJira()
+            MainScreen.ABOUT -> openAbout()
+        }
     }
 
     fun openVisualizations() {

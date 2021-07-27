@@ -7,6 +7,11 @@
             android:id="@+id/menu_home"
             android:icon="@drawable/ic_menu_home"
             android:title="@string/menu_home" />
+        <item
+            android:id="@+id/menu_home_visualizations"
+            android:visible="false"
+            android:icon="@drawable/ic_menu_home"
+            android:title="@string/menu_home" />
     </group>
 
     <group

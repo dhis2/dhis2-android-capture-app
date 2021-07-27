@@ -41,6 +41,7 @@ class MainActivity :
     ActivityGlobalAbstract(),
     MainView,
     DrawerLayout.DrawerListener {
+
     private lateinit var binding: ActivityMainBinding
     lateinit var mainComponent: MainComponent
 
@@ -97,10 +98,14 @@ class MainActivity :
             false
         }
 
-        savedInstanceState?.getString(FRAGMENT)?.let {
-            changeFragment(mainNavigator.currentNavigationViewItemId(it))
-        } ?: changeFragment(R.id.menu_home)
-        initCurrentScreen()
+        val restoreScreenName = savedInstanceState?.getString(FRAGMENT)
+        if (restoreScreenName != null) {
+            changeFragment(mainNavigator.currentNavigationViewItemId(restoreScreenName))
+            mainNavigator.restoreScreen(restoreScreenName)
+        } else {
+            changeFragment(R.id.menu_home)
+            initCurrentScreen()
+        }
 
         binding.mainDrawerLayout.addDrawerListener(this)
 
