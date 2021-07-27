@@ -8,6 +8,7 @@ import dhis2.org.R
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
 import org.dhis2.commons.popupmenu.AppMenuHelper
+import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.program.ProgramIndicator
 
 enum class SectionType {
@@ -15,14 +16,25 @@ enum class SectionType {
     SUBSECTION
 }
 
-enum class PeriodFilterType {
-    NONE,
-    PERIOD
-}
-
 enum class OrgUnitFilterType {
-
+    NONE, ALL, SELECTION
 }
+
+enum class FakeRelativePeriod {
+    NONE, DAILY, WEEKLY, MONTHLY, YEARLY
+}
+
+enum class FilterAction {
+    ADD, REMOVE
+}
+
+val periodToId = hashMapOf(
+    FakeRelativePeriod.NONE to R.id.none,
+    FakeRelativePeriod.DAILY to R.id.daily,
+    FakeRelativePeriod.WEEKLY to R.id.weekly,
+    FakeRelativePeriod.MONTHLY to R.id.monthly,
+    FakeRelativePeriod.YEARLY to R.id.yearly
+)
 
 sealed class AnalyticsModel
 
@@ -48,9 +60,10 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
         )
     }
 
-    val observableChartPeriodFilter by lazy {
+    //var observableChartPeriodFilter: ObservableField<RelativePeriod>
+    /*val observableChartPeriodFilter by lazy {
         ObservableField { PeriodFilterType.NONE }
-    }
+    }*/
 
     fun showVisualizationOptions(view: View) {
         AppMenuHelper.Builder(
@@ -65,10 +78,11 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
                 }
             },
             onMenuItemClicked = { itemId ->
-                if (itemId == R.id.periodFilter){
+                if (itemId == R.id.periodFilter) {
                     showPeriodFilters(view)
                     true
                 } else if (itemId == R.id.orgFilter) {
+                    showOrgUntFilters(view)
                     true
                 }
                 observableChartType.set(chartToLoad(itemId))
@@ -78,26 +92,50 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             .show()
     }
 
-    fun showPeriodFilters(view: View){
-        AppMenuHelper.Builder(
+    fun showPeriodFilters(view: View, selected: FakeRelativePeriod? = null) {
+        val appMenu = AppMenuHelper.Builder(
             context = view.context,
             menu = R.menu.period_filter_menu,
             anchor = view,
             onMenuItemClicked = { itemId ->
-                //Map itemID to Filter period enum
+                if (itemId == R.id.back) {
+                    showVisualizationOptions(view)
+                } else {
+                    val relativePeriodSelected =
+                        periodToId.filterValues { it == itemId }.keys.first()
+
+                }
                 true
             }
         ).build()
-            .show()
+        appMenu.show()
+
+        selected?.let {
+            val idPeriod = periodToId[selected]
+            appMenu.addIconToItem(idPeriod!!, R.drawable.ic_check_chart)
+        }
     }
 
-    fun showOrgUntFilters(view: View){
+    fun showOrgUntFilters(view: View, selected: OrgUnitFilterType? = null, count: Int = 0) {
         AppMenuHelper.Builder(
             context = view.context,
-            menu = R.menu.chart_menu,
+            menu = R.menu.org_unit_menu,
             anchor = view,
             onMenuItemClicked = { itemId ->
-
+                when (itemId) {
+                    R.id.back -> {
+                        showVisualizationOptions(view)
+                    }
+                    R.id.none -> {
+                        //clear filter
+                    }
+                    R.id.all -> {
+                        //send all to calculate
+                    }
+                    else -> {
+                        //selection
+                    }
+                }
                 true
             }
         ).build()
