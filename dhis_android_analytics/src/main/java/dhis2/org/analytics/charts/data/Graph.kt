@@ -1,5 +1,6 @@
 package dhis2.org.analytics.charts.data
 
+import org.hisp.dhis.android.core.common.RelativePeriod
 import java.util.Date
 import org.hisp.dhis.android.core.period.PeriodType
 
@@ -7,11 +8,12 @@ data class Graph(
     val title: String,
     val isOnline: Boolean,
     val series: List<SerieData>,
-    val periodToDisplay: String,
+    val periodToDisplay: RelativePeriod?,
     val eventPeriodType: PeriodType,
     val periodStep: Long,
     val chartType: ChartType? = ChartType.LINE_CHART,
-    val categories: List<String> = emptyList()
+    val categories: List<String> = emptyList(),
+    val filters: List<String> = emptyList()
 ) {
     fun numberOfStepsToDate(date: Date): Float {
         return if (baseSeries().isEmpty() || baseSeries().first().coordinates.isEmpty()) {

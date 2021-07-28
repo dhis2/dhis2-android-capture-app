@@ -85,7 +85,7 @@ class AnalyticsTeiSettingsToGraph(
                 false,
                 nutritionCoordinates.union(dataElementCoordinates).union(indicatorCoordinates)
                     .toList(),
-                "",
+                null,
                 PeriodType.valueOf(analyticsSetting.period()),
                 periodStepProvider.periodStep(PeriodType.valueOf(analyticsSetting.period())),
                 analyticsSetting.type

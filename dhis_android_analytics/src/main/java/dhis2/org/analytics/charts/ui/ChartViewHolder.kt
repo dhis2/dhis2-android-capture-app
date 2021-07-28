@@ -24,6 +24,25 @@ class ChartViewHolder(
                 }
             }
         )
+        chart.observableChartRelativePeriodFilter.addOnPropertyChangedCallback(
+            object : Observable.OnPropertyChangedCallback() {
+                override fun onPropertyChanged(
+                    sender: Observable?,
+                    propertyId: Int) {
+                    //TODO: Change relative period filter
+                }
+            }
+        )
+
+        chart.observableOrgUnitFilter.addOnPropertyChangedCallback(
+            object : Observable.OnPropertyChangedCallback() {
+                override fun onPropertyChanged(
+                    sender: Observable?,
+                    propertyId: Int) {
+                    //TODO: change org unit filter
+                }
+            }
+        )
         loadChart(chart)
     }
 

@@ -24,16 +24,12 @@ enum class FakeRelativePeriod {
     NONE, DAILY, WEEKLY, MONTHLY, YEARLY
 }
 
-enum class FilterAction {
-    ADD, REMOVE
-}
-
 val periodToId = hashMapOf(
-    FakeRelativePeriod.NONE to R.id.none,
-    FakeRelativePeriod.DAILY to R.id.daily,
-    FakeRelativePeriod.WEEKLY to R.id.weekly,
-    FakeRelativePeriod.MONTHLY to R.id.monthly,
-    FakeRelativePeriod.YEARLY to R.id.yearly
+    null to R.id.none,
+    RelativePeriod.LAST_4_WEEKS to R.id.daily,
+    RelativePeriod.LAST_12_WEEKS to R.id.weekly,
+    RelativePeriod.LAST_12_MONTHS to R.id.monthly,
+    RelativePeriod.BIMONTHS_THIS_YEAR to R.id.yearly
 )
 
 sealed class AnalyticsModel
@@ -60,10 +56,13 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
         )
     }
 
-    //var observableChartPeriodFilter: ObservableField<RelativePeriod>
-    /*val observableChartPeriodFilter by lazy {
-        ObservableField { PeriodFilterType.NONE }
-    }*/
+    val observableChartRelativePeriodFilter by lazy {
+        ObservableField(graph.periodToDisplay)
+    }
+
+    val observableOrgUnitFilter by lazy {
+        ObservableField(graph.filters)
+    }
 
     fun showVisualizationOptions(view: View) {
         AppMenuHelper.Builder(
@@ -79,7 +78,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             },
             onMenuItemClicked = { itemId ->
                 if (itemId == R.id.periodFilter) {
-                    showPeriodFilters(view)
+                    showPeriodFilters(view, observableChartRelativePeriodFilter.get())
                     true
                 } else if (itemId == R.id.orgFilter) {
                     showOrgUntFilters(view)
@@ -92,18 +91,24 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             .show()
     }
 
-    fun showPeriodFilters(view: View, selected: FakeRelativePeriod? = null) {
+    fun showPeriodFilters(view: View, selected: RelativePeriod?) {
         val appMenu = AppMenuHelper.Builder(
             context = view.context,
             menu = R.menu.period_filter_menu,
             anchor = view,
             onMenuItemClicked = { itemId ->
-                if (itemId == R.id.back) {
-                    showVisualizationOptions(view)
-                } else {
-                    val relativePeriodSelected =
-                        periodToId.filterValues { it == itemId }.keys.first()
-
+                when (itemId) {
+                    R.id.back -> {
+                        showVisualizationOptions(view)
+                    }
+                    R.id.none -> {
+                        observableChartRelativePeriodFilter.set(null)
+                    }
+                    else -> {
+                        val relativePeriodSelected =
+                            periodToId.filterValues { it == itemId }.keys.first()
+                        observableChartRelativePeriodFilter.set(relativePeriodSelected)
+                    }
                 }
                 true
             }
@@ -116,7 +121,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
         }
     }
 
-    fun showOrgUntFilters(view: View, selected: OrgUnitFilterType? = null, count: Int = 0) {
+    fun showOrgUntFilters(view: View, selected: OrgUnitFilterType? = null) {
         AppMenuHelper.Builder(
             context = view.context,
             menu = R.menu.org_unit_menu,
@@ -127,13 +132,13 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
                         showVisualizationOptions(view)
                     }
                     R.id.none -> {
-                        //clear filter
+                        // clear filter
                     }
                     R.id.all -> {
-                        //send all to calculate
+                        // send all to calculate
                     }
                     else -> {
-                        //selection
+                        // selection
                     }
                 }
                 true

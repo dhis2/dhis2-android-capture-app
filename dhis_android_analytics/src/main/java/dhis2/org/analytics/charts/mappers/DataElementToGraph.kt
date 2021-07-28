@@ -38,7 +38,7 @@ class DataElementToGraph(
             "${stagePeriod.name}-${dataElement.displayFormName()}",
             false,
             serie,
-            "",
+            null,
             stagePeriod,
             periodStepProvider.periodStep(stagePeriod)
         )

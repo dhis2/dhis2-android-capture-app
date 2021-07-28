@@ -6,6 +6,7 @@ import java.util.GregorianCalendar
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.featureconfig.model.Feature
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 
@@ -70,7 +71,7 @@ fun List<Graph>.nutritionTestingData(d2: D2): List<Graph> {
                 "HFA - Boy",
                 false,
                 series,
-                "",
+                RelativePeriod.LAST_4_WEEKS,
                 PeriodType.Monthly,
                 monthlyPeriodStep,
                 ChartType.NUTRITION
@@ -81,7 +82,7 @@ fun List<Graph>.nutritionTestingData(d2: D2): List<Graph> {
                 "WFA - Boy",
                 false,
                 seriesWFA,
-                "",
+                RelativePeriod.LAST_4_WEEKS,
                 PeriodType.Monthly,
                 monthlyPeriodStep,
                 ChartType.NUTRITION
@@ -92,7 +93,7 @@ fun List<Graph>.nutritionTestingData(d2: D2): List<Graph> {
                 "WFH - Boy",
                 false,
                 seriesWFH,
-                "",
+                RelativePeriod.LAST_4_WEEKS,
                 PeriodType.Monthly,
                 monthlyPeriodStep,
                 ChartType.NUTRITION
@@ -135,7 +136,7 @@ fun List<Graph>.radarTestingData(d2: D2, featureConfig: FeatureConfigRepository)
                     "Radar test",
                     false,
                     radarSeries,
-                    "",
+                    RelativePeriod.LAST_4_WEEKS,
                     PeriodType.Daily,
                     monthlyPeriodStep,
                     ChartType.RADAR,
@@ -188,7 +189,7 @@ fun List<Graph>.pieChartTestingData(d2: D2, featureConfig: FeatureConfigReposito
                     "Daily - Case detection",
                     false,
                     caseDetectionData,
-                    "",
+                    RelativePeriod.LAST_4_WEEKS,
                     PeriodType.Daily,
                     dailyPeriodStep,
                     ChartType.PIE_CHART
@@ -200,7 +201,7 @@ fun List<Graph>.pieChartTestingData(d2: D2, featureConfig: FeatureConfigReposito
                     "Daily - Malaria test",
                     false,
                     malariaTestData,
-                    "",
+                    RelativePeriod.LAST_4_WEEKS,
                     PeriodType.Daily,
                     dailyPeriodStep,
                     ChartType.PIE_CHART
@@ -211,7 +212,7 @@ fun List<Graph>.pieChartTestingData(d2: D2, featureConfig: FeatureConfigReposito
                     "Daily - Gender",
                     false,
                     genderData,
-                    "",
+                    RelativePeriod.LAST_4_WEEKS,
                     PeriodType.Daily,
                     dailyPeriodStep,
                     ChartType.PIE_CHART

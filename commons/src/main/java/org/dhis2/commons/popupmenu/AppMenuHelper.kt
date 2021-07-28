@@ -56,6 +56,10 @@ class AppMenuHelper private constructor(
         popupMenu.menu.findItem(id).icon = ContextCompat.getDrawable(this.context, icon)
     }
 
+    fun changeItemText(@IdRes id: Int, text: String){
+        popupMenu.menu.findItem(id).title = text
+    }
+
     data class Builder(
         var context: Context? = null,
         var menu: Int = -1,
