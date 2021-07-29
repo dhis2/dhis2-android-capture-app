@@ -1,14 +1,14 @@
 package org.dhis2.usescases.teiDashboard
 
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
-import org.dhis2.utils.isPortrait
 
 class TeiDashboardPageConfigurator(
-    val dashboardRepository: DashboardRepository
+    val dashboardRepository: DashboardRepository,
+    val isPortrait: Boolean
 ) : NavigationPageConfigurator {
 
     override fun displayDetails(): Boolean {
-        return isPortrait()
+        return isPortrait
     }
 
     override fun displayAnalytics(): Boolean {
