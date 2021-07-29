@@ -60,6 +60,10 @@ class AppMenuHelper private constructor(
         popupMenu.menu.findItem(id).title = text
     }
 
+    fun getItemText(@IdRes id: Int): String{
+        return popupMenu.menu.findItem(id).title.toString()
+    }
+
     data class Builder(
         var context: Context? = null,
         var menu: Int = -1,

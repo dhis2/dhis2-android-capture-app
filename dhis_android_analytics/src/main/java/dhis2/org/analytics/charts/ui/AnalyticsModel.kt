@@ -20,16 +20,36 @@ enum class OrgUnitFilterType {
     NONE, ALL, SELECTION
 }
 
-enum class FakeRelativePeriod {
-    NONE, DAILY, WEEKLY, MONTHLY, YEARLY
-}
-
 val periodToId = hashMapOf(
-    null to R.id.none,
-    RelativePeriod.LAST_4_WEEKS to R.id.daily,
-    RelativePeriod.LAST_12_WEEKS to R.id.weekly,
-    RelativePeriod.LAST_12_MONTHS to R.id.monthly,
-    RelativePeriod.BIMONTHS_THIS_YEAR to R.id.yearly
+    null to R.id.noneperiod,
+    RelativePeriod.TODAY to R.id.today,
+    RelativePeriod.YESTERDAY to R.id.yesterday,
+    RelativePeriod.LAST_3_DAYS to R.id.last3days,
+    RelativePeriod.LAST_7_DAYS to R.id.last7days,
+    RelativePeriod.LAST_14_DAYS to R.id.last14days,
+    RelativePeriod.LAST_30_DAYS to R.id.last30days,
+    RelativePeriod.THIS_WEEK to R.id.thisweek,
+    RelativePeriod.LAST_WEEK to R.id.lastweek,
+    RelativePeriod.LAST_4_WEEKS to R.id.last4weeks,
+    RelativePeriod.LAST_12_WEEKS to R.id.last12weeks,
+    RelativePeriod.THIS_MONTH to R.id.thismonth,
+    RelativePeriod.LAST_MONTH to R.id.lastmonth,
+    RelativePeriod.LAST_3_MONTHS to R.id.last3months,
+    RelativePeriod.LAST_6_MONTHS to R.id.last6months,
+    RelativePeriod.LAST_12_MONTHS to R.id.last12months,
+    RelativePeriod.MONTHS_THIS_YEAR to R.id.monthThisYear,
+    RelativePeriod.LAST_MONTH to R.id.lastmonth,
+    RelativePeriod.LAST_3_MONTHS to R.id.last3months,
+    RelativePeriod.LAST_6_MONTHS to R.id.last6months,
+    RelativePeriod.LAST_12_MONTHS to R.id.last12months,
+    RelativePeriod.MONTHS_THIS_YEAR to R.id.monthThisYear,
+    RelativePeriod.THIS_QUARTER to R.id.thisquarter,
+    RelativePeriod.LAST_QUARTER to R.id.lastquarter,
+    RelativePeriod.LAST_4_QUARTERS to R.id.last4quarter,
+    RelativePeriod.QUARTERS_THIS_YEAR to R.id.quarterthisyear,
+    RelativePeriod.THIS_YEAR to R.id.thisyear,
+    RelativePeriod.LAST_YEAR to R.id.lastyear,
+    RelativePeriod.LAST_5_YEARS to R.id.last5year
 )
 
 sealed class AnalyticsModel
@@ -50,19 +70,21 @@ data class SectionTitle(
 }
 
 data class ChartModel(val graph: Graph) : AnalyticsModel() {
+    var orgUnitFilterNone = false
+    var periodFilterNone = false
+
     val observableChartType by lazy {
         ObservableField<ChartType>(
             graph.chartType ?: ChartType.LINE_CHART
         )
     }
-
     val observableChartRelativePeriodFilter by lazy {
         ObservableField(graph.periodToDisplay)
     }
-
+   // val observableOrgUnitFilter = ObservableField<Pair<OrgUnitFilterType, List<String>>>()
     val observableOrgUnitFilter by lazy {
         ObservableField(graph.filters)
-    }
+   }
 
     fun showVisualizationOptions(view: View) {
         AppMenuHelper.Builder(
@@ -81,7 +103,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
                     showPeriodFilters(view, observableChartRelativePeriodFilter.get())
                     true
                 } else if (itemId == R.id.orgFilter) {
-                    showOrgUntFilters(view)
+                    showOrgUntFilters(view, observableOrgUnitFilter.get()!!)
                     true
                 }
                 observableChartType.set(chartToLoad(itemId))
@@ -103,8 +125,10 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
                     }
                     R.id.none -> {
                         observableChartRelativePeriodFilter.set(null)
+                        periodFilterNone = true
                     }
                     else -> {
+                        periodFilterNone = false
                         val relativePeriodSelected =
                             periodToId.filterValues { it == itemId }.keys.first()
                         observableChartRelativePeriodFilter.set(relativePeriodSelected)
@@ -119,10 +143,14 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             val idPeriod = periodToId[selected]
             appMenu.addIconToItem(idPeriod!!, R.drawable.ic_check_chart)
         }
+
+        if (periodFilterNone){
+            appMenu.addIconToItem(R.id.noneperiod, R.drawable.ic_check_chart)
+        }
     }
 
-    fun showOrgUntFilters(view: View, selected: OrgUnitFilterType? = null) {
-        AppMenuHelper.Builder(
+    fun showOrgUntFilters(view: View, orgUnits: List<String>) {
+        val menuBuilder = AppMenuHelper.Builder(
             context = view.context,
             menu = R.menu.org_unit_menu,
             anchor = view,
@@ -132,7 +160,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
                         showVisualizationOptions(view)
                     }
                     R.id.none -> {
-                        // clear filter
+                       observableOrgUnitFilter.set(emptyList())
                     }
                     R.id.all -> {
                         // send all to calculate
@@ -144,7 +172,12 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
                 true
             }
         ).build()
-            .show()
+        menuBuilder.show()
+
+        if (!orgUnits.isNullOrEmpty()){
+            val selectionText = menuBuilder.getItemText(R.id.selection)
+            menuBuilder.changeItemText(R.id.selection, "$selectionText (${orgUnits.size})")
+        }
     }
 
     private fun idsToHide(originalChartType: ChartType): List<Int> {

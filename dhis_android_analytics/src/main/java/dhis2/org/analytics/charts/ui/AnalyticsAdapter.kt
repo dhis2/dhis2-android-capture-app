@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import dhis2.org.databinding.ItemChartBinding
 import dhis2.org.databinding.ItemIndicatorBinding
 import dhis2.org.databinding.ItemSectionTittleBinding
+import org.hisp.dhis.android.core.common.RelativePeriod
 
 class AnalyticsAdapter : ListAdapter<AnalyticsModel, RecyclerView.ViewHolder>(
     object : DiffUtil.ItemCallback<AnalyticsModel>() {
@@ -19,7 +20,7 @@ class AnalyticsAdapter : ListAdapter<AnalyticsModel, RecyclerView.ViewHolder>(
         override fun areContentsTheSame(oldItem: AnalyticsModel, newItem: AnalyticsModel): Boolean {
             return oldItem == newItem
         }
-    }) {
+    }), ChartViewHolder.ChartItemCallback {
 
     enum class AnalyticType {
         INDICATOR, CHART, SECTION_TITLE
@@ -50,8 +51,16 @@ class AnalyticsAdapter : ListAdapter<AnalyticsModel, RecyclerView.ViewHolder>(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is IndicatorViewHolder -> holder.bind(getItem(position) as IndicatorModel)
-            is ChartViewHolder -> holder.bind(getItem(position) as ChartModel)
+            is ChartViewHolder -> holder.bind(getItem(position) as ChartModel, this)
             is SectionTitleViewHolder -> holder.bind(getItem(position) as SectionTitle)
         }
+    }
+
+    override fun filterPeriod(chart: ChartModel, period: RelativePeriod?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun filterOrgUnit(chart: ChartModel, filters: List<String>) {
+        TODO("Not yet implemented")
     }
 }
