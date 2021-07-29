@@ -3,6 +3,7 @@
     <item
         android:id="@+id/navigation_tasks"
         android:enabled="true"
+        android:visible="false"
         android:icon="@drawable/ic_navigation_tasks"
         android:title="@string/navigation_tasks"/>
 

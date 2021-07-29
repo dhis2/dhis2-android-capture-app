@@ -33,12 +33,12 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
 
-class HomeRepositoryImplTest {
+class ProgramRepositoryImplTest {
     @Rule
     @JvmField
     var instantExecutorRule = InstantTaskExecutorRule()
 
-    private lateinit var homeRepository: HomeRepository
+    private lateinit var programRepository: ProgramRepository
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val filterPresenter: FilterPresenter =
         Mockito.mock(FilterPresenter::class.java, Mockito.RETURNS_DEEP_STUBS)
@@ -51,7 +51,7 @@ class HomeRepositoryImplTest {
     fun setUp() {
         RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
 
-        homeRepository = HomeRepositoryImpl(
+        programRepository = ProgramRepositoryImpl(
             d2,
             filterPresenter,
             dhisProgramUtils,
@@ -110,7 +110,7 @@ class HomeRepositoryImplTest {
             filterPresenter.isAssignedToMeApplied()
         ) doReturn false
 
-        val testObserver = homeRepository.aggregatesModels().test()
+        val testObserver = programRepository.aggregatesModels().test()
 
         testObserver
             .assertNoErrors()
@@ -134,7 +134,7 @@ class HomeRepositoryImplTest {
             filterPresenter.areFiltersActive()
         ) doReturn true
 
-        val testObserver = homeRepository.aggregatesModels().test()
+        val testObserver = programRepository.aggregatesModels().test()
 
         testObserver
             .assertNoErrors()
@@ -153,7 +153,7 @@ class HomeRepositoryImplTest {
         whenever(
             filterPresenter.areFiltersActive()
         ) doReturn false
-        val testOvserver = homeRepository.programModels().test()
+        val testOvserver = programRepository.programModels().test()
 
         testOvserver
             .assertNoErrors()

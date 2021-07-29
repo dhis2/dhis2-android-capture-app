@@ -63,6 +63,10 @@ class ChartsRepositoryImpl(
         return emptyList<Graph>().nutritionTestingData(d2)
     }
 
+    override fun getHomeVisualization(groupUid: String?): List<Graph> {
+        return emptyList<Graph>().nutritionTestingData(d2)
+    }
+
     private fun getSettingsAnalytics(enrollment: Enrollment): List<Graph> {
         return d2.settingModule().analyticsSetting().teis()
             .byProgram().eq(enrollment.program())

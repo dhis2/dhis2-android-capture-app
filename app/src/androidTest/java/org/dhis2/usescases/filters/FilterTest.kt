@@ -156,7 +156,9 @@ class FilterTest: BaseTest() {
         homeRobot {
             openFilters()
             checkItemsInProgram(37,"TB program", "0")
+            waitToDebounce(700)
             checkItemsInProgram(41, "XX TEST EVENT FULL", "1")
+            waitToDebounce(700)
         }
         cleanLocalDatabase()
     }
