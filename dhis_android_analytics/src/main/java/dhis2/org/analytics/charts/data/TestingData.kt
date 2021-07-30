@@ -69,7 +69,6 @@ fun List<Graph>.nutritionTestingData(d2: D2): List<Graph> {
         add(
             Graph(
                 "HFA - Boy",
-                false,
                 series,
                 RelativePeriod.LAST_4_WEEKS,
                 PeriodType.Monthly,
@@ -80,7 +79,6 @@ fun List<Graph>.nutritionTestingData(d2: D2): List<Graph> {
         add(
             Graph(
                 "WFA - Boy",
-                false,
                 seriesWFA,
                 RelativePeriod.LAST_4_WEEKS,
                 PeriodType.Monthly,
@@ -91,7 +89,6 @@ fun List<Graph>.nutritionTestingData(d2: D2): List<Graph> {
         add(
             Graph(
                 "WFH - Boy",
-                false,
                 seriesWFH,
                 RelativePeriod.LAST_4_WEEKS,
                 PeriodType.Monthly,
@@ -134,7 +131,6 @@ fun List<Graph>.radarTestingData(d2: D2, featureConfig: FeatureConfigRepository)
             add(
                 Graph(
                     "Radar test",
-                    false,
                     radarSeries,
                     RelativePeriod.LAST_4_WEEKS,
                     PeriodType.Daily,
@@ -187,7 +183,6 @@ fun List<Graph>.pieChartTestingData(d2: D2, featureConfig: FeatureConfigReposito
             add(
                 Graph(
                     "Daily - Case detection",
-                    false,
                     caseDetectionData,
                     RelativePeriod.LAST_4_WEEKS,
                     PeriodType.Daily,
@@ -199,7 +194,6 @@ fun List<Graph>.pieChartTestingData(d2: D2, featureConfig: FeatureConfigReposito
             add(
                 Graph(
                     "Daily - Malaria test",
-                    false,
                     malariaTestData,
                     RelativePeriod.LAST_4_WEEKS,
                     PeriodType.Daily,
@@ -210,7 +204,6 @@ fun List<Graph>.pieChartTestingData(d2: D2, featureConfig: FeatureConfigReposito
             add(
                 Graph(
                     "Daily - Gender",
-                    false,
                     genderData,
                     RelativePeriod.LAST_4_WEEKS,
                     PeriodType.Daily,

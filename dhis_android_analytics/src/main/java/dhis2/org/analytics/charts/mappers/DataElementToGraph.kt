@@ -36,7 +36,6 @@ class DataElementToGraph(
 
         return Graph(
             "${stagePeriod.name}-${dataElement.displayFormName()}",
-            false,
             serie,
             null,
             stagePeriod,

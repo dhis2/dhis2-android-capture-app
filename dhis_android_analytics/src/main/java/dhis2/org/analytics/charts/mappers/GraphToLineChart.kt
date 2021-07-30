@@ -38,7 +38,7 @@ class GraphToLineChart {
                 valueFormatter = DateLabelFormatter { graph.dateFromSteps(it) }
                 granularity = DEFAULT_GRANULARITY
                 axisMinimum = X_AXIS_DEFAULT_MIN
-                axisMaximum = graph.numberOfStepsToLastDate() + 1f
+                axisMaximum = graph.categories.size.toFloat() - 1
                 labelRotationAngle = 15f
             }
 

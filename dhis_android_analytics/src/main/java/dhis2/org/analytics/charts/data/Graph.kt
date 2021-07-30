@@ -6,7 +6,6 @@ import org.hisp.dhis.android.core.period.PeriodType
 
 data class Graph(
     val title: String,
-    val isOnline: Boolean,
     val series: List<SerieData>,
     val periodToDisplay: RelativePeriod?,
     val eventPeriodType: PeriodType,
