@@ -174,6 +174,10 @@ public class EventCaptureContract {
         boolean showCompletionPercentage();
 
         void updateFieldValue(String uid);
+
+        boolean hasAnalytics();
+
+        boolean hasRelationships();
     }
 
 }
