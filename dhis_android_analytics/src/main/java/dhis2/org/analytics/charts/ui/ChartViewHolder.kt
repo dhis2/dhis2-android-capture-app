@@ -13,7 +13,13 @@ class ChartViewHolder(
     val binding: ItemChartBinding
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(chart: ChartModel, callback: ChartItemCallback) {
+    fun bind(chart: ChartModel, adapterCallback: ChartItemCallback) {
+        chart.orgUnitCallback = {
+            adapterCallback.filterOrgUnit(chart, it)
+        }
+        chart.relativePeriodCallback = {
+            adapterCallback.filterPeriod(chart, it)
+        }
         binding.chartModel = chart
         chart.observableChartType.addOnPropertyChangedCallback(
             object : Observable.OnPropertyChangedCallback() {
@@ -25,36 +31,7 @@ class ChartViewHolder(
                 }
             }
         )
-        chart.observableChartRelativePeriodFilter.addOnPropertyChangedCallback(
-            object : Observable.OnPropertyChangedCallback() {
-                override fun onPropertyChanged(
-                    sender: Observable?,
-                    propertyId: Int
-                ) {
-                    //callback.filterPeriod(chart, observableC)
-                }
-            }
-        )
-
-        chart.observableOrgUnitFilter.addOnPropertyChangedCallback(
-            object : Observable.OnPropertyChangedCallback() {
-                override fun onPropertyChanged(
-                    sender: Observable?,
-                    propertyId: Int
-                ) {
-                    //TODO: change org unit filter
-                }
-            }
-        )
         loadChart(chart)
-    }
-
-    private fun loadChartRelativePeriod(chart: ChartModel) {
-        chart.graph.copy(filters = chart.observableOrgUnitFilter.get()!!).toChartBuilder()
-    }
-
-    private fun loadChartOrgUnit(chart: ChartModel) {
-
     }
 
     private fun loadChart(chart: ChartModel) {
@@ -69,6 +46,6 @@ class ChartViewHolder(
 
     interface ChartItemCallback {
         fun filterPeriod(chart: ChartModel, period: RelativePeriod?)
-        fun filterOrgUnit(chart: ChartModel, filters: List<String>)
+        fun filterOrgUnit(chart: ChartModel, filters: OrgUnitFilterType)
     }
 }

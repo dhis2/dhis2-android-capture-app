@@ -70,21 +70,14 @@ data class SectionTitle(
 }
 
 data class ChartModel(val graph: Graph) : AnalyticsModel() {
-    var orgUnitFilterNone = false
-    var periodFilterNone = false
-
     val observableChartType by lazy {
         ObservableField<ChartType>(
             graph.chartType ?: ChartType.LINE_CHART
         )
     }
-    val observableChartRelativePeriodFilter by lazy {
-        ObservableField(graph.periodToDisplay)
-    }
-   // val observableOrgUnitFilter = ObservableField<Pair<OrgUnitFilterType, List<String>>>()
-    val observableOrgUnitFilter by lazy {
-        ObservableField(graph.filters)
-   }
+
+    var orgUnitCallback: ((OrgUnitFilterType) -> Unit)? = null
+    var relativePeriodCallback: ((RelativePeriod?) -> Unit)? = null
 
     fun showVisualizationOptions(view: View) {
         AppMenuHelper.Builder(
@@ -100,10 +93,10 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             },
             onMenuItemClicked = { itemId ->
                 if (itemId == R.id.periodFilter) {
-                    showPeriodFilters(view, observableChartRelativePeriodFilter.get())
+                    showPeriodFilters(view, graph.periodToDisplay)
                     true
                 } else if (itemId == R.id.orgFilter) {
-                    showOrgUntFilters(view, observableOrgUnitFilter.get()!!)
+                    showOrgUntFilters(view, graph.filters)
                     true
                 }
                 observableChartType.set(chartToLoad(itemId))
@@ -124,14 +117,12 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
                         showVisualizationOptions(view)
                     }
                     R.id.none -> {
-                        observableChartRelativePeriodFilter.set(null)
-                        periodFilterNone = true
+                        relativePeriodCallback?.invoke(null)
                     }
                     else -> {
-                        periodFilterNone = false
                         val relativePeriodSelected =
                             periodToId.filterValues { it == itemId }.keys.first()
-                        observableChartRelativePeriodFilter.set(relativePeriodSelected)
+                        relativePeriodCallback?.invoke(relativePeriodSelected)
                     }
                 }
                 true
@@ -139,14 +130,8 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
         ).build()
         appMenu.show()
 
-        selected?.let {
-            val idPeriod = periodToId[selected]
-            appMenu.addIconToItem(idPeriod!!, R.drawable.ic_check_chart)
-        }
-
-        if (periodFilterNone){
-            appMenu.addIconToItem(R.id.noneperiod, R.drawable.ic_check_chart)
-        }
+        val idPeriod = periodToId[selected]
+        appMenu.addIconToItem(idPeriod!!, R.drawable.ic_check_chart)
     }
 
     fun showOrgUntFilters(view: View, orgUnits: List<String>) {
@@ -160,13 +145,13 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
                         showVisualizationOptions(view)
                     }
                     R.id.none -> {
-                       observableOrgUnitFilter.set(emptyList())
+                        orgUnitCallback?.invoke(OrgUnitFilterType.NONE)
                     }
                     R.id.all -> {
-                        // send all to calculate
+                        orgUnitCallback?.invoke(OrgUnitFilterType.ALL)
                     }
                     else -> {
-                        // selection
+                        orgUnitCallback?.invoke(OrgUnitFilterType.SELECTION)
                     }
                 }
                 true

@@ -1,5 +1,6 @@
 package dhis2.org.analytics.charts.ui
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -25,6 +26,9 @@ class AnalyticsAdapter : ListAdapter<AnalyticsModel, RecyclerView.ViewHolder>(
     enum class AnalyticType {
         INDICATOR, CHART, SECTION_TITLE
     }
+
+    var onRelativePeriodCallback: ((ChartModel, RelativePeriod?) -> Unit)? = null
+    var onOrgUnitCallback: ((ChartModel, OrgUnitFilterType) -> Unit)? = null
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
@@ -57,10 +61,12 @@ class AnalyticsAdapter : ListAdapter<AnalyticsModel, RecyclerView.ViewHolder>(
     }
 
     override fun filterPeriod(chart: ChartModel, period: RelativePeriod?) {
-        TODO("Not yet implemented")
+        Log.d("AnalyticsAdapter", "onFilterPeriod")
+        onRelativePeriodCallback?.invoke(chart, period)
     }
 
-    override fun filterOrgUnit(chart: ChartModel, filters: List<String>) {
-        TODO("Not yet implemented")
+    override fun filterOrgUnit(chart: ChartModel, filters: OrgUnitFilterType) {
+        Log.d("AnalyticsAdapter", "onFilterOrgUnit")
+        onOrgUnitCallback?.invoke(chart, filters)
     }
 }

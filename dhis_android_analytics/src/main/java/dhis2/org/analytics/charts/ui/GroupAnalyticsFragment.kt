@@ -2,6 +2,7 @@ package dhis2.org.analytics.charts.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import dhis2.org.databinding.AnalyticsGroupBinding
 import dhis2.org.databinding.AnalyticsItemBinding
 import javax.inject.Inject
 import org.dhis2.commons.bindings.clipWithRoundedCorners
+import org.hisp.dhis.android.core.common.RelativePeriod
 
 const val ARG_MODE = "ARG_MODE"
 const val ARG_UID = "ARG_UID"
@@ -85,6 +87,18 @@ class GroupAnalyticsFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.analytics_group, container, false)
         binding.lifecycleOwner = this
         binding.analyticsRecycler.adapter = adapter
+        adapter.onRelativePeriodCallback =
+            { chartModel: ChartModel, relativePeriod: RelativePeriod? ->
+               Log.d("GroupAnalyticsFrag", "onRelativePeriod")
+                groupViewModel.filterByPeriod()
+            }
+        adapter.onOrgUnitCallback =
+            { chartModel: ChartModel, orgUnitFilterType: OrgUnitFilterType ->
+                if (orgUnitFilterType == OrgUnitFilterType.SELECTION){
+                    Log.d("GroupAnalyticsFrag", "onOrgUnitCallback")
+                    //update graph adding new org unit list
+                }
+            }
         binding.visualizationContainer.clipWithRoundedCorners()
         return binding.root
     }
