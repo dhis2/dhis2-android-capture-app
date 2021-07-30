@@ -34,7 +34,7 @@ class MapRelationshipToRelationshipMapModel {
             ?.trackedEntityInstance()
 
         val fromAttr =
-            relationshipViewModel.fromValues.firstOrNull()?.let { it.second?: "-" } ?: "-"
+            relationshipViewModel.fromValues.firstOrNull()?.let { it.second ?: "-" } ?: "-"
         val toAttr =
             relationshipViewModel.toValues.firstOrNull()?.let { it.second ?: "-" } ?: "-"
 

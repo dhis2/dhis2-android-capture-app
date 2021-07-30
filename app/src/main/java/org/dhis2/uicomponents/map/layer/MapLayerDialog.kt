@@ -26,7 +26,7 @@ import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
 import org.dhis2.uicomponents.map.managers.EventMapManager
 import org.dhis2.uicomponents.map.managers.MapManager
 import org.dhis2.uicomponents.map.managers.RelationshipMapManager.Companion.RELATIONSHIP_ICON
-import org.dhis2.utils.ColorUtils
+import org.dhis2.commons.resources.ColorUtils
 
 class MapLayerDialog(
     private val mapManager: MapManager

@@ -7,7 +7,7 @@ import org.dhis2.Bindings.toDateSpan
 import org.dhis2.R
 import org.dhis2.databinding.ItemStageSectionBinding
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts
-import org.dhis2.utils.ColorUtils
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.utils.resources.ResourceManager
 
 internal class StageViewHolder(

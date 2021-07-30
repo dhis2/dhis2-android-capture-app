@@ -16,7 +16,7 @@ import org.dhis2.uicomponents.map.layer.isPoint
 import org.dhis2.uicomponents.map.layer.isPolygon
 import org.dhis2.uicomponents.map.layer.withInitialVisibility
 import org.dhis2.uicomponents.map.layer.withTEIMarkerProperties
-import org.dhis2.utils.ColorUtils
+import org.dhis2.commons.resources.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
 
 class TeiEventMapLayer(

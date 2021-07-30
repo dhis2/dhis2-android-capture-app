@@ -108,15 +108,18 @@ class RelationshipPresenter internal constructor(
     }
 
     fun addRelationship(selectedTei: String, relationshipTypeUid: String) {
-        if(teiUid!=null){
+        if (teiUid != null) {
             addTeiToTeiRelationship(teiUid, selectedTei, relationshipTypeUid)
-        }else if(eventUid != null){
+        } else if (eventUid != null) {
             addEventToTeiRelationship(eventUid, selectedTei, relationshipTypeUid)
         }
-
     }
 
-    private fun addTeiToTeiRelationship(teiUid: String, selectedTei: String, relationshipTypeUid: String) {
+    private fun addTeiToTeiRelationship(
+        teiUid: String,
+        selectedTei: String,
+        relationshipTypeUid: String
+    ) {
         val relationshipType =
             d2.relationshipModule().relationshipTypes().withConstraints().uid(relationshipTypeUid)
                 .blockingGet()
@@ -151,7 +154,9 @@ class RelationshipPresenter internal constructor(
     ) {
         try {
             val relationship =
-                RelationshipHelper.eventToTeiRelationship(eventUid, selectedTei, relationshipTypeUid)
+                RelationshipHelper.eventToTeiRelationship(
+                    eventUid, selectedTei, relationshipTypeUid
+                )
             d2.relationshipModule().relationships().blockingAdd(relationship)
         } catch (e: D2Error) {
             view.displayMessage(e.errorDescription())
@@ -183,7 +188,7 @@ class RelationshipPresenter internal constructor(
         }
     }
 
-    fun openEvent(eventUid: String, eventProgramUid:String){
+    fun openEvent(eventUid: String, eventProgramUid: String) {
         view.openEventFor(eventUid, eventProgramUid)
     }
 
@@ -196,8 +201,11 @@ class RelationshipPresenter internal constructor(
     }
 
     fun onRelationshipClicked(ownerType: RelationshipOwnerType, ownerUid: String) {
-        when(ownerType){
-            RelationshipOwnerType.EVENT -> openEvent(ownerUid, relationshipRepository.getEventProgram(ownerUid))
+        when (ownerType) {
+            RelationshipOwnerType.EVENT -> openEvent(
+                ownerUid,
+                relationshipRepository.getEventProgram(ownerUid)
+            )
             RelationshipOwnerType.TEI -> openDashboard(ownerUid)
         }
     }

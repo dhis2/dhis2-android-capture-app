@@ -18,7 +18,7 @@ import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.widthAndHeight
 import org.dhis2.R
 import org.dhis2.databinding.DetailImageBottomDialogBinding
-import org.dhis2.utils.ColorUtils
+import org.dhis2.commons.resources.ColorUtils
 
 class ImageDetailBottomDialog(
     val label: String?,

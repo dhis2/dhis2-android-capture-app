@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.Bindings.toTrailingText
 import org.dhis2.R
 import org.dhis2.databinding.ItemSettingProgramBinding
-import org.dhis2.utils.ColorUtils
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.utils.resources.ResourceManager
 
 class ProgramSettingsHolder(

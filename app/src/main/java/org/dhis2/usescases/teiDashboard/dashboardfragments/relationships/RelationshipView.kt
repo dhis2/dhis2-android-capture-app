@@ -22,5 +22,5 @@ interface RelationshipView : AbstractActivityContracts.View {
         map: Pair<Map<String?, FeatureCollection>, BoundingBox>
     )
 
-    fun openEventFor(eventUid: String, programUid:String)
+    fun openEventFor(eventUid: String, programUid: String)
 }

@@ -17,12 +17,12 @@ class EventPageConfigurator(
     }
 
     override fun displayAnalytics(): Boolean {
-        return eventCaptureRepository.hasAnalytics();
+        return eventCaptureRepository.hasAnalytics()
     }
 
     override fun displayRelationships(): Boolean {
         return eventCaptureRepository.hasRelationships() &&
-                featureConfig.isFeatureEnable(Feature.ANDROAPP_2275)
+            featureConfig.isFeatureEnable(Feature.ANDROAPP_2275)
     }
 
     override fun displayNotes(): Boolean {

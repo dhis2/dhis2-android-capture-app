@@ -1,18 +1,16 @@
-package org.dhis2.utils;
+package org.dhis2.commons.resources;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.RippleDrawable;
 import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.dhis2.R;
+import org.dhis2.commons.R;
 
 import java.util.ArrayList;
 
@@ -103,6 +101,36 @@ public class ColorUtils {
 
 
         return (L > 0.179d) ? Color.BLACK : Color.WHITE;
+    }
+
+    public static int getAlphaContrastColor(int color) {
+
+        ArrayList<Double> rgb = new ArrayList<>();
+        rgb.add(Color.red(color) / 255.0d);
+        rgb.add(Color.green(color) / 255.0d);
+        rgb.add(Color.blue(color) / 255.0d);
+
+        Double r = null;
+        Double g = null;
+        Double b = null;
+        for (Double c : rgb) {
+            if (c <= 0.03928d)
+                c = c / 12.92d;
+            else
+                c = Math.pow(((c + 0.055d) / 1.055d), 2.4d);
+
+            if (r == null)
+                r = c;
+            else if (g == null)
+                g = c;
+            else
+                b = c;
+        }
+
+        double L = 0.2126d * r + 0.7152d * g + 0.0722d * b;
+
+
+        return (L > 0.179d) ? Color.parseColor("#000000b3") : Color.parseColor("#ffffffe6");
     }
 
     public static int getThemeFromColor(String color) {

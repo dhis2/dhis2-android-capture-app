@@ -17,7 +17,7 @@ import org.dhis2.uicomponents.map.layer.isPolygon
 import org.dhis2.uicomponents.map.layer.withInitialVisibility
 import org.dhis2.uicomponents.map.layer.withTEIMarkerProperties
 import org.dhis2.uicomponents.map.managers.TeiMapManager.Companion.TEIS_SOURCE_ID
-import org.dhis2.utils.ColorUtils
+import org.dhis2.commons.resources.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
 
 class TeiMapLayer(

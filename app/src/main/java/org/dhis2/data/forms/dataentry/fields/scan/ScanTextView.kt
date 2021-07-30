@@ -28,7 +28,7 @@ import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.utils.ActivityResultObservable
 import org.dhis2.utils.ActivityResultObserver
-import org.dhis2.utils.ColorUtils
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.EXTRA_DATA
 import org.dhis2.utils.Constants.RQ_QR_SCANNER

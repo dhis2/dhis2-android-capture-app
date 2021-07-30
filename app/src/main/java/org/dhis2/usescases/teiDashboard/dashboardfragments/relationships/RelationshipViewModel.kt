@@ -18,9 +18,31 @@ data class RelationshipViewModel(
     val toImage: String?,
     val fromDefaultImageResource: Int,
     val toDefaultImageResource: Int
-){
-    fun primaryInfo(){
+) {
+    fun displayRelationshipName(): String {
+        val values = when (direction) {
+            RelationshipDirection.FROM -> fromValues
+            RelationshipDirection.TO -> toValues
+        }
+        return when {
+            values.size > 1 -> "${values[0].second} ${values[1].second}"
+            values.size == 1 -> values[0].second
+            else -> "-"
+        }
+    }
 
+    fun displayRelationshipTypeName(): String {
+        return when (direction) {
+            RelationshipDirection.FROM -> relationshipType.toFromName()
+            RelationshipDirection.TO -> relationshipType.fromToName()
+        } ?: relationshipType.displayName() ?: "-"
+    }
+
+    fun displayImage(): Pair<String?, Int> {
+        return when (direction) {
+            RelationshipDirection.FROM -> Pair(fromImage, fromDefaultImageResource)
+            RelationshipDirection.TO -> Pair(toImage, toDefaultImageResource)
+        }
     }
 }
 

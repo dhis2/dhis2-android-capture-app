@@ -36,7 +36,7 @@ class RelationshipRepositoryImpl(
     }
 
     private fun trackerRelationshipTypes(): Single<List<Pair<RelationshipType, String>>> {
-        //TODO: Limit link to only TEI
+        // TODO: Limit link to only TEI
         val teTypeUid = d2.trackedEntityModule().trackedEntityInstances()
             .uid((config as TrackerRelationshipConfiguration).teiUid)
             .blockingGet().trackedEntityType() ?: return Single.just(emptyList())
@@ -60,11 +60,10 @@ class RelationshipRepositoryImpl(
                     }
                 }
             }
-
     }
 
     private fun stageRelationshipTypes(): Single<List<Pair<RelationshipType, String>>> {
-        //TODO: Limit links to TEI
+        // TODO: Limit links to TEI
         val event = d2.eventModule().events().uid(
             (config as EventRelationshipConfiguration).eventUid
         ).blockingGet()
@@ -92,7 +91,6 @@ class RelationshipRepositoryImpl(
                     secondaryUid?.let { Pair(relationshipType, secondaryUid) }
                 }
             }
-
     }
 
     fun eventRelationships(): Single<List<RelationshipViewModel>> {

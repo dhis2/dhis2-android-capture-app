@@ -363,7 +363,7 @@ class CarouselAdapter private constructor(
         var program: Program? = null
     ) {
         fun addCurrentTei(currentTei: String?) = apply {
-            if(currentTei!=null) {
+            if (currentTei != null) {
                 this.currentTei = currentTei
             }
         }

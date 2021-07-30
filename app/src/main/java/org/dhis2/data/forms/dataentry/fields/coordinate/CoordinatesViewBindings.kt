@@ -12,7 +12,7 @@ import org.dhis2.Bindings.truncate
 import org.dhis2.R
 import org.dhis2.uicomponents.map.geometry.isLatitudeValid
 import org.dhis2.uicomponents.map.geometry.isLongitudeValid
-import org.dhis2.utils.ColorUtils
+import org.dhis2.commons.resources.ColorUtils
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
