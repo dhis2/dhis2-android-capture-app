@@ -9,8 +9,9 @@ import org.junit.Test
 
 class TeiDashboardPageConfiguratorTest {
     private val dashboardRepository: DashboardRepository = mock()
+    private val isPortrait = true
     private val pageConfigurator: NavigationPageConfigurator =
-        TeiDashboardPageConfigurator(dashboardRepository)
+        TeiDashboardPageConfigurator(dashboardRepository, isPortrait)
 
     @Test
     fun `Should display the details screen`() {
