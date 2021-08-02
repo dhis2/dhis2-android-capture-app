@@ -11,17 +11,25 @@ import dhis2.org.databinding.ItemIndicatorBinding
 import dhis2.org.databinding.ItemSectionTittleBinding
 import org.hisp.dhis.android.core.common.RelativePeriod
 
-class AnalyticsAdapter : ListAdapter<AnalyticsModel, RecyclerView.ViewHolder>(
-    object : DiffUtil.ItemCallback<AnalyticsModel>() {
+class AnalyticsAdapter :
+    ListAdapter<AnalyticsModel, RecyclerView.ViewHolder>(
+        object : DiffUtil.ItemCallback<AnalyticsModel>() {
 
-        override fun areItemsTheSame(oldItem: AnalyticsModel, newItem: AnalyticsModel): Boolean {
-            return oldItem === newItem
-        }
+            override fun areItemsTheSame(
+                oldItem: AnalyticsModel,
+                newItem: AnalyticsModel
+            ): Boolean {
+                return oldItem === newItem
+            }
 
-        override fun areContentsTheSame(oldItem: AnalyticsModel, newItem: AnalyticsModel): Boolean {
-            return oldItem == newItem
-        }
-    }), ChartViewHolder.ChartItemCallback {
+            override fun areContentsTheSame(
+                oldItem: AnalyticsModel,
+                newItem: AnalyticsModel
+            ): Boolean {
+                return oldItem == newItem
+            }
+        }),
+    ChartViewHolder.ChartItemCallback {
 
     enum class AnalyticType {
         INDICATOR, CHART, SECTION_TITLE

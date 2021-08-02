@@ -159,7 +159,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
         ).build()
         menuBuilder.show()
 
-        if (!orgUnits.isNullOrEmpty()){
+        if (!orgUnits.isNullOrEmpty()) {
             val selectionText = menuBuilder.getItemText(R.id.selection)
             menuBuilder.changeItemText(R.id.selection, "$selectionText (${orgUnits.size})")
         }

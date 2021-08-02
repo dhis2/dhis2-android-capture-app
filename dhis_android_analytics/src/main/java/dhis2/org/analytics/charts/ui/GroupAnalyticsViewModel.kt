@@ -31,11 +31,12 @@ class GroupAnalyticsViewModel(
         }
     }
 
-    fun filterByOrgUnit(){
+    fun filterByOrgUnit() {
+        // TODO Implement search + filtering
     }
 
-    fun filterByPeriod(chartModel: ChartModel, period: RelativePeriod?){
-       // _analytics.value?.map { it as  }
+    fun filterByPeriod(chartModel: ChartModel, period: RelativePeriod?) {
+        // TODO Implement filtering
     }
 
     fun fetchAnalytics(groupUid: String?) {

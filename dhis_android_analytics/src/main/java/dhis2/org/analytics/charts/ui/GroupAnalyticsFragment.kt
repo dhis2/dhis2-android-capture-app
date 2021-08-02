@@ -89,14 +89,13 @@ class GroupAnalyticsFragment : Fragment() {
         binding.analyticsRecycler.adapter = adapter
         adapter.onRelativePeriodCallback =
             { chartModel: ChartModel, relativePeriod: RelativePeriod? ->
-               Log.d("GroupAnalyticsFrag", "onRelativePeriod")
-                groupViewModel.filterByPeriod()
+                groupViewModel.filterByPeriod(chartModel, relativePeriod)
             }
         adapter.onOrgUnitCallback =
             { chartModel: ChartModel, orgUnitFilterType: OrgUnitFilterType ->
-                if (orgUnitFilterType == OrgUnitFilterType.SELECTION){
+                if (orgUnitFilterType == OrgUnitFilterType.SELECTION) {
                     Log.d("GroupAnalyticsFrag", "onOrgUnitCallback")
-                    //update graph adding new org unit list
+                    groupViewModel.filterByOrgUnit()
                 }
             }
         binding.visualizationContainer.clipWithRoundedCorners()
