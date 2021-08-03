@@ -1,6 +1,5 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-import android.content.pm.ActivityInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -35,7 +34,7 @@ import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.customviews.AlertBottomDialog;
+import org.dhis2.commons.dialogs.AlertBottomDialog;
 import org.dhis2.utils.validationrules.ValidationResultViolationsAdapter;
 import org.dhis2.utils.validationrules.Violation;
 import org.hisp.dhis.android.core.dataset.DataSet;

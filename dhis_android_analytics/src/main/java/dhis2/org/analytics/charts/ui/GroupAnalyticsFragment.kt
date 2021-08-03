@@ -12,11 +12,13 @@ import androidx.fragment.app.viewModels
 import dhis2.org.R
 import dhis2.org.analytics.charts.data.AnalyticGroup
 import dhis2.org.analytics.charts.di.AnalyticsComponentProvider
+import dhis2.org.analytics.charts.extensions.isNotCurrent
 import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule
 import dhis2.org.databinding.AnalyticsGroupBinding
 import dhis2.org.databinding.AnalyticsItemBinding
 import javax.inject.Inject
 import org.dhis2.commons.bindings.clipWithRoundedCorners
+import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.hisp.dhis.android.core.common.RelativePeriod
 
 const val ARG_MODE = "ARG_MODE"
@@ -89,8 +91,14 @@ class GroupAnalyticsFragment : Fragment() {
         binding.analyticsRecycler.adapter = adapter
         adapter.onRelativePeriodCallback =
             { chartModel: ChartModel, relativePeriod: RelativePeriod? ->
+                relativePeriod?.let {
+                    if (it.isNotCurrent()) {
+                        showAlertDialogCurrentPeriod()
+                    }
+                }
                 groupViewModel.filterByPeriod(chartModel, relativePeriod)
             }
+
         adapter.onOrgUnitCallback =
             { chartModel: ChartModel, orgUnitFilterType: OrgUnitFilterType ->
                 if (orgUnitFilterType == OrgUnitFilterType.SELECTION) {
@@ -100,6 +108,19 @@ class GroupAnalyticsFragment : Fragment() {
             }
         binding.visualizationContainer.clipWithRoundedCorners()
         return binding.root
+    }
+
+    private fun showAlertDialogCurrentPeriod() {
+        AlertBottomDialog.instance
+            .setTitle(getString(R.string.include_this_period_title))
+            .setMessage(getString(R.string.include_this_period_body))
+            .setNegativeButton(getString(R.string.no)) {
+
+            }
+            .setPositiveButton(getString(R.string.yes)){
+
+            }
+            .show(parentFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

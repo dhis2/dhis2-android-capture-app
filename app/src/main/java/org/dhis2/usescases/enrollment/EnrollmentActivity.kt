@@ -42,7 +42,7 @@ import org.dhis2.utils.EventMode
 import org.dhis2.utils.FileResourcesUtil
 import org.dhis2.utils.ImageUtils
 import org.dhis2.utils.RulesUtilsProviderConfigurationError
-import org.dhis2.utils.customviews.AlertBottomDialog
+import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.toMessage
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper

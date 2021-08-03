@@ -38,4 +38,6 @@
     <string name="yearly">Yearly</string>
     <string name="all">All</string>
     <string name="selection">Selection</string>
+    <string name="include_this_period_title">Do you want to include the current period?</string>
+    <string name="include_this_period_body">It will display the current period in the chart.</string>
 </resources>

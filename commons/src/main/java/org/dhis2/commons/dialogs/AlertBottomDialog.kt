@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews
+package org.dhis2.commons.dialogs
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,8 +10,8 @@ import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import org.dhis2.R
-import org.dhis2.databinding.AlertBottomDialogBinding
+import org.dhis2.commons.R
+import org.dhis2.commons.databinding.AlertBottomDialogBinding
 
 class AlertBottomDialog : BottomSheetDialogFragment() {
 
