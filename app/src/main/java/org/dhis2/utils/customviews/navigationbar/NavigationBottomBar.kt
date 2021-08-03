@@ -63,8 +63,8 @@ class NavigationBottomBar @JvmOverloads constructor(
     }
 
     fun hide() {
+        hidden = true
         animations.hide {
-            hidden = true
             visibility = View.GONE
         }
     }

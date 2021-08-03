@@ -59,6 +59,10 @@ class ChartsRepositoryImpl(
             .visualizationGroupTestingData(featureConfig)
     }
 
+    override fun getDataSetVisualization(groupUid: String?, programUid: String): List<Graph> {
+        return emptyList<Graph>().nutritionTestingData(d2)
+    }
+
     override fun getProgramVisualization(groupUid: String?, programUid: String): List<Graph> {
         return emptyList<Graph>().nutritionTestingData(d2)
     }

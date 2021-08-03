@@ -41,14 +41,12 @@ import io.reactivex.schedulers.TestScheduler
 import org.dhis2.data.filter.FilterRepository
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.data.tuples.Pair
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.FilterManager.PeriodRequest
 import org.dhis2.utils.filters.Filters
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
-import org.hisp.dhis.android.core.common.State
 import org.junit.Before
 import org.junit.Test
 
@@ -62,7 +60,6 @@ class DataSetDetailPresenterTest {
     private val filterManager: FilterManager = mock()
     private val filterRepository: FilterRepository = mock()
     private val disableHomeFilters: DisableHomeFiltersFromSettingsApp = mock()
-    private val matomoAnalyticsController: MatomoAnalyticsController = mock()
 
     @Before
     fun setUp() {
@@ -72,27 +69,21 @@ class DataSetDetailPresenterTest {
             scheduler,
             filterManager,
             filterRepository,
-            disableHomeFilters,
-            matomoAnalyticsController
+            disableHomeFilters
         )
     }
 
     @Test
-    fun `Should get the list of dataSet`() {
+    fun `Should init filters`() {
         val filterProcessor: FlowableProcessor<FilterManager> = PublishProcessor.create()
         val periodRequest: FlowableProcessor<kotlin.Pair<PeriodRequest, Filters?>> =
             BehaviorProcessor.create()
         val filterManagerFlowable = Flowable.just(filterManager).startWith(filterProcessor)
-        val dataSets = listOf(dummyDataSet(), dummyDataSet(), dummyDataSet())
         val catOptionComboPair = Pair.create(dummyCategoryCombo(), dummyListCatOptionCombo())
 
         whenever(filterManager.asFlowable()) doReturn filterManagerFlowable
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
-        whenever(
-            repository.dataSetGroups(any(), any(), any(), any())
-        ) doReturn Flowable.just(dataSets)
         whenever(filterManager.periodRequest) doReturn periodRequest
-        whenever(repository.canWriteAny()) doReturn Flowable.just(true)
         filterProcessor.onNext(filterManager)
         periodRequest.onNext(Pair(PeriodRequest.FROM_TO, null))
 
@@ -100,17 +91,8 @@ class DataSetDetailPresenterTest {
         scheduler.io().triggerActions()
 
         verify(view).openOrgUnitTreeSelector()
-        verify(view).setData(dataSets)
         verify(view).updateFilters(any())
         verify(view).showPeriodRequest(periodRequest.blockingFirst().first)
-        verify(view).setWritePermission(true)
-    }
-
-    @Test
-    fun `Should navigate to activity to add a new DataSer`() {
-        presenter.addDataSet()
-
-        verify(view).startNewDataSet()
     }
 
     @Test
@@ -118,15 +100,6 @@ class DataSetDetailPresenterTest {
         presenter.onBackClick()
 
         verify(view).back()
-    }
-
-    @Test
-    fun `Should open a dataSet`() {
-        val dataSet = dummyDataSet()
-
-        presenter.openDataSet(dataSet)
-
-        verify(view).openDataSet(dataSet)
     }
 
     @Test
@@ -165,41 +138,12 @@ class DataSetDetailPresenterTest {
     }
 
     @Test
-    fun `Should show sync dialog`() {
-        val dataSet = dummyDataSet()
-
-        presenter.onSyncIconClick(dataSet)
-
-        verify(view).showSyncDialog(dataSet)
-    }
-
-    @Test
-    fun `Should publish filter data`() {
-        presenter.updateFilters()
-
-        verify(filterManager).publishData()
-    }
-
-    @Test
     fun `Should clear all filters when reset filter button is clicked`() {
         presenter.clearFilterClick()
 
         verify(filterManager).clearAllFilters()
         verify(view).clearFilters()
     }
-
-    private fun dummyDataSet() = DataSetDetailModel.create(
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        State.SYNCED,
-        "",
-        true,
-        false
-    )
 
     private fun dummyCategoryCombo() = CategoryCombo.builder().uid("uid").build()
 
