@@ -40,14 +40,12 @@
 
                 <TextView
                     android:id="@+id/imageText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="center"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:gravity="center"
                     android:textSize="20sp"
-                    app:layout_constraintBottom_toBottomOf="@id/toTeiImage"
-                    app:layout_constraintEnd_toEndOf="@id/toTeiImage"
-                    app:layout_constraintStart_toStartOf="@+id/toTeiImage"
-                    app:layout_constraintTop_toTopOf="@id/toTeiImage"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:text="A" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 

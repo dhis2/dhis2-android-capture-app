@@ -2,6 +2,8 @@ package org.dhis2.uicomponents.map.mocks
 
 import java.text.ParseException
 import java.util.Date
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipDirection
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipOwnerType
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject
 import org.hisp.dhis.android.core.relationship.Relationship
@@ -30,16 +32,19 @@ object RelationshipViewModelDummy {
         val geometryFrom = GeometryDummy.getGeometryAsPointFrom()
         val geometryTo = GeometryDummy.getGeometryAsPointTo()
 
-        return RelationshipViewModel.create(
-            relationship, relationshipType,
-            RelationshipViewModel.RelationshipDirection.FROM,
-            UID,
-            emptyList(),
-            emptyList(),
+        return RelationshipViewModel(
+            relationship,
             geometryFrom,
             geometryTo,
+            relationshipType,
+            RelationshipDirection.FROM,
+            UID,
+            RelationshipOwnerType.TEI,
+            emptyList(),
+            emptyList(),
             "",
             "",
+            -1,
             -1,
             -1
         )
@@ -63,16 +68,19 @@ object RelationshipViewModelDummy {
             .bidirectional(false)
             .build()
 
-        return RelationshipViewModel.create(
-            relationship, relationshipType,
-            RelationshipViewModel.RelationshipDirection.FROM,
+        return RelationshipViewModel(
+            relationship,
+            null,
+            null,
+            relationshipType,
+            RelationshipDirection.FROM,
             UID,
+            RelationshipOwnerType.TEI,
             emptyList(),
             emptyList(),
-            null,
-            null,
             "",
             "",
+            -1,
             -1,
             -1
         )

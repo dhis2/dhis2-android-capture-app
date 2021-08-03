@@ -6,14 +6,11 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import io.reactivex.Flowable
-import io.reactivex.Observable
 import io.reactivex.Single
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel
-import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_RELATIONSHIP
@@ -57,6 +54,7 @@ class RelationshipPresenterTest {
             d2,
             "programUid",
             "teiUid",
+            null,
             repository,
             schedulerProvider,
             analyticsHelper,

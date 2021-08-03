@@ -8,6 +8,7 @@ import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.relationship.RelationshipEntityType
 import org.hisp.dhis.android.core.relationship.RelationshipItem
 import org.hisp.dhis.android.core.relationship.RelationshipItemEvent
@@ -187,7 +188,8 @@ class RelationshipRepositoryImpl(
                     fromProfilePic,
                     toProfilePic,
                     fromDefaultPic,
-                    toDefaultPic
+                    toDefaultPic,
+                    getOwnerColor(relationshipOwnerUid, RelationshipOwnerType.TEI)
                 )
             }
         }
@@ -223,7 +225,7 @@ class RelationshipRepositoryImpl(
 
                 when (teiUid) {
                     relationship.from()?.trackedEntityInstance()?.trackedEntityInstance() -> {
-                        direction = RelationshipDirection.FROM
+                        direction = RelationshipDirection.TO
                         fromGeometry = tei.geometry()
                         fromValues = getTeiAttributesForRelationship(teiUid)
                         fromProfilePic = tei.profilePicturePath(d2, programUid)
@@ -241,7 +243,7 @@ class RelationshipRepositoryImpl(
                         } else {
                             relationshipOwnerType = RelationshipOwnerType.EVENT
                             relationshipOwnerUid =
-                                relationship.from()?.event()?.event()
+                                relationship.to()?.event()?.event()
                             val toEvent = d2.eventModule().events()
                                 .uid(relationshipOwnerUid).blockingGet()
                             toGeometry = toEvent.geometry()
@@ -251,7 +253,7 @@ class RelationshipRepositoryImpl(
                         }
                     }
                     relationship.to()?.trackedEntityInstance()?.trackedEntityInstance() -> {
-                        direction = RelationshipDirection.TO
+                        direction = RelationshipDirection.FROM
                         toGeometry = tei.geometry()
                         toValues = getTeiAttributesForRelationship(teiUid)
                         toProfilePic = tei.profilePicturePath(d2, programUid)
@@ -297,8 +299,32 @@ class RelationshipRepositoryImpl(
                     fromProfilePic,
                     toProfilePic,
                     fromDefaultPicRes,
-                    toDefaultPicRes
+                    toDefaultPicRes,
+                    getOwnerColor(relationshipOwnerUid, relationshipOwnerType)
                 )
+            }
+        }
+    }
+
+    private fun getOwnerColor(uid: String, relationshipOwnerType: RelationshipOwnerType): Int {
+        return when (relationshipOwnerType) {
+            RelationshipOwnerType.EVENT -> {
+                val event = d2.eventModule().events().uid(uid).blockingGet()
+                val program = d2.programModule().programs().uid(event.program()).blockingGet()
+                if (program.programType() == ProgramType.WITHOUT_REGISTRATION) {
+                    resources.getColorFrom(program.style().color())
+                } else {
+                    val programStage =
+                        d2.programModule().programStages().uid(event.programStage()).blockingGet()
+                    resources.getColorFrom(programStage.style().color() ?: program.style().color())
+                }
+            }
+            RelationshipOwnerType.TEI -> {
+                val tei = d2.trackedEntityModule().trackedEntityInstances()
+                    .uid(uid).blockingGet()
+                val teType = d2.trackedEntityModule().trackedEntityTypes()
+                    .uid(tei.trackedEntityType()).blockingGet()
+                return resources.getColorFrom(teType.style().color())
             }
         }
     }
@@ -352,7 +378,8 @@ class RelationshipRepositoryImpl(
         return if (valuesFromEvent.isNotEmpty()) {
             valuesFromEvent
         } else {
-            listOf(Pair("uid", eventUid))
+            val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
+            listOf(Pair("displayName", stage.displayName() ?: event.uid()))
         }
     }
 

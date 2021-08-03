@@ -20,12 +20,10 @@ class MapRelationshipToRelationshipMapModel {
         val typeUid = relationshipViewModel.relationshipType.uid()
         val bidirectional = relationshipViewModel.relationshipType.bidirectional()
         val direction =
-            if (relationshipViewModel.direction
-                == org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipDirection.TO
-            ) {
-                RelationshipDirection.TO
-            } else {
+            if (relationshipViewModel.isFrom()) {
                 RelationshipDirection.FROM
+            } else {
+                RelationshipDirection.TO
             }
 
         val teiFromUid = relationshipViewModel.relationship.from()?.trackedEntityInstance()

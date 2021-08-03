@@ -17,6 +17,7 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.layer.isBiderectional
@@ -27,7 +28,6 @@ import org.dhis2.uicomponents.map.layer.isUnidirectional
 import org.dhis2.uicomponents.map.layer.withInitialVisibility
 import org.dhis2.uicomponents.map.layer.withTEIMarkerProperties
 import org.dhis2.uicomponents.map.managers.RelationshipMapManager
-import org.dhis2.commons.resources.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
 
 class RelationshipMapLayer(

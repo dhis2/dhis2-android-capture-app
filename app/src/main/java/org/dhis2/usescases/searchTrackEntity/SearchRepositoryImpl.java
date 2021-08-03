@@ -526,7 +526,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                     ExtensionsKt.profilePicturePath(fromTei, d2, selectedProgram.uid()),
                     ExtensionsKt.profilePicturePath(toTei, d2, selectedProgram.uid()),
                     getTeiDefaultRes(fromTei),
-                    getTeiDefaultRes(toTei)
+                    getTeiDefaultRes(toTei),
+                    -1
             ));
         }
 

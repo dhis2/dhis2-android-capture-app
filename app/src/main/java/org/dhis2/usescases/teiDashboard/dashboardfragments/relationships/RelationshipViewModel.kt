@@ -17,7 +17,8 @@ data class RelationshipViewModel(
     val fromImage: String?,
     val toImage: String?,
     val fromDefaultImageResource: Int,
-    val toDefaultImageResource: Int
+    val toDefaultImageResource: Int,
+    val ownerDefaultColorResource: Int
 ) {
     fun displayRelationshipName(): String {
         val values = when (direction) {
@@ -43,6 +44,14 @@ data class RelationshipViewModel(
             RelationshipDirection.FROM -> Pair(fromImage, fromDefaultImageResource)
             RelationshipDirection.TO -> Pair(toImage, toDefaultImageResource)
         }
+    }
+
+    fun isEvent(): Boolean {
+        return ownerType == RelationshipOwnerType.EVENT
+    }
+
+    fun isFrom(): Boolean {
+        return direction == RelationshipDirection.FROM
     }
 }
 

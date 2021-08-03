@@ -10,6 +10,8 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
+import org.dhis2.commons.bindings.clipWithAllRoundedCorners
+import org.dhis2.commons.bindings.clipWithRoundedCorners
 import org.dhis2.commons.bindings.dp
 import java.io.File
 import java.util.Locale
@@ -19,11 +21,13 @@ fun ImageView.setItemPic(
     defaultImageRes: Int,
     defaultColorRes: Int,
     defaultValue: String?,
+    isSingleEvent:Boolean =false,
     textView: TextView?
 ) {
 
     when {
-        imagePath != null -> {
+        imagePath?.isNotEmpty() == true -> {
+            visibility = View.VISIBLE
             textView?.visibility = View.GONE
             Glide.with(context).load(File(imagePath))
                 .transform(CircleCrop())
@@ -35,16 +39,20 @@ fun ImageView.setItemPic(
                 .skipMemoryCache(true)
                 .into(this)
         }
-        defaultValue != null -> {
+        defaultValue != null && !isSingleEvent -> {
+            visibility = View.GONE
             textView?.visibility = View.VISIBLE
+            textView?.clipWithAllRoundedCorners(20.dp)
             setImageDrawable(null)
             textView?.text = defaultValue.first().toString().toUpperCase(Locale.getDefault())
             textView?.setTextColor(ColorUtils.getAlphaContrastColor(defaultColorRes))
             textView?.setBackgroundColor(defaultColorRes)
         }
         else -> {
+            visibility = View.VISIBLE
             textView?.visibility = View.GONE
             setBackgroundColor(defaultColorRes)
+            clipWithAllRoundedCorners(6.dp)
             ContextCompat.getDrawable(context, defaultImageRes)?.let {
                 Glide.with(context).load(
                     ColorUtils.tintDrawableReosurce(it, defaultColorRes)

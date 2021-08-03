@@ -82,7 +82,7 @@ class RelationshipPresenter internal constructor(
 
     fun goToAddRelationship(teiTypeToAdd: String) {
         if (d2.programModule()
-                .programs().uid(programUid).blockingGet()!!.access().data().write()!!
+            .programs().uid(programUid).blockingGet()!!.access().data().write()!!
         ) {
             analyticsHelper.setEvent(NEW_RELATIONSHIP, CLICK, NEW_RELATIONSHIP)
             if (teiUid != null) {
@@ -167,11 +167,11 @@ class RelationshipPresenter internal constructor(
 
     fun openDashboard(teiUid: String) {
         if (d2.trackedEntityModule()
-                .trackedEntityInstances().uid(teiUid).blockingGet()!!.state() !=
+            .trackedEntityInstances().uid(teiUid).blockingGet()!!.state() !=
             State.RELATIONSHIP
         ) {
             if (d2.enrollmentModule().enrollments()
-                    .byTrackedEntityInstance().eq(teiUid).blockingGet().isNotEmpty()
+                .byTrackedEntityInstance().eq(teiUid).blockingGet().isNotEmpty()
             ) {
                 view.openDashboardFor(teiUid)
             } else {
