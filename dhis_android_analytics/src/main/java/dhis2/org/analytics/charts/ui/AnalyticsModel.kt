@@ -3,12 +3,14 @@ package dhis2.org.analytics.charts.ui
 import android.graphics.Color
 import android.graphics.Typeface
 import android.view.View
+import androidx.annotation.IdRes
 import androidx.databinding.ObservableField
 import dhis2.org.R
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
 import org.dhis2.commons.popupmenu.AppMenuHelper
 import org.hisp.dhis.android.core.common.RelativePeriod
+import org.hisp.dhis.android.core.parser.internal.service.dataitem.DimensionalItemId
 import org.hisp.dhis.android.core.program.ProgramIndicator
 
 enum class SectionType {
@@ -21,7 +23,6 @@ enum class OrgUnitFilterType {
 }
 
 val periodToId = hashMapOf(
-    null to R.id.noneperiod,
     RelativePeriod.TODAY to R.id.today,
     RelativePeriod.YESTERDAY to R.id.yesterday,
     RelativePeriod.LAST_3_DAYS to R.id.last3days,
@@ -39,10 +40,6 @@ val periodToId = hashMapOf(
     RelativePeriod.LAST_12_MONTHS to R.id.last12months,
     RelativePeriod.MONTHS_THIS_YEAR to R.id.monthThisYear,
     RelativePeriod.LAST_MONTH to R.id.lastmonth,
-    RelativePeriod.LAST_3_MONTHS to R.id.last3months,
-    RelativePeriod.LAST_6_MONTHS to R.id.last6months,
-    RelativePeriod.LAST_12_MONTHS to R.id.last12months,
-    RelativePeriod.MONTHS_THIS_YEAR to R.id.monthThisYear,
     RelativePeriod.THIS_QUARTER to R.id.thisquarter,
     RelativePeriod.LAST_QUARTER to R.id.lastquarter,
     RelativePeriod.LAST_4_QUARTERS to R.id.last4quarter,
@@ -116,13 +113,20 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
                     R.id.back -> {
                         showVisualizationOptions(view)
                     }
-                    R.id.none -> {
-                        relativePeriodCallback?.invoke(null)
+                    R.id.daily -> {
+                        showDailyPeriodVisualization(view)
                     }
-                    else -> {
-                        val relativePeriodSelected =
-                            periodToId.filterValues { it == itemId }.keys.first()
-                        relativePeriodCallback?.invoke(relativePeriodSelected)
+                    R.id.weekly -> {
+                        showWeeklyPeriodVisualization(view)
+                    }
+                    R.id.monthly -> {
+                        showMonthlyPeriodVisualization(view)
+                    }
+                    R.id.yearly -> {
+                        showYearlyPeriodVisualization(view)
+                    }
+                    R.id.other -> {
+                        showOtherPeriodVisualization(view)
                     }
                 }
                 true
@@ -130,8 +134,116 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
         ).build()
         appMenu.show()
 
-        val idPeriod = periodToId[selected]
-        appMenu.addIconToItem(idPeriod!!, R.drawable.ic_check_chart)
+        // appMenu.addIconToItem(idPeriod!!, R.drawable.ic_check_chart)
+    }
+
+    private fun showOtherPeriodVisualization(view: View) {
+        val appMenu = AppMenuHelper.Builder(
+            context = view.context,
+            menu = R.menu.period_other_filter_menu,
+            anchor = view,
+            onMenuItemClicked = { itemId ->
+                when (itemId) {
+                    R.id.back_other -> {
+                        showPeriodFilters(view, graph.periodToDisplay)
+                    }
+                    else -> {
+                        propagateRelativePeriod(itemId)
+                    }
+                }
+                true
+            }
+        ).build()
+        appMenu.show()
+    }
+
+    private fun showYearlyPeriodVisualization(view: View) {
+        val appMenu = AppMenuHelper.Builder(
+            context = view.context,
+            menu = R.menu.period_yearly_filter_menu,
+            anchor = view,
+            onMenuItemClicked = { itemId ->
+                when (itemId) {
+                    R.id.back_yearly -> {
+                        showPeriodFilters(view, graph.periodToDisplay)
+                    }
+                    else -> {
+                        propagateRelativePeriod(itemId)
+                    }
+                }
+                true
+            }
+        ).build()
+        appMenu.show()
+    }
+
+    private fun showMonthlyPeriodVisualization(view: View) {
+        val appMenu = AppMenuHelper.Builder(
+            context = view.context,
+            menu = R.menu.period_monthly_filter_menu,
+            anchor = view,
+            onMenuItemClicked = { itemId ->
+                when (itemId) {
+                    R.id.back_monthly -> {
+                        showPeriodFilters(view, graph.periodToDisplay)
+                    }
+                    else -> {
+                        propagateRelativePeriod(itemId)
+                    }
+                }
+                true
+            }
+        ).build()
+        appMenu.show()
+    }
+
+    private fun showWeeklyPeriodVisualization(view: View) {
+        val appMenu = AppMenuHelper.Builder(
+            context = view.context,
+            menu = R.menu.period_weekly_filter_menu,
+            anchor = view,
+            onMenuItemClicked = { itemId ->
+                when (itemId) {
+                    R.id.back_weekly -> {
+                        showPeriodFilters(view, graph.periodToDisplay)
+                    }
+                    else -> {
+                        propagateRelativePeriod(itemId)
+                    }
+                }
+                true
+            }
+        ).build()
+        appMenu.show()
+    }
+
+
+    private fun showDailyPeriodVisualization(view: View) {
+        val appMenu = AppMenuHelper.Builder(
+            context = view.context,
+            menu = R.menu.period_daily_filter_menu,
+            anchor = view,
+            onMenuItemClicked = { itemId ->
+                when (itemId) {
+                    R.id.back_daily -> {
+                        showPeriodFilters(view, graph.periodToDisplay)
+                    }
+                    else -> {
+                        propagateRelativePeriod(itemId)
+                    }
+                }
+                true
+            }
+        ).build()
+        appMenu.show()
+    }
+
+    private fun propagateRelativePeriod(
+        @IdRes itemId: Int
+    ) {
+        val relativePeriodSelected =
+            periodToId.filterValues { it == itemId }.keys.first()
+        relativePeriodCallback?.invoke(relativePeriodSelected)
     }
 
     fun showOrgUntFilters(view: View, orgUnits: List<String>) {

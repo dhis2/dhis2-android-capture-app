@@ -64,6 +64,14 @@ class AppMenuHelper private constructor(
         return popupMenu.menu.findItem(id).title.toString()
     }
 
+    fun hideItem(@IdRes id:Int){
+        popupMenu.menu.findItem(id).isVisible = false
+    }
+
+    fun showItem(@IdRes id: Int){
+        popupMenu.menu.findItem(id).isVisible = true
+    }
+
     data class Builder(
         var context: Context? = null,
         var menu: Int = -1,

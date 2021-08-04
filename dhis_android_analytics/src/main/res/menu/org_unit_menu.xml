@@ -8,13 +8,14 @@
         </group>
         <group android:id="@+id/filters">
             <item
-                android:id="@+id/none"
-                android:title="@string/none" />
-            <item
                 android:id="@+id/all"
                 android:title="@string/all" />
             <item
                 android:id="@+id/selection"
                 android:title="@string/selection" />
+            <item
+                android:visible="false"
+                android:id="@+id/reset"
+                android:title="@string/reset" />
         </group>
     </menu>
