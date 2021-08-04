@@ -8,12 +8,14 @@ data class Graph(
     val title: String,
     val isOnline: Boolean,
     val series: List<SerieData>,
-    val periodToDisplay: RelativePeriod?,
+    val periodToDisplayDefault: RelativePeriod?,
     val eventPeriodType: PeriodType,
     val periodStep: Long,
     val chartType: ChartType? = ChartType.LINE_CHART,
     val categories: List<String> = emptyList(),
-    val filters: List<String> = emptyList()
+    val orgUnitsDefault: List<String> = emptyList(),
+    val orgUnitsSelected: List<String> = emptyList(),
+    val periodToDisplaySelected: RelativePeriod? = null
 ) {
     fun numberOfStepsToDate(date: Date): Float {
         return if (baseSeries().isEmpty() || baseSeries().first().coordinates.isEmpty()) {

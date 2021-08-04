@@ -22,9 +22,13 @@
         <item
             android:id="@+id/other"
             android:title="@string/other" />
+    </group>
+
+    <group android:id="@+id/resetcurrent">
         <item
             android:visible="false"
-            android:id="@+id/reset"
+            android:icon="@drawable/ic_reset_chart"
+            android:id="@+id/reset_period"
             android:title="@string/reset" />
     </group>
 </menu>

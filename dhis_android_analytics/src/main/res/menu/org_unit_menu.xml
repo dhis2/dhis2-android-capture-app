@@ -13,9 +13,13 @@
             <item
                 android:id="@+id/selection"
                 android:title="@string/selection" />
+        </group>
+
+        <group android:id="@+id/resetcurrent">
             <item
                 android:visible="false"
-                android:id="@+id/reset"
+                android:icon="@drawable/ic_reset_chart"
+                android:id="@+id/reset_orgunit"
                 android:title="@string/reset" />
         </group>
     </menu>

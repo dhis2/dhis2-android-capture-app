@@ -10,7 +10,6 @@ import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
 import org.dhis2.commons.popupmenu.AppMenuHelper
 import org.hisp.dhis.android.core.common.RelativePeriod
-import org.hisp.dhis.android.core.parser.internal.service.dataitem.DimensionalItemId
 import org.hisp.dhis.android.core.program.ProgramIndicator
 
 enum class SectionType {
@@ -20,6 +19,10 @@ enum class SectionType {
 
 enum class OrgUnitFilterType {
     NONE, ALL, SELECTION
+}
+
+enum class ChartFilter {
+    PERIOD, ORG_UNIT
 }
 
 val periodToId = hashMapOf(
@@ -75,6 +78,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
 
     var orgUnitCallback: ((OrgUnitFilterType) -> Unit)? = null
     var relativePeriodCallback: ((RelativePeriod?) -> Unit)? = null
+    var resetFilter:((ChartFilter) -> Unit)? = null
 
     fun showVisualizationOptions(view: View) {
         AppMenuHelper.Builder(
@@ -90,10 +94,10 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             },
             onMenuItemClicked = { itemId ->
                 if (itemId == R.id.periodFilter) {
-                    showPeriodFilters(view, graph.periodToDisplay)
+                    showPeriodFilters(view, graph.periodToDisplayDefault)
                     true
                 } else if (itemId == R.id.orgFilter) {
-                    showOrgUntFilters(view, graph.filters)
+                    showOrgUntFilters(view, graph.orgUnitsDefault)
                     true
                 }
                 observableChartType.set(chartToLoad(itemId))
@@ -128,13 +132,20 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
                     R.id.other -> {
                         showOtherPeriodVisualization(view)
                     }
+                    R.id.reset_period -> {
+                        resetFilter?.invoke(ChartFilter.PERIOD)
+                    }
                 }
                 true
             }
         ).build()
         appMenu.show()
 
-        // appMenu.addIconToItem(idPeriod!!, R.drawable.ic_check_chart)
+        if (graph.periodToDisplaySelected != null){
+            appMenu.showItem(R.id.reset_period)
+          //  val selectedPeriodId = periodToId[graph.periodToDisplaySelected]
+           // appMenu.addIconToItem(idPeriod!!, R.drawable.ic_check_chart)
+        }
     }
 
     private fun showOtherPeriodVisualization(view: View) {
@@ -145,7 +156,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             onMenuItemClicked = { itemId ->
                 when (itemId) {
                     R.id.back_other -> {
-                        showPeriodFilters(view, graph.periodToDisplay)
+                        showPeriodFilters(view, graph.periodToDisplayDefault)
                     }
                     else -> {
                         propagateRelativePeriod(itemId)
@@ -155,6 +166,10 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             }
         ).build()
         appMenu.show()
+
+        if (graph.orgUnitsSelected.isNotEmpty()){
+            appMenu.showItem(R.id.reset_period)
+        }
     }
 
     private fun showYearlyPeriodVisualization(view: View) {
@@ -165,7 +180,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             onMenuItemClicked = { itemId ->
                 when (itemId) {
                     R.id.back_yearly -> {
-                        showPeriodFilters(view, graph.periodToDisplay)
+                        showPeriodFilters(view, graph.periodToDisplayDefault)
                     }
                     else -> {
                         propagateRelativePeriod(itemId)
@@ -185,7 +200,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             onMenuItemClicked = { itemId ->
                 when (itemId) {
                     R.id.back_monthly -> {
-                        showPeriodFilters(view, graph.periodToDisplay)
+                        showPeriodFilters(view, graph.periodToDisplayDefault)
                     }
                     else -> {
                         propagateRelativePeriod(itemId)
@@ -205,7 +220,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             onMenuItemClicked = { itemId ->
                 when (itemId) {
                     R.id.back_weekly -> {
-                        showPeriodFilters(view, graph.periodToDisplay)
+                        showPeriodFilters(view, graph.periodToDisplayDefault)
                     }
                     else -> {
                         propagateRelativePeriod(itemId)
@@ -226,7 +241,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             onMenuItemClicked = { itemId ->
                 when (itemId) {
                     R.id.back_daily -> {
-                        showPeriodFilters(view, graph.periodToDisplay)
+                        showPeriodFilters(view, graph.periodToDisplayDefault)
                     }
                     else -> {
                         propagateRelativePeriod(itemId)
@@ -261,6 +276,9 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
                     }
                     R.id.all -> {
                         orgUnitCallback?.invoke(OrgUnitFilterType.ALL)
+                    }
+                    R.id.reset_orgunit -> {
+                        resetFilter?.invoke(ChartFilter.ORG_UNIT)
                     }
                     else -> {
                         orgUnitCallback?.invoke(OrgUnitFilterType.SELECTION)
