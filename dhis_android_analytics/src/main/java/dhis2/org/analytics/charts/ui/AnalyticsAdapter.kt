@@ -1,5 +1,6 @@
 package dhis2.org.analytics.charts.ui
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -8,22 +9,34 @@ import androidx.recyclerview.widget.RecyclerView
 import dhis2.org.databinding.ItemChartBinding
 import dhis2.org.databinding.ItemIndicatorBinding
 import dhis2.org.databinding.ItemSectionTittleBinding
+import org.hisp.dhis.android.core.common.RelativePeriod
 
-class AnalyticsAdapter : ListAdapter<AnalyticsModel, RecyclerView.ViewHolder>(
-    object : DiffUtil.ItemCallback<AnalyticsModel>() {
+class AnalyticsAdapter :
+    ListAdapter<AnalyticsModel, RecyclerView.ViewHolder>(
+        object : DiffUtil.ItemCallback<AnalyticsModel>() {
 
-        override fun areItemsTheSame(oldItem: AnalyticsModel, newItem: AnalyticsModel): Boolean {
-            return oldItem === newItem
-        }
+            override fun areItemsTheSame(
+                oldItem: AnalyticsModel,
+                newItem: AnalyticsModel
+            ): Boolean {
+                return oldItem === newItem
+            }
 
-        override fun areContentsTheSame(oldItem: AnalyticsModel, newItem: AnalyticsModel): Boolean {
-            return oldItem == newItem
-        }
-    }) {
+            override fun areContentsTheSame(
+                oldItem: AnalyticsModel,
+                newItem: AnalyticsModel
+            ): Boolean {
+                return oldItem == newItem
+            }
+        }),
+    ChartViewHolder.ChartItemCallback {
 
     enum class AnalyticType {
         INDICATOR, CHART, SECTION_TITLE
     }
+
+    var onRelativePeriodCallback: ((ChartModel, RelativePeriod?) -> Unit)? = null
+    var onOrgUnitCallback: ((ChartModel, OrgUnitFilterType) -> Unit)? = null
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
@@ -50,8 +63,18 @@ class AnalyticsAdapter : ListAdapter<AnalyticsModel, RecyclerView.ViewHolder>(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is IndicatorViewHolder -> holder.bind(getItem(position) as IndicatorModel)
-            is ChartViewHolder -> holder.bind(getItem(position) as ChartModel)
+            is ChartViewHolder -> holder.bind(getItem(position) as ChartModel, this)
             is SectionTitleViewHolder -> holder.bind(getItem(position) as SectionTitle)
         }
+    }
+
+    override fun filterPeriod(chart: ChartModel, period: RelativePeriod?) {
+        Log.d("AnalyticsAdapter", "onFilterPeriod")
+        onRelativePeriodCallback?.invoke(chart, period)
+    }
+
+    override fun filterOrgUnit(chart: ChartModel, filters: OrgUnitFilterType) {
+        Log.d("AnalyticsAdapter", "onFilterOrgUnit")
+        onOrgUnitCallback?.invoke(chart, filters)
     }
 }

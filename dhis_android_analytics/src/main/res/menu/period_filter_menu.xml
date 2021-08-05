@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/visualization">
+        <item
+            android:id="@+id/back"
+            android:icon="@drawable/ic_arrowback_chart"
+            android:title="@string/period"/>
+    </group>
+    <group android:id="@+id/filters">
+        <item
+            android:id="@+id/noneperiod"
+            android:title="@string/none" />
+        <item
+            android:id="@+id/today"
+            android:title="@string/today" />
+        <item
+            android:id="@+id/yesterday"
+            android:title="@string/yesterday" />
+        <item
+            android:id="@+id/last3days"
+            android:title="@string/last3Days" />
+        <item
+            android:id="@+id/last7days"
+            android:title="@string/last7Days" />
+        <item
+            android:id="@+id/last14days"
+            android:title="@string/last14Days" />
+        <item
+            android:id="@+id/last30days"
+            android:title="@string/last30Days" />
+        <item
+            android:id="@+id/thisweek"
+            android:title="@string/thisweek" />
+        <item
+            android:id="@+id/lastweek"
+            android:title="@string/lastweek" />
+        <item
+            android:id="@+id/last4weeks"
+            android:title="@string/last4weeks" />
+        <item
+            android:id="@+id/last12weeks"
+            android:title="@string/last12weeks" />
+        <item
+            android:id="@+id/thismonth"
+            android:title="@string/thismonth" />
+        <item
+            android:id="@+id/lastmonth"
+            android:title="@string/lastmonth" />
+        <item
+            android:id="@+id/last3months"
+            android:title="@string/last3months" />
+        <item
+            android:id="@+id/last6months"
+            android:title="@string/last6months" />
+        <item
+            android:id="@+id/last12months"
+            android:title="@string/last12months" />
+        <item
+            android:id="@+id/monthThisYear"
+            android:title="@string/monthsthisyear" />
+        <item
+            android:id="@+id/thisquarter"
+            android:title="@string/thisquarter" />
+        <item
+            android:id="@+id/lastquarter"
+            android:title="@string/lastquarter" />
+        <item
+            android:id="@+id/last4quarter"
+            android:title="@string/last4quarters" />
+        <item
+            android:id="@+id/quarterthisyear"
+            android:title="@string/quartersthisyear" />
+        <item
+            android:id="@+id/thisyear"
+            android:title="@string/thisyear" />
+        <item
+            android:id="@+id/lastyear"
+            android:title="@string/lastyear" />
+        <item
+            android:id="@+id/last5year"
+            android:title="@string/last5years" />
+    </group>
+</menu>

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dhis2.org.analytics.charts.Charts
 import dhis2.org.analytics.charts.data.AnalyticGroup
+import org.hisp.dhis.android.core.common.RelativePeriod
 
 const val MIN_SIZE_TO_SHOW = 2
 
@@ -28,6 +29,14 @@ class GroupAnalyticsViewModel(
         _chipItems.value = charts.getVisualizationGroups(uid).map {
             AnalyticGroup(it.id(), it.name())
         }
+    }
+
+    fun filterByOrgUnit() {
+        // TODO Implement search + filtering
+    }
+
+    fun filterByPeriod(chartModel: ChartModel, period: RelativePeriod?) {
+        // TODO Implement filtering
     }
 
     fun fetchAnalytics(groupUid: String?) {

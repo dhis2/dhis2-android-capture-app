@@ -13,6 +13,7 @@ import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.utils.Result
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository
 import org.hisp.dhis.android.core.period.PeriodType
@@ -425,7 +426,7 @@ class TrackerAnalyticsRepositoryTest {
                 "title",
                 false,
                 emptyList(),
-                "period",
+                RelativePeriod.LAST_5_YEARS,
                 PeriodType.Yearly,
                 10
             )

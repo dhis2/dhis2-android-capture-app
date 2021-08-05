@@ -38,7 +38,7 @@ class ProgramIndicatorToGraph(
             "${stagePeriod.name}-${programIndicator.displayName()}",
             false,
             serie,
-            "",
+            null,
             stagePeriod,
             periodStepProvider.periodStep(stagePeriod)
         )

@@ -5,7 +5,11 @@ import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.View
 import android.widget.PopupMenu
+import androidx.annotation.DrawableRes
+import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
+import androidx.core.content.ContextCompat
+import androidx.core.view.MenuCompat
 import org.dhis2.commons.R
 
 class AppMenuHelper private constructor(
@@ -17,9 +21,11 @@ class AppMenuHelper private constructor(
     private val onException: ((Exception) -> Unit)? = {}
 ) {
 
+    lateinit var popupMenu: PopupMenu
+
     fun show() {
         val contextWrapper = ContextThemeWrapper(context, R.style.PopupMenuMarginStyle)
-        val popupMenu = PopupMenu(contextWrapper, anchor, Gravity.END)
+        popupMenu = PopupMenu(contextWrapper, anchor, Gravity.END)
         try {
             val fields = popupMenu.javaClass.declaredFields
             for (field in fields) {
@@ -40,9 +46,22 @@ class AppMenuHelper private constructor(
             onException?.invoke(e)
         }
         popupMenu.menuInflater.inflate(menu, popupMenu.menu)
+        MenuCompat.setGroupDividerEnabled(popupMenu.menu, true)
         onMenuInflated(popupMenu)
         popupMenu.setOnMenuItemClickListener { onMenuItemClicked(it.itemId) }
         popupMenu.show()
+    }
+
+    fun addIconToItem(@IdRes id: Int, @DrawableRes icon: Int){
+        popupMenu.menu.findItem(id).icon = ContextCompat.getDrawable(this.context, icon)
+    }
+
+    fun changeItemText(@IdRes id: Int, text: String){
+        popupMenu.menu.findItem(id).title = text
+    }
+
+    fun getItemText(@IdRes id: Int): String{
+        return popupMenu.menu.findItem(id).title.toString()
     }
 
     data class Builder(

@@ -7,12 +7,19 @@ import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import dhis2.org.analytics.charts.data.toChartBuilder
 import dhis2.org.databinding.ItemChartBinding
+import org.hisp.dhis.android.core.common.RelativePeriod
 
 class ChartViewHolder(
     val binding: ItemChartBinding
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(chart: ChartModel) {
+    fun bind(chart: ChartModel, adapterCallback: ChartItemCallback) {
+        chart.orgUnitCallback = {
+            adapterCallback.filterOrgUnit(chart, it)
+        }
+        chart.relativePeriodCallback = {
+            adapterCallback.filterPeriod(chart, it)
+        }
         binding.chartModel = chart
         chart.observableChartType.addOnPropertyChangedCallback(
             object : Observable.OnPropertyChangedCallback() {
@@ -35,5 +42,10 @@ class ChartViewHolder(
         TransitionManager.beginDelayedTransition(binding.chartContainer, Slide(Gravity.START))
         binding.chartContainer.removeAllViews()
         binding.chartContainer.addView(chartView)
+    }
+
+    interface ChartItemCallback {
+        fun filterPeriod(chart: ChartModel, period: RelativePeriod?)
+        fun filterOrgUnit(chart: ChartModel, filters: OrgUnitFilterType)
     }
 }

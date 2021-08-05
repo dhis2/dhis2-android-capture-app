@@ -28,7 +28,7 @@ class VisualizationToGraph(
                 visualization.name,
                 false,
                 series,
-                "",
+                null,
                 PeriodType.Daily,
                 periodStepProvider.periodStep(PeriodType.Daily),
                 visualization.chartType,
