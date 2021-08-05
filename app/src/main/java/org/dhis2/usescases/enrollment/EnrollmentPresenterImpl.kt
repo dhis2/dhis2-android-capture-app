@@ -34,6 +34,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
@@ -477,7 +478,11 @@ class EnrollmentPresenterImpl(
     }
 
     fun deleteAllSavedData() {
-        teiRepository.blockingDelete()
+        if (teiRepository.blockingGet().syncState() == State.TO_UPDATE) {
+            enrollmentObjectRepository.blockingDelete()
+        } else {
+            teiRepository.blockingDelete()
+        }
         analyticsHelper.setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK)
     }
 
