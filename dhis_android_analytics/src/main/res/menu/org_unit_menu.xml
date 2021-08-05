@@ -4,7 +4,7 @@
             <item
                 android:id="@+id/back"
                 android:icon="@drawable/ic_arrowback_chart"
-                android:title="@string/period"/>
+                android:title="@string/orgUnit"/>
         </group>
         <group android:id="@+id/filters">
             <item

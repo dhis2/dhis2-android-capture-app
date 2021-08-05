@@ -52,7 +52,7 @@ fun RelativePeriod.isInYearly(): Boolean {
         this == RelativePeriod.LAST_10_YEARS
 }
 
-fun RelativePeriod.IsInOther(): Boolean {
+fun RelativePeriod.isInOther(): Boolean {
     return this == RelativePeriod.THIS_QUARTER ||
         this == RelativePeriod.LAST_QUARTER ||
         this == RelativePeriod.LAST_4_QUARTERS ||

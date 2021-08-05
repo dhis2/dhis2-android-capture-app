@@ -106,6 +106,9 @@ class GroupAnalyticsFragment : Fragment() {
                     groupViewModel.filterByOrgUnit()
                 }
             }
+        adapter.onResetFilterCallback = {
+            groupViewModel.resetFilter()
+        }
         binding.visualizationContainer.clipWithRoundedCorners()
         return binding.root
     }
