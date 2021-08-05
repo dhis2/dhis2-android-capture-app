@@ -38,8 +38,7 @@ class GroupAnalyticsFragment : Fragment() {
     lateinit var analyticsViewModelFactory: GroupAnalyticsViewModelFactory
     private val groupViewModel: GroupAnalyticsViewModel by viewModels { analyticsViewModelFactory }
     private val adapter: AnalyticsAdapter by lazy { AnalyticsAdapter() }
-
-    var disableToolbarElevation: (() -> Unit)? = null
+    private var disableToolbarElevation: (() -> Unit)? = null
 
     companion object {
         fun forEnrollment(enrollmentUid: String): GroupAnalyticsFragment {
@@ -90,13 +89,14 @@ class GroupAnalyticsFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.analyticsRecycler.adapter = adapter
         adapter.onRelativePeriodCallback =
-            { chartModel: ChartModel, relativePeriod: RelativePeriod? ->
+            { chartModel: ChartModel, relativePeriod: RelativePeriod?, current: RelativePeriod? ->
                 relativePeriod?.let {
                     if (it.isNotCurrent()) {
-                        showAlertDialogCurrentPeriod()
+                        showAlertDialogCurrentPeriod(chartModel, relativePeriod, current)
+                    } else {
+                        groupViewModel.filterByPeriod(chartModel, mutableListOf(it))
                     }
                 }
-                groupViewModel.filterByPeriod(chartModel, relativePeriod)
             }
 
         adapter.onOrgUnitCallback =
@@ -113,15 +113,23 @@ class GroupAnalyticsFragment : Fragment() {
         return binding.root
     }
 
-    private fun showAlertDialogCurrentPeriod() {
+    private fun showAlertDialogCurrentPeriod(
+        chartModel: ChartModel,
+        relativePeriod: RelativePeriod?,
+        current: RelativePeriod?
+    ) {
+        val periodList = mutableListOf<RelativePeriod?>()
         AlertBottomDialog.instance
             .setTitle(getString(R.string.include_this_period_title))
             .setMessage(getString(R.string.include_this_period_body))
             .setNegativeButton(getString(R.string.no)) {
-
+                periodList.add(relativePeriod)
+                groupViewModel.filterByPeriod(chartModel, periodList)
             }
-            .setPositiveButton(getString(R.string.yes)){
-
+            .setPositiveButton(getString(R.string.yes)) {
+                periodList.add(relativePeriod)
+                periodList.add(current)
+                groupViewModel.filterByPeriod(chartModel, periodList)
             }
             .show(parentFragmentManager, AlertBottomDialog::class.java.simpleName)
     }

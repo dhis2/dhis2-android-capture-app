@@ -17,8 +17,8 @@ class ChartViewHolder(
         chart.orgUnitCallback = {
             adapterCallback.filterOrgUnit(chart, it)
         }
-        chart.relativePeriodCallback = {
-            adapterCallback.filterPeriod(chart, it)
+        chart.relativePeriodCallback = { selected: RelativePeriod?, thisCurrent: RelativePeriod? ->
+            adapterCallback.filterPeriod(chart, selected, thisCurrent)
         }
         chart.resetFilterCallback = {
             adapterCallback.resetFilter(it)
@@ -48,7 +48,7 @@ class ChartViewHolder(
     }
 
     interface ChartItemCallback {
-        fun filterPeriod(chart: ChartModel, period: RelativePeriod?)
+        fun filterPeriod(chart: ChartModel, period: RelativePeriod?, current: RelativePeriod?)
         fun filterOrgUnit(chart: ChartModel, filters: OrgUnitFilterType)
         fun resetFilter(filter: ChartFilter)
     }

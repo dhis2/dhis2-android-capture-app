@@ -58,3 +58,23 @@ fun RelativePeriod.isInOther(): Boolean {
         this == RelativePeriod.LAST_4_QUARTERS ||
         this == RelativePeriod.QUARTERS_THIS_YEAR
 }
+
+fun RelativePeriod.getThisFromPeriod(): RelativePeriod {
+    return when {
+        this.isInDaily() -> {
+            RelativePeriod.TODAY
+        }
+        this.isInMonthly() -> {
+            RelativePeriod.THIS_MONTH
+        }
+        this.isInWeekly() -> {
+            RelativePeriod.THIS_WEEK
+        }
+        this.isInYearly() -> {
+            RelativePeriod.THIS_YEAR
+        }
+        else -> {
+            RelativePeriod.THIS_QUARTER
+        }
+    }
+}

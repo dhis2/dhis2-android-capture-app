@@ -8,6 +8,7 @@ import androidx.databinding.ObservableField
 import dhis2.org.R
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
+import dhis2.org.analytics.charts.extensions.getThisFromPeriod
 import dhis2.org.analytics.charts.extensions.isInDaily
 import dhis2.org.analytics.charts.extensions.isInMonthly
 import dhis2.org.analytics.charts.extensions.isInOther
@@ -82,7 +83,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
     }
 
     var orgUnitCallback: ((OrgUnitFilterType) -> Unit)? = null
-    var relativePeriodCallback: ((RelativePeriod?) -> Unit)? = null
+    var relativePeriodCallback: ((RelativePeriod?, RelativePeriod?) -> Unit)? = null
     var resetFilterCallback: ((ChartFilter) -> Unit)? = null
 
     fun showVisualizationOptions(view: View) {
@@ -325,7 +326,8 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
     ) {
         val relativePeriodSelected =
             periodToId.filterValues { it == itemId }.keys.first()
-        relativePeriodCallback?.invoke(relativePeriodSelected)
+        val thisPeriod = relativePeriodSelected.getThisFromPeriod()
+        relativePeriodCallback?.invoke(relativePeriodSelected, thisPeriod)
     }
 
     fun showOrgUntFilters(view: View) {

@@ -35,7 +35,7 @@ class GroupAnalyticsViewModel(
         //TODO: Implement search + filtering calling repository with SDK
     }
 
-    fun filterByPeriod(chartModel: ChartModel, period: RelativePeriod?) {
+    fun filterByPeriod(chartModel: ChartModel, periods: MutableList<RelativePeriod?>) {
         //TODO: Implement filtering calling repository with SDK
     }
 
