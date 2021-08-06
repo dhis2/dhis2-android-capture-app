@@ -424,7 +424,6 @@ class TrackerAnalyticsRepositoryTest {
         return listOf(
             Graph(
                 "title",
-                false,
                 emptyList(),
                 RelativePeriod.LAST_5_YEARS,
                 PeriodType.Yearly,

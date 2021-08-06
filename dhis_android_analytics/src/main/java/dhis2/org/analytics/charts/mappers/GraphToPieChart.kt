@@ -12,7 +12,7 @@ class GraphToPieChart {
         val pieData = GraphToPieData().map(graph)
         return PieChart(context).apply {
             description.isEnabled = false
-            setDrawEntryLabels(true)
+            setDrawEntryLabels(false)
             setUsePercentValues(true)
             setEntryLabelColor(ContextCompat.getColor(context, R.color.textPrimary))
             setEntryLabelTextSize(11f)
