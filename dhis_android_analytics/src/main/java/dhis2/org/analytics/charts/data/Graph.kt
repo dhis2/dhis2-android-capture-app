@@ -14,11 +14,11 @@ data class Graph(
     val categories: List<String> = emptyList(),
     val filters: List<String> = emptyList()
 ) {
-    fun xAxixMaximun():Float{
-        return if(categories.isNotEmpty()){
+    fun xAxixMaximun(): Float {
+        return if (categories.isNotEmpty()) {
             categories.size.toFloat()
-        }else{
-            series.maxOf { serie -> serie.coordinates.maxOf { point-> point.position?:0f } }
+        } else {
+            series.maxOf { serie -> serie.coordinates.maxOf { point -> point.position ?: 0f } }
         }
     }
 

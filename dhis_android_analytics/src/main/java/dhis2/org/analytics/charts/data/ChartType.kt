@@ -34,8 +34,8 @@ fun org.hisp.dhis.android.core.settings.ChartType.toAnalyticsChartType(): ChartT
     }
 }
 
-fun VisualizationType?.toAnalyticsChartType(): ChartType{
-    return when(this){
+fun VisualizationType?.toAnalyticsChartType(): ChartType {
+    return when (this) {
         VisualizationType.LINE -> ChartType.LINE_CHART
         VisualizationType.COLUMN,
         VisualizationType.STACKED_COLUMN,

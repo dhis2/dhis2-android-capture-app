@@ -78,7 +78,9 @@ class GraphToTable {
                             serie.coordinates.firstOrNull {
                                 when (graph.chartType) {
                                     ChartType.PIE_CHART -> it.legend == headerLabel
-                                    else -> DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate) == headerLabel
+                                    else ->
+                                        DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate) ==
+                                            headerLabel
                                 }
                             }?.fieldValue?.toString()
                                 ?: ""

@@ -7,6 +7,7 @@ import dhis2.org.analytics.charts.data.SerieData
 import dhis2.org.analytics.charts.data.toAnalyticsChartType
 import dhis2.org.analytics.charts.providers.ChartCoordinatesProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProvider
+import java.util.Locale
 import org.hisp.dhis.android.core.analytics.aggregated.Dimension
 import org.hisp.dhis.android.core.analytics.aggregated.GridAnalyticsResponse
 import org.hisp.dhis.android.core.analytics.aggregated.MetadataItem
@@ -14,7 +15,6 @@ import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.visualization.Visualization
 import org.hisp.dhis.android.core.visualization.VisualizationType
-import java.util.Locale
 
 class VisualizationToGraph(
     private val periodStepProvider: PeriodStepProvider,
@@ -48,19 +48,21 @@ class VisualizationToGraph(
         visualization: Visualization,
         gridAnalyticsResponse: GridAnalyticsResponse
     ): Graph {
-        //Whe need to map relative periods and fixed from Visualization
+        // Whe need to map relative periods and fixed from Visualization
         val period = visualization.relativePeriods()?.filter { it.value }?.keys?.first()
         val categories = getCategories(visualization.type(), gridAnalyticsResponse)
         val formattedCategory = formatCategories(period, categories, gridAnalyticsResponse.metadata)
 
-        //In Graph we need a property to determine which formatter to use
+        // In Graph we need a property to determine which formatter to use
         return Graph(
             title = visualization.displayName() ?: "",
             series = getSeries(gridAnalyticsResponse, categories),
-            //These three properties are not going to be used as we are going to use positions
+            // These three properties are not going to be used as we are going to use positions
             periodToDisplay = "", // Always relative period, only one period
-            eventPeriodType = PeriodType.Monthly, // Not always is relative to period, why is using, NOT USING now
-            periodStep = periodStepProvider.periodStep(PeriodType.Monthly), // Not always is relative to period is because graph pint has event date, not always have
+            // Not always is relative to period, why is using, NOT USING now
+            eventPeriodType = PeriodType.Monthly,
+            // Not always is relative to period because graph pint has eventdate, not always have
+            periodStep = periodStepProvider.periodStep(PeriodType.Monthly),
             chartType = visualization.type().toAnalyticsChartType(),
             categories = formattedCategory
         )
@@ -85,7 +87,7 @@ class VisualizationToGraph(
     private fun formatCategories(
         period: RelativePeriod?,
         categories: List<String>,
-        metadata: Map<String, MetadataItem>,
+        metadata: Map<String, MetadataItem>
     ): List<String> {
         return period?.let {
             categories.map { category ->

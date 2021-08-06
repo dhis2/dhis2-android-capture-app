@@ -1,5 +1,9 @@
 package dhis2.org.analytics.charts.providers
 
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.regex.Pattern
 import org.apache.commons.text.WordUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.period.Period
@@ -9,10 +13,6 @@ import org.joda.time.Days
 import org.joda.time.Months
 import org.joda.time.Weeks
 import org.joda.time.Years
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.regex.Pattern
 
 class PeriodStepProviderImpl(val d2: D2) : PeriodStepProvider {
     override fun periodStep(periodType: PeriodType?): Long {
@@ -171,7 +171,7 @@ class PeriodStepProviderImpl(val d2: D2) : PeriodStepProvider {
         }
     }
 
-    //TODO:Some of these strings need to be localized
+    // TODO:Some of these strings need to be localized
     companion object {
         const val DATE_FORMAT_EXPRESSION = "yyyy-MM-dd"
         const val MONTHLY_FORMAT_EXPRESSION = "MMM yyyy"

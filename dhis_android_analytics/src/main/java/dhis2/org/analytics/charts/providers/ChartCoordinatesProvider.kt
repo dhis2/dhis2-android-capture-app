@@ -36,5 +36,5 @@ interface ChartCoordinatesProvider {
         gridResponseValueList: List<GridResponseValue>,
         metadata: Map<String, MetadataItem>,
         categories: List<String>
-    ):List<GraphPoint>
+    ): List<GraphPoint>
 }
