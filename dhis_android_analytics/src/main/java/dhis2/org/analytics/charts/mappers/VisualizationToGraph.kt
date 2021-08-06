@@ -59,7 +59,7 @@ class VisualizationToGraph(
         return Graph(
             title = visualization.displayName() ?: "",
             series = getSeries(gridAnalyticsResponse, categories),
-            periodToDisplay = "",
+            periodToDisplay = null,
             eventPeriodType = PeriodType.Monthly,
             periodStep = periodStepProvider.periodStep(PeriodType.Monthly),
             chartType = visualization.type().toAnalyticsChartType(),

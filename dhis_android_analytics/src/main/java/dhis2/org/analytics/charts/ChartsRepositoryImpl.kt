@@ -1,6 +1,7 @@
 package dhis2.org.analytics.charts
 
 import dhis2.org.analytics.charts.data.Graph
+import dhis2.org.analytics.charts.data.nutritionTestingData
 import dhis2.org.analytics.charts.data.pieChartTestingData
 import dhis2.org.analytics.charts.data.radarTestingData
 import dhis2.org.analytics.charts.data.visualizationGroupTestingData
