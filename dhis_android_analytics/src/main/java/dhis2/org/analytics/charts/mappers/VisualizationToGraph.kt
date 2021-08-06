@@ -54,14 +54,13 @@ class VisualizationToGraph(
         val formattedCategory = formatCategories(period, categories, gridAnalyticsResponse.metadata)
 
         // In Graph we need a property to determine which formatter to use
+        // These three properties are not going to be used as we are going to use positions
+
         return Graph(
             title = visualization.displayName() ?: "",
             series = getSeries(gridAnalyticsResponse, categories),
-            // These three properties are not going to be used as we are going to use positions
-            periodToDisplay = "", // Always relative period, only one period
-            // Not always is relative to period, why is using, NOT USING now
+            periodToDisplay = "",
             eventPeriodType = PeriodType.Monthly,
-            // Not always is relative to period because graph pint has eventdate, not always have
             periodStep = periodStepProvider.periodStep(PeriodType.Monthly),
             chartType = visualization.type().toAnalyticsChartType(),
             categories = formattedCategory
