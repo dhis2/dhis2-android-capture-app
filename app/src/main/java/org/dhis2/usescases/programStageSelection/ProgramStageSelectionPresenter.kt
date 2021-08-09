@@ -5,7 +5,7 @@ import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import java.util.ArrayList
-import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.utils.Result
 import org.dhis2.utils.RulesUtilsProvider
 import org.hisp.dhis.android.core.period.PeriodType
