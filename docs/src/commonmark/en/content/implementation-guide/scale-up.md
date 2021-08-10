@@ -93,6 +93,10 @@ In the next page you can find a list of available MDM software (please keep in m
 - XenMobile (Citrix) (can be expensive - 2.03 USD /device/month for 3,000 devices)
 - Good for Enterprise (Blackberry) (can be expensive - 2 USD /device/month \+ 2.5K USD for deployment)
 
+> **Note**
+>
+> Check the specific [Mobile Device Management Guideline](https://docs.dhis2.org/en/implement/managing-mobile-devices/considerations.html) for more information about this topic.
+
 ## Training { #implementation_guide_scale_up_training }
 
 
