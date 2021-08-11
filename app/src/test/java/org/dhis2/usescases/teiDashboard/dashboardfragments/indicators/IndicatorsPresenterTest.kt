@@ -9,7 +9,7 @@ import dhis2.org.analytics.charts.ui.AnalyticsModel
 import dhis2.org.analytics.charts.ui.IndicatorModel
 import dhis2.org.analytics.charts.ui.LOCATION_INDICATOR_WIDGET
 import io.reactivex.Flowable
-import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.hisp.dhis.android.core.program.ProgramIndicator
 import org.junit.Assert

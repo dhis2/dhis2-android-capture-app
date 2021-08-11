@@ -7,7 +7,7 @@ import org.dhis2.data.location.LocationModule;
 import org.dhis2.data.location.LocationProvider;
 import org.dhis2.commons.prefs.PreferenceModule;
 import org.dhis2.commons.prefs.PreferenceProvider;
-import org.dhis2.data.schedulers.SchedulerModule;
+import org.dhis2.commons.schedulers.SchedulerModule;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.ServerModule;
 import org.dhis2.data.service.workManager.WorkManagerController;

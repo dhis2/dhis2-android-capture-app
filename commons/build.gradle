@@ -69,6 +69,11 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${libraries.lifecycle}"
     implementation "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycle}"
     implementation "androidx.recyclerview:recyclerview:${libraries.recyclerview}"
+    implementation "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
+    implementation "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
+
+    //Timber
+    implementation "com.jakewharton.timber:timber:${libraries.timber}"
 
 
     testImplementation 'junit:junit:4.13.2'

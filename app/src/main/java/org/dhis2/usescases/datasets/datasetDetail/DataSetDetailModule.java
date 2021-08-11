@@ -32,7 +32,7 @@ import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.filter.FilterRepository;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.utils.filters.FilterManager;

@@ -9,7 +9,7 @@ import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.filters.FilterManager;

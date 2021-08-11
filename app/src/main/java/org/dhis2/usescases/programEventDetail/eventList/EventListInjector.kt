@@ -5,7 +5,7 @@ import dagger.Provides
 import dagger.Subcomponent
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailRepository
 import org.dhis2.utils.filters.FilterManager
 

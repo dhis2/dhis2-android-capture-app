@@ -19,7 +19,7 @@ import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.form.data.FormRepositoryPersistenceImpl;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.style.FormUiColorFactory;

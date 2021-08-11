@@ -20,7 +20,7 @@ import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.filter.FilterRepository;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.form.data.FormRepository;

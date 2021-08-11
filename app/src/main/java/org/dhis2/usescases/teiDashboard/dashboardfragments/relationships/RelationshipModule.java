@@ -2,7 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.commons.di.dagger.PerFragment;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
 import org.dhis2.uicomponents.map.geometry.line.MapLineRelationshipToFeature;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection;
