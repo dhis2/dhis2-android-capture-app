@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
 import dhis2.org.analytics.charts.data.Graph
+import dhis2.org.analytics.charts.formatters.CategoryFormatter
 import dhis2.org.analytics.charts.formatters.DateLabelFormatter
 
 const val X_AXIS_MAX_PADDING_WITH_VALUE = 4f
@@ -29,10 +30,14 @@ class GraphToBarChart {
                 )
                 setDrawLimitLinesBehindData(true)
                 position = XAxis.XAxisPosition.BOTTOM
-                valueFormatter = DateLabelFormatter { graph.dateFromSteps(it) }
+                valueFormatter = if (graph.categories.isNotEmpty()) {
+                    CategoryFormatter(graph.categories)
+                } else {
+                    DateLabelFormatter { graph.dateFromSteps(it) }
+                }
                 granularity = DEFAULT_GRANULARITY
                 axisMinimum = X_AXIS_DEFAULT_MIN
-                axisMaximum = graph.numberOfStepsToLastDate() + 1f
+                axisMaximum = graph.xAxixMaximun() + 1f
                 labelRotationAngle = 15f
             }
 

@@ -11,7 +11,7 @@ class GraphToPieData {
     fun map(graph: Graph): PieData {
         return PieData(
             PieDataSet(
-                coordinateToPieEntryMapper.map(graph.series.last().coordinates),
+                coordinateToPieEntryMapper.map(graph.series.map { it.coordinates }.flatten()),
                 null
             ).also {
                 it.colors = SerieColors.getColors()
