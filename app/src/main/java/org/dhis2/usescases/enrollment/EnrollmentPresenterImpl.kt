@@ -478,10 +478,10 @@ class EnrollmentPresenterImpl(
     }
 
     fun deleteAllSavedData() {
-        if (teiRepository.blockingGet().syncState() == State.TO_UPDATE) {
-            enrollmentObjectRepository.blockingDelete()
-        } else {
+        if (teiRepository.blockingGet().syncState() == State.TO_POST) {
             teiRepository.blockingDelete()
+        } else {
+            enrollmentObjectRepository.blockingDelete()
         }
         analyticsHelper.setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK)
     }
