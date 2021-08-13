@@ -375,9 +375,10 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
 
             try {
                 if (showRowTotal) {
+                    int newValue = isEmpty(rowAction.value()) ? 0 : Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0");
                     int totalRow = Integer.parseInt(isEmpty(getCellItem(viewModels.get(0).size() - 1, rowAction.rowPos())) ?
                             "0" : getCellItem(viewModels.get(0).size() - 1, rowAction.rowPos()))
-                            + (Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0") - oldValue);
+                            + (newValue - oldValue);
                     changeCellItem(viewModels.get(0).size() - 1, rowAction.rowPos(), totalRow + "", showRowTotal);
                 }
             } catch (Exception e) {
