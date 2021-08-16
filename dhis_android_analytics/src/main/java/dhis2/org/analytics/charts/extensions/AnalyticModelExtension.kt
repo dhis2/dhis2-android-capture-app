@@ -29,11 +29,11 @@ fun RelativePeriod.isInDaily(): Boolean {
 }
 
 fun RelativePeriod.isInWeekly(): Boolean {
-   return this == RelativePeriod.THIS_WEEK ||
-       this == RelativePeriod.LAST_WEEK ||
-       this == RelativePeriod.LAST_4_WEEKS ||
-       this == RelativePeriod.LAST_12_WEEKS ||
-       this == RelativePeriod.LAST_52_WEEKS
+    return this == RelativePeriod.THIS_WEEK ||
+        this == RelativePeriod.LAST_WEEK ||
+        this == RelativePeriod.LAST_4_WEEKS ||
+        this == RelativePeriod.LAST_12_WEEKS ||
+        this == RelativePeriod.LAST_52_WEEKS
 }
 
 fun RelativePeriod.isInMonthly(): Boolean {

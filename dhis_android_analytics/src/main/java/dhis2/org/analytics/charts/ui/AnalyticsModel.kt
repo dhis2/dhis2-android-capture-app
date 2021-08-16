@@ -201,7 +201,6 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
             }
         ).build()
         appMenu.show()
-
     }
 
     private fun showYearlyPeriodVisualization(view: View) {
@@ -223,11 +222,15 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
         ).build()
         appMenu.show()
 
-        if (graph.periodToDisplaySelected != null && graph.periodToDisplaySelected.isInMonthly()) {
+        if (graph.periodToDisplaySelected != null &&
+            graph.periodToDisplaySelected.isInMonthly()
+        ) {
             val periodIdSelected = periodToId[graph.periodToDisplaySelected]
             appMenu.addIconToItem(periodIdSelected!!, R.drawable.ic_check_chart)
             return
-        } else if (graph.periodToDisplayDefault != null && graph.periodToDisplayDefault.isInMonthly()) {
+        } else if (graph.periodToDisplayDefault != null &&
+            graph.periodToDisplayDefault.isInMonthly()
+        ) {
             val periodIdDefault = periodToId[graph.periodToDisplayDefault]
             appMenu.addIconToItem(periodIdDefault!!, R.drawable.ic_check_chart)
         }
@@ -252,11 +255,15 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
         ).build()
         appMenu.show()
 
-        if (graph.periodToDisplaySelected != null && graph.periodToDisplaySelected.isInMonthly()) {
+        if (graph.periodToDisplaySelected != null &&
+            graph.periodToDisplaySelected.isInMonthly()
+        ) {
             val periodIdSelected = periodToId[graph.periodToDisplaySelected]
             appMenu.addIconToItem(periodIdSelected!!, R.drawable.ic_check_chart)
             return
-        } else if (graph.periodToDisplayDefault != null && graph.periodToDisplayDefault.isInMonthly()) {
+        } else if (graph.periodToDisplayDefault != null &&
+            graph.periodToDisplayDefault.isInMonthly()
+        ) {
             val periodIdDefault = periodToId[graph.periodToDisplayDefault]
             appMenu.addIconToItem(periodIdDefault!!, R.drawable.ic_check_chart)
         }
@@ -281,16 +288,19 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
         ).build()
         appMenu.show()
 
-        if (graph.periodToDisplaySelected != null && graph.periodToDisplaySelected.isInWeekly()) {
+        if (graph.periodToDisplaySelected != null &&
+            graph.periodToDisplaySelected.isInWeekly()
+        ) {
             val periodIdSelected = periodToId[graph.periodToDisplaySelected]
             appMenu.addIconToItem(periodIdSelected!!, R.drawable.ic_check_chart)
             return
-        } else if (graph.periodToDisplayDefault != null && graph.periodToDisplayDefault.isInWeekly()) {
+        } else if (graph.periodToDisplayDefault != null &&
+            graph.periodToDisplayDefault.isInWeekly()
+        ) {
             val periodIdDefault = periodToId[graph.periodToDisplayDefault]
             appMenu.addIconToItem(periodIdDefault!!, R.drawable.ic_check_chart)
         }
     }
-
 
     private fun showDailyPeriodVisualization(view: View) {
         val appMenu = AppMenuHelper.Builder(
@@ -311,11 +321,15 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
         ).build()
         appMenu.show()
 
-        if (graph.periodToDisplaySelected != null && graph.periodToDisplaySelected.isInDaily()) {
+        if (graph.periodToDisplaySelected != null &&
+            graph.periodToDisplaySelected.isInDaily()
+        ) {
             val periodIdSelected = periodToId[graph.periodToDisplaySelected]
             appMenu.addIconToItem(periodIdSelected!!, R.drawable.ic_check_chart)
             return
-        } else if (graph.periodToDisplayDefault != null && graph.periodToDisplayDefault.isInDaily()) {
+        } else if (graph.periodToDisplayDefault != null &&
+            graph.periodToDisplayDefault.isInDaily()
+        ) {
             val periodIdDefault = periodToId[graph.periodToDisplayDefault]
             appMenu.addIconToItem(periodIdDefault!!, R.drawable.ic_check_chart)
         }
@@ -366,7 +380,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
                 "$selectionText (${graph.orgUnitsSelected.size})"
             )
             return
-        } else if(graph.orgUnitsDefault.isNotEmpty()){
+        } else if (graph.orgUnitsDefault.isNotEmpty()) {
             menuBuilder.showItem(R.id.reset_period)
             val selectionText = menuBuilder.getItemText(R.id.selection)
             menuBuilder.changeItemText(

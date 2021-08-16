@@ -32,15 +32,15 @@ class GroupAnalyticsViewModel(
     }
 
     fun filterByOrgUnit() {
-        //TODO: Implement search + filtering calling repository with SDK
+        // TODO: Implement search + filtering calling repository with SDK
     }
 
     fun filterByPeriod(chartModel: ChartModel, periods: MutableList<RelativePeriod?>) {
-        //TODO: Implement filtering calling repository with SDK
+        // TODO: Implement filtering calling repository with SDK
     }
 
-    fun resetFilter(){
-        //TODO: Implement reset calling SDK
+    fun resetFilter() {
+        // TODO: Implement reset calling SDK
     }
 
     fun fetchAnalytics(groupUid: String?) {
