@@ -484,51 +484,53 @@ public class SearchRepositoryImpl implements SearchRepository {
                 ).build()
         );
         for (Relationship relationship : relationships) {
-            RelationshipType relationshipType =
-                    d2.relationshipModule().relationshipTypes().uid(relationship.relationshipType()).blockingGet();
+            if (relationship.from().trackedEntityInstance() != null) {
+                RelationshipType relationshipType =
+                        d2.relationshipModule().relationshipTypes().uid(relationship.relationshipType()).blockingGet();
 
-            String relationshipTEIUid;
-            RelationshipDirection direction;
-            if (!searchTeiModel.getTei().uid().equals(relationship.from().trackedEntityInstance().trackedEntityInstance())) {
-                relationshipTEIUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
-                direction = RelationshipDirection.FROM;
-            } else {
-                relationshipTEIUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
-                direction = RelationshipDirection.TO;
+                String relationshipTEIUid;
+                RelationshipDirection direction;
+                if (!searchTeiModel.getTei().uid().equals(relationship.from().trackedEntityInstance().trackedEntityInstance())) {
+                    relationshipTEIUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
+                    direction = RelationshipDirection.FROM;
+                } else {
+                    relationshipTEIUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
+                    direction = RelationshipDirection.TO;
+                }
+
+                String fromTeiUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
+                String toTeiUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
+
+                TrackedEntityInstance fromTei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(fromTeiUid).blockingGet();
+                TrackedEntityInstance toTei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(toTeiUid).blockingGet();
+
+                List<kotlin.Pair<String, String>> fromValues = new ArrayList<>();
+                List<TrackedEntityAttributeValue> fromAttr = getTrackedEntityAttributesForRelationship(fromTei, selectedProgram);
+                List<kotlin.Pair<String, String>> toValues = new ArrayList<>();
+                List<TrackedEntityAttributeValue> toAttr = getTrackedEntityAttributesForRelationship(toTei, selectedProgram);
+                for (TrackedEntityAttributeValue attributeValue : fromAttr) {
+                    fromValues.add(new kotlin.Pair<>(attributeValue.trackedEntityAttribute(), attributeValue.value()));
+                }
+                for (TrackedEntityAttributeValue attributeValue : toAttr) {
+                    toValues.add(new kotlin.Pair<>(attributeValue.trackedEntityAttribute(), attributeValue.value()));
+                }
+                relationshipViewModels.add(new RelationshipViewModel(
+                        relationship,
+                        fromTei.geometry(),
+                        toTei.geometry(),
+                        relationshipType,
+                        direction,
+                        relationshipTEIUid,
+                        RelationshipOwnerType.TEI,
+                        fromValues,
+                        toValues,
+                        ExtensionsKt.profilePicturePath(fromTei, d2, selectedProgram.uid()),
+                        ExtensionsKt.profilePicturePath(toTei, d2, selectedProgram.uid()),
+                        getTeiDefaultRes(fromTei),
+                        getTeiDefaultRes(toTei),
+                        -1
+                ));
             }
-
-            String fromTeiUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
-            String toTeiUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
-
-            TrackedEntityInstance fromTei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(fromTeiUid).blockingGet();
-            TrackedEntityInstance toTei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(toTeiUid).blockingGet();
-
-            List<kotlin.Pair<String,String>> fromValues = new ArrayList<>();
-            List<TrackedEntityAttributeValue> fromAttr = getTrackedEntityAttributesForRelationship(fromTei, selectedProgram);
-            List<kotlin.Pair<String,String>> toValues = new ArrayList<>();
-            List<TrackedEntityAttributeValue> toAttr = getTrackedEntityAttributesForRelationship(toTei, selectedProgram);
-            for(TrackedEntityAttributeValue attributeValue : fromAttr){
-                fromValues.add(new kotlin.Pair<>(attributeValue.trackedEntityAttribute(),attributeValue.value()));
-            }
-            for(TrackedEntityAttributeValue attributeValue : toAttr){
-                toValues.add(new kotlin.Pair<>(attributeValue.trackedEntityAttribute(),attributeValue.value()));
-            }
-            relationshipViewModels.add( new RelationshipViewModel(
-                    relationship,
-                    fromTei.geometry(),
-                    toTei.geometry(),
-                    relationshipType,
-                    direction,
-                    relationshipTEIUid,
-                    RelationshipOwnerType.TEI,
-                    fromValues,
-                    toValues,
-                    ExtensionsKt.profilePicturePath(fromTei, d2, selectedProgram.uid()),
-                    ExtensionsKt.profilePicturePath(toTei, d2, selectedProgram.uid()),
-                    getTeiDefaultRes(fromTei),
-                    getTeiDefaultRes(toTei),
-                    -1
-            ));
         }
 
         searchTeiModel.setRelationships(relationshipViewModels);
