@@ -299,7 +299,7 @@ class ChartsRepositoryTest {
             Graph(
                 "settings_1",
                 emptyList(),
-                "periodToDisplay",
+                null,
                 PeriodType.Daily,
                 0L,
                 dhis2.org.analytics.charts.data.ChartType.LINE_CHART
@@ -311,7 +311,7 @@ class ChartsRepositoryTest {
         return Graph(
             "de_graph_1",
             listOf(SerieData("de_field", listOf(GraphPoint(Date(), null, 30f)))),
-            "periodToDisplay",
+            null,
             PeriodType.Daily,
             0L,
             dhis2.org.analytics.charts.data.ChartType.LINE_CHART
@@ -322,7 +322,7 @@ class ChartsRepositoryTest {
         return Graph(
             "indicator_graph_1",
             listOf(SerieData("indicator_field", listOf(GraphPoint(Date(), null, 30f)))),
-            "periodToDisplay",
+            null,
             PeriodType.Daily,
             0L,
             dhis2.org.analytics.charts.data.ChartType.LINE_CHART
