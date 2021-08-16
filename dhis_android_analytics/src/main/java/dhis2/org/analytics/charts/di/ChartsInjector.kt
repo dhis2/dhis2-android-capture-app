@@ -115,8 +115,11 @@ class ChartsModule {
     }
 
     @Provides
-    internal fun chartCoordinatesProvider(d2: D2): ChartCoordinatesProvider {
-        return ChartCoordinatesProviderImpl(d2)
+    internal fun chartCoordinatesProvider(
+        d2: D2,
+        periodStepProvider: PeriodStepProvider
+    ): ChartCoordinatesProvider {
+        return ChartCoordinatesProviderImpl(d2, periodStepProvider)
     }
 
     @Provides

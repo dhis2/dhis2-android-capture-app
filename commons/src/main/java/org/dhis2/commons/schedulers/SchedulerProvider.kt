@@ -1,4 +1,4 @@
-package org.dhis2.data.schedulers
+package org.dhis2.commons.schedulers
 
 import io.reactivex.Flowable
 import io.reactivex.Observable

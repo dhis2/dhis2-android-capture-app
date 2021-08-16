@@ -82,7 +82,6 @@ class AnalyticsTeiSettingsToGraph(
             }.filter { it.coordinates.isNotEmpty() }
             Graph(
                 analyticsSetting.displayName,
-                false,
                 nutritionCoordinates.union(dataElementCoordinates).union(indicatorCoordinates)
                     .toList(),
                 null,

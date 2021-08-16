@@ -3,7 +3,7 @@ package org.dhis2.usescases.qrCodes;
 import android.annotation.SuppressLint;
 
 import org.dhis2.data.qr.QRInterface;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 
 import androidx.annotation.NonNull;
 

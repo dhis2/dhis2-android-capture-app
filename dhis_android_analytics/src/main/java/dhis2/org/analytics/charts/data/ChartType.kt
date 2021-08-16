@@ -3,6 +3,7 @@ package dhis2.org.analytics.charts.data
 import androidx.annotation.DrawableRes
 import dhis2.org.R
 import org.hisp.dhis.android.core.settings.WHONutritionChartType
+import org.hisp.dhis.android.core.visualization.VisualizationType
 
 enum class ChartType(@DrawableRes val iconResource: Int) {
     LINE_CHART(R.drawable.ic_line_chart),
@@ -30,6 +31,19 @@ fun org.hisp.dhis.android.core.settings.ChartType.toAnalyticsChartType(): ChartT
         org.hisp.dhis.android.core.settings.ChartType.TABLE -> ChartType.TABLE
         org.hisp.dhis.android.core.settings.ChartType.WHO_NUTRITION -> ChartType.NUTRITION
         org.hisp.dhis.android.core.settings.ChartType.SINGLE_VALUE -> ChartType.SINGLE_VALUE
+    }
+}
+
+fun VisualizationType?.toAnalyticsChartType(): ChartType {
+    return when (this) {
+        VisualizationType.LINE -> ChartType.LINE_CHART
+        VisualizationType.COLUMN,
+        VisualizationType.STACKED_COLUMN,
+        VisualizationType.BAR,
+        VisualizationType.STACKED_BAR -> ChartType.BAR_CHART
+        VisualizationType.PIE -> ChartType.PIE_CHART
+        VisualizationType.RADAR -> ChartType.RADAR
+        else -> ChartType.TABLE
     }
 }
 

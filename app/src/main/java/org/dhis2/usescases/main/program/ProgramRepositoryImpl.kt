@@ -2,23 +2,23 @@ package org.dhis2.usescases.main.program
 
 import io.reactivex.Flowable
 import io.reactivex.parallel.ParallelFlowable
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
 import org.dhis2.data.filter.FilterPresenter
-import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
 
-internal class HomeRepositoryImpl(
+internal class ProgramRepositoryImpl(
     private val d2: D2,
     private val filterPresenter: FilterPresenter,
     private val dhisProgramUtils: DhisProgramUtils,
     private val dhisTeiUtils: DhisTrackedEntityInstanceUtils,
     private val resourceManager: ResourceManager,
     private val schedulerProvider: SchedulerProvider
-) : HomeRepository {
+) : ProgramRepository {
 
     private val programViewModelMapper = ProgramViewModelMapper()
 

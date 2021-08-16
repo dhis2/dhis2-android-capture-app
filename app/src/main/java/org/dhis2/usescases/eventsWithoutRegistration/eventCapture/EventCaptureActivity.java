@@ -30,6 +30,7 @@ import org.dhis2.utils.RuleUtilsProviderResultKt;
 import org.dhis2.utils.RulesUtilsProviderConfigurationError;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog;
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
 
 import java.io.File;
@@ -53,6 +54,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     private ActivityEventCaptureBinding binding;
     @Inject
     EventCaptureContract.Presenter presenter;
+    @Inject
+    NavigationPageConfigurator pageConfigurator;
+
     private String programStageUid;
     private Boolean isEventCompleted = false;
     private EventMode eventMode;
@@ -97,6 +101,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void setUpNavigationBar() {
+        binding.navigationBar.pageConfiguration(pageConfigurator);
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_details:

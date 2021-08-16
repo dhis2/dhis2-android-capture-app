@@ -34,6 +34,7 @@ fun Legend.withGlobalStyle(): Legend {
     return apply {
         form = Legend.LegendForm.LINE
         horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+        isWordWrapEnabled = true
     }
 }
 

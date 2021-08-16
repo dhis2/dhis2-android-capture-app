@@ -25,11 +25,11 @@ class DhisAnalyticCharts @Inject constructor(
     }
 
     override fun getHomeVisualizations(groupUid: String?): List<Graph> {
-        return emptyList()
+        return chartsRepository.getHomeVisualization(groupUid)
     }
 
     override fun getDataSetVisualizations(groupUid: String?, dataSetUid: String): List<Graph> {
-        return emptyList()
+        return chartsRepository.getDataSetVisualization(groupUid, dataSetUid)
     }
 
     companion object Provider : Charts.Provider {

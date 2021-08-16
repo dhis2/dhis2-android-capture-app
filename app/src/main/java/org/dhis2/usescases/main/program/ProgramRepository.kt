@@ -2,7 +2,7 @@ package org.dhis2.usescases.main.program
 
 import io.reactivex.Flowable
 
-internal interface HomeRepository {
+internal interface ProgramRepository {
 
     fun programModels(): Flowable<List<ProgramViewModel>>
 

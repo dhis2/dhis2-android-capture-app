@@ -6,7 +6,6 @@ import org.hisp.dhis.android.core.period.PeriodType
 
 data class Graph(
     val title: String,
-    val isOnline: Boolean,
     val series: List<SerieData>,
     val periodToDisplayDefault: RelativePeriod?,
     val eventPeriodType: PeriodType,
@@ -17,6 +16,14 @@ data class Graph(
     val orgUnitsSelected: List<String> = emptyList(),
     val periodToDisplaySelected: RelativePeriod? = null
 ) {
+    fun xAxixMaximun(): Float {
+        return if (categories.isNotEmpty()) {
+            categories.size.toFloat()
+        } else {
+            series.maxOf { serie -> serie.coordinates.maxOf { point -> point.position ?: 0f } }
+        }
+    }
+
     fun numberOfStepsToDate(date: Date): Float {
         return if (baseSeries().isEmpty() || baseSeries().first().coordinates.isEmpty()) {
             0f

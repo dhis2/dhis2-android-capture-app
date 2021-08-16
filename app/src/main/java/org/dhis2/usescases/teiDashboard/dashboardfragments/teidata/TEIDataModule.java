@@ -5,7 +5,7 @@ import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.commons.prefs.PreferenceProvider;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.filters.FilterManager;

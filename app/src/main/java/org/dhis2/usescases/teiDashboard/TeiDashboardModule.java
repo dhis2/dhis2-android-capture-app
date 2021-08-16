@@ -9,7 +9,7 @@ import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.filters.FilterManager;
@@ -31,12 +31,14 @@ public class TeiDashboardModule {
     public final String teiUid;
     private final TeiDashboardContracts.View view;
     private final String enrollmentUid;
+    private final boolean isPortrait;
 
-    public TeiDashboardModule(TeiDashboardContracts.View view, String teiUid, String programUid, String enrollmentUid) {
+    public TeiDashboardModule(TeiDashboardContracts.View view, String teiUid, String programUid, String enrollmentUid, boolean isPortrait) {
         this.view = view;
         this.teiUid = teiUid;
         this.programUid = programUid;
         this.enrollmentUid = enrollmentUid;
+        this.isPortrait = isPortrait;
     }
 
     @Provides
@@ -94,6 +96,6 @@ public class TeiDashboardModule {
     @Provides
     @PerActivity
     NavigationPageConfigurator pageConfigurator(DashboardRepository dashboardRepository) {
-        return new TeiDashboardPageConfigurator(dashboardRepository);
+        return new TeiDashboardPageConfigurator(dashboardRepository, isPortrait);
     }
 }

@@ -76,7 +76,6 @@ class GraphTest {
     private fun mockedGraph(coordinates: List<GraphPoint> = mockedCoordinates()): Graph {
         return Graph(
             "testGraph",
-            false,
             coordinates.map { SerieData("fieldName", coordinates) },
             "periodToDisplay",
             PeriodType.Daily,

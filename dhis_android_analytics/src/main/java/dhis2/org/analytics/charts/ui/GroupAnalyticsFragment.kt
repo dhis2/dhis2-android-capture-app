@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -85,7 +86,9 @@ class GroupAnalyticsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        postponeEnterTransition()
         binding = DataBindingUtil.inflate(inflater, R.layout.analytics_group, container, false)
+        ViewCompat.setTransitionName(binding.visualizationContainer, "contenttest")
         binding.lifecycleOwner = this
         binding.analyticsRecycler.adapter = adapter
         adapter.onRelativePeriodCallback =
@@ -142,9 +145,11 @@ class GroupAnalyticsFragment : Fragment() {
                 if (it.isEmpty() || it.size < MIN_SIZE_TO_SHOW) {
                     binding.analyticChipGroup.visibility = View.GONE
                 } else {
+                    binding.analyticChipGroup.visibility = View.VISIBLE
                     disableToolbarElevation?.invoke()
                     addChips(it)
                 }
+                startPostponedEnterTransition()
             }
         )
         groupViewModel.analytics.observe(
@@ -180,4 +185,6 @@ class GroupAnalyticsFragment : Fragment() {
             idChip++
         }
     }
+
+    fun sharedView() = binding.visualizationContainer
 }

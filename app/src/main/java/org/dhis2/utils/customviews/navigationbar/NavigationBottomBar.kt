@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -15,7 +16,6 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.core.view.forEach
-import androidx.core.view.forEachIndexed
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.LabelVisibilityMode.LABEL_VISIBILITY_UNLABELED
@@ -59,30 +59,22 @@ class NavigationBottomBar @JvmOverloads constructor(
                 getBoolean(R.styleable.NavigationBottomBar_forceShowAnalytics, false)
             recycle()
         }
-        post {
-            menu.forEachIndexed { index, item ->
-                if (index == initialPage) {
-                    animateItemIndicatorPosition(findViewById(item.itemId))
-                }
-                if (initialPage != 0) {
-                    selectItemAt(initialPage)
-                }
-            }
-        }
         setIconsColor(currentItemIndicatorColor)
     }
 
     fun hide() {
+        hidden = true
         animations.hide {
-            hidden = true
             visibility = View.GONE
         }
     }
 
     fun show() {
-        visibility = View.VISIBLE
-        animations.show {
-            hidden = false
+        if (visibleItemCount().size > 1) {
+            visibility = View.VISIBLE
+            animations.show {
+                hidden = false
+            }
         }
     }
 
@@ -200,8 +192,28 @@ class NavigationBottomBar @JvmOverloads constructor(
     }
 
     fun pageConfiguration(navigationPageConfigurator: NavigationPageConfigurator) {
+        val visibleMenuItems = mutableListOf<MenuItem>()
         menu.forEach {
             it.isVisible = navigationPageConfigurator.pageVisibility(it.itemId)
+            if (it.isVisible) {
+                visibleMenuItems.add(it)
+            }
+        }
+        when {
+            visibleMenuItems.size < 2 && !isHidden() -> hide()
+            visibleMenuItems.size > 1 && isHidden() -> {
+                initSelection(visibleMenuItems)
+                show()
+            }
+            else -> initSelection(visibleMenuItems)
+        }
+    }
+
+    private fun initSelection(visibleMenuItems: MutableList<MenuItem>) {
+        visibleMenuItems.forEachIndexed { index, item ->
+            if (index == initialPage) {
+                selectItemAt(initialPage)
+            }
         }
     }
 
@@ -212,5 +224,13 @@ class NavigationBottomBar @JvmOverloads constructor(
                 animateItemIndicatorPosition(findViewById(selectedItemId))
             }
         }
+    }
+
+    private fun visibleItemCount(): MutableList<MenuItem> {
+        val visibleMenuItems = mutableListOf<MenuItem>()
+        menu.forEach {
+            it.takeIf { it.isVisible }?.let { visibleItem -> visibleMenuItems.add(visibleItem) }
+        }
+        return visibleMenuItems
     }
 }

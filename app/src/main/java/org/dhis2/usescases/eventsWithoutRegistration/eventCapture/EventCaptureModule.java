@@ -19,12 +19,13 @@ import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.form.data.FormRepositoryPersistenceImpl;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.utils.RulesUtilsProvider;
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 
@@ -139,5 +140,11 @@ public class EventCaptureModule {
                 ),
                 new FieldErrorMessageProvider(activityContext)
         );
+    }
+
+    @Provides
+    @PerActivity
+    NavigationPageConfigurator pageConfigurator(){
+        return new EventPageConfigurator();
     }
 }

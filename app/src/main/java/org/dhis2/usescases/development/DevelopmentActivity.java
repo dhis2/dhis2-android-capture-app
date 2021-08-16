@@ -241,7 +241,13 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
 
     private void loadFeatureConfig() {
         binding.featureConfigButton.setOnClickListener(view -> {
-            startActivity(FeatureConfigView.class, null, true, true, null);
+            startActivity(FeatureConfigView.class, null, false, false, null);
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_OK);
+        finish();
     }
 }

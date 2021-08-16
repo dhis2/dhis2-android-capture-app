@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import dhis2.org.analytics.charts.Charts
 import io.reactivex.Single
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
 import org.dhis2.data.dhislogic.DhisPeriodUtils
@@ -31,9 +32,11 @@ class DataSetDetailRepositoryTest {
     private val d2: D2 = Mockito.mock(D2::class.java, RETURNS_DEEP_STUBS)
     private val dataSetUid = "dataSetUid"
     private val periodUtils: DhisPeriodUtils = mock()
+    private val charts: Charts = mock()
+
     @Before
     fun setUp() {
-        repository = DataSetDetailRepositoryImpl(dataSetUid, d2, periodUtils)
+        repository = DataSetDetailRepositoryImpl(dataSetUid, d2, periodUtils, charts)
     }
 
     @Test
