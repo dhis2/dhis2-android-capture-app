@@ -26,6 +26,8 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
 
 import org.dhis2.App;
+import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
@@ -53,8 +55,6 @@ import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM;
 import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM_ENROLLMENT;
 import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT;
 import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT_PROGRAM;
-import static org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter.RELATIONSHIPS_LANDSCAPE_POSITION;
-import static org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter.RELATIONSHIPS_PORTRAIT_POSITION;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.Constants.TEI_UID;
@@ -64,6 +64,12 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View {
 
     public static final int OVERVIEW_POS = 0;
+    public static final int INDICATORS_POS = 1;
+    public static final int RELATIONSHIPS_POS = 2;
+    public static final int NOTES_POS = 3;
+    public static final int INDICATORS_LANDSCAPE_POS = 0;
+    public static final int RELATIONSHIPS_LANDSCAPE_POS = 1;
+    public static final int NOTES_LANDSCAPE_POS = 2;
 
     private int currentOrientation = -1;
 
@@ -229,7 +235,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                                 binding.filterCounter.setVisibility(View.VISIBLE);
                                 binding.searchFilterGeneral.setVisibility(View.VISIBLE);
                             }
-                            if (position == RELATIONSHIPS_PORTRAIT_POSITION) {
+                            if (position == RELATIONSHIPS_POS) {
                                 binding.relationshipMapIcon.setVisibility(View.VISIBLE);
                             } else {
                                 binding.relationshipMapIcon.setVisibility(View.GONE);
@@ -250,11 +256,14 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                         @Override
                         public void onPageSelected(int position) {
                             switch (position) {
-                                case RELATIONSHIPS_LANDSCAPE_POSITION:
+                                case INDICATORS_LANDSCAPE_POS:
+                                case NOTES_LANDSCAPE_POS:
+                                    binding.relationshipMapIcon.setVisibility(View.GONE);
+                                    break;
+                                case RELATIONSHIPS_LANDSCAPE_POS:
                                     binding.relationshipMapIcon.setVisibility(View.VISIBLE);
                                     break;
                                 default:
-                                    binding.relationshipMapIcon.setVisibility(View.GONE);
                                     break;
                             }
                             binding.navigationBar.selectItemAt(position);

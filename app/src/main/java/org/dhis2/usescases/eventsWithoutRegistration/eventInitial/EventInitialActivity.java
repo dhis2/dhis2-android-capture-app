@@ -995,6 +995,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
+    public void displayFeatureTypeError() {
+        displayMessage(getString(R.string.coordinate_feature_type_error));
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK && requestCode == RQ_MAP_LOCATION_VIEW && data != null && data.getExtras() != null) {
             FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA));

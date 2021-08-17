@@ -4,7 +4,6 @@ import io.reactivex.Single
 import java.util.Locale
 import org.dhis2.Bindings.applyFilters
 import org.dhis2.Bindings.userFriendlyValue
-import org.dhis2.data.dhislogic.DhisEventUtils
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.getProgramStageName
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel

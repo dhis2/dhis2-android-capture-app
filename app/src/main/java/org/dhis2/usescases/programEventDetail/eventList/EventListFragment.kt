@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
 import org.dhis2.BuildConfig
+import javax.inject.Inject
 import org.dhis2.R
 import org.dhis2.animations.collapse
 import org.dhis2.animations.expand
@@ -23,7 +24,6 @@ import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.utils.DataElementsAdapter
 import org.hisp.dhis.android.core.dataelement.DataElement
-import javax.inject.Inject
 
 class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
 
@@ -51,6 +51,31 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
 
                 initializeTextFilter()
             }.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        programEventsViewModel.setProgress(true)
+        presenter.init()
+    }
+
+    override fun setLiveData(pagedListLiveData: LiveData<PagedList<EventViewModel>>) {
+        pagedListLiveData.observe(
+            this,
+            Observer<PagedList<EventViewModel>> { pagedList: PagedList<EventViewModel> ->
+                programEventsViewModel.setProgress(false)
+                liveAdapter?.submitList(pagedList) {
+                    if (binding.recycler.adapter?.itemCount ?: 0 == 0) {
+                        binding.emptyTeis.text = getString(R.string.empty_tei_add)
+                        binding.emptyTeis.visibility = View.VISIBLE
+                        binding.recycler.visibility = View.GONE
+                    } else {
+                        binding.emptyTeis.visibility = View.GONE
+                        binding.recycler.visibility = View.VISIBLE
+                    }
+                }
+            }
+        )
     }
 
     private fun initializeTextFilter() {
@@ -106,31 +131,6 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        programEventsViewModel.setProgress(true)
-        presenter.init()
-    }
-
-    override fun setLiveData(pagedListLiveData: LiveData<PagedList<EventViewModel>>) {
-        pagedListLiveData.observe(
-            this,
-            Observer<PagedList<EventViewModel>> { pagedList: PagedList<EventViewModel> ->
-                programEventsViewModel.setProgress(false)
-                liveAdapter?.submitList(pagedList) {
-                    if (binding.recycler.adapter?.itemCount ?: 0 == 0) {
-                        binding.emptyTeis.text = getString(R.string.empty_tei_add)
-                        binding.emptyTeis.visibility = View.VISIBLE
-                        binding.recycler.visibility = View.GONE
-                    } else {
-                        binding.emptyTeis.visibility = View.GONE
-                        binding.recycler.visibility = View.VISIBLE
-                    }
-                }
-            }
-        )
-    }
-
     override fun setTextTypeDataElementsFilter(textTypeDataElements: List<DataElement>) {
         val dataElementsAdapter = DataElementsAdapter(
             abstracContext,
@@ -158,4 +158,5 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
                 }
             }
     }
+
 }
