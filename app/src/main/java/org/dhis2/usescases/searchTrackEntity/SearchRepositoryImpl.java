@@ -37,6 +37,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.sorting.SortingItem;
+import org.dhis2.utils.reporting.CrashReportController;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
@@ -98,6 +99,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private DhisPeriodUtils periodUtils;
     private String currentProgram = null;
     private final Charts charts;
+    private final CrashReportController crashReportController;
 
     SearchRepositoryImpl(String teiType,
                          D2 d2,
@@ -106,7 +108,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                          SearchSortingValueSetter sortingValueSetter,
                          FieldViewModelFactory fieldFactory,
                          DhisPeriodUtils periodUtils,
-                         Charts charts) {
+                         Charts charts,
+                         CrashReportController crashReportController) {
         this.teiType = teiType;
         this.d2 = d2;
         this.resources = resources;
@@ -115,6 +118,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.fieldFactory = fieldFactory;
         this.periodUtils = periodUtils;
         this.charts = charts;
+        this.crashReportController = crashReportController;
     }
 
     @Override
@@ -309,7 +313,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                         if (fromRelationshipUid != null) {
                             d2.trackedEntityModule().trackedEntityInstanceService().blockingInheritAttributes(fromRelationshipUid, uid, programUid);
                         }
-                        ValueStore valueStore = new ValueStoreImpl(d2, uid, DataEntryStore.EntryMode.ATTR, new DhisEnrollmentUtils(d2));
+                        ValueStore valueStore = new ValueStoreImpl(d2, uid, DataEntryStore.EntryMode.ATTR, new DhisEnrollmentUtils(d2), crashReportController);
 
                         if (queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
                             queryData.remove(Constants.ENROLLMENT_DATE_UID);

@@ -1,5 +1,6 @@
 package org.dhis2.utils.reporting
 
+import io.sentry.Breadcrumb
 import io.sentry.Sentry
 import javax.inject.Inject
 
@@ -19,6 +20,14 @@ class CrashReportControllerImpl @Inject constructor() : CrashReportController {
         Sentry.configureScope { scope ->
             scope.setTag(SERVER_NAME, server ?: "")
         }
+    }
+
+    override fun trackError(exception: Exception, message: String) {
+        val breadcrumb = Breadcrumb()
+        breadcrumb.type = "Info"
+        breadcrumb.message = message
+        Sentry.addBreadcrumb(breadcrumb)
+        Sentry.captureException(exception)
     }
 
     override fun logException(exception: Exception) {
