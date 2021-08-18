@@ -6,4 +6,7 @@
     <string name="clear">clear</string>
     <string name="action_accept">Accept</string>
     <string name="next">Next</string>
+    <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

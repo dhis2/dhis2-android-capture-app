@@ -11,6 +11,7 @@
     <string name="none">None</string>
     <string name="daily">Daily</string>
     <string name="today">Today</string>
+    <string name="other">Other</string>
     <string name="yesterday">Yesterday</string>
     <string name="last3Days">Last 3 Days</string>
     <string name="last7Days">Last 7 Days</string>
@@ -38,4 +39,7 @@
     <string name="yearly">Yearly</string>
     <string name="all">All</string>
     <string name="selection">Selection</string>
+    <string name="reset">Reset</string>
+    <string name="include_this_period_title">Do you want to include the current period?</string>
+    <string name="include_this_period_body">It will display the current period in the chart.</string>
 </resources>

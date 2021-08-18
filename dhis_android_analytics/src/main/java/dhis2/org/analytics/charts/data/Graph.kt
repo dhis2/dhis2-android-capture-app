@@ -7,12 +7,14 @@ import org.hisp.dhis.android.core.period.PeriodType
 data class Graph(
     val title: String,
     val series: List<SerieData>,
-    val periodToDisplay: RelativePeriod?,
+    val periodToDisplayDefault: RelativePeriod?,
     val eventPeriodType: PeriodType,
     val periodStep: Long,
     val chartType: ChartType? = ChartType.LINE_CHART,
     val categories: List<String> = emptyList(),
-    val filters: List<String> = emptyList()
+    val orgUnitsDefault: List<String> = emptyList(),
+    val orgUnitsSelected: List<String> = emptyList(),
+    val periodToDisplaySelected: RelativePeriod? = null
 ) {
     fun xAxixMaximun(): Float {
         return if (categories.isNotEmpty()) {

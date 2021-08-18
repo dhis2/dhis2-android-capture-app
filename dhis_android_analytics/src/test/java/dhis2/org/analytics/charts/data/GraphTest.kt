@@ -77,7 +77,7 @@ class GraphTest {
         return Graph(
             "testGraph",
             coordinates.map { SerieData("fieldName", coordinates) },
-            "periodToDisplay",
+            null,
             PeriodType.Daily,
             dailyPeriodPeriod
         )

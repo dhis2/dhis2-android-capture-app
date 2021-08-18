@@ -13,11 +13,13 @@ import androidx.fragment.app.viewModels
 import dhis2.org.R
 import dhis2.org.analytics.charts.data.AnalyticGroup
 import dhis2.org.analytics.charts.di.AnalyticsComponentProvider
+import dhis2.org.analytics.charts.extensions.isNotCurrent
 import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule
 import dhis2.org.databinding.AnalyticsGroupBinding
 import dhis2.org.databinding.AnalyticsItemBinding
 import javax.inject.Inject
 import org.dhis2.commons.bindings.clipWithRoundedCorners
+import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.hisp.dhis.android.core.common.RelativePeriod
 
 const val ARG_MODE = "ARG_MODE"
@@ -37,8 +39,7 @@ class GroupAnalyticsFragment : Fragment() {
     lateinit var analyticsViewModelFactory: GroupAnalyticsViewModelFactory
     private val groupViewModel: GroupAnalyticsViewModel by viewModels { analyticsViewModelFactory }
     private val adapter: AnalyticsAdapter by lazy { AnalyticsAdapter() }
-
-    var disableToolbarElevation: (() -> Unit)? = null
+    private var disableToolbarElevation: (() -> Unit)? = null
 
     companion object {
         fun forEnrollment(enrollmentUid: String): GroupAnalyticsFragment {
@@ -91,9 +92,16 @@ class GroupAnalyticsFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.analyticsRecycler.adapter = adapter
         adapter.onRelativePeriodCallback =
-            { chartModel: ChartModel, relativePeriod: RelativePeriod? ->
-                groupViewModel.filterByPeriod(chartModel, relativePeriod)
+            { chartModel: ChartModel, relativePeriod: RelativePeriod?, current: RelativePeriod? ->
+                relativePeriod?.let {
+                    if (it.isNotCurrent()) {
+                        showAlertDialogCurrentPeriod(chartModel, relativePeriod, current)
+                    } else {
+                        groupViewModel.filterByPeriod(chartModel, mutableListOf(it))
+                    }
+                }
             }
+
         adapter.onOrgUnitCallback =
             { chartModel: ChartModel, orgUnitFilterType: OrgUnitFilterType ->
                 if (orgUnitFilterType == OrgUnitFilterType.SELECTION) {
@@ -101,8 +109,32 @@ class GroupAnalyticsFragment : Fragment() {
                     groupViewModel.filterByOrgUnit()
                 }
             }
+        adapter.onResetFilterCallback = {
+            groupViewModel.resetFilter()
+        }
         binding.visualizationContainer.clipWithRoundedCorners()
         return binding.root
+    }
+
+    private fun showAlertDialogCurrentPeriod(
+        chartModel: ChartModel,
+        relativePeriod: RelativePeriod?,
+        current: RelativePeriod?
+    ) {
+        val periodList = mutableListOf<RelativePeriod?>()
+        AlertBottomDialog.instance
+            .setTitle(getString(R.string.include_this_period_title))
+            .setMessage(getString(R.string.include_this_period_body))
+            .setNegativeButton(getString(R.string.no)) {
+                periodList.add(relativePeriod)
+                groupViewModel.filterByPeriod(chartModel, periodList)
+            }
+            .setPositiveButton(getString(R.string.yes)) {
+                periodList.add(relativePeriod)
+                periodList.add(current)
+                groupViewModel.filterByPeriod(chartModel, periodList)
+            }
+            .show(parentFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

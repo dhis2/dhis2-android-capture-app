@@ -35,8 +35,9 @@ class AnalyticsAdapter :
         INDICATOR, CHART, SECTION_TITLE
     }
 
-    var onRelativePeriodCallback: ((ChartModel, RelativePeriod?) -> Unit)? = null
+    var onRelativePeriodCallback: ((ChartModel, RelativePeriod?, RelativePeriod?) -> Unit)? = null
     var onOrgUnitCallback: ((ChartModel, OrgUnitFilterType) -> Unit)? = null
+    var onResetFilterCallback: ((ChartFilter) -> Unit)? = null
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
@@ -68,13 +69,21 @@ class AnalyticsAdapter :
         }
     }
 
-    override fun filterPeriod(chart: ChartModel, period: RelativePeriod?) {
+    override fun filterPeriod(
+        chart: ChartModel,
+        period: RelativePeriod?,
+        current: RelativePeriod?
+    ) {
         Log.d("AnalyticsAdapter", "onFilterPeriod")
-        onRelativePeriodCallback?.invoke(chart, period)
+        onRelativePeriodCallback?.invoke(chart, period, current)
     }
 
     override fun filterOrgUnit(chart: ChartModel, filters: OrgUnitFilterType) {
         Log.d("AnalyticsAdapter", "onFilterOrgUnit")
         onOrgUnitCallback?.invoke(chart, filters)
+    }
+
+    override fun resetFilter(filter: ChartFilter) {
+        onResetFilterCallback?.invoke(filter)
     }
 }
