@@ -10,7 +10,7 @@ import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
-import org.dhis2.utils.customviews.AgeView;
+import org.dhis2.data.forms.dataentry.fields.age.AgeView;
 import org.dhis2.utils.customviews.TableFieldDialog;
 
 import java.util.Date;
@@ -18,10 +18,6 @@ import java.util.Date;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
-
-/**
- * QUADRAM. Created by frodriguez on 20/03/2018.
- */
 
 public class AgeHolder extends FormViewHolder {
 

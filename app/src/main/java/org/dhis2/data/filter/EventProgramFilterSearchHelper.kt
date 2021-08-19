@@ -1,38 +1,100 @@
 package org.dhis2.data.filter
 
-import javax.inject.Inject
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
-import org.hisp.dhis.android.core.event.EventCollectionRepository
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.event.search.EventQueryCollectionRepository
 import org.hisp.dhis.android.core.program.Program
+import javax.inject.Inject
 
 class EventProgramFilterSearchHelper @Inject constructor(
     private val filterRepository: FilterRepository,
     val filterManager: FilterManager
-) : FilterHelperActions<EventCollectionRepository> {
+) : FilterHelperActions<EventQueryCollectionRepository> {
+
+    fun getFilteredEventRepository(
+        program: Program,
+        textFilter: TextFilter?
+    ): EventQueryCollectionRepository {
+        return applyFiltersTo(
+            if(textFilter != null){
+                filterRepository.eventsByProgramAndTextFilter(program.uid(),textFilter)
+            } else {
+                filterRepository.eventsByProgram(program.uid())
+            }
+        )
+    }
 
     fun getFilteredEventRepository(
         program: Program
-    ): EventCollectionRepository {
+    ): EventQueryCollectionRepository {
         return applyFiltersTo(
             filterRepository.eventsByProgram(program.uid())
         )
     }
 
     override fun applyFiltersTo(
-        repository: EventCollectionRepository
-    ): EventCollectionRepository {
+        repository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
         return repository
+            .withFilter { applyWorkingList(it) }
+            .withFilter { applyDateFilter(it) }
             .withFilter { applyOrgUnitFilter(it) }
             .withFilter { applyStateFilter(it) }
-            .withFilter { applyDateFilter(it) }
+            .withFilter { applyEventStatus(it) }
             .withFilter { applyAssignedToMeFilter(it) }
+            .withFilter { applyCategoryOptionComboFilter(it) }
             .withFilter { applySorting(it) }
     }
 
+    private fun applyWorkingList(
+        eventRepository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
+        return if (filterManager.workingListActive()) {
+            filterRepository.applyWorkingList(
+                eventRepository,
+                filterManager.currentWorkingList()
+            ).also {
+                filterManager.setWorkingListScope(
+                    it.scope.mapToEventWorkingListScope(
+                        filterRepository.resources
+                    )
+                )
+            }
+        } else {
+            eventRepository
+        }
+    }
+
+    private fun applyEventStatus(
+        eventRepository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
+        return if (filterManager.eventStatusFilters.isNotEmpty()) {
+            filterRepository.applyEventStatusFilter(
+                eventRepository,
+                filterManager.eventStatusFilters
+            )
+        } else {
+            eventRepository
+        }
+    }
+
+    private fun applyCategoryOptionComboFilter(
+        eventRepository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
+        return if (filterManager.catOptComboFilters.isNotEmpty()) {
+            filterRepository.applyCategoryOptionComboFilter(
+                eventRepository,
+                filterManager.catOptComboFilters
+            )
+        } else {
+            eventRepository
+        }
+    }
+
     private fun applyOrgUnitFilter(
-        eventRepository: EventCollectionRepository
-    ): EventCollectionRepository {
+        eventRepository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
         return if (filterManager.orgUnitUidsFilters.isNotEmpty()) {
             filterRepository.applyOrgUnitFilter(eventRepository, filterManager.orgUnitUidsFilters)
         } else {
@@ -41,8 +103,8 @@ class EventProgramFilterSearchHelper @Inject constructor(
     }
 
     private fun applyStateFilter(
-        eventRepository: EventCollectionRepository
-    ): EventCollectionRepository {
+        eventRepository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
         return if (filterManager.stateFilters.isNotEmpty()) {
             filterRepository.applyStateFilter(eventRepository, filterManager.stateFilters)
         } else {
@@ -51,18 +113,18 @@ class EventProgramFilterSearchHelper @Inject constructor(
     }
 
     private fun applyDateFilter(
-        eventRepository: EventCollectionRepository
-    ): EventCollectionRepository {
+        eventRepository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
         return if (filterManager.periodFilters.isNotEmpty()) {
-            filterRepository.applyDateFilter(eventRepository, filterManager.periodFilters)
+            filterRepository.applyDateFilter(eventRepository, filterManager.periodFilters.first())
         } else {
             eventRepository
         }
     }
 
     private fun applyAssignedToMeFilter(
-        eventRepository: EventCollectionRepository
-    ): EventCollectionRepository {
+        eventRepository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
         return if (filterManager.assignedFilter) {
             filterRepository.applyAssignToMe(eventRepository)
         } else {
@@ -71,8 +133,8 @@ class EventProgramFilterSearchHelper @Inject constructor(
     }
 
     override fun applySorting(
-        repository: EventCollectionRepository
-    ): EventCollectionRepository {
+        repository: EventQueryCollectionRepository
+    ): EventQueryCollectionRepository {
         return filterManager.sortingItem?.let { sortingItem ->
             val orderDirection = getSortingDirection(
                 filterManager.sortingItem.sortingStatus
@@ -90,6 +152,6 @@ class EventProgramFilterSearchHelper @Inject constructor(
                     else -> repository
                 }
             } ?: repository
-        } ?: repository
+        } ?: filterRepository.sortByEventDate(repository, RepositoryScope.OrderByDirection.DESC)
     }
 }

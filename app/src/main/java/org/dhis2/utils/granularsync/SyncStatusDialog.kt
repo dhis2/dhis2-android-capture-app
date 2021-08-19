@@ -207,7 +207,10 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         binding!!.programName.text = displayName
     }
 
-    override fun setState(state: State) {
+    override fun setState(
+        state: State,
+        conflicts: MutableList<TrackerImportConflict>
+    ) {
         Bindings.setStateIcon(binding!!.syncIcon, state, true)
         binding!!.syncStatusName.setText(getTextByState(state))
         binding!!.syncStatusBar.setBackgroundResource(getColorForState(state))
@@ -225,6 +228,10 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                     setProgramConflictMessage(state)
                 } else if (conflictType == ConflictType.DATA_VALUES) {
                     setDataSetInstanceMessage()
+                } else if (conflicts.isNotEmpty()) {
+                    prepareConflictAdapter(conflicts)
+                } else {
+                    setNoConflictMessage(getString(R.string.server_sync_error))
                 }
             State.SYNCED_VIA_SMS, State.SENT_VIA_SMS ->
                 setNoConflictMessage(getString(R.string.sms_synced_message))
@@ -316,7 +323,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         val eIndex = src.indexOf('$')
         if (wIndex > -1) {
             str.setSpan(
-                ImageSpan(context!!, R.drawable.ic_sync_warning),
+                ImageSpan(requireContext(), R.drawable.ic_sync_warning),
                 wIndex,
                 wIndex + 1,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -324,7 +331,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         }
         if (eIndex > -1) {
             str.setSpan(
-                ImageSpan(context!!, R.drawable.ic_sync_problem_red),
+                ImageSpan(requireContext(), R.drawable.ic_sync_problem_red),
                 eIndex,
                 eIndex + 1,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -405,7 +412,10 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             Manifest.permission.READ_SMS
         )
         if (!hasPermissions(smsPermissions)) {
-            ActivityCompat.requestPermissions(activity!!, smsPermissions, SMS_PERMISSIONS_REQ_ID)
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                smsPermissions, SMS_PERMISSIONS_REQ_ID
+            )
             return false
         }
         return true
@@ -413,7 +423,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
     private fun hasPermissions(permissions: Array<String>): Boolean {
         for (permission in permissions) {
-            if (ContextCompat.checkSelfPermission(context!!, permission) !=
+            if (ContextCompat.checkSelfPermission(requireContext(), permission) !=
                 PackageManager.PERMISSION_GRANTED
             ) {
                 return false
@@ -486,7 +496,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             }
         }
         dialog.arguments = args
-        dialog.show(activity!!.supportFragmentManager, null)
+        dialog.show(requireActivity().supportFragmentManager, null)
     }
 
     private fun syncGranular() {

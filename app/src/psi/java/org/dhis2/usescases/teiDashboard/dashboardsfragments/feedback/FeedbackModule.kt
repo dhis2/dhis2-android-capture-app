@@ -3,8 +3,9 @@ package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 import android.content.Context
 import dagger.Module
 import dagger.Provides
-import org.dhis2.data.dagger.PerFragment
-import org.dhis2.data.dhislogic.DhisEventUtils
+import org.dhis2.data.dagger.PerActivity
+import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepositoryImpl
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.enrollment.EnrollmentInfoD2Repository
@@ -15,7 +16,7 @@ import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.SystemInf
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.SystemInfoRepository
 import org.hisp.dhis.android.core.D2
 
-@PerFragment
+@PerActivity
 @Module
 class FeedbackModule(
     private val programUid: String,
@@ -24,15 +25,16 @@ class FeedbackModule(
     private val context: Context
 ) {
     @Provides
-    @PerFragment
+    @PerActivity
     fun provideFeedbackPresenter(
-        feedbackProgramRepository: FeedbackProgramRepository
+        feedbackProgramRepository: FeedbackProgramRepository,
+        preferenceProvider: PreferenceProvider
     ): FeedbackPresenter {
-        return FeedbackPresenter(feedbackProgramRepository)
+        return FeedbackPresenter(feedbackProgramRepository,preferenceProvider)
     }
 
     @Provides
-    @PerFragment
+    @PerActivity
     fun provideFeedbackContentPresenter(
         getFeedback: GetFeedback,
         getSystemInfo: GetSystemInfo,
@@ -42,7 +44,7 @@ class FeedbackModule(
     }
 
     @Provides
-    @PerFragment
+    @PerActivity
     fun provideGetFeedback(
         teiDataRepository: TeiDataRepository,
         valuesRepository: ValuesRepository,
@@ -52,49 +54,49 @@ class FeedbackModule(
     }
 
     @Provides
-    @PerFragment
+    @PerActivity
     fun provideGetSystemInfo(systemInfoRepository: SystemInfoRepository): GetSystemInfo {
         return GetSystemInfo(systemInfoRepository)
     }
 
     @Provides
-    @PerFragment
+    @PerActivity
     fun provideGetEnrollmentInfo(enrollmentInfoRepository: EnrollmentInfoRepository): GetEnrollmentInfo {
         return GetEnrollmentInfo(enrollmentInfoRepository)
     }
 
     @Provides
-    @PerFragment
+    @PerActivity
     fun providesFeedbackProgramRepository(d2: D2): FeedbackProgramRepository {
         return D2FeedbackProgramRepository(d2)
     }
 
     @Provides
-    @PerFragment
-    fun provideTeiDataRepository(d2: D2, dhisEventUtils: DhisEventUtils): TeiDataRepository {
-        return TeiDataRepositoryImpl(d2, programUid, teiUid, enrollmentUid, dhisEventUtils)
+    @PerActivity
+    fun provideTeiDataRepository(d2: D2, dhisPeriodUtils: DhisPeriodUtils): TeiDataRepository {
+        return TeiDataRepositoryImpl(d2, programUid, teiUid, enrollmentUid, dhisPeriodUtils)
     }
 
     @Provides
-    @PerFragment
+    @PerActivity
     fun provideValuesRepository(d2: D2): ValuesRepository {
         return ValuesD2Repository(d2, context)
     }
 
     @Provides
-    @PerFragment
+    @PerActivity
     fun provideDataElementRepository(d2: D2): DataElementRepository {
         return DataElementD2Repository(d2)
     }
 
     @Provides
-    @PerFragment
+    @PerActivity
     fun provideSystemInfoRepository(d2: D2): SystemInfoRepository {
         return SystemInfoD2Repository(d2)
     }
 
     @Provides
-    @PerFragment
+    @PerActivity
     fun provideEnrollmentInfoRepository(d2: D2): EnrollmentInfoRepository {
         return EnrollmentInfoD2Repository(d2)
     }

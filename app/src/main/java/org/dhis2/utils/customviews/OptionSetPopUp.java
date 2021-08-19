@@ -7,6 +7,7 @@ import android.view.View;
 import androidx.appcompat.widget.PopupMenu;
 
 import org.dhis2.App;
+import org.dhis2.data.forms.dataentry.fields.spinner.OptionSetView;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -59,19 +60,11 @@ public class OptionSetPopUp extends PopupMenu {
                                 finalOptionsToHide.addAll(optionsToHide);
 
                             if (!optionGroupsToShow.isEmpty()) {
-                                for (String groupUid : optionGroupsToShow) {
-                                    finalOptionsToShow.addAll(
-                                            UidsHelper.getUidsList(d2.optionModule().optionGroups().withOptions().uid(groupUid).blockingGet().options())
-                                    );
-                                }
+                                finalOptionsToShow.addAll(optionGroupsToShow);
                             }
 
                             if (!optionGroupsToHide.isEmpty()) {
-                                for (String groupUid : optionGroupsToHide) {
-                                    finalOptionsToHide.addAll(
-                                            UidsHelper.getUidsList(d2.optionModule().optionGroups().withOptions().uid(groupUid).blockingGet().options())
-                                    );
-                                }
+                                finalOptionsToHide.addAll(optionGroupsToHide);
                             }
 
                             if (!finalOptionsToShow.isEmpty())

@@ -3,6 +3,7 @@ package org.dhis2.data.user;
 import androidx.annotation.NonNull;
 
 import org.dhis2.data.dagger.PerUser;
+import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.service.ReservedValuesWorkerComponent;
 import org.dhis2.data.service.ReservedValuesWorkerModule;
 import org.dhis2.data.service.SyncDataWorkerComponent;
@@ -31,8 +32,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureCo
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialModule;
-import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryComponent;
-import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryModule;
 import org.dhis2.usescases.main.MainComponent;
 import org.dhis2.usescases.main.MainModule;
 import org.dhis2.usescases.main.program.ProgramComponent;
@@ -41,8 +40,6 @@ import org.dhis2.usescases.notes.NotesComponent;
 import org.dhis2.usescases.notes.NotesModule;
 import org.dhis2.usescases.notes.noteDetail.NoteDetailComponent;
 import org.dhis2.usescases.notes.noteDetail.NoteDetailModule;
-import org.dhis2.usescases.orgunitselector.OUTreeComponent;
-import org.dhis2.usescases.orgunitselector.OUTreeModule;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailComponent;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailModule;
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionComponent;
@@ -67,7 +64,7 @@ import org.dhis2.usescases.sms.SmsComponent;
 import org.dhis2.usescases.sms.SmsModule;
 import org.dhis2.usescases.sync.SyncComponent;
 import org.dhis2.usescases.sync.SyncModule;
-import org.dhis2.usescases.teiDashboard.TeiDashboardComponentFlavor;
+import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.usescases.teiDashboard.nfcdata.NfcDataWriteComponent;
 import org.dhis2.usescases.teiDashboard.nfcdata.NfcDataWriteModule;
@@ -80,7 +77,9 @@ import dagger.Subcomponent;
 
 @PerUser
 @Subcomponent(modules = UserModule.class)
-public interface UserComponent {
+public interface UserComponent extends UserComponentFlavor{
+
+    FilterPresenter filterPresenter();
 
     @NonNull
     MainComponent plus(@NonNull MainModule mainModule);
@@ -94,7 +93,7 @@ public interface UserComponent {
     SearchTEComponent plus(@NonNull SearchTEModule searchTEModule);
 
     @NonNull
-    TeiDashboardComponentFlavor plus(@NonNull TeiDashboardModule dashboardModule);
+    TeiDashboardComponent plus(@NonNull TeiDashboardModule dashboardModule);
 
     @NonNull
     QrComponent plus(@NonNull QrModule qrModule);
@@ -110,9 +109,6 @@ public interface UserComponent {
 
     @NonNull
     EventInitialComponent plus(EventInitialModule eventInitialModule);
-
-    @NonNull
-    EventSummaryComponent plus(EventSummaryModule eventInitialModule);
 
     @NonNull
     SyncManagerComponent plus(SyncManagerModule syncManagerModule);
@@ -181,9 +177,6 @@ public interface UserComponent {
 
     @NonNull
     NoteDetailComponent plus(NoteDetailModule noteDetailModule);
-
-    @NonNull
-    OUTreeComponent plus(OUTreeModule ouTreeModule);
 
     @NonNull
     ProgramSettingsComponent plus(SettingsProgramModule settingsProgramModule);

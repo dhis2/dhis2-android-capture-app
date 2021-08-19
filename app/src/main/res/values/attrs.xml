@@ -4,30 +4,37 @@
         <attr name="bgTransparent" format="boolean" />
     </declare-styleable>
 
-    <attr name="colorPrimary" format="color"/>
-    <attr name="colorPrimaryLight" format="color"/>
-    <attr name="colorAccentAlpha" format="color"/>
-    <attr name="coloredBgTextColor" format="color"/>
+    <attr name="colorPrimary" format="color" />
+    <attr name="colorPrimaryLight" format="color" />
+    <attr name="colorAccentAlpha" format="color" />
+    <attr name="coloredBgTextColor" format="color" />
 
-    <attr name="button_selector" format="reference"/>
-    <attr name="selector_button_round_20" format="reference"/>
-    <attr name="selector_button_round_7" format="reference"/>
-    <attr name="selector_button_round_2" format="reference"/>
+    <attr name="button_selector" format="reference" />
+    <attr name="selector_button_round_20" format="reference" />
+    <attr name="selector_button_round_7" format="reference" />
+    <attr name="selector_button_round_2" format="reference" />
 
 
-    <attr name="image_selector_bg" format="reference"/>
-    <attr name="period_button" format="reference"/>
-    <attr name="period_time_button" format="reference"/>
-    <attr name="toast_bg" format="reference"/>
+    <attr name="image_selector_bg" format="reference" />
+    <attr name="period_button" format="reference" />
+    <attr name="period_time_button" format="reference" />
+    <attr name="toast_bg" format="reference" />
 
     <declare-styleable name="CircularCompletionView">
-        <attr name="initialPercentage" format="float"/>
-        <attr name="initialSecondaryPercentage" format="float"/>
+        <attr name="initialPercentage" format="float" />
+        <attr name="initialSecondaryPercentage" format="float" />
         <attr name="percentageSize" format="dimension" />
         <attr name="strokeSize" format="dimension" />
         <attr name="completionColor" format="color" />
         <attr name="secondaryColor" format="color" />
         <attr name="percentageColor" format="color" />
         <attr name="circleColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="DhisBottomNavigationBar">
+        <attr name="currentItemSelectorColor" format="color"/>
+        <attr name="currentItemSelectorSize" format="dimension"/>
+        <attr name="currentItemSelectorDrawable" format="reference"/>
+        <attr name="initialPage" format="integer"/>
     </declare-styleable>
 </resources>

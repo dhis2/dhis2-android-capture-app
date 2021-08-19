@@ -15,33 +15,20 @@
             name="description"
             type="java.lang.String" />
 
-        <variable
-            name="optionSet"
-            type="java.lang.String" />
-
-        <variable
-            name="isBgTransparent"
-            type="java.lang.Boolean" />
-
-        <variable
-            name="initialValue"
-            type="java.lang.String" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/rootLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="5dp">
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        tools:background="?colorPrimary">
 
         <ImageView
             android:id="@+id/renderImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:layout_marginBottom="5dp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
@@ -52,14 +39,14 @@
 
         <TextView
             android:id="@+id/label"
-            android:layout_width="0dp"
+            style="@style/FieldLabel"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:gravity="start|center"
-            android:text='@{label}'
-            android:textAllCaps="false"
-            android:textColor="@color/text_black_808"
-            android:textSize="16sp"
+            android:text="@{label}"
+            android:textColor="?colorAccent"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/renderImage"
@@ -67,40 +54,74 @@
 
         <ImageView
             android:id="@+id/descriptionLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            style="@style/ActionIconUnwrap"
+            android:layout_width="12dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="@{(description!=null)?View.VISIBLE:View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@+id/label"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/renderImage"
+            app:layout_constraintStart_toEndOf="@id/label"
+            app:layout_constraintTop_toTopOf="@+id/label"
             app:srcCompat="@drawable/ic_info_outline"
             app:tint="?colorPrimary" />
 
 
         <ImageView
             android:id="@+id/delete"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            style="@style/ActionIcon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/label"
+            android:padding="8dp"
             app:srcCompat="@drawable/ic_close"
-            app:tint="?colorPrimary" />
+            app:tint="?colorAccent"/>
 
-        <LinearLayout
-            android:id="@+id/checkLayout"
+        <HorizontalScrollView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_margin="8dp"
             app:layout_constraintEnd_toStartOf="@id/delete"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/label" />
+            app:layout_constraintTop_toBottomOf="@id/warningError">
+            <LinearLayout
+                android:id="@+id/checkLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:weightSum="6"
+                />
+        </HorizontalScrollView>
 
-        <RadioGroup
-            android:id="@+id/radioLayout"
+        <HorizontalScrollView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toStartOf="@id/delete"
+            android:layout_margin="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/delete"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/label" />
+            app:layout_constraintTop_toBottomOf="@id/label">
+
+            <RadioGroup
+                android:id="@+id/radioLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:textSize="@dimen/form_edit_text_size"
+                android:weightSum="6" />
+        </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/warningError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:textSize="12sp"
+            android:textAppearance="@style/warning_appearance"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/label"
+            app:layout_constraintTop_toBottomOf="@id/label"
+            tools:text="This is a warning" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

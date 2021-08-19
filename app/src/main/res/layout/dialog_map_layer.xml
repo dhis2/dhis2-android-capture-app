@@ -28,6 +28,20 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+        
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/baseMapCarousel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:layout_marginTop="20dp"
+            tools:listitem="@layout/basemap_item"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:clipToPadding="false"
+            />
 
         <ScrollView
             android:layout_width="0dp"
@@ -39,7 +53,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintTop_toBottomOf="@id/baseMapCarousel"
             app:layout_constraintVertical_bias="0.654">
 
             <LinearLayout

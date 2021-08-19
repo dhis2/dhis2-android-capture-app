@@ -1,0 +1,85 @@
+<resources>
+    <!-- Warnings and error messages -->
+    <string name="error">Хатогӣ</string>
+    <string name="sync_events">Рӯйдодҳо</string>
+    <string name="add_new">Иловаи нав</string>
+    <string name="add">Илова кардан</string>
+    <string name="user_hint">Номи корбар</string>
+    <string name="password_hint">Парол</string>
+    <string name="account_recovery">Барқароркунии ҳисоб</string>
+
+    <!--PERIOD-->
+    <string name="DAILY">Ҳаррӯза</string>
+    <string name="WEEKLY">Ҳафтаина</string>
+    <string name="MONTHLY">Моҳона</string>
+    <string name="YEARLY">Солона</string>
+    <string name="action_share_zero_items">Мубодила</string>
+    <!-- Input hints -->
+    <string name="search">Ҷустуҷӯ</string>
+    <string name="read_only">Танҳо барои хондан</string>
+    <string name="complete">Анҷом ёфт</string>
+    <string name="completed">Анҷомёфта</string>
+    <string name="state_error">Хатогӣ</string>
+    <!--Event initial-->
+    <string name="create">Сохтан</string>
+    <string name="update">Навсозӣ</string>
+    <string name="date">Сана</string>
+    <string name="category_option">Имкони категория</string>
+    <string name="latitude">Тӯл</string>
+    <string name="longitude">Арз</string>
+    <!--DataSet initial-->
+    <string name="report_period">Давраи ҳисобот</string>
+    <string name="due_date">Санаи пешбинишуда</string>
+    <string name="cancel">Бекор кардан</string>
+    <string name="delete">Нест кардан</string>
+    <string name="done_task">Саҳифаи асосӣ</string>
+    <string name="wipe_data_no">Бекор кардан</string>
+    <string name="SYNC_MANAGER">Танзимот</string>
+    <!--endregion-->
+
+    <string name="enrollmment_date">Санаи номнавис</string>
+
+    <!-- SEARCH OPTION SET -->
+    <string name="search_optionset">Ҷустуҷӯ</string>
+    <!--FORM FRAGMENT-->
+    <string name="report_date">Санаи ҳисобот</string>
+    <string name="hint_month">Моҳҳо</string>
+    <string name="hint_year">Солҳо</string>
+    <string name="week">Ҳафтаҳо</string>
+    <string name="date_dialog_clear">Пок кардан</string>
+    <string name="period">Давра</string>
+    <string name="next">Навбатӣ</string>
+    <string name="SAVE">Захира кардан</string>
+    <string name="qr_attributes">Нишонаҳо</string>
+    <string name="qr_events">Рӯйдодҳо</string>
+    <string name="about">Дар бораи</string>
+    <string name="share">Мубодила</string>
+    <string name="max">Макс</string>
+    <string name="current">Ҷорӣ</string>
+    <string name="warning_on_complete_title">Огоҳӣ</string>
+    <string name="error_on_complete_title">Хатогӣ</string>
+    <string name="save">Захира кардан</string>
+    <string name="menu_home">Саҳифаи асосӣ</string>
+    <string name="qr_data_values">Қиматҳои иттлоот</string>
+    <string name="dashboard_indicators">Индикаторҳо</string>
+    <string name="event_overview">Маълумоти муфассал</string>
+    <string name="event_indicators">Индикаторҳо</string>
+    <string name="please_wait">Лутфан мунтазир шавед</string>
+    <string name="table">Ҷадвал</string>
+    <string name="state_warning">Огоҳӣ</string>
+    <string name="action_close">Пӯшидан</string>
+    <string name="data_every_day">Ҳаррӯза</string>
+    <string name="data_every_week">Ҳафтаина</string>
+    <string name="sms_completed">Анҷомёфта</string>
+    <string name="sms_bar_state_sent">Фиристодашуда</string>
+    <string name="sms_bar_state_failed">Иҷро нашуд</string>
+
+    <string name="polygon">Бисёркунҷа</string>
+    <string name="filters_title_period">Давра</string>
+    <string name="filters_title_status">Ҳолат</string>
+    <string name="filter_period_today">Имрӯз</string>
+    <string name="filter_period_yesterday">Дирӯз</string>
+    <string name="filter_period_last_week">Ҳафтаи гузашта</string>
+    <string name="filter_period_last_month">Моҳи гузашта</string>
+    <string name="filter_period_other">Дигар</string>
+    </resources>

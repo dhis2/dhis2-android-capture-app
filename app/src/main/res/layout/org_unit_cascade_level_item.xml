@@ -10,9 +10,8 @@
 
         <ImageView
             android:id="@+id/clearButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:tint="@color/colorGreyDefault"
+            style="@style/ActionIcon"
+            app:tint="@color/colorGreyDefault"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

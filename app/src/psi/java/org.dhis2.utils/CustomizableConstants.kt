@@ -1,4 +1,3 @@
 package org.dhis2.utils
 
 const val DEFAULT_URL: String = "https://data.psi-mis.org"
-const val SHOW_INDICATORS_IN_EVENT: Boolean = false

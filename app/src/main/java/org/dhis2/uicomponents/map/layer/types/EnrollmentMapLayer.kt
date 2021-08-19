@@ -1,8 +1,6 @@
 package org.dhis2.uicomponents.map.layer.types
 
-import android.graphics.Color
 import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.layers.FillLayer
@@ -14,9 +12,10 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.layer.MapLayerManager
-import org.dhis2.uicomponents.map.layer.TYPE
-import org.dhis2.uicomponents.map.layer.TYPE_POINT
-import org.dhis2.uicomponents.map.layer.TYPE_POLYGON
+import org.dhis2.uicomponents.map.layer.isPoint
+import org.dhis2.uicomponents.map.layer.isPolygon
+import org.dhis2.uicomponents.map.layer.withInitialVisibility
+import org.dhis2.uicomponents.map.layer.withTEIMarkerProperties
 import org.dhis2.uicomponents.map.managers.TeiMapManager.Companion.ENROLLMENT_SOURCE_ID
 import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
@@ -32,12 +31,10 @@ class EnrollmentMapLayer(
     private var SELECTED_POINT_LAYER_ID: String = "SELECTED_POINT_LAYER_ID"
 
     private var POLYGON_LAYER_ID: String = "ENROLLMENT_POLYGON_LAYER_ID"
-    private var SELECTED_POLYGON_LAYER_ID: String = "SELECTED_ENROLLMENT_POLYGON_LAYER_ID"
     private var POLYGON_BORDER_LAYER_ID: String = "ENROLLMENT_POLYGON_BORDER_LAYER_ID"
-    private var SELECTED_POLYGON_BORDER_LAYER_ID: String =
-        "SELECTED_ENROLLMENT_POLYGON_BORDER_LAYER_ID"
 
     private var SELECTED_ENROLLMENT_SOURCE_ID = "SELECTED_ENROLLMENT_SOURCE_ID"
+    private var TEI_POINT_LAYER_ID = "ENROLLMENT_TEI_POINT_LAYER_ID"
 
     override var visible = false
 
@@ -46,8 +43,7 @@ class EnrollmentMapLayer(
         style.addLayer(polygonBorderLayer)
         style.addLayer(pointLayer)
         style.addSource(GeoJsonSource(SELECTED_ENROLLMENT_SOURCE_ID))
-        style.addLayer(selectedPolygonLayer)
-        style.addLayer(selectedPolygonBorderLayer)
+        style.addLayer(teiPointLayer)
         style.addLayer(selectedPointLayer)
     }
 
@@ -57,29 +53,23 @@ class EnrollmentMapLayer(
                 .withProperties(
                     PropertyFactory.iconImage(MapLayerManager.ENROLLMENT_ICON_ID),
                     PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.iconOffset(arrayOf(0f, -25f)),
+                    PropertyFactory.textAllowOverlap(true),
                     PropertyFactory.visibility(Property.NONE)
-                ).withFilter(
-                    Expression.eq(
-                        Expression.literal(TYPE),
-                        Expression.literal(TYPE_POINT)
-                    )
-                )
+                ).withFilter(isPoint())
+
+    private val teiPointLayer: Layer
+        get() = style.getLayer(TEI_POINT_LAYER_ID)
+            ?: SymbolLayer(TEI_POINT_LAYER_ID, ENROLLMENT_SOURCE_ID)
+                .withTEIMarkerProperties()
+                .withInitialVisibility(Property.NONE)
+                .withFilter(isPoint())
 
     private val selectedPointLayer: Layer
         get() = style.getLayer(SELECTED_POINT_LAYER_ID)
             ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_ENROLLMENT_SOURCE_ID)
-                .withProperties(
-                    PropertyFactory.iconImage(MapLayerManager.ENROLLMENT_ICON_ID),
-                    PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.iconOffset(arrayOf(0f, -25f)),
-                    PropertyFactory.visibility(Property.NONE)
-                ).withFilter(
-                    Expression.eq(
-                        Expression.literal(TYPE),
-                        Expression.literal(TYPE_POINT)
-                    )
-                )
+                .withTEIMarkerProperties()
+                .withInitialVisibility(Property.NONE)
+                .withFilter(isPoint())
 
     private val polygonLayer: Layer
         get() = style.getLayer(POLYGON_LAYER_ID)
@@ -88,26 +78,7 @@ class EnrollmentMapLayer(
                     PropertyFactory.fillColor(ColorUtils.withAlpha(enrollmentColor)),
                     PropertyFactory.visibility(Property.NONE)
                 )
-                .withFilter(
-                    Expression.eq(
-                        Expression.literal(TYPE),
-                        Expression.literal(TYPE_POLYGON)
-                    )
-                )
-
-    private val selectedPolygonLayer: Layer
-        get() = style.getLayer(SELECTED_POLYGON_LAYER_ID)
-            ?: FillLayer(SELECTED_POLYGON_LAYER_ID, SELECTED_ENROLLMENT_SOURCE_ID)
-                .withProperties(
-                    PropertyFactory.fillColor(ColorUtils.withAlpha(enrollmentColor)),
-                    PropertyFactory.visibility(Property.NONE)
-                )
-                .withFilter(
-                    Expression.eq(
-                        Expression.literal(TYPE),
-                        Expression.literal(TYPE_POLYGON)
-                    )
-                )
+                .withFilter(isPolygon())
 
     private val polygonBorderLayer: Layer
         get() = style.getLayer(POLYGON_BORDER_LAYER_ID)
@@ -117,32 +88,14 @@ class EnrollmentMapLayer(
                     PropertyFactory.lineWidth(2f),
                     PropertyFactory.visibility(Property.NONE)
                 )
-                .withFilter(
-                    Expression.eq(
-                        Expression.literal(TYPE),
-                        Expression.literal(TYPE_POLYGON)
-                    )
-                )
-
-    private val selectedPolygonBorderLayer: Layer
-        get() = style.getLayer(SELECTED_POLYGON_BORDER_LAYER_ID)
-            ?: LineLayer(SELECTED_POLYGON_BORDER_LAYER_ID, SELECTED_ENROLLMENT_SOURCE_ID)
-                .withProperties(
-                    PropertyFactory.lineColor(enrollmentDarkColor),
-                    PropertyFactory.lineWidth(2f),
-                    PropertyFactory.visibility(Property.NONE)
-                )
-                .withFilter(
-                    Expression.eq(
-                        Expression.literal(TYPE),
-                        Expression.literal(TYPE_POLYGON)
-                    )
-                )
+                .withFilter(isPolygon())
 
     private fun setVisibility(visibility: String) {
         pointLayer.setProperties(PropertyFactory.visibility(visibility))
+        selectedPointLayer.setProperties(PropertyFactory.visibility(visibility))
         polygonLayer.setProperties(PropertyFactory.visibility(visibility))
         polygonBorderLayer.setProperties(PropertyFactory.visibility(visibility))
+        teiPointLayer.setProperties(PropertyFactory.visibility(visibility))
         visible = visibility == Property.VISIBLE
     }
 
@@ -155,62 +108,22 @@ class EnrollmentMapLayer(
     }
 
     override fun setSelectedItem(feature: Feature?) {
-        feature?.let {
-            if (feature.type() == FeatureType.POINT.geometryType) {
-                selectPoint(feature)
-            } else {
-                selectPolygon(feature)
-            }
-        } ?: deselectCurrentPoint()
+        feature?.let { selectPoint(feature) } ?: deselectCurrentPoint()
     }
 
     private fun selectPoint(feature: Feature) {
-        deselectCurrentPoint()
-
         style.getSourceAs<GeoJsonSource>(SELECTED_ENROLLMENT_SOURCE_ID)?.apply {
-            setGeoJson(
-                FeatureCollection.fromFeatures(
-                    arrayListOf(Feature.fromGeometry(feature.geometry()))
-                )
-            )
+            setGeoJson(feature)
         }
 
         selectedPointLayer.setProperties(
-            PropertyFactory.iconSize(1.5f)
-        )
-    }
-
-    private fun selectPolygon(feature: Feature) {
-        deselectCurrentPoint()
-
-        style.getSourceAs<GeoJsonSource>(SELECTED_ENROLLMENT_SOURCE_ID)?.apply {
-            setGeoJson(
-                FeatureCollection.fromFeatures(
-                    arrayListOf(Feature.fromGeometry(feature.geometry()))
-                )
-            )
-        }
-
-        selectedPolygonLayer.setProperties(
-            PropertyFactory.fillColor(ColorUtils.withAlpha(enrollmentDarkColor))
-        )
-        selectedPolygonBorderLayer.setProperties(
-            PropertyFactory.lineColor(Color.WHITE),
-            PropertyFactory.lineWidth(2.5f)
+            PropertyFactory.iconSize(1.5f),
+            PropertyFactory.visibility(Property.VISIBLE)
         )
     }
 
     private fun deselectCurrentPoint() {
-        selectedPointLayer.setProperties(
-            PropertyFactory.iconSize(1f)
-        )
-        selectedPolygonLayer.setProperties(
-            PropertyFactory.fillColor(ColorUtils.withAlpha(enrollmentColor))
-        )
-        selectedPolygonBorderLayer.setProperties(
-            PropertyFactory.lineColor(enrollmentDarkColor),
-            PropertyFactory.lineWidth(2f)
-        )
+        selectedPointLayer.setProperties(PropertyFactory.visibility(Property.NONE))
     }
 
     override fun findFeatureWithUid(featureUidProperty: String): Feature? {
@@ -218,5 +131,16 @@ class EnrollmentMapLayer(
             ?.querySourceFeatures(
                 Expression.eq(Expression.get("enrollmentUid"), featureUidProperty)
             )?.firstOrNull()
+            .also { setSelectedItem(it) }
+    }
+
+    override fun getId(): String {
+        return POINT_LAYER_ID
+    }
+
+    override fun layerIdsToSearch(): Array<String> {
+        return arrayOf(
+            TEI_POINT_LAYER_ID
+        )
     }
 }

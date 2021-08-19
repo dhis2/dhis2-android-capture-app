@@ -1,7 +1,9 @@
 package org.dhis2.usescases.main
 
 import android.view.Gravity
+import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
+import org.dhis2.data.filter.FilterRepository
 import org.dhis2.data.prefs.Preference
 import org.dhis2.data.prefs.Preference.Companion.DEFAULT_CAT_COMBO
 import org.dhis2.data.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
@@ -9,6 +11,10 @@ import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.LoginActivity
+import org.dhis2.utils.analytics.matomo.Actions.Companion.SETTINGS
+import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
+import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.user.User
@@ -22,7 +28,9 @@ class MainPresenter(
     private val schedulerProvider: SchedulerProvider,
     private val preferences: PreferenceProvider,
     private val workManagerController: WorkManagerController,
-    private val filterManager: FilterManager
+    private val filterManager: FilterManager,
+    private val filterRepository: FilterRepository,
+    private val matomoAnalyticsController: MatomoAnalyticsController
 ) {
 
     var disposable: CompositeDisposable = CompositeDisposable()
@@ -69,6 +77,22 @@ class MainPresenter(
     }
 
     fun initFilters() {
+        disposable.add(
+            Flowable.just(filterRepository.homeFilters())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { filters ->
+                        if (filters.isEmpty()) {
+                            view.hideFilters()
+                        } else {
+                            view.setFilters(filters)
+                        }
+                    },
+                    { Timber.e(it) }
+                )
+        )
+
         disposable.add(
             filterManager.asFlowable()
                 .subscribeOn(schedulerProvider.io())
@@ -142,5 +166,14 @@ class MainPresenter(
 
     fun onNavigateBackToHome() {
         view.goToHome()
+        initFilters()
+    }
+
+    fun onClickSyncManager() {
+        matomoAnalyticsController.trackEvent(HOME, SETTINGS, CLICK)
+    }
+
+    fun setOpeningFilterToNone() {
+        filterRepository.collapseAllFilters()
     }
 }

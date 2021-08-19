@@ -20,7 +20,10 @@ class CarouselViewAnimations {
             duration = 500
             interpolator = DecelerateInterpolator()
             alpha(1f)
-            withEndAction { view.setEnabledStatus(true) }
+            withEndAction {
+                view.setEnabledStatus(true)
+                view.selectFirstItem()
+            }
             start()
         }
     }

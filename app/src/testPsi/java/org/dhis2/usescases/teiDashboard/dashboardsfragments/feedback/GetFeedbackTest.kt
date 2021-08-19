@@ -756,11 +756,11 @@ class GetFeedbackTest {
             EventViewModel(
                 EventViewModelType.EVENT,
                 ProgramStage.builder().displayName("EVENT1").uid("STAGE_UID").build(),
-                Event.builder().uid("EVENT1_UID").build(), 0, null, true, true, "","", listOf(),null,false,false,false),
+                Event.builder().uid("EVENT1_UID").build(), 0, null, true, true, "","", listOf(),null,false,false,false,""),
             EventViewModel(
                 EventViewModelType.EVENT,
                 ProgramStage.builder().displayName("EVENT2").uid("STAGE_UID").build(),
-                Event.builder().uid("EVENT2_UID").build(), 0, null, true, true, "","", listOf(),null,false,false,false
+                Event.builder().uid("EVENT2_UID").build(), 0, null, true, true, "","", listOf(),null,false,false,false,""
             )
         )
 
@@ -792,7 +792,7 @@ class GetFeedbackTest {
                     EventViewModel(
                         EventViewModelType.EVENT,
                         ProgramStage.builder().displayName(stageName).uid("STAGE_UID").build(),
-                        Event.builder().uid("$stageName UID").build(), 0, null, true, true, "","", listOf(),null,false,false,false
+                        Event.builder().uid("$stageName UID").build(), 0, null, true, true, "","", listOf(),null,false,false,false, ""
                     )
                 )
             )

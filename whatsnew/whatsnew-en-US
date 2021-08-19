@@ -1,5 +1,7 @@
 This is a patch version that fixes:
-- ANDROAPP-3773 TEIs in search org unit not being downloaded
-- ANDROAPP-3775 Unique attribute searching
-
+- ANDROAPP-3983 Cannot use QR to read and populate the search form
+- ANDROAPP-3927 Impossible to add TEI when the program has zero search fields
+- ANDROAPP-3917 With translated DEs, Horizontal/Vertical Options not keeping values selected
+- ANDROAPP-4054 App crashes when searching by Age
+....
 You can find all the details on Jira and Github.

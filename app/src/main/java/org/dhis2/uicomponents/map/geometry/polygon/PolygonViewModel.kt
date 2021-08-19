@@ -11,15 +11,11 @@ import java.util.UUID
 
 class PolygonViewModel : ViewModel() {
 
-    private var _response = MutableLiveData<MutableList<PolygonPoint>>()
+    private val _response = MutableLiveData<MutableList<PolygonPoint>>(arrayListOf())
     val response: LiveData<MutableList<PolygonPoint>>
         get() = _response
 
     lateinit var onMessage: (str: String) -> Unit
-
-    init {
-        _response.postValue(mutableListOf())
-    }
 
     fun add(polygonPoint: PolygonPoint) {
         if (polygonPoint.point != null) {

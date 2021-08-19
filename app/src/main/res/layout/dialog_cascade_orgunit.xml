@@ -19,6 +19,8 @@
             android:layout_marginBottom="70dp"
             android:background="@color/dialog_gray_background"
             android:orientation="vertical"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             tools:ignore="UselessParent">
 
             <TextView

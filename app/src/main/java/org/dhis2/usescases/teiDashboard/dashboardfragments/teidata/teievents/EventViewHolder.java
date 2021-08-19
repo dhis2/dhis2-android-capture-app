@@ -15,7 +15,6 @@ import org.dhis2.R;
 import org.dhis2.databinding.ItemEventBinding;
 import org.dhis2.databinding.ItemFieldValueBinding;
 import org.dhis2.utils.ColorUtils;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -28,7 +27,6 @@ import org.hisp.dhis.android.core.program.ProgramType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import kotlin.Pair;
@@ -85,7 +83,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
             renderStageIcon(programStage.style());
         }
 
-        String date = DateUtils.getInstance().getPeriodUIString(programStage.periodType(), event.eventDate() != null ? event.eventDate() : event.dueDate(), Locale.getDefault());
+        String date = eventModel.getDisplayDate();
         binding.eventDate.setText(date);
 
         binding.organisationUnit.setText(eventModel.getOrgUnitName());
@@ -182,7 +180,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
             binding.dataElementList.setVisibility(View.GONE);
             SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
             for (Pair<String, String> nameValuePair : dataElementValues) {
-                if (nameValuePair.component2()!= null && !Objects.equals(nameValuePair.component2(), "-")) {
+                if (nameValuePair.component2() != null && !Objects.equals(nameValuePair.component2(), "-")) {
                     SpannableString value = new SpannableString(nameValuePair.component2());
                     int colorToUse = dataElementValues.indexOf(nameValuePair) % 2 == 0 ?
                             ContextCompat.getColor(itemView.getContext(), R.color.textPrimary) : ContextCompat.getColor(itemView.getContext(), R.color.textSecondary);

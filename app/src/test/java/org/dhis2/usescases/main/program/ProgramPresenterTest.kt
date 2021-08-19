@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.utils.Constants.PROGRAM_THEME
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.dhis2.utils.filters.FilterManager
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -25,10 +26,18 @@ class ProgramPresenterTest {
     private val schedulers: TestSchedulerProvider = TestSchedulerProvider(TestScheduler())
     private val preferences: PreferenceProvider = mock()
     private val filterManager: FilterManager = mock()
+    private val matomoAnalyticsController: MatomoAnalyticsController = mock()
 
     @Before
     fun setUp() {
-        presenter = ProgramPresenter(view, homeRepository, schedulers, preferences, filterManager)
+        presenter = ProgramPresenter(
+            view,
+            homeRepository,
+            schedulers,
+            preferences,
+            filterManager,
+            matomoAnalyticsController
+        )
     }
 
     @Test

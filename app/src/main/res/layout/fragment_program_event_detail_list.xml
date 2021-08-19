@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/backdropLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <include
+            android:id="@+id/textFilterLayout"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            layout="@layout/item_filter_value"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/empty_teis"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:padding="42dp"
+            android:textSize="@dimen/primaryTextSize"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textFilterLayout"
+            tools:text="@string/empty_tei_add" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="100dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textFilterLayout"
+            tools:listitem="@layout/item_event" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

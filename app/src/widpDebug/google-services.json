@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "54974137353",
+    "firebase_url": "https://widp-app.firebaseio.com",
+    "project_id": "widp-app",
+    "storage_bucket": "widp-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:54974137353:android:2b1b366d3cb148d787e4d8",
+        "android_client_info": {
+          "package_name": "com.eyeseetea.widp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "54974137353-ts8gu4bo3fh4sqhesmn7ia3qba2p1aek.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1rFhbvynaTkyfshOQmgrLtAk-BCL0NnE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "54974137353-ts8gu4bo3fh4sqhesmn7ia3qba2p1aek.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:54974137353:android:0fe6765f4a1f406b87e4d8",
+        "android_client_info": {
+          "package_name": "com.eyeseetea.widp.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "54974137353-ts8gu4bo3fh4sqhesmn7ia3qba2p1aek.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1rFhbvynaTkyfshOQmgrLtAk-BCL0NnE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "54974137353-ts8gu4bo3fh4sqhesmn7ia3qba2p1aek.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

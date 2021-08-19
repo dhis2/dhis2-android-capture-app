@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="rfab__color_background_normal">#ffffff</color>
+    <color name="rfab__color_background_pressed">#dddddd</color>
+    <color name="rfab__color_frame">#ffffff</color>
+    <color name="rfab__color_shadow">#c6c6c6</color>
+    <color name="rfab__color_text_label_item">#777777</color>
+    <item name="rfab__id_content_label_list_item_position" type="id"/>
+    <string name="rfab_rfal__float_convert_color_alpha">0.7</string>
+    <declare-styleable name="RapidFloatingActionButton">
+        <attr format="enum" name="rfab_size">
+            <!-- 56dp -->
+            <enum name="normal" value="0"/>
+            <!-- 40dp -->
+            <enum name="mini" value="1"/>
+        </attr>
+        <attr format="reference" name="rfab_drawable"/>
+        <attr format="color" name="rfab_color_normal"/>
+        <attr format="color" name="rfab_color_pressed"/>
+        <attr format="dimension" name="rfab_shadow_radius"/>
+        <attr format="color" name="rfab_shadow_color"/>
+        <attr format="dimension" name="rfab_shadow_dx"/>
+        <attr format="dimension" name="rfab_shadow_dy"/>
+        <!-- identificationCode用于确定唯一个RFAB，目前用在通过RapidFloatingActionButtonGroup中获取某一个RFAB -->
+        <attr format="string" name="rfab_identification_code"/>
+    </declare-styleable>
+    <declare-styleable name="RapidFloatingActionLayout">
+        <attr format="color" name="rfal_frame_color"/>
+        <attr format="float" name="rfal_frame_alpha"/>
+    </declare-styleable>
+</resources>

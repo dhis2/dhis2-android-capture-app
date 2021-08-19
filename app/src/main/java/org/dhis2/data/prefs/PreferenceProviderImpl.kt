@@ -147,6 +147,7 @@ open class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
 
     override fun closeJiraSession() {
         SecurePreferences.removeValue(context, Constants.JIRA_AUTH)
+        SecurePreferences.removeValue(context, Constants.JIRA_USER)
     }
 
     override fun clear() {

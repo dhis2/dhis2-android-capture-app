@@ -2,11 +2,22 @@ package org.dhis2.usescases.datasets.datasetDetail;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
+import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
+import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 
+import java.util.List;
+
+import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
+
+import static org.dhis2.utils.analytics.matomo.Actions.SYNC_DATASET;
+import static org.dhis2.utils.analytics.matomo.Categories.DATASET_LIST;
+import static org.dhis2.utils.analytics.matomo.Labels.CLICK;
 
 public class DataSetDetailPresenter {
 
@@ -14,23 +25,48 @@ public class DataSetDetailPresenter {
     private DataSetDetailRepository dataSetDetailRepository;
     private SchedulerProvider schedulerProvider;
     private FilterManager filterManager;
+    private FilterRepository filterRepository;
+    private DisableHomeFiltersFromSettingsApp disableHomFilters;
+    private MatomoAnalyticsController matomoAnalyticsController;
 
     CompositeDisposable disposable;
 
     public DataSetDetailPresenter(DataSetDetailView view,
                                   DataSetDetailRepository dataSetDetailRepository,
                                   SchedulerProvider schedulerProvider,
-                                  FilterManager filterManager) {
+                                  FilterManager filterManager,
+                                  FilterRepository filterRepository,
+                                  DisableHomeFiltersFromSettingsApp disableHomFilters,
+                                  MatomoAnalyticsController matomoAnalyticsController) {
 
         this.view = view;
         this.dataSetDetailRepository = dataSetDetailRepository;
         this.schedulerProvider = schedulerProvider;
         this.filterManager = filterManager;
+        this.filterRepository = filterRepository;
+        this.disableHomFilters = disableHomFilters;
+        this.matomoAnalyticsController = matomoAnalyticsController;
         disposable = new CompositeDisposable();
     }
 
     public void init() {
         getOrgUnits();
+
+        disposable.add(
+                filterManager.asFlowable().startWith(filterManager)
+                        .flatMap(filterManager -> Flowable.just(filterRepository.dataSetFilters(dataSetDetailRepository.getDataSetUid())))
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(filterItems -> {
+                                    if (filterItems.isEmpty()){
+                                        view.hideFilters();
+                                    } else {
+                                        view.setFilters(filterItems);
+                                    }
+                                },
+                                Timber::d
+                        )
+        );
 
         disposable.add(
                 filterManager.asFlowable()
@@ -58,16 +94,6 @@ public class DataSetDetailPresenter {
                                 periodRequest -> view.showPeriodRequest(periodRequest.getFirst()),
                                 Timber::e
                         ));
-
-        disposable.add(
-                dataSetDetailRepository.catOptionCombos()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                catCombos -> view.setCatOptionComboFilter(catCombos),
-                                Timber::e
-                        )
-        );
 
         disposable.add(
                 dataSetDetailRepository.canWriteAny()
@@ -128,6 +154,7 @@ public class DataSetDetailPresenter {
 
 
     public void onSyncIconClick(DataSetDetailModel dataSet) {
+        matomoAnalyticsController.trackEvent(DATASET_LIST, SYNC_DATASET, CLICK);
         view.showSyncDialog(dataSet);
     }
 
@@ -144,5 +171,14 @@ public class DataSetDetailPresenter {
         FilterManager.getInstance().addCatOptCombo(
                 dataSetDetailRepository.getCatOptCombo(selectedCatOptionCombo)
         );
+    }
+
+    public void clearFilterIfDatasetConfig() {
+        List<FilterItem> filters = filterRepository.homeFilters();
+        disableHomFilters.execute(filters);
+    }
+
+    public void setOpeningFilterToNone(){
+        filterRepository.collapseAllFilters();
     }
 }

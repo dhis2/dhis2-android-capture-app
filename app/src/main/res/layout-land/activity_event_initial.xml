@@ -21,7 +21,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialContract.Presenter" />
+            type="org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter" />
     </data>
 
     <LinearLayout
@@ -40,11 +40,12 @@
 
             <ImageView
                 android:id="@+id/menu"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                style="@style/ActionIcon"
                 android:onClick="@{()->presenter.onBackClick()}"
-                android:padding="15dp"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginStart="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
 
@@ -132,7 +133,7 @@
                                 android:layout_height="80dp"
                                 android:contentDescription='@{name}'
                                 android:padding="7dp"
-                                android:tint="?colorPrimaryDark"
+                                app:tint="?colorPrimaryDark"
                                 app:imageBackground="@{ @drawable/photo_temp }"
                                 app:srcCompat="@drawable/ic_clinical_f_outline" />
 
@@ -165,13 +166,13 @@
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="end"
                                     android:layout_marginTop="30dp"
-                                    android:onClick="@{(view)->presenter.onShareClick(view)}">
+                                    android:onClick="@{()->presenter.onShareClick()}">
 
                                     <ImageView
                                         android:id="@+id/shareIcon"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:tint="@color/text_black_333"
+                                        app:tint="@color/text_black_333"
                                         app:srcCompat="@drawable/ic_share" />
 
                                     <TextView
@@ -238,8 +239,9 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical" />
 
-                        <org.dhis2.usescases.coodinates.CoordinatesView
+                        <include
                             android:id="@+id/geometry"
+                            layout="@layout/form_coordinates"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:visibility="@{programStage.featureType()!=null &amp;&amp; programStage.featureType() != FeatureType.NONE ?View.VISIBLE:View.GONE}" />
