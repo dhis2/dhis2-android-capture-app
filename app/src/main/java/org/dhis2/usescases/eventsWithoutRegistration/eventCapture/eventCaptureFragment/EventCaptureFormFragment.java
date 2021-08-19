@@ -152,9 +152,4 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             presenter.onActionButtonClick();
         }
     }
-
-    @Override
-    public void displayUpdateErrorMessage() {
-        displayMessage(getString(R.string.update_field_error));
-    }
 }

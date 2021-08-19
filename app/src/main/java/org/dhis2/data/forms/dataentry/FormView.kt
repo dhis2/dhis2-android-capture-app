@@ -158,7 +158,7 @@ class FormView constructor(
 
         viewModel.loading.observe(
             viewLifecycleOwner,
-            Observer { loading ->
+            { loading ->
                 if (onLoadingListener != null) {
                     onLoadingListener.invoke(loading)
                 } else {
@@ -168,6 +168,13 @@ class FormView constructor(
                         binding.progress.hide()
                     }
                 }
+            }
+        )
+
+        viewModel.showToast.observe(
+            viewLifecycleOwner,
+            { message ->
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
         )
     }

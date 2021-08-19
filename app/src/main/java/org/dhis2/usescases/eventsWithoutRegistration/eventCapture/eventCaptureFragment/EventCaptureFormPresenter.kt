@@ -41,8 +41,6 @@ class EventCaptureFormPresenter(
                                     activityPresenter.setValueChanged(result.uid)
                                     activityPresenter.nextCalculation(true)
                                 }
-                                ValueStoreResult.ERROR_UPDATING_VALUE ->
-                                    view.displayUpdateErrorMessage()
                                 else -> populateList()
                             }
                         } ?: activityPresenter.hideProgress()

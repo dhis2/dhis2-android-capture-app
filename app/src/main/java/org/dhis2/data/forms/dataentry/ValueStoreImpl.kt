@@ -392,7 +392,7 @@ class ValueStoreImpl(
                     }
                     try {
                         saveEnrollmentGeometry(geometry)
-                        Flowable.just(
+                        return Flowable.just(
                             StoreResult(
                                 "",
                                 ValueStoreResult.VALUE_CHANGED
@@ -404,7 +404,7 @@ class ValueStoreImpl(
                         Flowable.just(
                             StoreResult(
                                 "",
-                                ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                                ValueStoreResult.ERROR_UPDATING_VALUE
                             )
                         )
                     }

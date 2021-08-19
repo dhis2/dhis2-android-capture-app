@@ -226,9 +226,6 @@ class EnrollmentPresenterImpl(
                                     view.hideProgress()
                                     checkFinishing(false)
                                 }
-                                ValueStoreResult.ERROR_UPDATING_VALUE -> {
-                                    view.displayUpdateErrorMessage()
-                                }
                             }
                         } ?: view.hideProgress()
                     },

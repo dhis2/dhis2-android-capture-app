@@ -485,8 +485,4 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             .setCancelable(false)
             .show()
     }
-
-    override fun displayUpdateErrorMessage() {
-        displayMessage(getString(R.string.update_field_error))
-    }
 }

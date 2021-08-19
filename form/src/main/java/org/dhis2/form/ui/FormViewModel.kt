@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.dhis2.form.R
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
@@ -31,6 +32,7 @@ class FormViewModel(
 ) : ViewModel() {
 
     val loading = MutableLiveData<Boolean>()
+    val showToast = MutableLiveData<Int>()
     private val _items = MutableLiveData<List<FieldUiModel>>()
     val items: LiveData<List<FieldUiModel>> = _items
 
@@ -49,6 +51,9 @@ class FormViewModel(
                     when (result.second.valueStoreResult) {
                         ValueStoreResult.VALUE_CHANGED -> {
                             _savedValue.value = result.first
+                        }
+                        ValueStoreResult.ERROR_UPDATING_VALUE -> {
+                            showToast.value = R.string.update_field_error
                         }
                         else -> _items.value = repository.composeList()
                     }

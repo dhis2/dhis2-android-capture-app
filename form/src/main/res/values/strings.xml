@@ -12,4 +12,5 @@
     <string name="validation_url">This is not a valid url</string>
     <string name="invalid_integer">Value must be an integer</string>
     <string name="wrong_pattern">It is not a correct format.</string>
+    <string name="update_field_error">This field could not be updated. Please try again</string>
 </resources>
