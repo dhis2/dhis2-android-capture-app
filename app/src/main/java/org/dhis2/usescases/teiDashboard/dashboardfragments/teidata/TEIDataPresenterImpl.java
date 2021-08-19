@@ -184,7 +184,8 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                                     filterManager.getAssignedFilter(),
                                                     filterManager.getEventStatusFilters(),
                                                     filterManager.getCatOptComboFilters(),
-                                                    filterManager.getSortingItem()
+                                                    filterManager.getSortingItem(),
+                                                    false
                                             ).toFlowable(),
                                             ruleEngineRepository.updateRuleEngine()
                                                     .flatMap(ruleEngine -> ruleEngineRepository.reCalculate()),
