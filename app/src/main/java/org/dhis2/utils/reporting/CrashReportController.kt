@@ -11,4 +11,6 @@ interface CrashReportController {
     fun logException(exception: Exception)
 
     fun logMessage(message: String)
+
+    fun addBreadCrumb(category: String, message: String)
 }
