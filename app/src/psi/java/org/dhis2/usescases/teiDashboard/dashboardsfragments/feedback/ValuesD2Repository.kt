@@ -29,12 +29,12 @@ class ValuesD2Repository(private val d2: D2, private val context: Context) : Val
                 .get().blockingGet()
 
         val dataElementsWithFeedbackOrder =
-            getDataElementsWithFeedbackOrder(dataElements, feedbackOrderAttributeCode)
+            getDataElementsWithFeedbackOrder( feedbackOrderAttributeCode)
 
         val dataElementsWithMandatory =
             getDataElementsWithMandatoryFilter(eventUid, dataElementsWithFeedbackOrder)
 
-        return teiDataValues.filter { dataElementsWithFeedbackOrder.contains(it.dataElement()) }
+        return teiDataValues.filter { dataElementsWithFeedbackOrder.keys.contains(it.dataElement()) }
             .map { teiValue ->
                 val dataElement =
                     dataElements.first { it.uid() == teiValue.dataElement() }
@@ -112,25 +112,28 @@ class ValuesD2Repository(private val d2: D2, private val context: Context) : Val
         }
     }
 
-    private fun getDataElementsWithFeedbackOrder(
-        dataElements: List<DataElement>,
-        feedbackOrderAttributeCode: String
-    ): List<String> {
-        return dataElements.map {
-            val deAttributeValues = getDataElementAttributeValues(it.uid())
+    private fun getDataElementsWithFeedbackOrder(feedbackOrderAttributeCode: String): Map<String, String> {
+        var result = mutableMapOf<String, String>()
 
-            it.toBuilder().attributeValues(deAttributeValues).build()
-        }.filter {
-            if (it.attributeValues() == null) false else it.attributeValues()!!
-                .any { attributeValue ->
-                    attributeValue.attribute().code() == feedbackOrderAttributeCode
+        val select = "SELECT dataElement, value  FROM DataElementAttributeValueLink  \n" +
+            "LEFT JOIN Attribute ON DataElementAttributeValueLink.Attribute = Attribute.uid\n" +
+            "where Attribute.code = ?"
+
+        d2.databaseAdapter().rawQuery(select, feedbackOrderAttributeCode)
+            .use { cursor ->
+                if (cursor != null) {
+                    while (cursor.moveToNext()) {
+                        result[cursor.getString(0)] = cursor.getString(1)
+                    }
                 }
-        }.map { it.uid() }
+            }
+
+        return result
     }
 
     private fun getDataElementsWithMandatoryFilter(
         eventUid: String,
-        dataElementsWithFeedbackOrder: List<String>
+        dataElementsWithFeedbackOrder:  Map<String, String>
     ): List<String> {
         val event = d2.eventModule().events().byUid().eq(eventUid)
             .one().blockingGet()
@@ -143,7 +146,7 @@ class ValuesD2Repository(private val d2: D2, private val context: Context) : Val
             d2.dataElementModule().dataElements()
                 .uid(programStageDE.dataElement()?.uid()).blockingGet().uid()
         }.filter { deUid ->
-            dataElementsWithFeedbackOrder.contains(deUid)
+            dataElementsWithFeedbackOrder.keys.contains(deUid)
         }
     }
 
