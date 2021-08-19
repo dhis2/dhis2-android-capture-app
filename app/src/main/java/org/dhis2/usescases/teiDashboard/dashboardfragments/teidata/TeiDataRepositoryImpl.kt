@@ -41,7 +41,8 @@ class TeiDataRepositoryImpl(
         assignedToMe: Boolean,
         eventStatusFilters: MutableList<EventStatus>,
         catOptComboFilters: MutableList<CategoryOptionCombo>,
-        sortingItem: SortingItem?
+        sortingItem: SortingItem?,
+        replaceProgramStageName: Boolean
     ): Single<List<EventViewModel>> {
         var eventRepo = d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
 
@@ -59,9 +60,9 @@ class TeiDataRepositoryImpl(
         )
 
         return if (groupedByStage) {
-            getGroupedEvents(eventRepo, selectedStage, sortingItem)
+            getGroupedEvents(eventRepo, selectedStage, sortingItem, replaceProgramStageName)
         } else {
-            getTimelineEvents(eventRepo, sortingItem)
+            getTimelineEvents(eventRepo, sortingItem,replaceProgramStageName)
         }
     }
 
@@ -93,7 +94,8 @@ class TeiDataRepositoryImpl(
     private fun getGroupedEvents(
         eventRepository: EventCollectionRepository,
         selectedStage: String?,
-        sortingItem: SortingItem?
+        sortingItem: SortingItem?,
+        replaceProgramStageName: Boolean = false
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
         var eventRepo: EventCollectionRepository
@@ -136,13 +138,14 @@ class TeiDataRepositoryImpl(
                             val showTopShadow = index == 0
                             val showBottomShadow = index == eventList.size - 1
 
-                            val programStageDisplayName = getProgramStageName(d2, event.uid())
-                            val editedProgramStage = programStage.toBuilder().displayName(programStageDisplayName).build();
+                            val finalProgramStage = if (replaceProgramStageName == true)
+                                programStage.toBuilder().displayName(getProgramStageName(d2, event.uid())).build()
+                            else programStage
 
                             eventViewModels.add(
                                 EventViewModel(
                                     EventViewModelType.EVENT,
-                                    editedProgramStage,
+                                    finalProgramStage,
                                     event,
                                     0,
                                     null,
@@ -170,7 +173,8 @@ class TeiDataRepositoryImpl(
 
     private fun getTimelineEvents(
         eventRepository: EventCollectionRepository,
-        sortingItem: SortingItem?
+        sortingItem: SortingItem?,
+        replaceProgramStageName: Boolean = false
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
         var eventRepo = eventRepository
@@ -186,15 +190,16 @@ class TeiDataRepositoryImpl(
                         .uid(event.programStage())
                         .blockingGet()
 
-                    val programStageDisplayName = getProgramStageName(d2, event.uid())
-                    val editedProgramStage = programStage.toBuilder().displayName(programStageDisplayName).build();
+                    val finalProgramStage = if (replaceProgramStageName == true)
+                        programStage.toBuilder().displayName(getProgramStageName(d2, event.uid())).build()
+                    else programStage
 
                     val showTopShadow = index == 0
                     val showBottomShadow = index == eventList.size - 1
                     eventViewModels.add(
                         EventViewModel(
                             EventViewModelType.EVENT,
-                            editedProgramStage,
+                            finalProgramStage,
                             event,
                             0,
                             null,
@@ -204,7 +209,7 @@ class TeiDataRepositoryImpl(
                                 .uid(event.organisationUnit()).blockingGet().displayName()
                                 ?: "",
                             catComboName = getCatComboName(event.attributeOptionCombo()),
-                            dataElementValues = getEventValues(event.uid(), editedProgramStage.uid()),
+                            dataElementValues = getEventValues(event.uid(), finalProgramStage.uid()),
                             groupedByStage = false
                         )
                     )
