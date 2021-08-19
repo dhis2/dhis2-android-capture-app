@@ -5,13 +5,12 @@ import androidx.databinding.ObservableField;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-
-import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.R;
 import org.dhis2.data.filter.EmptyWorkingList;
 import org.dhis2.data.filter.FilterStateExtensionsKt;
 import org.dhis2.data.filter.WorkingListScope;
 import org.dhis2.utils.filters.cat_opt_comb.CatOptCombFilterAdapter;
+import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.filters.sorting.SortingStatus;
 import org.dhis2.utils.filters.workingLists.WorkingListItem;
 import org.dhis2.utils.resources.ResourceManager;
@@ -25,7 +24,6 @@ import org.hisp.dhis.android.core.period.DatePeriod;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -33,6 +31,7 @@ import java.util.Objects;
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+import kotlin.Pair;
 import kotlin.collections.CollectionsKt;
 
 public class FilterManager implements Serializable {
@@ -90,7 +89,7 @@ public class FilterManager implements Serializable {
 
     private FlowableProcessor<FilterManager> filterProcessor;
     private FlowableProcessor<Boolean> ouTreeProcessor;
-    private FlowableProcessor<kotlin.Pair<PeriodRequest, Filters>> periodRequestProcessor;
+    private FlowableProcessor<Pair<PeriodRequest, Filters>> periodRequestProcessor;
     private FlowableProcessor<String> catOptComboRequestProcessor;
 
     private WorkingListItem currentWorkingList;
@@ -330,7 +329,7 @@ public class FilterManager implements Serializable {
         return filterProcessor;
     }
 
-    public FlowableProcessor<kotlin.Pair<PeriodRequest, Filters>> getPeriodRequest() {
+    public FlowableProcessor<Pair<PeriodRequest, Filters>> getPeriodRequest() {
         return periodRequestProcessor;
     }
 
@@ -416,7 +415,7 @@ public class FilterManager implements Serializable {
     }
 
     public void addPeriodRequest(PeriodRequest periodRequest, Filters filter) {
-        periodRequestProcessor.onNext( new kotlin.Pair(periodRequest, filter));
+        periodRequestProcessor.onNext(new Pair<>(periodRequest, filter));
     }
 
     public void addCatOptComboRequest(String catOptComboUid) {
@@ -551,7 +550,6 @@ public class FilterManager implements Serializable {
         ouFiltersApplied.set(ouFilters.size());
         periodFiltersApplied.set(0);
         assignedToMeApplied.set(0);
-
         this.currentWorkingList = null;
         setWorkingListScope(new EmptyWorkingList());
 
@@ -677,7 +675,7 @@ public class FilterManager implements Serializable {
                 return currentWorkingListScope.get().isEnrollmentStatusActive();
             case EVENT_STATUS:
                 return currentWorkingListScope.get().isEventStatusActive();
-                case ASSIGNED_TO_ME:
+            case ASSIGNED_TO_ME:
                 return currentWorkingListScope.get().isAssignedActive();
             default:
                 return false;

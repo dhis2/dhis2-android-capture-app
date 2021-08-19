@@ -71,5 +71,7 @@ public class EventInitialContract {
         void setGeometryModel(CoordinateViewModel geometryModel);
 
         void setNewGeometry(String value);
+
+        void displayFeatureTypeError();
     }
 }

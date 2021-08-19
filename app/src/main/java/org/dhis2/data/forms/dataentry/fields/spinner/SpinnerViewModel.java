@@ -41,10 +41,10 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     public abstract List<String> optionGroupsToShow();
 
     public static SpinnerViewModel create(String id, String label, String hintFilterOptions,
-            Boolean mandatory, String optionSet, String value,
-            String section, Boolean editable, String description,
-            ObjectStyle objectStyle, boolean isBackgroundTransparent,
-            String renderType, LegendValue colorLegend, String url) {
+                                          Boolean mandatory, String optionSet, String value,
+                                          String section, Boolean editable, String description,
+                                          ObjectStyle objectStyle, boolean isBackgroundTransparent,
+                                          String renderType, LegendValue colorLegend, String url) {
         return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null,
                 editable, null, null, description, objectStyle, null,
                 DataEntryViewHolderTypes.OPTION_SET_SPINNER, null, null,false,
@@ -54,11 +54,11 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     }
 
     public static SpinnerViewModel create(String id, String label, String hintFilterOptions,
-            Boolean mandatory, String optionSet, String value,
-            String section, Boolean editable, String description,
-            ObjectStyle objectStyle, boolean isBackgroundTransparent,
-            String renderType, FlowableProcessor<RowAction> processor,
-            LegendValue legendValue, String url) {
+                                          Boolean mandatory, String optionSet, String value,
+                                          String section, Boolean editable, String description,
+                                          ObjectStyle objectStyle, boolean isBackgroundTransparent,
+                                          String renderType, FlowableProcessor<RowAction> processor,
+                                          LegendValue legendValue, String url) {
         return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null,
                 editable, null, null, description, objectStyle, null,
                 DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor, null,false,
@@ -83,7 +83,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
         return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(),
                 allowFutureDate(), editable(), warning(), error, description(), objectStyle(),
                 null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(),
-                style(), activated(), url(), legendValue(), hint(), optionSet(),
+                 style(), activated(), url(), legendValue(), hint(), optionSet(),
                 optionsToHide(), optionGroupsToHide(), optionGroupsToShow(),
                 isBackgroundTransparent(), renderType());
     }
@@ -94,7 +94,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
         return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(),
                 allowFutureDate(), editable(), warning, error(), description(), objectStyle(),
                 null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(), style(),
-                activated(),  url(), legendValue(), hint(), optionSet(),
+                activated(), url(), legendValue(), hint(), optionSet(),
                 optionsToHide(), optionGroupsToHide(), optionGroupsToShow(),
                 isBackgroundTransparent(), renderType());
     }
@@ -127,7 +127,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
         return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(),
                 programStageSection(), allowFutureDate(), editable(), warning(), error(),
                 description(), objectStyle(), null, dataEntryViewType(),
-                processor(), style(), isFocused, url(),legendValue(), hint(), optionSet(),
+                processor(), style(), isFocused, url(), legendValue(), hint(), optionSet(),
                 optionsToHide(), optionGroupsToHide(), optionGroupsToShow(),
                 isBackgroundTransparent(), renderType());
     }

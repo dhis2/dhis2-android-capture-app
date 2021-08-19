@@ -1,6 +1,8 @@
 package org.dhis2.data.filter
 
 import androidx.databinding.ObservableField
+import java.util.Calendar
+import javax.inject.Inject
 import org.dhis2.utils.filters.AssignedFilter
 import org.dhis2.utils.filters.CatOptionComboFilter
 import org.dhis2.utils.filters.EnrollmentDateFilter
@@ -36,8 +38,6 @@ import org.hisp.dhis.android.core.settings.HomeFilter
 import org.hisp.dhis.android.core.settings.ProgramFilter
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
 import timber.log.Timber
-import java.util.Calendar
-import javax.inject.Inject
 
 data class TextFilter(val dataElement: String, val text: String)
 

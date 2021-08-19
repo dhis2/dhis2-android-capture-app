@@ -1,6 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.form.model.FieldUiModel;
@@ -36,9 +37,9 @@ public class EventCaptureContract {
 
         void updatePercentage(float primaryValue);
 
-        void updateProgramStageName(String stageName);
-
         void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldUiModel> emptyMandatoryFields);
+
+        void updateProgramStageName(String stageName);
 
         void restartDataEntry();
 
