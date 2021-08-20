@@ -37,7 +37,7 @@ import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModelExtensionsKt;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelKt;
-import org.dhis2.utils.ColorUtils;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.NetworkUtils;

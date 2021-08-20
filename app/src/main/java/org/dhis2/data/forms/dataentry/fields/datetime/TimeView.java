@@ -22,7 +22,7 @@ import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
-import org.dhis2.utils.ColorUtils;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.commons.dialogs.CustomDialog;

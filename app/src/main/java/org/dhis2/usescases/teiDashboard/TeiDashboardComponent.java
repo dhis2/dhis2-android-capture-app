@@ -24,9 +24,6 @@ public interface TeiDashboardComponent {
     IndicatorsComponent plus(IndicatorsModule indicatorsModule);
 
     @NonNull
-    RelationshipComponent plus(RelationshipModule relationshipModule);
-
-    @NonNull
     NotesComponent plus(NotesModule notesModule);
 
     @NonNull

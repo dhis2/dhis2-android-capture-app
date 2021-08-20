@@ -362,8 +362,10 @@ class CarouselAdapter private constructor(
         var items: MutableList<CarouselItemModel> = arrayListOf(),
         var program: Program? = null
     ) {
-        fun addCurrentTei(currentTei: String) = apply {
-            this.currentTei = currentTei
+        fun addCurrentTei(currentTei: String?) = apply {
+            if (currentTei != null) {
+                this.currentTei = currentTei
+            }
         }
 
         fun addOnTeiClickListener(

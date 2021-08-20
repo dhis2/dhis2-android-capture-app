@@ -35,7 +35,7 @@ import com.google.gson.reflect.TypeToken;
 import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.commons.dialogs.CustomDialog;
-import org.dhis2.utils.ColorUtils;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.Preconditions;

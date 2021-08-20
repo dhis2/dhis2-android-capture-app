@@ -9,6 +9,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -21,6 +23,7 @@ import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
 import org.dhis2.utils.Constants;
 import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.utils.EventMode;
@@ -32,6 +35,7 @@ import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.List;
@@ -46,7 +50,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
-public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.View {
+public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.View, MapButtonObservable {
 
     private static final int RQ_GO_BACK = 1202;
     private static final int NOTES_TAB_POSITION = 1;
@@ -63,6 +67,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public EventCaptureComponent eventCaptureComponent;
     public String programUid;
     public String eventUid;
+    private LiveData<Boolean> relationshipMapButton = new MutableLiveData<>(false);
 
     public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid, @NonNull EventMode eventMode) {
         Bundle bundle = new Bundle();
@@ -113,9 +118,12 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 case R.id.navigation_analytics:
                     binding.eventViewPager.setCurrentItem(1);
                     break;
+                case R.id.navigation_relationships:
+                    binding.eventViewPager.setCurrentItem(2);
+                    break;
                 case R.id.navigation_notes:
                 default:
-                    binding.eventViewPager.setCurrentItem(2);
+                    binding.eventViewPager.setCurrentItem(3);
                     break;
             }
             return true;
@@ -491,5 +499,16 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 })
                 .setCancelable(false)
                 .show();
+    }
+
+    @NotNull
+    @Override
+    public LiveData<Boolean> relationshipMap() {
+        return relationshipMapButton;
+    }
+
+    @Override
+    public void onRelationshipMapLoaded() {
+
     }
 }

@@ -9,7 +9,7 @@ import org.hisp.dhis.android.core.relationship.RelationshipType
 
 interface RelationshipView : AbstractActivityContracts.View {
 
-    fun setRelationships(relationships: MutableList<RelationshipViewModel>)
+    fun setRelationships(relationships: List<RelationshipViewModel>)
     fun goToAddRelationship(teiUid: String, teiTypeUidToAdd: String)
     fun showPermissionError()
     fun openDashboardFor(teiUid: String)
@@ -17,8 +17,10 @@ interface RelationshipView : AbstractActivityContracts.View {
     fun showRelationshipNotFoundError(teiTypeName: String)
     fun initFab(relationshipTypes: MutableList<Trio<RelationshipType, String, Int>>)
     fun setFeatureCollection(
-        currentTei: String,
+        currentTei: String?,
         relationshipsMapModels: List<RelationshipUiComponentModel>,
         map: Pair<Map<String?, FeatureCollection>, BoundingBox>
     )
+
+    fun openEventFor(eventUid: String, programUid: String)
 }

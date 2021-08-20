@@ -10,6 +10,7 @@ import com.mapbox.mapboxsdk.style.layers.Property
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.layer.MapLayerManager
 import org.dhis2.uicomponents.map.layer.isPoint
@@ -17,7 +18,6 @@ import org.dhis2.uicomponents.map.layer.isPolygon
 import org.dhis2.uicomponents.map.layer.withInitialVisibility
 import org.dhis2.uicomponents.map.layer.withTEIMarkerProperties
 import org.dhis2.uicomponents.map.managers.TeiMapManager.Companion.ENROLLMENT_SOURCE_ID
-import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
 
 class EnrollmentMapLayer(

@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.di.dagger.PerActivity;
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.forms.EventRepository;
@@ -144,7 +145,10 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    NavigationPageConfigurator pageConfigurator(){
-        return new EventPageConfigurator();
+    NavigationPageConfigurator pageConfigurator(
+            EventCaptureContract.EventCaptureRepository repository,
+            FeatureConfigRepository featureRepository
+    ) {
+        return new EventPageConfigurator(repository, featureRepository);
     }
 }

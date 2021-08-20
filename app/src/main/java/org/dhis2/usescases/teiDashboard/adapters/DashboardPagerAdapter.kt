@@ -74,7 +74,14 @@ class DashboardPagerAdapter(
             }
             DashboardPageType.RELATIONSHIPS -> {
                 if (relationshipFragment == null) {
-                    relationshipFragment = RelationshipFragment()
+                    relationshipFragment = RelationshipFragment().apply {
+                        arguments = RelationshipFragment.withArguments(
+                            currentProgram,
+                            teiUid,
+                            enrollmentUid,
+                            null
+                        )
+                    }
                 }
                 relationshipFragment!!
             }

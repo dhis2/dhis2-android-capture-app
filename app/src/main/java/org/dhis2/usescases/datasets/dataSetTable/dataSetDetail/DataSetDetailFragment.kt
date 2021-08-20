@@ -13,11 +13,11 @@ import javax.inject.Inject
 import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.toDateSpan
 import org.dhis2.R
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.databinding.FragmentDatasetDetailBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.granularsync.GranularSyncContracts
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.resources.ResourceManager

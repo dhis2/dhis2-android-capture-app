@@ -21,7 +21,7 @@ import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.databinding.CustomTextViewAccentBinding;
 import org.dhis2.databinding.CustomTextViewBinding;
-import org.dhis2.utils.ColorUtils;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.FieldLayout;

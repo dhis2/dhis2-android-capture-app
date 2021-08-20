@@ -81,8 +81,6 @@ public interface DashboardRepository {
 
     Single<Boolean> deleteEnrollmentIfPossible(String enrollmentUid);
 
-    Flowable<List<RelationshipViewModel>> listTeiRelationships();
-
     Single<Integer> getNoteCount();
 
     EnrollmentStatus getEnrollmentStatus(String enrollmentUid);

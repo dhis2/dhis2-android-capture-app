@@ -1,8 +1,13 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 
-class EventPageConfigurator : NavigationPageConfigurator {
+class EventPageConfigurator(
+    private val eventCaptureRepository: EventCaptureContract.EventCaptureRepository,
+    private val featureConfig: FeatureConfigRepository
+) : NavigationPageConfigurator {
     override fun displayDetails(): Boolean {
         return true
     }
@@ -12,7 +17,12 @@ class EventPageConfigurator : NavigationPageConfigurator {
     }
 
     override fun displayAnalytics(): Boolean {
-        return true
+        return eventCaptureRepository.hasAnalytics()
+    }
+
+    override fun displayRelationships(): Boolean {
+        return eventCaptureRepository.hasRelationships() &&
+            featureConfig.isFeatureEnable(Feature.ANDROAPP_2275)
     }
 
     override fun displayNotes(): Boolean {

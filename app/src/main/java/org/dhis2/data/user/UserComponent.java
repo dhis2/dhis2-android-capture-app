@@ -70,6 +70,8 @@ import org.dhis2.usescases.sync.SyncComponent;
 import org.dhis2.usescases.sync.SyncModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipComponent;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipModule;
 import org.dhis2.usescases.teiDashboard.nfcdata.NfcDataWriteComponent;
 import org.dhis2.usescases.teiDashboard.nfcdata.NfcDataWriteModule;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListComponent;
@@ -198,4 +200,7 @@ public interface UserComponent {
 
     @NonNull
     AnalyticsFragmentComponent plus(AnalyticsFragmentModule analyticsFragmentModule);
+
+    @NonNull
+    RelationshipComponent plus(RelationshipModule relationshipModule);
 }

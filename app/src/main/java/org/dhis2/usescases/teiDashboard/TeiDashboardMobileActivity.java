@@ -31,9 +31,10 @@ import org.dhis2.databinding.ActivityDashboardMobileBinding;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
-import org.dhis2.utils.ColorUtils;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OrientationUtilsKt;
@@ -42,6 +43,7 @@ import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.Filters;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -60,7 +62,7 @@ import static org.dhis2.utils.Constants.TEI_UID;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
-public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View {
+public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View, MapButtonObservable {
 
     public static final int OVERVIEW_POS = 0;
 
@@ -257,7 +259,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     new ViewPager2.OnPageChangeCallback() {
                         @Override
                         public void onPageSelected(int position) {
-                            switch (adapter.pageType(position)){
+                            switch (adapter.pageType(position)) {
                                 case ANALYTICS:
                                 case NOTES:
                                     binding.relationshipMapIcon.setVisibility(View.GONE);
@@ -568,6 +570,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         return groupByStage;
     }
 
+    @NotNull
+    @Override
     public LiveData<Boolean> relationshipMap() {
         return relationshipMap;
     }
@@ -621,6 +625,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     }
 
+    @Override
     public void onRelationshipMapLoaded() {
         binding.toolbarProgress.hide();
     }
