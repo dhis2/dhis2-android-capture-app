@@ -10,6 +10,7 @@ import org.dhis2.data.forms.dataentry.DataEntryStore
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.utils.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
 
 @Module
@@ -52,7 +53,13 @@ class DataValueModule(
 
     @Provides
     @PerFragment
-    fun valueStore(d2: D2): ValueStore {
-        return ValueStoreImpl(d2, dataSetUid, DataEntryStore.EntryMode.DV, DhisEnrollmentUtils(d2))
+    fun valueStore(d2: D2, crashReportController: CrashReportController): ValueStore {
+        return ValueStoreImpl(
+            d2,
+            dataSetUid,
+            DataEntryStore.EntryMode.DV,
+            DhisEnrollmentUtils(d2),
+            crashReportController
+        )
     }
 }

@@ -27,6 +27,7 @@ import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
+import org.dhis2.utils.reporting.CrashReportController;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 
@@ -113,8 +114,14 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    ValueStore valueStore(@NonNull D2 d2) {
-        return new ValueStoreImpl(d2, eventUid, DataEntryStore.EntryMode.DE, new DhisEnrollmentUtils(d2));
+    ValueStore valueStore(@NonNull D2 d2, CrashReportController crashReportController) {
+        return new ValueStoreImpl(
+                d2,
+                eventUid,
+                DataEntryStore.EntryMode.DE,
+                new DhisEnrollmentUtils(d2),
+                crashReportController
+        );
     }
 
     @Provides
@@ -131,13 +138,17 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    org.dhis2.form.data.FormRepository provideEventsFormRepository(@NonNull D2 d2) {
+    org.dhis2.form.data.FormRepository provideEventsFormRepository(
+            @NonNull D2 d2,
+            CrashReportController crashReportController
+    ) {
         return new FormRepositoryPersistenceImpl(
                 new ValueStoreImpl(
                         d2,
                         eventUid,
                         DataEntryStore.EntryMode.DE,
-                        new DhisEnrollmentUtils(d2)
+                        new DhisEnrollmentUtils(d2),
+                        crashReportController
                 ),
                 new FieldErrorMessageProvider(activityContext)
         );
