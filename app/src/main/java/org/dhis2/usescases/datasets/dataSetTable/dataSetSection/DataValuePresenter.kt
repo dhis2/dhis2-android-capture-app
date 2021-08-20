@@ -3,7 +3,6 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.Action
 import io.reactivex.functions.Function5
 import io.reactivex.functions.Function6
 import io.reactivex.processors.FlowableProcessor
