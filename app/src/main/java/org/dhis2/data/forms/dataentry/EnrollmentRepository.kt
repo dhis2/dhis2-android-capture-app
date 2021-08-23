@@ -246,7 +246,7 @@ class EnrollmentRepository(
             attribute.fieldMask(),
             null,
             onRowActionProccesor,
-            null
+            emptyList()
         )
 
         return if (!error.isNullOrEmpty()) {
