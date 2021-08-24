@@ -177,4 +177,6 @@ class EventMapLayer(
             POLYGON_LAYER_ID
         }
     }
+
+    override fun layerIdsToSearch(): Array<String> = arrayOf(POINT_LAYER_ID)
 }
