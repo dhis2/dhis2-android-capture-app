@@ -371,14 +371,6 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         }.flatten().distinct()
     }
 
-    fun getSourcesAndLayersForSearch(): Map<String, Array<String>> {
-        return mapLayerManager.mapLayers
-            .filter { (sourceId, mapLayer) -> mapLayer.visible }
-            .map { (sourceId, mapLayer) ->
-                sourceId to mapLayer.layerIdsToSearch()
-            }.toMap()
-    }
-
     override fun getLayerName(source: String): String {
         return if (fieldFeatureCollections.containsKey(source)) {
             fieldFeatureCollections[source]?.features()?.get(0)?.let {
@@ -410,7 +402,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
 
     private fun selectedFeature(rectF: RectF): Feature? {
         var selectedFeature: Feature? = null
-        val sourcesAndLayers = getSourcesAndLayersForSearch()
+        val sourcesAndLayers = mapLayerManager.sourcesAndLayersForSearch()
         sourcesAndLayers.filter { it.value.isNotEmpty() }.forEach { (source, layer) ->
             val features = map?.queryRenderedFeatures(rectF, layer.first()) ?: emptyList()
             if (features.isNotEmpty()) {
