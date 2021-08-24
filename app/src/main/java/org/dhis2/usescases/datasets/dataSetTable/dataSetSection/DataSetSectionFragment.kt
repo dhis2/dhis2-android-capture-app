@@ -251,6 +251,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             false
         )
         binding.tableLayout.addView(indicatorsTable)
+        binding.programProgress.visibility = View.GONE
     }
 
     override fun setSection(section: Section) {

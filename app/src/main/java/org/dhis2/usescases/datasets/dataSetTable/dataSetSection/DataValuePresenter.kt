@@ -186,12 +186,12 @@ class DataValuePresenter(
                         }
                     ).toObservable().blockingFirst()
                 }
+                .doOnComplete { getDataSetIndicators() }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { tableData ->
                         view.setTableData(tableData)
-                        getDataSetIndicators()
                     },
                     { Timber.e(it) }
                 )
