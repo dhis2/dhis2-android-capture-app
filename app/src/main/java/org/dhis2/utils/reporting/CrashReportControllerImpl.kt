@@ -38,6 +38,14 @@ class CrashReportControllerImpl @Inject constructor() : CrashReportController {
 //        Sentry.captureMessage(message)
     }
 
+    override fun addBreadCrumb(category: String, message: String) {
+        val breadcrumb = Breadcrumb()
+        breadcrumb.type = "info"
+        breadcrumb.category = category
+        breadcrumb.message = message
+        Sentry.addBreadcrumb(breadcrumb)
+    }
+
     companion object {
         const val SERVER_NAME = "server_name"
     }
