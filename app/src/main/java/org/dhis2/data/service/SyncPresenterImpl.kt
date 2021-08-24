@@ -314,11 +314,18 @@ class SyncPresenterImpl(
         return d2.programModule().programs().uid(uid).get().toObservable()
             .flatMap { program ->
                 if (program.programType() == ProgramType.WITH_REGISTRATION) {
-                    d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
-                        listOf(uid)
-                    ).upload()
+                    Completable.fromObservable(
+                        d2.trackedEntityModule().trackedEntityInstances().byProgramUids(listOf(uid))
+                            .upload()
+                    ).blockingAwait()
+
+                    d2.trackedEntityModule().trackedEntityInstanceDownloader().byProgramUid(uid)
+                        .download()
                 } else {
-                    d2.eventModule().events().byProgramUid().eq(uid).upload()
+                    Completable.fromObservable(
+                        d2.eventModule().events().byProgramUid().eq(uid).upload()
+                    ).blockingAwait()
+                    d2.eventModule().eventDownloader().byProgramUid(uid).download()
                 }
             }
     }
