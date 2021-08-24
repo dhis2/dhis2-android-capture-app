@@ -37,7 +37,7 @@ class GraphTableAdapter(context: Context) : AbstractTableAdapter<String, String,
         parent: ViewGroup,
         viewType: Int
     ): AbstractViewHolder = GraphTableHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_table_header, parent, false)
+        LayoutInflater.from(parent.context).inflate(R.layout.item_table_fixed_header, parent, false)
     )
     override fun onBindRowHeaderViewHolder(
         holder: AbstractViewHolder?,
