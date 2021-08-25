@@ -235,6 +235,15 @@
                 app:layout_constraintEnd_toStartOf="@id/backdropGuideDiv"
                 app:layout_constraintStart_toStartOf="parent" />
 
+            <FrameLayout
+                android:id="@+id/mainComponent"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/backdropGuideDiv"
+                app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/mainLayout"
                 android:layout_width="0dp"
