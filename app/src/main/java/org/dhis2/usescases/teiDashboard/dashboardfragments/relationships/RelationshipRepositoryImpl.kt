@@ -72,7 +72,7 @@ class RelationshipRepositoryImpl(
         val programUid = event.program() ?: ""
         return d2.relationshipModule().relationshipTypes()
             .withConstraints()
-            .byConstraint(event.uid())
+            .byAvailableForEvent(event.uid())
             .get().map { relationshipTypes ->
                 relationshipTypes.mapNotNull { relationshipType ->
                     val secondaryUid = when {
