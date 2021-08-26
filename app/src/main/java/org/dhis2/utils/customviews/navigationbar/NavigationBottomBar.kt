@@ -200,7 +200,10 @@ class NavigationBottomBar @JvmOverloads constructor(
             }
         }
         when {
-            visibleMenuItems.size < 2 && !isHidden() -> hide()
+            visibleMenuItems.size < 2 && !isHidden() -> {
+                hidden = true
+                visibility = View.GONE
+            }
             visibleMenuItems.size > 1 && isHidden() -> {
                 initSelection(visibleMenuItems)
                 show()
