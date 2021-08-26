@@ -17,7 +17,6 @@ import org.hisp.dhis.android.core.D2;
 import dagger.Module;
 import dagger.Provides;
 
-@PerFragment
 @Module
 public class RelationshipModule {
 

@@ -54,6 +54,8 @@ android {
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
         buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"" + mapboxAccessToken + "\""
         buildConfigField "String", "MATOMO_URL", "\"https://usage.analytics.dhis2.org/matomo.php\""
+        buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
+        buildConfigField("String","VERSION_NAME","\"${defaultConfig.versionName}\"")
 
         javaCompileOptions {
             annotationProcessorOptions {

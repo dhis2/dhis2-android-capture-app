@@ -5,7 +5,6 @@ import dagger.Provides
 import org.dhis2.commons.di.dagger.PerActivity
 import org.hisp.dhis.android.core.D2
 
-@PerActivity
 @Module
 class ScanModule(private val optionSetUid: String?) {
 

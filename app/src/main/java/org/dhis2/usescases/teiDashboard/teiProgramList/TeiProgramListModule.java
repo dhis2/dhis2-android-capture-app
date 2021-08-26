@@ -14,7 +14,6 @@ import dagger.Provides;
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
  */
-@PerActivity
 @Module
 public class TeiProgramListModule {
 

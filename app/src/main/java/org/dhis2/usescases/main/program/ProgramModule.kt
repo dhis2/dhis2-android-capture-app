@@ -14,7 +14,6 @@ import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 
 @Module
-@PerFragment
 class ProgramModule(private val view: ProgramView) {
 
     @Provides

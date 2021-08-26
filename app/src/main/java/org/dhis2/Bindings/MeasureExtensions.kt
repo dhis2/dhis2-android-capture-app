@@ -9,7 +9,7 @@ fun List<DataElement>.toDisplayNameList(): List<String> {
 }
 
 fun List<DataElement>.maxLengthLabel(): String {
-    return toDisplayNameList().maxBy {
+    return toDisplayNameList().maxByOrNull {
         it.length
     } ?: ""
 }

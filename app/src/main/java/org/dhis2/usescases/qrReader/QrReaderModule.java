@@ -11,7 +11,6 @@ import dagger.Provides;
  * QUADRAM. Created by ppajuelo on 22/05/2018.
  */
 @Module
-@PerFragment
 public class QrReaderModule {
 
     @Provides

@@ -8,7 +8,6 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-@PerUser
 public class UserModule {
 
     @Provides

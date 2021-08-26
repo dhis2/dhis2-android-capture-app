@@ -119,7 +119,7 @@ class CategoryDialogPresenter(
         val dataSource =
             catOptionRepository.orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
                 .dataSource
-                .mapByPage { options -> filterByDate(options) }
+                .mapByPage { options -> filterByDate(options.toMutableList()) }
                 .map { catOption -> catOptMapper.map(catOption) }
 
         return LivePagedListBuilder(
@@ -153,7 +153,7 @@ class CategoryDialogPresenter(
         )
     }
 
-    private fun filterByDate(options: MutableList<CategoryOption>): MutableList<CategoryOption>? {
+    private fun filterByDate(options: MutableList<CategoryOption>): List<CategoryOption> {
         val iterator = options.iterator()
         while (iterator.hasNext()) {
             val option = iterator.next()
@@ -163,7 +163,7 @@ class CategoryDialogPresenter(
                 iterator.remove()
             }
         }
-        return options
+        return options.toList()
     }
 
     private fun isBeforeDate(option: CategoryOption): Boolean {

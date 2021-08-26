@@ -8,7 +8,6 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepositoryImpl
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 
 @Module
-@PerFragment
 class DataSetDetailModule(
     private val dataSetDetailView: DataSetDetailView,
     private val dataSetUid: String

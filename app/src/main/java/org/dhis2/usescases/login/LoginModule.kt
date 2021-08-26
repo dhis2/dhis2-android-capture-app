@@ -16,7 +16,6 @@ import org.dhis2.utils.reporting.CrashReportController
  */
 
 @Module
-@PerActivity
 class LoginModule(private val view: LoginContracts.View) {
 
     @Provides

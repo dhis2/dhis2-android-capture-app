@@ -4,9 +4,10 @@ import org.dhis2.commons.di.dagger.PerActivity;
 
 import dagger.Module;
 
-@PerActivity
 @Module
 public class SmsModule {
+
+    @PerActivity
     public SmsModule() {
     }
 }

@@ -36,7 +36,6 @@ import dagger.Provides;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
-@PerActivity
 @Module
 public class EventCaptureModule {
 

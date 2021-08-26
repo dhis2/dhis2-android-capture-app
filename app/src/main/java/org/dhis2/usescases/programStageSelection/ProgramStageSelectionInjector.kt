@@ -15,7 +15,6 @@ interface ProgramStageSelectionInjector {
     fun inject(programStageSelectionActivity: ProgramStageSelectionActivity?)
 }
 
-@PerActivity
 @Module
 class ProgramStageSelectionModule(
     private val view: ProgramStageSelectionView,

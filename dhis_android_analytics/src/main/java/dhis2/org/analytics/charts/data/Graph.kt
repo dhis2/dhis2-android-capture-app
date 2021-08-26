@@ -55,12 +55,14 @@ data class Graph(
     }
 
     fun maxValue(): Float {
-        return series.map { it.coordinates.map { points -> points.fieldValue }.max() ?: 0f }.max()
+        return series.map { it.coordinates.map { points -> points.fieldValue }.maxOrNull() ?: 0f }
+            .maxOrNull()
             ?: 0f
     }
 
     fun minValue(): Float {
-        return series.map { it.coordinates.map { points -> points.fieldValue }.min() ?: 0f }.min()
+        return series.map { it.coordinates.map { points -> points.fieldValue }.minOrNull() ?: 0f }
+            .minOrNull()
             ?: 0f
     }
 

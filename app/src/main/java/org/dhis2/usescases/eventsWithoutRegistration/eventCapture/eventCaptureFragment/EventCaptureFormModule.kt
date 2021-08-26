@@ -9,7 +9,6 @@ import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.RowAction
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 
-@PerFragment
 @Module
 class EventCaptureFormModule(
     val view: EventCaptureFormView,

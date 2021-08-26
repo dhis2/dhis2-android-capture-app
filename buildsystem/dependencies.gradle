@@ -39,7 +39,7 @@ ext {
             lottie                    : "3.4.0",
 
             //Dependency injection
-            dagger                    : "2.14.1",
+            dagger                    : "2.38.1",
 
             //RXJava
             rxjava                    : "2.1.0",

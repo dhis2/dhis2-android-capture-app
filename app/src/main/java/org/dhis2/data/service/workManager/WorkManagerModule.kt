@@ -35,7 +35,6 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-@Singleton
 open class WorkManagerModule {
 
     @Provides
