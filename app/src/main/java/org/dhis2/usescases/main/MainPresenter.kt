@@ -112,7 +112,7 @@ class MainPresenter(
     }
 
     fun logOut() {
-       disposable.add(
+        disposable.add(
             repository.logOut()
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.ui())
