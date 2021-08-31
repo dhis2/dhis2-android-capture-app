@@ -3,8 +3,8 @@ ext {
             sdk   : 30,
             tools : "30.0.3",
             minSdk: 19,
-            vCode: 103,
-            vName: "2.4.2"
+            vCode: 104,
+            vName: "2.4.3.1"
     ]
     libraries = [
             //DHIS2
