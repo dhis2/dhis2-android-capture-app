@@ -19,6 +19,7 @@ import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetMode
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.LayoutProvider;
 import org.dhis2.form.ui.style.BasicFormUiModelStyle;
 import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.form.ui.style.FormUiModelStyle;
@@ -63,12 +64,14 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     );
     private final boolean searchMode;
     private FormUiColorFactory colorFactory;
+    private LayoutProvider layoutProvider;
 
     public FieldViewModelFactoryImpl(Map<ValueType, String> valueTypeHintMap, boolean searchMode,
-                                     FormUiColorFactory colorFactory) {
+                                     FormUiColorFactory colorFactory, LayoutProvider layoutProvider) {
         this.valueTypeHintMap = valueTypeHintMap;
         this.searchMode = searchMode;
         this.colorFactory = colorFactory;
+        this.layoutProvider = layoutProvider;
     }
 
     @Nullable

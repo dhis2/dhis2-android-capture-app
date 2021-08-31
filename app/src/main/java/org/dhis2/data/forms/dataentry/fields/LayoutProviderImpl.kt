@@ -31,7 +31,7 @@ private val layouts = mapOf<KClass<*>, Int>(
     UnsupportedViewModel::class to R.layout.form_unsupported
 )
 
-//Matrix Option Set Model Companion issue to take into account for factory somehow
+//Matrix Option Set Model Companion issue to take into account for later
 
 class LayoutProviderImpl : LayoutProvider {
 

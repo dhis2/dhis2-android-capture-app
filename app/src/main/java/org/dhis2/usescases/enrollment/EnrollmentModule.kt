@@ -18,6 +18,7 @@ import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
+import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryPersistenceImpl
 import org.dhis2.form.model.RowAction
@@ -104,7 +105,7 @@ class EnrollmentModule(
         context: Context,
         colorFactory: FormUiColorFactory
     ): FieldViewModelFactory {
-        return FieldViewModelFactoryImpl(context.valueTypeHintMap(), false, colorFactory)
+        return FieldViewModelFactoryImpl(context.valueTypeHintMap(), false, colorFactory, LayoutProviderImpl())
     }
 
     @Provides
