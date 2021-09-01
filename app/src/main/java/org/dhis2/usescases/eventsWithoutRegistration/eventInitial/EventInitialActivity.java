@@ -626,8 +626,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         int scheduleInterval = 0;
         Date minDate = null;
         Date maxDate = null;
+        boolean allowedFutureDates = false;
         if (eventCreationType == EventCreationType.SCHEDULE) {
             scheduleInterval = eventScheduleInterval;
+            allowedFutureDates = true;
         }
 
         if (program.expiryPeriodType() != null) {
@@ -648,6 +650,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         dialog.setMinDate(minDate);
         dialog.setMaxDate(maxDate);
         dialog.setScheduleInterval(scheduleInterval);
+        dialog.isFutureDatesAllowed(allowedFutureDates);
         dialog.setListener(
                 new OnDatePickerListener() {
                     @Override
