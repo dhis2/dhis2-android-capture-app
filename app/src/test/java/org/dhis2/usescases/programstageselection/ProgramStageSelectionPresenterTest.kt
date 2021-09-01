@@ -40,6 +40,8 @@ import org.dhis2.usescases.programStageSelection.ProgramStageSelectionRepository
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionView
 import org.dhis2.utils.Result
 import org.dhis2.utils.RulesUtilsProvider
+import org.hisp.dhis.android.core.common.Access
+import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.rules.models.RuleActionHideProgramStage
 import org.hisp.dhis.rules.models.RuleEffect
@@ -152,5 +154,49 @@ class ProgramStageSelectionPresenterTest {
         presenter.displayMessage(message)
 
         verify(view).displayMessage(message)
+    }
+
+    @Test
+    fun `Should set result when clicking on a ProgramStage`() {
+        val programStage = ProgramStage.builder().uid("programStage").access(
+            Access.builder().data(DataAccess.builder().write(true).build()).build()
+        ).build()
+
+        presenter.onProgramStageClick(programStage)
+
+        verify(view).setResult("programStage", false, null)
+    }
+
+    @Test
+    fun `Should display permission message when clicking on a ProgramStage without access`() {
+        val programStage = ProgramStage.builder().uid("programStage").access(
+            Access.builder().data(DataAccess.builder().write(false).build()).build()
+        ).build()
+
+        presenter.onProgramStageClick(programStage)
+
+        verify(view).displayMessage(null)
+    }
+
+    @Test
+    fun `Should return the standard interval`() {
+        val interval = 3
+        whenever(repository.getStage("programUid")) doReturn mock()
+        whenever(repository.getStage("programUid").standardInterval()) doReturn interval
+
+        val result = presenter.getStandardInterval("programUid")
+
+        assert(interval == result)
+    }
+
+    @Test
+    fun `Should return 0 if the standard interval is not configured`() {
+        val interval = null
+        whenever(repository.getStage("programUid")) doReturn mock()
+        whenever(repository.getStage("programUid").standardInterval()) doReturn interval
+
+        val result = presenter.getStandardInterval("programUid")
+
+        assert(result == 0)
     }
 }
