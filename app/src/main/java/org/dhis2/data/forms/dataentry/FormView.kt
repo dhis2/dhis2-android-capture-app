@@ -407,6 +407,10 @@ class FormView constructor(
         }
     }
 
+    fun onEditionFinish() {
+        binding.recyclerView.requestFocus()
+    }
+
     class Builder {
         private var fragmentManager: FragmentManager? = null
         private var persistentRepository: FormRepository? = null
