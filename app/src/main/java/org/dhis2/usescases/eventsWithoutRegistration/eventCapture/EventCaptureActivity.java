@@ -100,7 +100,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         binding.eventViewPager.setAdapter(new EventCapturePagerAdapter(
                 this,
                 getIntent().getStringExtra(PROGRAM_UID),
-                getIntent().getStringExtra(Constants.EVENT_UID)
+                getIntent().getStringExtra(Constants.EVENT_UID),
+                pageConfigurator.displayAnalytics(),
+                pageConfigurator.displayRelationships()
         ));
         ViewExtensionsKt.clipWithRoundedCorners(binding.eventViewPager, ExtensionsKt.getDp(16));
     }
