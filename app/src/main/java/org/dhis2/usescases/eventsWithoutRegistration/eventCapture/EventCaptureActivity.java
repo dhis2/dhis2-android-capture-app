@@ -18,20 +18,21 @@ import com.google.android.material.snackbar.Snackbar;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.dialogs.CustomDialog;
+import org.dhis2.commons.dialogs.DialogClickListener;
+import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
 import org.dhis2.utils.Constants;
-import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.ImageUtils;
 import org.dhis2.utils.RuleUtilsProviderResultKt;
 import org.dhis2.utils.RulesUtilsProviderConfigurationError;
-import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
@@ -68,6 +69,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public String programUid;
     public String eventUid;
     private LiveData<Boolean> relationshipMapButton = new MutableLiveData<>(false);
+    private OnEditionListener onEditionListener;
 
     public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid, @NonNull EventMode eventMode) {
         Bundle bundle = new Bundle();
@@ -145,17 +147,15 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void goBack() {
-        hideKeyboard();
-        finishEditMode();
+        onBackPressed();
     }
 
     @Override
     public void onBackPressed() {
-        if (!ExtensionsKt.isKeyboardOpened(this)) {
-            finishEditMode();
-        } else {
-            hideKeyboard();
+        if (onEditionListener != null) {
+            onEditionListener.onEditionListener();
         }
+        finishEditMode();
     }
 
     private void finishEditMode() {
@@ -202,7 +202,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     try {
                         presenter.saveImage(uuid, FileResourcesUtil.getFileFromGallery(this, imageUri).getPath());
                         presenter.nextCalculation(true);
-                    } catch(Exception e) {
+                    } catch (Exception e) {
                         crashReportController.logException(e);
                         Toast.makeText(this, getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
                     }
@@ -321,7 +321,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         showSnackBar(R.string.fix_error);
     }
 
-    private void reschedule() { }
+    private void reschedule() {
+    }
 
     @Override
     public void showSnackBar(int messageId) {
@@ -489,9 +490,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void displayConfigurationErrors(List<RulesUtilsProviderConfigurationError> configurationError) {
-        new MaterialAlertDialogBuilder(this,R.style.DhisMaterialDialog)
+        new MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
                 .setTitle(R.string.warning_on_complete_title)
-                .setMessage(RuleUtilsProviderResultKt.toMessage(configurationError,this))
+                .setMessage(RuleUtilsProviderResultKt.toMessage(configurationError, this))
                 .setPositiveButton(R.string.action_close, (dialogInterface, i) -> {
                 })
                 .setNegativeButton(R.string.action_do_not_show_again, (dialogInterface, i) -> {
@@ -510,5 +511,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onRelationshipMapLoaded() {
 
+    }
+
+    public void setFormEditionListener(OnEditionListener onEditionListener) {
+        this.onEditionListener = onEditionListener;
     }
 }

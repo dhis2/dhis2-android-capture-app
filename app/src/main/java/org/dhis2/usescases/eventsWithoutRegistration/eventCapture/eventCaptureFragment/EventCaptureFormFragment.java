@@ -27,7 +27,8 @@ import java.util.List;
 import javax.inject.Inject;
 import kotlin.Unit;
 
-public class EventCaptureFormFragment extends FragmentGlobalAbstract implements EventCaptureFormView {
+public class EventCaptureFormFragment extends FragmentGlobalAbstract implements EventCaptureFormView,
+        OnEditionListener {
 
     @Inject
     EventCaptureFormPresenter presenter;
@@ -86,6 +87,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                 })
                 .factory(activity.getSupportFragmentManager())
                 .build();
+        activity.setFormEditionListener(this);
         super.onCreate(savedInstanceState);
     }
 
@@ -151,5 +153,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         } else {
             presenter.onActionButtonClick();
         }
+    }
+
+    @Override
+    public void onEditionListener() {
+        formView.onEditionFinish();
     }
 }
