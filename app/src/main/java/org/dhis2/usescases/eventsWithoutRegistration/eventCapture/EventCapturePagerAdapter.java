@@ -13,32 +13,57 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.Indicators
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VisualizationType;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragmentKt.VISUALIZATION_TYPE;
 
 public class EventCapturePagerAdapter extends FragmentStateAdapter {
 
     private final String programUid;
     private final String eventUid;
+    private List<EventPageType> pages;
 
-    public EventCapturePagerAdapter(FragmentActivity fragmentActivity, String programUid, String eventUid) {
+    private enum EventPageType {
+        DATA_ENTRY, ANALYTICS, RELATIONSHIPS, NOTES
+    }
+
+    public EventCapturePagerAdapter(FragmentActivity fragmentActivity,
+                                    String programUid,
+                                    String eventUid,
+                                    boolean displayAnalyticScreen,
+                                    boolean displayRelationshipScreen
+
+    ) {
         super(fragmentActivity);
         this.programUid = programUid;
         this.eventUid = eventUid;
+        pages = new ArrayList<>();
+        pages.add(EventPageType.DATA_ENTRY);
+        if (displayAnalyticScreen) {
+            pages.add(EventPageType.ANALYTICS);
+        }
+        if (displayRelationshipScreen) {
+            pages.add(EventPageType.RELATIONSHIPS);
+        }
+        pages.add(EventPageType.NOTES);
+
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        switch (position) {
+        switch (pages.get(position)) {
             default:
+            case DATA_ENTRY:
                 return EventCaptureFormFragment.newInstance(eventUid);
-            case 1:
+            case ANALYTICS:
                 Fragment indicatorFragment = new IndicatorsFragment();
                 Bundle arguments = new Bundle();
                 arguments.putString(VISUALIZATION_TYPE, VisualizationType.EVENTS.name());
                 indicatorFragment.setArguments(arguments);
                 return indicatorFragment;
-            case 2:
+            case RELATIONSHIPS:
                 Fragment relationshipFragment = new RelationshipFragment();
                 relationshipFragment.setArguments(
                         RelationshipFragment.withArguments(programUid,
@@ -48,13 +73,13 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                         )
                 );
                 return relationshipFragment;
-            case 3:
+            case NOTES:
                 return NotesFragment.newEventInstance(programUid, eventUid);
         }
     }
 
     @Override
     public int getItemCount() {
-        return 3; //TODO: ADD OVERVIEW
+        return pages.size();
     }
 }
