@@ -16,7 +16,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.io.File
 import javax.inject.Inject
 import org.dhis2.App
-import org.dhis2.Bindings.isKeyboardOpened
 import org.dhis2.R
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.data.forms.dataentry.FormView
@@ -287,17 +286,12 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun goBack() {
-        hideKeyboard()
-        attemptFinish()
+        onBackPressed()
     }
 
     override fun onBackPressed() {
-        if (!isKeyboardOpened()) {
-            attemptFinish()
-        } else {
-            currentFocus?.apply { clearFocus() }
-            hideKeyboard()
-        }
+        formView.onEditionFinish()
+        attemptFinish()
     }
 
     private fun attemptFinish() {
