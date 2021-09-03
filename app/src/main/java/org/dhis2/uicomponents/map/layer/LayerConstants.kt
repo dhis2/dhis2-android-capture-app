@@ -54,6 +54,7 @@ fun SymbolLayer.withDEIconAndTextProperties(): SymbolLayer = withProperties(
     PropertyFactory.iconAllowOverlap(true),
     PropertyFactory.textField(Expression.get(MapCoordinateFieldToFeatureCollection.FIELD_NAME)),
     PropertyFactory.textAllowOverlap(false),
+    PropertyFactory.textIgnorePlacement(true),
     PropertyFactory.textAnchor(Property.TEXT_ANCHOR_TOP),
     PropertyFactory.textRadialOffset(2f),
     PropertyFactory.textHaloWidth(1f),

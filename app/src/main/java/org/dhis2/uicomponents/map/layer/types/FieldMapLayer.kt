@@ -30,7 +30,7 @@ class FieldMapLayer(
         style.addLayer(pointLayer)
         style.addSource(GeoJsonSource(SELECTED_POINT_SOURCE_ID))
         style.addLayer(teiPointLayer)
-        style.addLayer(selectedPointLayer)
+        style.addLayerBelow(selectedPointLayer, POINT_LAYER_ID)
     }
 
     private val pointLayer: Layer
