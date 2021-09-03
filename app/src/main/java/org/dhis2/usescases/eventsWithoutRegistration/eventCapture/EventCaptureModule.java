@@ -28,7 +28,7 @@ import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.reporting.CrashReportController;
-import org.dhis2.utils.resources.ResourceManager;
+import org.dhis2.commons.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;

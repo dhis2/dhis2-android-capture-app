@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import org.dhis2.databinding.ItemSettingProgramBinding
-import org.dhis2.utils.resources.ResourceManager
+import org.dhis2.commons.resources.ResourceManager
 
 class SettingsProgramAdapter(private val resourceManager: ResourceManager) :
     ListAdapter<ProgramSettingsViewModel, ProgramSettingsHolder>(

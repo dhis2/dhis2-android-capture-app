@@ -30,7 +30,7 @@ package org.dhis2.usescases.orgunitselector
 import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.utils.filters.FilterManager
+import org.dhis2.commons.filters.FilterManager
 import org.hisp.dhis.android.core.D2
 
 @Module

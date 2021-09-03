@@ -11,7 +11,7 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemDateBinding;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.Period;
+import org.dhis2.commons.date.Period;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

@@ -6,7 +6,7 @@ import dhis2.org.analytics.charts.Charts
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
-import org.dhis2.utils.resources.ResourceManager
+import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 
 @PerFragment

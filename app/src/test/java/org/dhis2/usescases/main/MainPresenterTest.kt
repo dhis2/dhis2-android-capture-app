@@ -16,13 +16,13 @@ import org.dhis2.commons.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMB
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.filter.FilterRepository
+import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
-import org.dhis2.utils.filters.FilterManager
-import org.dhis2.utils.filters.Filters
+import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.Filters
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.user.User

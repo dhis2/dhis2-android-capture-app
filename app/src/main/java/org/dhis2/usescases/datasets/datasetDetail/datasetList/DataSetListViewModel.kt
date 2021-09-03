@@ -12,7 +12,7 @@ import org.dhis2.utils.analytics.matomo.Actions
 import org.dhis2.utils.analytics.matomo.Categories
 import org.dhis2.utils.analytics.matomo.Labels
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
-import org.dhis2.utils.filters.FilterManager
+import org.dhis2.commons.filters.FilterManager
 import timber.log.Timber
 
 class DataSetListViewModel(

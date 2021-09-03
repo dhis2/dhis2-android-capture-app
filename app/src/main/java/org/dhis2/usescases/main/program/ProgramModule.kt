@@ -7,10 +7,10 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
-import org.dhis2.data.filter.FilterPresenter
+import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
-import org.dhis2.utils.filters.FilterManager
-import org.dhis2.utils.resources.ResourceManager
+import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 
 @Module

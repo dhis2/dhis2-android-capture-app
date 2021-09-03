@@ -29,9 +29,9 @@ import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.extension.navigateTo
-import org.dhis2.utils.filters.FilterItem
-import org.dhis2.utils.filters.FilterManager
-import org.dhis2.utils.filters.FiltersAdapter
+import org.dhis2.commons.filters.FilterItem
+import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 

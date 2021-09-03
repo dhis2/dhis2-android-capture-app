@@ -10,7 +10,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
 import org.dhis2.R;
-import org.dhis2.utils.resources.ResourceManager;
+import org.dhis2.commons.resources.ResourceManager;
 
 import static android.text.TextUtils.isEmpty;
 

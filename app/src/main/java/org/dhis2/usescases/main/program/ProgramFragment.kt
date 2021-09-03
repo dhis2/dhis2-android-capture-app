@@ -30,7 +30,7 @@ import org.dhis2.utils.Constants
 import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.SELECT_PROGRAM
 import org.dhis2.utils.analytics.TYPE_PROGRAM_SELECTED
-import org.dhis2.utils.filters.FilterManager
+import org.dhis2.commons.filters.FilterManager
 import org.dhis2.utils.granularsync.GranularSyncContracts
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.android.core.program.ProgramType

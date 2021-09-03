@@ -225,17 +225,6 @@
         <item name="colorAccent">?colorPrimaryLight</item>
     </style>
 
-    <style name="filterPeriodRadioButton" parent="Widget.AppCompat.CompoundButton.RadioButton">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">11sp</item>
-        <item name="buttonTint">@color/white</item>
-        <item name="android:fontFamily">@font/rubik_regular</item>
-    </style>
-
-    <style name="filterCheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
-        <item name="buttonTint">@color/white</item>
-    </style>
-
     <style name="primaryCheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
         <item name="buttonTint">?colorPrimary</item>
     </style>

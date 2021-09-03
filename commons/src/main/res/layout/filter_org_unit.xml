@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="filterType"
+            type="org.dhis2.commons.filters.Filters" />
+
+        <variable
+            name="filterItem"
+            type="org.dhis2.commons.filters.OrgUnitFilter" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/filter_alpha"
+        android:visibility="gone"
+        app:clipAllCorners="@{8}"
+        app:expand_view="@{filterItem.openFilter == filterItem.type}"
+        app:request_layout="@{filterItem}"
+        tools:visibility="visible">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:background="@drawable/inner_shadow_top_straight"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:background="@drawable/inner_shadow_bottom_straight"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/orgUnitSearchLayout"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_search"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/ouTreeButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="2dp"
+                    app:srcCompat="@drawable/ic_search" />
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:focusableInTouchMode="true">
+
+                    <org.dhis2.commons.customviews.TextInputAutoCompleteTextView
+                        android:id="@+id/orgUnitSearchEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:ellipsize="end"
+                        android:hint="@string/search"
+                        android:imeOptions="actionDone"
+                        android:maxLines="1"
+                        android:paddingStart="5dp"
+                        android:paddingTop="8dp"
+                        android:paddingEnd="5dp"
+                        android:singleLine="true"
+                        android:textSize="16sp"
+                        android:theme="@style/inputText"
+                        app:layout_constraintStart_toStartOf="parent"
+                        tools:text="Org" />
+
+                    <TextView
+                        android:id="@+id/orgUnitHint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:alpha="0.3"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:paddingStart="5dp"
+                        android:paddingTop="8dp"
+                        android:paddingEnd="5dp"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        tools:text="OrgUnit Test" />
+                </RelativeLayout>
+
+                <ProgressBar
+                    android:id="@+id/progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:visibility="gone"
+                    app:progressColor="@{@color/colorPrimary}" />
+
+                <ImageView
+                    android:id="@+id/addButton"
+                    style="@style/ActionIconUnwrap"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/ic_add_circle_primary" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/ouTreeButton"
+                style="@style/ActionIconNoPadding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_open_ou_tree" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/ouRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@id/orgUnitSearchLayout"
+            tools:listitem="@layout/item_selected_ou_filter" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

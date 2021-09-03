@@ -41,7 +41,7 @@ import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.Preconditions;
 import org.dhis2.utils.ValidationUtils;
 import org.dhis2.utils.customviews.FieldLayout;
-import org.dhis2.utils.customviews.TextInputAutoCompleteTextView;
+import org.dhis2.commons.customviews.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;

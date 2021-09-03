@@ -7,7 +7,7 @@ import io.reactivex.Flowable
 import io.reactivex.functions.Function3
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.utils.DhisTextUtils
-import org.dhis2.utils.resources.ResourceManager
+import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 
 class TrackerAnalyticsRepository(

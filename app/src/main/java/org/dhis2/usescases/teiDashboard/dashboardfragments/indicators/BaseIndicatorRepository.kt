@@ -12,7 +12,7 @@ import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.tuples.Pair
 import org.dhis2.data.tuples.Trio
 import org.dhis2.utils.Result
-import org.dhis2.utils.resources.ResourceManager
+import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.program.ProgramIndicator

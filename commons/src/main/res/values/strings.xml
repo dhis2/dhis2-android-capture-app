@@ -9,4 +9,119 @@
     <string name="cancel">Cancel</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="select_option">Select option</string>
+    <string name="search">Search</string>
+    <string name="jira_issue_sent">Issue Sent</string>
+    <string name="jira_issue_sent_error">Error sending issue</string>
+    <string name="events">events</string>
+    <string name="data_sets">Data sets</string>
+    <string name="tei">TEI</string>
+    <string name="info">Info</string>
+
+    <!-- Filters -->
+    <string name="filters_active">Filters applying</string>
+    <string name="filters_disabled">No filters applied</string>
+    <string name="filters_title_period">Period</string>
+    <string name="filters_title_org_unit">Org. Unit</string>
+    <string name="filters_title_sorting">Sorting</string>
+    <string name="filters_title_status">Status</string>
+    <string name="filters_title_state">Sync</string>
+    <string name="filters_title_assigned">Assigned to me</string>
+    <string name="filters_title_date">Date</string>
+    <string name="filters_title_event_date">Event date</string>
+    <string name="enrollment_date">Enrollment date</string>
+    <string name="filters_title_event_status">Event status</string>
+    <string name="filters_title_enrollment_status">Enrollment status</string>
+    <string name="filter_follow_up_label">Followed up %s</string>
+
+    <!-- State -->
+    <string name="state_synced">Sync</string>
+    <string name="state_to_post">To send</string>
+    <string name="state_to_update">To update</string>
+    <string name="state_to_delete">To delete</string>
+    <string name="state_error">Error</string>
+    <string name="state_warning">Warning</string>
+    <string name="state_uploading">Uploading</string>
+    <string name="state_relationship">Relationship</string>
+    <string name="sent_by_sms">Sent by sms</string>
+    <string name="sync_by_sms">Synced by SMS</string>
+
+    <!-- Status -->
+    <string name="filter_event_status_open">Open</string>
+    <string name="filter_event_status_schedule">Schedule</string>
+    <string name="filter_event_status_overdue">Overdue</string>
+    <string name="filter_event_status_visited">Visited</string>
+    <string name="filter_event_status_completed">Completed</string>
+    <string name="filter_event_status_skipped">Skipped</string>
+    <string name="active">Active</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="enrollment_status_active">Open</string>
+    <string name="enrollment_status_completed">Complete</string>
+    <string name="enrollment_status_cancelled">Cancelled</string>
+
+    <!-- Periods -->
+    <string name="filter_period_today">Today</string>
+    <string name="filter_period_yesterday">Yesterday</string>
+    <string name="filter_period_tomorrow">Tomorrow</string>
+    <string name="filter_period_this_week">This week</string>
+    <string name="filter_period_last_week">Last week</string>
+    <string name="filter_perdior_next_week">Next week</string>
+    <string name="filter_period_this_month">This month</string>
+    <string name="filter_period_last_month">Last month</string>
+    <string name="filter_period_next_month">Next month</string>
+    <string name="filter_period_form_to">From - To</string>
+    <string name="filter_period_other">Other</string>
+    <string name="filter_period_any">Anytime</string>
+    <string name="working_list_default_label">Working list %s</string>
+    <string name="filter_period_last_n_days">Last %d days</string>
+    <string name="filter_period_this_year">This year</string>
+    <string name="filter_period_this_bimonth">This bimonth</string>
+    <string name="filter_period_last_bimonth">Last bimonth</string>
+    <string name="filter_period_this_quarter">This quarter</string>
+    <string name="filter_period_last_quarter">Last quarter</string>
+    <string name="filter_period_six_months">This six months</string>
+    <string name="filter_period_last_six_months">Last six months</string>
+    <string name="filter_period_last_n_years">Last %d years</string>
+    <string name="filter_period_last_n_months">Last %d months</string>
+    <string name="filter_period__last_n_weeks">Last %d weeks</string>
+    <string name="filter_period_weeks_this_year">Weeks this year</string>
+    <string name="filter_period_months_this_year">Months this year</string>
+    <string name="filter_period_bimonths_this_year">Bimonths this year</string>
+    <string name="filter_period_quarters_this_year">Quarters this year</string>
+    <string name="filter_period_months_last_year">Months last year</string>
+    <string name="filter_period_quarters_last_year">Quarters las years</string>
+    <string name="filter_period_last_year">Last year</string>
+    <string name="filter_period_this_biweek">This biweek</string>
+    <string name="filter_period_last_biweek">Last biweek</string>
+    <string name="filter_period_last_n_bimonths">Last %d bimonths</string>
+    <string name="filter_period_last_n_quarters">Last %d quarters</string>
+    <string name="last_n_months">Last %d months</string>
+    <string name="filter_period_this_financial_year">This financial year</string>
+    <string name="filter_period_last_financial_year">Last financial year</string>
+    <string name="filter_period_last_n_financial_years">Last %d financial years</string>
+    <string name="filter_period_last_n_biweeks">Last %d biweeks</string>
+    <string name="filter_period_from_to" translatable="false">%s - %s</string>
+    <string name="period">Period</string>
+    <string name="DAILY">Daily</string>
+    <string name="WEEKLY">Weekly</string>
+    <string name="MONTHLY">Monthly</string>
+    <string name="YEARLY">Yearly</string>
+
+    <!-- Sync -->
+    <string name="filter_sync_synced">Synced</string>
+    <string name="filter_sync_not_synced">Not Synced</string>
+    <string name="filter_sync_error">Sync Error</string>
+    <string name="filter_sync_sms">SMS Synced</string>
+
+    <!-- Intervals -->
+    <string name="interval_now">now</string>
+    <string name="interval_minute_ago">%d min. ago</string>
+    <string name="interval_hour_ago">%d hours ago</string>
+    <string name="interval_yesterday">Yesterday</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">Feedback</string>
+    <string name="section_indicators">Indicators</string>
+    <string name="section_charts">Charts</string>
+    <string name="section_charts_indicators">Charts and indicators</string>
 </resources>

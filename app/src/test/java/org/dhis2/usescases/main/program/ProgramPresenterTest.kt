@@ -12,7 +12,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.utils.Constants.PROGRAM_THEME
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
-import org.dhis2.utils.filters.FilterManager
+import org.dhis2.commons.filters.FilterManager
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
