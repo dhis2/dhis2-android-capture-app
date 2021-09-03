@@ -6,5 +6,5 @@ import org.hisp.dhis.android.core.program.ProgramStage
 
 interface ProgramStageSelectionView : AbstractActivityContracts.View {
     fun setData(programStages: List<ProgramStage>)
-    fun setResult(programStageUid: String, repeatable: Boolean, periodType: PeriodType)
+    fun setResult(programStageUid: String, repeatable: Boolean, periodType: PeriodType?)
 }

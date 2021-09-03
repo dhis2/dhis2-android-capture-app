@@ -57,7 +57,7 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
         }
     }
 
-    override fun setResult(programStageUid: String, repeatable: Boolean, periodType: PeriodType) {
+    override fun setResult(programStageUid: String, repeatable: Boolean, periodType: PeriodType?) {
         val intent = Intent(this, EventInitialActivity::class.java)
         val bundle = Bundle().apply {
             putString(Constants.PROGRAM_UID, getIntent().getStringExtra(Constants.PROGRAM_UID))
