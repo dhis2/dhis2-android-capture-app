@@ -16,8 +16,8 @@ import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.util.TreeIterables
 import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.Matcher
-import org.hamcrest.Matchers
 
 fun openSpinnerPopup(): ViewAction {
     return object : ViewAction {
@@ -163,7 +163,7 @@ fun clickClickableSpan(textToClick: CharSequence): ViewAction {
     return object : ViewAction {
 
         override fun getConstraints(): Matcher<View> {
-            return Matchers.instanceOf(TextView::class.java)
+            return instanceOf(TextView::class.java)
         }
 
         override fun getDescription(): String {

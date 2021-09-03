@@ -23,10 +23,7 @@ import org.dhis2.common.viewactions.scrollToPositionRecyclerview
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION_POSITION
-import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.containsString
-import org.hamcrest.Matchers.instanceOf
-import org.hamcrest.Matchers.not
+import org.hamcrest.CoreMatchers.*
 
 fun formRobot(formRobot: FormRobot.() -> Unit) {
     FormRobot().apply {
@@ -38,14 +35,23 @@ class FormRobot : BaseRobot() {
 
     private fun clickOnASpecificSection(sectionLabel: String) {
         onView(withId(R.id.recyclerView))
-            .perform(actionOnItem<FormViewHolder>(allOf(hasDescendant(withText(sectionLabel)), hasDescendant(
-                withId(R.id.openIndicator))), click()))
+            .perform(
+                actionOnItem<FormViewHolder>(
+                    allOf(
+                        hasDescendant(withText(sectionLabel)), hasDescendant(
+                            withId(R.id.openIndicator)
+                        )
+                    ), click()
+                )
+            )
     }
 
     private fun clickOnSpinner(position: Int) {
         onView(withId(R.id.recyclerView))
-            .perform(actionOnItemAtPosition<FormViewHolder>(
-                position, clickChildViewWithId(R.id.input_editText))
+            .perform(
+                actionOnItemAtPosition<FormViewHolder>(
+                    position, clickChildViewWithId(R.id.input_editText)
+                )
             )
     }
 
@@ -75,7 +81,16 @@ class FormRobot : BaseRobot() {
 
     fun checkValueWasAssigned(value: String) {
         onView(withId(R.id.recyclerView))
-            .check(matches(hasItem(allOf(hasDescendant(withId(R.id.input_editText)), hasDescendant(withText(value))))))
+            .check(
+                matches(
+                    hasItem(
+                        allOf(
+                            hasDescendant(withId(R.id.input_editText)),
+                            hasDescendant(withText(value))
+                        )
+                    )
+                )
+            )
     }
 
     fun checkWarningIsShown() {
@@ -140,7 +155,7 @@ class FormRobot : BaseRobot() {
         onView(withId(R.id.recyclerView)).perform(scrollToBottomRecyclerView())
     }
 
-    fun scrollToPositionForm(position: Int){
+    fun scrollToPositionForm(position: Int) {
         onView(withId(R.id.recyclerView)).perform(scrollToPositionRecyclerview(position))
     }
 

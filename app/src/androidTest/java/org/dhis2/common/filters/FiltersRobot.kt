@@ -19,7 +19,7 @@ import org.dhis2.common.matchers.DatePickerMatchers.Companion.matchesDate
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.usescases.orgunitselector.OrgUnitSelectorHolder
 import org.dhis2.utils.filters.FilterHolder
-import org.hamcrest.Matchers.allOf
+import org.hamcrest.CoreMatchers.allOf
 
 fun filterRobotCommon(robotBody: FiltersRobot.() -> Unit) {
     FiltersRobot().apply {

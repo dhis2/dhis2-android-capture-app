@@ -13,7 +13,7 @@ import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.usescases.datasets.datasetDetail.datasetList.DataSetListViewHolder
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
-import org.hamcrest.Matchers.allOf
+import org.hamcrest.CoreMatchers.allOf
 
 fun syncFlowRobot(syncFlowRobot: SyncFlowRobot.() -> Unit) {
     SyncFlowRobot().apply {
