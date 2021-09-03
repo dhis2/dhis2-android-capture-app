@@ -7,6 +7,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.databinding.BindingAdapter
 import androidx.databinding.Observable
 import androidx.recyclerview.widget.RecyclerView
+import java.lang.Exception
 import org.dhis2.commons.R
 import org.dhis2.commons.animations.collapse
 import org.dhis2.commons.animations.expand
@@ -22,7 +23,6 @@ import org.dhis2.commons.filters.cat_opt_comb.CatOptCombFilterAdapter
 import org.dhis2.commons.filters.sorting.SortingItem
 import org.dhis2.commons.filters.sorting.SortingStatus
 import timber.log.Timber
-import java.lang.Exception
 
 @BindingAdapter("expand_view")
 fun View.setExpanded(expanded: Boolean) {

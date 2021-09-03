@@ -1,8 +1,8 @@
 package org.dhis2.commons.filters
 
 import android.content.Context
-import org.dhis2.commons.date.toUiText
 import org.dhis2.commons.R
+import org.dhis2.commons.date.toUiText
 import org.dhis2.commons.filters.workingLists.RelativePeriodToStringMapper
 import org.hisp.dhis.android.core.common.DateFilterPeriod
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus

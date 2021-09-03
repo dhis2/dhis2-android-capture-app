@@ -1,8 +1,8 @@
 package org.dhis2.Bindings
 
 import android.content.Context
-import org.dhis2.commons.date.toDateSpan
 import java.util.Date
+import org.dhis2.commons.date.toDateSpan
 import org.dhis2.utils.DateUtils
 import timber.log.Timber
 

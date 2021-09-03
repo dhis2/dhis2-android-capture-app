@@ -73,14 +73,16 @@ fun checkValueTypeValue(d2: D2, valueType: ValueType?, value: String): String {
             }
         ValueType.DATE ->
             DateUtils.uiDateFormat().format(
-                DateUtils.oldUiDateFormat().parse(value) ?: "")
+                DateUtils.oldUiDateFormat().parse(value) ?: ""
+            )
         ValueType.DATETIME ->
             DateUtils.dateTimeFormat().format(
                 DateUtils.databaseDateFormatNoSeconds().parse(value) ?: ""
             )
         ValueType.TIME ->
             DateUtils.timeFormat().format(
-                DateUtils.timeFormat().parse(value) ?: "")
+                DateUtils.timeFormat().parse(value) ?: ""
+            )
         else -> value
     }
 }

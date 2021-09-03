@@ -2,8 +2,8 @@ package org.dhis2.commons.filters.di
 
 import dagger.Module
 import dagger.Provides
-import org.dhis2.commons.filters.FilterManager
 import javax.inject.Singleton
+import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.dhis2.commons.resources.ResourceManager

@@ -5,14 +5,14 @@ import dagger.Provides
 import dhis2.org.analytics.charts.Charts
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.FiltersAdapter
+import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
-import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.filters.FiltersAdapter
 import org.hisp.dhis.android.core.D2
 
 @Module

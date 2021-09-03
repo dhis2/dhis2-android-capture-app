@@ -3,8 +3,8 @@ package org.dhis2.usescases.orgunitselector
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.R
-import org.dhis2.databinding.ItemOuTreeBinding
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.databinding.ItemOuTreeBinding
 
 internal class OrgUnitSelectorHolder(private val binding: ItemOuTreeBinding) :
     RecyclerView.ViewHolder(binding.root) {

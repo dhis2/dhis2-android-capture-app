@@ -9,9 +9,9 @@ import java.time.Instant
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import org.dhis2.R
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.date.toUiText
-import org.dhis2.R
 import org.junit.Test
 
 class DateExtensionsTest {
