@@ -25,6 +25,7 @@ import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.orgunitselector.OUTreeFragment
+import org.dhis2.usescases.orgunitselector.OnOrgUnitSelectionFinished
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.utils.Constants
@@ -33,6 +34,7 @@ import org.dhis2.utils.analytics.SELECT_PROGRAM
 import org.dhis2.utils.analytics.TYPE_PROGRAM_SELECTED
 import org.dhis2.utils.granularsync.GranularSyncContracts
 import org.dhis2.utils.granularsync.SyncStatusDialog
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
 
@@ -125,7 +127,16 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     }
 
     override fun openOrgUnitTreeSelector() {
-        OUTreeFragment.newInstance(true).show(childFragmentManager, "OUTreeFragment")
+        OUTreeFragment.newInstance(
+            true,
+            FilterManager.getInstance().orgUnitFilters.map { it.uid() }.toMutableList()
+        ).apply {
+            selectionCallback = object : OnOrgUnitSelectionFinished {
+                override fun onSelectionFinished(selectedOrgUnits: List<OrganisationUnit>) {
+                    this@ProgramFragment.presenter.setOrgUnitFilters(selectedOrgUnits)
+                }
+            }
+        }.show(childFragmentManager, "OUTreeFragment")
     }
 
     override fun setTutorial() {

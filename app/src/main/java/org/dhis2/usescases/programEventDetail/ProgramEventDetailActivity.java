@@ -38,8 +38,10 @@ import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -259,7 +261,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void openOrgUnitTreeSelector() {
-        OUTreeFragment.Companion.newInstance(true).show(getSupportFragmentManager(), "OUTreeFragment");
+        OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, Collections.emptyList());
+        ouTreeFragment.setSelectionCallback(selectedOrgUnits -> presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits));
+        ouTreeFragment.show(getSupportFragmentManager(), "OUTreeFragment");
     }
 
     @Override

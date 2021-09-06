@@ -287,6 +287,14 @@ public class FilterManager implements Serializable {
         publishData();
     }
 
+    public void addOrgUnits(List<OrganisationUnit> ouList){
+        ouFilters.clear();
+        ouFilters.addAll(ouList);
+        liveDataOUFilter.setValue(ouFilters);
+        ouFiltersApplied.set(ouFilters.size());
+        publishData();
+    }
+
     public void addCatOptCombo(CategoryOptionCombo catOptCombo) {
         if (catOptComboFilters.contains(catOptCombo))
             catOptComboFilters.remove(catOptCombo);

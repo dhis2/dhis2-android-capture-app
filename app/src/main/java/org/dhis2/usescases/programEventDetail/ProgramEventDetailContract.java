@@ -5,6 +5,7 @@ import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.workingLists.WorkingListItem;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 
 import java.util.List;
@@ -70,5 +71,7 @@ public class ProgramEventDetailContract {
         void setOpeningFilterToNone();
 
         String getStageUid();
+
+        void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits);
     }
 }

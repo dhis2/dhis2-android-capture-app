@@ -12,7 +12,7 @@ class OUTreePresenter(
     private val view: OUTreeView,
     private val repository: OUTreeRepository,
     private val schedulerProvider: SchedulerProvider,
-    private val filterManager: FilterManager
+    private val preselectedOrgUnits: List<String>
 ) {
 
     var compositeDisposable = CompositeDisposable()
@@ -38,7 +38,7 @@ class OUTreePresenter(
                                 org,
                                 false,
                                 repository.orgUnitHasChildren(org.uid()),
-                                filterManager.orgUnitFilters.contains(org),
+                                preselectedOrgUnits.contains(org.uid()),
                                 org.level()!!
                             )
                         )
@@ -69,7 +69,7 @@ class OUTreePresenter(
                                 org,
                                 false,
                                 repository.orgUnitHasChildren(org.uid()),
-                                filterManager.orgUnitFilters.contains(org),
+                                preselectedOrgUnits.contains(org.uid()),
                                 org.level()!!
                             )
                         )
@@ -115,7 +115,7 @@ class OUTreePresenter(
                                     it,
                                     false,
                                     repository.orgUnitHasChildren(it.uid()),
-                                    filterManager.orgUnitFilters.contains(it),
+                                    preselectedOrgUnits.contains(it.uid()),
                                     it.level()!!
                                 )
                             )
@@ -141,5 +141,9 @@ class OUTreePresenter(
 
     fun onDestroy() {
         compositeDisposable.clear()
+    }
+
+    fun getOrgUnits(selectedOrgUnits: MutableList<String>): List<OrganisationUnit> {
+        return selectedOrgUnits.mapNotNull { uid -> repository.orgUnit(uid) }
     }
 }

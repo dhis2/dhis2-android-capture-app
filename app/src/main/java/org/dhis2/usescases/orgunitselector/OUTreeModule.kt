@@ -35,7 +35,8 @@ import org.hisp.dhis.android.core.D2
 
 @Module
 class OUTreeModule(
-    private val view: OUTreeView
+    private val view: OUTreeView,
+    private val preselectedOrgUnits: List<String>
 ) {
 
     @Provides
@@ -48,7 +49,7 @@ class OUTreeModule(
             view,
             ouTreeRepository,
             schedulerProvider,
-            filterManager
+            preselectedOrgUnits
         )
     }
 

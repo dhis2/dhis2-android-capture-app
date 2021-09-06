@@ -511,6 +511,11 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         filterRepository.collapseAllFilters();
     }
 
+    @Override
+    public void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits) {
+        FilterManager.getInstance().addOrgUnits(selectedOrgUnits);
+    }
+
     private boolean canAddNewEvents() {
         return d2.enrollmentModule()
                 .enrollmentService()
