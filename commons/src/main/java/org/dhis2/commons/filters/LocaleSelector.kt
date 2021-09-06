@@ -6,8 +6,8 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
 import android.os.LocaleList
-import org.hisp.dhis.android.core.D2
 import java.util.Locale
+import org.hisp.dhis.android.core.D2
 
 class LocaleSelector(private val base: Context, private val d2: D2) {
 
