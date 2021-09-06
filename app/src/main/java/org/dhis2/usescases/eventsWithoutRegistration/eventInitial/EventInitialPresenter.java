@@ -414,6 +414,9 @@ public class EventInitialPresenter {
         compositeDisposable.add(eventInitialRepository
                 .filteredOrgUnits(DateUtils.databaseDateFormat().format(selectedDate), programId, null)
                 .flatMap(filteredOrgUnits -> {
+                    if (orgUnits.size() > 1) {
+                        orgUnits = filteredOrgUnits;
+                    }
                     if (getCurrentOrgUnit(null) != null) {
                         String prevOrgUnitUid = getCurrentOrgUnit(null);
                         for (OrganisationUnit ou : orgUnits) {

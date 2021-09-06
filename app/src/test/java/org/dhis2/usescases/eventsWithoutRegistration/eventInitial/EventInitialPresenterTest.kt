@@ -497,11 +497,13 @@ class EventInitialPresenterTest {
         val catCombo = CategoryCombo.builder().uid("catCombo").build()
         val selectedDate = Date()
         val date = DateUtils.databaseDateFormat().format(selectedDate)
+        val filteredOrgUnit =
+            OrganisationUnit.builder().uid("orgUnit").displayName("name").build()
 
         initMocks("uid", null, "stageUid", catCombo, true)
         whenever(
             eventInitialRepository.filteredOrgUnits(date, "uid", null)
-        ) doReturn Observable.just(listOf())
+        ) doReturn Observable.just(listOf(filteredOrgUnit))
         whenever(preferences.contains(Preference.CURRENT_ORG_UNIT)) doReturn true
         whenever(preferences.getString(Preference.CURRENT_ORG_UNIT)) doReturn "orgUnit"
 
