@@ -38,10 +38,24 @@
             android:text="@{chartModel.graph.title}"
             android:textColor="@color/textPrimary"
             android:textSize="14sp"
-            app:layout_constraintEnd_toStartOf="@id/chartVisualizationButton"
+            app:layout_constraintEnd_toStartOf="@id/chartFilters"
             app:layout_constraintStart_toEndOf="@id/chart_icon"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Chart title" />
+
+        <ImageView
+            android:id="@+id/chartFilters"
+            style="@style/ActionIconNoPadding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            app:filter_visualization="@{chartModel}"
+            app:layout_constraintBottom_toBottomOf="@id/chart_title"
+            app:layout_constraintEnd_toStartOf="@id/chartVisualizationButton"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_visualization_filter"
+            app:tint="?colorPrimary" />
+
 
         <ImageButton
             android:id="@+id/chartVisualizationButton"

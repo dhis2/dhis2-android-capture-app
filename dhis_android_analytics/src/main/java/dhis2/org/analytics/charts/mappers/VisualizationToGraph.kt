@@ -33,20 +33,22 @@ class VisualizationToGraph(
             }
             val categories = emptyList<String>()
             Graph(
-                visualization.name,
-                series,
-                null,
-                PeriodType.Daily,
-                periodStepProvider.periodStep(PeriodType.Daily),
-                visualization.chartType,
-                categories
+                title = visualization.name,
+                series = series,
+                periodToDisplayDefault = null,
+                eventPeriodType = PeriodType.Daily,
+                periodStep = periodStepProvider.periodStep(PeriodType.Daily),
+                chartType = visualization.chartType,
+                categories = categories,
+                visualizationUid = null
             )
         }
     }
 
     fun mapToGraph(
         visualization: Visualization,
-        gridAnalyticsResponse: GridAnalyticsResponse
+        gridAnalyticsResponse: GridAnalyticsResponse,
+        selectedRelativePeriod: RelativePeriod?
     ): Graph {
         // Whe need to map relative periods and fixed from Visualization
         val period = visualization.relativePeriods()?.filter { it.value }?.keys?.first()
@@ -63,7 +65,9 @@ class VisualizationToGraph(
             eventPeriodType = PeriodType.Monthly,
             periodStep = periodStepProvider.periodStep(PeriodType.Monthly),
             chartType = visualization.type().toAnalyticsChartType(),
-            categories = formattedCategory
+            categories = formattedCategory,
+            visualizationUid = visualization.uid(),
+            periodToDisplaySelected = selectedRelativePeriod
         )
     }
 

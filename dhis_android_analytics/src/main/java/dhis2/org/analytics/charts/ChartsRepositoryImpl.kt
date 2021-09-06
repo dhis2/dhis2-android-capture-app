@@ -1,5 +1,7 @@
 package dhis2.org.analytics.charts
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.nutritionTestingData
 import dhis2.org.analytics.charts.data.pieChartTestingData
@@ -12,6 +14,8 @@ import dhis2.org.analytics.charts.mappers.VisualizationToGraph
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.featureconfig.model.Feature
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.analytics.aggregated.DimensionItem
+import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.period.PeriodType
@@ -118,15 +122,24 @@ class ChartsRepositoryImpl(
                 .visualizations()
                 .uid(visualizationUid)
                 .blockingGet()
+            val selectedRelativePeriod = visualizationPeriod(visualizationUid)
 
             val gridAnalyticsResponse = d2.analyticsModule()
                 .visualizations()
                 .withVisualization(visualizationUid)
+                .run {
+                    selectedRelativePeriod?.map { relPeriod: RelativePeriod ->
+                        DimensionItem.PeriodItem.Relative(relPeriod)
+                    }?.let { dimensionPeriods ->
+                        withPeriods(dimensionPeriods)
+                    } ?: this
+                }
                 .blockingEvaluate()
 
             visualizationToGraph.mapToGraph(
                 visualization,
-                gridAnalyticsResponse
+                gridAnalyticsResponse,
+                selectedRelativePeriod?.firstOrNull()
             ).let {
                 graphList.add(it)
             }
@@ -217,5 +230,25 @@ class ChartsRepositoryImpl(
             .byDisplayInForm().isTrue
             .byProgramUid().eq(programUid)
             .blockingGet()
+    }
+
+    override fun setVisualizationPeriods(visualizationUid: String, periods: List<RelativePeriod>) {
+        if (periods.isNotEmpty()) {
+            d2.dataStoreModule().localDataStore().value(visualizationUid).blockingSet(
+                Gson().toJson(periods)
+            )
+        } else {
+            d2.dataStoreModule().localDataStore().value(visualizationUid).blockingDeleteIfExist()
+        }
+    }
+
+    private fun visualizationPeriod(visualizationUid: String): List<RelativePeriod>? {
+        return if (d2.dataStoreModule().localDataStore().value(visualizationUid).blockingExists()) {
+            val entry = d2.dataStoreModule().localDataStore().value(visualizationUid).blockingGet()
+            val type = object : TypeToken<List<RelativePeriod>?>() {}.type
+            return entry.value()?.let { Gson().fromJson(entry.value(), type) }
+        } else {
+            null
+        }
     }
 }
