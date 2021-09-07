@@ -63,6 +63,7 @@ import org.dhis2.uicomponents.map.model.MapStyle;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.orgunitselector.OUTreeFragment;
+import org.dhis2.usescases.orgunitselector.OnOrgUnitSelectionFinished;
 import org.dhis2.usescases.searchTrackEntity.adapters.RelationshipLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
@@ -106,7 +107,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.CHANGE_PROGRAM;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 
 public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View,
-        MapboxMap.OnMapClickListener {
+        MapboxMap.OnMapClickListener, OnOrgUnitSelectionFinished {
 
     ActivitySearchBinding binding;
     @Inject
@@ -907,8 +908,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void openOrgUnitTreeSelector() {
         OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, Collections.emptyList());
-        ouTreeFragment.setSelectionCallback(selectedOrgUnits -> presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits));
+        ouTreeFragment.setSelectionCallback(this);
         ouTreeFragment.show(getSupportFragmentManager(), "OUTreeFragment");
+    }
+
+    @Override
+    public void onSelectionFinished(List<? extends OrganisationUnit> selectedOrgUnits) {
+        presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
     }
 
     @Override

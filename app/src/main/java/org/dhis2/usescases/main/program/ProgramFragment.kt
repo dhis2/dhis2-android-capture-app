@@ -38,7 +38,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
 
-class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
+class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectionFinished {
 
     private lateinit var binding: FragmentProgramBinding
 
@@ -131,12 +131,12 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
             true,
             FilterManager.getInstance().orgUnitFilters.map { it.uid() }.toMutableList()
         ).apply {
-            selectionCallback = object : OnOrgUnitSelectionFinished {
-                override fun onSelectionFinished(selectedOrgUnits: List<OrganisationUnit>) {
-                    this@ProgramFragment.presenter.setOrgUnitFilters(selectedOrgUnits)
-                }
-            }
+            selectionCallback = this@ProgramFragment
         }.show(childFragmentManager, "OUTreeFragment")
+    }
+
+    override fun onSelectionFinished(selectedOrgUnits: List<OrganisationUnit>) {
+        presenter.setOrgUnitFilters(selectedOrgUnits)
     }
 
     override fun setTutorial() {

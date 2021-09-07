@@ -1,5 +1,6 @@
 package org.dhis2.usescases.orgunitselector
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -18,11 +19,10 @@ class OUTreePresenterTest {
     private val view: OUTreeView = mock()
     private val repository: OUTreeRepository = mock()
     private val scheduler = TrampolineSchedulerProvider()
-    private val filterManager: FilterManager = mock()
 
     @Before
-    fun setUpForEnrollment() {
-        presenter = OUTreePresenter(view, repository, scheduler, filterManager)
+    fun setUp() {
+        presenter = OUTreePresenter(view, repository, scheduler, emptyList())
     }
 
     @Test
@@ -36,10 +36,6 @@ class OUTreePresenterTest {
         whenever(
             repository.orgUnitHasChildren(orgUnits[0].uid())
         ) doReturn false
-
-        whenever(
-            filterManager.orgUnitFilters
-        ) doReturn listOf()
 
         presenter.init()
 
@@ -64,13 +60,13 @@ class OUTreePresenterTest {
         ) doReturn false
 
         whenever(
-            filterManager.orgUnitFilters
-        ) doReturn listOf()
+            view.getCurrentList()
+        )doReturn listOf(TreeNode(parent))
 
         presenter.init()
-        presenter.ouChildListener.onNext(Pair(2, parent))
+        presenter.ouChildListener.onNext(Pair(0, parent))
 
-        verify(view).addOrgUnits(2, listOf(treeNode(orgUnits[0]), treeNode(orgUnits[1])))
+        verify(view).setOrgUnits(any())
     }
 
     @Test
@@ -106,10 +102,6 @@ class OUTreePresenterTest {
         whenever(
             repository.orgUnitHasChildren(orgUnit.uid())
         ) doReturn false
-
-        whenever(
-            filterManager.orgUnitFilters
-        ) doReturn listOf()
 
         presenter.init()
         presenter.onSearchListener.onNext(name)

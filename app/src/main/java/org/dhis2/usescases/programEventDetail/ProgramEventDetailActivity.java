@@ -24,6 +24,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.orgunitselector.OUTreeFragment;
+import org.dhis2.usescases.orgunitselector.OnOrgUnitSelectionFinished;
 import org.dhis2.usescases.programEventDetail.eventList.EventListFragment;
 import org.dhis2.usescases.programEventDetail.eventMap.EventMapFragment;
 import org.dhis2.utils.Constants;
@@ -51,7 +52,8 @@ import static org.dhis2.R.layout.activity_program_event_detail;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 
-public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View {
+public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View,
+        OnOrgUnitSelectionFinished {
 
     private static final String FRAGMENT_TAG = "SYNC";
 
@@ -262,8 +264,13 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void openOrgUnitTreeSelector() {
         OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, Collections.emptyList());
-        ouTreeFragment.setSelectionCallback(selectedOrgUnits -> presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits));
+        ouTreeFragment.setSelectionCallback(this);
         ouTreeFragment.show(getSupportFragmentManager(), "OUTreeFragment");
+    }
+
+    @Override
+    public void onSelectionFinished(List<? extends OrganisationUnit> selectedOrgUnits) {
+        presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
     }
 
     @Override

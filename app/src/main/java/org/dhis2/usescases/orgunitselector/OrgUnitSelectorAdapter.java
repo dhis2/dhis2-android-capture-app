@@ -7,20 +7,22 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ListAdapter;
 
 import org.dhis2.databinding.ItemOuTreeBinding;
-import org.dhis2.commons.filters.FilterManager;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import kotlin.Unit;
 
 class OrgUnitSelectorAdapter extends ListAdapter<TreeNode, OrgUnitSelectorHolder> {
-    private final OnOrgUnitClick listener;
+    private final OnOrgUnitClick ouClickListener;
     private final List<String> selectedOrgUnits;
 
-    public OrgUnitSelectorAdapter(OnOrgUnitClick ouClickListener, List<String> selectedOrgUnits) {
+    public OrgUnitSelectorAdapter(
+            OnOrgUnitClick ouClickListener,
+            List<String> selectedOrgUnits
+    ) {
         super(new TreeNodeCallback());
-        this.listener = ouClickListener;
+        this.ouClickListener = ouClickListener;
         this.selectedOrgUnits = selectedOrgUnits;
     }
 
@@ -30,11 +32,7 @@ class OrgUnitSelectorAdapter extends ListAdapter<TreeNode, OrgUnitSelectorHolder
         org.dhis2.databinding.ItemOuTreeBinding binding = ItemOuTreeBinding
                 .inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new OrgUnitSelectorHolder(binding, (organisationUnit, isChecked) -> {
-            if (isChecked && !selectedOrgUnits.contains(organisationUnit.uid())) {
-                selectedOrgUnits.add(organisationUnit.uid());
-            } else if (!isChecked && selectedOrgUnits.contains(organisationUnit.uid())) {
-                selectedOrgUnits.remove(organisationUnit.uid());
-            }
+            ouClickListener.onOrgUnitSelected(organisationUnit, isChecked);
             return Unit.INSTANCE;
         });
     }
@@ -46,45 +44,14 @@ class OrgUnitSelectorAdapter extends ListAdapter<TreeNode, OrgUnitSelectorHolder
         holder.itemView.setOnClickListener(view -> {
                     if (getItemCount() > holder.getAdapterPosition() &&
                             holder.getAdapterPosition() >= 0)
-                        listener.onOrgUnitClick(getItem(holder.getAdapterPosition()), holder.getAdapterPosition());
+                        ouClickListener.onOrgUnitClick(getItem(holder.getAdapterPosition()), holder.getAdapterPosition());
                 }
         );
     }
 
-    public void addOrgUnits(int location, List<TreeNode> nodes) {
-        List<TreeNode> nodesCopy = new ArrayList<>(getCurrentList());
-        nodesCopy.get(location).setOpen(!nodesCopy.get(location).isOpen());
-
-        if (!nodesCopy.get(location).isOpen()) {
-            TreeNode parent = nodesCopy.get(location);
-            List<TreeNode> deleteList = new ArrayList<>();
-            boolean sameLevel = true;
-            for (int i = location + 1; i < nodesCopy.size(); i++) {
-                if (sameLevel)
-                    if (nodesCopy.get(i).getLevel() > parent.getLevel()) {
-                        deleteList.add(nodesCopy.get(i));
-                    } else {
-                        sameLevel = false;
-                    }
-            }
-            nodesCopy.removeAll(deleteList);
-        } else {
-            nodesCopy.addAll(location + 1, nodes);
-        }
-
-        submitList(nodesCopy);
-    }
-
-    public void clearAll() {
-        FilterManager.getInstance().removeAll();
-        for (int i = 0; i < getItemCount(); i++) {
-            TreeNode treeNode = getItem(i);
-            treeNode.setChecked(false);
-        }
-        notifyDataSetChanged();
-    }
-
     public interface OnOrgUnitClick {
         void onOrgUnitClick(TreeNode treeNode, int position);
+
+        void onOrgUnitSelected(OrganisationUnit organisationUnit, boolean isSelected);
     }
 }

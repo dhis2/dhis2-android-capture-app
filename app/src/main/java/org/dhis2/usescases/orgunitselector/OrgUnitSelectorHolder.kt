@@ -20,7 +20,7 @@ internal class OrgUnitSelectorHolder(
         this.node = node
         binding.checkBox.setOnCheckedChangeListener(null)
 
-        binding.ouName.text = node.content.displayName()
+        binding.ouName.text = node.displayName()
         node.isChecked = preselected
         val marginParams = binding.root.layoutParams as ViewGroup.MarginLayoutParams
         marginParams.leftMargin = (node.level - 1) * 40
@@ -36,7 +36,6 @@ internal class OrgUnitSelectorHolder(
 
         binding.checkBox.setOnCheckedChangeListener { _, isChecked ->
             checkCallback(node.content, isChecked)
-//            FilterManager.getInstance().addIfCan(node.content, isChecked)
         }
     }
 }

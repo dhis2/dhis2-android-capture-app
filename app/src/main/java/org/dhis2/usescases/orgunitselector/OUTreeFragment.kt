@@ -14,6 +14,7 @@ import androidx.fragment.app.DialogFragment
 import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.databinding.OuTreeFragmentBinding
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 const val ARG_SHOW_AS_DIALOG = "OUTreeFragment.ARG_SHOW_AS_DIALOG"
 const val ARG_PRE_SELECTED_OU = "OUTreeFragment.ARG_PRE_SELECTED_OU"
@@ -56,7 +57,7 @@ class OUTreeFragment private constructor() :
     override fun onAttach(context: Context) {
         super.onAttach(context)
         context.app().serverComponent()!!
-            .plus(OUTreeModule(this, preSelectedOrgUnits()))
+            .plus(OUTreeModule(this, selectedOrgUnits))
             .inject(this)
     }
 
@@ -71,7 +72,7 @@ class OUTreeFragment private constructor() :
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return OuTreeFragmentBinding.inflate(inflater, container, false).apply {
             menu.setOnClickListener {
                 exitOuSelection()
@@ -99,9 +100,8 @@ class OUTreeFragment private constructor() :
                 }
             })
             clearAll.setOnClickListener {
-                if (orgUnitRecycler.adapter != null) {
-                    (orgUnitRecycler.adapter as OrgUnitSelectorAdapter).clearAll()
-                }
+                selectedOrgUnits.clear()
+                presenter.rebuildCurrentList()
             }
             orgUnitRecycler.adapter = orgUnitSelectorAdapter
         }.root
@@ -130,12 +130,21 @@ class OUTreeFragment private constructor() :
         orgUnitSelectorAdapter.submitList(organisationUnits)
     }
 
-    override fun addOrgUnits(location: Int, organisationUnits: List<TreeNode>) {
-        orgUnitSelectorAdapter.addOrgUnits(location, organisationUnits)
+    override fun getCurrentList(): List<TreeNode> {
+        return orgUnitSelectorAdapter.currentList
     }
 
     override fun onOrgUnitClick(node: TreeNode, position: Int) {
         presenter.ouChildListener.onNext(Pair(position, node.content))
+    }
+
+    override fun onOrgUnitSelected(organisationUnit: OrganisationUnit, isSelected: Boolean) {
+        if (isSelected && !selectedOrgUnits.contains(organisationUnit.uid())) {
+            selectedOrgUnits.add(organisationUnit.uid())
+        } else if (!isSelected && selectedOrgUnits.contains(organisationUnit.uid())) {
+            selectedOrgUnits.remove(organisationUnit.uid())
+        }
+        presenter.rebuildCurrentList()
     }
 
     private fun exitOuSelection() {

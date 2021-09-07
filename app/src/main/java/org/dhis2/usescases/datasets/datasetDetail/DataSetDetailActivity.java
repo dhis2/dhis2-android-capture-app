@@ -39,7 +39,8 @@ import javax.inject.Inject;
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment;
 
 
-public class DataSetDetailActivity extends ActivityGlobalAbstract implements DataSetDetailView {
+public class DataSetDetailActivity extends ActivityGlobalAbstract implements DataSetDetailView,
+        OnOrgUnitSelectionFinished {
 
     private ActivityDatasetDetailBinding binding;
     private String dataSetUid;
@@ -141,8 +142,13 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Override
     public void openOrgUnitTreeSelector() {
         OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, Collections.emptyList());
-        ouTreeFragment.setSelectionCallback(selectedOrgUnits -> presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits));
+        ouTreeFragment.setSelectionCallback(this);
         ouTreeFragment.show(getSupportFragmentManager(), "OUTreeFragment");
+    }
+
+    @Override
+    public void onSelectionFinished(List<? extends OrganisationUnit> selectedOrgUnits) {
+        presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
     }
 
     @Override

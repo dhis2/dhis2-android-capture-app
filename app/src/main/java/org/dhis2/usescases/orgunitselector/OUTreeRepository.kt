@@ -33,9 +33,19 @@ class OUTreeRepository(private val d2: D2) {
                     .get()
         }
     }
+
     fun orgUnit(uid: String): OrganisationUnit? =
         d2.organisationUnitModule().organisationUnits().uid(uid).blockingGet()
 
     fun orgUnitHasChildren(uid: String): Boolean =
         !d2.organisationUnitModule().organisationUnits().byParentUid().eq(uid).blockingIsEmpty()
+
+    fun countSelectedChildren(
+        parentOrgUnit: OrganisationUnit,
+        selectedOrgUnits: List<String>
+    ): Int {
+        return d2.organisationUnitModule().organisationUnits()
+            .byPath().like("%${parentOrgUnit.uid()}%")
+            .byUid().`in`(selectedOrgUnits).blockingCount()
+    }
 }
