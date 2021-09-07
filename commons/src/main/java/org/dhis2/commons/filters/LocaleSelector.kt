@@ -25,7 +25,7 @@ class LocaleSelector(private val base: Context, private val d2: D2) {
     }
 
     private fun getUserLanguage(): String? {
-        return d2.settingModule().userSettings().blockingGet().keyUiLocale()
+        return d2.settingModule().userSettings().blockingGet()?.keyUiLocale()
     }
 
     private fun hasLanguageChanged(): Boolean {
