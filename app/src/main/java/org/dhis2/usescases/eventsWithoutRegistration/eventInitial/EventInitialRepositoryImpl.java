@@ -28,6 +28,7 @@ import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCreateProjection;
+import org.hisp.dhis.android.core.event.EventEditableStatus;
 import org.hisp.dhis.android.core.event.EventObjectRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.maintenance.D2Error;
@@ -594,5 +595,10 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     fieldFactory.style()
             );
         });
+    }
+
+    @Override
+    public Flowable<EventEditableStatus> getEditableStatus() {
+        return d2.eventModule().eventService().getEditableStatus(eventUid).toFlowable();
     }
 }
