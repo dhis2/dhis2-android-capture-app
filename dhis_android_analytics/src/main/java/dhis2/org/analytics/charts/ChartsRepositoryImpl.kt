@@ -78,7 +78,11 @@ class ChartsRepositoryImpl(
             ?.program()?.get(programUid)?.find { it.id().equals(groupUid) }
             ?.let { visualizationGroup -> addVisualizationsInGroup(visualizationGroup, graphList) }
 
-        return graphList
+        return when {
+            graphList.isEmpty() && featureConfig.isFeatureEnable(Feature.FORCE_DEFAULT_ANALYTICS) ->
+                graphList.nutritionTestingData(d2)
+            else -> graphList
+        }
     }
 
     override fun getHomeVisualization(groupUid: String?): List<Graph> {
@@ -97,7 +101,11 @@ class ChartsRepositoryImpl(
         }
             ?.let { visualizationGroup -> addVisualizationsInGroup(visualizationGroup, graphList) }
 
-        return graphList
+        return when {
+            graphList.isEmpty() && featureConfig.isFeatureEnable(Feature.FORCE_DEFAULT_ANALYTICS) ->
+                graphList.nutritionTestingData(d2)
+            else -> graphList
+        }
     }
 
     private fun addVisualizationsInGroup(

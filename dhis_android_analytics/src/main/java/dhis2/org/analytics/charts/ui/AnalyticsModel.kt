@@ -99,14 +99,11 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
                 }
             },
             onMenuItemClicked = { itemId ->
-                if (itemId == R.id.periodFilter) {
-                    showPeriodFilters(view)
-                    true
-                } else if (itemId == R.id.orgFilter) {
-                    showOrgUntFilters(view)
-                    true
+                when (itemId) {
+                    R.id.periodFilter -> showPeriodFilters(view)
+                    R.id.orgFilter -> showOrgUntFilters(view)
+                    else -> observableChartType.set(chartToLoad(itemId))
                 }
-                observableChartType.set(chartToLoad(itemId))
                 true
             }
         ).build()
