@@ -15,7 +15,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="@id/guide"
-            app:srcCompat="@drawable/ic_add_circle_primary" />
+            app:srcCompat="@drawable/ic_add_ou_circle_primary" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guide"
@@ -36,7 +36,7 @@
 
         <CheckBox
             android:id="@+id/checkBox"
-            style="@style/primaryCheckBox"
+            style="@style/primaryOUCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"

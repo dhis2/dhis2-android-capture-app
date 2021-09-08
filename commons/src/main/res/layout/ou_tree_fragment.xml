@@ -22,7 +22,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:srcCompat="@drawable/ic_arrow_back"
+                app:srcCompat="@drawable/ic_ou_tree_arrow_back"
                 tools:ignore="ContentDescription" />
 
             <EditText
@@ -31,9 +31,9 @@
                 android:layout_marginEnd="8dp"
                 android:drawablePadding="8dp"
                 android:padding="8dp"
-                android:background="@drawable/edittext_material_border"
+                android:background="@drawable/ou_tree_edittext_material_border"
                 android:id="@+id/search"
-                app:drawableStartCompat="@drawable/ic_search"
+                app:drawableStartCompat="@drawable/ic_ou_tree_search"
                 app:layout_constraintEnd_toStartOf="@id/clearAll"
                 app:layout_constraintStart_toEndOf="@id/menu"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -48,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                app:drawableEndCompat="@drawable/ic_remove_circle"
+                app:drawableEndCompat="@drawable/ic_ou_tree_remove_circle"
                 android:drawablePadding="8dp"
                 android:text="@string/clear_all"
                 android:textAllCaps="false"

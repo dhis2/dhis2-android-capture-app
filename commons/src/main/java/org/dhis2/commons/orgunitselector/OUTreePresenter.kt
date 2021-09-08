@@ -1,24 +1,25 @@
-package org.dhis2.usescases.orgunitselector
+package org.dhis2.commons.orgunitselector
 
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
 import java.util.ArrayList
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.defaultSubscribe
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import timber.log.Timber
 
 class OUTreePresenter(
     private val view: OUTreeView,
     private val repository: OUTreeRepository,
     private val schedulerProvider: SchedulerProvider,
-    private val filterManager: FilterManager
+    private val preselectedOrgUnits: List<String>
 ) {
 
     var compositeDisposable = CompositeDisposable()
     val ouChildListener = PublishProcessor.create<Pair<Int, OrganisationUnit>>()
     val onSearchListener = PublishProcessor.create<String>()
     val onStartSearch = PublishProcessor.create<Boolean>()
+    val onRebuildList = PublishProcessor.create<Unit>()
 
     fun init() {
         compositeDisposable.add(
@@ -38,21 +39,16 @@ class OUTreePresenter(
                                 org,
                                 false,
                                 repository.orgUnitHasChildren(org.uid()),
-                                filterManager.orgUnitFilters.contains(org),
-                                org.level()!!
+                                preselectedOrgUnits.contains(org.uid()),
+                                org.level()!!,
+                                repository.countSelectedChildren(org, preselectedOrgUnits)
                             )
                         )
                     }
                     nodes
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    {
-                        organisationUnits ->
-                        view.setOrgUnits(organisationUnits)
-                    },
-                    { Timber.e(it) }
+                }.defaultSubscribe(
+                    schedulerProvider,
+                    onNext = { view.setOrgUnits(it) }
                 )
         )
 
@@ -69,21 +65,16 @@ class OUTreePresenter(
                                 org,
                                 false,
                                 repository.orgUnitHasChildren(org.uid()),
-                                filterManager.orgUnitFilters.contains(org),
-                                org.level()!!
+                                preselectedOrgUnits.contains(org.uid()),
+                                org.level()!!,
+                                repository.countSelectedChildren(org, preselectedOrgUnits)
                             )
                         )
                     }
-                    Pair(organisationUnits.first, nodes)
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    {
-                        organisationUnits ->
-                        view.addOrgUnits(organisationUnits.first, organisationUnits.second)
-                    },
-                    { Timber.e(it) }
+                    rebuildOrgUnitList(organisationUnits.first, nodes)
+                }.defaultSubscribe(
+                    schedulerProvider,
+                    onNext = { view.setOrgUnits(it) }
                 )
         )
 
@@ -115,8 +106,9 @@ class OUTreePresenter(
                                     it,
                                     false,
                                     repository.orgUnitHasChildren(it.uid()),
-                                    filterManager.orgUnitFilters.contains(it),
-                                    it.level()!!
+                                    preselectedOrgUnits.contains(it.uid()),
+                                    it.level()!!,
+                                    repository.countSelectedChildren(it, preselectedOrgUnits)
                                 )
                             )
                         }
@@ -126,20 +118,64 @@ class OUTreePresenter(
                         .filter { nodes[it].level > nodes[it - 1].level }
                         .forEach { nodes[it - 1].isOpen = true }
                     nodes
+                }.defaultSubscribe(
+                    schedulerProvider,
+                    onNext = { view.setOrgUnits(it) }
+                )
+        )
+
+        compositeDisposable.add(
+            onRebuildList
+                .map {
+                    view.getCurrentList().map { currentTreeNode ->
+                        currentTreeNode.copy(
+                            isChecked = preselectedOrgUnits.contains(currentTreeNode.content.uid()),
+                            selectedChildrenCount = repository.countSelectedChildren(
+                                currentTreeNode.content,
+                                preselectedOrgUnits
+                            )
+                        )
+                    }
                 }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    {
-                        organisationUnits ->
-                        view.setOrgUnits(organisationUnits)
-                    },
-                    { Timber.e(it) }
+                .defaultSubscribe(
+                    schedulerProvider,
+                    onNext = { view.setOrgUnits(it) }
                 )
         )
     }
 
+    private fun rebuildOrgUnitList(location: Int, nodes: List<TreeNode>): List<TreeNode> {
+        val nodesCopy: MutableList<TreeNode> = ArrayList<TreeNode>(view.getCurrentList())
+        nodesCopy[location].isOpen = !nodesCopy[location].isOpen
+
+        if (!nodesCopy[location].isOpen) {
+            val (_, _, _, _, level) = nodesCopy[location]
+            val deleteList: MutableList<TreeNode> = ArrayList()
+            var sameLevel = true
+            for (i in location + 1 until nodesCopy.size) {
+                if (sameLevel) if (nodesCopy[i].level > level) {
+                    deleteList.add(nodesCopy[i])
+                } else {
+                    sameLevel = false
+                }
+            }
+            nodesCopy.removeAll(deleteList)
+        } else {
+            nodesCopy.addAll(location + 1, nodes)
+        }
+
+        return nodesCopy
+    }
+
     fun onDestroy() {
         compositeDisposable.clear()
+    }
+
+    fun getOrgUnits(selectedOrgUnits: MutableList<String>): List<OrganisationUnit> {
+        return selectedOrgUnits.mapNotNull { uid -> repository.orgUnit(uid) }
+    }
+
+    fun rebuildCurrentList() {
+        onRebuildList.onNext(Unit)
     }
 }

@@ -1,4 +1,4 @@
-package org.dhis2.usescases.orgunitselector
+package org.dhis2.commons.orgunitselector
 
 import dagger.Subcomponent
 import org.dhis2.commons.di.dagger.PerActivity

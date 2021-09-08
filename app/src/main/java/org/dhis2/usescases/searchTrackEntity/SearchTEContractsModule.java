@@ -181,5 +181,7 @@ public class SearchTEContractsModule {
         void setOpeningFilterToNone();
 
         void populateList(List<FieldUiModel> list);
+
+        void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits);
     }
 }

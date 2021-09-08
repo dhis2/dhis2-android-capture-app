@@ -965,6 +965,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
+    public void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits) {
+        FilterManager.getInstance().addOrgUnits(selectedOrgUnits);
+    }
+
+    @Override
     public void checkFilters(boolean listResultIsOk) {
         boolean hasToShowFilters;
         if (currentProgram.blockingFirst().isEmpty()) {
