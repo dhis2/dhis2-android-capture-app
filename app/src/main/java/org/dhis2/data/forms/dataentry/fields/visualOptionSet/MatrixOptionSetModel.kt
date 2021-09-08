@@ -8,6 +8,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
+import org.dhis2.form.ui.RecyclerViewUiEvents.ShowDescriptionLabelDialog
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.option.Option
 
@@ -283,5 +284,9 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             this.options() == item.options() &&
             this.numberOfColumns() == item.numberOfColumns() &&
             this.optionsToHide() == item.optionsToHide()
+    }
+
+    fun onDescriptionClick() {
+        callback.recyclerViewUiEvents(ShowDescriptionLabelDialog(label(), description()))
     }
 }
