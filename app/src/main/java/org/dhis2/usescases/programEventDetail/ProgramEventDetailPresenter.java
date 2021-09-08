@@ -2,15 +2,15 @@ package org.dhis2.usescases.programEventDetail;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.data.filter.FilterPresenter;
-import org.dhis2.data.filter.FilterRepository;
+import org.dhis2.commons.filters.data.FilterPresenter;
+import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
-import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
-import org.dhis2.utils.filters.FilterItem;
-import org.dhis2.utils.filters.FilterManager;
-import org.dhis2.utils.filters.workingLists.EventFilterToWorkingListItemMapper;
-import org.dhis2.utils.filters.workingLists.WorkingListItem;
+import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
+import org.dhis2.commons.filters.FilterItem;
+import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper;
+import org.dhis2.commons.filters.workingLists.WorkingListItem;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.program.Program;

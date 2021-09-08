@@ -11,7 +11,6 @@ import org.dhis2.databinding.TableDateTextBinding;
 import org.dhis2.databinding.TableDateTimeTextBinding;
 import org.dhis2.databinding.TableTimeTextBinding;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.Date;
 

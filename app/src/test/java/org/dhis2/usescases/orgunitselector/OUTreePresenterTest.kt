@@ -6,8 +6,8 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import java.util.UUID
+import org.dhis2.commons.filters.FilterManager
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.junit.Before
 import org.junit.Test

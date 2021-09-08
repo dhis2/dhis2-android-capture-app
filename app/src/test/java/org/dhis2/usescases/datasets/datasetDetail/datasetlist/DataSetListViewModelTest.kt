@@ -9,6 +9,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
+import org.dhis2.commons.filters.FilterManager
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailRepository
@@ -17,7 +18,6 @@ import org.dhis2.utils.analytics.matomo.Actions
 import org.dhis2.utils.analytics.matomo.Categories
 import org.dhis2.utils.analytics.matomo.Labels
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
-import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.common.State
 import org.junit.Before
 import org.junit.Rule

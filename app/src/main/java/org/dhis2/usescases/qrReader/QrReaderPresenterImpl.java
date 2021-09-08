@@ -7,8 +7,6 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
-import org.hisp.dhis.android.core.common.Coordinates;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.State;
@@ -40,7 +38,7 @@ import java.util.Locale;
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
 
-import static org.dhis2.utils.DateUtils.DATABASE_FORMAT_EXPRESSION;
+import static org.dhis2.commons.date.DateUtils.DATABASE_FORMAT_EXPRESSION;
 
 /**
  * QUADRAM. Created by ppajuelo on 22/05/2018.

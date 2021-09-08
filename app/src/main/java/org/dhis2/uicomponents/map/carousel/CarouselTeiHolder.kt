@@ -9,8 +9,8 @@ import org.dhis2.Bindings.hasFollowUp
 import org.dhis2.Bindings.setAttributeList
 import org.dhis2.Bindings.setStatusText
 import org.dhis2.Bindings.setTeiImage
-import org.dhis2.Bindings.toDateSpan
 import org.dhis2.R
+import org.dhis2.commons.date.toDateSpan
 import org.dhis2.databinding.ItemCarouselTeiBinding
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 

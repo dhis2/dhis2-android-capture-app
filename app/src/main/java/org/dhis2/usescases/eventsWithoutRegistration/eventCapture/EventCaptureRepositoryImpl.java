@@ -13,7 +13,7 @@ import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
-import org.dhis2.utils.resources.ResourceManager;
+import org.dhis2.commons.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
