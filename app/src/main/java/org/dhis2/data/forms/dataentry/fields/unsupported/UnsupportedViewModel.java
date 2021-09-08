@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.form.model.RowAction;
@@ -52,10 +51,5 @@ public abstract class UnsupportedViewModel extends FieldViewModel {
     @Override
     public FieldViewModel withFocus(boolean isFocused) {
         return new AutoValue_UnsupportedViewModel(uid(), layoutId(), label(), false, value(), programStageSection(), allowFutureDate(), false, optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.UNSUPPORTED, processor(), style(), isFocused);
-    }
-
-    @Override
-    public int getLayoutId() {
-        return R.layout.form_unsupported;
     }
 }

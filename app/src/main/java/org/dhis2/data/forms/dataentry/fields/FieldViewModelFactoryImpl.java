@@ -67,7 +67,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     );
     private final boolean searchMode;
     private FormUiColorFactory colorFactory;
-    private LayoutProvider layoutProvider;
+    private final LayoutProvider layoutProvider;
 
     public FieldViewModelFactoryImpl(Map<ValueType, String> valueTypeHintMap, boolean searchMode,
                                      FormUiColorFactory colorFactory, LayoutProvider layoutProvider) {

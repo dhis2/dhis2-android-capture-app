@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.form.model.ActionType;
@@ -172,11 +171,6 @@ public abstract class SpinnerViewModel extends FieldViewModel {
 
     public List<String> getOptionGroupsToShow() {
         return optionGroupsToShow();
-    }
-
-    @Override
-    public int getLayoutId() {
-        return R.layout.form_option_set_spinner;
     }
 
     public abstract boolean isBackgroundTransparent();

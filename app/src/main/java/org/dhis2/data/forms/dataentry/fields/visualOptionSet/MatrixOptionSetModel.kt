@@ -2,7 +2,6 @@ package org.dhis2.data.forms.dataentry.fields.visualOptionSet
 
 import com.google.auto.value.AutoValue
 import io.reactivex.processors.FlowableProcessor
-import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.form.model.ActionType
@@ -15,9 +14,6 @@ const val labelTag = "tag"
 
 @AutoValue
 abstract class MatrixOptionSetModel : FieldViewModel() {
-
-    override val layoutId: Int
-        get() = R.layout.matrix_option_set
 
     abstract fun options(): List<Option>
 

@@ -1,5 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.coordinate;
 
+import static android.text.TextUtils.isEmpty;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
@@ -7,10 +9,8 @@ import androidx.databinding.ObservableField;
 import com.google.auto.value.AutoValue;
 
 import org.dhis2.Bindings.StringExtensionsKt;
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.RecyclerViewUiEvents;
 import org.dhis2.form.ui.intent.FormIntent;
@@ -23,8 +23,6 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import io.reactivex.processors.FlowableProcessor;
-
-import static android.text.TextUtils.isEmpty;
 
 @AutoValue
 public abstract class CoordinateViewModel extends FieldViewModel {
