@@ -9,9 +9,6 @@ import org.dhis2.usescases.event.eventRegistrationRobot
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
-import org.dhis2.usescases.teidashboard.robot.noteRobot
-import org.dhis2.utils.DateUtils
-import org.dhis2.utils.DateUtils.uiDateFormat
 import org.junit.Rule
 import org.junit.Test
 

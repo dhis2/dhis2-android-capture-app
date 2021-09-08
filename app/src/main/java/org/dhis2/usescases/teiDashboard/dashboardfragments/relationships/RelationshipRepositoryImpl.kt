@@ -4,7 +4,7 @@ import io.reactivex.Single
 import org.dhis2.Bindings.profilePicturePath
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.R
-import org.dhis2.utils.resources.ResourceManager
+import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.event.Event

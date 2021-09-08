@@ -12,7 +12,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.utils.customviews.OrgUnitDialog;
-import org.dhis2.utils.customviews.TextInputAutoCompleteTextView;
+import org.dhis2.commons.customviews.TextInputAutoCompleteTextView;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;

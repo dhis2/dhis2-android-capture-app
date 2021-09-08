@@ -52,23 +52,23 @@ class AppMenuHelper private constructor(
         popupMenu.show()
     }
 
-    fun addIconToItem(@IdRes id: Int, @DrawableRes icon: Int){
+    fun addIconToItem(@IdRes id: Int, @DrawableRes icon: Int) {
         popupMenu.menu.findItem(id).icon = ContextCompat.getDrawable(this.context, icon)
     }
 
-    fun changeItemText(@IdRes id: Int, text: String){
+    fun changeItemText(@IdRes id: Int, text: String) {
         popupMenu.menu.findItem(id).title = text
     }
 
-    fun getItemText(@IdRes id: Int): String{
+    fun getItemText(@IdRes id: Int): String {
         return popupMenu.menu.findItem(id).title.toString()
     }
 
-    fun hideItem(@IdRes id:Int){
+    fun hideItem(@IdRes id: Int) {
         popupMenu.menu.findItem(id).isVisible = false
     }
 
-    fun showItem(@IdRes id: Int){
+    fun showItem(@IdRes id: Int) {
         popupMenu.menu.findItem(id).isVisible = true
     }
 

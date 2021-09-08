@@ -9,12 +9,12 @@ import android.view.View
 import android.widget.DatePicker
 import android.widget.LinearLayout
 import androidx.databinding.BindingAdapter
-import org.dhis2.commons.R
-import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponentProvider
-import org.dhis2.commons.databinding.CalendarPickerViewBinding
 import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
+import org.dhis2.commons.R
+import org.dhis2.commons.databinding.CalendarPickerViewBinding
+import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponentProvider
 
 class CalendarPicker(
     context: Context
@@ -153,7 +153,7 @@ class CalendarPicker(
     }
 
     private fun setFuturesDates() {
-        if(!isFutureDatesAllowed) {
+        if (!isFutureDatesAllowed) {
             datePicker.maxDate = System.currentTimeMillis()
             calendarPicker.maxDate = System.currentTimeMillis()
         }

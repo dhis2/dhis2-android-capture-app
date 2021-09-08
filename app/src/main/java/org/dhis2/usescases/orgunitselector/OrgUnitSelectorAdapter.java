@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ListAdapter;
 
 import org.dhis2.databinding.ItemOuTreeBinding;
-import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.commons.filters.FilterManager;
 
 import java.util.ArrayList;
 import java.util.List;

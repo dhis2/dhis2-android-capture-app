@@ -12,12 +12,12 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import okhttp3.MediaType
 import okhttp3.ResponseBody
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.jira.JiraIssue
 import org.dhis2.data.jira.JiraIssueListResponse
 import org.dhis2.data.jira.JiraIssuesResult
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.utils.resources.ResourceManager
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule

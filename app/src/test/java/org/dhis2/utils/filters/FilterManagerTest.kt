@@ -5,9 +5,11 @@ import com.nhaarman.mockitokotlin2.mock
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
 import java.util.Date
-import org.dhis2.utils.filters.sorting.SortingItem
-import org.dhis2.utils.filters.sorting.SortingStatus
-import org.dhis2.utils.resources.ResourceManager
+import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.Filters
+import org.dhis2.commons.filters.sorting.SortingItem
+import org.dhis2.commons.filters.sorting.SortingStatus
+import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus

@@ -16,9 +16,9 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.databinding.BindingAdapter
-import org.dhis2.commons.R
 import java.util.ArrayList
 import kotlin.math.pow
+import org.dhis2.commons.R
 
 @BindingAdapter("scrollingTextView")
 fun TextView.setScrollingTextView(canScroll: Boolean) {
