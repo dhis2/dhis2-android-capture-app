@@ -300,9 +300,11 @@ For example we can detect here an error of a text field without quotes in the fi
 <content>PR04 text with quotes is: </content>
 </programRuleAction>
 </programRuleActions>
-</programRule>`
+</programRule>
+```
 
-`<programRule name="PR04- !#{varible_name} - BOOLEAN - Assign text with quotes">
+```xml
+<programRule name="PR04- !#{varible_name} - BOOLEAN - Assign text with quotes">
 <program name="JB_Testing_2.2"/>
 <programRuleActions>
 <programRuleAction>
