@@ -1,4 +1,4 @@
-package org.dhis2.usescases.orgunitselector
+package org.dhis2.commons.orgunitselector
 
 import io.reactivex.Single
 import org.hisp.dhis.android.core.D2

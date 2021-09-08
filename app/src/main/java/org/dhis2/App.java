@@ -21,6 +21,8 @@ import org.dhis2.commons.di.dagger.PerUser;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityComponent;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityModule;
 import org.dhis2.commons.featureconfig.di.FeatureConfigModule;
+import org.dhis2.commons.orgunitselector.OUTreeComponent;
+import org.dhis2.commons.orgunitselector.OUTreeModule;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceModule;
@@ -340,5 +342,11 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     @Override
     public FilterPresenter provideFilterPresenter() {
         return userComponent.filterPresenter();
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public OUTreeComponent provideOUTreeComponent(@NotNull OUTreeModule module) {
+        return serverComponent.plus(module);
     }
 }

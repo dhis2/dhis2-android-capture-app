@@ -1,12 +1,12 @@
-package org.dhis2.usescases.orgunitselector
+package org.dhis2.commons.orgunitselector
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.R
-import org.dhis2.databinding.ItemOuTreeBinding
+import org.dhis2.commons.R
+import org.dhis2.commons.databinding.ItemOuTreeBinding
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
-internal class OrgUnitSelectorHolder(
+class OrgUnitSelectorHolder(
     private val binding: ItemOuTreeBinding,
     private val checkCallback: (OrganisationUnit, Boolean) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
@@ -27,11 +27,11 @@ internal class OrgUnitSelectorHolder(
         binding.checkBox.isChecked = node.isChecked
 
         if (!node.hasChild) {
-            binding.icon.setImageResource(R.drawable.ic_circle_primary)
+            binding.icon.setImageResource(R.drawable.ic_ou_tree_circle_primary)
         } else if (node.isOpen) {
-            binding.icon.setImageResource(R.drawable.ic_remove_circle_primary)
+            binding.icon.setImageResource(R.drawable.ic_ou_tree_remove_circle_primary)
         } else {
-            binding.icon.setImageResource(R.drawable.ic_add_circle)
+            binding.icon.setImageResource(R.drawable.ic_ou_tree_add_circle)
         }
 
         binding.checkBox.setOnCheckedChangeListener { _, isChecked ->

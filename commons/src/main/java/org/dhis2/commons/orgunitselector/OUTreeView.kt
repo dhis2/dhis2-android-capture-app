@@ -1,4 +1,4 @@
-package org.dhis2.usescases.orgunitselector
+package org.dhis2.commons.orgunitselector
 
 interface OUTreeView {
     fun setOrgUnits(organisationUnits: List<TreeNode>)

@@ -25,7 +25,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dhis2.usescases.orgunitselector
+package org.dhis2.commons.orgunitselector
 
 import dagger.Module
 import dagger.Provides
@@ -42,8 +42,7 @@ class OUTreeModule(
     @Provides
     internal fun providesPresenter(
         ouTreeRepository: OUTreeRepository,
-        schedulerProvider: SchedulerProvider,
-        filterManager: FilterManager
+        schedulerProvider: SchedulerProvider
     ): OUTreePresenter {
         return OUTreePresenter(
             view,

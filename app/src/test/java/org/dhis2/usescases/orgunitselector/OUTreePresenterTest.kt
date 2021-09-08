@@ -7,7 +7,10 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import java.util.UUID
-import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.orgunitselector.OUTreePresenter
+import org.dhis2.commons.orgunitselector.OUTreeRepository
+import org.dhis2.commons.orgunitselector.OUTreeView
+import org.dhis2.commons.orgunitselector.TreeNode
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.junit.Before

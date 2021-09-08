@@ -1,4 +1,4 @@
-package org.dhis2.usescases.orgunitselector
+package org.dhis2.commons.orgunitselector
 
 import android.app.Activity
 import android.content.Context
@@ -11,10 +11,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import javax.inject.Inject
-import org.dhis2.Bindings.app
-import org.dhis2.databinding.OuTreeFragmentBinding
+import org.dhis2.commons.databinding.OuTreeFragmentBinding
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import javax.inject.Inject
 
 const val ARG_SHOW_AS_DIALOG = "OUTreeFragment.ARG_SHOW_AS_DIALOG"
 const val ARG_PRE_SELECTED_OU = "OUTreeFragment.ARG_PRE_SELECTED_OU"
@@ -56,9 +55,9 @@ class OUTreeFragment private constructor() :
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        context.app().serverComponent()!!
-            .plus(OUTreeModule(this, selectedOrgUnits))
-            .inject(this)
+        (context.applicationContext as OUTreeComponentProvider).provideOUTreeComponent(
+            OUTreeModule(this, selectedOrgUnits)
+        )?.inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

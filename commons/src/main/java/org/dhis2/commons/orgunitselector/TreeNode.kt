@@ -1,4 +1,4 @@
-package org.dhis2.usescases.orgunitselector
+package org.dhis2.commons.orgunitselector
 
 import java.util.UUID
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit

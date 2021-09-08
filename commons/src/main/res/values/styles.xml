@@ -109,4 +109,8 @@
         <item name="android:textColor">@color/textPrimary</item>
         <item name="colorControlActivated">?colorPrimary</item>
     </style>
+
+    <style name="primaryOUCheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="buttonTint">?colorPrimary</item>
+    </style>
 </resources>

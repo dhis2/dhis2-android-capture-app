@@ -1,4 +1,4 @@
-package org.dhis2.usescases.orgunitselector;
+package org.dhis2.commons.orgunitselector;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ListAdapter;
 
-import org.dhis2.databinding.ItemOuTreeBinding;
+import org.dhis2.commons.databinding.ItemOuTreeBinding;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.util.List;
@@ -29,7 +29,7 @@ class OrgUnitSelectorAdapter extends ListAdapter<TreeNode, OrgUnitSelectorHolder
     @NonNull
     @Override
     public OrgUnitSelectorHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        org.dhis2.databinding.ItemOuTreeBinding binding = ItemOuTreeBinding
+        ItemOuTreeBinding binding = ItemOuTreeBinding
                 .inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new OrgUnitSelectorHolder(binding, (organisationUnit, isChecked) -> {
             ouClickListener.onOrgUnitSelected(organisationUnit, isChecked);
