@@ -1,5 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import static android.text.TextUtils.isEmpty;
+
 import androidx.annotation.NonNull;
 
 import org.dhis2.Bindings.ValueExtensionsKt;
@@ -18,6 +20,7 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -42,7 +45,6 @@ import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
-import org.hisp.dhis.android.core.relationship.RelationshipEntityType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository;
 import org.hisp.dhis.rules.models.RuleEffect;
 
@@ -59,8 +61,6 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.processors.FlowableProcessor;
 import timber.log.Timber;
-
-import static android.text.TextUtils.isEmpty;
 
 public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCaptureRepository {
 
@@ -279,7 +279,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                         valueType, mandatory, optionSet, dataValue,
                                         programStageSection != null ? programStageSection.uid() : null, allowFutureDates,
                                         isEventEditable,
-                                        renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(), legendValue, processor, options);
+                                        renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(), legendValue, processor, options, FeatureType.POINT);
 
                         if (!error.isEmpty()) {
                             return fieldViewModel.setError(error);
@@ -541,7 +541,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         for (ProgramRule rule : programRules) {
             for (ProgramRuleAction action : rule.programRuleActions()) {
                 if (action.programRuleActionType() == ProgramRuleActionType.DISPLAYKEYVALUEPAIR ||
-                    action.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT){
+                        action.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT) {
                     hasProgramRules = true;
                 }
             }

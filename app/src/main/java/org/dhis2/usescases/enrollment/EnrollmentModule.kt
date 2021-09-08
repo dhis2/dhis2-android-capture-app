@@ -105,7 +105,12 @@ class EnrollmentModule(
         context: Context,
         colorFactory: FormUiColorFactory
     ): FieldViewModelFactory {
-        return FieldViewModelFactoryImpl(context.valueTypeHintMap(), false, colorFactory, LayoutProviderImpl())
+        return FieldViewModelFactoryImpl(
+            context.valueTypeHintMap(),
+            false,
+            colorFactory,
+            LayoutProviderImpl()
+        )
     }
 
     @Provides

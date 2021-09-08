@@ -13,6 +13,7 @@ import org.dhis2.form.model.RowAction
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -168,7 +169,8 @@ class EventCaptureFieldProvider(
                 de.fieldMask(),
                 getColorByLegend(rawValue, de),
                 actionProcessor,
-                options
+                options,
+                FeatureType.POINT
             )
 
         return if (error.isNotEmpty()) {

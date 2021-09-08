@@ -100,16 +100,31 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 trackedEntityAttribute.fieldMask(),
                 null,
                 fieldProcessor,
-                Collections.emptyList());
+                Collections.emptyList(),
+                FeatureType.POINT);
     }
 
     @NonNull
     @Override
-    public FieldUiModel create(@NonNull String id, @NonNull String label, @NonNull ValueType type,
-                               @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value,
-                               @Nullable String section, @Nullable Boolean allowFutureDates, @NonNull Boolean editable, @Nullable ProgramStageSectionRenderingType renderingType,
-                               @Nullable String description, @Nullable ValueTypeDeviceRendering fieldRendering, @Nullable Integer optionCount, ObjectStyle objectStyle,
-                               @Nullable String fieldMask, @Nullable LegendValue legendValue, @NonNull FlowableProcessor<RowAction> processor, @NonNull List<Option> options) {
+    public FieldUiModel create(@NonNull String id,
+                               @NonNull String label,
+                               @NonNull ValueType type,
+                               @NonNull Boolean mandatory,
+                               @Nullable String optionSet,
+                               @Nullable String value,
+                               @Nullable String section,
+                               @Nullable Boolean allowFutureDates,
+                               @NonNull Boolean editable,
+                               @Nullable ProgramStageSectionRenderingType renderingType,
+                               @Nullable String description,
+                               @Nullable ValueTypeDeviceRendering fieldRendering,
+                               @Nullable Integer optionCount,
+                               ObjectStyle objectStyle,
+                               @Nullable String fieldMask,
+                               @Nullable LegendValue legendValue,
+                               @NonNull FlowableProcessor<RowAction> processor,
+                               @NonNull List<Option> options,
+                               @Nullable FeatureType featureType) {
         isNull(type, "type must be supplied");
         FormUiModelStyle style = new BasicFormUiModelStyle(colorFactory);
 
@@ -308,7 +323,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         editable,
                         description,
                         objectStyle,
-                        FeatureType.POINT,
+                        featureType,
                         !searchMode,
                         searchMode,
                         processor,

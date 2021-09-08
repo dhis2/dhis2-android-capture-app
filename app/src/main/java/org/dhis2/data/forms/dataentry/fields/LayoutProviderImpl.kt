@@ -1,5 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields
 
+import kotlin.reflect.KClass
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.age.AgeViewModel
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
@@ -16,7 +17,6 @@ import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetMode
 import org.dhis2.form.ui.LayoutProvider
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
-import kotlin.reflect.KClass
 
 private val layouts = mapOf<KClass<*>, Int>(
     AgeViewModel::class to R.layout.form_age_custom,
@@ -33,7 +33,7 @@ private val layouts = mapOf<KClass<*>, Int>(
     MatrixOptionSetModel::class to R.layout.matrix_option_set
 )
 
-//Matrix Option Set Model Companion issue to take into account for later
+// Matrix Option Set Model Companion issue to take into account for later
 
 class LayoutProviderImpl : LayoutProvider {
 

@@ -2,7 +2,6 @@ package org.dhis2.data.forms.dataentry.fields.scan
 
 import com.google.auto.value.AutoValue
 import io.reactivex.processors.FlowableProcessor
-import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.form.model.RowAction
