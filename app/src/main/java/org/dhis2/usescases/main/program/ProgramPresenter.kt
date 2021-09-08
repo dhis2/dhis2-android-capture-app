@@ -10,6 +10,7 @@ import org.dhis2.utils.analytics.matomo.Actions.Companion.SYNC_BTN
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
 import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK_ON
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import timber.log.Timber
 
 class ProgramPresenter internal constructor(
@@ -114,5 +115,9 @@ class ProgramPresenter internal constructor(
 
     fun dispose() {
         disposable.clear()
+    }
+
+    fun setOrgUnitFilters(selectedOrgUnits: List<OrganisationUnit>) {
+        filterManager.addOrgUnits(selectedOrgUnits)
     }
 }

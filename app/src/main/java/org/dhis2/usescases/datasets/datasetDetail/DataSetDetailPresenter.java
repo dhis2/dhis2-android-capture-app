@@ -2,11 +2,12 @@ package org.dhis2.usescases.datasets.datasetDetail;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.util.List;
 
@@ -50,7 +51,7 @@ public class DataSetDetailPresenter {
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(filterItems -> {
-                                    if (filterItems.isEmpty()){
+                                    if (filterItems.isEmpty()) {
                                         view.hideFilters();
                                     } else {
                                         view.setFilters(filterItems);
@@ -69,7 +70,6 @@ public class DataSetDetailPresenter {
                                 periodRequest -> view.showPeriodRequest(periodRequest.getFirst()),
                                 Timber::e
                         ));
-
 
 
         disposable.add(FilterManager.getInstance().getCatComboRequest()
@@ -128,7 +128,11 @@ public class DataSetDetailPresenter {
         disableHomFilters.execute(filters);
     }
 
-    public void setOpeningFilterToNone(){
+    public void setOpeningFilterToNone() {
         filterRepository.collapseAllFilters();
+    }
+
+    public void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits) {
+        FilterManager.getInstance().addOrgUnits(selectedOrgUnits);
     }
 }

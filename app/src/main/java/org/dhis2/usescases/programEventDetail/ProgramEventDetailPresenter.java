@@ -13,6 +13,7 @@ import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.dhis2.commons.filters.workingLists.WorkingListItem;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Unit;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 
 import java.util.List;
@@ -225,5 +226,10 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public String getStageUid() {
         return eventRepository.programStage().blockingGet().uid();
+    }
+
+    @Override
+    public void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits) {
+        FilterManager.getInstance().addOrgUnits(selectedOrgUnits);
     }
 }
