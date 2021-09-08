@@ -26,6 +26,8 @@ public abstract class FieldViewModel implements FieldUiModel {
     @NonNull
     public abstract String uid();
 
+    public abstract int layoutId();
+
     @NonNull
     public abstract String label();
 
@@ -135,6 +137,11 @@ public abstract class FieldViewModel implements FieldUiModel {
     }
 
     @Override
+    public int getLayoutId() {
+        return layoutId();
+    }
+
+    @Override
     @Nullable
     public FormUiModelStyle getStyle() {
         return style();
@@ -148,6 +155,7 @@ public abstract class FieldViewModel implements FieldUiModel {
         if (o instanceof FieldViewModel) {
             FieldViewModel that = (FieldViewModel) o;
             return this.uid().equals(that.uid())
+                    && this.layoutId() == that.layoutId()
                     && this.label().equals(that.label())
                     && (this.programStageSection() == null ? that.programStageSection() == null : this.programStageSection().equals(that.programStageSection()))
                     && (this.allowFutureDate() == null ? that.allowFutureDate() == null : this.allowFutureDate().equals(that.allowFutureDate()))

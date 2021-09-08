@@ -5,7 +5,7 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import kotlin.reflect.KClass
 
 interface LayoutProvider {
-    fun getLayoutByModel(modelClass: KClass<*>): Int?
+    fun getLayoutByModel(modelClass: KClass<*>): Int
     fun getLayoutByValueType(valueType: ValueType): Int
     fun getLayoutByValueRenderingType(
         renderingType: ValueTypeRenderingType,

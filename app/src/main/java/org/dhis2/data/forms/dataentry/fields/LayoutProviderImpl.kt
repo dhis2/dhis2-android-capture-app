@@ -12,6 +12,7 @@ import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel
+import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.form.ui.LayoutProvider
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
@@ -28,15 +29,16 @@ private val layouts = mapOf<KClass<*>, Int>(
     ScanTextViewModel::class to R.layout.form_scan,
     SectionViewModel::class to R.layout.form_section,
     SpinnerViewModel::class to R.layout.form_option_set_spinner,
-    UnsupportedViewModel::class to R.layout.form_unsupported
+    UnsupportedViewModel::class to R.layout.form_unsupported,
+    MatrixOptionSetModel::class to R.layout.matrix_option_set
 )
 
 //Matrix Option Set Model Companion issue to take into account for later
 
 class LayoutProviderImpl : LayoutProvider {
 
-    override fun getLayoutByModel(modelClass: KClass<*>): Int? {
-        return layouts[modelClass]
+    override fun getLayoutByModel(modelClass: KClass<*>): Int {
+        return layouts[modelClass]!!
     }
 
     override fun getLayoutByValueType(valueType: ValueType): Int {

@@ -39,48 +39,43 @@ public abstract class CoordinateViewModel extends FieldViewModel {
 
     public abstract boolean isBackgroundTransparent();
 
-    public static CoordinateViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle, FeatureType featureType, boolean isBackgroundTransparent, boolean isSearchMode, FlowableProcessor<RowAction> processor, FormUiModelStyle style) {
-        return new AutoValue_CoordinateViewModel(id, label, mandatory, value, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.COORDINATES, processor, style, false, featureType, isBackgroundTransparent, isSearchMode);
+    public static CoordinateViewModel create(String id, int layoutId, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle, FeatureType featureType, boolean isBackgroundTransparent, boolean isSearchMode, FlowableProcessor<RowAction> processor, FormUiModelStyle style) {
+        return new AutoValue_CoordinateViewModel(id, layoutId, label, mandatory, value, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.COORDINATES, processor, style, false, featureType, isBackgroundTransparent, isSearchMode);
     }
 
     @Override
     public FieldViewModel setMandatory() {
-        return new AutoValue_CoordinateViewModel(uid(), label(), true, value(), programStageSection(), null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.COORDINATES, processor(), style(), activated(), featureType(), isBackgroundTransparent(), isSearchMode());
+        return new AutoValue_CoordinateViewModel(uid(), layoutId(), label(), true, value(), programStageSection(), null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.COORDINATES, processor(), style(), activated(), featureType(), isBackgroundTransparent(), isSearchMode());
     }
 
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
-        return new AutoValue_CoordinateViewModel(uid(), label(), mandatory(), value(), programStageSection(), null, editable(), null, warning, error(), description(), objectStyle(), null, DataEntryViewHolderTypes.COORDINATES, processor(), style(), activated(), featureType(), isBackgroundTransparent(), isSearchMode());
+        return new AutoValue_CoordinateViewModel(uid(), layoutId(), label(), mandatory(), value(), programStageSection(), null, editable(), null, warning, error(), description(), objectStyle(), null, DataEntryViewHolderTypes.COORDINATES, processor(), style(), activated(), featureType(), isBackgroundTransparent(), isSearchMode());
     }
 
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
-        return new AutoValue_CoordinateViewModel(uid(), label(), mandatory(), value(), programStageSection(), null, editable(), null, warning(), error, description(), objectStyle(), null, DataEntryViewHolderTypes.COORDINATES, processor(), style(), activated(), featureType(), isBackgroundTransparent(), isSearchMode());
+        return new AutoValue_CoordinateViewModel(uid(), layoutId(), label(), mandatory(), value(), programStageSection(), null, editable(), null, warning(), error, description(), objectStyle(), null, DataEntryViewHolderTypes.COORDINATES, processor(), style(), activated(), featureType(), isBackgroundTransparent(), isSearchMode());
     }
 
     @NonNull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_CoordinateViewModel(uid(), label(), mandatory(), data, programStageSection(), null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.COORDINATES, processor(), style(), activated(), featureType(), isBackgroundTransparent(), isSearchMode());
+        return new AutoValue_CoordinateViewModel(uid(), layoutId(), label(), mandatory(), data, programStageSection(), null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.COORDINATES, processor(), style(), activated(), featureType(), isBackgroundTransparent(), isSearchMode());
     }
 
     @NonNull
     @Override
     public FieldViewModel withEditMode(boolean isEditable) {
-        return new AutoValue_CoordinateViewModel(uid(), label(), mandatory(), value(), programStageSection(), null, isEditable, null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.COORDINATES, processor(), style(), activated(), featureType(), isBackgroundTransparent(), isSearchMode());
+        return new AutoValue_CoordinateViewModel(uid(), layoutId(), label(), mandatory(), value(), programStageSection(), null, isEditable, null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.COORDINATES, processor(), style(), activated(), featureType(), isBackgroundTransparent(), isSearchMode());
     }
 
     @NonNull
     @Override
     public FieldViewModel withFocus(boolean isFocused) {
-        return new AutoValue_CoordinateViewModel(uid(), label(), mandatory(), value(), programStageSection(), null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.COORDINATES, processor(), style(), isFocused, featureType(), isBackgroundTransparent(), isSearchMode());
-    }
-
-    @Override
-    public int getLayoutId() {
-        return R.layout.custom_form_coordinate;
+        return new AutoValue_CoordinateViewModel(uid(), layoutId(), label(), mandatory(), value(), programStageSection(), null, editable(), null, warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.COORDINATES, processor(), style(), isFocused, featureType(), isBackgroundTransparent(), isSearchMode());
     }
 
     public void onCurrentLocationClick(Geometry geometry) {

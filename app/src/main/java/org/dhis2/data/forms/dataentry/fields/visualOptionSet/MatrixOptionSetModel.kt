@@ -29,6 +29,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
         @JvmStatic
         fun create(
             fieldUid: String,
+            layoutId: Int,
             fieldLabel: String,
             mandatory: Boolean,
             value: String?,
@@ -43,6 +44,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
         ): MatrixOptionSetModel {
             return AutoValue_MatrixOptionSetModel(
                 fieldUid,
+                layoutId,
                 fieldLabel,
                 mandatory,
                 value,
@@ -69,6 +71,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
     override fun setMandatory(): FieldViewModel {
         return AutoValue_MatrixOptionSetModel(
             uid(),
+            layoutId(),
             label(),
             true,
             value(),
@@ -94,6 +97,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
     override fun withError(error: String?): FieldViewModel {
         return AutoValue_MatrixOptionSetModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             value(),
@@ -119,6 +123,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
     override fun withWarning(warning: String?): FieldViewModel {
         return AutoValue_MatrixOptionSetModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             value(),
@@ -144,6 +149,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
     override fun withValue(data: String?): FieldViewModel {
         return AutoValue_MatrixOptionSetModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             data,
@@ -169,6 +175,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
     override fun withEditMode(isEditable: Boolean): FieldViewModel {
         return AutoValue_MatrixOptionSetModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             value(),
@@ -194,6 +201,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
     override fun withFocus(isFocused: Boolean): FieldViewModel {
         return AutoValue_MatrixOptionSetModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             value(),
@@ -250,6 +258,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
 
         return AutoValue_MatrixOptionSetModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             value(),

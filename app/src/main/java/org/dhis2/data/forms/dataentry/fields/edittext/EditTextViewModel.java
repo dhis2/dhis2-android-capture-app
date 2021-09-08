@@ -43,7 +43,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public abstract KeyboardActionType keyBoardAction();
 
     @NonNull
-    public static EditTextViewModel create(@NonNull String uid, @NonNull String label,
+    public static EditTextViewModel create(@NonNull String uid, int layoutId, @NonNull String label,
                                            @NonNull Boolean mandatory, @Nullable String value, @NonNull String hint,
                                            @NonNull Integer lines, @NonNull ValueType valueType, @Nullable String section,
                                            @NonNull Boolean editable, @Nullable String description,
@@ -60,7 +60,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
             keyboardActionType = KeyboardActionType.NEXT;
         }
 
-        return new AutoValue_EditTextViewModel(uid, label, mandatory,
+        return new AutoValue_EditTextViewModel(uid, layoutId, label, mandatory,
                 value, section, null, editable, null, description, objectStyle, fieldMask, DataEntryViewHolderTypes.EDIT_TEXT, processor, null, false, hint, lines,
                 InputType.TYPE_CLASS_TEXT, valueType, null, null, renderType, isBackgroundTransparent, isSearchMode, fieldRendering, legendValue, keyboardActionType);
     }
@@ -68,7 +68,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     @NonNull
     @Override
     public EditTextViewModel withWarning(@NonNull String warning) {
-        return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
+        return new AutoValue_EditTextViewModel(uid(), layoutId(), label(), mandatory(),
                 value(), programStageSection(), null, editable(), null,
                 description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(), style(), activated(), hint(), maxLines(), inputType(), valueType(), warning, error(), renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering(), legendValue(), keyBoardAction());
     }
@@ -76,7 +76,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     @NonNull
     @Override
     public EditTextViewModel withError(@NonNull String error) {
-        return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
+        return new AutoValue_EditTextViewModel(uid(), layoutId(), label(), mandatory(),
                 value(), programStageSection(), null, true, null,
                 description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(), style(), activated(), hint(), maxLines(), inputType(), valueType(), warning(), error,
                 renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering(), legendValue(), keyBoardAction());
@@ -85,7 +85,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     @NonNull
     @Override
     public FieldViewModel setMandatory() {
-        return new AutoValue_EditTextViewModel(uid(), label(), true,
+        return new AutoValue_EditTextViewModel(uid(), layoutId(), label(), true,
                 value(), programStageSection(), null, editable(), null,
                 description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(), style(), activated(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
                 renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering(), legendValue(), keyBoardAction());
@@ -94,7 +94,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     @NonNull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
+        return new AutoValue_EditTextViewModel(uid(), layoutId(), label(), mandatory(),
                 data, programStageSection(), null, editable(), null,
                 description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(), style(), activated(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
                 renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering(), legendValue(), keyBoardAction());
@@ -103,7 +103,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     @NonNull
     @Override
     public FieldViewModel withEditMode(boolean isEditable) {
-        return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
+        return new AutoValue_EditTextViewModel(uid(), layoutId(), label(), mandatory(),
                 value(), programStageSection(), null, isEditable, null,
                 description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT, processor(), style(), activated(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
                 renderType(), isBackgroundTransparent(), isSearchMode(), fieldRendering(), legendValue(), keyBoardAction());
@@ -112,7 +112,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     @NonNull
     @Override
     public FieldViewModel withFocus(boolean isFocused) {
-        return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
+        return new AutoValue_EditTextViewModel(uid(), layoutId(), label(), mandatory(),
                 value(), programStageSection(), allowFutureDate(), editable(), optionSet(),
                 description(), objectStyle(), fieldMask(), DataEntryViewHolderTypes.EDIT_TEXT,
                 processor(), style(), isFocused, hint(), maxLines(),
@@ -123,7 +123,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
 
     @NonNull
     public FieldViewModel withlegendValue(LegendValue legendValue) {
-        return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
+        return new AutoValue_EditTextViewModel(uid(), layoutId(), label(), mandatory(),
                 value(), programStageSection(), allowFutureDate(), editable(), optionSet(),
                 description(), objectStyle(), fieldMask(), dataEntryViewType(),
                 processor(), style(), activated(), hint(), maxLines(),
@@ -133,20 +133,12 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
 
     @NonNull
     public FieldViewModel withKeyBoardActionDone() {
-        return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
+        return new AutoValue_EditTextViewModel(uid(), layoutId(), label(), mandatory(),
                 value(), programStageSection(), allowFutureDate(), editable(), optionSet(),
                 description(), objectStyle(), fieldMask(), dataEntryViewType(),
                 processor(), style(), activated(), hint(), maxLines(),
                 inputType(), valueType(), warning(), error(), renderType(),
                 isBackgroundTransparent(), isSearchMode(), fieldRendering(), legendValue(), KeyboardActionType.DONE);
-    }
-
-    @Override
-    public int getLayoutId() {
-        if (valueType() == ValueType.LONG_TEXT) {
-            return R.layout.form_long_text_custom;
-        }
-        return R.layout.form_edit_text_custom;
     }
 
     public void onTextFilled(String value) {

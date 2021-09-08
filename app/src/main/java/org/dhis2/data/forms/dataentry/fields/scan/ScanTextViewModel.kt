@@ -24,6 +24,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
         @JvmStatic
         fun create(
             id: String,
+            layoutId: Int,
             label: String?,
             mandatory: Boolean?,
             value: String?,
@@ -40,6 +41,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
         ): FieldViewModel =
             AutoValue_ScanTextViewModel(
                 id,
+                layoutId,
                 label,
                 mandatory,
                 value,
@@ -66,6 +68,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
     override fun setMandatory(): FieldViewModel =
         AutoValue_ScanTextViewModel(
             uid(),
+            layoutId(),
             label(),
             true,
             value(),
@@ -91,6 +94,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
     override fun withError(error: String): FieldViewModel =
         AutoValue_ScanTextViewModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             value(),
@@ -116,6 +120,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
     override fun withWarning(warning: String): FieldViewModel =
         AutoValue_ScanTextViewModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             value(),
@@ -141,6 +146,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
     override fun withValue(data: String?): FieldViewModel =
         AutoValue_ScanTextViewModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             data,
@@ -166,6 +172,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
     override fun withEditMode(isEditable: Boolean): FieldViewModel =
         AutoValue_ScanTextViewModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             value(),
@@ -191,6 +198,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
     override fun withFocus(isFocused: Boolean): FieldViewModel =
         AutoValue_ScanTextViewModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             value(),
@@ -212,9 +220,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             isBackgroundTransparent(),
             isSearchMode()
         )
-
-    override val layoutId: Int
-        get() = R.layout.form_scan
 
     abstract fun isBackgroundTransparent(): Boolean
 
