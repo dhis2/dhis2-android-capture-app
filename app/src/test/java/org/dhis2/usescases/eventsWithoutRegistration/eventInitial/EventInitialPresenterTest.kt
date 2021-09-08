@@ -29,6 +29,8 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.event.EventEditableStatus
+import org.hisp.dhis.android.core.event.EventNonEditableReason
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -85,6 +87,7 @@ class EventInitialPresenterTest {
         verify(view).setProgram(any())
         verify(view).setProgramStage(any())
         verify(view).setEvent(any())
+        verify(view).setEditionStatus(any())
         verify(view).setCatComboOptions(catCombo, listOf(), null)
         verify(view).updatePercentage(any())
         verify(view).setOrgUnit(any(), any())
@@ -643,6 +646,8 @@ class EventInitialPresenterTest {
         val event = Event.builder().uid(eventId).build()
         val programStage = ProgramStage.builder().uid(eventId).build()
         val stringCategoryOptionMap = mutableMapOf<String, CategoryOption>()
+        val editionStatus =
+            EventEditableStatus.NonEditable(EventNonEditableReason.BLOCKED_BY_COMPLETION)
 
         whenever(eventInitialRepository.event(eventId)) doReturn Observable.just(event)
         whenever(
@@ -667,5 +672,8 @@ class EventInitialPresenterTest {
                 false to false
             )
         ) doReturn Pair(mutableListOf(), mutableListOf())
+        whenever(eventInitialRepository.editableStatus) doReturn Flowable.just(editionStatus)
+        whenever(view.context) doReturn mock()
+        whenever(view.context.getString(any())) doReturn "reason"
     }
 }
