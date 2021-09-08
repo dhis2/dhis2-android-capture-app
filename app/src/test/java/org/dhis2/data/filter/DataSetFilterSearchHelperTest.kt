@@ -10,8 +10,10 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
 import java.util.Date
-import org.dhis2.utils.filters.FilterManager
-import org.dhis2.utils.resources.ResourceManager
+import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.data.DataSetFilterSearchHelper
+import org.dhis2.commons.filters.data.FilterRepository
+import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSetInstanceSummaryCollectionRepository
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit

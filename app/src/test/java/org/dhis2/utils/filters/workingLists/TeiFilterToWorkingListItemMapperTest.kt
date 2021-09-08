@@ -1,5 +1,6 @@
 package org.dhis2.utils.filters.workingLists
 
+import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.hisp.dhis.android.core.common.AssignedUserMode
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceEventFilter

@@ -12,12 +12,12 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import java.util.Date
 import java.util.GregorianCalendar
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.AUTH_ALL
 import org.dhis2.data.dhislogic.AUTH_UNCOMPLETE_EVENT
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.utils.Result
-import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.ObjectWithUid

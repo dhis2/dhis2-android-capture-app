@@ -10,8 +10,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
 import org.dhis2.R
-import org.dhis2.animations.collapse
-import org.dhis2.animations.expand
+import org.dhis2.commons.animations.collapse
+import org.dhis2.commons.animations.expand
 import org.dhis2.data.tuples.Pair
 import org.dhis2.databinding.ItemCarouselProgramEventBinding
 import org.dhis2.databinding.ItemFieldValueBinding

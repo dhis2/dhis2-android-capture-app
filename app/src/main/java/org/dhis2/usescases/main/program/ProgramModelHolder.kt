@@ -3,8 +3,8 @@ package org.dhis2.usescases.main.program
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.R
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.ItemProgramModelBinding
-import org.dhis2.utils.resources.ResourceManager
 
 class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
     RecyclerView.ViewHolder(binding.root) {

@@ -10,13 +10,13 @@ import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.data.dhislogic.DhisMapUtils;
-import org.dhis2.data.filter.FilterPresenter;
+import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
 import org.dhis2.uicomponents.map.managers.EventMapManager;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
-import org.dhis2.utils.filters.sorting.SortingItem;
-import org.dhis2.utils.filters.sorting.SortingStatus;
+import org.dhis2.commons.filters.sorting.SortingItem;
+import org.dhis2.commons.filters.sorting.SortingStatus;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;

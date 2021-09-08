@@ -21,6 +21,7 @@ import org.dhis2.commons.di.dagger.PerUser;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityComponent;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityModule;
 import org.dhis2.commons.featureconfig.di.FeatureConfigModule;
+import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceModule;
 import org.dhis2.data.appinspector.AppInspector;
@@ -334,5 +335,10 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     @Override
     public AnalyticsFragmentComponent provideAnalyticsFragmentComponent(AnalyticsFragmentModule module){
         return userComponent.plus(module);
+    }
+
+    @Override
+    public FilterPresenter provideFilterPresenter() {
+        return userComponent.filterPresenter();
     }
 }

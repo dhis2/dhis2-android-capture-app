@@ -1,6 +1,7 @@
 package org.dhis2.utils.filters.workingLists
 
-import org.dhis2.utils.filters.FilterManager
+import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.workingLists.WorkingListItem
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Test
