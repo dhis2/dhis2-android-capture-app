@@ -34,7 +34,6 @@ import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.settings.DataSetFilter
-import org.hisp.dhis.android.core.settings.FilterSetting
 import org.hisp.dhis.android.core.settings.HomeFilter
 import org.hisp.dhis.android.core.settings.ProgramFilter
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
@@ -47,6 +46,15 @@ class FilterRepository @Inject constructor(
 
     private val observableSortingInject = ObservableField<SortingItem>()
     private val observableOpenFilter = ObservableField<Filters>()
+    private var orgUnitsCount: Int = -1
+
+    init {
+        orgUnitsCount =
+            d2.organisationUnitModule()
+                .organisationUnits()
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
+                .blockingCount()
+    }
 
     fun trackedEntityInstanceQueryByProgram(
         programUid: String
@@ -284,6 +292,9 @@ class FilterRepository @Inject constructor(
         val defaultFilters = createDefaultTrackedEntityFilters()
 
         if (webAppIsNotConfigured()) {
+            if (orgUnitsCount == 1) {
+                defaultFilters.remove(ProgramFilter.ORG_UNIT)
+            }
             return defaultFilters.values.toList()
         }
 
@@ -292,12 +303,14 @@ class FilterRepository @Inject constructor(
         globalTrackedEntityTypeFiltersWebApp.remove(ProgramFilter.ASSIGNED_TO_ME)
         globalTrackedEntityTypeFiltersWebApp.remove(ProgramFilter.ENROLLMENT_DATE)
 
-        val filtersToShow = getFiltersApplyingWebAppConfig.execute(
+        if (orgUnitsCount == 1) {
+            globalTrackedEntityTypeFiltersWebApp.remove(ProgramFilter.ORG_UNIT)
+        }
+
+        return getFiltersApplyingWebAppConfig.execute(
             defaultFilters,
             globalTrackedEntityTypeFiltersWebApp
         )
-
-        return filtersToShow
     }
 
     private fun createDefaultTrackedEntityFilters(): LinkedHashMap<ProgramFilter, FilterItem> {
@@ -340,15 +353,20 @@ class FilterRepository @Inject constructor(
         val defaultFilters = createDefaultDatasetFilters(dataSetUid)
 
         if (webAppIsNotConfigured()) {
+            if (orgUnitsCount == 1) {
+                defaultFilters.remove(DataSetFilter.ORG_UNIT)
+            }
             return defaultFilters.values.toList()
         }
 
-        val datasetFiltersWebApp: Map<DataSetFilter, FilterSetting> =
+        val datasetFiltersWebApp =
             d2.settingModule().appearanceSettings().getDataSetFiltersByUid(dataSetUid)
-        val filtersToShow =
-            getFiltersApplyingWebAppConfig.execute(defaultFilters, datasetFiltersWebApp)
 
-        return filtersToShow
+        if (orgUnitsCount == 1) {
+            datasetFiltersWebApp.remove(DataSetFilter.ORG_UNIT)
+        }
+
+        return getFiltersApplyingWebAppConfig.execute(defaultFilters, datasetFiltersWebApp)
     }
 
     private fun createDefaultDatasetFilters(
@@ -399,15 +417,19 @@ class FilterRepository @Inject constructor(
         val defaultFilters = createDefaultHomeFilters()
 
         if (webAppIsNotConfigured()) {
+            if (orgUnitsCount == 1) {
+                defaultFilters.remove(HomeFilter.ORG_UNIT)
+            }
             return defaultFilters.values.toList()
         }
 
-        val homeFiltersWebApp: Map<HomeFilter, FilterSetting> =
-            d2.settingModule().appearanceSettings().homeFilters
-        val filtersToShow =
-            getFiltersApplyingWebAppConfig.execute(defaultFilters, homeFiltersWebApp)
+        val homeFiltersWebApp = d2.settingModule().appearanceSettings().homeFilters
 
-        return filtersToShow
+        if (orgUnitsCount == 1) {
+            homeFiltersWebApp.remove(HomeFilter.ORG_UNIT)
+        }
+
+        return getFiltersApplyingWebAppConfig.execute(defaultFilters, homeFiltersWebApp)
     }
 
     private fun createDefaultHomeFilters(): LinkedHashMap<HomeFilter, FilterItem> {
@@ -457,6 +479,9 @@ class FilterRepository @Inject constructor(
 
         if (webAppIsNotConfigured()) {
             val workingListFilter = getTrackerWorkingList(program, showWorkingLists)
+            if (orgUnitsCount == 1) {
+                defaultFilters.remove(ProgramFilter.ORG_UNIT)
+            }
             if (workingListFilter != null) {
                 return defaultFilters.values.toMutableList().apply {
                     add(0, workingListFilter)
@@ -465,8 +490,13 @@ class FilterRepository @Inject constructor(
             return defaultFilters.values.toList()
         }
 
-        val trackerFiltersWebApp: Map<ProgramFilter, FilterSetting> =
+        val trackerFiltersWebApp =
             d2.settingModule().appearanceSettings().getProgramFiltersByUid(program.uid())
+
+        if (orgUnitsCount == 1) {
+            trackerFiltersWebApp.remove(ProgramFilter.ORG_UNIT)
+        }
+
         val filterPreList =
             getFiltersApplyingWebAppConfig.execute(defaultFilters, trackerFiltersWebApp)
         val workingListFilter: WorkingListFilter? = getTrackerWorkingList(program, showWorkingLists)
@@ -603,6 +633,9 @@ class FilterRepository @Inject constructor(
 
         if (webAppIsNotConfigured()) {
             val workingListFilter = getEventWorkingList(program)
+            if (orgUnitsCount == 1) {
+                defaultFilters.remove(ProgramFilter.ORG_UNIT)
+            }
             if (workingListFilter != null) {
                 return defaultFilters.values.toMutableList().apply {
                     add(0, workingListFilter)
@@ -611,8 +644,13 @@ class FilterRepository @Inject constructor(
             return defaultFilters.values.toMutableList()
         }
 
-        val eventFiltersWebApp: Map<ProgramFilter, FilterSetting> =
+        val eventFiltersWebApp =
             d2.settingModule().appearanceSettings().getProgramFiltersByUid(program.uid())
+
+        if (orgUnitsCount == 1) {
+            eventFiltersWebApp.remove(ProgramFilter.ORG_UNIT)
+        }
+
         val filtersToShow =
             getFiltersApplyingWebAppConfig.execute(defaultFilters, eventFiltersWebApp)
         val workingListFilter: WorkingListFilter? = getEventWorkingList(program)
