@@ -10,13 +10,16 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.databinding.ViewDataBinding;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
+import org.dhis2.databinding.DateTimeViewAccentBinding;
 import org.dhis2.databinding.DateTimeViewBinding;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
@@ -38,8 +41,9 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     private TextInputEditText editText;
     private TextInputLayout inputLayout;
-    private DateTimeViewBinding binding;
+    private ViewDataBinding binding;
     private ImageView icon;
+    private View descriptionLabel;
 
     private Calendar selectedCalendar;
     private DateFormat dateFormat;
@@ -66,13 +70,14 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     }
 
     public void setLabel(String label) {
-        binding.setLabel(label);
+        this.label = label;
+        binding.setVariable(BR.label, label);
+        binding.executePendingBindings();
     }
 
     public void setDescription(String description) {
-        binding.setDescription(description);
-        binding.descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
-        binding.descriptionLabel.setOnClickListener(v ->
+        descriptionLabel.setVisibility(description != null ? View.VISIBLE : View.GONE);
+        descriptionLabel.setOnClickListener(v ->
                 new CustomDialog(
                         getContext(),
                         label,
@@ -82,6 +87,8 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
                         Constants.DESCRIPTION_DIALOG,
                         null
                 ).show());
+        binding.setVariable(BR.description, description);
+        binding.executePendingBindings();
     }
 
     public void initData(String data) {
@@ -141,12 +148,17 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     private void setLayout(boolean isBgTransparent) {
         this.isBgTransparent = isBgTransparent;
-        binding = DateTimeViewBinding.inflate(inflater, this, true);
+        if (isBgTransparent) {
+            binding = DateTimeViewBinding.inflate(inflater, this, true);
+        } else {
+            binding = DateTimeViewAccentBinding.inflate(inflater, this, true);
+        }
         inputLayout = findViewById(R.id.inputLayout);
         icon = findViewById(R.id.descIcon);
         editText = findViewById(R.id.inputEditText);
         clearButton = findViewById(R.id.clear_button);
         labelText = findViewById(R.id.label);
+        descriptionLabel = findViewById(R.id.descriptionLabel);
         inputLayout.setHint(getContext().getString(R.string.choose_date));
         icon.setImageResource(R.drawable.ic_form_date_time);
         icon.setOnClickListener(this);
@@ -236,7 +248,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
                 hour,
                 minute,
                 is24HourFormat);
-        dialog.setTitle(binding.getLabel());
+        dialog.setTitle(label);
         dialog.show();
     }
 
