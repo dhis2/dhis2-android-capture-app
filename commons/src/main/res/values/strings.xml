@@ -9,6 +9,7 @@
     <string name="cancel">Cancel</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="clear_all">clear selection</string>
     <string name="select_option">Select option</string>
     <string name="search">Search</string>
     <string name="jira_issue_sent">Issue Sent</string>

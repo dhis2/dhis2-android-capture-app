@@ -1,4 +1,4 @@
-package org.dhis2.usescases.orgunitselector
+package org.dhis2.commons.orgunitselector
 
 import android.app.Activity
 import android.content.Context
@@ -11,11 +11,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import org.dhis2.commons.databinding.OuTreeFragmentBinding
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import javax.inject.Inject
-import org.dhis2.Bindings.app
-import org.dhis2.databinding.OuTreeFragmentBinding
 
 const val ARG_SHOW_AS_DIALOG = "OUTreeFragment.ARG_SHOW_AS_DIALOG"
+const val ARG_PRE_SELECTED_OU = "OUTreeFragment.ARG_PRE_SELECTED_OU"
 
 class OUTreeFragment private constructor() :
     DialogFragment(),
@@ -23,10 +24,14 @@ class OUTreeFragment private constructor() :
     OrgUnitSelectorAdapter.OnOrgUnitClick {
 
     companion object {
-        fun newInstance(showAsDialog: Boolean = false): OUTreeFragment {
+        fun newInstance(
+            showAsDialog: Boolean = false,
+            preselectedOrgUnits: MutableList<String> = mutableListOf()
+        ): OUTreeFragment {
             return OUTreeFragment().apply {
                 arguments = Bundle().apply {
                     putBoolean(ARG_SHOW_AS_DIALOG, showAsDialog)
+                    putStringArrayList(ARG_PRE_SELECTED_OU, ArrayList(preselectedOrgUnits))
                 }
             }
         }
@@ -35,13 +40,24 @@ class OUTreeFragment private constructor() :
     @Inject
     lateinit var presenter: OUTreePresenter
 
-    private val orgUnitSelectorAdapter = OrgUnitSelectorAdapter(this)
+    private val orgUnitSelectorAdapter by lazy {
+        OrgUnitSelectorAdapter(
+            this,
+            selectedOrgUnits
+        )
+    }
+
+    private val selectedOrgUnits by lazy {
+        preSelectedOrgUnits().toMutableList()
+    }
+
+    var selectionCallback: OnOrgUnitSelectionFinished? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        context.app().serverComponent()!!
-            .plus(OUTreeModule(this))
-            .inject(this)
+        (context.applicationContext as OUTreeComponentProvider).provideOUTreeComponent(
+            OUTreeModule(this, selectedOrgUnits)
+        )?.inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +71,7 @@ class OUTreeFragment private constructor() :
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return OuTreeFragmentBinding.inflate(inflater, container, false).apply {
             menu.setOnClickListener {
                 exitOuSelection()
@@ -83,9 +99,8 @@ class OUTreeFragment private constructor() :
                 }
             })
             clearAll.setOnClickListener {
-                if (orgUnitRecycler.adapter != null) {
-                    (orgUnitRecycler.adapter as OrgUnitSelectorAdapter).clearAll()
-                }
+                selectedOrgUnits.clear()
+                presenter.rebuildCurrentList()
             }
             orgUnitRecycler.adapter = orgUnitSelectorAdapter
         }.root
@@ -107,19 +122,34 @@ class OUTreeFragment private constructor() :
     private fun showAsDialog() =
         arguments?.getBoolean(ARG_SHOW_AS_DIALOG, false)
 
+    private fun preSelectedOrgUnits() =
+        arguments?.getStringArrayList(ARG_PRE_SELECTED_OU)?.toList() ?: emptyList()
+
     override fun setOrgUnits(organisationUnits: List<TreeNode>) {
         orgUnitSelectorAdapter.submitList(organisationUnits)
     }
 
-    override fun addOrgUnits(location: Int, organisationUnits: List<TreeNode>) {
-        orgUnitSelectorAdapter.addOrgUnits(location, organisationUnits)
+    override fun getCurrentList(): List<TreeNode> {
+        return orgUnitSelectorAdapter.currentList
     }
 
     override fun onOrgUnitClick(node: TreeNode, position: Int) {
         presenter.ouChildListener.onNext(Pair(position, node.content))
     }
 
+    override fun onOrgUnitSelected(organisationUnit: OrganisationUnit, isSelected: Boolean) {
+        if (isSelected && !selectedOrgUnits.contains(organisationUnit.uid())) {
+            selectedOrgUnits.add(organisationUnit.uid())
+        } else if (!isSelected && selectedOrgUnits.contains(organisationUnit.uid())) {
+            selectedOrgUnits.remove(organisationUnit.uid())
+        }
+        presenter.rebuildCurrentList()
+    }
+
     private fun exitOuSelection() {
+        selectionCallback?.onSelectionFinished(
+            presenter.getOrgUnits(selectedOrgUnits)
+        )
         if (showAsDialog() == true) {
             dismiss()
         } else {

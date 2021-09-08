@@ -129,6 +129,8 @@ public class TEIDataContracts {
         boolean enrollmentOrgUnitInCaptureScope(String enrollmentOrgUnit);
 
         void setOpeningFilterToNone();
+
+        void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits);
     }
 
 }

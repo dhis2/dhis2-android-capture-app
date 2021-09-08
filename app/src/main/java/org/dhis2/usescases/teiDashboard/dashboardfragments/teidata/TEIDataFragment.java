@@ -27,7 +27,8 @@ import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.databinding.FragmentTeiDataBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.usescases.orgunitselector.OUTreeFragment;
+import org.dhis2.commons.orgunitselector.OUTreeFragment;
+import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardViewModel;
@@ -57,6 +58,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -81,7 +83,7 @@ import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT_TEI;
 import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_EVENT_TEI;
 
-public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.View {
+public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.View, OnOrgUnitSelectionFinished {
 
     private static final int REQ_DETAILS = 1001;
     private static final int REQ_EVENT = 2001;
@@ -602,7 +604,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void openOrgUnitTreeSelector(String programUid) {
-        OUTreeFragment.Companion.newInstance(true).show(getChildFragmentManager(), "OUTreeFragment");
+        OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, Collections.emptyList());
+        ouTreeFragment.setSelectionCallback(this);
+        ouTreeFragment.show(getChildFragmentManager(), "OUTreeFragment");
     }
 
     @Override
@@ -618,5 +622,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 .build();
 
         dialog.show(getChildFragmentManager(), uid);
+    }
+
+    @Override
+    public void onSelectionFinished(@NotNull List<? extends OrganisationUnit> selectedOrgUnits) {
+        presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
     }
 }
