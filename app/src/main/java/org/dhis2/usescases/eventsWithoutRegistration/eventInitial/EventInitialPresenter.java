@@ -11,10 +11,11 @@ import org.dhis2.R;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.data.tuples.Sextet;
+import org.dhis2.data.tuples.Septet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper;
+import org.dhis2.utils.D2EditionMapper;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.EventCreationType;
@@ -27,6 +28,7 @@ import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.Geometry;
+import org.hisp.dhis.android.core.event.EventEditableStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.rules.models.RuleEffect;
@@ -131,15 +133,23 @@ public class EventInitialPresenter {
                                     eventInitialRepository.programStageForEvent(eventId),
                                     eventInitialRepository.getOptionsFromCatOptionCombo(eventId),
                                     eventInitialRepository.orgUnits(programId).toFlowable(BackpressureStrategy.LATEST),
-                                    Sextet::create)
+                                    eventInitialRepository.getEditableStatus(),
+                                    Septet::create)
                                     .subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui())
-                                    .subscribe(sextet -> {
-                                        this.program = sextet.val1();
-                                        this.orgUnits = sextet.val5();
-                                        view.setProgram(sextet.val1());
-                                        view.setProgramStage(sextet.val3());
-                                        view.setEvent(sextet.val0());
-                                        getCatOptionCombos(sextet.val2(), !sextet.val4().isEmpty() ? sextet.val4() : null);
+                                    .subscribe(septet -> {
+                                        this.program = septet.val1();
+                                        this.orgUnits = septet.val5();
+                                        view.setProgram(septet.val1());
+                                        view.setProgramStage(septet.val3());
+                                        view.setEvent(septet.val0());
+                                        getCatOptionCombos(septet.val2(), !septet.val4().isEmpty() ? septet.val4() : null);
+                                        if (septet.val6() instanceof EventEditableStatus.NonEditable) {
+                                            String mapReason = D2EditionMapper.mapEditionStatus(view.getContext(), ((EventEditableStatus.NonEditable) septet.val6()).getReason());
+                                            view.setEditionStatus(mapReason);
+                                        } else {
+                                            view.setEditionStatus(view.getContext().getString(R.string.available));
+                                        }
+
                                     }, Timber::d));
 
         } else {
