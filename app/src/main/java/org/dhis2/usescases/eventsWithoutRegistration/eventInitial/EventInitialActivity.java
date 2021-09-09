@@ -303,6 +303,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (eventUid == null) {
             binding.shareContainer.setVisibility(View.GONE);
             binding.actionButton.setText(R.string.next);
+            binding.editionLayout.setVisibility(View.GONE);
         } else {
             fixedOrgUnit = true;
             binding.orgUnitLayout.setEnabled(false);
@@ -990,5 +991,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     displayMessage(getString(R.string.enable_location_message));
                     return Unit.INSTANCE;
                 });
+    }
+
+    @Override
+    public void setEditionStatus(String reason) {
+        binding.editionReason.setText(reason);
     }
 }
