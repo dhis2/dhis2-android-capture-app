@@ -10,12 +10,16 @@ class GraphCoordinatesToEntry {
         coordinates: List<GraphPoint>
     ): List<Entry> {
         return coordinates.mapIndexed { index, graphPoint ->
-            Entry(
-                if (index > 0) {
-                    graphPoint.position ?: graph.numberOfStepsToDate(graphPoint.eventDate)
+
+            val entryIndex = graphPoint.position
+                ?: if (index == 0) {
+                    0f
                 } else {
-                    index.toFloat()
-                },
+                    graph.numberOfStepsToDate(graphPoint.eventDate)
+                }
+
+            Entry(
+                entryIndex,
                 graphPoint.fieldValue
             )
         }

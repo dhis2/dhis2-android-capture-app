@@ -14,11 +14,12 @@ data class Graph(
     val categories: List<String> = emptyList(),
     val orgUnitsDefault: List<String> = emptyList(),
     val orgUnitsSelected: List<String> = emptyList(),
-    val periodToDisplaySelected: RelativePeriod? = null
+    val periodToDisplaySelected: RelativePeriod? = null,
+    val visualizationUid: String? = null
 ) {
     fun xAxixMaximun(): Float {
         return if (categories.isNotEmpty()) {
-            categories.size.toFloat()
+            categories.size.toFloat() - 1
         } else {
             series.maxOf { serie -> serie.coordinates.maxOf { point -> point.position ?: 0f } }
         }

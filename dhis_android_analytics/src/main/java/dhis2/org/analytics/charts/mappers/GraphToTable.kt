@@ -89,7 +89,14 @@ class GraphToTable {
                 }
             }
         } else {
-            series.map { it.coordinates.map { point -> point.fieldValue.toString() } }
+            series.map { serie ->
+                return@map headers.mapIndexed { index, header ->
+                    serie.coordinates.firstOrNull { point ->
+                        point.position?.toInt() == index
+                    }?.fieldValue?.toString()
+                        ?: ""
+                }
+            }
         }
     }
 }
