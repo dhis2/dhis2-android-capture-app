@@ -457,6 +457,13 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
                 }
         }
     }
+
+    fun currentFilters(): Int {
+        var filterCount = 0
+        if (graph.orgUnitsSelected.isNotEmpty()) filterCount++
+        if (graph.periodToDisplaySelected != null) filterCount++
+        return filterCount
+    }
 }
 
 data class IndicatorModel(

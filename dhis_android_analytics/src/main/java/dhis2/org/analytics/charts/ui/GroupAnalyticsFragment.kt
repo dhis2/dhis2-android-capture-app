@@ -109,8 +109,8 @@ class GroupAnalyticsFragment : Fragment() {
                     groupViewModel.filterByOrgUnit()
                 }
             }
-        adapter.onResetFilterCallback = {
-            groupViewModel.resetFilter()
+        adapter.onResetFilterCallback = { chartModel, filterType ->
+            groupViewModel.resetFilter(chartModel, filterType)
         }
         binding.visualizationContainer.clipWithRoundedCorners()
         return binding.root
@@ -121,17 +121,17 @@ class GroupAnalyticsFragment : Fragment() {
         relativePeriod: RelativePeriod?,
         current: RelativePeriod?
     ) {
-        val periodList = mutableListOf<RelativePeriod?>()
+        val periodList = mutableListOf<RelativePeriod>()
         AlertBottomDialog.instance
             .setTitle(getString(R.string.include_this_period_title))
             .setMessage(getString(R.string.include_this_period_body))
             .setNegativeButton(getString(R.string.no)) {
-                periodList.add(relativePeriod)
+                relativePeriod?.let { periodList.add(relativePeriod) }
                 groupViewModel.filterByPeriod(chartModel, periodList)
             }
             .setPositiveButton(getString(R.string.yes)) {
-                periodList.add(relativePeriod)
-                periodList.add(current)
+                relativePeriod?.let { periodList.add(relativePeriod) }
+                current?.let { periodList.add(current) }
                 groupViewModel.filterByPeriod(chartModel, periodList)
             }
             .show(parentFragmentManager, AlertBottomDialog::class.java.simpleName)

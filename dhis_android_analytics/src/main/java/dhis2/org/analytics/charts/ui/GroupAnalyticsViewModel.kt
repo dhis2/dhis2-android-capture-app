@@ -19,6 +19,7 @@ class GroupAnalyticsViewModel(
     val chipItems: LiveData<List<AnalyticGroup>> = _chipItems
     private val _analytics = MutableLiveData<List<AnalyticsModel>>()
     val analytics: LiveData<List<AnalyticsModel>> = _analytics
+    private var currentGroup: String? = null
 
     init {
         fetchAnalyticsGroup()
@@ -35,15 +36,28 @@ class GroupAnalyticsViewModel(
         // TODO: Implement search + filtering calling repository with SDK
     }
 
-    fun filterByPeriod(chartModel: ChartModel, periods: MutableList<RelativePeriod?>) {
-        // TODO: Implement filtering calling repository with SDK
+    fun filterByPeriod(chartModel: ChartModel, periods: List<RelativePeriod>) {
+        chartModel.graph.visualizationUid?.let {
+            charts.setVisualizationPeriods(chartModel.graph.visualizationUid, periods)
+            fetchAnalytics(currentGroup)
+        }
     }
 
-    fun resetFilter() {
-        // TODO: Implement reset calling SDK
+    fun resetFilter(chartModel: ChartModel, filterType: ChartFilter) {
+        chartModel.graph.visualizationUid?.let {
+            when (filterType) {
+                ChartFilter.PERIOD -> charts.setVisualizationPeriods(
+                    chartModel.graph.visualizationUid,
+                    emptyList()
+                )
+                ChartFilter.ORG_UNIT -> TODO()
+            }
+            fetchAnalytics(currentGroup)
+        }
     }
 
     fun fetchAnalytics(groupUid: String?) {
+        currentGroup = groupUid
         _analytics.value = when (mode) {
             AnalyticMode.ENROLLMENT -> uid?.let {
                 charts.geEnrollmentCharts(uid)

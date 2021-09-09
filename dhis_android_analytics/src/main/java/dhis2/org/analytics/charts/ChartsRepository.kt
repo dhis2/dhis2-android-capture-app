@@ -1,6 +1,7 @@
 package dhis2.org.analytics.charts
 
 import dhis2.org.analytics.charts.data.Graph
+import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 
 interface ChartsRepository {
@@ -9,4 +10,5 @@ interface ChartsRepository {
     fun getHomeVisualization(groupUid: String?): List<Graph>
     fun getVisualizationGroups(uid: String?): List<AnalyticsDhisVisualizationsGroup>
     fun getDataSetVisualization(groupUid: String?, programUid: String): List<Graph>
+    fun setVisualizationPeriods(visualizationUid: String, periods: List<RelativePeriod>)
 }
