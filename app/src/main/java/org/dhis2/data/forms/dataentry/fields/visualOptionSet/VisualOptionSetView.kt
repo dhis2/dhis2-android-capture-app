@@ -5,10 +5,6 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.RelativeLayout
-import android.widget.TextView
-import androidx.core.view.setPadding
-import androidx.core.view.updatePadding
 import org.dhis2.Bindings.dp
 import org.dhis2.data.forms.dataentry.fields.image.ImageCustomView
 import org.dhis2.utils.customviews.FieldLayout
@@ -36,7 +32,6 @@ class VisualOptionSetView @JvmOverloads constructor(
     private fun setLayoutData() {
         post {
             removeAllViews()
-            createLabel()
             addView(
                 FrameLayout(context).apply {
                     layoutParams =
@@ -44,41 +39,9 @@ class VisualOptionSetView @JvmOverloads constructor(
                             LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.MATCH_PARENT
                         ).apply {
-                            topMargin = 36.dp
+                            topMargin = 16.dp
                         }
                     addOptionImages(this)
-                }
-            )
-            createWarningErrorMessage()
-        }
-    }
-
-    private fun createLabel() {
-        addView(
-            TextView(context).apply {
-                tag = viewModel?.labelTag()
-                layoutParams =
-                    LayoutParams(LayoutParams.MATCH_PARENT, 36.dp)
-                text = viewModel?.formattedLabel
-                updatePadding(left = 16.dp)
-            }
-        )
-    }
-
-    private fun createWarningErrorMessage() {
-        viewModel?.takeIf {
-            it.warning() != null || it.error() != null
-        }?.let {
-            val labelView = findViewWithTag<TextView>(viewModel?.labelTag())
-            addView(
-                TextView(context).apply {
-                    setTextAppearance(context, it.errorAppearance)
-                    text = it.errorMessage
-                    layoutParams =
-                        LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                            addRule(RelativeLayout.BELOW, labelView.id)
-                            setPadding(16.dp)
-                        }
                 }
             )
         }
@@ -102,12 +65,55 @@ class VisualOptionSetView @JvmOverloads constructor(
         return ImageCustomView(context).apply {
             tag = viewModel?.optionTag(option)
             layoutParams =
-                FrameLayout.LayoutParams(parentWidth / numberOfColumns, 500).apply {
-                    topMargin = (index / numberOfColumns) * 500
-                    marginStart =
-                        (index % numberOfColumns) * (parentWidth / numberOfColumns)
+                FrameLayout.LayoutParams(
+                    getWidth(numberOfColumns),
+                    FrameLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    topMargin = getTopMargin(index, numberOfColumns)
+                    marginStart = getStartMargin(index, numberOfColumns)
+                    marginEnd = getEndMargin(index, numberOfColumns)
                 }
             viewModel?.let { setViewModel(it, option) }
+        }
+    }
+
+    private fun getWidth(numberOfColumns: Int) = when (numberOfColumns) {
+        2 -> (parentWidth / numberOfColumns) - 16.dp - 8.dp
+        else -> FrameLayout.LayoutParams.WRAP_CONTENT
+    }
+
+    private fun getTopMargin(index: Int, numberOfColumns: Int): Int {
+        return when (numberOfColumns) {
+            2 -> {
+                (index / numberOfColumns) * (190 + 16).dp
+            }
+            else -> {
+                (index / numberOfColumns) * (96 + 16).dp
+            }
+        }
+    }
+
+    private fun getStartMargin(index: Int, numberOfColumns: Int): Int {
+        return when (numberOfColumns) {
+            2 -> {
+                when (index % numberOfColumns) {
+                    0 -> 16.dp
+                    else -> 8.dp + (parentWidth / numberOfColumns)
+                }
+            }
+            else -> 16.dp
+        }
+    }
+
+    private fun getEndMargin(index: Int, numberOfColumns: Int): Int {
+        return when (numberOfColumns) {
+            2 -> {
+                when (index % numberOfColumns) {
+                    0 -> 8.dp
+                    else -> 16.dp
+                }
+            }
+            else -> 16.dp
         }
     }
 
