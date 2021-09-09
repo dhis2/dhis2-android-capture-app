@@ -222,7 +222,14 @@ abstract class ScanTextViewModel : FieldViewModel() {
 
     fun onScanSelected(value: String?) {
         if (valueHasChanged(value)) {
-            callback.intent(FormIntent.OnSave(uid(), value))
+            callback.intent(
+                FormIntent.OnSave(
+                    uid = uid(),
+                    value = value,
+                    valueType = null,
+                    fieldMask = fieldMask()
+                )
+            )
         }
     }
 

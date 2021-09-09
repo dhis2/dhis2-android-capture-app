@@ -1,14 +1,15 @@
 package org.dhis2.data.forms.dataentry.fields.scan
 
+import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
-import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doOnTextChanged
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import org.dhis2.Bindings.closeKeyboard
+import org.dhis2.Bindings.openKeyboard
 import org.dhis2.R
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
@@ -45,10 +46,17 @@ fun TextInputEditText.setActionHandler(model: ScanTextViewModel) {
     isFocusable = true
     isClickable = model.editable
 
+    setOnTouchListener { v, event ->
+        if (MotionEvent.ACTION_UP == event.action) model.onItemClick()
+        false
+    }
     setOnFocusChangeListener { view, hasFocus ->
-        if (hasFocus) {
-            model.onItemClick()
-        } else {
+        if (hasFocus && !model.activated()) {
+            clearFocus()
+        } else if (hasFocus && model.isSearchMode()) {
+            openKeyboard()
+        }
+        if (!hasFocus) {
             model.onScanSelected(text.toString())
         }
     }
@@ -66,6 +74,11 @@ fun TextInputEditText.setActionHandler(model: ScanTextViewModel) {
         }
     }
     doOnTextChanged { text, _, _, _ -> model.onTextChange(text.toString()) }
+
+    if (model.activated()) {
+        requestFocus()
+        openKeyboard()
+    }
 }
 
 @BindingAdapter("view_edition")

@@ -5,11 +5,6 @@ import org.hisp.dhis.android.core.common.ValueType
 
 sealed class FormIntent : MviIntent {
 
-    data class OnSave(
-        val uid: String,
-        val value: String?
-    ) : FormIntent()
-
     data class OnNext(
         val uid: String,
         val value: String?,

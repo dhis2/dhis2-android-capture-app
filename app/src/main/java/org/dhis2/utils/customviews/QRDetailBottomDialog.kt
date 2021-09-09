@@ -19,9 +19,8 @@ import com.google.zxing.oned.Code128Writer
 import com.google.zxing.qrcode.QRCodeWriter
 import org.dhis2.Bindings.clipWithRoundedCorners
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.QrDetailDialogBinding
-import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
 class QRDetailBottomDialog(
@@ -72,7 +71,6 @@ class QRDetailBottomDialog(
                 )
             )
             setOnClickListener {
-
             }
         }
 
