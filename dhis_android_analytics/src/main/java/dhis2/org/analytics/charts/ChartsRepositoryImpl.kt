@@ -11,10 +11,12 @@ import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
 import dhis2.org.analytics.charts.mappers.DataElementToGraph
 import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
 import dhis2.org.analytics.charts.mappers.VisualizationToGraph
+import dhis2.org.analytics.charts.ui.OrgUnitFilterType
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.featureconfig.model.Feature
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.analytics.aggregated.DimensionItem
+import org.hisp.dhis.android.core.common.RelativeOrganisationUnit
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -98,12 +100,12 @@ class ChartsRepositoryImpl(
 
         visualizationSettings
             ?.home()?.find {
-            if (groupUid != null) {
-                it.id() == groupUid
-            } else {
-                true
+                if (groupUid != null) {
+                    it.id() == groupUid
+                } else {
+                    true
+                }
             }
-        }
             ?.let { visualizationGroup -> addVisualizationsInGroup(visualizationGroup, graphList) }
 
         return when {
@@ -125,6 +127,7 @@ class ChartsRepositoryImpl(
                 .blockingGet()
             val selectedRelativePeriod = visualizationPeriod(visualizationUid)
             val selectedOrgUnits = visualizationOrgUnits(visualizationUid)
+            val selectedOrgUnitType = visualizationOrgUnitsType(visualizationUid)
 
             val gridAnalyticsResponse = d2.analyticsModule()
                 .visualizations()
@@ -137,11 +140,25 @@ class ChartsRepositoryImpl(
                     } ?: this
                 }
                 .run {
-                    selectedOrgUnits?.map { ouUid: String ->
-                        DimensionItem.OrganisationUnitItem.Absolute(ouUid)
-                    }?.let { dimensionOrgUnits ->
-                        withOrganisationUnits(dimensionOrgUnits)
-                    } ?: this
+                    when (selectedOrgUnitType) {
+                        OrgUnitFilterType.ALL -> {
+                            withOrganisationUnits(
+                                listOf(
+                                    DimensionItem.OrganisationUnitItem.Relative(
+                                        RelativeOrganisationUnit.USER_ORGUNIT
+                                    )
+                                )
+                            )
+                        }
+                        OrgUnitFilterType.SELECTION -> {
+                            selectedOrgUnits?.map { ouUid: String ->
+                                DimensionItem.OrganisationUnitItem.Absolute(ouUid)
+                            }?.let { dimensionOrgUnits ->
+                                withOrganisationUnits(dimensionOrgUnits)
+                            } ?: this
+                        }
+                        else -> this
+                    }
                 }
                 .blockingEvaluate()
 
@@ -160,27 +177,27 @@ class ChartsRepositoryImpl(
         return d2.settingModule().analyticsSetting().teis()
             .byProgram().eq(enrollment.program())
             .blockingGet()?.let { analyticsSettings ->
-            analyticsTeiSettingsToGraph.map(
-                enrollment.trackedEntityInstance()!!,
-                analyticsSettings,
-                { dataElementUid ->
-                    d2.dataElementModule().dataElements().uid(dataElementUid).blockingGet()
-                        .displayFormName() ?: dataElementUid
-                },
-                { indicatorUid ->
-                    d2.programModule().programIndicators().uid(indicatorUid).blockingGet()
-                        .displayName() ?: indicatorUid
-                },
-                { nutritionGenderData ->
-                    val genderValue =
-                        d2.trackedEntityModule().trackedEntityAttributeValues().value(
-                            nutritionGenderData.attributeUid,
-                            enrollment.trackedEntityInstance()
-                        ).blockingGet()
-                    nutritionGenderData.isFemale(genderValue?.value())
-                }
-            )
-        } ?: emptyList()
+                analyticsTeiSettingsToGraph.map(
+                    enrollment.trackedEntityInstance()!!,
+                    analyticsSettings,
+                    { dataElementUid ->
+                        d2.dataElementModule().dataElements().uid(dataElementUid).blockingGet()
+                            .displayFormName() ?: dataElementUid
+                    },
+                    { indicatorUid ->
+                        d2.programModule().programIndicators().uid(indicatorUid).blockingGet()
+                            .displayName() ?: indicatorUid
+                    },
+                    { nutritionGenderData ->
+                        val genderValue =
+                            d2.trackedEntityModule().trackedEntityAttributeValues().value(
+                                nutritionGenderData.attributeUid,
+                                enrollment.trackedEntityInstance()
+                            ).blockingGet()
+                        nutritionGenderData.isFemale(genderValue?.value())
+                    }
+                )
+            } ?: emptyList()
     }
 
     private fun getDefaultAnalytics(enrollment: Enrollment): List<Graph> {
@@ -258,24 +275,62 @@ class ChartsRepositoryImpl(
 
     override fun setVisualizationOrgUnits(
         visualizationUid: String,
+        orgUnits: List<OrganisationUnit>,
+        orgUnitFilterType: OrgUnitFilterType
+    ) {
+        when (orgUnitFilterType) {
+            OrgUnitFilterType.NONE -> removeOrgUnitFilter(visualizationUid)
+            OrgUnitFilterType.ALL -> addOrgUnitFilter(visualizationUid, orgUnitFilterType, orgUnits)
+            OrgUnitFilterType.SELECTION -> {
+                if (orgUnits.isNotEmpty()) {
+                    addOrgUnitFilter(visualizationUid, orgUnitFilterType, orgUnits)
+                } else {
+                    removeOrgUnitFilter(visualizationUid)
+                }
+            }
+        }
+    }
+
+    private fun addOrgUnitFilter(
+        visualizationUid: String,
+        filterType: OrgUnitFilterType,
         orgUnits: List<OrganisationUnit>
     ) {
-        if (orgUnits.isNotEmpty()) {
-            d2.dataStoreModule().localDataStore()
-                .value("${visualizationUid}_ou")
-                .blockingSet(
-                    Gson().toJson(orgUnits.map { it.uid() })
-                )
-        } else {
-            d2.dataStoreModule().localDataStore()
-                .value("${visualizationUid}_ou")
-                .blockingDeleteIfExist()
+        when (filterType) {
+            OrgUnitFilterType.NONE -> return
+            OrgUnitFilterType.ALL -> {
+                d2.dataStoreModule().localDataStore()
+                    .value("${visualizationUid}_ou_type")
+                    .blockingSet(filterType.name)
+                d2.dataStoreModule().localDataStore()
+                    .value("${visualizationUid}_ou")
+                    .blockingDeleteIfExist()
+            }
+            OrgUnitFilterType.SELECTION -> {
+                d2.dataStoreModule().localDataStore()
+                    .value("${visualizationUid}_ou_type")
+                    .blockingSet(filterType.name)
+                d2.dataStoreModule().localDataStore()
+                    .value("${visualizationUid}_ou")
+                    .blockingSet(
+                        Gson().toJson(orgUnits.map { it.uid() })
+                    )
+            }
         }
+    }
+
+    private fun removeOrgUnitFilter(visualizationUid: String) {
+        d2.dataStoreModule().localDataStore()
+            .value("${visualizationUid}_ou_type")
+            .blockingDeleteIfExist()
+        d2.dataStoreModule().localDataStore()
+            .value("${visualizationUid}_ou")
+            .blockingDeleteIfExist()
     }
 
     private fun visualizationPeriod(visualizationUid: String): List<RelativePeriod>? {
         return if (d2.dataStoreModule().localDataStore().value("${visualizationUid}_p")
-            .blockingExists()
+                .blockingExists()
         ) {
             val entry =
                 d2.dataStoreModule().localDataStore()
@@ -288,9 +343,24 @@ class ChartsRepositoryImpl(
         }
     }
 
+    private fun visualizationOrgUnitsType(visualizationUid: String): OrgUnitFilterType? {
+        return if (d2.dataStoreModule().localDataStore().value("${visualizationUid}_ou_type")
+                .blockingExists()
+        ) {
+            val entry =
+                d2.dataStoreModule().localDataStore()
+                    .value("${visualizationUid}_ou_type")
+                    .blockingGet()
+            val type = object : TypeToken<OrgUnitFilterType>() {}.type
+            return entry.value()?.let { Gson().fromJson(entry.value(), type) }
+        } else {
+            null
+        }
+    }
+
     private fun visualizationOrgUnits(visualizationUid: String): List<String>? {
         return if (d2.dataStoreModule().localDataStore().value("${visualizationUid}_ou")
-            .blockingExists()
+                .blockingExists()
         ) {
             val entry =
                 d2.dataStoreModule().localDataStore()

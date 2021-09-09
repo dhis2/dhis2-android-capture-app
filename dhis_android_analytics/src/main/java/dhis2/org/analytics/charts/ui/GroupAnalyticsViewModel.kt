@@ -33,9 +33,16 @@ class GroupAnalyticsViewModel(
         }
     }
 
-    fun filterByOrgUnit(chartModel: ChartModel, orgUnits: List<OrganisationUnit>) {
+    fun filterByOrgUnit(
+        chartModel: ChartModel,
+        orgUnits: List<OrganisationUnit>,
+        orgUnitFilterType: OrgUnitFilterType
+    ) {
         chartModel.graph.visualizationUid?.let {
-            charts.setVisualizationOrgUnits(chartModel.graph.visualizationUid, orgUnits)
+            charts.setVisualizationOrgUnits(
+                chartModel.graph.visualizationUid, orgUnits,
+                orgUnitFilterType
+            )
             fetchAnalytics(currentGroup)
         }
     }
@@ -56,7 +63,8 @@ class GroupAnalyticsViewModel(
                 )
                 ChartFilter.ORG_UNIT -> charts.setVisualizationOrgUnits(
                     chartModel.graph.visualizationUid,
-                    emptyList()
+                    emptyList(),
+                    OrgUnitFilterType.NONE
                 )
             }
             fetchAnalytics(currentGroup)

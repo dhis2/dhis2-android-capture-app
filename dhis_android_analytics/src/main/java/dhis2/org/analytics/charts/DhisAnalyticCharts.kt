@@ -2,6 +2,7 @@ package dhis2.org.analytics.charts
 
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.di.DaggerChartsComponent
+import dhis2.org.analytics.charts.ui.OrgUnitFilterType
 import javax.inject.Inject
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -40,9 +41,10 @@ class DhisAnalyticCharts @Inject constructor(
 
     override fun setVisualizationOrgUnits(
         visualizationUid: String,
-        orgUnits: List<OrganisationUnit>
+        orgUnits: List<OrganisationUnit>,
+        orgUnitFilterType: OrgUnitFilterType
     ) {
-        chartsRepository.setVisualizationOrgUnits(visualizationUid, orgUnits)
+        chartsRepository.setVisualizationOrgUnits(visualizationUid, orgUnits, orgUnitFilterType)
     }
 
     companion object Provider : Charts.Provider {
