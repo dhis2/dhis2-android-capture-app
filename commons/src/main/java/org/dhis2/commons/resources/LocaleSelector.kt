@@ -1,4 +1,4 @@
-package org.dhis2.utils.resources
+package org.dhis2.commons.resources
 
 import android.content.Context
 import android.content.ContextWrapper

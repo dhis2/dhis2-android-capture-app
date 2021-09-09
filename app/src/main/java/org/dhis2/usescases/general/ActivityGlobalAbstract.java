@@ -40,7 +40,7 @@ import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.reporting.CrashReportController;
-import org.dhis2.utils.resources.LocaleSelector;
+import org.dhis2.commons.resources.LocaleSelector;
 import org.dhis2.utils.session.PinDialog;
 import org.jetbrains.annotations.NotNull;
 
