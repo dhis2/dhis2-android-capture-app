@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.analytics.aggregated.DimensionItem
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramIndicator
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
@@ -123,6 +124,7 @@ class ChartsRepositoryImpl(
                 .uid(visualizationUid)
                 .blockingGet()
             val selectedRelativePeriod = visualizationPeriod(visualizationUid)
+            val selectedOrgUnits = visualizationOrgUnits(visualizationUid)
 
             val gridAnalyticsResponse = d2.analyticsModule()
                 .visualizations()
@@ -134,12 +136,20 @@ class ChartsRepositoryImpl(
                         withPeriods(dimensionPeriods)
                     } ?: this
                 }
+                .run {
+                    selectedOrgUnits?.map { ouUid: String ->
+                        DimensionItem.OrganisationUnitItem.Absolute(ouUid)
+                    }?.let { dimensionOrgUnits ->
+                        withOrganisationUnits(dimensionOrgUnits)
+                    } ?: this
+                }
                 .blockingEvaluate()
 
             visualizationToGraph.mapToGraph(
                 visualization,
                 gridAnalyticsResponse,
-                selectedRelativePeriod?.firstOrNull()
+                selectedRelativePeriod?.firstOrNull(),
+                selectedOrgUnits
             ).let {
                 graphList.add(it)
             }
@@ -234,18 +244,59 @@ class ChartsRepositoryImpl(
 
     override fun setVisualizationPeriods(visualizationUid: String, periods: List<RelativePeriod>) {
         if (periods.isNotEmpty()) {
-            d2.dataStoreModule().localDataStore().value(visualizationUid).blockingSet(
-                Gson().toJson(periods)
-            )
+            d2.dataStoreModule().localDataStore()
+                .value("${visualizationUid}_p")
+                .blockingSet(
+                    Gson().toJson(periods)
+                )
         } else {
-            d2.dataStoreModule().localDataStore().value(visualizationUid).blockingDeleteIfExist()
+            d2.dataStoreModule().localDataStore()
+                .value("${visualizationUid}_p")
+                .blockingDeleteIfExist()
+        }
+    }
+
+    override fun setVisualizationOrgUnits(
+        visualizationUid: String,
+        orgUnits: List<OrganisationUnit>
+    ) {
+        if (orgUnits.isNotEmpty()) {
+            d2.dataStoreModule().localDataStore()
+                .value("${visualizationUid}_ou")
+                .blockingSet(
+                    Gson().toJson(orgUnits.map { it.uid() })
+                )
+        } else {
+            d2.dataStoreModule().localDataStore()
+                .value("${visualizationUid}_ou")
+                .blockingDeleteIfExist()
         }
     }
 
     private fun visualizationPeriod(visualizationUid: String): List<RelativePeriod>? {
-        return if (d2.dataStoreModule().localDataStore().value(visualizationUid).blockingExists()) {
-            val entry = d2.dataStoreModule().localDataStore().value(visualizationUid).blockingGet()
+        return if (d2.dataStoreModule().localDataStore().value("${visualizationUid}_p")
+            .blockingExists()
+        ) {
+            val entry =
+                d2.dataStoreModule().localDataStore()
+                    .value("${visualizationUid}_p")
+                    .blockingGet()
             val type = object : TypeToken<List<RelativePeriod>?>() {}.type
+            return entry.value()?.let { Gson().fromJson(entry.value(), type) }
+        } else {
+            null
+        }
+    }
+
+    private fun visualizationOrgUnits(visualizationUid: String): List<String>? {
+        return if (d2.dataStoreModule().localDataStore().value("${visualizationUid}_ou")
+            .blockingExists()
+        ) {
+            val entry =
+                d2.dataStoreModule().localDataStore()
+                    .value("${visualizationUid}_ou")
+                    .blockingGet()
+            val type = object : TypeToken<List<String>?>() {}.type
             return entry.value()?.let { Gson().fromJson(entry.value(), type) }
         } else {
             null

@@ -4,6 +4,7 @@ import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.di.DaggerChartsComponent
 import javax.inject.Inject
 import org.hisp.dhis.android.core.common.RelativePeriod
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 
 class DhisAnalyticCharts @Inject constructor(
@@ -34,7 +35,14 @@ class DhisAnalyticCharts @Inject constructor(
     }
 
     override fun setVisualizationPeriods(visualizationUid: String, periods: List<RelativePeriod>) {
-        return chartsRepository.setVisualizationPeriods(visualizationUid, periods)
+        chartsRepository.setVisualizationPeriods(visualizationUid, periods)
+    }
+
+    override fun setVisualizationOrgUnits(
+        visualizationUid: String,
+        orgUnits: List<OrganisationUnit>
+    ) {
+        chartsRepository.setVisualizationOrgUnits(visualizationUid, orgUnits)
     }
 
     companion object Provider : Charts.Provider {

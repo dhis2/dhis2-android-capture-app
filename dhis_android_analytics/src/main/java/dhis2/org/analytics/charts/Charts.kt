@@ -4,6 +4,7 @@ import dhis2.org.analytics.charts.data.Graph
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.RelativePeriod
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 
 interface Charts {
@@ -20,6 +21,8 @@ interface Charts {
     fun getDataSetVisualizations(groupUid: String?, dataSetUid: String): List<Graph>
 
     fun setVisualizationPeriods(visualizationUid: String, periods: List<RelativePeriod>)
+
+    fun setVisualizationOrgUnits(visualizationUid: String, orgUnits: List<OrganisationUnit>)
 
     interface Provider {
         fun get(dependencies: Dependencies): Charts
