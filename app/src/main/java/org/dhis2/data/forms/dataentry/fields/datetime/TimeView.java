@@ -71,7 +71,11 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     }
 
     private void setLayout() {
-        binding = DataBindingUtil.inflate(inflater, R.layout.date_time_view, this, true);
+        if (isBgTransparent) {
+            binding = DataBindingUtil.inflate(inflater, R.layout.date_time_view, this, true);
+        } else {
+            binding = DataBindingUtil.inflate(inflater, R.layout.date_time_view_accent, this, true);
+        }
         editText = findViewById(R.id.inputEditText);
         inputLayout = findViewById(R.id.inputLayout);
         labelText = findViewById(R.id.label);

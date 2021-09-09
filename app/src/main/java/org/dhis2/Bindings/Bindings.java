@@ -678,6 +678,11 @@ public class Bindings {
         }
     }
 
+    @BindingAdapter("setTextColor")
+    public static void setTextColor(TextView textView, boolean isBgTransparent) {
+        textView.setTextColor(getColorStateViewChecked(textView.getContext(), isBgTransparent));
+    }
+
     private static ColorStateList getColorStateViewChecked(Context context, boolean isBackground) {
         int colorStateChecked;
         int colorStateUnchecked;
