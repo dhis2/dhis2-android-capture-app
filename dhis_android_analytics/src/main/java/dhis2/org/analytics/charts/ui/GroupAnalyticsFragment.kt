@@ -16,13 +16,13 @@ import dhis2.org.analytics.charts.extensions.isNotCurrent
 import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule
 import dhis2.org.databinding.AnalyticsGroupBinding
 import dhis2.org.databinding.AnalyticsItemBinding
-import javax.inject.Inject
 import org.dhis2.commons.bindings.clipWithRoundedCorners
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import javax.inject.Inject
 
 const val ARG_MODE = "ARG_MODE"
 const val ARG_UID = "ARG_UID"
