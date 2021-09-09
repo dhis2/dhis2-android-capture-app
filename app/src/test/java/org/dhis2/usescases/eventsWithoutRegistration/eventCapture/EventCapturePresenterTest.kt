@@ -106,6 +106,7 @@ class EventCapturePresenterTest {
         val section = presenter.getFieldSection(
             SpinnerViewModel.create(
                 "ID",
+                1,
                 "Label",
                 "options",
                 false,
@@ -129,6 +130,7 @@ class EventCapturePresenterTest {
         val section = presenter.getFieldSection(
             SpinnerViewModel.create(
                 "ID",
+                1,
                 "Label",
                 "options",
                 false,

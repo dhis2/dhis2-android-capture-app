@@ -1,5 +1,8 @@
 package org.dhis2.data.forms.dataentry.fields;
 
+import static org.dhis2.data.forms.dataentry.EnrollmentRepository.SINGLE_SECTION_UID;
+import static org.dhis2.utils.Preconditions.isNull;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
@@ -46,9 +49,6 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import kotlin.jvm.JvmClassMappingKt;
 import kotlin.reflect.KClass;
-
-import static org.dhis2.data.forms.dataentry.EnrollmentRepository.SINGLE_SECTION_UID;
-import static org.dhis2.utils.Preconditions.isNull;
 
 public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
