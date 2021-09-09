@@ -94,7 +94,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     @Override
     protected void attachBaseContext(Context newBase) {
         ServerComponent serverComponent = ((App) newBase.getApplicationContext()).getServerComponent();
-        if (serverComponent != null) {
+        if (serverComponent != null && serverComponent.getD2().userModule().blockingIsLogged()) {
             ContextWrapper localeUpdatedContext = new LocaleSelector(newBase, serverComponent.getD2()).updateUiLanguage();
             super.attachBaseContext(localeUpdatedContext);
         } else {
