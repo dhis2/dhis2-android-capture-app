@@ -114,10 +114,6 @@ public abstract class CoordinateViewModel extends FieldViewModel {
         return featureType() == FeatureType.POINT;
     }
 
-    public void onDescriptionClick() {
-        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.ShowDescriptionLabelDialog(label(), description()));
-    }
-
     public Geometry currentGeometry() {
         if (value() != null) {
             Geometry geometry = Geometry.builder()
