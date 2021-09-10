@@ -49,7 +49,8 @@ class ChartCoordinatesProviderImplTest {
         val result = coordinatesProvider.indicatorCoordinates(
             "stageUid",
             "teiUid",
-            "indicatorUid"
+            "indicatorUid",
+            selectedRelativePeriod
         )
         assertTrue(
             result.isNotEmpty()
@@ -62,7 +63,8 @@ class ChartCoordinatesProviderImplTest {
         val result = coordinatesProvider.indicatorCoordinates(
             "stageUid",
             "teiUid",
-            "indicatorUid"
+            "indicatorUid",
+            selectedRelativePeriod
         )
         assertTrue(
             result.isEmpty()

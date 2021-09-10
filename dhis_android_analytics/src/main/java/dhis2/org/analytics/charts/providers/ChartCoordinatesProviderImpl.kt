@@ -6,6 +6,7 @@ import java.util.Date
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.analytics.aggregated.GridResponseValue
 import org.hisp.dhis.android.core.analytics.aggregated.MetadataItem
+import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.period.Period
 
 class ChartCoordinatesProviderImpl(
@@ -16,13 +17,19 @@ class ChartCoordinatesProviderImpl(
     override fun dataElementCoordinates(
         stageUid: String,
         teiUid: String,
-        dataElementUid: String
+        dataElementUid: String,
+        selectedRelativePeriod: List<RelativePeriod>?
     ): List<GraphPoint> {
         var initialPeriod: Period? = null
         return d2.analyticsModule().eventLineList()
             .byProgramStage().eq(stageUid)
             .byTrackedEntityInstance().eq(teiUid)
             .withDataElement(dataElementUid)
+            .apply {
+                selectedRelativePeriod?.let { relativePeriods ->
+                    byEventDate().inPeriods(*relativePeriods.toTypedArray())
+                }
+            }
             .blockingEvaluate()
             .sortedBy { it.date }
             .mapNotNull { lineListResponse ->
@@ -43,7 +50,8 @@ class ChartCoordinatesProviderImpl(
     override fun indicatorCoordinates(
         stageUid: String,
         teiUid: String,
-        indicatorUid: String
+        indicatorUid: String,
+        selectedRelativePeriod: List<RelativePeriod>?
     ): List<GraphPoint> {
         var initialPeriod: Period? = null
         return d2.analyticsModule()
@@ -51,6 +59,11 @@ class ChartCoordinatesProviderImpl(
             .byProgramStage().eq(stageUid)
             .byTrackedEntityInstance().eq(teiUid)
             .withProgramIndicator(indicatorUid)
+            .apply {
+                selectedRelativePeriod?.let { relativePeriods ->
+                    byEventDate().inPeriods(*relativePeriods.toTypedArray())
+                }
+            }
             .blockingEvaluate()
             .sortedBy { it.date }
             .filter {
@@ -81,7 +94,8 @@ class ChartCoordinatesProviderImpl(
         zScoreValueContainerUid: String,
         zScoreSavedIsDataElement: Boolean,
         ageOrHeightCountainerUid: String,
-        ageOrHeightIsDataElement: Boolean
+        ageOrHeightIsDataElement: Boolean,
+        selectedRelativePeriod: List<RelativePeriod>?
     ): List<GraphPoint> {
         var eventLineListRepository = d2.analyticsModule().eventLineList()
             .byProgramStage().eq(stageUid)
@@ -96,32 +110,48 @@ class ChartCoordinatesProviderImpl(
         } else {
             eventLineListRepository.withProgramIndicator(ageOrHeightCountainerUid)
         }
-        return eventLineListRepository.blockingEvaluate().mapNotNull { lineListResponse ->
-            val zScoreValue =
-                lineListResponse.values.firstOrNull { it.uid == zScoreValueContainerUid }?.value
-            val xAxisValue =
-                lineListResponse.values.firstOrNull { it.uid == ageOrHeightCountainerUid }?.value
-            if (zScoreValue == null || xAxisValue == null) {
-                null
-            } else {
-                GraphPoint(
-                    eventDate = formattedDate(lineListResponse.date),
-                    position = xAxisValue.toFloat(),
-                    fieldValue = zScoreValue.toFloat()
-                )
+        return eventLineListRepository
+            .apply {
+                selectedRelativePeriod?.let {
+                    byEventDate().inPeriods(*selectedRelativePeriod.toTypedArray())
+                }
             }
-        }
+            .blockingEvaluate().mapNotNull { lineListResponse ->
+                val zScoreValue =
+                    lineListResponse.values.firstOrNull {
+                        it.uid == zScoreValueContainerUid
+                    }?.value
+                val xAxisValue =
+                    lineListResponse.values.firstOrNull {
+                        it.uid == ageOrHeightCountainerUid
+                    }?.value
+                if (zScoreValue == null || xAxisValue == null) {
+                    null
+                } else {
+                    GraphPoint(
+                        eventDate = formattedDate(lineListResponse.date),
+                        position = xAxisValue.toFloat(),
+                        fieldValue = zScoreValue.toFloat()
+                    )
+                }
+            }
     }
 
     override fun pieChartCoordinates(
         stageUid: String,
         teiUid: String,
-        dataElementUid: String
+        dataElementUid: String,
+        selectedRelativePeriod: List<RelativePeriod>?
     ): List<GraphPoint> {
         val eventList = d2.analyticsModule().eventLineList()
             .byProgramStage().eq(stageUid)
             .byTrackedEntityInstance().eq(teiUid)
             .withDataElement(dataElementUid)
+            .apply {
+                selectedRelativePeriod?.let {
+                    byEventDate().inPeriods(*selectedRelativePeriod.toTypedArray())
+                }
+            }
             .blockingEvaluate()
             .sortedBy { it.date }
             .filter { it.values.first().value != null }

@@ -182,6 +182,9 @@ class ChartsRepositoryImpl(
             analyticsTeiSettingsToGraph.map(
                 enrollment.trackedEntityInstance()!!,
                 analyticsSettings,
+                { analyticsSettingsUid ->
+                    visualizationPeriod(analyticsSettingsUid)
+                },
                 { dataElementUid ->
                     d2.dataElementModule().dataElements().uid(dataElementUid).blockingGet()
                         .displayFormName() ?: dataElementUid
@@ -208,19 +211,33 @@ class ChartsRepositoryImpl(
             val period = programStage.periodType() ?: PeriodType.Daily
 
             getNumericDataElements(programStage.uid()).map { dataElement ->
+                val selectedRelativePeriod =
+                    visualizationPeriod(
+                        enrollment.trackedEntityInstance()!! +
+                            programStage.uid() +
+                            dataElement.uid()
+                    )
                 dataElementToGraph.map(
                     dataElement,
                     programStage.uid(),
                     enrollment.trackedEntityInstance()!!,
-                    period
+                    period,
+                    selectedRelativePeriod
                 )
             }.union(
                 getStageIndicators(enrollment.program()).map { programIndicator ->
+                    val selectedRelativePeriod =
+                        visualizationPeriod(
+                            enrollment.trackedEntityInstance()!! +
+                                programStage.uid() +
+                                programIndicator.uid()
+                        )
                     programIndicatorToGraph.map(
                         programIndicator,
                         programStage.uid(),
                         enrollment.trackedEntityInstance()!!,
-                        period
+                        period,
+                        selectedRelativePeriod
                     )
                 }
             )
