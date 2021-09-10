@@ -5,8 +5,10 @@ import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
-import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.RowAction
+import org.dhis2.form.ui.RecyclerViewUiEvents
+import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.utils.Preconditions
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
 
@@ -219,12 +221,49 @@ abstract class ScanTextViewModel : FieldViewModel() {
     abstract fun isSearchMode(): Boolean
 
     fun onScanSelected(value: String?) {
-        processor()?.onNext(
-            RowAction(
-                id = uid(),
-                value = value,
-                type = ActionType.ON_SAVE
+        if (valueHasChanged(value)) {
+            callback.intent(
+                FormIntent.OnSave(
+                    uid = uid(),
+                    value = value,
+                    valueType = null,
+                    fieldMask = fieldMask()
+                )
             )
-        )
+        }
+    }
+
+    fun scan() {
+        if (value().isNullOrEmpty()) {
+            onItemClick()
+            callback.recyclerViewUiEvents(
+                RecyclerViewUiEvents.ScanQRCode(
+                    uid(),
+                    optionSet(),
+                    fieldRendering?.type()
+                )
+            )
+        } else {
+            callback.recyclerViewUiEvents(
+                RecyclerViewUiEvents.DisplayQRCode(
+                    uid(),
+                    optionSet(),
+                    value()!!,
+                    fieldRendering?.type(),
+                    editable
+                )
+            )
+        }
+    }
+
+    private fun valueHasChanged(newValue: String?): Boolean {
+        return !Preconditions.equals(newValue, value()) || error() != null
+    }
+
+    fun canShowDeleteButton(): Boolean = value() != null && editable
+
+    fun onClearValue() {
+        onItemClick()
+        onScanSelected(null)
     }
 }

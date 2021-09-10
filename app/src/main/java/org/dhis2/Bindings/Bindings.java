@@ -714,9 +714,11 @@ public class Bindings {
     public static void requestFocus(EditText editText, boolean focused) {
         if (focused) {
             editText.requestFocus();
+            editText.setCursorVisible(true);
             openKeyboard(editText);
         } else {
             editText.clearFocus();
+            editText.setCursorVisible(false);
         }
     }
 

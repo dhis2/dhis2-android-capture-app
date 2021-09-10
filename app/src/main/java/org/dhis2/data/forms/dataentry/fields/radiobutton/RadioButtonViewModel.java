@@ -159,10 +159,6 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
         return Boolean.parseBoolean(value());
     }
 
-    public void onDescriptionClick() {
-        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.ShowDescriptionLabelDialog(label(), description()));
-    }
-
     @Override
     public boolean equals(FieldUiModel o) {
         if (o instanceof RadioButtonViewModel) {

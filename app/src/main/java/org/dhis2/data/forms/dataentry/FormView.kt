@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.DatePicker
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -50,7 +51,9 @@ import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
+import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.utils.Constants
+import org.dhis2.utils.customviews.QRDetailBottomDialog
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import timber.log.Timber
@@ -64,6 +67,16 @@ class FormView constructor(
     dispatchers: DispatcherProvider
 ) : Fragment() {
 
+    private val qrScanContent =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                val intent = FormIntent.OnNext(
+                    it.data?.getStringExtra(Constants.UID)!!,
+                    it.data?.getStringExtra(Constants.EXTRA_DATA)
+                )
+                intentHandler(intent)
+            }
+        }
     private val viewModel: FormViewModel by viewModels {
         Injector.provideFormViewModelFactory(formRepository, dispatchers)
     }
@@ -201,6 +214,8 @@ class FormView constructor(
             )
             is RecyclerViewUiEvents.RequestCurrentLocation -> requestCurrentLocation(uiEvent)
             is RecyclerViewUiEvents.RequestLocationByMap -> requestLocationByMap(uiEvent)
+            is RecyclerViewUiEvents.DisplayQRCode -> displayQRImage(uiEvent)
+            is RecyclerViewUiEvents.ScanQRCode -> requestQRScan(uiEvent)
         }
     }
 
@@ -372,6 +387,39 @@ class FormView constructor(
         startActivityForResult(
             MapSelectorActivity.create(requireContext(), event.uid, event.featureType, event.value),
             Constants.RQ_MAP_LOCATION_VIEW
+        )
+    }
+
+    private fun requestQRScan(event: RecyclerViewUiEvents.ScanQRCode) {
+        qrScanContent.launch(
+            Intent(context, ScanActivity::class.java).apply {
+                putExtra(Constants.UID, event.uid)
+                putExtra(Constants.OPTION_SET, event.optionSet)
+                putExtra(Constants.SCAN_RENDERING_TYPE, event.renderingType)
+            }
+        )
+    }
+
+    private fun displayQRImage(event: RecyclerViewUiEvents.DisplayQRCode) {
+        QRDetailBottomDialog(
+            event.value,
+            event.renderingType,
+            event.editable,
+            {
+                intentHandler(FormIntent.OnNext(event.uid, null))
+            },
+            {
+                requestQRScan(
+                    RecyclerViewUiEvents.ScanQRCode(
+                        event.uid,
+                        event.optionSet,
+                        event.renderingType
+                    )
+                )
+            }
+        ).show(
+            childFragmentManager,
+            QRDetailBottomDialog.TAG
         )
     }
 

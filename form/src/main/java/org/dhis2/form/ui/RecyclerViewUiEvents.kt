@@ -1,6 +1,7 @@
 package org.dhis2.form.ui
 
 import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
 sealed class RecyclerViewUiEvents {
 
@@ -29,5 +30,19 @@ sealed class RecyclerViewUiEvents {
         val uid: String,
         val featureType: FeatureType,
         val value: String?
+    ) : RecyclerViewUiEvents()
+
+    data class ScanQRCode(
+        val uid: String,
+        val optionSet: String?,
+        val renderingType: ValueTypeRenderingType?
+    ) : RecyclerViewUiEvents()
+
+    data class DisplayQRCode(
+        val uid: String,
+        val optionSet: String?,
+        val value: String,
+        val renderingType: ValueTypeRenderingType?,
+        val editable: Boolean
     ) : RecyclerViewUiEvents()
 }

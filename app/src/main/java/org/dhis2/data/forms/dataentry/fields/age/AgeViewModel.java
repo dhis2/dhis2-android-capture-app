@@ -76,10 +76,6 @@ public abstract class AgeViewModel extends FieldViewModel {
 
     public abstract Boolean isBackgroundTransparent();
 
-    public void onDescriptionClick(){
-        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.ShowDescriptionLabelDialog(label(), description()));
-    }
-
     public void onShowCustomCalendar(){
         onItemClick();
         callback.recyclerViewUiEvents(new RecyclerViewUiEvents.OpenCustomAgeCalendar(uid(), label()));
