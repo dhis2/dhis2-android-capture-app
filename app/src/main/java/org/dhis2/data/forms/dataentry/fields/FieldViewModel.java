@@ -11,6 +11,7 @@ import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.RecyclerViewUiEvents;
 import org.dhis2.form.ui.intent.FormIntent;
 import org.dhis2.form.ui.style.FormUiModelStyle;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -322,5 +323,9 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Override
     public boolean getEditable() {
         return editable() != null ? editable() : true;
+    }
+
+    public void onDescriptionClick(){
+        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.ShowDescriptionLabelDialog(label(), description()));
     }
 }

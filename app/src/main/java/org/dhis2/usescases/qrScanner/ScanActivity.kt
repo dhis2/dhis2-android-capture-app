@@ -40,6 +40,7 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
     private lateinit var binding: ActivityScanBinding
     private lateinit var mScannerView: ZXingScannerView
     private var isPermissionRequested = false
+    private var uid: String? = null
     private var optionSetUid: String? = null
     private var renderingType: ValueTypeRenderingType? = null
 
@@ -52,6 +53,7 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        uid = intent.getStringExtra(Constants.UID)
         optionSetUid = intent.getStringExtra(Constants.OPTION_SET)
         (applicationContext as App)
             .userComponent()
@@ -153,6 +155,7 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
         }
 
         val data = Intent()
+        data.putExtra(Constants.UID, uid)
         data.putExtra(Constants.EXTRA_DATA, url)
         setResult(Activity.RESULT_OK, data)
         finish()
