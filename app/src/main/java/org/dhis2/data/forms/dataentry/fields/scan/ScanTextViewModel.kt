@@ -234,7 +234,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
     }
 
     fun scan() {
-        if (value() == null) {
+        if (value().isNullOrEmpty()) {
             onItemClick()
             callback.recyclerViewUiEvents(
                 RecyclerViewUiEvents.ScanQRCode(
@@ -263,6 +263,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
     fun canShowDeleteButton(): Boolean = value() != null && editable
 
     fun onClearValue() {
+        onItemClick()
         onScanSelected(null)
     }
 }
