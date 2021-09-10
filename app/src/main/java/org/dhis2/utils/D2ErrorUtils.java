@@ -32,11 +32,13 @@ public class D2ErrorUtils {
                 return context.getString(R.string.login_error_error_response);
             case NO_DHIS2_SERVER:
                 return  context.getString(R.string.login_error_no_dhis_instance);
-            case UNEXPECTED:
+            case BAD_CREDENTIALS:
+                return context.getString(R.string.login_error_bad_credentials);
             case UNKNOWN_HOST:
+                return context.getString(R.string.login_error_unknown_host);
+            case UNEXPECTED:
             case URL_NOT_FOUND:
             case SOCKET_TIMEOUT:
-            case BAD_CREDENTIALS:
             case ALREADY_EXECUTED:
             case TOO_MANY_PERIODS:
             case API_INVALID_QUERY:
