@@ -1,6 +1,5 @@
 package dhis2.org.analytics.charts
 
-import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dhis2.org.analytics.charts.data.Graph
@@ -259,10 +258,7 @@ class ChartsRepositoryImpl(
                     )
                 }
             )
-        }.apply {
-            Log.d("ANALYTICS", "hello")
-        }
-            .flatten()
+        }.flatten()
             .filter { it.canBeShown() }
             .radarTestingData(d2, featureConfig)
             .pieChartTestingData(d2, featureConfig)
