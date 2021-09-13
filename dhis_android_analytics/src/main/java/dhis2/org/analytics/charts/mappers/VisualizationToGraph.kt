@@ -48,15 +48,12 @@ class VisualizationToGraph(
     fun mapToGraph(
         visualization: Visualization,
         gridAnalyticsResponse: GridAnalyticsResponse,
-        selectedRelativePeriod: RelativePeriod?
+        selectedRelativePeriod: RelativePeriod?,
+        selectedOrgUnits: List<String>?
     ): Graph {
-        // Whe need to map relative periods and fixed from Visualization
         val period = visualization.relativePeriods()?.filter { it.value }?.keys?.first()
         val categories = getCategories(visualization.type(), gridAnalyticsResponse)
         val formattedCategory = formatCategories(period, categories, gridAnalyticsResponse.metadata)
-
-        // In Graph we need a property to determine which formatter to use
-        // These three properties are not going to be used as we are going to use positions
 
         return Graph(
             title = visualization.displayName() ?: "",
@@ -67,7 +64,8 @@ class VisualizationToGraph(
             chartType = visualization.type().toAnalyticsChartType(),
             categories = formattedCategory,
             visualizationUid = visualization.uid(),
-            periodToDisplaySelected = selectedRelativePeriod
+            periodToDisplaySelected = selectedRelativePeriod,
+            orgUnitsSelected = selectedOrgUnits ?: emptyList()
         )
     }
 

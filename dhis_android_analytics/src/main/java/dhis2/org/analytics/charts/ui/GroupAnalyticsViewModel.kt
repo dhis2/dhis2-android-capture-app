@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import dhis2.org.analytics.charts.Charts
 import dhis2.org.analytics.charts.data.AnalyticGroup
 import org.hisp.dhis.android.core.common.RelativePeriod
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 const val MIN_SIZE_TO_SHOW = 2
 
@@ -32,8 +33,18 @@ class GroupAnalyticsViewModel(
         }
     }
 
-    fun filterByOrgUnit() {
-        // TODO: Implement search + filtering calling repository with SDK
+    fun filterByOrgUnit(
+        chartModel: ChartModel,
+        orgUnits: List<OrganisationUnit>,
+        orgUnitFilterType: OrgUnitFilterType
+    ) {
+        chartModel.graph.visualizationUid?.let {
+            charts.setVisualizationOrgUnits(
+                chartModel.graph.visualizationUid, orgUnits,
+                orgUnitFilterType
+            )
+            fetchAnalytics(currentGroup)
+        }
     }
 
     fun filterByPeriod(chartModel: ChartModel, periods: List<RelativePeriod>) {
@@ -50,7 +61,11 @@ class GroupAnalyticsViewModel(
                     chartModel.graph.visualizationUid,
                     emptyList()
                 )
-                ChartFilter.ORG_UNIT -> TODO()
+                ChartFilter.ORG_UNIT -> charts.setVisualizationOrgUnits(
+                    chartModel.graph.visualizationUid,
+                    emptyList(),
+                    OrgUnitFilterType.NONE
+                )
             }
             fetchAnalytics(currentGroup)
         }

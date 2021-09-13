@@ -2,7 +2,6 @@ package dhis2.org.analytics.charts.ui
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +19,10 @@ import dhis2.org.databinding.AnalyticsItemBinding
 import javax.inject.Inject
 import org.dhis2.commons.bindings.clipWithRoundedCorners
 import org.dhis2.commons.dialogs.AlertBottomDialog
+import org.dhis2.commons.orgunitselector.OUTreeFragment
+import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished
 import org.hisp.dhis.android.core.common.RelativePeriod
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 const val ARG_MODE = "ARG_MODE"
 const val ARG_UID = "ARG_UID"
@@ -104,9 +106,13 @@ class GroupAnalyticsFragment : Fragment() {
 
         adapter.onOrgUnitCallback =
             { chartModel: ChartModel, orgUnitFilterType: OrgUnitFilterType ->
-                if (orgUnitFilterType == OrgUnitFilterType.SELECTION) {
-                    Log.d("GroupAnalyticsFrag", "onOrgUnitCallback")
-                    groupViewModel.filterByOrgUnit()
+                when (orgUnitFilterType) {
+                    OrgUnitFilterType.SELECTION -> showOUTreeSelector(chartModel)
+                    else -> groupViewModel.filterByOrgUnit(
+                        chartModel,
+                        emptyList(),
+                        orgUnitFilterType
+                    )
                 }
             }
         adapter.onResetFilterCallback = { chartModel, filterType ->
@@ -135,6 +141,23 @@ class GroupAnalyticsFragment : Fragment() {
                 groupViewModel.filterByPeriod(chartModel, periodList)
             }
             .show(parentFragmentManager, AlertBottomDialog::class.java.simpleName)
+    }
+
+    private fun showOUTreeSelector(chartModel: ChartModel) {
+        val ouTreeFragment =
+            OUTreeFragment.newInstance(
+                true,
+                chartModel.graph.orgUnitsSelected.toMutableList()
+            )
+        ouTreeFragment.selectionCallback = object : OnOrgUnitSelectionFinished {
+            override fun onSelectionFinished(selectedOrgUnits: List<OrganisationUnit>) {
+                groupViewModel.filterByOrgUnit(
+                    chartModel, selectedOrgUnits,
+                    OrgUnitFilterType.SELECTION
+                )
+            }
+        }
+        ouTreeFragment.show(childFragmentManager, "OUTreeFragment")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
