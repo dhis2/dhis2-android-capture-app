@@ -10,14 +10,16 @@ interface ChartCoordinatesProvider {
         stageUid: String,
         teiUid: String,
         dataElementUid: String,
-        selectedRelativePeriod: List<RelativePeriod>?
+        selectedRelativePeriod: List<RelativePeriod>?,
+        selectedOrgUnits: List<String>?
     ): List<GraphPoint>
 
     fun indicatorCoordinates(
         stageUid: String,
         teiUid: String,
         indicatorUid: String,
-        selectedRelativePeriod: List<RelativePeriod>?
+        selectedRelativePeriod: List<RelativePeriod>?,
+        selectedOrgUnits: List<String>?
     ): List<GraphPoint>
 
     fun nutritionCoordinates(
@@ -27,14 +29,16 @@ interface ChartCoordinatesProvider {
         zScoreSavedIsDataElement: Boolean,
         ageOrHeightCountainerUid: String,
         ageOrHeightIsDataElement: Boolean,
-        selectedRelativePeriod: List<RelativePeriod>?
+        selectedRelativePeriod: List<RelativePeriod>?,
+        selectedOrgUnits: List<String>?
     ): List<GraphPoint>
 
     fun pieChartCoordinates(
         stageUid: String,
         teiUid: String,
         dataElementUid: String,
-        selectedRelativePeriod: List<RelativePeriod>?
+        selectedRelativePeriod: List<RelativePeriod>?,
+        selectedOrgUnits: List<String>?
     ): List<GraphPoint>
 
     fun visualizationCoordinates(

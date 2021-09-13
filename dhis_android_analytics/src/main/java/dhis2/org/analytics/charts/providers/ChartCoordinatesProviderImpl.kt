@@ -18,17 +18,23 @@ class ChartCoordinatesProviderImpl(
         stageUid: String,
         teiUid: String,
         dataElementUid: String,
-        selectedRelativePeriod: List<RelativePeriod>?
+        selectedRelativePeriod: List<RelativePeriod>?,
+        selectedOrgUnits: List<String>?
     ): List<GraphPoint> {
         var initialPeriod: Period? = null
         return d2.analyticsModule().eventLineList()
             .byProgramStage().eq(stageUid)
             .byTrackedEntityInstance().eq(teiUid)
             .withDataElement(dataElementUid)
-            .apply {
+            .run {
                 selectedRelativePeriod?.let { relativePeriods ->
-                    byEventDate().inPeriods(*relativePeriods.toTypedArray())
-                }
+                    this.byEventDate().inPeriods(*relativePeriods.toTypedArray())
+                } ?: this
+            }
+            .run {
+                selectedOrgUnits?.let {
+                    this.byOrganisationUnit().`in`(*selectedOrgUnits.toTypedArray())
+                } ?: this
             }
             .blockingEvaluate()
             .sortedBy { it.date }
@@ -51,7 +57,8 @@ class ChartCoordinatesProviderImpl(
         stageUid: String,
         teiUid: String,
         indicatorUid: String,
-        selectedRelativePeriod: List<RelativePeriod>?
+        selectedRelativePeriod: List<RelativePeriod>?,
+        selectedOrgUnits: List<String>?
     ): List<GraphPoint> {
         var initialPeriod: Period? = null
         return d2.analyticsModule()
@@ -59,10 +66,15 @@ class ChartCoordinatesProviderImpl(
             .byProgramStage().eq(stageUid)
             .byTrackedEntityInstance().eq(teiUid)
             .withProgramIndicator(indicatorUid)
-            .apply {
+            .run {
                 selectedRelativePeriod?.let { relativePeriods ->
-                    byEventDate().inPeriods(*relativePeriods.toTypedArray())
-                }
+                    this.byEventDate().inPeriods(*relativePeriods.toTypedArray())
+                } ?: this
+            }
+            .run {
+                selectedOrgUnits?.let {
+                    this.byOrganisationUnit().`in`(*selectedOrgUnits.toTypedArray())
+                } ?: this
             }
             .blockingEvaluate()
             .sortedBy { it.date }
@@ -95,7 +107,8 @@ class ChartCoordinatesProviderImpl(
         zScoreSavedIsDataElement: Boolean,
         ageOrHeightCountainerUid: String,
         ageOrHeightIsDataElement: Boolean,
-        selectedRelativePeriod: List<RelativePeriod>?
+        selectedRelativePeriod: List<RelativePeriod>?,
+        selectedOrgUnits: List<String>?
     ): List<GraphPoint> {
         var eventLineListRepository = d2.analyticsModule().eventLineList()
             .byProgramStage().eq(stageUid)
@@ -111,10 +124,15 @@ class ChartCoordinatesProviderImpl(
             eventLineListRepository.withProgramIndicator(ageOrHeightCountainerUid)
         }
         return eventLineListRepository
-            .apply {
-                selectedRelativePeriod?.let {
-                    byEventDate().inPeriods(*selectedRelativePeriod.toTypedArray())
-                }
+            .run {
+                selectedRelativePeriod?.let { relativePeriods ->
+                    this.byEventDate().inPeriods(*relativePeriods.toTypedArray())
+                } ?: this
+            }
+            .run {
+                selectedOrgUnits?.let {
+                    this.byOrganisationUnit().`in`(*selectedOrgUnits.toTypedArray())
+                } ?: this
             }
             .blockingEvaluate().mapNotNull { lineListResponse ->
                 val zScoreValue =
@@ -141,16 +159,22 @@ class ChartCoordinatesProviderImpl(
         stageUid: String,
         teiUid: String,
         dataElementUid: String,
-        selectedRelativePeriod: List<RelativePeriod>?
+        selectedRelativePeriod: List<RelativePeriod>?,
+        selectedOrgUnits: List<String>?
     ): List<GraphPoint> {
         val eventList = d2.analyticsModule().eventLineList()
             .byProgramStage().eq(stageUid)
             .byTrackedEntityInstance().eq(teiUid)
             .withDataElement(dataElementUid)
-            .apply {
-                selectedRelativePeriod?.let {
-                    byEventDate().inPeriods(*selectedRelativePeriod.toTypedArray())
-                }
+            .run {
+                selectedRelativePeriod?.let { relativePeriods ->
+                    this.byEventDate().inPeriods(*relativePeriods.toTypedArray())
+                } ?: this
+            }
+            .run {
+                selectedOrgUnits?.let {
+                    this.byOrganisationUnit().`in`(*selectedOrgUnits.toTypedArray())
+                } ?: this
             }
             .blockingEvaluate()
             .sortedBy { it.date }

@@ -50,7 +50,8 @@ class ChartCoordinatesProviderImplTest {
             "stageUid",
             "teiUid",
             "indicatorUid",
-            selectedRelativePeriod
+            selectedRelativePeriod,
+            selectedOrgUnits
         )
         assertTrue(
             result.isNotEmpty()
@@ -64,7 +65,8 @@ class ChartCoordinatesProviderImplTest {
             "stageUid",
             "teiUid",
             "indicatorUid",
-            selectedRelativePeriod
+            selectedRelativePeriod,
+            selectedOrgUnits
         )
         assertTrue(
             result.isEmpty()

@@ -17,13 +17,15 @@ class ProgramIndicatorToGraph(
         stageUid: String,
         teiUid: String,
         stagePeriod: PeriodType,
-        selectedRelativePeriod: List<RelativePeriod>?
+        selectedRelativePeriod: List<RelativePeriod>?,
+        selectedOrgUnits: List<String>?
     ): Graph {
         val coordinates = chartCoordinatesProvider.indicatorCoordinates(
             stageUid,
             teiUid,
             programIndicator.uid(),
-            selectedRelativePeriod
+            selectedRelativePeriod,
+            selectedOrgUnits
         )
 
         val serie = if (coordinates.isNotEmpty()) {
@@ -44,7 +46,8 @@ class ProgramIndicatorToGraph(
             eventPeriodType = stagePeriod,
             periodStep = periodStepProvider.periodStep(stagePeriod),
             visualizationUid = "${teiUid}${stageUid}${programIndicator.uid()}",
-            periodToDisplaySelected = selectedRelativePeriod?.firstOrNull()
+            periodToDisplaySelected = selectedRelativePeriod?.firstOrNull(),
+            orgUnitsSelected = selectedOrgUnits ?: emptyList()
         )
     }
 }

@@ -24,6 +24,7 @@ class AnalyticsTeiSettingsToGraph(
         teiUid: String,
         analytycsTeiSettings: List<AnalyticsTeiSetting>,
         selectedRelativePeriodProvider: (String) -> List<RelativePeriod>?,
+        selectedOrgUnitProvider: (String) -> List<String>?,
         dataElementNameProvider: (String) -> String,
         indicatorNameProvider: (String) -> String,
         teiGenderProvider: (NutritionGenderData) -> Boolean
@@ -31,6 +32,7 @@ class AnalyticsTeiSettingsToGraph(
         return analytycsTeiSettings.map { analyticsTeiSettings ->
             val analyticsSetting = analyticsSettingsMapper.map(analyticsTeiSettings)
             val selectedRelativePeriod = selectedRelativePeriodProvider(analyticsTeiSettings.uid())
+            val selectedOrgUnits = selectedOrgUnitProvider(analyticsTeiSettings.uid())
             val nutritionCoordinates: List<SerieData> =
                 if (analyticsSetting is NutritionSettingsAnalyticsModel) {
                     val isFemale = teiGenderProvider(analyticsSetting.genderData)
@@ -48,7 +50,8 @@ class AnalyticsTeiSettingsToGraph(
                                         analyticsSetting.zScoreContainerIsDataElement,
                                         analyticsSetting.ageOrHeightContainerUid,
                                         analyticsSetting.ageOrHeightIsDataElement,
-                                        selectedRelativePeriod
+                                        selectedRelativePeriod,
+                                        selectedOrgUnits
                                     )
                                 )
                             )
@@ -65,13 +68,15 @@ class AnalyticsTeiSettingsToGraph(
                             it.stageUid,
                             teiUid,
                             it.dataElementUid,
-                            selectedRelativePeriod
+                            selectedRelativePeriod,
+                            selectedOrgUnits
                         )
                         else -> chartCoordinatesProvider.dataElementCoordinates(
                             it.stageUid,
                             teiUid,
                             it.dataElementUid,
-                            selectedRelativePeriod
+                            selectedRelativePeriod,
+                            selectedOrgUnits
                         )
                     }
                 )
@@ -83,7 +88,8 @@ class AnalyticsTeiSettingsToGraph(
                         it.stageUid,
                         teiUid,
                         it.indicatorUid,
-                        selectedRelativePeriod
+                        selectedRelativePeriod,
+                        selectedOrgUnits
                     )
                 )
             }.filter { it.coordinates.isNotEmpty() }
@@ -99,7 +105,8 @@ class AnalyticsTeiSettingsToGraph(
                 ),
                 chartType = analyticsSetting.type,
                 visualizationUid = analyticsTeiSettings.uid(),
-                periodToDisplaySelected = selectedRelativePeriod?.firstOrNull()
+                periodToDisplaySelected = selectedRelativePeriod?.firstOrNull(),
+                orgUnitsSelected = selectedOrgUnits ?: emptyList()
             )
         }
     }

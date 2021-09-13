@@ -17,13 +17,15 @@ class DataElementToGraph(
         stageUid: String,
         teiUid: String,
         stagePeriod: PeriodType,
-        selectedRelativePeriod: List<RelativePeriod>?
+        selectedRelativePeriod: List<RelativePeriod>?,
+        selectedOrgUnits: List<String>?
     ): Graph {
         val coordinates = chartCoordinatesProvider.dataElementCoordinates(
             stageUid,
             teiUid,
             dataElement.uid(),
-            selectedRelativePeriod
+            selectedRelativePeriod,
+            selectedOrgUnits
         )
 
         val serie = if (coordinates.isNotEmpty()) {
@@ -44,7 +46,8 @@ class DataElementToGraph(
             eventPeriodType = stagePeriod,
             periodStep = periodStepProvider.periodStep(stagePeriod),
             visualizationUid = "${teiUid}${stageUid}${dataElement.uid()}",
-            periodToDisplaySelected = selectedRelativePeriod?.firstOrNull()
+            periodToDisplaySelected = selectedRelativePeriod?.firstOrNull(),
+            orgUnitsSelected = selectedOrgUnits ?: emptyList()
         )
     }
 }
