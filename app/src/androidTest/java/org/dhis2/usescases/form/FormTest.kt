@@ -139,6 +139,7 @@ class FormTest: BaseTest() {
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, DISPLAY_TEXT, DISPLAY_TEXT_POSITION)
             pressBack()
             goToAnalytics()
+            waitToDebounce(3000)
             checkIndicatorIsDisplayed("Info", "Current Option Selected: DT")
             goToDataEntry()
         }
@@ -148,7 +149,7 @@ class FormTest: BaseTest() {
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, DISPLAY_KEY, DISPLAY_KEY_POSITION)
             pressBack()
             goToAnalytics()
-            waitToDebounce(1000)
+            waitToDebounce(3000)
             checkIndicatorIsDisplayed("Current Option", "DKVP")
             goToDataEntry()
         }
