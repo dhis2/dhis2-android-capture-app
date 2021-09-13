@@ -370,7 +370,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
         menuBuilder.show()
 
         if (graph.orgUnitsSelected.isNotEmpty()) {
-            menuBuilder.showItem(R.id.reset_period)
+            menuBuilder.showItem(R.id.reset_orgunit)
             val selectionText = menuBuilder.getItemText(R.id.selection)
             menuBuilder.changeItemText(
                 R.id.selection,
