@@ -7,12 +7,12 @@ import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 
-class FormRepositoryPersistenceImpl(
-    private val formValueStore: FormValueStore,
+class FormRepositoryImpl(
+    private val formValueStore: FormValueStore?,
     private val fieldErrorMessageProvider: FieldErrorMessageProvider
 ) : FormRepository {
 
-    private val itemsWithError = mutableListOf<RowAction>()
+    private val itemsWithError: MutableList<RowAction> = mutableListOf()
     private var itemList: List<FieldUiModel> = emptyList()
     private var focusedItem: RowAction? = null
 
@@ -26,7 +26,15 @@ class FormRepositoryPersistenceImpl(
                         ValueStoreResult.VALUE_HAS_NOT_CHANGED
                     )
                 } else {
-                    formValueStore.save(action.id, action.value, action.extraData)
+                    if (formValueStore != null) {
+                        formValueStore.save(action.id, action.value, action.extraData)
+                    } else {
+                        updateValueOnList(action.id, action.value)
+                        StoreResult(
+                            action.id,
+                            ValueStoreResult.VALUE_CHANGED
+                        )
+                    }
                 }
             }
             ActionType.ON_FOCUS, ActionType.ON_NEXT -> {
@@ -40,17 +48,7 @@ class FormRepositoryPersistenceImpl(
 
             ActionType.ON_TEXT_CHANGE -> {
                 updateErrorList(action)
-
-                itemList.let { list ->
-                    list.find { item ->
-                        item.uid == action.id
-                    }?.let { item ->
-                        itemList = list.updated(
-                            list.indexOf(item),
-                            item.setValue(action.value)
-                        )
-                    }
-                }
+                updateValueOnList(action.id, action.value)
                 StoreResult(action.id)
             }
         }
@@ -61,21 +59,7 @@ class FormRepositoryPersistenceImpl(
             itemList = it
         }
         val listWithErrors = mergeListWithErrorFields(itemList, itemsWithError)
-        return setFocusedItem(listWithErrors).toMutableList()
-    }
-
-    private fun mergeListWithErrorFields(
-        list: List<FieldUiModel>,
-        fieldsWithError: MutableList<RowAction>
-    ): List<FieldUiModel> {
-        return list.map { item ->
-            fieldsWithError.find { it.id == item.uid }?.let { action ->
-                val error = action.error?.let {
-                    fieldErrorMessageProvider.getFriendlyErrorMessage(it)
-                }
-                item.setValue(action.value).setError(error)
-            } ?: item
-        }
+        return setFocusedItem(listWithErrors)
     }
 
     private fun setFocusedItem(list: List<FieldUiModel>) = focusedItem?.let {
@@ -103,6 +87,33 @@ class FormRepositoryPersistenceImpl(
         return null
     }
 
+    private fun updateValueOnList(uid: String, value: String?) {
+        itemList.let { list ->
+            list.find { item ->
+                item.uid == uid
+            }?.let { item ->
+                itemList = list.updated(
+                    list.indexOf(item),
+                    item.setValue(value)
+                )
+            }
+        }
+    }
+
+    private fun mergeListWithErrorFields(
+        list: List<FieldUiModel>,
+        fieldsWithError: MutableList<RowAction>
+    ): List<FieldUiModel> {
+        return list.map { item ->
+            fieldsWithError.find { it.id == item.uid }?.let { action ->
+                val error = action.error?.let {
+                    fieldErrorMessageProvider.getFriendlyErrorMessage(it)
+                }
+                item.setValue(action.value).setError(error)
+            } ?: item
+        }
+    }
+
     private fun updateErrorList(action: RowAction) {
         if (action.error != null) {
             if (itemsWithError.find { it.id == action.id } == null) {
@@ -114,4 +125,7 @@ class FormRepositoryPersistenceImpl(
             }
         }
     }
+
+    fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =
+        mapIndexed { i, existing -> if (i == index) elem else existing }
 }

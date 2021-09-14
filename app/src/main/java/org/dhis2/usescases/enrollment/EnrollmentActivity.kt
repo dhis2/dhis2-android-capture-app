@@ -117,7 +117,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         ).inject(this)
 
         formView = FormView.Builder()
-            .persistence(formRepository)
+            .repository(formRepository)
             .locationProvider(locationProvider)
             .dispatcher(dispatchers)
             .onItemChangeListener(presenter::updateFields)

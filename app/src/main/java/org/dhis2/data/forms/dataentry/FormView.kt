@@ -22,11 +22,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
-import java.util.Calendar
 import org.dhis2.Bindings.truncate
 import org.dhis2.R
 import org.dhis2.commons.dialogs.CustomDialog
@@ -41,7 +39,6 @@ import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
 import org.dhis2.form.data.FormRepository
-import org.dhis2.form.data.FormRepositoryNonPersistenceImpl
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
@@ -61,6 +58,7 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import timber.log.Timber
+import java.util.Calendar
 
 class FormView constructor(
     formRepository: FormRepository,
@@ -162,14 +160,14 @@ class FormView constructor(
 
         viewModel.savedValue.observe(
             viewLifecycleOwner,
-            Observer { rowAction ->
+            { rowAction ->
                 onItemChangeListener?.let { it(rowAction) }
             }
         )
 
         viewModel.items.observe(
             viewLifecycleOwner,
-            Observer { items ->
+            { items ->
                 render(items)
             }
         )
@@ -499,7 +497,7 @@ class FormView constructor(
 
     class Builder {
         private var fragmentManager: FragmentManager? = null
-        private var persistentRepository: FormRepository? = null
+        private var repository: FormRepository? = null
         private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
         private var locationProvider: LocationProvider? = null
         private var needToForceUpdate: Boolean = false
@@ -508,16 +506,16 @@ class FormView constructor(
 
         /**
          * If you want to persist the items and it's changes in any sources, please provide an
-         * implementation of the repository that fits with your system.
+         * implementation of the repository with a valueStore.
          *
-         * IF you don't provide any repository implementation, data will be kept in memory.
+         * IF you don't provide any valueStore in repository constructor, it will be kept in memory.
          *
          * NOTE: This step is temporary in order to facilitate refactor, in the future will be
          * changed by some info like DataEntryStore.EntryMode and Event/Program uid. Then the
          * library will generate the implementation of the repository.
          */
-        fun persistence(repository: FormRepository) =
-            apply { this.persistentRepository = repository }
+        fun repository(repository: FormRepository) =
+            apply { this.repository = repository }
 
         /**
          * If you want to handle the behaviour of the form and be notified when any item is updated,
@@ -560,9 +558,12 @@ class FormView constructor(
             if (fragmentManager == null) {
                 throw Exception("You need to call factory method and pass a FragmentManager")
             }
+            if (repository == null) {
+                throw Exception("You need to call persistence method and pass a FormRepository")
+            }
             fragmentManager!!.fragmentFactory =
                 FormViewFragmentFactory(
-                    persistentRepository ?: FormRepositoryNonPersistenceImpl(),
+                    repository!!,
                     locationProvider,
                     onItemChangeListener,
                     needToForceUpdate,

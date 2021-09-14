@@ -8,6 +8,7 @@ import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.commons.di.dagger.PerActivity;
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.filters.data.FilterPresenter;
@@ -25,8 +26,9 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.form.data.FormRepository;
-import org.dhis2.form.data.FormRepositoryNonPersistenceImpl;
+import org.dhis2.form.data.FormRepositoryImpl;
 import org.dhis2.form.ui.style.FormUiColorFactory;
+import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
 import org.dhis2.uicomponents.map.geometry.line.MapLineRelationshipToFeature;
@@ -199,7 +201,10 @@ public class SearchTEModule {
     @Provides
     @PerActivity
     FormRepository provideFormRepository() {
-        return new FormRepositoryNonPersistenceImpl();
+        return new FormRepositoryImpl(
+                null,
+                new FieldErrorMessageProvider(moduleContext)
+        );
     }
 
     @Provides

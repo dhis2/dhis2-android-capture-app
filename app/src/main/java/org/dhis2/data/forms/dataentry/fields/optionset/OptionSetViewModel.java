@@ -7,9 +7,9 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.intent.FormIntent;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.option.Option;
@@ -363,16 +363,12 @@ public abstract class OptionSetViewModel extends FieldViewModel {
 
     public void onOptionSelected(String optionCode) {
         onItemClick();
-
-        processor().onNext(new RowAction(
+        callback.intent(new FormIntent.OnSave(
                 uid(),
                 optionCode,
-                false,
                 null,
-                null,
-                null,
-                null,
-                ActionType.ON_SAVE));
+                fieldMask()
+        ));
     }
 
     @Override

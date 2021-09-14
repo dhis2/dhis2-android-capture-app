@@ -69,7 +69,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         formView = new FormView.Builder()
-                .persistence(formRepository)
+                .repository(formRepository)
                 .locationProvider(locationProvider)
                 .dispatcher(coroutineDispatcher)
                 .onItemChangeListener(action -> {
