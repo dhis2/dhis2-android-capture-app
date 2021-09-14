@@ -20,7 +20,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
 import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl
 import org.dhis2.form.data.FormRepository
-import org.dhis2.form.data.FormRepositoryPersistenceImpl
+import org.dhis2.form.data.FormRepositoryImpl
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.style.FormUiColorFactory
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
@@ -209,7 +209,7 @@ class EnrollmentModule(
         enrollmentRepository: EnrollmentObjectRepository,
         crashReportController: CrashReportController
     ): FormRepository {
-        return FormRepositoryPersistenceImpl(
+        return FormRepositoryImpl(
             ValueStoreImpl(
                 d2,
                 enrollmentRepository.blockingGet().trackedEntityInstance()!!,

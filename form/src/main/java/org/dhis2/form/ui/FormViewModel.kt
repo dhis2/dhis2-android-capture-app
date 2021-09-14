@@ -48,16 +48,26 @@ class FormViewModel(
                 .map { intent -> createRowActionStore(intent) }
                 .flowOn(dispatcher.io())
                 .collect { result ->
-                    when (result.second.valueStoreResult) {
-                        ValueStoreResult.VALUE_CHANGED -> {
-                            _savedValue.value = result.first
-                        }
-                        ValueStoreResult.ERROR_UPDATING_VALUE -> {
-                            showToast.value = R.string.update_field_error
-                        }
-                        else -> _items.value = repository.composeList()
-                    }
+                    displayResult(result)
                 }
+        }
+    }
+
+    private fun displayResult(result: Pair<RowAction, StoreResult>) {
+        when (result.second.valueStoreResult) {
+            ValueStoreResult.VALUE_CHANGED -> {
+                _savedValue.value = result.first
+            }
+            ValueStoreResult.ERROR_UPDATING_VALUE -> {
+                showToast.value = R.string.update_field_error
+            }
+            else -> _items.value = repository.composeList()
+        }
+    }
+
+    fun submitIntent(intent: FormIntent) {
+        viewModelScope.launch {
+            _pendingIntents.emit(intent)
         }
     }
 
@@ -76,7 +86,10 @@ class FormViewModel(
                 intent.uid,
                 intent.date
             )
-            is FormIntent.ClearDateFromAgeCalendar -> createRowAction(intent.uid, null)
+            is FormIntent.ClearDateFromAgeCalendar -> createRowAction(
+                intent.uid,
+                null
+            )
             is FormIntent.SelectLocationFromCoordinates -> createRowAction(
                 intent.uid,
                 intent.coordinates,
@@ -107,10 +120,21 @@ class FormViewModel(
                 createRowAction(
                     uid = intent.uid,
                     value = intent.value,
-                    error = error,
-                    actionType = ActionType.ON_SAVE
+                    error = error
                 )
             }
+            is FormIntent.OnFocus -> createRowAction(
+                uid = intent.uid,
+                value = intent.value,
+                actionType = ActionType.ON_FOCUS
+            )
+
+            is FormIntent.OnTextChange -> createRowAction(
+                uid = intent.uid,
+                value = intent.value,
+                actionType = ActionType.ON_TEXT_CHANGE
+            )
+
         }
     }
 
@@ -149,12 +173,6 @@ class FormViewModel(
         error = error,
         type = actionType
     )
-
-    fun submitIntent(intent: FormIntent) {
-        viewModelScope.launch {
-            _pendingIntents.emit(intent)
-        }
-    }
 
     fun onItemsRendered() {
         loading.value = false

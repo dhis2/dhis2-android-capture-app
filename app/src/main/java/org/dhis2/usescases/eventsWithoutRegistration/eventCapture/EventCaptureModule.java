@@ -22,7 +22,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
-import org.dhis2.form.data.FormRepositoryPersistenceImpl;
+import org.dhis2.form.data.FormRepositoryImpl;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.LayoutProvider;
 import org.dhis2.form.ui.style.FormUiColorFactory;
@@ -144,7 +144,7 @@ public class EventCaptureModule {
             @NonNull D2 d2,
             CrashReportController crashReportController
     ) {
-        return new FormRepositoryPersistenceImpl(
+        return new FormRepositoryImpl(
                 new ValueStoreImpl(
                         d2,
                         eventUid,

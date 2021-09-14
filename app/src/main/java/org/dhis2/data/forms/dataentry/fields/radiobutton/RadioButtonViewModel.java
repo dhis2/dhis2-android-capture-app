@@ -8,10 +8,9 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.RowAction;
-import org.dhis2.form.ui.RecyclerViewUiEvents;
+import org.dhis2.form.ui.intent.FormIntent;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
@@ -110,16 +109,12 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
                 result = String.valueOf(value);
         }
 
-        if (processor() == null || Objects.equals(result, value())) return;
-        Objects.requireNonNull(processor()).onNext(new RowAction(
+        callback.intent(new FormIntent.OnSave(
                 uid(),
                 result,
-                false,
-                null,
-                null,
-                null,
-                null,
-                ActionType.ON_SAVE));
+                valueType(),
+                fieldMask()
+        ));
     }
 
     public abstract boolean isBackgroundTransparent();

@@ -7,7 +7,6 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
-import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.RowAction;
@@ -16,8 +15,6 @@ import org.dhis2.form.ui.intent.FormIntent;
 import org.dhis2.form.ui.style.FormUiModelStyle;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -181,19 +178,10 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     @Override
     public void onItemClick() {
-        if (processor() != null) {
-            RowAction action = new RowAction(
-                    uid(),
-                    value(),
-                    false,
-                    null,
-                    null,
-                    null,
-                    null,
-                    ActionType.ON_FOCUS
-            );
-            Objects.requireNonNull(processor()).onNext(action);
-        }
+        callback.intent(new FormIntent.OnFocus(
+                uid(),
+                value()
+        ));
     }
 
     @Override
@@ -206,19 +194,10 @@ public abstract class FieldViewModel implements FieldUiModel {
     }
 
     public void onTextChange(String value) {
-        if (processor() != null) {
-            RowAction action = new RowAction(
-                    uid(),
-                    value,
-                    false,
-                    null,
-                    null,
-                    null,
-                    null,
-                    ActionType.ON_TEXT_CHANGE
-            );
-            Objects.requireNonNull(processor()).onNext(action);
-        }
+        callback.intent(new FormIntent.OnTextChange(
+                uid(),
+                value()
+        ));
     }
 
     @NotNull
@@ -333,7 +312,7 @@ public abstract class FieldViewModel implements FieldUiModel {
         return editable() != null ? editable() : true;
     }
 
-    public void onDescriptionClick(){
+    public void onDescriptionClick() {
         callback.recyclerViewUiEvents(new RecyclerViewUiEvents.ShowDescriptionLabelDialog(label(), description()));
     }
 }

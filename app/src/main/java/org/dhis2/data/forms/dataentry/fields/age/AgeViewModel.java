@@ -12,9 +12,11 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.RecyclerViewUiEvents;
+import org.dhis2.form.ui.intent.FormIntent;
 import org.dhis2.form.ui.style.FormUiModelStyle;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -97,17 +99,12 @@ public abstract class AgeViewModel extends FieldViewModel {
     }
 
     public void onAgeSet(Date ageDate) {
-        if (processor() == null) return;
-        processor().onNext(new RowAction(
+        callback.intent(new FormIntent.OnSave(
                 uid(),
                 ageDate == null ? null : DateUtils.oldUiDateFormat().format(ageDate),
-                false,
-                null,
-                null,
-                null,
-                null,
-                ActionType.ON_SAVE)
-        );
+                ValueType.AGE,
+                fieldMask()
+        ));
     }
 
     public abstract boolean isSearchMode();

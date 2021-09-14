@@ -5,6 +5,11 @@ import org.hisp.dhis.android.core.common.ValueType
 
 sealed class FormIntent : MviIntent {
 
+    data class OnFocus(
+        val uid: String,
+        val value: String?
+    ) : FormIntent()
+
     data class OnNext(
         val uid: String,
         val value: String?,
@@ -16,6 +21,11 @@ sealed class FormIntent : MviIntent {
         val value: String?,
         val valueType: ValueType?,
         val fieldMask: String?
+    ) : FormIntent()
+
+    data class OnTextChange(
+        val uid: String,
+        val value: String?
     ) : FormIntent()
 
     data class SelectDateFromAgeCalendar(
