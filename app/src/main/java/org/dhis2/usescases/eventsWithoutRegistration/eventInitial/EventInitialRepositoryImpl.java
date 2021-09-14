@@ -549,7 +549,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
                 programStageSection, allowFutureDates,
                 eventStatus == EventStatus.ACTIVE,
-                null, description, fieldRendering, optionCount, objectStyle, dataElement.fieldMask(), null, null, null);
+                null, description, fieldRendering, optionCount, objectStyle, dataElement.fieldMask(), null, null, null, null);
     }
 
     private String searchValueDataElement(String dataElement, List<TrackedEntityDataValue> dataValues) {
@@ -579,20 +579,26 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     coordinatesValue = geometry.coordinates();
                 }
             }
-            return CoordinateViewModel.create(
+            return (CoordinateViewModel) fieldFactory.create(
                     "",
                     "",
+                    ValueType.COORDINATE,
                     false,
+                    null,
                     coordinatesValue,
+                    null,
                     null,
                     accessDataWrite && !shouldBlockEdition,
                     null,
+                    null,
+                    null,
+                    null,
                     ObjectStyle.builder().build(),
-                    featureType,
-                    true,
-                    false,
+                    null,
+                    null,
                     processor,
-                    fieldFactory.style()
+                    null,
+                    featureType
             );
         });
     }

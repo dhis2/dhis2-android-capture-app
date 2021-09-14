@@ -35,6 +35,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
     public abstract List<String> optionsToShow();
 
     public static OptionSetViewModel create(String id,
+                                            int layoutId,
                                             String label,
                                             Boolean mandatory,
                                             String optionSet,
@@ -51,6 +52,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
 
         return new AutoValue_OptionSetViewModel(
                 id,
+                layoutId,
                 label,
                 mandatory,
                 value,
@@ -80,6 +82,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
     public OptionSetViewModel setMandatory() {
         return new AutoValue_OptionSetViewModel(
                 uid(),
+                layoutId(),
                 label(),
                 mandatory(),
                 value(),
@@ -110,6 +113,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
     public OptionSetViewModel withEditMode(boolean isEditable) {
         return new AutoValue_OptionSetViewModel(
                 uid(),
+                layoutId(),
                 label(),
                 mandatory(),
                 value(),
@@ -140,6 +144,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
     public OptionSetViewModel withError(@NonNull String error) {
         return new AutoValue_OptionSetViewModel(
                 uid(),
+                layoutId(),
                 label(),
                 mandatory(),
                 value(),
@@ -170,6 +175,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
     public OptionSetViewModel withWarning(@NonNull String warning) {
         return new AutoValue_OptionSetViewModel(
                 uid(),
+                layoutId(),
                 label(),
                 mandatory(),
                 value(),
@@ -199,6 +205,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
     public OptionSetViewModel withOptions(@NonNull List<Option> options) {
         return new AutoValue_OptionSetViewModel(
                 uid(),
+                layoutId(),
                 label(),
                 mandatory(),
                 value(),
@@ -229,6 +236,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
     public OptionSetViewModel withValue(String value) {
         return new AutoValue_OptionSetViewModel(
                 uid(),
+                layoutId(),
                 label(),
                 mandatory(),
                 value,
@@ -259,6 +267,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
     public OptionSetViewModel withFocus(boolean isFocused) {
         return new AutoValue_OptionSetViewModel(
                 uid(),
+                layoutId(),
                 label(),
                 mandatory(),
                 value(),
@@ -288,6 +297,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
     public FieldViewModel setOptionsToHide(List<String> optionsToHide) {
         return new AutoValue_OptionSetViewModel(
                 uid(),
+                layoutId(),
                 label(),
                 mandatory(),
                 value(),
@@ -317,6 +327,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
     public OptionSetViewModel setOptionsToShow(List<String> optionsToShow) {
         return new AutoValue_OptionSetViewModel(
                 uid(),
+                layoutId(),
                 label(),
                 mandatory(),
                 value(),
@@ -348,12 +359,6 @@ public abstract class OptionSetViewModel extends FieldViewModel {
 
     public List<String> getOptionsToShow() {
         return optionsToShow();
-    }
-
-
-    @Override
-    public int getLayoutId() {
-        return R.layout.form_option_set_selector;
     }
 
     public void onOptionSelected(String optionCode) {

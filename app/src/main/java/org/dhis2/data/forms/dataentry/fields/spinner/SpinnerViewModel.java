@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.form.model.ActionType;
@@ -40,28 +39,28 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     @NonNull
     public abstract List<String> optionGroupsToShow();
 
-    public static SpinnerViewModel create(String id, String label, String hintFilterOptions,
+    public static SpinnerViewModel create(String id, int layoutId, String label, String hintFilterOptions,
                                           Boolean mandatory, String optionSet, String value,
                                           String section, Boolean editable, String description,
                                           ObjectStyle objectStyle, boolean isBackgroundTransparent,
                                           String renderType, LegendValue colorLegend) {
-        return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null,
+        return new AutoValue_SpinnerViewModel(id, layoutId, label, mandatory, value, section, null,
                 editable, null, null, description, objectStyle, null,
-                DataEntryViewHolderTypes.OPTION_SET_SPINNER, null, null,false,
+                DataEntryViewHolderTypes.OPTION_SET_SPINNER, null, null, false,
                 colorLegend, hintFilterOptions, optionSet,
                 new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
                 isBackgroundTransparent, renderType);
     }
 
-    public static SpinnerViewModel create(String id, String label, String hintFilterOptions,
+    public static SpinnerViewModel create(String id, int layoutId, String label, String hintFilterOptions,
                                           Boolean mandatory, String optionSet, String value,
                                           String section, Boolean editable, String description,
                                           ObjectStyle objectStyle, boolean isBackgroundTransparent,
                                           String renderType, FlowableProcessor<RowAction> processor,
                                           LegendValue legendValue) {
-        return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null,
+        return new AutoValue_SpinnerViewModel(id, layoutId, label, mandatory, value, section, null,
                 editable, null, null, description, objectStyle, null,
-                DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor, null,false,
+                DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor, null, false,
                 legendValue, hintFilterOptions, optionSet,
                 new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
                 isBackgroundTransparent, renderType);
@@ -69,7 +68,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
 
     @Override
     public FieldViewModel setMandatory() {
-        return new AutoValue_SpinnerViewModel(uid(), label(), true, value(), programStageSection(),
+        return new AutoValue_SpinnerViewModel(uid(), layoutId(), label(), true, value(), programStageSection(),
                 allowFutureDate(), editable(), warning(), error(), description(), objectStyle(),
                 null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(),
                 style(), activated(), legendValue(), hint(), optionSet(),
@@ -80,10 +79,10 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(),
+        return new AutoValue_SpinnerViewModel(uid(), layoutId(), label(), mandatory(), value(), programStageSection(),
                 allowFutureDate(), editable(), warning(), error, description(), objectStyle(),
                 null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(),
-                 style(), activated(), legendValue(), hint(), optionSet(),
+                style(), activated(), legendValue(), hint(), optionSet(),
                 optionsToHide(), optionGroupsToHide(), optionGroupsToShow(),
                 isBackgroundTransparent(), renderType());
     }
@@ -91,7 +90,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(),
+        return new AutoValue_SpinnerViewModel(uid(), layoutId(), label(), mandatory(), value(), programStageSection(),
                 allowFutureDate(), editable(), warning, error(), description(), objectStyle(),
                 null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(), style(),
                 activated(), legendValue(), hint(), optionSet(),
@@ -102,7 +101,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     @NonNull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), data, programStageSection(),
+        return new AutoValue_SpinnerViewModel(uid(), layoutId(), label(), mandatory(), data, programStageSection(),
                 allowFutureDate(), editable(), warning(), error(), description(), objectStyle(),
                 null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(),
                 style(), activated(), legendValue(), hint(), optionSet(),
@@ -113,7 +112,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     @NonNull
     @Override
     public FieldViewModel withEditMode(boolean isEditable) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(),
+        return new AutoValue_SpinnerViewModel(uid(), layoutId(), label(), mandatory(), value(), programStageSection(),
                 allowFutureDate(), isEditable, warning(), error(), description(), objectStyle(),
                 null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, processor(),
                 style(), activated(), legendValue(), hint(), optionSet(),
@@ -124,7 +123,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     @NonNull
     @Override
     public FieldViewModel withFocus(boolean isFocused) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(),
+        return new AutoValue_SpinnerViewModel(uid(), layoutId(), label(), mandatory(), value(),
                 programStageSection(), allowFutureDate(), editable(), warning(), error(),
                 description(), objectStyle(), null, dataEntryViewType(),
                 processor(), style(), isFocused, legendValue(), hint(), optionSet(),
@@ -134,7 +133,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
 
     @NonNull
     public FieldViewModel withlegendValue(LegendValue legendValue) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(),
+        return new AutoValue_SpinnerViewModel(uid(), layoutId(), label(), mandatory(), value(),
                 programStageSection(), allowFutureDate(), editable(), warning(), error(),
                 description(), objectStyle(), null, dataEntryViewType(),
                 processor(), style(), activated(), legendValue, hint(), optionSet(),
@@ -144,7 +143,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
 
     @NonNull
     public FieldViewModel setOptionsToHide(List<String> optionsToHide, List<String> optionsGroupsToHide) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(),
+        return new AutoValue_SpinnerViewModel(uid(), layoutId(), label(), mandatory(), value(),
                 programStageSection(), allowFutureDate(), editable(), warning(), error(),
                 description(), objectStyle(), null, dataEntryViewType(),
                 processor(), style(), activated(), legendValue(), hint(), optionSet(),
@@ -154,7 +153,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
 
     @NonNull
     public FieldViewModel setOptionGroupsToShow(List<String> optionGroupsToShow) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(),
+        return new AutoValue_SpinnerViewModel(uid(), layoutId(), label(), mandatory(), value(),
                 programStageSection(), allowFutureDate(), editable(), warning(), error(),
                 description(), objectStyle(), null, dataEntryViewType(),
                 processor(), style(), activated(), legendValue(), hint(), optionSet(),
@@ -172,11 +171,6 @@ public abstract class SpinnerViewModel extends FieldViewModel {
 
     public List<String> getOptionGroupsToShow() {
         return optionGroupsToShow();
-    }
-
-    @Override
-    public int getLayoutId() {
-        return R.layout.form_option_set_spinner;
     }
 
     public abstract boolean isBackgroundTransparent();

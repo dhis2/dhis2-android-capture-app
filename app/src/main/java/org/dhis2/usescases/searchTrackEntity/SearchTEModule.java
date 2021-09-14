@@ -19,6 +19,7 @@ import org.dhis2.data.forms.dataentry.FormUiModelColorFactoryImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.data.FormRepositoryNonPersistenceImpl;
@@ -134,7 +135,7 @@ public class SearchTEModule {
     @Provides
     @PerActivity
     FieldViewModelFactory fieldViewModelFactory(Context context, FormUiColorFactory colorFactory) {
-        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), true, colorFactory);
+        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), true, colorFactory, new LayoutProviderImpl());
     }
 
     @Provides

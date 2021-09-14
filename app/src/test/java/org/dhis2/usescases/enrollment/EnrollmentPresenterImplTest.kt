@@ -343,6 +343,7 @@ class EnrollmentPresenterImplTest {
     ) =
         EditTextViewModel.create(
             uid,
+            1,
             label,
             mandatory,
             value,
