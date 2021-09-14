@@ -34,6 +34,7 @@ class FormBottomDialogPresenterTest {
                 "uid1",
                 EditTextViewModel.create(
                     "uid1",
+                    1,
                     "label1",
                     true,
                     null,
@@ -57,6 +58,7 @@ class FormBottomDialogPresenterTest {
                 "uid2",
                 MatrixOptionSetModel.create(
                     "uid2",
+                    1,
                     "label2",
                     true,
                     null,

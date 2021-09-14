@@ -2,7 +2,6 @@ package org.dhis2.data.forms.dataentry.fields.visualOptionSet
 
 import com.google.auto.value.AutoValue
 import io.reactivex.processors.FlowableProcessor
-import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.form.model.ActionType
@@ -16,9 +15,6 @@ const val labelTag = "tag"
 @AutoValue
 abstract class MatrixOptionSetModel : FieldViewModel() {
 
-    override val layoutId: Int
-        get() = R.layout.matrix_option_set
-
     abstract fun options(): List<Option>
 
     abstract fun numberOfColumns(): Int
@@ -29,6 +25,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
         @JvmStatic
         fun create(
             fieldUid: String,
+            layoutId: Int,
             fieldLabel: String,
             mandatory: Boolean,
             value: String?,
@@ -43,6 +40,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
         ): MatrixOptionSetModel {
             return AutoValue_MatrixOptionSetModel(
                 fieldUid,
+                layoutId,
                 fieldLabel,
                 mandatory,
                 value,
@@ -69,6 +67,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
     override fun setMandatory(): FieldViewModel {
         return AutoValue_MatrixOptionSetModel(
             uid(),
+            layoutId(),
             label(),
             true,
             value(),
@@ -94,6 +93,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
     override fun withError(error: String?): FieldViewModel {
         return AutoValue_MatrixOptionSetModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             value(),
@@ -119,6 +119,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
     override fun withWarning(warning: String?): FieldViewModel {
         return AutoValue_MatrixOptionSetModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             value(),
@@ -144,6 +145,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
     override fun withValue(data: String?): FieldViewModel {
         return AutoValue_MatrixOptionSetModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             data,
@@ -169,6 +171,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
     override fun withEditMode(isEditable: Boolean): FieldViewModel {
         return AutoValue_MatrixOptionSetModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             value(),
@@ -194,6 +197,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
     override fun withFocus(isFocused: Boolean): FieldViewModel {
         return AutoValue_MatrixOptionSetModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             value(),
@@ -250,6 +254,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
 
         return AutoValue_MatrixOptionSetModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             value(),

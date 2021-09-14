@@ -120,7 +120,10 @@ class OptionSetPresenterTest {
 
     private fun getTestSpinnerModel(): SpinnerViewModel {
         return SpinnerViewModel.create(
-            "id", "label", "hint",
+            "id",
+            1,
+            "label",
+            "hint",
             false,
             "optionSet",
             "value",
