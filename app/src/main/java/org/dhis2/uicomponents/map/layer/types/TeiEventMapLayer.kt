@@ -132,7 +132,10 @@ class TeiEventMapLayer(
     }
 
     private fun deselectCurrentPoint() {
-        selectedPointLayer.setProperties(PropertyFactory.visibility(Property.NONE))
+        selectedPointLayer.setProperties(
+            PropertyFactory.iconSize(1f),
+            PropertyFactory.visibility(Property.NONE)
+        )
     }
 
     override fun findFeatureWithUid(featureUidProperty: String): Feature? {
