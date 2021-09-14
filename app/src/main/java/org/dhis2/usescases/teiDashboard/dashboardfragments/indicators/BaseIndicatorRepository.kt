@@ -120,7 +120,7 @@ abstract class BaseIndicatorRepository(
                     val indicator = IndicatorModel(
                         ProgramIndicator.builder()
                             .uid(ruleAction.content())
-                            .displayName(resourceManager.defaultDataSetLabel())
+                            .displayName(resourceManager.defaultIndicatorLabel())
                             .build(),
                         ruleAction.content() + ruleEffect.data(),
                         "",
