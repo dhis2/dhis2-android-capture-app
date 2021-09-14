@@ -56,6 +56,7 @@ import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.QRDetailBottomDialog
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.ValueType
 import timber.log.Timber
 
 class FormView constructor(
@@ -70,9 +71,10 @@ class FormView constructor(
     private val qrScanContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) {
-                val intent = FormIntent.OnNext(
+                val intent = FormIntent.OnSave(
                     it.data?.getStringExtra(Constants.UID)!!,
-                    it.data?.getStringExtra(Constants.EXTRA_DATA)
+                    it.data?.getStringExtra(Constants.EXTRA_DATA),
+                    ValueType.TEXT
                 )
                 intentHandler(intent)
             }
