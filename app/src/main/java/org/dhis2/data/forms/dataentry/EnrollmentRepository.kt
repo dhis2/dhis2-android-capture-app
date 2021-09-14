@@ -384,6 +384,7 @@ class EnrollmentRepository(
             ENROLLMENT_DATA_SECTION_UID,
             allowFutureDates,
             canEditAttributes,
+            canEditAttributes,
             null,
             null,
             null,
