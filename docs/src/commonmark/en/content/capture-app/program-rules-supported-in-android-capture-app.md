@@ -184,13 +184,15 @@ DHIS2 web version evaluate numbers in a more flexible way casting values from in
 | true | Assign value to DE: d2:daysBetween('2020-05-13', '2020-05-17') / 3 | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-negative.png) | The user would expect the division to be calculated as 4/3 with a result of 1.3333. However, Android does not cast 4 to a float (4.0 as the web version does) so the result in Android is a pure 1 as the result of the integer division 4/3 |
 | true | Assign value to DE: d2:daysBetween('2020-05-13', '2020-05-17') / 3.0 | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-complete.png) | Division results in 1.33333 in both web and Android |
 
-## Changes in Program Rules (from 2.2 version ) { #capture_app_pr_changes }
+## Changes in Program Rules (as from version 2.2 of the app ) { #capture_app_pr_changes }
+
+In the version 2.2 of the application (released on August, 2020) a new rule-engine was included. This rule-engine requires some optional and some mandatory changes to be performed on the program rules expressions in order to make it work in the new application. A list of those changes, how to detect them and how to fix them is included in the following subsections.
 
 ### Evaluation of 'd2:hasValue' { #capture_app_pr_changes_hasvalue }
 
 #### Description
 
-d2:hasValue now works with both single quotes or full variable expression (d2:hasValue('variable_name') and d2:hasValue(#{variable_name}))
+This is an optional change. *d2:hasValue* now works with both single quotes or full variable expression. The following expressions is valid: `(d2:hasValue('variable_name') and d2:hasValue(#{variable_name}))`
 
 #### How to identify via API?
 
@@ -223,7 +225,7 @@ The example above shows how different ways of using the hasValue function will h
 
 #### Description
 
-!#{varible_name} will only work with boolean type variables (BOOLEAN and TRUE_ONLY).
+This is a mandatory change. *!#{varible_name}* can only be used boolean type variables (BOOLEAN and TRUE_ONLY).
 
 #### How to identify via API?
 
@@ -280,7 +282,7 @@ To:
 
 #### Description
 
-In program rule actions (ASSIGN, DISPLAY TEXT, DISPLAY KEY/VALUE PAIR) If the Expression to evaluate and assign/display is a text, it has to be in single quotes.
+This is a mdantory change. In program rule actions of the type ASSIGN, DISPLAY TEXT or DISPLAY KEY/VALUE PAIR if the Expression to evaluate and assign/display is a text, it must be enclosed with single quotes.
 
 #### How to identify via API?
 
@@ -324,7 +326,7 @@ Scan the generated list (via the suggested API calls) to find data components of
 
 #### Description
 
-In program rule actions (ASSIGN, DISPLAY TEXT, DISPLAY KEY/VALUE PAIR) If the Expression to evaluate and assign/display is a text, it has to be in single quotes (same as previous change) but, on top of that, if it requires to concatenate two strings or a combination of functions it is mandatory to use the d2:concatenate function.
+This is a mdantory change. In program rule actions of the type ASSIGN, DISPLAY TEXT or DISPLAY KEY/VALUE PAIR if the Expression to evaluate and assign/display is a text, it must be enclosed with single quotes (same as previous change); but, on top of that, if it requires to concatenate two strings or a combination of functions it is mandatory to use the *d2:concatenate* function.
 
 #### How to identify via API?
 
@@ -351,7 +353,7 @@ For example we can detect here an error of two strings in an action without the 
 
 #### How to fix it?
 
-Scan the generated list (via the suggested API calls) to find data components of the Program Rule Action where two or more objects are being concatenated and update them to use the d2:concatenate function.
+Scan the generated list (via the suggested API calls) to find data components of the Program Rule Action where two or more objects are being concatenated and update them to use the *d2:concatenate* function.
 
 In the example above the data should change from:
 
