@@ -472,7 +472,7 @@ data class IndicatorModel(
     val color: String?,
     val location: String,
     val defaultLabel: String
-) : AnalyticsModel(programIndicator?.uid()!!) {
+) : AnalyticsModel(programIndicator?.uid() ?: defaultLabel) {
     fun label(): String {
         return programIndicator?.displayName() ?: defaultLabel
     }

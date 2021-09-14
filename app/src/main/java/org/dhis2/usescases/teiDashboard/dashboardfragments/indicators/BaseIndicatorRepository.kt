@@ -118,7 +118,10 @@ abstract class BaseIndicatorRepository(
                     indicators.add(indicator)
                 } else if (ruleAction is RuleActionDisplayText) {
                     val indicator = IndicatorModel(
-                        null,
+                        ProgramIndicator.builder()
+                            .uid(ruleAction.content())
+                            .displayName(resourceManager.defaultDataSetLabel())
+                            .build(),
                         ruleAction.content() + ruleEffect.data(),
                         "",
                         ruleAction.location(),
