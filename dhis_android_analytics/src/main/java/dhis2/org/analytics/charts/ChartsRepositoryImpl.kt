@@ -161,14 +161,17 @@ class ChartsRepositoryImpl(
                     }
                 }
                 .blockingEvaluate()
+                .getOrNull()
 
-            visualizationToGraph.mapToGraph(
-                visualization,
-                gridAnalyticsResponse,
-                selectedRelativePeriod?.firstOrNull(),
-                selectedOrgUnits
-            ).let {
-                graphList.add(it)
+            if (gridAnalyticsResponse != null) {
+                visualizationToGraph.mapToGraph(
+                    visualization,
+                    gridAnalyticsResponse,
+                    selectedRelativePeriod?.firstOrNull(),
+                    selectedOrgUnits
+                ).let {
+                    graphList.add(it)
+                }
             }
         }
     }
