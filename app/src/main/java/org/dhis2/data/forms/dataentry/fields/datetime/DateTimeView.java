@@ -15,13 +15,15 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.R;
+import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
+import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
 import org.dhis2.databinding.DateTimeViewBinding;
-import org.dhis2.utils.ColorUtils;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.FieldLayout;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -31,10 +33,6 @@ import java.util.Date;
 import timber.log.Timber;
 
 import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
-
-/**
- * QUADRAM. Created by frodriguez on 1/15/2018.
- */
 
 public class DateTimeView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
 
@@ -132,6 +130,8 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         } else if (warning != null) {
             inputLayout.setErrorTextAppearance(R.style.warning_appearance);
             inputLayout.setError(warning);
+        }else{
+            inputLayout.setError(null);
         }
     }
 
@@ -191,22 +191,25 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     }
 
     private void showCustomCalendar(View view) {
+        CalendarPicker dialog = new CalendarPicker(view.getContext());
+        dialog.setTitle(label);
+        dialog.setInitialDate(date);
+        dialog.isFutureDatesAllowed(allowFutureDates);
+        dialog.setListener(new OnDatePickerListener() {
+            @Override
+            public void onNegativeClick() {
+                clearDate();
+            }
 
-        DatePickerUtils.getDatePickerDialog(getContext(), label, date, allowFutureDates,
-                new DatePickerUtils.OnDatePickerClickListener() {
-                    @Override
-                    public void onNegativeClick() {
-                        clearDate();
-                    }
-
-                    @Override
-                    public void onPositiveClick(DatePicker datePicker) {
-                        selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
-                        selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
-                        selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-                        showTimePicker(view);
-                    }
-                }).show();
+            @Override
+            public void onPositiveClick(@NotNull DatePicker datePicker) {
+                selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
+                selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
+                selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
+                showTimePicker(view);
+            }
+        });
+        dialog.show();
     }
 
     private void showTimePicker(View view) {

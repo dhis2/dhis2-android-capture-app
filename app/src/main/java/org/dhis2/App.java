@@ -13,14 +13,20 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
+import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponent;
+import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerModule;
+import org.dhis2.commons.di.dagger.PerActivity;
+import org.dhis2.commons.di.dagger.PerServer;
+import org.dhis2.commons.di.dagger.PerUser;
+import org.dhis2.commons.featureconfig.di.FeatureConfigActivityComponent;
+import org.dhis2.commons.featureconfig.di.FeatureConfigActivityModule;
+import org.dhis2.commons.featureconfig.di.FeatureConfigModule;
+import org.dhis2.commons.prefs.Preference;
+import org.dhis2.commons.prefs.PreferenceModule;
 import org.dhis2.data.appinspector.AppInspector;
-import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.data.dagger.PerServer;
-import org.dhis2.data.dagger.PerUser;
-import org.dhis2.data.prefs.Preference;
-import org.dhis2.data.prefs.PreferenceModule;
-import org.dhis2.data.schedulers.SchedulerModule;
-import org.dhis2.data.schedulers.SchedulersProviderImpl;
+import org.dhis2.data.dispatcher.DispatcherModule;
+import org.dhis2.commons.schedulers.SchedulerModule;
+import org.dhis2.commons.schedulers.SchedulersProviderImpl;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.ServerModule;
 import org.dhis2.data.server.UserManager;
@@ -49,6 +55,8 @@ import java.net.SocketException;
 import javax.inject.Singleton;
 
 import cat.ereza.customactivityoncrash.config.CaocConfig;
+import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentComponent;
+import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule;
 import io.reactivex.Scheduler;
 import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -152,7 +160,9 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .analyticsModule(new AnalyticsModule())
                 .preferenceModule(new PreferenceModule())
                 .workManagerController(new WorkManagerModule())
-                .crashReportModule(new CrashReportModule());
+                .coroutineDispatchers(new DispatcherModule())
+                .crashReportModule(new CrashReportModule())
+                .featureConfigModule(new FeatureConfigModule());
     }
 
     @NonNull
@@ -309,5 +319,20 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     public AppInspector getAppInspector() {
         return appInspector;
+    }
+
+    @Override
+    public FeatureConfigActivityComponent provideFeatureConfigActivityComponent() {
+        return userComponent.plus(new FeatureConfigActivityModule());
+    }
+
+    @Override
+    public CalendarPickerComponent provideCalendarPickerComponent() {
+        return userComponent.plus(new CalendarPickerModule());
+    }
+
+    @Override
+    public AnalyticsFragmentComponent provideAnalyticsFragmentComponent(AnalyticsFragmentModule module){
+        return userComponent.plus(module);
     }
 }

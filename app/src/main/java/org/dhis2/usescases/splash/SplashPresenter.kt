@@ -2,9 +2,9 @@ package org.dhis2.usescases.splash
 
 import io.reactivex.disposables.CompositeDisposable
 import java.util.concurrent.TimeUnit
-import org.dhis2.data.prefs.Preference
-import org.dhis2.data.prefs.PreferenceProvider
-import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.commons.prefs.Preference
+import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.SERVER

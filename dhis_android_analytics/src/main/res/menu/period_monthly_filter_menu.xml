@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/visualization">
+        <item
+            android:id="@+id/back_monthly"
+            android:icon="@drawable/ic_arrowback_chart"
+            android:title="@string/monthly"/>
+    </group>
+    <group android:id="@+id/filters">
+        <item
+            android:id="@+id/thismonth"
+            android:title="@string/thismonth" />
+        <item
+            android:id="@+id/lastmonth"
+            android:title="@string/lastmonth" />
+        <item
+            android:id="@+id/last3months"
+            android:title="@string/last3months" />
+        <item
+            android:id="@+id/last6months"
+            android:title="@string/last6months" />
+        <item
+            android:id="@+id/last12months"
+            android:title="@string/last12months" />
+        <item
+            android:id="@+id/monthThisYear"
+            android:title="@string/monthsthisyear" />
+    </group>
+</menu>

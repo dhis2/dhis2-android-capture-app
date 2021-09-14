@@ -1,8 +1,8 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 
 import io.reactivex.disposables.CompositeDisposable
-import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.data.schedulers.defaultSubscribe
+import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.defaultSubscribe
 import timber.log.Timber
 
 class IndicatorsPresenter(

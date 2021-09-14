@@ -129,28 +129,6 @@ fun scrollToPositionRecyclerview(position: Int): ViewAction {
     }
 }
 
-/*fun clickOnFabChild(): ViewAction {
-    return object : ViewAction {
-        override fun getDescription(): String {
-            return "searching for fab child"
-        }
-
-        override fun getConstraints(): Matcher<View> {
-            return isAssignableFrom(RapidFloatingActionLayout::class.java)
-        }
-
-        override fun perform(uiController: UiController?, view: View?) {
-            val rootView = (view as RapidFloatingActionLayout)
-            for (index in 0 until rootView.childCount) {
-                val child = rootView.getChildAt(index)
-                child.performClick()
-                uiController?.loopMainThreadUntilIdle()
-                return
-            }
-        }
-    }
-}*/
-
 fun waitForTransitionUntil(idView: Int): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {

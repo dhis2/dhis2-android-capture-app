@@ -2,12 +2,15 @@ package org.dhis2.usescases.main
 
 import dagger.Module
 import dagger.Provides
-import org.dhis2.data.dagger.PerActivity
+import dhis2.org.analytics.charts.Charts
+import org.dhis2.commons.di.dagger.PerActivity
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.filter.FilterRepository
-import org.dhis2.data.prefs.PreferenceProvider
-import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.FiltersAdapter
 import org.hisp.dhis.android.core.D2
@@ -18,7 +21,7 @@ class MainModule(val view: MainView) {
     @Provides
     @PerActivity
     fun homePresenter(
-        d2: D2,
+        homeRepository: HomeRepository,
         schedulerProvider: SchedulerProvider,
         preferences: PreferenceProvider,
         workManagerController: WorkManagerController,
@@ -28,7 +31,7 @@ class MainModule(val view: MainView) {
     ): MainPresenter {
         return MainPresenter(
             view,
-            d2,
+            homeRepository,
             schedulerProvider,
             preferences,
             workManagerController,
@@ -36,6 +39,21 @@ class MainModule(val view: MainView) {
             filterRepository,
             matomoAnalyticsController
         )
+    }
+
+    @Provides
+    @PerActivity
+    fun provideHomeRepository(d2: D2, charts: Charts?): HomeRepository {
+        return HomeRepositoryImpl(d2, charts)
+    }
+
+    @Provides
+    @PerActivity
+    fun providePageConfigurator(
+        homeRepository: HomeRepository,
+        featureConfigRepository: FeatureConfigRepository
+    ): NavigationPageConfigurator {
+        return HomePageConfigurator(homeRepository, featureConfigRepository)
     }
 
     @Provides

@@ -7,33 +7,27 @@ import android.os.Bundle
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
 import android.view.View
-import android.view.View.GONE
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.ObservableInt
 import androidx.drawerlayout.widget.DrawerLayout
 import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
 import org.dhis2.R
-import org.dhis2.data.prefs.Preference
+import org.dhis2.commons.prefs.Preference
 import org.dhis2.databinding.ActivityMainBinding
-import org.dhis2.usescases.about.AboutFragment
 import org.dhis2.usescases.development.DevelopmentActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
-import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.usescases.jira.JiraFragment
 import org.dhis2.usescases.login.LoginActivity
-import org.dhis2.usescases.main.program.ProgramFragment
-import org.dhis2.usescases.qrReader.QrReaderFragment
-import org.dhis2.usescases.settings.SyncManagerFragment
-import org.dhis2.usescases.teiDashboard.nfcdata.NfcDataWriteActivity
 import org.dhis2.utils.Constants
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.BLOCK_SESSION
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CLOSE_SESSION
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.extension.navigateTo
 import org.dhis2.utils.filters.FilterItem
 import org.dhis2.utils.filters.FilterManager
@@ -47,24 +41,41 @@ class MainActivity :
     ActivityGlobalAbstract(),
     MainView,
     DrawerLayout.DrawerListener {
+
     private lateinit var binding: ActivityMainBinding
     lateinit var mainComponent: MainComponent
+
     @Inject
     lateinit var presenter: MainPresenter
 
     @Inject
     lateinit var newAdapter: FiltersAdapter
 
-    private var programFragment: ProgramFragment? = null
+    @Inject
+    lateinit var pageConfigurator: NavigationPageConfigurator
 
-    var activeFragment: FragmentGlobalAbstract? = null
+    private val getDevActivityContent =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            binding.navigationBar.pageConfiguration(pageConfigurator)
+        }
 
-    private var currentFragment = ObservableInt(R.id.menu_home)
     private var isPinLayoutVisible = false
 
-    private var fragId: Int = 0
     private var prefs: SharedPreferences? = null
     private var backDropActive = false
+    private var elevation = 0f
+    private val mainNavigator = MainNavigator(
+        supportFragmentManager,
+        {
+            if (backDropActive) {
+                showHideFilter()
+            }
+        }
+    ) { titleRes, showFilterButton, showBottomNavigation ->
+        setTitle(getString(titleRes))
+        setFilterButtonVisibility(showFilterButton)
+        setBottomNavigationVisibility(showBottomNavigation)
+    }
 
     //region LIFECYCLE
 
@@ -81,21 +92,20 @@ class MainActivity :
         } else {
             navigateTo<LoginActivity>(true)
         }
+
         binding.navView.setNavigationItemSelectedListener { item ->
             changeFragment(item.itemId)
             false
         }
 
-        if (savedInstanceState != null) {
-            val frag = savedInstanceState.getInt(FRAGMENT)
-            currentFragment.set(frag)
-            binding.currentFragment = currentFragment
-            changeFragment(frag)
+        val restoreScreenName = savedInstanceState?.getString(FRAGMENT)
+        if (restoreScreenName != null) {
+            changeFragment(mainNavigator.currentNavigationViewItemId(restoreScreenName))
+            mainNavigator.restoreScreen(restoreScreenName)
         } else {
-            binding.currentFragment = currentFragment
             changeFragment(R.id.menu_home)
+            initCurrentScreen()
         }
-        initCurrentScreen()
 
         binding.mainDrawerLayout.addDrawerListener(this)
 
@@ -105,32 +115,34 @@ class MainActivity :
 
         binding.filterRecycler.adapter = newAdapter
 
+        binding.navigationBar.pageConfiguration(pageConfigurator)
         binding.navigationBar.setOnNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.navigation_tasks -> {}
-                R.id.navigation_programs -> {}
-                R.id.navigation_analytics -> {}
-                else -> {}
+                R.id.navigation_tasks -> {
+                }
+                R.id.navigation_programs -> {
+                    mainNavigator.openPrograms()
+                }
+                R.id.navigation_analytics -> {
+                    mainNavigator.openVisualizations()
+                }
             }
             true
         }
 
-        // TODO: remove to display BottomNavigationView
-        binding.fragmentContainer.setPadding(0, 0, 0, 0)
-        binding.navigationBar.visibility = View.GONE
-        // end
-
         if (BuildConfig.DEBUG) {
             binding.menu.setOnLongClickListener {
-                startActivity(DevelopmentActivity::class.java, null, false, false, null)
+                getDevActivityContent.launch(Intent(this, DevelopmentActivity::class.java))
                 false
             }
         }
+
+        elevation = ViewCompat.getElevation(binding.toolbar)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt(FRAGMENT, fragId)
+        outState.putString(FRAGMENT, mainNavigator.currentScreenName())
     }
 
     override fun onResume() {
@@ -188,7 +200,7 @@ class MainActivity :
             )
         }
         initSet.applyTo(binding.backdropLayout)
-        programFragment!!.openFilter(backDropActive)
+        mainNavigator.getCurrentIfProgram()?.openFilter(backDropActive)
     }
 
     override fun onLockClick() {
@@ -208,22 +220,18 @@ class MainActivity :
 
     override fun onBackPressed() {
         when {
-            fragId != R.id.menu_home -> presenter.onNavigateBackToHome()
+            !mainNavigator.isHome() -> presenter.onNavigateBackToHome()
             isPinLayoutVisible -> isPinLayoutVisible = false
             else -> super.onBackPressed()
         }
     }
 
     override fun goToHome() {
-        changeFragment(R.id.menu_home)
-        initCurrentScreen()
+        mainNavigator.openPrograms()
     }
 
     override fun changeFragment(id: Int) {
-        fragId = id
         binding.navView.setCheckedItem(id)
-        activeFragment = null
-
         binding.mainDrawerLayout.closeDrawers()
     }
 
@@ -234,7 +242,7 @@ class MainActivity :
     override fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest) {
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
             DateUtils.getInstance()
-                .showFromToSelector(this) { FilterManager.getInstance().addPeriod(it) }
+                .fromCalendarSelector(this) { FilterManager.getInstance().addPeriod(it) }
         } else {
             DateUtils.getInstance()
                 .showPeriodDialog(
@@ -249,11 +257,19 @@ class MainActivity :
         binding.title.text = title
     }
 
-    override fun showTutorial(shaked: Boolean) {
-        when (fragId) {
-            R.id.menu_home -> (activeFragment as ProgramFragment).setTutorial()
-            R.id.sync_manager -> (activeFragment as SyncManagerFragment).showTutorial()
-            else -> showToast(getString(R.string.no_intructions))
+    private fun setFilterButtonVisibility(showFilterButton: Boolean) {
+        binding.filterActionButton.visibility = if (showFilterButton) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+    }
+
+    private fun setBottomNavigationVisibility(showBottomNavigation: Boolean) {
+        if (showBottomNavigation) {
+            binding.navigationBar.show()
+        } else {
+            binding.navigationBar.hide()
         }
     }
 
@@ -262,7 +278,7 @@ class MainActivity :
     }
 
     override fun hideFilters() {
-        binding.filterActionButton.visibility = GONE
+        binding.filterActionButton.visibility = View.GONE
     }
 
     override fun onDrawerStateChanged(newState: Int) {
@@ -272,11 +288,9 @@ class MainActivity :
     }
 
     override fun onDrawerClosed(drawerView: View) {
-        if (currentFragment.get() != fragId) {
-            initCurrentScreen()
-            if (fragId == R.id.menu_home) {
-                presenter.initFilters()
-            }
+        initCurrentScreen()
+        if (mainNavigator.isPrograms()) {
+            presenter.initFilters()
         }
     }
 
@@ -284,32 +298,19 @@ class MainActivity :
     }
 
     private fun initCurrentScreen() {
-        var tag: String? = null
-        when (fragId) {
+        when (binding.navView.checkedItem?.itemId) {
             R.id.sync_manager -> {
                 presenter.onClickSyncManager()
-                activeFragment = SyncManagerFragment()
-                tag = getString(R.string.SYNC_MANAGER)
-                binding.filterActionButton.visibility = View.GONE
+                mainNavigator.openSettings()
             }
             R.id.qr_scan -> {
-                activeFragment = QrReaderFragment()
-                tag = getString(R.string.QR_SCANNER)
-                binding.filterActionButton.visibility = View.GONE
-            }
-            R.id.nfc_scan -> {
-                val intentNfc = Intent(this, NfcDataWriteActivity::class.java)
-                startActivity(intentNfc)
+                mainNavigator.openQR()
             }
             R.id.menu_jira -> {
-                activeFragment = JiraFragment()
-                tag = getString(R.string.jira_report)
-                binding.filterActionButton.visibility = View.GONE
+                mainNavigator.openJira()
             }
             R.id.menu_about -> {
-                activeFragment = AboutFragment()
-                tag = getString(R.string.about)
-                binding.filterActionButton.visibility = View.GONE
+                mainNavigator.openAbout()
             }
             R.id.block_button -> {
                 analyticsHelper.setEvent(BLOCK_SESSION, CLICK, BLOCK_SESSION)
@@ -320,35 +321,11 @@ class MainActivity :
                 presenter.logOut()
             }
             R.id.menu_home -> {
-                activeFragment = ProgramFragment()
-                programFragment = activeFragment as ProgramFragment?
-                tag = getString(R.string.done_task)
-                binding.filterActionButton.visibility = View.VISIBLE
-            }
-            else -> {
-                activeFragment = ProgramFragment()
-                programFragment = activeFragment as ProgramFragment?
-                tag = getString(R.string.done_task)
-                binding.filterActionButton.visibility = View.VISIBLE
+                mainNavigator.openPrograms()
             }
         }
 
-        if (activeFragment != null) {
-            currentFragment.set(fragId)
-            val transaction = supportFragmentManager.beginTransaction()
-            transaction.setCustomAnimations(
-                R.anim.fragment_enter_right,
-                R.anim.fragment_exit_left,
-                R.anim.fragment_enter_left,
-                R.anim.fragment_exit_right
-            )
-
-            transaction.replace(R.id.fragment_container, activeFragment!!, tag)
-                .commitAllowingStateLoss()
-            binding.title.text = tag
-        }
-
-        if (backDropActive && activeFragment !is ProgramFragment) {
+        if (backDropActive && mainNavigator.isPrograms()) {
             showHideFilter()
         }
     }

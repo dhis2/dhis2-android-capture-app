@@ -172,7 +172,7 @@
             app:layout_constraintStart_toEndOf="@id/guideline"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-        <org.dhis2.utils.customviews.DhisBottomNavigationBar
+        <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
             android:id="@+id/navigationBar"
             style="@style/DhisBottomNavigationView"
             android:layout_width="0dp"
@@ -180,6 +180,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/guideline75"
             app:layout_constraintStart_toStartOf="@id/guideline25"
+            app:forceShowAnalytics="true"
             app:menu="@menu/navigation_dashboard_landscape_menu" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

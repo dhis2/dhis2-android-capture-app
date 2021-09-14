@@ -22,10 +22,10 @@ import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
-import org.dhis2.utils.ColorUtils;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.FieldLayout;
 
 import java.text.ParseException;
@@ -38,9 +38,6 @@ import timber.log.Timber;
 
 import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
 
-/**
- * QUADRAM. Created by frodriguez on 1/15/2018.
- */
 
 public class TimeView extends FieldLayout implements View.OnClickListener {
 
@@ -153,6 +150,8 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         } else if (warning != null) {
             inputLayout.setErrorTextAppearance(R.style.warning_appearance);
             inputLayout.setError(warning);
+        }else{
+            inputLayout.setError(null);
         }
     }
 

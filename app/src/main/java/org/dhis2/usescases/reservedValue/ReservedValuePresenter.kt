@@ -5,8 +5,8 @@ import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.data.schedulers.defaultSubscribe
+import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.defaultSubscribe
 import org.hisp.dhis.android.core.maintenance.D2Error
 import timber.log.Timber
 

@@ -4,9 +4,9 @@ import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
 import io.reactivex.disposables.CompositeDisposable
 import java.util.concurrent.TimeUnit
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel as TableSpinnerViewModel
-import org.dhis2.data.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.option.Option
 import timber.log.Timber

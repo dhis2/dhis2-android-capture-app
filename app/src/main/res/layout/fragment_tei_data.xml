@@ -37,12 +37,16 @@
             name="isGrouping"
             type="java.lang.Boolean" />
 
+        <variable
+            name="canAddEvents"
+            type="java.lang.Boolean" />
+
     </data>
 
     <org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
         android:id="@+id/dialFabLayout"
         android:layout_width="match_parent"
-        app:fab_visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE || isGrouping}"
+        app:fab_visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE || isGrouping || !canAddEvents}"
         app:fab_extra_bottom_margin="@{16}"
         android:layout_height="match_parent">
 

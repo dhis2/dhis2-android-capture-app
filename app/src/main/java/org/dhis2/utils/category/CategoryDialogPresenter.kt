@@ -7,7 +7,7 @@ import androidx.paging.PagedList
 import io.reactivex.disposables.CompositeDisposable
 import java.util.Date
 import java.util.concurrent.TimeUnit
-import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryOption

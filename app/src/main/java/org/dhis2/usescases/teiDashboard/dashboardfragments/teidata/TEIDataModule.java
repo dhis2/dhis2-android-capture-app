@@ -1,21 +1,15 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata;
 
-import androidx.annotation.NonNull;
-
-import org.dhis2.data.dagger.PerFragment;
+import org.dhis2.commons.di.dagger.PerFragment;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
-import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.filter.FilterRepository;
-import org.dhis2.data.forms.FormRepository;
-import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
-import org.dhis2.data.prefs.PreferenceProvider;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
-import org.dhis2.utils.filters.ProgramType;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;

@@ -1,11 +1,15 @@
 package org.dhis2.uicomponents.map.layer
 
+import android.graphics.Color
 import com.mapbox.mapboxsdk.style.expressions.Expression
+import com.mapbox.mapboxsdk.style.layers.Property
 import com.mapbox.mapboxsdk.style.layers.Property.VISIBILITY
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.TEI_UID
+import org.dhis2.uicomponents.map.managers.EventMapManager
 
 val TEI_ICON_OFFSET = arrayOf(0f, -14.5f)
 
@@ -43,4 +47,17 @@ fun SymbolLayer.withTEIMarkerProperties(): SymbolLayer = withProperties(
 
 fun SymbolLayer.withInitialVisibility(@VISIBILITY visibility: String): SymbolLayer = withProperties(
     PropertyFactory.visibility(visibility)
+)
+
+fun SymbolLayer.withDEIconAndTextProperties(): SymbolLayer = withProperties(
+    PropertyFactory.iconImage("${EventMapManager.DE_ICON_ID}_$sourceId"),
+    PropertyFactory.iconAllowOverlap(true),
+    PropertyFactory.textField(Expression.get(MapCoordinateFieldToFeatureCollection.FIELD_NAME)),
+    PropertyFactory.textAllowOverlap(false),
+    PropertyFactory.textIgnorePlacement(true),
+    PropertyFactory.textAnchor(Property.TEXT_ANCHOR_TOP),
+    PropertyFactory.textRadialOffset(2f),
+    PropertyFactory.textHaloWidth(1f),
+    PropertyFactory.textHaloColor(Color.WHITE),
+    PropertyFactory.textSize(10f)
 )

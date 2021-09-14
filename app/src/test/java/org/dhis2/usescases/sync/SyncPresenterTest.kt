@@ -11,9 +11,9 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Single
 import java.util.UUID
-import org.dhis2.data.prefs.Preference
-import org.dhis2.data.prefs.PreferenceProvider
-import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.commons.prefs.Preference
+import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.METADATA_MESSAGE
@@ -124,7 +124,9 @@ class SyncPresenterTest {
             UUID.randomUUID(),
             state,
             Data.Builder().apply { putString(METADATA_MESSAGE, message) }.build(),
-            arrayListOf(Constants.META_NOW), 0
+            arrayListOf(Constants.META_NOW),
+            Data.EMPTY,
+            0
         )
     }
 
@@ -133,7 +135,9 @@ class SyncPresenterTest {
             UUID.randomUUID(),
             state,
             Data.Builder().build(),
-            arrayListOf(Constants.DATA_NOW), 0
+            arrayListOf(Constants.DATA_NOW),
+            Data.EMPTY,
+            0
         )
     }
 }

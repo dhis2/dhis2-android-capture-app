@@ -29,10 +29,12 @@ import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.RelationshipMapManager;
 import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.EventMode;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.dialFloatingActionButton.DialItem;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
@@ -67,17 +69,35 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     public static final String TEI_A_UID = "TEI_A_UID";
     private Set<String> sources;
-    private TeiDashboardMobileActivity activity;
+    private MapButtonObservable mapButtonObservable;
+
+    public static Bundle withArguments(
+            String programUid,
+            String teiUid,
+            String enrollmentUid,
+            String eventUid
+    ) {
+        Bundle bundle = new Bundle();
+        bundle.putString("ARG_PROGRAM_UID", programUid);
+        bundle.putString("ARG_TEI_UID", teiUid);
+        bundle.putString("ARG_ENROLLMENT_UID", enrollmentUid);
+        bundle.putString("ARG_EVENT_UID", eventUid);
+        return bundle;
+    }
 
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
-        activity = (TeiDashboardMobileActivity) context;
-        if (((App) context.getApplicationContext()).dashboardComponent() != null)
-            ((App) context.getApplicationContext())
-                    .dashboardComponent()
-                    .plus(new RelationshipModule(this, activity.getProgramUid(), activity.getTeiUid()))
-                    .inject(this);
+        mapButtonObservable = (MapButtonObservable) context;
+        if (((App) context.getApplicationContext()).userComponent() != null)
+            ((App) context.getApplicationContext()).userComponent()
+                    .plus(new RelationshipModule(
+                            this,
+                            getArguments().getString("ARG_PROGRAM_UID"),
+                            getArguments().getString("ARG_TEI_UID"),
+                            getArguments().getString("ARG_ENROLLMENT_UID"),
+                            getArguments().getString("ARG_EVENT_UID"))
+                    ).inject(this);
     }
 
     @Nullable
@@ -91,15 +111,15 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         relationshipMapManager.onCreate(savedInstanceState);
         relationshipMapManager.setOnMapClickListener(this);
         relationshipMapManager.init(() -> Unit.INSTANCE, (permissionManager) -> {
-            permissionManager.requestLocationPermissions(activity);
+            permissionManager.requestLocationPermissions(getActivity());
             return Unit.INSTANCE;
         });
 
-        TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) getContext();
-        activity.relationshipMap().observe(getViewLifecycleOwner(), showMap -> {
+        mapButtonObservable.relationshipMap().observe(getViewLifecycleOwner(), showMap -> {
             binding.relationshipRecycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
             binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
             binding.mapLayerButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
+            binding.mapPositionButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
             binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : View.GONE);
             binding.dialFabLayout.setFabVisible(!showMap);
         });
@@ -107,6 +127,13 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         binding.mapLayerButton.setOnClickListener(view -> {
             MapLayerDialog layerDialog = new MapLayerDialog(relationshipMapManager);
             layerDialog.show(getChildFragmentManager(), MapLayerDialog.class.getName());
+        });
+
+        binding.mapPositionButton.setOnClickListener(view -> {
+            relationshipMapManager.centerCameraOnMyPosition((permissionManager) -> {
+                permissionManager.requestLocationPermissions(getActivity());
+                return Unit.INSTANCE;
+            });
         });
 
         return binding.getRoot();
@@ -149,7 +176,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     @Override
     public void setRelationships(List<RelationshipViewModel> relationships) {
         if (relationshipAdapter != null) {
-            relationshipAdapter.addItems(relationships);
+            relationshipAdapter.submitList(relationships);
         }
         if (relationships != null && !relationships.isEmpty()) {
             binding.emptyRelationships.setVisibility(View.GONE);
@@ -159,7 +186,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     }
 
     @Override
-    public void goToAddRelationship(String teiUid, String teiTypeToAdd) {
+    public void goToAddRelationship(@NotNull String teiUid, @NotNull String teiTypeToAdd) {
 
         Intent intent = new Intent(getContext(), SearchTEActivity.class);
         Bundle extras = new Bundle();
@@ -169,7 +196,9 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         extras.putString("PROGRAM_UID", null);
         intent.putExtras(extras);
 
-        ((TeiDashboardMobileActivity) getActivity()).toRelationships();
+        if(getActivity() instanceof TeiDashboardMobileActivity) {
+            ((TeiDashboardMobileActivity) getActivity()).toRelationships();
+        }
         this.startActivityForResult(intent, Constants.REQ_ADD_RELATIONSHIP);
     }
 
@@ -226,6 +255,18 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     }
 
     @Override
+    public void openEventFor(@NonNull String eventUid, @NonNull String programUid){
+        Bundle bundle = EventCaptureActivity.getActivityBundle(
+                eventUid,
+                programUid,
+                EventMode.CHECK
+        );
+        Intent intent = new Intent(getContext(),EventCaptureActivity.class);
+        intent.putExtras(bundle);
+        getActivity().startActivity(intent);
+    }
+
+    @Override
     public void showTeiWithoutEnrollmentError(@NotNull String teiTypeName) {
         showInfoDialog(
                 String.format(
@@ -271,7 +312,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     @Override
     public void setFeatureCollection(
-            @NonNull String currentTei,
+            String currentTei,
             @NonNull List<RelationshipUiComponentModel> relationships,
             @NotNull kotlin.Pair<? extends Map<String, FeatureCollection>, ? extends BoundingBox> map) {
         relationshipMapManager.update(
@@ -308,7 +349,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         carouselAdapter.addItems(relationships);
 
         animations.endMapLoading(binding.mapCarousel);
-        activity.onRelationshipMapLoaded();
+        mapButtonObservable.onRelationshipMapLoaded();
     }
 
     @Override

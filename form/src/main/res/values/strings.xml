@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invalid_percentage">Only values from 0 to 100 are allowed</string>
+    <string name="invalid_field">Please review this field</string>
+    <string name="formatting_error">Formatting error</string>
+    <string name="invalid_possitive">Only positive numbers are allowed</string>
+    <string name="invalid_phone_number">This is not a valid phone number</string>
+    <string name="invalid_email">This is not a valid email</string>
+    <string name="invalid_negative_number">Only negative numbers are allowed</string>
+    <string name="invalid_possitive_zero">Only positive numbers or zero allowed</string>
+    <string name="invalid_interval">Only values from 0 to 1 are allowed</string>
+    <string name="validation_url">This is not a valid url</string>
+    <string name="invalid_integer">Value must be an integer</string>
+    <string name="wrong_pattern">It is not a correct format.</string>
+    <string name="update_field_error">This field could not be updated. Please try again</string>
+</resources>

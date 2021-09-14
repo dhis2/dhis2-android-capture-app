@@ -23,9 +23,9 @@ import java.io.File
 import java.util.ArrayList
 import java.util.Date
 import org.dhis2.R
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemFieldValueBinding
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
-import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus

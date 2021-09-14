@@ -1,6 +1,6 @@
 package org.dhis2.usescases.teiDashboard;
 
-import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsComponent;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsModule;
 import org.dhis2.usescases.notes.NotesComponent;
@@ -22,9 +22,6 @@ public interface TeiDashboardComponent {
 
     @NonNull
     IndicatorsComponent plus(IndicatorsModule indicatorsModule);
-
-    @NonNull
-    RelationshipComponent plus(RelationshipModule relationshipModule);
 
     @NonNull
     NotesComponent plus(NotesModule notesModule);

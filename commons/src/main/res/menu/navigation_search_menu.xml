@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_list_view"
+        android:enabled="true"
+        android:icon="@drawable/ic_navigation_list_view"
+        android:title="@string/navigation_list_view"/>
+
+    <item
+        android:id="@+id/navigation_table_view"
+        android:enabled="true"
+        android:visible="false"
+        android:icon="@drawable/ic_navigation_table_view"
+        android:title="@string/navigation_table_view"/>
+
+    <item
+        android:id="@+id/navigation_map_view"
+        android:enabled="true"
+        android:icon="@drawable/ic_navigation_map_view"
+        android:title="@string/navigation_map_view"/>
+
+    <item
+        android:id="@+id/navigation_analytics"
+        android:enabled="true"
+        android:icon="@drawable/ic_navigation_analytics"
+        android:title="@string/navigation_analytics"/>
+</menu>

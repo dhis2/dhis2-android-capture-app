@@ -25,6 +25,9 @@ import com.google.android.material.textfield.TextInputEditText
 import java.util.Calendar
 import org.dhis2.Bindings.truncate
 import org.dhis2.R
+import org.dhis2.commons.dialogs.CustomDialog
+import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
+import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.data.forms.dataentry.fields.age.AgeDialogDelegate
 import org.dhis2.data.forms.dataentry.fields.age.negativeOrZero
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
@@ -35,21 +38,19 @@ import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryNonPersistenceImpl
-import org.dhis2.form.model.ActionType
+import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
+import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.form.ui.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.uicomponents.map.views.MapSelectorActivity
 import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
-import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.create
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
 import org.dhis2.utils.Constants
-import org.dhis2.utils.DatePickerUtils
-import org.dhis2.utils.DatePickerUtils.OnDatePickerClickListener
-import org.dhis2.utils.customviews.CustomDialog
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import timber.log.Timber
@@ -59,11 +60,12 @@ class FormView constructor(
     private val onItemChangeListener: ((action: RowAction) -> Unit)?,
     private val locationProvider: LocationProvider?,
     private val onLoadingListener: ((loading: Boolean) -> Unit)?,
-    private val needToForceUpdate: Boolean = false
+    private val needToForceUpdate: Boolean = false,
+    dispatchers: DispatcherProvider
 ) : Fragment() {
 
     private val viewModel: FormViewModel by viewModels {
-        Injector.provideFormViewModelFactory(formRepository)
+        Injector.provideFormViewModelFactory(formRepository, dispatchers)
     }
 
     private lateinit var binding: ViewFormBinding
@@ -102,63 +104,13 @@ class FormView constructor(
         super.onViewCreated(view, savedInstanceState)
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
         adapter = DataEntryAdapter(needToForceUpdate)
-        adapter.onNextClicked = { position ->
-            val viewHolder = binding.recyclerView.findViewHolderForLayoutPosition(position + 1)
-            if (viewHolder == null) {
-                try {
-                    binding.recyclerView.smoothScrollToPosition(position + 1)
-                } catch (e: Exception) {
-                    Timber.e(e)
-                }
-            }
-        }
-
-        adapter.onItemAction = { action ->
-            viewModel.onItemAction(action)
-        }
-
-        adapter.onLocationRequest = { fieldUid ->
-            locationProvider?.getLastKnownLocation(
-                { location ->
-                    val geometry = GeometryHelper.createPointGeometry(
-                        location.longitude.truncate(),
-                        location.latitude.truncate()
-                    )
-                    viewModel.onItemAction(
-                        RowAction(
-                            id = fieldUid,
-                            value = geometry.coordinates(),
-                            type = ActionType.ON_SAVE,
-                            extraData = FeatureType.POINT.name
-                        )
-                    )
-                },
-                {
-                    this@FormView.requestPermissions(
-                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                        EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST
-                    )
-                },
-                {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.enable_location_message),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            )
-        }
-
-        adapter.onMapRequest = { fieldUid, featureType, initialData ->
-            startActivityForResult(
-                create(requireContext(), fieldUid, featureType, initialData),
-                Constants.RQ_MAP_LOCATION_VIEW
-            )
-        }
 
         binding.recyclerView.adapter = adapter
 
         adapter.onIntent = { intent ->
+            if (intent is FormIntent.OnNext) {
+                scrollToPosition(intent.position!!)
+            }
             intentHandler(intent)
         }
 
@@ -206,7 +158,7 @@ class FormView constructor(
 
         viewModel.loading.observe(
             viewLifecycleOwner,
-            Observer { loading ->
+            { loading ->
                 if (onLoadingListener != null) {
                     onLoadingListener.invoke(loading)
                 } else {
@@ -218,6 +170,24 @@ class FormView constructor(
                 }
             }
         )
+
+        viewModel.showToast.observe(
+            viewLifecycleOwner,
+            { message ->
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+        )
+    }
+
+    private fun scrollToPosition(position: Int) {
+        val viewHolder = binding.recyclerView.findViewHolderForLayoutPosition(position + 1)
+        if (viewHolder == null) {
+            try {
+                binding.recyclerView.smoothScrollToPosition(position + 1)
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
+        }
     }
 
     private fun uiEventHandler(uiEvent: RecyclerViewUiEvents) {
@@ -229,6 +199,8 @@ class FormView constructor(
             is RecyclerViewUiEvents.ShowDescriptionLabelDialog -> showDescriptionLabelDialog(
                 uiEvent
             )
+            is RecyclerViewUiEvents.RequestCurrentLocation -> requestCurrentLocation(uiEvent)
+            is RecyclerViewUiEvents.RequestLocationByMap -> requestLocationByMap(uiEvent)
         }
     }
 
@@ -294,12 +266,13 @@ class FormView constructor(
 
     private fun showCustomAgeCalendar(intent: RecyclerViewUiEvents.OpenCustomAgeCalendar) {
         val date = Calendar.getInstance().time
-        DatePickerUtils.getDatePickerDialog(
-            requireContext(),
-            intent.label,
-            date,
-            true,
-            object : OnDatePickerClickListener {
+
+        val dialog = CalendarPicker(requireContext())
+        dialog.apply {
+            setTitle(intent.label)
+            setInitialDate(date)
+            isFutureDatesAllowed(true)
+            setListener(object : OnDatePickerListener {
                 override fun onNegativeClick() {
                     val clearIntent = FormIntent.ClearDateFromAgeCalendar(intent.uid)
                     intentHandler(clearIntent)
@@ -314,8 +287,9 @@ class FormView constructor(
                     )
                     intentHandler(dateIntent)
                 }
-            }
-        ).show()
+            })
+        }
+        dialog.show()
     }
 
     private fun showYearMonthDayAgeCalendar(
@@ -363,16 +337,58 @@ class FormView constructor(
         ).show()
     }
 
+    private fun requestCurrentLocation(event: RecyclerViewUiEvents.RequestCurrentLocation) {
+        locationProvider?.getLastKnownLocation(
+            { location ->
+                val geometry = GeometryHelper.createPointGeometry(
+                    location.longitude.truncate(),
+                    location.latitude.truncate()
+                )
+                val intent = FormIntent.SelectLocationFromCoordinates(
+                    event.uid,
+                    geometry.coordinates(),
+                    FeatureType.POINT.name
+                )
+
+                intentHandler(intent)
+            },
+            {
+                this@FormView.requestPermissions(
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST
+                )
+            },
+            {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.enable_location_message),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        )
+    }
+
+    private fun requestLocationByMap(event: RecyclerViewUiEvents.RequestLocationByMap) {
+        startActivityForResult(
+            MapSelectorActivity.create(requireContext(), event.uid, event.featureType, event.value),
+            Constants.RQ_MAP_LOCATION_VIEW
+        )
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK &&
             requestCode == Constants.RQ_MAP_LOCATION_VIEW && data?.extras != null
         ) {
-            data.apply {
-                viewModel.setCoordinateFieldValue(
-                    getStringExtra(FIELD_UID),
-                    getStringExtra(LOCATION_TYPE_EXTRA),
-                    getStringExtra(DATA_EXTRA)
+            val uid = data.getStringExtra(FIELD_UID)
+            val featureType = data.getStringExtra(LOCATION_TYPE_EXTRA)
+            val coordinates = data.getStringExtra(DATA_EXTRA)
+            if (uid != null && featureType != null) {
+                val intent = FormIntent.SelectLocationFromMap(
+                    uid,
+                    featureType,
+                    coordinates
                 )
+                intentHandler(intent)
             }
         }
     }
@@ -386,9 +402,13 @@ class FormView constructor(
             grantResults[0] == PackageManager.PERMISSION_GRANTED
         ) {
             viewModel.getFocusedItemUid()?.let {
-                adapter.onLocationRequest?.invoke(it)
+                requestCurrentLocation(RecyclerViewUiEvents.RequestCurrentLocation(it))
             }
         }
+    }
+
+    fun onEditionFinish() {
+        binding.recyclerView.requestFocus()
     }
 
     class Builder {
@@ -398,6 +418,7 @@ class FormView constructor(
         private var locationProvider: LocationProvider? = null
         private var needToForceUpdate: Boolean = false
         private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
+        private var dispatchers: DispatcherProvider? = null
 
         /**
          * If you want to persist the items and it's changes in any sources, please provide an
@@ -438,6 +459,12 @@ class FormView constructor(
             apply { this.onLoadingListener = callback }
 
         /**
+         * By default it uses Coroutine dispatcher IO, Computation, and Main but, you could also set
+         * a custom one for testing for eg.
+         */
+        fun dispatcher(dispatcher: DispatcherProvider) = apply { this.dispatchers = dispatcher }
+
+        /**
          * Set a FragmentManager for instantiating the form view
          * */
         fun factory(manager: FragmentManager) =
@@ -453,7 +480,8 @@ class FormView constructor(
                     locationProvider,
                     onItemChangeListener,
                     needToForceUpdate,
-                    onLoadingListener
+                    onLoadingListener,
+                    dispatchers = dispatchers ?: FormDispatcher()
                 )
 
             return fragmentManager!!.fragmentFactory.instantiate(

@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
 import dhis2.org.analytics.charts.data.Graph
+import dhis2.org.analytics.charts.formatters.CategoryFormatter
 import dhis2.org.analytics.charts.formatters.DateLabelFormatter
 
 const val X_AXIS_MAX_PADDING_WITH_VALUE = 4f
@@ -16,10 +17,12 @@ class GraphToBarChart {
         return BarChart(context).apply {
             description.isEnabled = false
             isDragEnabled = true
-            setScaleEnabled(true)
-            setPinchZoom(true)
+            isScaleXEnabled = true
+            isScaleYEnabled = false
+            setPinchZoom(false)
 
             xAxis.apply {
+                setCenterAxisLabels(true)
                 enableGridDashedLine(
                     DEFAULT_GRID_LINE_LENGTH,
                     DEFAULT_GRID_SPACE_LENGTH,
@@ -27,10 +30,15 @@ class GraphToBarChart {
                 )
                 setDrawLimitLinesBehindData(true)
                 position = XAxis.XAxisPosition.BOTTOM
-                valueFormatter = DateLabelFormatter { graph.dateFromSteps(it) }
+                valueFormatter = if (graph.categories.isNotEmpty()) {
+                    CategoryFormatter(graph.categories)
+                } else {
+                    DateLabelFormatter { graph.dateFromSteps(it) }
+                }
                 granularity = DEFAULT_GRANULARITY
                 axisMinimum = X_AXIS_DEFAULT_MIN
-                axisMaximum = graph.numberOfStepsToLastDate() + 1f
+                axisMaximum = graph.xAxixMaximun() + 1f
+                labelRotationAngle = 15f
             }
 
             axisLeft.apply {
@@ -57,6 +65,7 @@ class GraphToBarChart {
 
             legend.withGlobalStyle()
             extraBottomOffset = 10f
+
             data = barData
 
             layoutParams =

@@ -1,7 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.form.model.FieldUiModel;
@@ -24,9 +23,6 @@ import io.reactivex.Single;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.subjects.BehaviorSubject;
 
-/**
- * QUADRAM. Created by ppajuelo on 19/11/2018.
- */
 public class EventCaptureContract {
 
     public interface View extends AbstractActivityContracts.View {
@@ -86,7 +82,7 @@ public class EventCaptureContract {
 
         void nextCalculation(boolean doNextCalculation);
 
-        void attempFinish();
+        void attemptFinish();
 
         boolean isEnrollmentOpen();
 
@@ -178,6 +174,10 @@ public class EventCaptureContract {
         boolean showCompletionPercentage();
 
         void updateFieldValue(String uid);
+
+        boolean hasAnalytics();
+
+        boolean hasRelationships();
     }
 
 }
