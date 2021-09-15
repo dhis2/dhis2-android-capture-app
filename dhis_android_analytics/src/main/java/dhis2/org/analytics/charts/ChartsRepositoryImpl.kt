@@ -163,14 +163,14 @@ class ChartsRepositoryImpl(
                 .blockingEvaluate()
                 .getOrNull()
 
-            if (gridAnalyticsResponse != null) {
+            gridAnalyticsResponse?.let {
                 visualizationToGraph.mapToGraph(
                     visualization,
                     gridAnalyticsResponse,
                     selectedRelativePeriod?.firstOrNull(),
                     selectedOrgUnits
                 ).let {
-                    graphList.add(it)
+
                 }
             }
         }
