@@ -52,6 +52,8 @@ public class DateUtils {
     public static final String MONTHLY_FORMAT_EXPRESSION = "MMM yyyy";
     public static final String YEARLY_FORMAT_EXPRESSION = "yyyy";
     public static final String SIMPLE_DATE_FORMAT = "d/M/yyyy";
+    public static final String TIME_24H_EXPRESSION = "HH:mm";
+    public static final String TIME_12H_EXPRESSION = "hh:mm a";
 
     public Date[] getDateFromDateAndPeriod(Date date, Period period) {
         switch (period) {
@@ -193,7 +195,12 @@ public class DateUtils {
 
     @NonNull
     public static SimpleDateFormat timeFormat() {
-        return new SimpleDateFormat("HH:mm", Locale.US);
+        return new SimpleDateFormat(TIME_24H_EXPRESSION, Locale.US);
+    }
+
+    @NonNull
+    public static SimpleDateFormat twelveHourTimeFormat() {
+        return new SimpleDateFormat(TIME_12H_EXPRESSION, Locale.US);
     }
 
     @NonNull

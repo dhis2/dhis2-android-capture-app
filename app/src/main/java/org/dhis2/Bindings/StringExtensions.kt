@@ -66,4 +66,6 @@ fun String.toDate(): Date {
     return date
 }
 
+fun String.toTime(): Date? = DateUtils.timeFormat().parse(this)
+
 fun String.parseToDouble() = this.toDoubleOrNull()?.toString() ?: "0.0"
