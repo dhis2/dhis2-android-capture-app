@@ -161,14 +161,16 @@ class ChartsRepositoryImpl(
                     }
                 }
                 .blockingEvaluate()
+                .getOrNull()
 
-            visualizationToGraph.mapToGraph(
-                visualization,
-                gridAnalyticsResponse,
-                selectedRelativePeriod?.firstOrNull(),
-                selectedOrgUnits
-            ).let {
-                graphList.add(it)
+            gridAnalyticsResponse?.let {
+                visualizationToGraph.mapToGraph(
+                    visualization,
+                    gridAnalyticsResponse,
+                    selectedRelativePeriod?.firstOrNull(),
+                    selectedOrgUnits
+                ).let {
+                }
             }
         }
     }
