@@ -170,7 +170,6 @@ class ChartsRepositoryImpl(
                     selectedRelativePeriod?.firstOrNull(),
                     selectedOrgUnits
                 ).let {
-
                 }
             }
         }
