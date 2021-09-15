@@ -42,4 +42,6 @@
     <string name="reset">Reset</string>
     <string name="include_this_period_title">Do you want to include the current period?</string>
     <string name="include_this_period_body">It will display the current period in the chart.</string>
+    <string name="no_data_for_selected_filters">No data for selected filters</string>
+    <string name="no_data_to_display">No data to display</string>
 </resources>
