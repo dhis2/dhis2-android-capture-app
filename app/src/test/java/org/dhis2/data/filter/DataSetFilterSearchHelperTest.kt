@@ -59,7 +59,7 @@ class DataSetFilterSearchHelperTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("Null pointer exception in bitrise")
     fun `Should return dataset instance summaries`() {
         dataSetFilterSearchHelper.getFilteredDataSetSearchRepository()
         verify(filterRepository).dataSetInstanceSummaries()
