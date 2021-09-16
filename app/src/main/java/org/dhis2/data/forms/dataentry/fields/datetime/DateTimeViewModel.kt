@@ -245,7 +245,7 @@ abstract class DateTimeViewModel : FieldViewModel() {
             objectStyle: ObjectStyle?,
             isBackgroundTransparent: Boolean,
             isSearchMode: Boolean,
-            processor: FlowableProcessor<RowAction>,
+            processor: FlowableProcessor<RowAction>?,
             style: FormUiModelStyle?
         ): FieldViewModel {
             return AutoValue_DateTimeViewModel(

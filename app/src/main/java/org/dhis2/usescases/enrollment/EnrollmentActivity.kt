@@ -120,7 +120,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             .persistence(formRepository)
             .locationProvider(locationProvider)
             .dispatcher(dispatchers)
-            .onItemChangeListener { presenter.updateFields() }
+            .onItemChangeListener(presenter::updateFields)
             .onLoadingListener { loading ->
                 if (loading) {
                     showProgress()
