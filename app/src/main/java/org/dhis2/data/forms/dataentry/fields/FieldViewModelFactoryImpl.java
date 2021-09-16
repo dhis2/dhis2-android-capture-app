@@ -150,7 +150,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             valueTypeHintMap.get(type),
                             !searchMode,
                             searchMode,
-                            processor
+                            processor,
+                            style
                     );
                 } else if (fieldRendering != null && type == ValueType.TEXT && optionSetTextRenderings.contains(fieldRendering.type())) {
                     return OptionSetViewModel.create(
@@ -254,7 +255,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             valueTypeHintMap.get(type),
                             !searchMode,
                             searchMode,
-                            processor
+                            processor,
+                            style
                     );
                 } else {
                     return EditTextViewModel.create(

@@ -33,7 +33,8 @@ import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
 
-class QRDetailBottomDialog(
+class
+QRDetailBottomDialog(
     private val value: String,
     private val renderingType: ValueTypeRenderingType?,
     private val editable: Boolean,
@@ -94,7 +95,7 @@ class QRDetailBottomDialog(
                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                         setDataAndType(uri, context.contentResolver.getType(uri))
                         putExtra(Intent.EXTRA_STREAM, uri)
-                        startActivity(Intent.createChooser(this, "How do you want to share it?"))
+                        startActivity(Intent.createChooser(this, context.getString(R.string.share)))
                     }
                 }
             }
