@@ -57,7 +57,13 @@ fun TextInputEditText.setActionHandler(model: ScanTextViewModel) {
             openKeyboard()
         }
         if (!hasFocus) {
-            model.onScanSelected(text.toString())
+            model.onScanSelected(
+                if (text.toString().isEmpty()) {
+                    null
+                } else {
+                    text.toString()
+                }
+            )
         }
     }
     setOnEditorActionListener { v, actionId, _ ->
@@ -73,7 +79,13 @@ fun TextInputEditText.setActionHandler(model: ScanTextViewModel) {
             else -> return@setOnEditorActionListener false
         }
     }
-    doOnTextChanged { text, _, _, _ -> model.onTextChange(text.toString()) }
+    doOnTextChanged { text, _, _, _ ->
+        if (text.toString().isEmpty()) {
+            model.onTextChange(null)
+        } else {
+            model.onTextChange(text.toString())
+        }
+    }
 
     if (model.activated()) {
         requestFocus()
