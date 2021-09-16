@@ -33,6 +33,8 @@ class FormViewModel(
 
     val loading = MutableLiveData<Boolean>()
     val showToast = MutableLiveData<Int>()
+    val focused = MutableLiveData<Boolean>()
+
     private val _items = MutableLiveData<List<FieldUiModel>>()
     val items: LiveData<List<FieldUiModel>> = _items
 
@@ -73,9 +75,11 @@ class FormViewModel(
 
     private fun createRowActionStore(it: FormIntent): Pair<RowAction, StoreResult> {
         val rowAction = rowActionFromIntent(it)
-        if (rowAction.type == ActionType.ON_SAVE) {
-            loading.postValue(true)
+        when (rowAction.type) {
+            ActionType.ON_FOCUS -> focused.postValue(true)
+            ActionType.ON_SAVE -> loading.postValue(true)
         }
+
         val result = repository.processUserAction(rowAction)
         return Pair(rowAction, result)
     }

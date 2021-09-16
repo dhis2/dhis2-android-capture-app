@@ -7,10 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentTransaction;
+
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.FormView;
@@ -23,8 +25,11 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
+
 import javax.inject.Inject;
+
 import kotlin.Unit;
 
 public class EventCaptureFormFragment extends FragmentGlobalAbstract implements EventCaptureFormView,
@@ -83,6 +88,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                     } else{
                         activity.hideProgress();
                     }
+                    return Unit.INSTANCE;
+                })
+                .onFocused(() -> {
+                    activity.hideNavigationBar();
                     return Unit.INSTANCE;
                 })
                 .factory(activity.getSupportFragmentManager())

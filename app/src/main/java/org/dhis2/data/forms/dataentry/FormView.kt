@@ -65,6 +65,7 @@ class FormView constructor(
     private val onItemChangeListener: ((action: RowAction) -> Unit)?,
     private val locationProvider: LocationProvider?,
     private val onLoadingListener: ((loading: Boolean) -> Unit)?,
+    private val onFocused: (() -> Unit)?,
     private val needToForceUpdate: Boolean = false,
     dispatchers: DispatcherProvider
 ) : Fragment() {
@@ -193,6 +194,11 @@ class FormView constructor(
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
         )
+
+        viewModel.focused.observe(
+            viewLifecycleOwner,
+            { onFocused?.invoke() }
+        )
     }
 
     private fun scrollToPosition(position: Int) {
@@ -237,15 +243,14 @@ class FormView constructor(
         }
 
         adapter.swap(
-            items,
-            Runnable {
-                when (needToForceUpdate) {
-                    true -> adapter.notifyDataSetChanged()
-                    else -> dataEntryHeaderHelper.onItemsUpdatedCallback()
-                }
-                viewModel.onItemsRendered()
+            items
+        ) {
+            when (needToForceUpdate) {
+                true -> adapter.notifyDataSetChanged()
+                else -> dataEntryHeaderHelper.onItemsUpdatedCallback()
             }
-        )
+            viewModel.onItemsRendered()
+        }
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
 
@@ -503,6 +508,7 @@ class FormView constructor(
         private var needToForceUpdate: Boolean = false
         private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
         private var dispatchers: DispatcherProvider? = null
+        private var onFocused: (() -> Unit)? = null
 
         /**
          * If you want to persist the items and it's changes in any sources, please provide an
@@ -537,10 +543,16 @@ class FormView constructor(
             apply { this.needToForceUpdate = needToForceUpdate }
 
         /**
-         * If set,
+         * Sets if loading started or finished to handle loadingfeedback
          * */
         fun onLoadingListener(callback: (loading: Boolean) -> Unit) =
             apply { this.onLoadingListener = callback }
+
+        /**
+         * It's triggered when form gets focus
+         */
+        fun onFocused(callback: () -> Unit) =
+            apply { this.onFocused = callback }
 
         /**
          * By default it uses Coroutine dispatcher IO, Computation, and Main but, you could also set
@@ -568,6 +580,7 @@ class FormView constructor(
                     onItemChangeListener,
                     needToForceUpdate,
                     onLoadingListener,
+                    onFocused,
                     dispatchers = dispatchers ?: FormDispatcher()
                 )
 
