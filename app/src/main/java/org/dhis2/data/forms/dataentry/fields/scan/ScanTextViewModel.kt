@@ -1,10 +1,8 @@
 package org.dhis2.data.forms.dataentry.fields.scan
 
 import com.google.auto.value.AutoValue
-import io.reactivex.processors.FlowableProcessor
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
-import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiModelStyle
@@ -37,7 +35,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             hint: String?,
             isBackgroundTransparent: Boolean,
             isSearchMode: Boolean,
-            processor: FlowableProcessor<RowAction>,
             style: FormUiModelStyle
         ): FieldViewModel =
             AutoValue_ScanTextViewModel(
@@ -56,7 +53,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
                 objectStyle,
                 null,
                 DataEntryViewHolderTypes.SCAN_CODE,
-                processor,
                 style,
                 false,
                 fieldRendering,
@@ -83,7 +79,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
-            processor(),
             style(),
             activated(),
             fieldRendering,
@@ -109,7 +104,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
-            processor(),
             style(),
             activated(),
             fieldRendering,
@@ -135,7 +129,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
-            processor(),
             style(),
             activated(),
             fieldRendering,
@@ -161,7 +154,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
-            processor(),
             style(),
             activated(),
             fieldRendering,
@@ -187,7 +179,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
-            processor(),
             style(),
             activated(),
             fieldRendering,
@@ -213,7 +204,6 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             fieldMask(),
             DataEntryViewHolderTypes.SCAN_CODE,
-            processor(),
             style(),
             isFocused,
             fieldRendering,

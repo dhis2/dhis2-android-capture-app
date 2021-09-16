@@ -5,7 +5,6 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.processors.FlowableProcessor
-import java.util.ArrayList
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
@@ -29,6 +28,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import timber.log.Timber
+import java.util.ArrayList
 
 class EnrollmentRepository(
     private val fieldFactory: FieldViewModelFactory,
@@ -248,7 +248,6 @@ class EnrollmentRepository(
             attribute.style(),
             attribute.fieldMask(),
             null,
-            onRowActionProccesor,
             emptyList(),
             if (valueType == ValueType.COORDINATE) FeatureType.POINT else null
         )
@@ -391,7 +390,6 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             null,
             null,
-            onRowActionProccesor,
             null,
             null
         )
@@ -420,7 +418,6 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             null,
             null,
-            onRowActionProccesor,
             null,
             null
         )
@@ -444,7 +441,6 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             null,
             null,
-            onRowActionProccesor,
             null,
             null
         )
@@ -476,7 +472,6 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             null,
             null,
-            onRowActionProccesor,
             null,
             featureType
         )
@@ -506,7 +501,6 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             null,
             null,
-            onRowActionProccesor,
             null,
             featureType
         )

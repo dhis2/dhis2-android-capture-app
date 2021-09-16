@@ -9,14 +9,11 @@ import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
-import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.RecyclerViewUiEvents;
 import org.dhis2.form.ui.intent.FormIntent;
 import org.dhis2.form.ui.style.FormUiModelStyle;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.jetbrains.annotations.NotNull;
-
-import io.reactivex.processors.FlowableProcessor;
 
 public abstract class FieldViewModel implements FieldUiModel {
 
@@ -79,9 +76,6 @@ public abstract class FieldViewModel implements FieldUiModel {
     public abstract String fieldMask();
 
     public abstract DataEntryViewHolderTypes dataEntryViewType();
-
-    @Nullable
-    public abstract FlowableProcessor<RowAction> processor();
 
     public Callback callback;
 

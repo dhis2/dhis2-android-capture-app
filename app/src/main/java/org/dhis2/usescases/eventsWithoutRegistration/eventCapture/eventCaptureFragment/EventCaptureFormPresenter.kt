@@ -24,30 +24,6 @@ class EventCaptureFormPresenter(
     var disposable: CompositeDisposable = CompositeDisposable()
 
     fun init() {
-        disposable.add(
-            onFieldActionProcessor.onBackpressureBuffer().distinctUntilChanged()
-                .doOnNext { activityPresenter.showProgress() }
-                .observeOn(schedulerProvider.io())
-                .switchMap { rowAction ->
-                    Flowable.just(formRepository.processUserAction(rowAction))
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { result ->
-                        result.valueStoreResult?.let {
-                            when (result.valueStoreResult) {
-                                ValueStoreResult.VALUE_CHANGED -> {
-                                    activityPresenter.setValueChanged(result.uid)
-                                    activityPresenter.nextCalculation(true)
-                                }
-                                else -> populateList()
-                            }
-                        } ?: activityPresenter.hideProgress()
-                    },
-                    Timber::e
-                )
-        )
 
         disposable.add(
             activityPresenter.formFieldsFlowable()
@@ -92,15 +68,5 @@ class EventCaptureFormPresenter(
 
     fun setFinishing() {
         finishing = true
-    }
-
-    fun saveValue(uid: String, value: String?) {
-        onFieldActionProcessor.onNext(
-            RowAction(
-                id = uid,
-                value = value,
-                type = ActionType.ON_SAVE
-            )
-        )
     }
 }

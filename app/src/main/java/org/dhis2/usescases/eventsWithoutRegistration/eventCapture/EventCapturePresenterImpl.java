@@ -93,7 +93,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                      PreferenceProvider preferences,
                                      GetNextVisibleSection getNextVisibleSection,
                                      EventFieldMapper fieldMapper,
-                                     FlowableProcessor<RowAction> onFieldActionProcessor, Flowable<String> sectionProcessor) {
+                                     FlowableProcessor<RowAction> onFieldActionProcessor,
+                                     Flowable<String> sectionProcessor
+    ) {
         this.view = view;
         this.eventUid = eventUid;
         this.eventCaptureRepository = eventCaptureRepository;
@@ -231,7 +233,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                 fieldMapper.completedFieldsPercentage()
                                         );
 
-                                        if(!configurationError.isEmpty() && showConfigurationError){
+                                        if (!configurationError.isEmpty() && showConfigurationError) {
                                             view.displayConfigurationErrors(configurationError);
                                         }
                                     }
