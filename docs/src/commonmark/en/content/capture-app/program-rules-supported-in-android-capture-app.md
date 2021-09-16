@@ -225,7 +225,7 @@ The example above shows how different ways of using the hasValue function will h
 
 #### Description
 
-This is a mandatory change. *!#{varible_name}* can only be used boolean type variables (BOOLEAN and TRUE_ONLY).
+This is a mandatory change. *!#{variable_name}* can only be used boolean type variables (BOOLEAN and TRUE_ONLY).
 
 #### How to identify via API?
 
@@ -254,11 +254,11 @@ And we can compare with the second list:
 ```xml
 <programRule>
 <condition>!#{Pregant}</condition>
-<displayName>PR03- !#{varible_name} - BOOLEAN</displayName>
+<displayName>PR03- !#{variable_name} - BOOLEAN</displayName>
 </programRule>
 <programRule>
 <condition>!#{Age in years}</condition>
-<displayName>PR03- !#{varible_name} - NOT BOOLEAN</displayName>
+<displayName>PR03- !#{variable_name} - NOT BOOLEAN</displayName>
 </programRule>
 <programRule>
 <condition>#{PregnancyStatus} != 'YES'</condition>
@@ -282,7 +282,7 @@ To:
 
 #### Description
 
-This is a mdantory change. In program rule actions of the type ASSIGN, DISPLAY TEXT or DISPLAY KEY/VALUE PAIR if the Expression to evaluate and assign/display is a text, it must be enclosed with single quotes.
+This is a mandatory change. In program rule actions of the type ASSIGN, DISPLAY TEXT or DISPLAY KEY/VALUE PAIR if the Expression to evaluate and assign/display is a text, it must be enclosed with single quotes.
 
 #### How to identify via API?
 
@@ -293,7 +293,7 @@ Get the Program Rules which actions are of type text, with something on the fiel
 For example we can detect here an error of a text field without quotes in the first Program Rule Action while the second one is correct.
 
 ```xml
-<programRule name="PR04- !#{varible_name} - BOOLEAN - Assign text without quotes">
+<programRule name="PR04- !#{variable_name} - BOOLEAN - Assign text without quotes">
 <program name="JB_Testing_2.2"/>
 <programRuleActions>
 <programRuleAction>
@@ -306,7 +306,7 @@ For example we can detect here an error of a text field without quotes in the fi
 ```
 
 ```xml
-<programRule name="PR04- !#{varible_name} - BOOLEAN - Assign text with quotes">
+<programRule name="PR04- !#{variable_name} - BOOLEAN - Assign text with quotes">
 <program name="JB_Testing_2.2"/>
 <programRuleActions>
 <programRuleAction>
@@ -326,7 +326,7 @@ Scan the generated list (via the suggested API calls) to find data components of
 
 #### Description
 
-This is a mdantory change. In program rule actions of the type ASSIGN, DISPLAY TEXT or DISPLAY KEY/VALUE PAIR if the Expression to evaluate and assign/display is a text, it must be enclosed with single quotes (same as previous change); but, on top of that, if it requires to concatenate two strings or a combination of functions it is mandatory to use the *d2:concatenate* function.
+This is a mandatory change. In program rule actions of the type ASSIGN, DISPLAY TEXT or DISPLAY KEY/VALUE PAIR if the Expression to evaluate and assign/display is a text, it must be enclosed with single quotes (same as previous change); but, on top of that, if it requires to concatenate two strings or a combination of functions it is mandatory to use the *d2:concatenate* function.
 
 #### How to identify via API?
 
