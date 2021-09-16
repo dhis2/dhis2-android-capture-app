@@ -59,7 +59,7 @@ class EventProgramFilterSearchHelperTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("Null pointer exception in bitrise")
     fun `Should return query by program`() {
         eventFilterSearchHelper.getFilteredEventRepository(
             Program.builder().uid("programUid").build()
@@ -68,7 +68,7 @@ class EventProgramFilterSearchHelperTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("Null pointer exception in bitrise")
     fun `Should not apply any filters if not set`() {
         eventFilterSearchHelper.getFilteredEventRepository(
             Program.builder().uid("programUid").build()
