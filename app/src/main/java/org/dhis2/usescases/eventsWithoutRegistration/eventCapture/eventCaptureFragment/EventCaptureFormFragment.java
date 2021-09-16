@@ -143,8 +143,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     }
 
     @Override
-    public void showFields(@NonNull List<FieldUiModel> updates) {
-        formView.render(updates);
+    public void showFields(@Nullable List<? extends FieldUiModel> fields) {
+        formView.processItems(fields);
     }
 
     private void animateFabButton(boolean sectionIsVisible) {

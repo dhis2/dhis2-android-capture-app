@@ -1,13 +1,11 @@
 package org.dhis2.data.forms.dataentry.fields.datetime
 
 import com.google.auto.value.AutoValue
-import io.reactivex.processors.FlowableProcessor
 import org.dhis2.Bindings.toDate
 import org.dhis2.Bindings.toTime
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
-import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiModelStyle
@@ -36,7 +34,6 @@ abstract class DateTimeViewModel : FieldViewModel() {
             objectStyle(),
             null,
             provideDataEntryViewHolderType(valueType()),
-            processor(),
             style(),
             activated(),
             isBackgroundTransparent,
@@ -62,7 +59,6 @@ abstract class DateTimeViewModel : FieldViewModel() {
             objectStyle(),
             null,
             provideDataEntryViewHolderType(valueType()),
-            processor(),
             style(),
             activated(),
             isBackgroundTransparent,
@@ -88,7 +84,6 @@ abstract class DateTimeViewModel : FieldViewModel() {
             objectStyle(),
             null,
             provideDataEntryViewHolderType(valueType()),
-            processor(),
             style(),
             activated(),
             isBackgroundTransparent,
@@ -114,7 +109,6 @@ abstract class DateTimeViewModel : FieldViewModel() {
             objectStyle(),
             null,
             provideDataEntryViewHolderType(valueType()),
-            processor(),
             style(),
             activated(),
             isBackgroundTransparent,
@@ -140,7 +134,6 @@ abstract class DateTimeViewModel : FieldViewModel() {
             objectStyle(),
             null,
             provideDataEntryViewHolderType(valueType()),
-            processor(),
             style(),
             activated(),
             isBackgroundTransparent,
@@ -166,7 +159,6 @@ abstract class DateTimeViewModel : FieldViewModel() {
             objectStyle(),
             null,
             provideDataEntryViewHolderType(valueType()),
-            processor(),
             style(),
             isFocused,
             isBackgroundTransparent,
@@ -245,7 +237,6 @@ abstract class DateTimeViewModel : FieldViewModel() {
             objectStyle: ObjectStyle?,
             isBackgroundTransparent: Boolean,
             isSearchMode: Boolean,
-            processor: FlowableProcessor<RowAction>?,
             style: FormUiModelStyle?
         ): FieldViewModel {
             return AutoValue_DateTimeViewModel(
@@ -264,7 +255,6 @@ abstract class DateTimeViewModel : FieldViewModel() {
                 objectStyle,
                 null,
                 provideDataEntryViewHolderType(type),
-                processor,
                 style,
                 false,
                 isBackgroundTransparent,

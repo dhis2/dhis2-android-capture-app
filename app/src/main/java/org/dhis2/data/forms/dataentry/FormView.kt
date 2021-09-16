@@ -500,6 +500,10 @@ class FormView constructor(
         binding.recyclerView.requestFocus()
     }
 
+    fun processItems(items: List<FieldUiModel>?) {
+        viewModel.processCalculatedItems(items)
+    }
+
     class Builder {
         private var fragmentManager: FragmentManager? = null
         private var repository: FormRepository? = null

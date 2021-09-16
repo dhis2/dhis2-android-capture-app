@@ -200,4 +200,8 @@ class FormViewModel(
     fun getFocusedItemUid(): String? {
         return items.value?.first { it.focused }?.uid
     }
+
+    fun processCalculatedItems(items: List<FieldUiModel>?) {
+        _items.value = repository.composeList(items)
+    }
 }

@@ -1,14 +1,8 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment
 
-import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.processors.FlowableProcessor
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.form.data.FormRepository
-import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.RowAction
-import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 import timber.log.Timber
 
@@ -16,8 +10,6 @@ class EventCaptureFormPresenter(
     val view: EventCaptureFormView,
     private val activityPresenter: EventCaptureContract.Presenter,
     val schedulerProvider: SchedulerProvider,
-    private val onFieldActionProcessor: FlowableProcessor<RowAction>,
-    private val formRepository: FormRepository
 ) {
     private var finishing: Boolean = false
     private var selectedSection: String? = null
@@ -37,8 +29,8 @@ class EventCaptureFormPresenter(
     }
 
     private fun populateList(items: List<FieldUiModel>? = null) {
-        view.showFields(formRepository.composeList(items).toMutableList())
-        checkFinishing(true)
+        view.showFields(items)
+        checkFinishing()
         activityPresenter.hideProgress()
         if (items != null) {
             selectedSection ?: items
@@ -48,8 +40,8 @@ class EventCaptureFormPresenter(
         }
     }
 
-    private fun checkFinishing(canFinish: Boolean) {
-        if (finishing && canFinish) {
+    private fun checkFinishing() {
+        if (finishing) {
             view.performSaveClick()
         }
         finishing = false
@@ -62,9 +54,6 @@ class EventCaptureFormPresenter(
     fun onActionButtonClick() {
         activityPresenter.attemptFinish()
     }
-
-    fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =
-        mapIndexed { i, existing -> if (i == index) elem else existing }
 
     fun setFinishing() {
         finishing = true
