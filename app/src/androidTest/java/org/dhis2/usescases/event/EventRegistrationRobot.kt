@@ -52,7 +52,7 @@ class EventRegistrationRobot : BaseRobot() {
    }
 
     fun clickOnShare() {
-        onView(withId(R.id.shareContainer)).perform(click())
+        onView(withText(R.string.share)).perform(click())
     }
 
     private fun clickOnNextQR() {
