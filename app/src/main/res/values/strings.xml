@@ -858,11 +858,11 @@
     <string name="update_field_error">This field could not be updated. Please try again</string>
     <string name="edition">Edition</string>
     <string name="available">Available</string>
-    <string name="blocked_by_completion">This data is marked as completed</string>
-    <string name="edition_expired">This data edition time is expired</string>
+    <string name="blocked_by_completion">This data is not editable because is marked as completed</string>
+    <string name="edition_expired">This data is not editable because its edition time is expired</string>
     <string name="edition_no_write_access">You do not have permission to edit this data</string>
-    <string name="event_date_not_in_orgunit_range">Event date not within the organization unit range</string>
-    <string name="edition_no_catcombo_access">You don\'t have access to this category option</string>
-    <string name="edition_enrollment_is_no_open">This Enrollment is not active</string>
+    <string name="event_date_not_in_orgunit_range">This data is not editable because the organization unit is closed</string>
+    <string name="edition_no_catcombo_access">You do not have permission to edit this data</string>
+    <string name="edition_enrollment_is_no_open">This data is not editable because the enrollment is completed or cancelled</string>
     <string name="edition_orgunit_capture_scope">You cannot edit data from this organisation unit</string>
 </resources>
