@@ -1,5 +1,6 @@
 package org.dhis2.form.ui
 
+import java.util.Date
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
@@ -12,9 +13,19 @@ sealed class RecyclerViewUiEvents {
         val day: Int
     ) : RecyclerViewUiEvents()
 
-    data class OpenCustomAgeCalendar(
+    data class OpenCustomCalendar(
         val uid: String,
-        val label: String
+        val label: String,
+        val date: Date?,
+        val allowFutureDates: Boolean,
+        val isDateTime: Boolean? = false
+    ) : RecyclerViewUiEvents()
+
+    data class OpenTimePicker(
+        val uid: String,
+        val label: String,
+        val date: Date?,
+        val isDateTime: Boolean? = false
     ) : RecyclerViewUiEvents()
 
     data class ShowDescriptionLabelDialog(

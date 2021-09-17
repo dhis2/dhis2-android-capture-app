@@ -310,7 +310,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         objectStyle,
                         !searchMode,
                         searchMode,
-                        processor
+                        processor,
+                        style
                 );
             case COORDINATE:
                 return CoordinateViewModel.create(
