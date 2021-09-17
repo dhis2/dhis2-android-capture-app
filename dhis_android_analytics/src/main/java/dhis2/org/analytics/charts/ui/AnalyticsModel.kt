@@ -464,6 +464,17 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
         if (graph.periodToDisplaySelected != null) filterCount++
         return filterCount
     }
+
+    fun showNoDataMessage(): Boolean {
+        return graph.series.all { serie -> serie.coordinates.isEmpty() } &&
+            graph.periodToDisplaySelected == null &&
+            graph.orgUnitsSelected.isEmpty()
+    }
+
+    fun showNoDataForFiltersMessage(): Boolean {
+        return graph.series.all { serie -> serie.coordinates.isEmpty() } &&
+            (graph.periodToDisplaySelected != null || graph.orgUnitsSelected.isNotEmpty())
+    }
 }
 
 data class IndicatorModel(
