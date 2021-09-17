@@ -986,4 +986,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void setEditionStatus(String reason) {
         binding.editionReason.setText(reason);
     }
+
+    @Override
+    public void hideEditionStatus() {
+        binding.editionReason.setVisibility(View.GONE);
+    }
 }

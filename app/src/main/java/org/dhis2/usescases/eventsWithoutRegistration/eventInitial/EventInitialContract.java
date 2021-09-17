@@ -76,5 +76,7 @@ public class EventInitialContract {
         void displayFeatureTypeError();
 
         void setEditionStatus(String reason);
+
+        void hideEditionStatus();
     }
 }
