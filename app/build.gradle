@@ -34,6 +34,7 @@ android {
         abortOnError false
     }
 
+    ndkVersion versions.ndk
     compileSdkVersion versions.sdk
     buildToolsVersion versions.tools
 
