@@ -319,38 +319,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<Boolean> accessDataWrite(String programUid) {
-        if (eventUid != null)
-            return d2.eventModule().events().uid(eventUid).get().toObservable()
-                    .flatMap(event -> {
-                        if (event.attributeOptionCombo() != null)
-                            return accessWithCatOption(programUid, event.attributeOptionCombo());
-                        else
-                            return programAccess(programUid);
-                    });
-        else
+        if(eventUid!= null){
+            return d2.eventModule().eventService().isEditable(eventUid).toObservable();
+        }else{
             return programAccess(programUid);
-
-
-    }
-
-    private Observable<Boolean> accessWithCatOption(String programUid, String catOptionCombo) {
-        return d2.categoryModule().categoryOptionCombos().withCategoryOptions().uid(catOptionCombo).get()
-                .map(data -> UidsHelper.getUidsList(data.categoryOptions()))
-                .flatMap(categoryOptionsUids -> d2.categoryModule().categoryOptions().byUid().in(categoryOptionsUids).get())
-                .toObservable()
-                .map(categoryOptions -> {
-                    boolean access = true;
-                    for (CategoryOption option : categoryOptions) {
-                        if (!option.access().data().write())
-                            access = false;
-                    }
-                    return access;
-                }).flatMap(catComboAccess -> {
-                    if (catComboAccess)
-                        return programAccess(programUid);
-                    else
-                        return Observable.just(catComboAccess);
-                });
+        }
     }
 
     private Observable<Boolean> programAccess(String programUid) {
