@@ -170,6 +170,7 @@ class ChartsRepositoryImpl(
                     selectedRelativePeriod?.firstOrNull(),
                     selectedOrgUnits
                 ).let {
+                    graphList.add(it)
                 }
             }
         }
