@@ -281,13 +281,13 @@ To:
 
 #### Description
 
-This is a mandatory change. In program rule actions of the type ASSIGN, DISPLAY TEXT or DISPLAY KEY/VALUE PAIR if the Expression to evaluate and assign/display is a text, it must be enclosed with single quotes.
+This is a mdantory change. In program rule actions of the type ASSIGN, DISPLAY TEXT, DISPLAY KEY/VALUE PAIR, SHOW WARNING, SHOW ERROR, WARNING ON COMPLETE or ERROR ON COMPLETE if the Expression to evaluate and assign/display is a text, it must be enclosed with single quotes.
 
 #### How to identify via API?
 
-Get the Program Rules which actions are of type text, with something on the field data and verify their data content to find strings without quotes.
+Get the Program Rules which actions are of type text, with something on the field `data` and verify their data content to find strings without quotes.
 
-`https://example.org/api/programRules?fields=program[name],name,programRuleActions[programRuleActionType,content,data]&filter=programRuleActions.programRuleActionType:in:[ASSIGN,DISPLAYTEXT,DISPLAYKEYVALUEPAIR,SHOWWARNING,SHOWERROR]&filter=programRuleActions.data:!null&paging=false`
+`https://example.org/api/programRules?fields=program[name],name,programRuleActions[programRuleActionType,content,data]&filter=programRuleActions.programRuleActionType:in:[ASSIGN,DISPLAYTEXT,DISPLAYKEYVALUEPAIR,SHOWWARNING,SHOWERROR,WARNINGONCOMPLETE,ERRORONCOMPLETE]&filter=programRuleActions.data:!null&paging=false`
 
 For example we can detect here an error of a text field without quotes in the first Program Rule Action while the second one is correct.
 
@@ -319,21 +319,21 @@ For example we can detect here an error of a text field without quotes in the fi
 
 #### How to fix it?
 
-Scan the generated list (via the suggested API calls) to find data components of the Program Rule Action where text is not quoted, then go to each of the identified Program Rules and update them.
+Scan the generated list (via the suggested API calls) to find `data` components of the Program Rule Action where text is not quoted, then go to each of the identified Program Rules and update them.
 
 ### Concatenation of string and objects { #capture_app_pr_changes_concat }
 
 #### Description
 
-This is a mandatory change. In program rule actions of the type ASSIGN, DISPLAY TEXT or DISPLAY KEY/VALUE PAIR if the Expression to evaluate and assign/display is a text, it must be enclosed with single quotes (same as previous change); but, on top of that, if it requires to concatenate two strings or a combination of functions it is mandatory to use the *d2:concatenate* function.
+This is a mdantory change. In program rule actions of the type ASSIGN, DISPLAY TEXT, DISPLAY KEY/VALUE PAIR, SHOW WARNING, SHOW ERROR, WARNING ON COMPLETE or ERROR ON COMPLETE if the Expression to evaluate and assign/display is a text, it must be enclosed with single quotes (same as previous change); but, on top of that, if it requires to concatenate two strings or a combination of functions it is mandatory to use the *d2:concatenate* function.
 
 #### How to identify via API?
 
-Get the Program Rules which actions are of type text, with any content on the field data and verify their data content to check if in case of two or more strings (or other objects) are being joined the d2:concatenate function is used
+Get the Program Rules which actions are of type text, with any content on the field `data` and verify their data content to check if in case of two or more strings (or other objects) are being joined the d2:concatenate function is used
 
 Get the Program Rules which actions are of type text and verify their data content to find strings without quotes.
 
-`http://localhost:8034/api/programRules?fields=program[name],name,programRuleActions[programRuleActionType,content,data]&filter=programRuleActions.programRuleActionType:in:[ASSIGN,DISPLAYTEXT,DISPLAYKEYVALUEPAIR,SHOWWARNING,SHOWERROR]&filter=programRuleActions.data:!null&paging=false`
+`http://localhost:8034/api/programRules?fields=program[name],name,programRuleActions[programRuleActionType,content,data]&filter=programRuleActions.programRuleActionType:in:[ASSIGN,DISPLAYTEXT,DISPLAYKEYVALUEPAIR,SHOWWARNING,SHOWERROR,WARNINGONCOMPLETE,ERRORONCOMPLETE]&filter=programRuleActions.data:!null&paging=false`
 
 For example we can detect here an error of two strings in an action without the use of d2:concatenate.
 
@@ -352,9 +352,9 @@ For example we can detect here an error of two strings in an action without the 
 
 #### How to fix it?
 
-Scan the generated list (via the suggested API calls) to find data components of the Program Rule Action where two or more objects are being concatenated and update them to use the *d2:concatenate* function.
+Scan the generated list (via the suggested API calls) to find `data` components of the Program Rule Action where two or more objects are being concatenated and update them to use the *d2:concatenate* function.
 
-In the example above the data should change from:
+In the example above the `data` should change from:
 
 `<data>'Age is 10 and modulus' 'another string'</data>`  
 To:  
