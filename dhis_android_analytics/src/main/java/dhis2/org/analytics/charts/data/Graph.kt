@@ -20,8 +20,10 @@ data class Graph(
     fun xAxixMaximun(): Float {
         return if (categories.isNotEmpty()) {
             categories.size.toFloat() - 1
-        } else {
+        } else if (series.isNotEmpty()) {
             series.maxOf { serie -> serie.coordinates.maxOf { point -> point.position ?: 0f } }
+        } else {
+            0f
         }
     }
 
@@ -56,12 +58,17 @@ data class Graph(
     }
 
     fun maxValue(): Float {
-        return series.map { it.coordinates.map { points -> points.fieldValue }.max() ?: 0f }.max()
+        return series.map {
+            it.coordinates.map { points -> points.fieldValue }.maxOrNull() ?: 0f
+        }.maxOrNull()
             ?: 0f
     }
 
     fun minValue(): Float {
-        return series.map { it.coordinates.map { points -> points.fieldValue }.min() ?: 0f }.min()
+        return series.map {
+            it.coordinates.map { points -> points.fieldValue }.minOrNull() ?: 0f
+        }
+            .minOrNull()
             ?: 0f
     }
 
@@ -69,6 +76,14 @@ data class Graph(
         listOf(series.last())
     } else {
         series
+    }
+
+    fun canBeShown(): Boolean {
+        return if (orgUnitsSelected.isNotEmpty() || periodToDisplaySelected != null) {
+            true
+        } else {
+            series.isNotEmpty()
+        }
     }
 }
 
