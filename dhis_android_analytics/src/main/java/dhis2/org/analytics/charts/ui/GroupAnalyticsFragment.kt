@@ -180,6 +180,7 @@ class GroupAnalyticsFragment : Fragment() {
             { analytics ->
                 adapter.submitList(analytics) {
                     binding.progress.visibility = View.GONE
+                    binding.analyticsRecycler.visibility = View.VISIBLE
                 }
             }
         )
@@ -199,6 +200,7 @@ class GroupAnalyticsFragment : Fragment() {
                     chip.tag = analyticGroup.uid
                     chip.setOnCheckedChangeListener { buttonView, isChecked ->
                         if (isChecked) {
+                            binding.analyticsRecycler.visibility = View.GONE
                             binding.progress.visibility = View.VISIBLE
                             groupViewModel.fetchAnalytics(buttonView.tag as String)
                         }

@@ -3,8 +3,12 @@ package dhis2.org.analytics.charts.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dhis2.org.analytics.charts.Charts
 import dhis2.org.analytics.charts.data.AnalyticGroup
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
@@ -28,8 +32,13 @@ class GroupAnalyticsViewModel(
     }
 
     private fun fetchAnalyticsGroup() {
-        _chipItems.value = charts.getVisualizationGroups(uid).map {
-            AnalyticGroup(it.id(), it.name())
+        viewModelScope.launch {
+            val result = async(context = Dispatchers.IO) {
+                charts.getVisualizationGroups(uid).map {
+                    AnalyticGroup(it.id(), it.name())
+                }
+            }
+            _chipItems.value = result.await()
         }
     }
 
@@ -73,22 +82,27 @@ class GroupAnalyticsViewModel(
 
     fun fetchAnalytics(groupUid: String?) {
         currentGroup = groupUid
-        _analytics.value = when (mode) {
-            AnalyticMode.ENROLLMENT -> uid?.let {
-                charts.geEnrollmentCharts(uid)
-                    .map { ChartModel(it) }
-            } ?: emptyList()
-            AnalyticMode.PROGRAM -> uid?.let {
-                charts.getProgramVisualizations(groupUid, uid)
-                    .map { ChartModel(it) }
-            } ?: emptyList()
-            AnalyticMode.HOME ->
-                charts.getHomeVisualizations(groupUid)
-                    .map { ChartModel(it) }
-            AnalyticMode.DATASET -> uid?.let {
-                charts.getDataSetVisualizations(groupUid, uid)
-                    .map { ChartModel(it) }
-            } ?: emptyList()
+        viewModelScope.launch {
+            val result = async(context = Dispatchers.IO) {
+                when (mode) {
+                    AnalyticMode.ENROLLMENT -> uid?.let {
+                        charts.geEnrollmentCharts(uid)
+                            .map { ChartModel(it) }
+                    } ?: emptyList()
+                    AnalyticMode.PROGRAM -> uid?.let {
+                        charts.getProgramVisualizations(groupUid, uid)
+                            .map { ChartModel(it) }
+                    } ?: emptyList()
+                    AnalyticMode.HOME ->
+                        charts.getHomeVisualizations(groupUid)
+                            .map { ChartModel(it) }
+                    AnalyticMode.DATASET -> uid?.let {
+                        charts.getDataSetVisualizations(groupUid, uid)
+                            .map { ChartModel(it) }
+                    } ?: emptyList()
+                }
+            }
+            _analytics.value = result.await()
         }
     }
 }
