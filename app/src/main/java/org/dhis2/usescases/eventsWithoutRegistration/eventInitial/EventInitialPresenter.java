@@ -147,7 +147,7 @@ public class EventInitialPresenter {
                                             String mapReason = D2EditionMapper.mapEditionStatus(view.getContext(), ((EventEditableStatus.NonEditable) septet.val6()).getReason());
                                             view.setEditionStatus(mapReason);
                                         } else {
-                                            view.setEditionStatus(view.getContext().getString(R.string.available));
+                                            view.hideEditionStatus();
                                         }
 
                                     }, Timber::d));
