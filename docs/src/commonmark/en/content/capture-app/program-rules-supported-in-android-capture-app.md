@@ -170,7 +170,6 @@ For the examples below consider the following:
 | d2:hasValue('yn_prv1') \|\| d2:hasValue('yn_prv2') | Assign fixed value to DE | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-complete.png) | |
 | #{yn_prv1} \|\| #{yn_prv2} | Assign fixed value to DE | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-complete.png) | |
 | d2:hasValue('yn_prv1') \|\| d2:hasValue('yn_prv2') | Assign value to DE: #{yn_prv1} + #{yn_prv2} + 1 | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-negative.png) | Crashes in Android  whenver a boolean is marked as the expression would result in *true*+*false*+1 |
-| d2:hasValue('yn_prv1') \|\| d2:hasValue('yn_prv2') | Assign value to DE: #{yn_prv1} + #{yn_prv2} + 1 | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-negative.png) | Crashes in Android  whenver a boolean is marked as the expression would result in *true*+*false*+1 |
 | PR1: #{prv_boolean_one} <br /><br />PR2: #{prv_boolean_two} <br /><br />PR3: #{prv_boolean_one} \|\| #{prv_boolean_two} | PRA1. Assign value  "1" to PRV "#{prv_bool_one_to_number}" <br /><br />PRA2. Assign value: "1" to PRV "#{prv_bool_two_to_number}" <br /><br />PRA3. Assign value to DE: "#{prv_bool_one_to_number} + #{prv_bool_two_to_number} + 1"| ![](resources/icons/icon-negative.png) | ![](resources/icons/icon-negative.png) | There are 2 variables for boolean, one gets the value via a PRV definition “value form DE” and the other one via a PRA. If a boolean is not marked it is counted as string instead of a number |
 | Four PR to assign 1 or 0 to the booleans and an additional for the addition. Priorities go from top to bottom <br /><br />PRC1: !d2:hasValue('prv_boolean_one')  \|\| !#{prv_boolean_one} <br /><br />PRC2: d2:hasValue('prv_boolean_one') && #{prv_boolean_one}<br /><br />PRC3: !d2:hasValue('prv_boolean_two')  \|\| !#{prv_boolean_two} <br /><br />PRC4: d2:hasValue('prv_boolean_two') && #{prv_boolean_two} <br /><br />PRC5: true | PRA1: Assign value: "0" to PRV "#{prv_bool_one_to_number}" <br /><br />PRA2: Assign value: "1" to PRV "#{prv_bool_one_to_number}" <br /><br />PRA3: Assign value: "0" to PRV "#{prv_bool_two_to_number}" <br /><br />PRA4: Assign value: "1" to PRV "#{prv_bool_two_to_number}" <br /><br />PRA5: Assign value: "#{prv_bool_one_to_number} + #{prv_bool_two_to_number} + 1" to DE <br /> | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-complete.png) | There are 2 variables for boolean, one gets the value via a PRV definition “value form DE” and the other one via a PRA.
 
@@ -225,7 +224,7 @@ The example above shows how different ways of using the hasValue function will h
 
 #### Description
 
-This is a mandatory change. *!#{varible_name}* can only be used boolean type variables (BOOLEAN and TRUE_ONLY).
+This is a mandatory change. *!#{variable_name}* can only be used boolean type variables (BOOLEAN and TRUE_ONLY).
 
 #### How to identify via API?
 
@@ -254,11 +253,11 @@ And we can compare with the second list:
 ```xml
 <programRule>
 <condition>!#{Pregant}</condition>
-<displayName>PR03- !#{varible_name} - BOOLEAN</displayName>
+<displayName>PR03- !#{variable_name} - BOOLEAN</displayName>
 </programRule>
 <programRule>
 <condition>!#{Age in years}</condition>
-<displayName>PR03- !#{varible_name} - NOT BOOLEAN</displayName>
+<displayName>PR03- !#{variable_name} - NOT BOOLEAN</displayName>
 </programRule>
 <programRule>
 <condition>#{PregnancyStatus} != 'YES'</condition>
@@ -293,7 +292,7 @@ Get the Program Rules which actions are of type text, with something on the fiel
 For example we can detect here an error of a text field without quotes in the first Program Rule Action while the second one is correct.
 
 ```xml
-<programRule name="PR04- !#{varible_name} - BOOLEAN - Assign text without quotes">
+<programRule name="PR04- !#{variable_name} - BOOLEAN - Assign text without quotes">
 <program name="JB_Testing_2.2"/>
 <programRuleActions>
 <programRuleAction>
@@ -306,7 +305,7 @@ For example we can detect here an error of a text field without quotes in the fi
 ```
 
 ```xml
-<programRule name="PR04- !#{varible_name} - BOOLEAN - Assign text with quotes">
+<programRule name="PR04- !#{variable_name} - BOOLEAN - Assign text with quotes">
 <program name="JB_Testing_2.2"/>
 <programRuleActions>
 <programRuleAction>
