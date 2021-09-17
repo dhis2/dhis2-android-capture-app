@@ -173,7 +173,7 @@ class TrackerFilterSearchHelperTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("Null pointer exception in bitrise")
     fun `Should apply sorting for supported sorting type`() {
         filterManager.sortingItem = SortingItem(Filters.PERIOD, SortingStatus.ASC)
         trackerFilterSearchHelper.getFilteredProgramRepository("programUid")
