@@ -19,7 +19,7 @@ class AnalyticsAdapter :
                 oldItem: AnalyticsModel,
                 newItem: AnalyticsModel
             ): Boolean {
-                return oldItem === newItem
+                return oldItem.uid == newItem.uid
             }
 
             override fun areContentsTheSame(

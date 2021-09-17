@@ -23,7 +23,9 @@ class ChartCoordinatesProviderImplTest {
         val result = coordinatesProvider.dataElementCoordinates(
             "stageUid",
             "teiUid",
-            "dataElementUid"
+            "dataElementUid",
+            null,
+            null
         )
         assertTrue(
             result.isNotEmpty()
@@ -36,7 +38,9 @@ class ChartCoordinatesProviderImplTest {
         val result = coordinatesProvider.dataElementCoordinates(
             "stageUid",
             "teiUid",
-            "dataElementUid"
+            "dataElementUid",
+            null,
+            null
         )
         assertTrue(
             result.isEmpty()
@@ -49,7 +53,9 @@ class ChartCoordinatesProviderImplTest {
         val result = coordinatesProvider.indicatorCoordinates(
             "stageUid",
             "teiUid",
-            "indicatorUid"
+            "indicatorUid",
+            null,
+            null
         )
         assertTrue(
             result.isNotEmpty()
@@ -62,7 +68,9 @@ class ChartCoordinatesProviderImplTest {
         val result = coordinatesProvider.indicatorCoordinates(
             "stageUid",
             "teiUid",
-            "indicatorUid"
+            "indicatorUid",
+            null,
+            null
         )
         assertTrue(
             result.isEmpty()
