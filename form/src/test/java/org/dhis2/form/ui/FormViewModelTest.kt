@@ -33,7 +33,6 @@ class FormViewModelTest {
     @Test
     @Ignore("We need to update Kotlin version in order to test coroutines")
     fun `should show dialog if a unique field has a coincidence in a unique attribute`() {
-
         val action = RowAction(
             id = "fieldUid",
             value = "123",

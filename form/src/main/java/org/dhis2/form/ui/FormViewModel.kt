@@ -153,7 +153,6 @@ class FormViewModel(
                 value = intent.value,
                 actionType = ActionType.ON_TEXT_CHANGE
             )
-
         }
     }
 
