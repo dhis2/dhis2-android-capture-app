@@ -12,7 +12,7 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun renderStatus(status: EnrollmentStatus)
     fun showStatusOptions(currentStatus: EnrollmentStatus)
 
-    fun showFields(fields: List<FieldUiModel>)
+    fun showFields(fields: List<FieldUiModel>?)
 
     fun setSaveButtonVisible(visible: Boolean)
 

@@ -16,6 +16,7 @@ import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
@@ -24,6 +25,7 @@ import org.dhis2.form.ui.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
+import timber.log.Timber
 
 class FormViewModel(
     private val repository: FormRepository,
@@ -34,6 +36,7 @@ class FormViewModel(
     val loading = MutableLiveData<Boolean>()
     val showToast = MutableLiveData<Int>()
     val focused = MutableLiveData<Boolean>()
+    val showInfo = MutableLiveData<InfoUiModel>()
 
     private val _items = MutableLiveData<List<FieldUiModel>>()
     val items: LiveData<List<FieldUiModel>> = _items
@@ -42,7 +45,6 @@ class FormViewModel(
     val savedValue: LiveData<RowAction> = _savedValue
 
     private val _pendingIntents = MutableSharedFlow<FormIntent>()
-    private val pendingIntents = _pendingIntents
 
     init {
         viewModelScope.launch {
@@ -63,6 +65,18 @@ class FormViewModel(
             ValueStoreResult.ERROR_UPDATING_VALUE -> {
                 showToast.value = R.string.update_field_error
             }
+            ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
+                Timber.tag(TAG)
+                    .d("${result.first.id} is not a data element or attribute")
+                repository.composeList()
+            }
+            ValueStoreResult.VALUE_NOT_UNIQUE -> {
+                showInfo.value = InfoUiModel(
+                    R.string.error,
+                    R.string.unique_warning
+                )
+                _items.value = repository.composeList()
+            }
             else -> _items.value = repository.composeList()
         }
     }
@@ -75,9 +89,11 @@ class FormViewModel(
 
     private fun createRowActionStore(it: FormIntent): Pair<RowAction, StoreResult> {
         val rowAction = rowActionFromIntent(it)
-        when (rowAction.type) {
-            ActionType.ON_FOCUS -> focused.postValue(true)
-            ActionType.ON_SAVE -> loading.postValue(true)
+
+        if (rowAction.type == ActionType.ON_FOCUS) {
+            focused.postValue(true)
+        } else if (rowAction.type == ActionType.ON_SAVE) {
+            loading.postValue(true)
         }
 
         val result = repository.processUserAction(rowAction)
@@ -203,5 +219,9 @@ class FormViewModel(
 
     fun processCalculatedItems(items: List<FieldUiModel>?) {
         _items.value = repository.composeList(items)
+    }
+
+    companion object {
+        private const val TAG = "FormVIewModel"
     }
 }

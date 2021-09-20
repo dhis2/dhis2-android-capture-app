@@ -9,14 +9,13 @@ import timber.log.Timber
 class EventCaptureFormPresenter(
     val view: EventCaptureFormView,
     private val activityPresenter: EventCaptureContract.Presenter,
-    val schedulerProvider: SchedulerProvider,
+    val schedulerProvider: SchedulerProvider
 ) {
     private var finishing: Boolean = false
     private var selectedSection: String? = null
     var disposable: CompositeDisposable = CompositeDisposable()
 
     fun init() {
-
         disposable.add(
             activityPresenter.formFieldsFlowable()
                 .subscribeOn(schedulerProvider.io())

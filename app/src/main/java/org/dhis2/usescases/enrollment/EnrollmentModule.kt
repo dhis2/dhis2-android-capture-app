@@ -70,7 +70,6 @@ class EnrollmentModule(
         context: Context,
         d2: D2,
         dhisEnrollmentUtils: DhisEnrollmentUtils,
-        onRowActionProcessor: FlowableProcessor<RowAction>,
         modelFactory: FieldViewModelFactory
     ): EnrollmentRepository {
         val enrollmentDataSectionLabel = context.getString(R.string.enrollment_data_section_label)
@@ -94,8 +93,7 @@ class EnrollmentModule(
             enrollmentCoordinatesLabel,
             reservedValueWarning,
             enrollmentDateDefaultLabel,
-            incidentDateDefaultLabel,
-            onRowActionProcessor
+            incidentDateDefaultLabel
         )
     }
 
@@ -132,10 +130,8 @@ class EnrollmentModule(
         enrollmentFormRepository: EnrollmentFormRepository,
         valueStore: ValueStore,
         analyticsHelper: AnalyticsHelper,
-        onRowActionProcessor: FlowableProcessor<RowAction>,
         fieldViewModelFactory: FieldViewModelFactory,
-        matomoAnalyticsController: MatomoAnalyticsController,
-        formRepository: FormRepository
+        matomoAnalyticsController: MatomoAnalyticsController
     ): EnrollmentPresenterImpl {
         return EnrollmentPresenterImpl(
             enrollmentView,
@@ -149,10 +145,8 @@ class EnrollmentModule(
             valueStore,
             analyticsHelper,
             context.getString(R.string.field_is_mandatory),
-            onRowActionProcessor,
             fieldViewModelFactory.sectionProcessor(),
-            matomoAnalyticsController,
-            formRepository
+            matomoAnalyticsController
         )
     }
 
