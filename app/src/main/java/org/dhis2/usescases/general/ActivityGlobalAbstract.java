@@ -110,13 +110,14 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
                 showSessionExpired();
                 return Unit.INSTANCE;
             });
+            if (!serverComponent.userManager().allowScreenShare()) {
+                getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+            }
         }
 
         if (!getResources().getBoolean(R.bool.is_tablet))
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
-        if (!BuildConfig.DEBUG && !BuildConfig.BUILD_TYPE.equals("beta"))
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         SharedPreferences prefs = getSharedPreferences();
         if (this instanceof MainActivity || this instanceof LoginActivity || this instanceof SplashActivity) {
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();

@@ -1,6 +1,7 @@
 package org.dhis2.data.server
 
 import io.reactivex.Single
+import org.dhis2.BuildConfig
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.settings.SystemSetting
 
@@ -22,5 +23,10 @@ class ServerSettingsRepository(
                     }?.value()
                 Pair(flag, systemStyleMapper.map(style))
             }
+    }
+
+    fun allowScreenShare(): Boolean {
+        return BuildConfig.DEBUG || d2.settingModule().generalSetting().blockingGet()
+            ?.allowScreenCapture() ?: false
     }
 }
