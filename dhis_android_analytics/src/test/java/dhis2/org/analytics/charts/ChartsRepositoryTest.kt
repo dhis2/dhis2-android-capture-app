@@ -13,7 +13,6 @@ import dhis2.org.analytics.charts.mappers.DataElementToGraph
 import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
 import dhis2.org.analytics.charts.mappers.VisualizationToGraph
 import java.util.Date
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -35,14 +34,12 @@ class ChartsRepositoryTest {
     private val analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph = mock()
     private val dataElementToGraph: DataElementToGraph = mock()
     private val programIndicatorToGraph: ProgramIndicatorToGraph = mock()
-    private val featureConfRepository: FeatureConfigRepository = mock()
     private val repository = ChartsRepositoryImpl(
         d2,
         visualizationToGraph,
         analyticsTeiSettingsToGraph,
         dataElementToGraph,
-        programIndicatorToGraph,
-        featureConfRepository
+        programIndicatorToGraph
     )
 
     @Test
