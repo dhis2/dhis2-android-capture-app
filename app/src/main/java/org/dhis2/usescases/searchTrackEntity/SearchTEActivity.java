@@ -514,7 +514,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void setFormData(List<FieldUiModel> data) {
-        formView.render(data);
+        formView.processItems(data);
         updateFiltersSearch(presenter.getQueryData().size());
     }
 

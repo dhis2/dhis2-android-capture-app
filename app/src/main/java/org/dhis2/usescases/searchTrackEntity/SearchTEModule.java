@@ -95,13 +95,12 @@ public class SearchTEModule {
                                                        TeiFilterToWorkingListItemMapper teiWorkingListMapper,
                                                        FilterRepository filterRepository,
                                                        FieldViewModelFactory fieldViewModelFactory,
-                                                       MatomoAnalyticsController matomoAnalyticsController,
-                                                       FormRepository formRepository) {
+                                                       MatomoAnalyticsController matomoAnalyticsController) {
         return new SearchTEPresenter(view, d2, mapUtils, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapCoordinateFieldToFeatureCollection,
                 new EventToEventUiComponent(), preferenceProvider,
                 teiWorkingListMapper, filterRepository, fieldViewModelFactory.fieldProcessor(),
-                new DisableHomeFiltersFromSettingsApp(), matomoAnalyticsController, formRepository);
+                new DisableHomeFiltersFromSettingsApp(), matomoAnalyticsController);
     }
 
     @Provides

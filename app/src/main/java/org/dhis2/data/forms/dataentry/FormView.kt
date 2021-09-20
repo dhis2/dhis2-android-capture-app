@@ -244,7 +244,7 @@ class FormView constructor(
         }
     }
 
-    fun render(items: List<FieldUiModel>) {
+    private fun render(items: List<FieldUiModel>) {
         val layoutManager: LinearLayoutManager =
             binding.recyclerView.layoutManager as LinearLayoutManager
         val myFirstPositionIndex = layoutManager.findFirstVisibleItemPosition()

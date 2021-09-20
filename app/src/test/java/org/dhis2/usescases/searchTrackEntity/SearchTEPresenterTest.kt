@@ -22,7 +22,6 @@ import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.dhislogic.DhisMapUtils
 import org.dhis2.data.schedulers.TestSchedulerProvider
-import org.dhis2.form.data.FormRepository
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
@@ -58,7 +57,6 @@ class SearchTEPresenterTest {
     private val filterRepository: FilterRepository = mock()
     private val disableHomeFiltersFromSettingsApp: DisableHomeFiltersFromSettingsApp = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
-    private val formRepository: FormRepository = mock()
 
     @Before
     fun setUp() {
@@ -86,8 +84,7 @@ class SearchTEPresenterTest {
             filterRepository,
             null,
             disableHomeFiltersFromSettingsApp,
-            matomoAnalyticsController,
-            formRepository
+            matomoAnalyticsController
         )
     }
 
@@ -371,7 +368,7 @@ class SearchTEPresenterTest {
     @Test
     fun `Should populate same list when onItemAction is triggered in FormView`() {
         presenter.populateList(null)
-        verify(view, times(1)).setFormData(any())
+        verify(view, times(1)).setFormData(null)
         verify(view, times(0)).setFabIcon(any())
     }
 
