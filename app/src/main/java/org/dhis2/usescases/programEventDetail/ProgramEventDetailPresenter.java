@@ -90,14 +90,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         Timber::e
                 )
         );
-        compositeDisposable.add(eventRepository.featureType()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                        view::setFeatureType,
-                        Timber::e
-                )
-        );
 
         compositeDisposable.add(Single.zip(
                 Single.just(eventRepository.getAccessDataWrite()),

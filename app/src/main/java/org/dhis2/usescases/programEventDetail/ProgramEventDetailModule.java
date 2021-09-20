@@ -22,6 +22,7 @@ import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper;
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -106,5 +107,11 @@ public class ProgramEventDetailModule {
     @PerActivity
     FiltersAdapter provideNewFiltersAdapter() {
         return new FiltersAdapter();
+    }
+
+    @Provides
+    @PerActivity
+    NavigationPageConfigurator providesPageConfigurator(ProgramEventDetailRepository repository) {
+        return new ProgramEventPageConfigurator(repository);
     }
 }

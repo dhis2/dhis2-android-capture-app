@@ -37,6 +37,7 @@ import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -65,6 +66,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Inject
     FiltersAdapter filtersAdapter;
 
+    @Inject
+    NavigationPageConfigurator pageConfigurator;
+
     private boolean backDropActive;
     private String programUid;
 
@@ -90,6 +94,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding = DataBindingUtil.setContentView(this, activity_program_event_detail);
         binding.setPresenter(presenter);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+        binding.navigationBar.pageConfiguration(pageConfigurator);
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_list_view:
@@ -205,8 +210,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         if (backDropActive) {
             initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.filterLayout, ConstraintSet.BOTTOM, 50);
+            binding.navigationBar.hide();
         } else {
             initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
+            binding.navigationBar.show();
         }
 
         initSet.applyTo(binding.backdropLayout);
@@ -214,7 +221,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setFeatureType(FeatureType type) {
-        binding.navigationBar.setVisibility(type == FeatureType.NONE ? View.GONE : View.VISIBLE);
+        //binding.navigationBar.setVisibility(type == FeatureType.NONE ? View.GONE : View.VISIBLE);
     }
 
     @Override
