@@ -190,7 +190,7 @@ public abstract class FieldViewModel implements FieldUiModel {
     public void onTextChange(String value) {
         callback.intent(new FormIntent.OnTextChange(
                 uid(),
-                value()
+                value
         ));
     }
 
