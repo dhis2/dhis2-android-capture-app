@@ -2,10 +2,9 @@ package dhis2.org.analytics.charts.mappers
 
 import dhis2.org.analytics.charts.data.GraphPoint
 import dhis2.org.analytics.charts.data.SerieData
-import java.util.Date
+import java.util.GregorianCalendar
 import org.hisp.dhis.android.core.analytics.aggregated.Dimension
 import org.hisp.dhis.android.core.analytics.aggregated.DimensionalResponse
-import java.util.GregorianCalendar
 
 class DimensionalResponseToPieData {
     fun map(dimensionalResponse: DimensionalResponse, dimension: Dimension): List<SerieData> {

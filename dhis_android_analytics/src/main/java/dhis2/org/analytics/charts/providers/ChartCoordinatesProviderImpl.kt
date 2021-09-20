@@ -3,12 +3,12 @@ package dhis2.org.analytics.charts.providers
 import dhis2.org.analytics.charts.data.GraphPoint
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.GregorianCalendar
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.analytics.aggregated.GridResponseValue
 import org.hisp.dhis.android.core.analytics.aggregated.MetadataItem
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.period.Period
-import java.util.GregorianCalendar
 
 class ChartCoordinatesProviderImpl(
     val d2: D2,
